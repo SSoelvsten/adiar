@@ -1,0 +1,122 @@
+% ---------------------------------------------------------------------------- %
+% INTRODUCTION
+% ---------------------------------------------------------------------------- %
+\section{Introduction} \label{sec:intro}
+
+% ---------------------------------------------------------------------------- %
+% PRELIMINARIES
+% ---------------------------------------------------------------------------- %
+\section{Preliminaries} \label{sec:preliminaries}
+
+\subsection{The I/O Model}
+
+\subsection{Ordered Boolean Decision Diagrams}
+
+\begin{theorem}[\cite{Arge96}] \label{thm:reduce_io_lower_bound}
+
+  Reduction of an OBBD $G$ with minimal pair, level, depth first or breadth
+  first blocking requires $\Omega(\sort(N))$ I/Os in the worst case.
+\end{theorem}
+
+\begin{theorem}[\cite{Arge96}] \label{thm:apply_io_worst_case}
+
+  The Dynamic Programming \Apply\ algorithm on two OBDDs of size $N_1, N_2$
+  followed up by a \Reduce\ operation requires $O(N_1 \cdot N_2)$ I/Os in the
+  worst case.
+\end{theorem}
+
+
+% ---------------------------------------------------------------------------- %
+% THE ALGORITHM IN THEORY
+% ---------------------------------------------------------------------------- %
+\newpage
+\section{Cache-oblivious OBBD algorithms} \label{sec:theory}
+
+For completeness we provide both the \Reduce\ and \Apply\ algorithms of
+\cite{Arge96}. Both algorithms essentially work by \emph{Time Process
+  Forwarding} where any recursive computation that would result in I/O's
+essentially are postponed until the node is retrieved from a work-list. This is
+done by forwarding the necessary information for the recursion with one or more
+priority queues that by careful choice of the ordering is in sync with the
+work-list. \todocite{TPF}
+
+\subsection{Reduce} \label{sec:theory_reduce}
+To create an I/O efficient \Reduce\ algorithm we make use of the following total
+ordering in all three data structures: Given a node $v$ of the OBBD, sort it by
+\lstinline{$v$.label} and break any ties at the same level by secondarily
+sorting it by its identity \lstinline{$v$.uid}. This ordering is such that the
+deepest nodes come first. Sink nodes come before any internal node.
+
+This sorting is used in the following three data structures, where $a \in
+\set{\textit{low}, \textit{high}}$.
+
+\begin{itemize}
+\item The list $L_1$ of all nodes $v \in V$ sorted with respect to $v$.
+
+  This is to be used as the work-list of processing the nodes for the reduction.
+
+\item The list $L_2$ of 3-tuples $(s,t,a)$ sorted with respect to $t$.
+
+  This list is supposed to contain the node $s$ to which the result of its child
+  $t$ has to be sent. Since every $s \in V$ is dependent on its two children
+  $s.\mathit{low}$ and $s.\mathit{high}$, then both $(s, s.\mathit{low},
+  \mathit{low})$ and $(s, s.\mathit{high}, \mathit{high})$ have to be included
+  in $L_2$.
+
+\item The priority queue $Q$ of 3-tuples $(s,t',a)$ sorted with respect to $s$.
+
+  This priority queue is used to forward the result $t'$ of processing nodes $t
+  \in L_1$ to nodes in $L_1$ dependent on $t'$.
+\end{itemize}
+
+The algorithm works by synchronous scanning through $L_1, L_2$ and extracting
+from $Q$ the result of dependent information. By the ordering chosen, when
+scanning an element $v \in L_1$ the next tuples of $L_2$ with $t = v$ contain
+the $s$ dependent on the result $v'$ of the computation on $v$. Similarly, when
+processing an element $s \in L_1$ the immediate next two elements of $Q$ will be
+the tuples of with the result of processing its two children.
+
+$L_1$ of length $N$ and $L_2$ of size $2 \cdot N$ can be populated in a single
+scan of the input OBBD and sorted in $O(sort(N))$ I/O's. For each element of
+$L_2$ a single element will be added to $Q$, which will result in $4 \cdot N$
+insertions and deletions from $Q$, which also happens in worst-case $O(sort(N))$
+I/O's when using an I/O efficient priority queue. On each layer all nodes are
+sorted twice, which when all layers are combined results in another $O(sort(N))$
+number of I/O's. Hence, the algorithm runs within the optimal $O(sort(N))$
+bound. \cite{Arge96}
+
+\subsection{Apply}
+
+
+\subsection{Pipelining}
+
+
+% ---------------------------------------------------------------------------- %
+% THE ALGORITHM IN PRACTICE
+% ---------------------------------------------------------------------------- %
+\section{A Cache-oblivious OBBD implementation} \label{sec:implementation}
+
+
+% ---------------------------------------------------------------------------- %
+% CONCLUSION
+% ---------------------------------------------------------------------------- %
+\section{Conclusion} \label{sec:conclusion}
+
+
+% ---------------------------------------------------------------------------- %
+% References
+% ---------------------------------------------------------------------------- %
+\printbibliography
+
+% ---------------------------------------------------------------------------- %
+% Appendix
+% ---------------------------------------------------------------------------- %
+% \newpage \appendix
+% \section{Appendix} \label{app:A}
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "arxiv"
+%%% End:

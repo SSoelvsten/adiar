@@ -1,0 +1,84 @@
+% ---------------------------------------------------------------------------- %
+% Load base preamble
+% ---------------------------------------------------------------------------- %
+\documentclass[english, twoside]{article}
+
+% Import from the same folder
+%\input{preamble_en.tex}
+
+% Import from absolute path
+%\usepackage{import}
+%\import{C:/GitHub/LaTeX_Preamble_and_Examples/preamble/}{preamble_en.tex}
+
+% Import from a relative path
+\usepackage{import}
+\subimport{../../LaTeX-Preamble_and_Examples/preamble/}{preamble_en.tex}
+
+
+% ---------------------------------------------------------------------------- %
+% Title
+% ---------------------------------------------------------------------------- %
+\newcommand{\titlecontent}{Cache-oblivious OBBD Manipulation}
+\title{\titlecontent}
+
+
+% ---------------------------------------------------------------------------- %
+% Page layout
+% ---------------------------------------------------------------------------- %
+\usepackage[a4paper]{geometry}
+\usepackage{lastpage, fancyhdr}
+\pagestyle{fancy}
+
+% Top: Odd pages (Main for onesided)
+\fancyhead[RO]{\thepage}
+\fancyhead[LO]{\titlecontent}
+
+% Top: even pages
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\fancyhead[LE]{\thepage}
+
+% Bottom: Nothing
+\fancyfoot[LCR]{}
+
+% ---------------------------------------------------------------------------- %
+% Bibliography
+% ---------------------------------------------------------------------------- %
+\usepackage[
+  backend=biber,
+  style=alphabetic,
+  sortlocale=en_US,
+  useprefix=false,
+  url=false,
+  doi=true,
+  eprint=false,
+  maxbibnames=99,
+]{biblatex}
+\addbibresource{references.bib}
+
+% ---------------------------------------------------------------------------- %
+% Authors
+% ---------------------------------------------------------------------------- %
+\author{Steffan Sølvsten}
+\affil{Aarhus University \\ \mailto{soelvsten@cs.au.dk}}
+
+% ---------------------------------------------------------------------------- %
+% Main content
+% ---------------------------------------------------------------------------- %
+\input{macros.tex}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  \input{abstract.tex}
+\end{abstract}
+
+\input{main.tex}
+
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

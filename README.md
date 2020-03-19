@@ -39,6 +39,7 @@ intermediate size of the OBBD or by having to run two algorithms separately.
 ## Bibliography
 Copies of the most relevant papers are placed here for convenience.
 
-## Paper
-The LaTeX source for the (knock-on-wood) resulting paper.
+## Report
+The LaTeX source for a report on this project. This could be repurposed into a
+paper in the event the benchmark results are promising.
 
