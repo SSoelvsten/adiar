@@ -33,12 +33,75 @@
 \section{Cache-oblivious OBBD algorithms} \label{sec:theory}
 
 For completeness we provide both the \Reduce\ and \Apply\ algorithms of
-\cite{Arge96}. Both algorithms essentially work by \emph{Time Process
-  Forwarding} where any recursive computation that would result in I/O's
-essentially are postponed until the node is retrieved from a work-list. This is
-done by forwarding the necessary information for the recursion with one or more
-priority queues that by careful choice of the ordering is in sync with the
-work-list. \todocite{TPF}
+\cite{Arge96}. We expand on these algorithms with a set of other algorithms for
+the manipulation of OBBD.
+
+The underlying idea of all the algorithms given below is to exploit that OBBD's
+are directed acyclic graphs. If all nodes of an OBBD is sorted first by their
+label and secondly by their unique identifier, then that constitutes a
+topological sorting. As long as the dependency of computation only is one-way in
+the OBBD, then a recursive algorithm can instead be handled by scanning through
+all nodes in topological order and ``forward'' information to its children or
+parent. This \emph{Time-Forward Processing} is done by use of one more priority
+queues that are carefully synchronised with the scanning of the nodes \todocite.
+
+These queues are aligned with the scan through all nodes by sorting all its
+entries by the same ordering as the nodes. At the time of forwarding the
+information, the receiving node is most likely not in memory. Since a lookup of
+the receiving node would result in a full I/O used, then all nodes store both
+the label and unique identifier of their children, as shown in
+Code~\ref{lst:struct}.
+\begin{lstfloat}
+  \centering
+
+  \begin{blstlisting}[language=sml, numbers=none]
+  Struct Node {
+    index : int;
+    label : int;
+    low   : { index: int?, label: int };
+    high  : { index: int?, label: int };
+  }
+  \end{blstlisting}
+
+  \caption{The information stored in each node of the OBBD}
+  \label{lst:struct}
+\end{lstfloat}
+
+Since the label for the children is stored within the parent, then there is no
+need to explicitly store the $0$- and $1$-sinks as nodes in the graph. Further
+notice, that the Node contains no direct pointers to its children, but instead
+only an index of where to find it an array. This is due to the fact that the
+\Reduce\ algorithm described below outputs the nodes bottom-up and hence is able
+to provide the index of the prior outputted children. That means, that an OBBD
+as outputted by \Reduce\ can be traversed with the \Evaluate\ function in
+Code~\ref{lst:eval}. For $n$ variables this traversal clearly takes $O(n)$ time
+and $O(n)$ I/Os.
+\begin{lstfloat}
+  \centering
+
+  \begin{blstlisting}[language=pseudocode, numbers=none]
+  Evaluate(x : bool[], G : OBBD):
+    v = G.V[G.V.length - 1] // The root is outputted last
+
+    while True:
+      if x[node.label]:
+        if v.high.label$\in \set{0, 1}$: return v.high.label
+        v = G.V[v.high.index]
+      else:
+        if v.low.label$\in \set{0, 1}$:  return v.low.label
+        v = G.V[v.low.index]
+  \end{blstlisting}
+
+  \caption{The \Evaluate\ algorithm to traverse a reduced OBBD $G$ according to an
+    assignment $x$}
+  \label{lst:eval}
+\end{lstfloat}
+
+Except \Reduce, all algorithms given below assume that the input OBBD is reduced
+and in reverse topological order, as outputted by the \Reduce\ algorithm. On the
+other hand, the \Reduce\ algorithm expects the to-be-reduced list of nodes are
+in topological order. Due to this, all sorting steps of the input nodes can
+be omitted for the sake of optimisation. \cite{Arge96}
 
 \subsection{Reduce} \label{sec:theory_reduce}
 To create an I/O efficient \Reduce\ algorithm we make use of the following total
