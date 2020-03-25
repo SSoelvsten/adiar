@@ -148,10 +148,101 @@ sorted twice, which when all layers are combined results in another $O(sort(N))$
 number of I/O's. Hence, the algorithm runs within the optimal $O(sort(N))$
 bound. \cite{Arge96}
 
+\subsection{Substitute} \label{sec:theory_substitute}
+Before we present the \Apply\ algorithm we present the simpler top-down
+algorithm \Substitute, which given an OBBD $G$ and an assignment vector $A$ of
+tuples $(x_i, \mathit{value})$ outputs a reduced OBBD $G_{| x_i = v ,\ \forall
+  (x_i,v) \in A}$ as shown in Code~\ref{lst:substitute}.
+
+The algorithm essentially traverses the OBBD recursively, either keeping the
+node and recursing along both outgoing arcs or skipping the node and only
+recursing on the arc according to the assignment. The recursion is controlled
+using a priority queue \lstinline{Q} of Node-tuples $(s,t,a)$ sorted by $t$ of
+requests arcs from $s$ to $t$ through an $a \in \set{\textit{low},
+  \textit{high}}$ arc. Since this only traverses the OBBD top-down, then the
+nodes traversed do not know the index of their children before they are
+outputted later. Hence, these nodes will not contain an actual index to their
+children, but instead only a unique identifier. Luckily, these references can be
+fixed as part of the bottom-up traversal of the final \Reduce. Furthermore, due
+to the top-down traversal of the OBBD, the \ReduceL\, \ReduceLnode\ and
+\ReduceLsink\ lists during the traversal \Reduce; \ReduceL\ and \ReduceLnode\
+even in the required ordering.
+
+\begin{lstfloat}
+  \centering
+
+  \begin{blstlisting}[language=pseudocode]
+  Substitute(G : OBBD, A : (int, bool)[]):
+      if A = $\emptyset$ $\lor$
+      sort (l,v) in A *@by@* l
+      Q = $\emptyset$                  // queue for recursion
+      *@\ReduceL@*, *@\ReduceLnode@*, *@\ReduceLsink@* = []  // output lists for Reduce
+
+      iA = 0
+      (al, av) = A[iA]
+
+      // Process the root and create initial recursion requests
+      v = G.V[G.V.length - 1]
+      if al == v.label:
+          if av:
+              if v.high.label $\in \set{0,1}$: return sink-only v.high.label
+              Q.insert(v.high)
+          else:
+              if v.low.label $\in \set{0,1}$: return sink-only v.low.label
+              Q.insert(v.low)
+          (al, av) = A[++iA]
+      else:
+          *@\ReduceL@*.append(v)
+
+          if v.low $\not\in \set{0,1}$: Q.insert(v.low)
+          if v.high $\not\in \set{0,1}$: Q.insert(v.high)
+
+      // Process all to-be-visited nodes in topological order
+      while $\neg$Q.empty():
+          (s,t,a) = Q.get_next()
+          v = G.V[t.index]
+
+          // Skip to-be-substituted variables that we didn't see
+          while al < v.label: (al, av) = A[++iA]
+
+          // Forward the desired information
+          if al $\neq$ v.label:
+              *@\ReduceL@*.append(v)
+              Q.insert((v,v.low,low), (v,v.high,high))
+
+              // v is outputted: dependencies to v can be locked in place
+              while True:
+                  *@\ReduceLnode@*.append((s,t, a))
+                  if Q.peek()[1] = v: (s,t,a) = Q.get_next()
+                  else: break
+          else:
+              is_sink = (if av then v.high else v.low).label $\in \set{0,1}$
+              request = (s, if av then v.high else v.low, av)
+
+              if is_sink: *@\ReduceLsink@*.append(request)
+              else: Q.insert(request)
+
+      sort L2 for Reduce
+      return Reduce(L1, L2$_{\mathit{node}}$, L2$_{\mathit{sink}}$)
+  \end{blstlisting}
+
+  \caption{The substitution algorithm}
+  \label{lst:substitute}
+\end{lstfloat}
+
+By the ordering of tuples in \Q, then nodes are visited in topological order,
+which means each block of \GV\ is only fetched at most once. This means that at
+most $O(N/B)$ I/O's are used as part of the look up of vertices in \GV. At most
+$2N$ requests are placed and retrieved from \Q\ which will only require
+$O(sort(N))$ I/Os. For $N' \leq N$ the number of nodes put into the resulting
+list of nodes, \ReduceL, then the use of \Reduce\ will only result in
+$O(sort(N'))$ I/O's. In total the \Substitute\ algorithm performs the full
+substitution and reduction in $O(sort(N))$ I/Os.
+
 \subsection{Apply}
 
 
-\subsection{Pipelining}
+\subsection{Relational Product}
 
 
 % ---------------------------------------------------------------------------- %
