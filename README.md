@@ -39,6 +39,13 @@ intermediate size of the OBBD or by having to run two algorithms separately.
 ## Bibliography
 Copies of the most relevant papers are placed here for convenience.
 
+## Pseudocode
+To better understand the algorithm in detail, the `Reduce` and `Apply` algorithm
+have been written as pseudocode. These are _python_ files for the syntax
+highlighting, but that does not mean they are supposed to be compilable and
+possible to run. These have then been extended with other commonly used
+algorithms.
+
 ## Report
 The LaTeX source for a report on this project. This could be repurposed into a
 paper in the event the benchmark results are promising.
