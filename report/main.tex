@@ -308,83 +308,99 @@ the algorithm has an $O(N \log N)$ time complexity.
 
 \subsection{Substitute} \label{sec:theory_substitute}
 Before we present the \Apply\ algorithm we present the simpler top-down
-algorithm \Substitute, which given an OBBD $G$ and an assignment vector $A$ of
-tuples $(x_i, \mathit{value})$ outputs a reduced OBBD $G_{| x_i = v ,\ \forall
+algorithm \Substitute, which given an OBDD $G$ and an assignment vector $A$ of
+tuples $(x_i, \mathit{value})$ outputs a reduced OBD $G_{| x_i = v ,\ \forall
   (x_i,v) \in A}$ as shown in Code~\ref{lst:substitute}.
 
-The algorithm essentially traverses the OBBD recursively, either keeping the
+\begin{itemize}
+\item The priority queue \Q\ of 3-tuples
+  \lstinline{(s: Node, t: NodeArc.Link, b: bool)} sorted with
+  respect to \lstinline{t} only.
+
+  This the tuples $(s,t,b)$-tuples in the priority queue are used to forward
+  recursion requests from $s$ to non-sink children $t$.
+\end{itemize}
+
+The algorithm essentially traverses the OBDD recursively, either keeping the
 node and recursing along both outgoing arcs or skipping the node and only
 recursing on the arc according to the assignment. The recursion is controlled
-using a priority queue \lstinline{Q} of Node-tuples $(s,t,a)$ sorted by $t$ of
-requests arcs from $s$ to $t$ through an $a \in \set{\textit{low},
-  \textit{high}}$ arc. Since this only traverses the OBBD top-down, then the
-nodes traversed do not know the index of their children before they are
-outputted later. Hence, these nodes will not contain an actual index to their
-children, but instead only a unique identifier. Luckily, these references can be
-fixed as part of the bottom-up traversal of the final \Reduce. Furthermore, due
-to the top-down traversal of the OBBD, the \ReduceL\, \ReduceLnode\ and
-\ReduceLsink\ lists during the traversal \Reduce; \ReduceL\ and \ReduceLnode\
-even in the required ordering.
+using \Q.
+
+Since this only traverses the OBDD top-down, the nodes traversed do not know the
+index of their children before they are outputted later. Hence, these nodes will
+not contain an actual index to their children, but instead only a unique
+identifier of \lstinline{int}-tuples. Luckily, these references
+can be fixed as part of the bottom-up traversal of the final \Reduce.
+Furthermore, due to the top-down traversal of the OBDD, the \ReduceLwork\,
+\ReduceLdep\ and \Q\ of \Reduce\ can be initialised during the traversal.
 
 \begin{lstfloat}
   \centering
 
-  \begin{blstlisting}[language=pseudocode]
-  Substitute(G : OBBD, A : (int, bool)[]):
-      if A = $\emptyset$ $\lor$
+  \begin{blstlisting}
+  Substitute(G : OBDD, A : (int, bool)[]):
       sort (l,v) in A *@by@* l
-      Q = $\emptyset$                  // queue for recursion
-      *@\ReduceL@*, *@\ReduceLnode@*, *@\ReduceLsink@* = []  // output lists for Reduce
+      Q, $\ReduceQdep$ = $\emptyset$ : PriorityQueue<Node,NodeArc,bool>
+      $\ReduceLwork, \ReduceLdep$ := [] : Node[] | (Node,NodeArc,bool)[]
 
-      iA = 0
-      (al, av) = A[iA]
+      iA := 0
+      (a_label, a_value) := A[iA]
 
       // Process the root and create initial recursion requests
       v = G.V[G.V.length - 1]
-      if al == v.label:
-          if av:
-              if v.high.label $\in \set{0,1}$: return sink-only v.high.label
-              Q.insert(v.high)
+      if a_label = v.label:
+          if a_value:
+              if is_sink(v.high): return sink-only OBDD v.high.value
+              Q.insert ((NIL, v.high, True))
           else:
-              if v.low.label $\in \set{0,1}$: return sink-only v.low.label
-              Q.insert(v.low)
-          (al, av) = A[++iA]
-      else:
-          *@\ReduceL@*.append(v)
+              if is_sink(v.low): return sink-only OBDD v.low.value
+              Q.insert((NIL, v.low, False))
 
-          if v.low $\not\in \set{0,1}$: Q.insert(v.low)
-          if v.high $\not\in \set{0,1}$: Q.insert(v.high)
+          (a_label, a_value) := A[++iA]
+      else:
+          $\ReduceLwork$.append(v)
+          high_request := (v, v.high, True)
+          low_request := Q.insert(v, v.low, False)
+
+          if !is_sink(v.high): Q.insert(high_request)
+          else: $\ReduceQdep$.insert(high_request)
+
+          if !is_sink(v.low):  Q.insert(low_request)
+          else: $\ReduceQdep$.insert(low_request)
 
       // Process all to-be-visited nodes in topological order
-      while $\neg$Q.empty():
-          (s,t,a) = Q.get_next()
-          v = G.V[t.index]
+      while !Q.empty():
+          (s,t,a) := Q.get_next()
+          v := G.V[t.index]
 
           // Skip to-be-substituted variables that we didn't see
-          while al < v.label: (al, av) = A[++iA]
+          while a_label < v.label: (a_label, a_value) := A[++iA]
 
           // Forward the desired information
-          if al $\neq$ v.label:
-              *@\ReduceL@*.append(v)
-              Q.insert((v,v.low,low), (v,v.high,high))
+          if a_label <> v.label:
+              $\ReduceLwork$.append(v)
+              Q.insert((v, v.low, False), (v, v.high, True))
 
-              // v is outputted: dependencies to v can be locked in place
-              while True:
-                  *@\ReduceLnode@*.append((s,t, a))
-                  if Q.peek()[1] = v: (s,t,a) = Q.get_next()
-                  else: break
+              // v is outputted: dependencies (if any) to v
+              // can be locked in place
+              if s <> NIL:
+                  while True:
+                      $\ReduceLdep$.append((s,t,a))
+                      if Q.peek()[1] = v: (s,t,a) := Q.get_next()
+                      else: break
           else:
-              is_sink = (if av then v.high else v.low).label $\in \set{0,1}$
-              request = (s, if av then v.high else v.low, av)
+              rec_child := if a_value then v.high else v.low
+              recurse := !is_sink(rec_child)
+              request := (s, rec_child, a_value)
 
-              if is_sink: *@\ReduceLsink@*.append(request)
-              else: Q.insert(request)
+              if recurse: Q.insert(request)
+              else if s = NIL: return sink-only OBDD rec_child.value
+              else: $\ReduceQdep$.insert(request)
 
-      sort L2 for Reduce
-      return Reduce(L1, L2$_{\mathit{node}}$, L2$_{\mathit{sink}}$)
+      return Reduce($\ReduceLwork, \ReduceLdep, \ReduceQdep$)
   \end{blstlisting}
 
-  \caption{The substitution algorithm}
+  \caption{The \Substitute\ algorithm}
   \label{lst:substitute}
 \end{lstfloat}
 
@@ -393,10 +409,11 @@ which means each block of \GV\ is only fetched at most once. This means that at
 most $O(N/B)$ I/O's are used as part of the look up of vertices in \GV. At most
 $2N$ requests are placed and retrieved from \Q\ which will only require
 $O(sort(N))$ I/Os. For $N' \leq N$ the number of nodes put into the resulting
-list of nodes, \ReduceL, then the use of \Reduce\ will only result in
+list of nodes, \ReduceLwork, then the use of \Reduce\ will only result in
 $O(sort(N'))$ I/O's. In total the \Substitute\ algorithm performs the full
 substitution and reduction in $O(sort(N))$ I/Os.
 
+\clearpage
 \subsection{Apply}
 
 
