@@ -107,49 +107,204 @@ in topological order. Due to this, all sorting steps of the input nodes can
 be omitted for the sake of optimisation. \cite{Arge96}
 
 \subsection{Reduce} \label{sec:theory_reduce}
-To create an I/O efficient \Reduce\ algorithm we make use of the following total
-ordering in all three data structures: Given a node $v$ of the OBBD, sort it by
-\lstinline{$v$.label} and break any ties at the same level by secondarily
-sorting it by its identity \lstinline{$v$.uid}. This ordering is such that the
-deepest nodes come first. Sink nodes come before any internal node.
-
-This sorting is used in the following three data structures, where $a \in
-\set{\textit{low}, \textit{high}}$.
+The \Reduce\ algorithm makes use of the following three data structures:
 
 \begin{itemize}
-\item The list $L_1$ of all nodes $v \in V$ sorted with respect to $v$.
+\item The list \ReduceLwork\ of all nodes $v \in V$ sorted with respect to $v$.
 
   This is to be used as the work-list of processing the nodes for the reduction.
 
-\item The list $L_2$ of 3-tuples $(s,t,a)$ sorted with respect to $t$.
+\item The list \ReduceLdep\ of 3-tuples
+  \lstinline{(s: Node, t: NodeArc.Link, b: bool)}
+  sorted with respect to the label and index of \lstinline{t}.
 
-  This list is supposed to contain the node $s$ to which the result of its child
-  $t$ has to be sent. Since every $s \in V$ is dependent on its two children
-  $s.\mathit{low}$ and $s.\mathit{high}$, then both $(s, s.\mathit{low},
-  \mathit{low})$ and $(s, s.\mathit{high}, \mathit{high})$ have to be included
-  in $L_2$.
+ This list is supposed to contain the node \lstinline{s} to which the result of
+ its child \lstinline{t} has to be sent.
 
-\item The priority queue $Q$ of 3-tuples $(s,t',a)$ sorted with respect to $s$.
+\item The priority queue \ReduceQdep\ of 3-tuples
+  \lstinline{(s: Node, t': NodeArc.Link, b: bool)} sorted with
+  respect to \lstinline{s} and secondly by \lstinline{b}.
 
-  This priority queue is used to forward the result $t'$ of processing nodes $t
-  \in L_1$ to nodes in $L_1$ dependent on $t'$.
+  This priority queue is used to forward the result \lstinline{t'} of processing
+  nodes \lstinline{t} $\in \ReduceLwork$ to nodes in $\ReduceLwork$ dependent on
+  the result \lstinline{t'}.
 \end{itemize}
+These datastructures can be initialised as depicted in
+Code~\ref{lst:reduce_init}. \ReduceLwork\ can be populated in topological
+order in $O(\sort(N))$ I/Os. \ReduceLdep\ can also be populated with all
+dependencies to non-sink children and sorted $O(\sort(N))$ I/Os. For simplicity
+of the presentation of the \Reduce\ algorithm later we populate \ReduceQdep\
+with all results of computation to the implicitly-stored sink nodes.%
+\footnote{In actuality you would in the \Reduce\ algorithm below rather check
+  whether the current node has an arc to a sink to minimise the number of
+  elements placed in and retrieved from \ReduceQdep.}
 
-The algorithm works by synchronous scanning through $L_1, L_2$ and extracting
-from $Q$ the result of dependent information. By the ordering chosen, when
-scanning an element $v \in L_1$ the next tuples of $L_2$ with $t = v$ contain
-the $s$ dependent on the result $v'$ of the computation on $v$. Similarly, when
-processing an element $s \in L_1$ the immediate next two elements of $Q$ will be
-the tuples of with the result of processing its two children.
+\begin{lstfloat}[ht!]
+  \centering
 
-$L_1$ of length $N$ and $L_2$ of size $2 \cdot N$ can be populated in a single
-scan of the input OBBD and sorted in $O(sort(N))$ I/O's. For each element of
-$L_2$ a single element will be added to $Q$, which will result in $4 \cdot N$
-insertions and deletions from $Q$, which also happens in worst-case $O(sort(N))$
-I/O's when using an I/O efficient priority queue. On each layer all nodes are
-sorted twice, which when all layers are combined results in another $O(sort(N))$
-number of I/O's. Hence, the algorithm runs within the optimal $O(sort(N))$
-bound. \cite{Arge96}
+  \begin{blstlisting}
+  $\ReduceLwork$ := G.V : Node[]
+  sort nodes in $\ReduceLwork$
+
+  $\ReduceLdep$ := [] : (Node, NodeArc, bool)[]
+  $\ReduceQdep$ := $\emptyset$ : PriorityQueue<Node,NodeArc,bool>
+
+  for $v \in \ReduceLwork$:
+      low_dependency := (v, v.low, low)
+      high_dependency := (v, v.high, high)
+
+      case v.low of Sink{_}   => $\ReduceQdep$.insert(low_dependency)
+                  | Link{_,_} => $\ReduceLdep$.append(low_dependency)
+
+      case v.high of Sink{_}   => $\ReduceQdep$.insert(high_dependency)
+                   | Link{_,_} => $\ReduceLdep$.append(high_dependency)
+
+  sort (s,t,a) in $\ReduceLdep$ by t
+  \end{blstlisting}
+
+  \caption{Initialisation of datastructures for the \Reduce}
+  \label{lst:reduce_init}
+\end{lstfloat}
+
+The \Reduce\ algorithm applies the reduction rules of \textcite{Bryant86} on all
+nodes of each layer using the \lstinline{ReduceLayer} subroutine depicted in
+Code~\ref{lst:reduce_bryant}. The output is are three lists
+\lstinline{O}$_{\mathit{out}}$, \lstinline{O}$_{\mathit{red:}1}$,
+\lstinline{O}$_{\mathit{red:}2}$ of tuples \lstinline{(w,w',i)} of mapping
+between the original nodes \lstinline{w} of the input and nodes \lstinline{w'}
+to-be or already outputted. The \lstinline{i} value contains the index of the
+original node \lstinline{w} for reasons that will become apparent later.
+
+\begin{lstfloat}[ht!]
+  \centering
+
+  \begin{blstlisting}
+  reduce_layer(data: (v: Node, low: NodeArc, high: NodeArc)[]):
+      sort (v, low, high) in data by low first and high second
+      O$_{\mathit{out}}$, O$_{\mathit{red:}1}$, O$_{\mathit{red:}2}$ = []
+
+      for i := 0 to data.length - 1:
+          (w, w_low, w_high) = data[i]
+
+          // Reduction rule 1:
+          if w_low = w_high:
+              O$_{\mathit{red:}1}$.append((w,w_low,w.index))
+          else:
+              w' = {
+                index: NIL,
+                label: w.label,
+                low: w_low,
+                high: w_high
+              }
+              O$_{\mathit{out}}$.append(w,w',w.index)
+
+              w$_{\mathit{arc}}'$ = {
+                index: NIL,
+                label: w.label,
+              }
+
+              // Reduction rule 2:
+              while i < data.length:
+                  (o, o_low, o_high) = data[i]
+                  if w_low = o_low $\land$ w_high = o_high:
+                      O$_{\mathit{red:}2}$.append((o,w$_{\mathit{arc}}'$,w.index))
+                      i++
+
+      return (O$_{\mathit{out}}$, O$_{\mathit{red:}1}$, O$_{\mathit{red:}2}$)
+  \end{blstlisting}
+
+  \caption{Subroutine applying reduction rules of \cite{Bryant86} within \Reduce}
+  \label{lst:reduce_bryant}
+\end{lstfloat}
+
+We are now ready to present the \Reduce\ algorithm. The algorithm takes as
+argument all the three datastructures described above and assumes they are all
+are initialised. We choose to do this, to make explicit the ability of the later
+algorithms to populate all three datastructures for free. The \Reduce\ algorithm
+is presented in Code~\ref{lst:reduce_algorithm}.
+
+It proceeds by computing and outputting the reduced OBBD bottom-up and layer for
+layer. This is done by a single scan through the work list \ReduceLwork, where
+the nodes of each layer are merged with the result of the recursion to then
+apply the reduction rules of \cite{Bryant86} on the whole layer. The recursive
+dependencies are handled through \ReduceQdep\ which is synchronised with the
+scan of \ReduceLwork\ while using \ReduceLdep\ to fill \ReduceQdep\ with the
+next dependencies outputted.
+
+
+\begin{lstfloat}
+  \centering
+
+  \begin{blstlisting}
+    Reduce($\ReduceLwork$: Node[],
+           $\ReduceLdep$: (Node,NodeArc,bool)[],
+           $\ReduceQdep$: PriorityQueue<Node,NodeArc,bool>):
+      // Index of next output in stream
+      iO = 0
+
+      // Index into *@\color{cGray} $\ReduceLwork$@*
+      iW := $\ReduceLwork$.length - 1
+      v := $\ReduceLwork$[iW]
+
+      // Index into *@\color{cGray} $\ReduceLdep$@*
+      iD = $\ReduceLdep$.length - 1
+
+      // Process bottom-up each layer except for the root-layer
+      for j := n-1 downto 2:
+          $L_{j}$ := []
+
+          // Merge nodes of layer j with result of prior computations
+          while v.label = j:
+              (_, t1, _) := $\ReduceQdep$.get_next()
+              (_, t2, _) := $\ReduceQdep$.get_next()
+
+              $L_{j}$.append((v,t1,t2))
+              v := $\ReduceLwork$[--iW]
+
+          // Apply reduction rules
+          ($L_{j,\mathit{out}}$, $L_{j,\mathit{red:}1}$, $L_{j,\mathit{red:}2}$) = reduce_layer($L_{j}$)
+
+          // Output to-be outputted nodes and distribute output index
+          sort (w,w',i) in $L_{j,\mathit{out}}$ and $L_{j,\mathit{red:}2}$ by i
+
+          iM = 0
+          for (w,w',i) in $L_{j,\mathit{out}}$:
+              w'.index := iO++
+              output w'
+
+              while iM < $L_{j,\mathit{red:}2}$.length $\land$ $L_{j,\mathit{red:}2}$[iM] is (_,_,i):
+                  $L_{j,\mathit{red:}2}$[iM++][1].index := w'.index
+
+          // Forward processing information to layers j-1 .. 1
+          $L_{j,\mathit{forward}}$ := $L_{j,\mathit{out}}$ ++ $L_{j,\mathit{red:}1}$ ++ $L_{j,\mathit{red:}2}$
+          sort (w,w',i) in $L_{j,\mathit{forward}}$ by w.index
+
+          (s, t, b) := $\ReduceLdep$[iD]
+          for (w,w') in $L_{j,\mathit{out}}$, $L_{j,\mathit{red:}2}$:
+              while t = w:
+                  $\ReduceQdep$.insert((s,w',b))
+                  (s, t, b) := L2[--iD]
+
+      // Process the root
+      (_, t_low,  _) := $\ReduceQdep$.get_next()
+      (_, t_high, _) := $\ReduceQdep$.get_next()
+      output { label: v.label, index: iO, low: t_low, high: t_high }
+  \end{blstlisting}
+
+  \caption{The \Reduce\ algorithm}
+  \label{lst:reduce_algorithm}
+\end{lstfloat}
+
+\clearpage
+As mentioned, \ReduceLwork\ and \ReduceLdep\ can be initialised in $O(sort(N))$
+I/O's. For each element of \ReduceLdep\ a single element will be added to
+\ReduceQdep, which will result in a total $4 N$ insertions and deletions from
+\ReduceQdep, which also happens in worst-case $O(sort(N))$ I/O's when using an
+I/O efficient priority queue. On each layer all nodes are sorted thrice, which
+when all layers are combined results in another $O(sort(N))$ total number of I/O's.
+Hence, the algorithm runs within the optimal $O(sort(N))$ I/O bound and in $O(N
+\log N)$ time. \cite{Arge96} By similar obsevations we can also conclude, that
+the algorithm has an $O(N \log N)$ time complexity.
 
 \subsection{Substitute} \label{sec:theory_substitute}
 Before we present the \Apply\ algorithm we present the simpler top-down
