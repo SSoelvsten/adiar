@@ -1,0 +1,35 @@
+% ---------------------------------------------------------------------------- %
+% The pseudocode syntax highlighting used
+% ---------------------------------------------------------------------------- %
+\lstdefinelanguage{pseudo}{
+  % Keywords
+  morekeywords=[1]{
+    break, continue, case, do, downto, else, error, for, if, let, of,
+    repeat, return, Struct, then, to, Type, until, while, NIL,
+  },
+  % Types
+  morekeywords=[2]{
+    ArcType, bool, int, Node, NodeArc, OBDD, PriorityQueue, Queue
+  },
+  % Comment
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  % Colours
+  keywordstyle=[1]\color{cBlue1},
+  keywordstyle=[2]\color{cRed},
+  % Literates
+  literate={:=}{{$\gets$}}1 {<=}{{$\leq$}}1 {>=}{{$\geq$}}1 {<>}{{$\neq$}}1 {!}{{$\neg$}}1
+}
+
+\lstset{
+  language=pseudo,
+}
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "arxiv"
+%%% End:
