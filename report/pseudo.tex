@@ -4,12 +4,13 @@
 \lstdefinelanguage{pseudo}{
   % Keywords
   morekeywords=[1]{
-    break, continue, case, do, downto, else, error, for, if, let, of,
-    repeat, return, Struct, then, to, Type, until, while, NIL,
+    break, continue, case, compare, do, downto, else, error, for, if, let, of,
+    output, repeat, return, skip, Struct, then, to, Type, until, while, NIL,
   },
   % Types
   morekeywords=[2]{
-    ArcType, bool, int, Node, NodeArc, OBDD, PriorityQueue, Queue
+    ArcType, bool, int, Node, NodeArc, OBDD, Option, PriorityQueue, Link, Queue,
+    Sink
   },
   % Comment
   sensitive=true,
@@ -20,7 +21,13 @@
   keywordstyle=[1]\color{cBlue1},
   keywordstyle=[2]\color{cRed},
   % Literates
-  literate={:=}{{$\gets$}}1 {<=}{{$\leq$}}1 {>=}{{$\geq$}}1 {<>}{{$\neq$}}1 {!}{{$\neg$}}1
+  literate={:=}{{$\gets$}}1
+  {<=}{{$\leq$}}1
+  {>=}{{$\geq$}}1
+  {<>}{{$\neq$}}1
+  {!}{{$\neg$}}1
+  {->}{{$\rightarrow$}}1
+  {=>}{{$\Rightarrow$}}1
 }
 
 \lstset{
