@@ -118,7 +118,7 @@ The \Reduce\ algorithm makes use of the following three data structures:
   \lstinline{(s: Node, t: NodeArc.Link, b: bool)}
   sorted with respect to the label and index of \lstinline{t}.
 
-  This list is is the transposed graph and is used to provide the node
+  This list is the transposed graph and is used to provide the node
   \lstinline{s} to which the result of processing its child \lstinline{t} has to
   be sent.
 
@@ -433,9 +433,234 @@ nodes outputted for the later \Reduce, which then also only uses another
 $O(sort(N')) = O(sort(N))$ I/Os. In total the \Substitute\ algorithm performs
 the full substitution and reduction in $O(sort(N))$ I/Os and $O(N \log N)$ time.
 
-\clearpage
 \subsection{Apply}
+Similar to \Substitute, the \Apply\ algorithm makes use of a priority queue
+to forward the recursion to nodes visited later in topological order. Since the
+queue has to be synchronised with the scan of both list of nodes at the same
+time, then the sorting is a bit more complicated than in the prior given
+algorithms. The data structure used is:
+\begin{itemize}
+\item The priority queue \ApplyQrec\ of 4-tuples \lstinline{((s$_1$,s$_2$), (t$_1$,t$_2$), b, data)}
+  where \lstinline{s$_1$, s$_2$} are of type \lstinline{Node}, \lstinline{t$_1$, t$_2$}
+  of type \lstinline{NodeArc}, \lstinline{b} of \lstinline{bool} and
+  \lstinline{data} of \lstinline{Option(Node)}.
 
+  This forwards requests for recursion from processing the pair of nodes $(s_1,
+  s_2)$ to $(t_1,t_2)$ through a $b$-arc. The \lstinline{data} element is used
+  when $t_1$ and $t_2$ have the same label such that the first visited can be
+  forwarded to to the second for processing. Hence, the sorting of an element is
+  dependant on whether \lstinline{data} is provided in the tuple.
+
+  \begin{itemize}
+  \item If \lstinline{data} is \lstinline{None}, then it is sorted first with
+    respect to $\min(t_1.\mathit{label},t_2.\mathit{label})$, secondly with
+    respect to $\min(t_1.\mathit{index},t_2.\mathit{index})$. Sinks come after
+    nodes.
+
+  \item If \lstinline{data} is \lstinline{Some(v)}, then it is still first
+    sorted with respect to $\min(t_1.\mathit{label},t_2.\mathit{label})$, but
+    secondly dually with respect to $\max(t_1.\mathit{index},
+    t_2.\mathit{index})$. For two requests to the same $(t_1,t_2)$ the one with
+    \lstinline{data} comes first.
+  \end{itemize}
+\end{itemize}
+The reader should notice that in the general case of \lstinline{data} being
+\lstinline{None}, then the sorting is a generalisation of the sorting of nodes
+used up until this point.
+
+To match the general sorting above the \lstinline{apply_step} function below in
+Code~\ref{lst:apply_step} mutates variables $\mathit{iW}_1$ and $\mathit{iW}_2$
+being indices in the respective input lists $G_1.V$ and $G_2.V$ of vertices
+together with the matching nodes $v_1$ and $v_2$. This function used later in
+\Apply, where the mutated variables are initialised.
+\begin{lstfloat}
+  \centering
+
+  \begin{blstlisting}
+  apply_step():
+      if v$_1$.label <> v$_2$.label:
+          if v$_1$.label < v$_2$.label:
+              v$_1$ := G$_1$.V[++iW$_1$]
+          else:
+              v$_2$ := G$_2$.V[++iW$_2$]
+      else:
+          if v$_1$.index > v$_2$.index:
+              v$_2$ := G$_2$.V[++iW$_2$]
+          else:
+              v$_1$ := G$_1$.V[++iW$_1$]
+  \end{blstlisting}
+
+  \caption{Determining in which OBDD should be progressed matching the sorting}
+  \label{lst:apply_step}
+\end{lstfloat}
+
+The \Apply\ algorithm constructs an OBDD that simulates both OBBDs $G_1$ and
+$G_2$ at the same time. At a node representing a $(v_1,v_2)$ the label of the
+output node is $\min(v_1.\mathit{label},v_2.\mathit{label})$. In the case the
+two labels of $v_1$ and $v_2$ differ, then the recursion is only dependent on
+the node with the smallest label. Otherwise, \lstinline{data} is used to send
+the data of the first-seen node to the second for processing later, when both
+are in memory. That is, for all cases but when \lstinline{data} should be
+forwarded then whereto recurse can be resolved as depicted in
+Code~\ref{lst:apply_node}.
+
+\begin{lstfloat}[ht!]
+  \centering
+
+  \begin{blstlisting}
+  apply_node((v$_1$, v$_2$) : Node$\times$Node,
+             (t$_1$, t$_2$) : NodeArc$\times$NodeArc,
+             data : Option(Node)):
+      label := min(t$_1$.label = t$_2$.label)
+
+      if $_1$.label <> t$_2$.label:
+          if label = v$_1$.label:
+              low := (v$_1$.low, t$_2$)
+              high := (v$_1$.high, t$_2$)
+          else:
+              low := (v$_1$.low, t$_2$)
+              high := (v$_1$.high, t$_2$)
+      else:
+          v$_1'$ := case data of None => v$_1$
+                         | Some(v$_o$) => if v$_o$.index = t$_1$.index
+                                     then v$_o$ else v$_1$
+          v$_2'$ := case data of None => v$_2$
+                         | Some(v$_o$) => if v$_o$.index = t$_2$.index
+                                     then v$_o$ else v$_2$
+
+          low := ((v$_1'$.low, v$_2'$.low)
+          high := ((v$_1'$.high, v$_2'$.high)
+
+      return (label, low, high)
+  \end{blstlisting}
+
+  \caption{Resolving which direction to recurse on request for $(w_1, w_2)$ while
+    being at $(v_1, v_2)$.}
+  \label{lst:apply_node}
+\end{lstfloat}
+
+Similar to \Substitute, this makes the algorithm traverse both OBDDs top-down
+and hence output nodes before their children. This leaves no ability to include
+a direct reference to them. Again, this is fixed during the later \Reduce, for
+which the sorting is satisfied by merely supplying indices in order of
+outputting the vertices.
+
+The base case of recursion on a child is when it reaches two sinks. Since sinks
+are stored in parents, the recursive call inserted into \ApplyQrec\ can be
+omitted in favour of applying the operator on both sinks. Hence, given the
+label, low and high nodes from Code~\ref{lst:apply_node} and the operand, then
+the node to be outputted can be resolved as depicted in
+\lstinline{apply_recurse_node} in Code~\ref{lst:apply_recurse_node}.
+
+\begin{lstfloat}[ht!]
+  \centering
+
+  \begin{blstlisting}
+  apply_recurse_node(label: int,
+                     low, high: NodeArc$\times$NodeArc,
+                     op: bool$\times$bool $\rightarrow$ bool):
+        low' = case low of
+               | (Sink{value$_1$}, Sink{value$_2$}) => Sink{op(value$_1$, value$_2$)}
+               | _ => low
+
+        high' = case high of
+                | (Sink{value$_1$}, Sink{value$_2$}) => Sink{op(value$_1$, value$_2$)}
+                | _ => low
+
+         v' := { index: iO--, label: label, low: low', high: high' }
+         if !is_sink(low'): $\ApplyQrec$.insert((v,low',False,None))
+         if !is_sink(high'): $\ApplyQrec$.insert((v,high',False,None))
+
+         return v'
+  \end{blstlisting}
+
+  \caption{Construction of to-be-outputted node \lstinline{v'} and recursing
+    using \ApplyQrec.}
+  \label{lst:apply_recurse_node}
+\end{lstfloat}
+
+Putting everything above together, we can create the \Apply\ algorithm as
+presented in Code~\ref{lst:apply_algorithm}
+
+\begin{lstfloat}[ht!]
+  \centering
+
+  \begin{blstlisting}
+  Apply(G$_1$ : OBDD, G$_2$ : OBDD, op: bool$\times$bool -> ):
+     $\ReduceLwork, \ReduceLdep$ := [] : Node[] | (Node,NodeArc,bool)[]
+     $\ApplyQrec$ := $\emptyset$ : PriorityQueue<...>
+     iW$_1$ := G$_1$.V.length - 1
+     iW$_2$ := G$_2$.V.length - 1
+
+     v$_1$ := G$_1$.V[iW$_1$]
+     v$_2$ := G$_2$.V[iW$_2$]
+
+     // Process root and create initial recursion requests
+     low = compare v$_1$.label to v$_2$.label:  <  => (v$_1$.low, v$_2$)
+                                       | > => (v$_1$, v$_2$.low)
+                                       | = => (v$_1$.low, v$_2$.low)
+
+     high = compare v$_1$.label to v$_2$.label:  <  => (v$_1$.high, v$_2$)
+                                        | > => (v$_1$, v$_2$.high)
+                                        | = => (v$_1$.high, v$_2$.high)
+     iO := 0
+     v' := { index: iO, label: min(v$_1$.label, v$_2$.label), low, high }
+
+     $\ReduceLwork$.append(v')
+     $ApplyQrec$.insert((v',low,False,None), (v',high,True,None))
+     iO := iO - 1
+
+     // Process all nodes in topological order of both OBBD's
+     v$_1$ := G$_1$.V[--iW$_1$]
+     v$_2$ := G$_2$.V[--iW$_2$]
+
+     while iW$_1$ < G$_1$.V.length or iW$_2$ < G$_2$.V.length:
+         // Extract all next recursion request to same pair of nodes
+         ((s$_1$, s$_2$), (t$_1$, t$_1$), b, data) := $\ApplyQrec$.extract_min()
+
+         // Forward in either OBBD if none match request
+         while v$_1$ <> t$_1$ $\land$ v$_2$ <> t$_2$:
+            apply_step() // mutates *@\color{gray} $v_1, v_2, \mathit{iW}_1,$ and $\mathit{iW}_2$. See Code~\ref{lst:apply_step}@*
+
+         // Forward information across the layer?
+         if t$_1$.label = t$_2$.label $\land$ ((v$_1$ <> t$_1$ $\lor$ v$_2$ <> t$_2$) $\land$ data = None):
+             v$_o$ := if v$_1$ = t$_1$ then v$_1$ else v$_2$
+             $\ApplyQrec$.insert((s$_1$, s$_2$), (t$_1$, t$_1$), b, Some(v$_o$)))
+             while $\ApplyQrec$.peek_min()[1] = (t$_1$,t$_2$):
+                     ((s$_1$,s$_2$), (t$_1$,t$_1$), b, data) := $\ApplyQrec$.extract_min()
+             else: break
+             continue
+
+         (label,low,high) := apply_node((v$_1$,v$_2$), (t$_1$,t$_2$))
+         v' := apply_recurse_node(label,low,high)
+
+         // Output v' and dependencies to v'
+         $\ReduceLwork$.append(v')
+
+         while True:
+             $\ReduceLdep$.append(((s$_1$,s$_2$), (t$_1$,t$_1$), b))
+             if $\ApplyQrec$.peek_min()[1] = (t$_1$,t$_2$):
+                 ((s$_1$,s$_2$), (t$_1$,t$_1$), b, data) := $\ApplyQrec$.extract_min()
+             else: break
+
+     return Reduce($\ReduceLwork, \ReduceLdep, \emptyset$)
+  \end{blstlisting}
+
+  \caption{The \Apply\ algorithm}
+  \label{lst:apply_algorithm}
+\end{lstfloat}
+
+\clearpage
+Let $N_1$ and $N_2$ be the respective sizes of $G_1$ and $G_2$. By the nature of
+how both lists are scanned, only $O(N_1 + N_2)$ I/Os are spent on reading the
+input. There is at most $N_1 \cdot N_2$ many nodes being outputted, resulting in
+at most $O(N_1 N_2)$ I/Os spent on writing the output for the later \Reduce\
+that will take $O(\sort(N_1 N_2))$ I/Os. Each element creates up to two requests
+for recursions. Up to half of the requests may be reinserted to forward data
+later into the queue. That means, an $O(N_1 N_2)$ number of elements are
+inserted and retrieved from \ApplyQrec\ which requires $O(\sort(N_1 N_2))$ I/Os.
+By the same account the algorithm also spends $O(N_1 N_2 \cdot \log (N_1 N_2))$
+time for computation. \cite{Arge96}
 
 \subsection{Relational Product}
 
