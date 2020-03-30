@@ -51,7 +51,7 @@ receiving node is most likely not in memory. Hence, a lookup of the receiving
 node would result in a full I/O used, which is not desired. To mitigate this,
 all nodes store both the label and unique identifier of their children, as shown
 in Code~\ref{lst:struct}.
-\begin{lstfloat}
+\begin{lstfloat}[ht!]
   \centering
 
   \begin{blstlisting}[language=pseudo, numbers=none]
@@ -79,7 +79,7 @@ to provide the index of the prior outputted children. That means, that an OBBD
 as outputted by \Reduce\ can be traversed with the \Evaluate\ function in
 Code~\ref{lst:eval}, which for $n$ variables this takes $O(n)$ time and $O(n)$
 I/Os.
-\begin{lstfloat}
+\begin{lstfloat}[ht!]
   \centering
 
   \begin{blstlisting}
@@ -91,8 +91,8 @@ I/Os.
         case v.high of Sink{ value }        => return value
                      | Link{ index, label } => v := G.V[index]
       else:
-        case v.low of Sink{ value }        => return value
-                    | Link{ index, label } => v := G.V[index]
+        case v.low of Sink{ value }         => return value
+                    | Link{ index, label }  => v := G.V[index]
   \end{blstlisting}
 
   \caption{The \Evaluate\ algorithm to traverse a reduced OBBD $G$ according to an
@@ -118,8 +118,9 @@ The \Reduce\ algorithm makes use of the following three data structures:
   \lstinline{(s: Node, t: NodeArc.Link, b: bool)}
   sorted with respect to the label and index of \lstinline{t}.
 
- This list is supposed to contain the node \lstinline{s} to which the result of
- its child \lstinline{t} has to be sent.
+  This list is is the transposed graph and is used to provide the node
+  \lstinline{s} to which the result of processing its child \lstinline{t} has to
+  be sent.
 
 \item The priority queue \ReduceQdep\ of 3-tuples
   \lstinline{(s: Node, t': NodeArc.Link, b: bool)} sorted with
@@ -134,10 +135,7 @@ Code~\ref{lst:reduce_init}. \ReduceLwork\ can be populated in topological
 order in $O(\sort(N))$ I/Os. \ReduceLdep\ can also be populated with all
 dependencies to non-sink children and sorted $O(\sort(N))$ I/Os. For simplicity
 of the presentation of the \Reduce\ algorithm later we populate \ReduceQdep\
-with all results of computation to the implicitly-stored sink nodes.%
-\footnote{In actuality you would in the \Reduce\ algorithm below rather check
-  whether the current node has an arc to a sink to minimise the number of
-  elements placed in and retrieved from \ReduceQdep.}
+with all results of computation to the implicitly-stored sink nodes.
 
 \begin{lstfloat}[ht!]
   \centering
@@ -147,7 +145,7 @@ with all results of computation to the implicitly-stored sink nodes.%
   sort nodes in $\ReduceLwork$
 
   $\ReduceLdep$ := [] : (Node, NodeArc, bool)[]
-  $\ReduceQdep$ := $\emptyset$ : PriorityQueue<Node,NodeArc,bool>
+  $\ReduceQdep$ := $\emptyset$ : PriorityQueue<(Node,NodeArc,bool)>
 
   for $v \in \ReduceLwork$:
       low_dependency := (v, v.low, low)
@@ -162,7 +160,7 @@ with all results of computation to the implicitly-stored sink nodes.%
   sort (s,t,a) in $\ReduceLdep$ by t
   \end{blstlisting}
 
-  \caption{Initialisation of datastructures for the \Reduce}
+  \caption{Initialisation of datastructures for \Reduce}
   \label{lst:reduce_init}
 \end{lstfloat}
 
@@ -179,7 +177,7 @@ original node \lstinline{w} for reasons that will become apparent later.
   \centering
 
   \begin{blstlisting}
-  reduce_layer(data: (v: Node, low: NodeArc, high: NodeArc)[]):
+  reduce_layer(data: (Node, NodeArc, NodeArc)[]):
       sort (v, low, high) in data by low first and high second
       O$_{\mathit{out}}$, O$_{\mathit{red:}1}$, O$_{\mathit{red:}2}$ = []
 
@@ -196,18 +194,14 @@ original node \lstinline{w} for reasons that will become apparent later.
                 low: w_low,
                 high: w_high
               }
-              O$_{\mathit{out}}$.append(w,w',w.index)
 
-              w$_{\mathit{arc}}'$ = {
-                index: NIL,
-                label: w.label,
-              }
+              O$_{\mathit{out}}$.append(w,w',w.index)
 
               // Reduction rule 2:
               while i < data.length:
                   (o, o_low, o_high) = data[i]
                   if w_low = o_low $\land$ w_high = o_high:
-                      O$_{\mathit{red:}2}$.append((o,w$_{\mathit{arc}}'$,w.index))
+                      O$_{\mathit{red:}2}$.append((o,w',w.index))
                       i++
 
       return (O$_{\mathit{out}}$, O$_{\mathit{red:}1}$, O$_{\mathit{red:}2}$)
@@ -218,8 +212,8 @@ original node \lstinline{w} for reasons that will become apparent later.
 \end{lstfloat}
 
 We are now ready to present the \Reduce\ algorithm. The algorithm takes as
-argument all the three datastructures described above and assumes they are all
-are initialised. We choose to do this, to make explicit the ability of the later
+argument all the three datastructures described above and assumes they all are
+initialised. We choose to do this, to make explicit the ability of the later
 algorithms to populate all three datastructures for free. The \Reduce\ algorithm
 is presented in Code~\ref{lst:reduce_algorithm}.
 
@@ -228,9 +222,8 @@ layer. This is done by a single scan through the work list \ReduceLwork, where
 the nodes of each layer are merged with the result of the recursion to then
 apply the reduction rules of \cite{Bryant86} on the whole layer. The recursive
 dependencies are handled through \ReduceQdep\ which is synchronised with the
-scan of \ReduceLwork\ while using \ReduceLdep\ to fill \ReduceQdep\ with the
-next dependencies outputted.
-
+scan of \ReduceLwork\ while using \ReduceLdep\ to forward in \ReduceQdep\ the
+outputted result to dependent nodes.
 
 \begin{lstfloat}
   \centering
@@ -238,7 +231,7 @@ next dependencies outputted.
   \begin{blstlisting}
     Reduce($\ReduceLwork$: Node[],
            $\ReduceLdep$: (Node,NodeArc,bool)[],
-           $\ReduceQdep$: PriorityQueue<Node,NodeArc,bool>):
+           $\ReduceQdep$: PriorityQueue<(Node$\times$NodeArc$\times$bool)>):
       // Index of next output in stream
       iO = 0
 
@@ -255,8 +248,8 @@ next dependencies outputted.
 
           // Merge nodes of layer j with result of prior computations
           while v.label = j:
-              (_, t1, _) := $\ReduceQdep$.get_next()
-              (_, t2, _) := $\ReduceQdep$.get_next()
+              (_, t1, _) := $\ReduceQdep$.extract_max()
+              (_, t2, _) := $\ReduceQdep$.extract_max()
 
               $L_{j}$.append((v,t1,t2))
               v := $\ReduceLwork$[--iW]
@@ -267,13 +260,13 @@ next dependencies outputted.
           // Output to-be outputted nodes and distribute output index
           sort (w,w',i) in $L_{j,\mathit{out}}$ and $L_{j,\mathit{red:}2}$ by i
 
-          iM = 0
+          iR2 = 0
           for (w,w',i) in $L_{j,\mathit{out}}$:
               w'.index := iO++
               output w'
 
-              while iM < $L_{j,\mathit{red:}2}$.length $\land$ $L_{j,\mathit{red:}2}$[iM] is (_,_,i):
-                  $L_{j,\mathit{red:}2}$[iM++][1].index := w'.index
+              while iR2 < $L_{j,\mathit{red:}2}$.length $\land$ $L_{j,\mathit{red:}2}$[iR2] is (_,_,i):
+                  $L_{j,\mathit{red:}2}$[iR2++][1].index := w'.index
 
           // Forward processing information to layers j-1 .. 1
           $L_{j,\mathit{forward}}$ := $L_{j,\mathit{out}}$ ++ $L_{j,\mathit{red:}1}$ ++ $L_{j,\mathit{red:}2}$
@@ -286,8 +279,8 @@ next dependencies outputted.
                   (s, t, b) := L2[--iD]
 
       // Process the root
-      (_, t_low,  _) := $\ReduceQdep$.get_next()
-      (_, t_high, _) := $\ReduceQdep$.get_next()
+      (_, t_low,  _) := $\ReduceQdep$.extract_max()
+      (_, t_high, _) := $\ReduceQdep$.extract_max()
       output { label: v.label, index: iO, low: t_low, high: t_high }
   \end{blstlisting}
 
@@ -295,44 +288,74 @@ next dependencies outputted.
   \label{lst:reduce_algorithm}
 \end{lstfloat}
 
-\clearpage
 As mentioned, \ReduceLwork\ and \ReduceLdep\ can be initialised in $O(sort(N))$
-I/O's. For each element of \ReduceLdep\ a single element will be added to
+I/Os. For each element of \ReduceLdep\ a single element will be added to
 \ReduceQdep, which will result in a total $4 N$ insertions and deletions from
-\ReduceQdep, which also happens in worst-case $O(sort(N))$ I/O's when using an
+\ReduceQdep, which also happens in worst-case $O(sort(N))$ I/Os when using an
 I/O efficient priority queue. On each layer all nodes are sorted thrice, which
-when all layers are combined results in another $O(sort(N))$ total number of I/O's.
-Hence, the algorithm runs within the optimal $O(sort(N))$ I/O bound and in $O(N
-\log N)$ time. \cite{Arge96} By similar obsevations we can also conclude, that
-the algorithm has an $O(N \log N)$ time complexity.
+when all layers are combined results in another $O(sort(N))$ total number of
+I/Os. Hence, the algorithm runs within the optimal $O(sort(N))$ I/O bound.
+\cite{Arge96} By similar obsevations we can also conclude, that the algorithm
+has an $O(N \log N)$ time complexity.
+
+\subsubsection{Optimisations} \label{sec:reduce_optimisations}
+The primary intent of the presentation above of the \Reduce\ algorithm has been
+to convey the idea of Time Forward Processing applied on the topological
+ordering og OBDDs. We now list multiple possible ways to improve the constants
+in the I/O and time complexity at the cost of the code complexity.
+
+\begin{itemize}
+\item The merging of a node $v \in \ReduceLwork$ with the processed children
+  retrieved from the queue \ReduceQdep\ serves to connect the resulting $v'$ to
+  its already outputted children. A child of $v$ that is a sink is already fully
+  reduced. A sink neither is an outputted element, since sinks always are stored
+  directly their parents. Hence, the information stored in $v$ is sufficient
+  for its sink children.
+
+  Then, \ReduceQdep\ can be initialised to $\emptyset$ at the cost of a few
+  conditional statements on $v$ before retrieving $0$, $1$, or $2$ elements out
+  of \ReduceQdep\ on lines $20$ through $21$ in Code~\ref{lst:reduce_algorithm}
+
+\item A node that is to be reduced by the first reduction rule is never to be
+  outputted, but only has to be inserted into \ReduceQdep. At the time of
+  merging with processed children in lines $19$ through $24$ in
+  Code~\ref{lst:reduce_algorithm}, the tuple \lstinline{(v,t1,a)} can be
+  forwarded in \ReduceQdep\ instead of appending to $L_j$. While this requires
+  an early simultaneous scan of \ReduceLdep\ costing a linear number of I/Os
+  and computation-time, this minimises the size of $L_j$ whos elements are
+  subsequently sorted thrice.
+\end{itemize}
+While it is possible in the later algorithms to populate \ReduceQdep\ with the
+data as in Code~\ref{lst:reduce_init} we will for the sake of clarity instead in
+the subsequent sections assume that \ReduceQdep\ should be empty. By the
+argument above this will only result in a speedup of both algorithms.
 
 \subsection{Substitute} \label{sec:theory_substitute}
 Before we present the \Apply\ algorithm we present the simpler top-down
 algorithm \Substitute, which given an OBDD $G$ and an assignment vector $A$ of
-tuples $(x_i, \mathit{value})$ outputs a reduced OBD $G_{| x_i = v ,\ \forall
-  (x_i,v) \in A}$ as shown in Code~\ref{lst:substitute}.
+tuples $(x_i, \mathit{value})$ outputs a reduced OBDD $G_{| x_i = v_i ,\ \forall
+  (x_i,v_i) \in A}$ as shown in Code~\ref{lst:substitute}.  This uses the data
+structure:
 
 \begin{itemize}
-\item The priority queue \Q\ of 3-tuples
-  \lstinline{(s: Node, t: NodeArc.Link, b: bool)} sorted with
-  respect to \lstinline{t} only.
+\item The priority queue \SubstituteQrec\ of 3-tuples
+    \lstinline{(s: Node, t: NodeArc.Link, b: bool)} sorted with respect to
+    \lstinline{t} only.
 
-  This the tuples $(s,t,b)$-tuples in the priority queue are used to forward
-  recursion requests from $s$ to non-sink children $t$.
+  These $(s,t,b)$-tuples in the priority queue are used to forward recursion
+  requests from $s$ to non-sink children $t$ along a $b$-arc.
 \end{itemize}
 
-The algorithm essentially traverses the OBDD recursively, either keeping the
-node and recursing along both outgoing arcs or skipping the node and only
-recursing on the arc according to the assignment. The recursion is controlled
-using \Q.
-
-Since this only traverses the OBDD top-down, the nodes traversed do not know the
-index of their children before they are outputted later. Hence, these nodes will
-not contain an actual index to their children, but instead only a unique
-identifier of \lstinline{int}-tuples. Luckily, these references
-can be fixed as part of the bottom-up traversal of the final \Reduce.
-Furthermore, due to the top-down traversal of the OBDD, the \ReduceLwork\,
-\ReduceLdep\ and \Q\ of \Reduce\ can be initialised during the traversal.
+The algorithm as depicted in Code~\ref{lst:substitute} essentially traverses the
+OBDD recursively, either keeping the node and recursing along both outgoing arcs
+or skipping the node and only recursing on the arc according to the assignment.
+The recursion is controlled using \SubstituteQrec. Since this only traverses the
+data structure top-down, the nodes traversed do not know the index of their
+children before they are outputted later. Hence, these nodes will not contain an
+actual index to their children. Luckily, these references can be fixed as part
+of the bottom-up traversal of the final \Reduce. Furthermore, due to the
+top-down traversal of the OBDD, the \ReduceLwork\, \ReduceLdep\ of \Reduce\ can
+be initialised during the traversal.
 
 \begin{lstfloat}
   \centering
@@ -340,7 +363,7 @@ Furthermore, due to the top-down traversal of the OBDD, the \ReduceLwork\,
   \begin{blstlisting}
   Substitute(G : OBDD, A : (int, bool)[]):
       sort (l,v) in A *@by@* l
-      Q, $\ReduceQdep$ = $\emptyset$ : PriorityQueue<Node,NodeArc,bool>
+      $\SubstituteQrec$ = $\emptyset$ : PriorityQueue<(Node$\times$NodeArc.Link$\times$bool)>
       $\ReduceLwork, \ReduceLdep$ := [] : Node[] | (Node,NodeArc,bool)[]
 
       iA := 0
@@ -351,26 +374,23 @@ Furthermore, due to the top-down traversal of the OBDD, the \ReduceLwork\,
       if a_label = v.label:
           if a_value:
               if is_sink(v.high): return sink-only OBDD v.high.value
-              Q.insert ((NIL, v.high, True))
+              $\SubstituteQrec$.insert ((NIL, v.high, True))
           else:
               if is_sink(v.low): return sink-only OBDD v.low.value
-              Q.insert((NIL, v.low, False))
+              $\SubstituteQrec$.insert((NIL, v.low, False))
 
           (a_label, a_value) := A[++iA]
       else:
           $\ReduceLwork$.append(v)
           high_request := (v, v.high, True)
-          low_request := Q.insert(v, v.low, False)
+          low_request := $\SubstituteQrec$.insert(v, v.low, False)
 
-          if !is_sink(v.high): Q.insert(high_request)
-          else: $\ReduceQdep$.insert(high_request)
-
-          if !is_sink(v.low):  Q.insert(low_request)
-          else: $\ReduceQdep$.insert(low_request)
+          if !is_sink(v.high): $\SubstituteQrec$.insert(high_request)
+          if !is_sink(v.low):  $\SubstituteQrec$.insert(low_request)
 
       // Process all to-be-visited nodes in topological order
-      while !Q.empty():
-          (s,t,a) := Q.get_next()
+      while !$\SubstituteQrec$.empty():
+          (s,t,a) := $\SubstituteQrec$.extract_min()
           v := G.V[t.index]
 
           // Skip to-be-substituted variables that we didn't see
@@ -379,39 +399,39 @@ Furthermore, due to the top-down traversal of the OBDD, the \ReduceLwork\,
           // Forward the desired information
           if a_label <> v.label:
               $\ReduceLwork$.append(v)
-              Q.insert((v, v.low, False), (v, v.high, True))
+              $\SubstituteQrec$.insert((v, v.low, False), (v, v.high, True))
 
-              // v is outputted: dependencies (if any) to v
-              // can be locked in place
+              // v is outputted: dependencies (if any) to v can be
+              // locked in place
               if s <> NIL:
                   while True:
                       $\ReduceLdep$.append((s,t,a))
-                      if Q.peek()[1] = v: (s,t,a) := Q.get_next()
+                      if $\SubstituteQrec$.peek_min()[1] = v:
+                          (s,t,a) := $\SubstituteQrec$.extract_min()
                       else: break
           else:
               rec_child := if a_value then v.high else v.low
               recurse := !is_sink(rec_child)
               request := (s, rec_child, a_value)
 
-              if recurse: Q.insert(request)
+              if recurse: $\SubstituteQrec$.insert(request)
               else if s = NIL: return sink-only OBDD rec_child.value
-              else: $\ReduceQdep$.insert(request)
 
-      return Reduce($\ReduceLwork, \ReduceLdep, \ReduceQdep$)
+      return Reduce($\ReduceLwork, \ReduceLdep, \emptyset$)
   \end{blstlisting}
 
   \caption{The \Substitute\ algorithm}
   \label{lst:substitute}
 \end{lstfloat}
 
-By the ordering of tuples in \Q, then nodes are visited in topological order,
-which means each block of \GV\ is only fetched at most once. This means that at
-most $O(N/B)$ I/O's are used as part of the look up of vertices in \GV. At most
-$2N$ requests are placed and retrieved from \Q\ which will only require
-$O(sort(N))$ I/Os. For $N' \leq N$ the number of nodes put into the resulting
-list of nodes, \ReduceLwork, then the use of \Reduce\ will only result in
-$O(sort(N'))$ I/O's. In total the \Substitute\ algorithm performs the full
-substitution and reduction in $O(sort(N))$ I/Os.
+By the ordering of tuples in \SubstituteQrec, nodes are visited in topological
+order, which also is the blocking of on disc \GV. This means every block is
+fetched at most once and at most $O(N/B)$ I/Os are used as part of the look up
+of vertices in \GV. At most $2N$ requests are placed and retrieved from \Q\
+which will only require $O(sort(N))$ I/Os. let $N' \leq N$ be the number of
+nodes outputted for the later \Reduce, which then also only uses another
+$O(sort(N')) = O(sort(N))$ I/Os. In total the \Substitute\ algorithm performs
+the full substitution and reduction in $O(sort(N))$ I/Os and $O(N \log N)$ time.
 
 \clearpage
 \subsection{Apply}
@@ -423,7 +443,7 @@ substitution and reduction in $O(sort(N))$ I/Os.
 % ---------------------------------------------------------------------------- %
 % THE ALGORITHM IN PRACTICE
 % ---------------------------------------------------------------------------- %
-\section{A Cache-oblivious OBBD implementation} \label{sec:implementation}
+\section{A Cache-oblivious OBDD implementation} \label{sec:implementation}
 
 
 % ---------------------------------------------------------------------------- %
