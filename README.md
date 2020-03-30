@@ -1,4 +1,19 @@
 # Cache-Oblivious OBBD Manipulation
+
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [Cache-Oblivious OBBD Manipulation](#cache-oblivious-obbd-manipulation)
+    - [Introduction](#introduction)
+    - [Risks and Discussion](#risks-and-discussion)
+    - [Repository Structure](#repository-structure)
+        - [Bibliography](#bibliography)
+        - [Pseudocode](#pseudocode)
+        - [Report](#report)
+
+<!-- markdown-toc end -->
+
+## Introduction
 While at a research meeting I asked the whether really _noone has yet been
 looking into Cache-Oblivious OBBD manipulation_, which after a bit of searching
 turned up a paper by Lars Arge from 1996 about external-memory OBBD
@@ -31,23 +46,27 @@ intermediate size of the OBBD or by having to run two algorithms separately.
 
 This results in the following questions to improve the speed
 - [ ] Can we circumvent this with pipelining (e.g.
-      [TPIE](https://github.com/thomasmoelhave/tpie))? This seems not that
-      trivial, since we cannot start _Reduce_ before the whole result of the
-      _Apply_ algorithm is outputted, and vica versa.
+      [TPIE](https://github.com/thomasmoelhave/tpie))?
 
-- [ ] The output of the _Apply_ is already in sorted order for the _Reduce_, and
-      vica. This results in one fewer steps of sorting and a speedup.
+    - [X] The output of _Apply_ and _Substitute_ directly generate the input of
+          both the work list and the transposed graph of dependencies for the
+          following _Reduce_. This definitely solves the need to sort the input
+          at the beginning of every algorithm.
 
-  - [ ] The sorted list of whereto computation has to be forwarded in the
-        _Reduce_ algorithm can be replaced by a priority queue which can already
-        be filled up during the _Apply_ computation. Or is such a queue so heavy
-        a sorting of a massive input afterwards is quicker?
+    - [ ] While the output is already sorted for the next algorithm, the
+          computation order of every algorithm still is in reverse of the input
+          given. That is, _Apply_ has to finish processing before the following
+          _Reduce_ can start and vica versa. Is it possible though to output in
+          the order used for computation to make them all into streaming
+          algorithms?
 
 - [ ] The idea of Time-Forward-Processing is inherently sequential, but can we
       parallelise parts of the algorithm?
-
-    - [ ] Parallelisable sorting algorithms?
-    - [ ] Parallelisable priority queue?
+      
+    - Need to investigate the following data structures and algorithms:
+      
+      - [ ] Parallelisable sorting algorithms
+      - [ ] Parallelisable priority queue
 
     - In the _Reduce_ algorithm:
 
