@@ -1,0 +1,55 @@
+\begin{blstlisting}
+    Reduce($\ReduceLwork$: Node[],
+           $\ReduceLdep$: (Node,NodeArc,bool)[],
+           $\ReduceQdep$: PriorityQueue<(Node$\times$NodeArc$\times$bool)>):
+      // Index of next output in stream
+      iO = 0
+
+      // Index into *@\color{cGray} $\ReduceLwork$@*
+      iW := $\ReduceLwork$.length - 1
+      v := $\ReduceLwork$[iW]
+
+      // Index into *@\color{cGray} $\ReduceLdep$@*
+      iD = $\ReduceLdep$.length - 1
+
+      // Process bottom-up each layer except for the root-layer
+      for j := n-1 downto 2:
+          $L_{j}$ := []
+
+          // Merge nodes of layer j with result of prior computations
+          while v.label = j:
+              (_, t1, _) := $\ReduceQdep$.extract_max()
+              (_, t2, _) := $\ReduceQdep$.extract_max()
+
+              $L_{j}$.append((v,t1,t2))
+              v := $\ReduceLwork$[--iW]
+
+          // Apply reduction rules
+          ($L_{j,\mathit{out}}$, $L_{j,\mathit{red:}1}$, $L_{j,\mathit{red:}2}$) = reduce_layer($L_{j}$)
+
+          // Output to-be outputted nodes and distribute output index
+          sort (w,w',i) in $L_{j,\mathit{out}}$ and $L_{j,\mathit{red:}2}$ by i
+
+          iR2 = 0
+          for (w,w',i) in $L_{j,\mathit{out}}$:
+              w'.index := iO++
+              output w'
+
+              while iR2 < $L_{j,\mathit{red:}2}$.length $\land$ $L_{j,\mathit{red:}2}$[iR2] is (_,_,i):
+                  $L_{j,\mathit{red:}2}$[iR2++][1].index := w'.index
+
+          // Forward processing information to layers j-1 .. 1
+          $L_{j,\mathit{forward}}$ := $L_{j,\mathit{out}}$ ++ $L_{j,\mathit{red:}1}$ ++ $L_{j,\mathit{red:}2}$
+          sort (w,w',i) in $L_{j,\mathit{forward}}$ by w.index
+
+          (s, t, b) := $\ReduceLdep$[iD]
+          for (w,w') in $L_{j,\mathit{out}}$, $L_{j,\mathit{red:}2}$:
+              while t = w:
+                  $\ReduceQdep$.insert((s,w',b))
+                  (s, t, b) := L2[--iD]
+
+      // Process the root
+      (_, t_low,  _) := $\ReduceQdep$.extract_max()
+      (_, t_high, _) := $\ReduceQdep$.extract_max()
+      output { label: v.label, index: iO, low: t_low, high: t_high }
+\end{blstlisting}

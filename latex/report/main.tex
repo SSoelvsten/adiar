@@ -5,12 +5,13 @@
 
 % Import from a relative path
 \usepackage{import}
-\subimport{../../LaTeX-Preamble_and_Examples/preamble/}{preamble_en.tex}
+\subimport{../../../LaTeX-Preamble_and_Examples/preamble/}{preamble_en.tex}
 
 % ---------------------------------------------------------------------------- %
 % Project specific settings
 % ---------------------------------------------------------------------------- %
-\input{pseudo.tex}
+\input{../pseudo.tex}
+\input{../macros.tex}
 
 % ---------------------------------------------------------------------------- %
 % Title
@@ -50,18 +51,18 @@
   eprint=false,
   maxbibnames=99,
 ]{biblatex}
-\addbibresource{references.bib}
+\addbibresource{../references.bib}
 
 % ---------------------------------------------------------------------------- %
 % Authors
 % ---------------------------------------------------------------------------- %
 \author{Steffan Sølvsten}
-\affil{Aarhus University \\ \mailto{soelvsten@cs.au.dk}}
+\author{Jaco van de Pol}
+\affil{Aarhus University \\ \mailto{{soelvsten,jaco}@cs.au.dk}}
 
 % ---------------------------------------------------------------------------- %
 % Main content
 % ---------------------------------------------------------------------------- %
-\input{macros.tex}
 
 \begin{document}
 \maketitle
@@ -70,7 +71,23 @@
   \input{abstract.tex}
 \end{abstract}
 
-\input{main.tex}
+\tableofcontents
+\newpage
+
+% ---------------------------------------------------------------------------- %
+% Content
+% ---------------------------------------------------------------------------- %
+\input{sec_introduction.tex}
+\input{sec_preliminaries.tex}
+\input{sec_theory.tex}
+\input{sec_implementation.tex}
+\input{sec_conclusion.tex}
+
+% ---------------------------------------------------------------------------- %
+% References
+% ---------------------------------------------------------------------------- %
+\printbibliography
+
 
 \end{document}
 

@@ -1,0 +1,30 @@
+\begin{blstlisting}
+  reduce_layer(data: (Node, NodeArc, NodeArc)[]):
+      sort (v, low, high) in data by low first and high second
+      O$_{\mathit{out}}$, O$_{\mathit{red:}1}$, O$_{\mathit{red:}2}$ = []
+
+      for i := 0 to data.length - 1:
+          (w, w_low, w_high) = data[i]
+
+          // Reduction rule 1:
+          if w_low = w_high:
+              O$_{\mathit{red:}1}$.append((w,w_low,w.index))
+          else:
+              w' = {
+                index: NIL,
+                label: w.label,
+                low: w_low,
+                high: w_high
+              }
+
+              O$_{\mathit{out}}$.append(w,w',w.index)
+
+              // Reduction rule 2:
+              while i < data.length:
+                  (o, o_low, o_high) = data[i]
+                  if w_low = o_low $\land$ w_high = o_high:
+                      O$_{\mathit{red:}2}$.append((o,w',w.index))
+                      i++
+
+      return (O$_{\mathit{out}}$, O$_{\mathit{red:}1}$, O$_{\mathit{red:}2}$)
+\end{blstlisting}
