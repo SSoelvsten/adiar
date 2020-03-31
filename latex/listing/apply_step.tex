@@ -1,0 +1,9 @@
+\begin{blstlisting}
+  apply_step():
+      if v$_1$.label <> v$_2$.label:
+          if v$_1$.label < v$_2$.label: v$_1$ := G$_1$.V[--iW$_1$]
+          else:                   v$_2$ := G$_2$.V[--iW$_2$]
+      else:
+          if v$_1$.index > v$_2$.index: v$_2$ := G$_2$.V[--iW$_2$]
+          else:                   v$_1$ := G$_1$.V[--iW$_1$]
+\end{blstlisting}

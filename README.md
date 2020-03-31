@@ -1,34 +1,30 @@
-# Cache-Oblivious OBBD Manipulation
+# Cache-Oblivious OBDD Manipulation
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [Cache-Oblivious OBBD Manipulation](#cache-oblivious-obbd-manipulation)
+- [Cache-Oblivious OBDD Manipulation](#cache-oblivious-obdd-manipulation)
     - [Introduction](#introduction)
-    - [Risks and Discussion](#risks-and-discussion)
-    - [Repository Structure](#repository-structure)
-        - [Bibliography](#bibliography)
-        - [Pseudocode](#pseudocode)
-        - [Report](#report)
+    - [Risks, Discussion and Future Work](#risks-discussion-and-future-work)
 
 <!-- markdown-toc end -->
 
 ## Introduction
-While at a research meeting I asked the whether really _noone has yet been
-looking into Cache-Oblivious OBBD manipulation_, which after a bit of searching
-turned up a paper by Lars Arge from 1996 about external-memory OBBD
-manipulation. The main points of the paper is:
+While at a research meeting I asked whether really _noone has yet been looking
+into Cache-Oblivious OBDD manipulation_, which after a bit of searching turned
+up a paper by Lars Arge from 1996 about external-memory OBDD manipulation. The
+main points of the paper is:
 
 - The DFS, BFS and other algorithms at the time had a worst case _O(N)_ I/O
   complexity.
 
 - The lower bound for both a _Reduce_ is _O(sort(N))_. An _Apply_ that will have
-  to output a minimal OBBD has by extension the same bound.
+  to output a minimal OBDD has by extension the same bound.
 
 - It provides an I/O optimal external-memory algorithm for both _Reduce_ and
   _Apply_
 
-  - If the OBBD is represented by the _low_ and _high_ arcs, then the output of
+  - If the OBDD is represented by the _low_ and _high_ arcs, then the output of
     _Reduce_ is already in sorted order for the _Apply_ algorithm, and vica
     versa.
 
@@ -39,10 +35,10 @@ Looking at the algorithm in [Arge96] you will further notice the following:
   substituted for a _Cache-oblivious_ or _Cache-aware_ instance to immediately
   yield an optimal algorithm of both types!
 
-## Risks and Discussion
+## Risks, Discussion and Future Work
 Immediate risks of this project is that since _Reduce_ and _Apply_ are separate
 algorithms, then the implementation might end up much slower due to the
-intermediate size of the OBBD or by having to run two algorithms separately.
+intermediate size of the OBDD or by having to run two algorithms separately.
 
 This results in the following questions to improve the speed
 - [ ] Can we circumvent this with pipelining (e.g.
@@ -85,20 +81,7 @@ This results in the following questions to improve the speed
             they can work in parallel, as long as the output is sorted for the
             later _Reduce_.
 
-## Repository Structure
-The repository has different folders with different aspects of this project,
-ranging from articles, report, through to implementation.
+- [ ] Can the algorithm or parts of it be done on the much faster GPU?
 
-### Bibliography
-Copies of the most relevant papers are placed here for convenience.
-
-### Pseudocode
-To better understand the algorithm in detail, the _Reduce_ and _Apply_ algorithm
-have been written as pseudocode. These are _python_ files for the syntax
-highlighting, but that does not mean they are supposed to be compilable and
-possible to run. These have then been extended with other commonly used
-algorithms.
-
-### Report
-The LaTeX source for a report on this project. This could be repurposed into a
-paper in the event the benchmark results are promising.
+    - [ ] Sorting Algorithm
+    - [ ] Priority Queue (e.g. [CUPQ](https://github.com/crosetto/cupq))

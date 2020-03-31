@@ -1,0 +1,395 @@
+% ---------------------------------------------------------------------------- %
+% THE ALGORITHM IN THEORY
+% ---------------------------------------------------------------------------- %
+\newpage
+\section{Cache-oblivious OBDD algorithms} \label{sec:theory}
+
+For completeness we provide both the \Reduce\ and \Apply\ algorithms of
+\cite{Arge96}. We expand on these algorithms with a set of other algorithms for
+the manipulation of OBDD.
+
+The underlying idea of all the algorithms given below is to exploit that OBDD's
+are directed acyclic graphs. If all nodes of an OBDD is sorted first by their
+label and secondly by their unique identifier, then that constitutes a
+topological sorting. As long as the dependency of computation only is one-way in
+the OBDD, then a recursive algorithm can instead be handled by scanning through
+all nodes in topological order and ``forward'' information to its children or
+parent. This \emph{Time-Forward Processing} is done by use of one more priority
+queues that are carefully synchronised with the scanning of the nodes \todocite.
+
+These queues are aligned with the scan through the list of nodes by sorting all
+their entries by the same topological ordering. At the time of forwarding the
+information, the receiving node is most likely not in memory. Hence, a lookup of
+the receiving node would result in a full I/O used, which is not desired. To
+mitigate this, all nodes store both the label and unique identifier of their
+children. Since the label for the children is stored within the parent, then
+there is no need to explicitly store the $0$- and $1$-sinks as nodes in the
+graph. The data stored for each node then is as depicted in Code~\ref{lst:data}.
+\begin{lstfloat}[ht!]
+  \centering
+
+  \input{../listing/data.tex}
+
+  \caption{The information stored in each node of the OBDD}
+  \label{lst:data}
+\end{lstfloat}
+
+The reader should notice, that the Nodes contains no direct pointers to its
+children, but instead only an index of where to find it in the array of all
+nodes. This is a direct consequence of the iterative design of all the
+algorithms below. All manipulating algorithms are followed by a \Reduce, which
+outputs the nodes bottom-up. That means, that an OBDD as outputted by \Reduce\
+can be traversed with the \Evaluate\ function in Code~\ref{lst:evaluate}, which
+easily can be seen for $n$ variables will take $O(n)$ time and $O(n)$ I/Os.
+\begin{lstfloat}[ht!]
+  \centering
+
+  \input{../listing/evaluate_algorithm.tex}
+
+  \caption{The \Evaluate\ algorithm to traverse a reduced OBDD $G$ according to an
+    assignment $x$}
+  \label{lst:evaluate}
+\end{lstfloat}
+
+Except \Reduce, all algorithms given below assume that the input OBDD is reduced
+and in reverse topological order, as outputted by the \Reduce\ algorithm. On the
+other hand, the \Reduce\ algorithm expects the to-be-reduced list of nodes are
+in topological order. Due to this, all sorting of the input nodes can be omitted
+for the sake of optimisation. \cite{Arge96}
+
+\subsection{Reduce} \label{sec:theory_reduce}
+The \Reduce\ algorithm makes use of the following three data structures:
+
+\begin{itemize}
+\item The list \ReduceLwork\ of all nodes $v \in V$ sorted with respect to $v$.
+
+  This provides a work-order to processing the nodes in reverse topological
+  order for the reduction.
+
+\item The list \ReduceLdep\ of 3-tuples
+  \lstinline{(s: Node, t: NodeArc.Link, b: bool)}
+  sorted with respect to the label and index of \lstinline{t}.
+
+  This is the transposed graph and it is used to determine whereto send the
+  result \lstinline{t'} of computation on \lstinline{t}. This constitutes all
+  the parents \lstinline{s} of \lstinline{t}.
+
+\item The priority queue \ReduceQdep\ of 3-tuples
+  \lstinline{(s: Node, t': NodeArc.Link, b: bool)} sorted with
+  respect to \lstinline{s} and secondly by \lstinline{b}.
+
+  This priority queue is used to forward the result \lstinline{t'} of processing
+  nodes \lstinline{t} $\in \ReduceLwork$ to nodes in $\ReduceLwork$ dependent on
+  the result \lstinline{t'}.
+\end{itemize}
+These datastructures can be initialised as depicted in
+Code~\ref{lst:reduce_init}. \ReduceLwork\ can be populated in topological order
+in $O(\sort(N))$ I/Os. \ReduceLdep\ can also be populated with all dependencies
+to non-sink children and sorted in $O(N/B + \sort(N)) = O(\sort(N))$ I/Os. For
+simplicity of the presentation of the \Reduce\ algorithm we populate
+\ReduceQdep\ with all results of computation to the implicitly-stored sink
+nodes.
+
+\begin{lstfloat}[ht!]
+  \centering
+
+  \input{../listing/reduce_init.tex}
+
+  \caption{Initialisation of datastructures for \Reduce}
+  \label{lst:reduce_init}
+\end{lstfloat}
+
+The \Reduce\ algorithm applies the reduction rules of \textcite{Bryant86} on all
+nodes of each layer using the \lstinline{reduce_layer} subroutine depicted in
+Code~\ref{lst:reduce_bryant}. The output are the three lists
+\lstinline{O}$_{\mathit{out}}$, \lstinline{O}$_{\mathit{red:}1}$,
+\lstinline{O}$_{\mathit{red:}2}$ of tuples \lstinline{(w,w',i)} of mapping
+between the original nodes \lstinline{w} of the input and nodes \lstinline{w'}
+that are to be or already have been outputted. The \lstinline{i} value contains
+the index of the original node from which \lstinline{w'} was derived. This then
+constitutes a link between all original nodes associated by Bryant's second
+reduction rule.
+
+\begin{lstfloat}[ht!]
+  \centering
+
+  \input{../listing/reduce_layer.tex}
+
+  \caption{Subroutine applying reduction rules of \cite{Bryant86} within \Reduce}
+  \label{lst:reduce_bryant}
+\end{lstfloat}
+
+\newpage
+We are now ready to present the \Reduce\ algorithm. The algorithm takes as
+argument all the three datastructures described above and assumes they all are
+initialised. We choose to do this, to make explicit the ability of the later
+algorithms to populate all three datastructures for free. The \Reduce\ algorithm
+is presented in Code~\ref{lst:reduce_algorithm}.
+
+It proceeds by computing and outputting the reduced OBDD bottom-up and layer for
+layer. This is done by a single scan through the work list \ReduceLwork, where
+the nodes of each layer are merged with the result of the recursion to then
+apply the reduction rules of \cite{Bryant86} on the whole layer. The recursive
+dependencies are handled through \ReduceQdep\ which is synchronised with the
+scan of \ReduceLwork\ using \ReduceLdep\ to determine whereto forward outputted
+results in \ReduceQdep.
+
+\begin{lstfloat}
+  \centering
+
+  \input{../listing/reduce_algorithm.tex}
+
+  \caption{The \Reduce\ algorithm}
+  \label{lst:reduce_algorithm}
+\end{lstfloat}
+
+For each element of \ReduceLdep\ a single element will be added to \ReduceQdep,
+which will result in a total $2 N$ insertions and extractions from \ReduceQdep,
+which in the worst-case uses $O(sort(N))$ I/Os. On each layer all nodes are
+sorted thrice, which when all layers are combined results in another
+$O(sort(N))$ total number of I/Os. Hence, the algorithm runs within the optimal
+$O(sort(N))$ I/O bound \cite{Arge96}. By similar obsevations we can also
+conclude, that the algorithm has an $O(N \log N)$ time complexity.
+
+\newpage
+\subsubsection{Optimisations} \label{sec:reduce_optimisations}
+The primary intent of the presentation of the \Reduce\ algorithm above was to
+convey the idea of Time Forward Processing applied on the topological ordering
+og OBDDs. This closely followed the algorithm as in \cite{Arge96}. We will now
+point out multiple avenues to improve the constants in the I/O and time
+complexity at the cost of the code complexity.
+
+\paragraph{Only non-sink-dependencies in $\mathbf{\ReduceQdep}$}
+The merging of a node $v \in \ReduceLwork$ with the processed children retrieved
+from the queue \ReduceQdep\ serves to connect the resulting $v'$ to its already
+outputted children. A child of $v$ that is a sink is already fully reduced. A
+sink neither is an outputted element, since sinks always are stored directly
+within their parents. Hence, the information stored in $v$ is sufficient for its
+sink children.
+
+By this observation, we conclude that \ReduceQdep\ can merely be initialised to
+$\emptyset$ at the cost of a few conditional statements on $v$ to determine
+whether to retrieve $0$, $1$, or $2$ elements out of \ReduceQdep. Since $v$
+already is in memory, the decrease in size of \ReduceQdep\ will heavily outweigh
+the computational cost. To be more precise, for $N_s \leq 2N$ many sink-arcs the
+number of elements inserted into and extracted from \ReduceQdep\ decreases by
+$N_s$. This decreases the number of I/Os to $O(sort(2N - N_s))$ and time.
+
+\todo[inline]{Experimentally settle the value of $N_s$ relative to $N$}
+
+When presenting the other algorithms below we will assume this optimisation is
+applied. It is possible for these algorithms to populate \ReduceQdep\ with
+sink-dependencies during their execution, but for the sake of clarity we will
+leave out how in the subsequent sections and only provide $\emptyset$.
+
+\paragraph{Early application of first reduction rule}
+A node that is to be reduced by the first reduction rule is never to be
+outputted, but only has to be inserted into \ReduceQdep. At the time of merging
+with processed children in lines $19$ through $24$ in
+Code~\ref{lst:reduce_algorithm}, the tuple \lstinline{(v,t1,a)} can immediately
+be placed in \ReduceQdep\ instead of appending to $L_j$. While this requires a
+second scan of \ReduceLdep\ costing linear I/Os and computation-time, this
+minimises the size of $L_j$ whos elements are subsequently sorted thrice.
+
+For $N_{\mathit{red}:1} \leq N$ many nodes that are removed by the first
+reduction rule, this saves multiple $O(sort(N_{\mathit{red:1}}))$ I/Os at the
+cost of a single $O(N/B)$ I/Os of scanning. Let $c_{\mathit{scan}}$ and
+$c_{\mathit{sort}}$ be the respective constants, then a speedup is gained when
+the following inequality is satisfied.
+\begin{alignat*}{2}
+  &&c_{\mathit{scan}} \cdot \frac{N}{B}
+  & \leq 3 \cdot c_{\mathit{sort}} \cdot \frac{N_{\mathit{red:1}}}{B}
+           \log_{M/B} \left( \frac{N_{\mathit{red:1}}}{B} \right)
+  \\ \ArrowBetweenLines
+  &&\frac{c_{\mathit{scan}}}{3 \cdot c_{\mathit{sort}}}
+  & \leq \frac{N_{\mathit{red:1}} \log_{M/B} N_{\mathit{red:1}} / B}{N}
+\end{alignat*}
+Dropping the $\log_{M/B} N_{\mathit{red:1}} / B$ term gives a lower bound on the
+ratio $N_{\mathit{red:1}} / N$ based on the ratio $c_{\mathit{scan}} /
+c_{\mathit{sort}}$.
+\begin{equation}
+    \frac{c_{\mathit{scan}}}{3 \cdot c_{\mathit{sort}}} \leq \frac{N_s}{N}
+\end{equation}
+This constitutes a very pessimistic lower bound, as not only the term was
+dropped but also it lacks accounting for the $O(N_{\mathit{red:1}} / B)$ I/Os
+spent on scanning the $N_{\mathit{red:1}}$ elements in $L_j,
+L_{j,\mathit{red:1}}$ and the same number of I/Os spent on moving of data.
+
+\todo[inline]{Experimentally settle a value for the ratios $c_{\mathit{scan}} /
+  c_{\mathit{sort}}$ and $N_{\mathit{red:1}} / N$ to determine whether this is
+  satisfied in practice. If not, then the analysis has to be more fine-grained
+  or we just have to do actual experiments on the implementation.}
+
+\clearpage
+\subsection{Restrict} \label{sec:theory_restrict}
+Before we present the \Apply\ algorithm we present the simpler top-down
+algorithm \Restrict, which given an OBDD $G$ and an assignment vector $A$ of
+tuples $(x_i, \mathit{value})$ outputs a reduced OBDD $G_{| x_i = v_i ,\ \forall
+  (x_i,v_i) \in A}$ as shown in Code~\ref{lst:restrict}.  This uses the data
+structure:
+
+\begin{itemize}
+\item The priority queue \RestrictQrec\ of 3-tuples
+    \lstinline{(s: Node, t: NodeArc.Link, b: bool)} sorted with respect to
+    \lstinline{t} only.
+
+  These $(s,t,b)$-tuples in the priority queue are used to forward recursion
+  requests from $s$ to non-sink children $t$ along a $b$-arc.
+\end{itemize}
+
+The algorithm as depicted in Code~\ref{lst:restrict} essentially traverses the
+OBDD recursively, either keeping the node and recursing along both outgoing arcs
+or skipping the node and only recursing on the arc according to the assignment.
+The recursion is controlled using \RestrictQrec. Since this only traverses the
+data structure top-down, the nodes traversed do not know the index of their
+children before they are outputted later. Hence, these nodes will not contain an
+actual index to their children. Luckily, these references can be fixed as part
+of the bottom-up traversal of the final \Reduce. Furthermore, due to the
+top-down traversal of the OBDD, the \ReduceLwork\, \ReduceLdep\ of \Reduce\ can
+be initialised during the traversal.
+
+\begin{lstfloat}
+  \centering
+
+  \input{../listing/restrict_algorithm.tex}
+
+  \caption{The \Restrict\ algorithm}
+  \label{lst:restrict}
+\end{lstfloat}
+
+By the ordering of tuples in \RestrictQrec, nodes are visited in topological
+order, which also is the blocking of \GV on disk. This means every block is
+fetched at most once and at most $O(N/B)$ I/Os are used as part of the look up
+of vertices in \GV. At most $2N$ requests are placed and retrieved from \Q\
+which will only require $O(sort(N))$ I/Os. let $N' \leq N$ be the number of
+nodes outputted for the later \Reduce, which then also only uses another
+$O(sort(N')) = O(sort(N))$ I/Os. In total the \Restrict\ algorithm performs
+the full substitution and reduction in $O(sort(N))$ I/Os and $O(N \log N)$ time.
+
+\clearpage
+\subsection{Apply}
+Similar to \Restrict, the \Apply\ algorithm makes use of a priority queue to
+forward the recursion to nodes visited later in topological order. In
+\cite{Arge96} four priority queues were used to make the algorithm easier to
+follow. We hope to make the algorithm still comprehensible while only using a
+single queue. This will result in a constant improvement in the running time.
+Since this queue has to be synchronised with the scan of both list of nodes at
+the same time, then the sorting is a bit more complicated than in the prior
+given algorithms. The data structure used is:
+\begin{itemize}
+\item The priority queue \ApplyQrec\ of 4-tuples \lstinline{((s$_1$,s$_2$), (t$_1$,t$_2$), b, data)}
+  where \lstinline{s$_1$, s$_2$} are of type \lstinline{Node}, \lstinline{t$_1$, t$_2$}
+  of type \lstinline{NodeArc}, \lstinline{b} of \lstinline{bool} and
+  \lstinline{data} of \lstinline{Option(Node)}.
+
+  This forwards requests for recursion from processing the pair of nodes $(s_1,
+  s_2)$ to $(t_1,t_2)$ through a $b$-arc. The \lstinline{data} element is used
+  when $t_1$ and $t_2$ have the same label such that the first visited can be
+  forwarded to to the second for processing. Hence, the sorting of an element is
+  dependant on whether \lstinline{data} is provided in the tuple.
+
+  \begin{itemize}
+  \item If \lstinline{data} is \lstinline{None}, then it is sorted first with
+    respect to $\min(t_1.\mathit{label},t_2.\mathit{label})$, secondly with
+    respect to $\min(t_1.\mathit{index},t_2.\mathit{index})$. Sinks come after
+    nodes.
+
+  \item If \lstinline{data} is \lstinline{Some(v)}, then it is still first
+    sorted with respect to $\min(t_1.\mathit{label},t_2.\mathit{label})$, but
+    secondly dually with respect to $\max(t_1.\mathit{index},
+    t_2.\mathit{index})$. For two requests to the same $(t_1,t_2)$ the one with
+    \lstinline{data} comes first.
+  \end{itemize}
+\end{itemize}
+The reader should notice that in the general case of \lstinline{data} being
+\lstinline{None}, then the sorting is a generalisation of the sorting of nodes
+used up until this point.
+
+To match the general sorting above the \lstinline{apply_step} function below in
+Code~\ref{lst:apply_step} mutates variables $\mathit{iW}_1$ and $\mathit{iW}_2$
+being indices in the respective input lists $G_1.V$ and $G_2.V$ of vertices
+together with the matching nodes $v_1$ and $v_2$. This function used later in
+\Apply, where the mutated variables are initialised.
+\begin{lstfloat}
+  \centering
+
+  \input{../listing/apply_step.tex}
+
+  \caption{Determining in which OBDD should be progressed matching the sorting}
+  \label{lst:apply_step}
+\end{lstfloat}
+
+The \Apply\ algorithm constructs an OBDD that simulates both OBDDs $G_1$ and
+$G_2$ at the same time. At a node representing a $(v_1,v_2)$ the label of the
+output node is $\min(v_1.\mathit{label},v_2.\mathit{label})$. In the case the
+two labels of $v_1$ and $v_2$ differ, then the recursion is only dependent on
+the node with the smallest label. Otherwise, \lstinline{data} is used to send
+the data of the first-seen node to the second for processing later, such that
+both are in memory simultaneously. That is, for all cases but when
+\lstinline{data} should be forwarded, then whereto recurse can be resolved as
+depicted in Code~\ref{lst:apply_node}.
+
+\begin{lstfloat}[ht!]
+  \centering
+
+  \input{../listing/apply_node.tex}
+
+  \caption{Resolving which direction to recurse on request for $(w_1, w_2)$ while
+    being at $(v_1, v_2)$.}
+  \label{lst:apply_node}
+\end{lstfloat}
+
+Similar to \Restrict, this makes the algorithm traverse both OBDDs top-down
+and hence output nodes before their children. This leaves no ability to include
+a direct reference to them. Again, this is fixed during the later \Reduce, for
+which the sorting is satisfied by merely supplying indices in order of
+outputting the vertices.
+
+The base case of recursion on a child is when it reaches two sinks. Since sinks
+are stored in parents, the recursive call inserted into \ApplyQrec\ can be
+omitted in favour of applying the operator on both sinks. Hence, given the
+label, low and high nodes from Code~\ref{lst:apply_node} and the operand, then
+the node to be outputted can be resolved as depicted in
+\lstinline{apply_recurse_node} in Code~\ref{lst:apply_recurse_node}.
+
+\begin{lstfloat}[ht!]
+  \centering
+
+  \input{../listing/apply_recurse_node.tex}
+
+  \caption{Construction of to-be-outputted node \lstinline{v'} and recursing
+    using \ApplyQrec.}
+  \label{lst:apply_recurse_node}
+\end{lstfloat}
+
+Putting everything above together, we can create the \Apply\ algorithm as
+presented in Code~\ref{lst:apply_algorithm}
+
+\begin{lstfloat}[ht!]
+  \centering
+
+  \input{../listing/apply_algorithm}
+
+  \caption{The \Apply\ algorithm}
+  \label{lst:apply_algorithm}
+\end{lstfloat}
+
+\clearpage
+Let $N_1$ and $N_2$ be the respective sizes of $G_1$ and $G_2$. By the nature of
+how both lists are scanned, then only $O(N_1 + N_2)$ I/Os are spent on scanning
+the nodes. There is at most $N_1 \cdot N_2$ many nodes being outputted,
+resulting in at most $O(N_1 N_2)$ I/Os spent on writing the output for the later
+\Reduce\ that will take $O(\sort(N_1 N_2))$ I/Os. Each element creates up to two
+requests for recursions, each of which may be reinserted to forward data later
+into the queue. That means, an $O(N_1 N_2)$ number of elements are inserted and
+retrieved from \ApplyQrec\ which requires $O(\sort(N_1 N_2))$ I/Os. By the same
+account the algorithm also spends $O(N_1 N_2 \cdot \log (N_1 N_2))$ time for
+computation. \cite{Arge96}
+
+\subsection{Relational Product}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

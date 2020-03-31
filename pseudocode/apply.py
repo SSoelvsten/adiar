@@ -79,13 +79,13 @@ def Apply(G1, G2, op):
     # TODO: This logic below has to be abstracted into helper function?
     r_low = compare v1.label with v2.label
              | <    => (v1.low, v2)
-             | >    => (v1, v.low)
-             | ==   => (v.low, w.low)
+             | >    => (v1, v2.low)
+             | ==   => (v1.low, v2.low)
 
     r_high = compare v.label with w.label
-             | <    => (v.high, w)
-             | >    => (v, w.high)
-             | ==   => (v.high, w.high)
+             | <    => (v1.high, v2)
+             | >    => (v1, v2.high)
+             | ==   => (v1.high, v2.high)
 
     output {
         uid: (v,w),

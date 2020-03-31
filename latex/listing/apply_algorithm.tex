@@ -1,0 +1,60 @@
+\begin{blstlisting}
+  Apply(G$_1$ : OBDD, G$_2$ : OBDD, op: bool$\times$bool -> ):
+     $\ReduceLwork, \ReduceLdep$ := [] : Node[] | (Node,NodeArc,bool)[]
+     $\ApplyQrec$ := $\emptyset$ : PriorityQueue<...>
+     iW$_1$ := G$_1$.V.length - 1
+     iW$_2$ := G$_2$.V.length - 1
+
+     v$_1$ := G$_1$.V[iW$_1$]
+     v$_2$ := G$_2$.V[iW$_2$]
+
+     // Process root and create initial recursion requests
+     low = compare v$_1$.label to v$_2$.label:  <  => (v$_1$.low, v$_2$)
+                                       | > => (v$_1$, v$_2$.low)
+                                       | = => (v$_1$.low, v$_2$.low)
+
+     high = compare v$_1$.label to v$_2$.label:  <  => (v$_1$.high, v$_2$)
+                                        | > => (v$_1$, v$_2$.high)
+                                        | = => (v$_1$.high, v$_2$.high)
+     iO := 0
+     v' := { index: iO, label: min(v$_1$.label, v$_2$.label), low, high }
+
+     $\ReduceLwork$.append(v')
+     $ApplyQrec$.insert((v',low,False,None), (v',high,True,None))
+     iO := iO - 1
+
+     // Process all nodes in topological order of both OBBD's
+     v$_1$ := G$_1$.V[--iW$_1$]
+     v$_2$ := G$_2$.V[--iW$_2$]
+
+     while iW$_1$ < G$_1$.V.length or iW$_2$ < G$_2$.V.length:
+         // Extract all next recursion request to same pair of nodes
+         ((s$_1$, s$_2$), (t$_1$, t$_1$), b, data) := $\ApplyQrec$.extract_min()
+
+         // Forward in either OBBD if none match request
+         while v$_1$ <> t$_1$ $\land$ v$_2$ <> t$_2$:
+            apply_step() // mutates *@\color{gray} $v_1, v_2, \mathit{iW}_1,$ and $\mathit{iW}_2$. See Code~\ref{lst:apply_step}@*
+
+         // Forward information across the layer?
+         if t$_1$.label = t$_2$.label $\land$ ((v$_1$ <> t$_1$ $\lor$ v$_2$ <> t$_2$) $\land$ data = None):
+             v$_o$ := if v$_1$ = t$_1$ then v$_1$ else v$_2$
+             $\ApplyQrec$.insert((s$_1$, s$_2$), (t$_1$, t$_1$), b, Some(v$_o$)))
+             while $\ApplyQrec$.peek_min()[1] = (t$_1$,t$_2$):
+                     ((s$_1$,s$_2$), (t$_1$,t$_1$), b, data) := $\ApplyQrec$.extract_min()
+             else: break
+             continue
+
+         (label,low,high) := apply_node((v$_1$,v$_2$), (t$_1$,t$_2$))
+         v' := apply_recurse_node(label,low,high)
+
+         // Output v' and dependencies to v'
+         $\ReduceLwork$.append(v')
+
+         while True:
+             $\ReduceLdep$.append(((s$_1$,s$_2$), (t$_1$,t$_1$), b))
+             if $\ApplyQrec$.peek_min()[1] = (t$_1$,t$_2$):
+                 ((s$_1$,s$_2$), (t$_1$,t$_1$), b, data) := $\ApplyQrec$.extract_min()
+             else: break
+
+     return Reduce($\ReduceLwork, \ReduceLdep, \emptyset$)
+\end{blstlisting}

@@ -1,0 +1,54 @@
+% ---------------------------------------------------------------------------- %
+% PRELIMINARIES
+% ---------------------------------------------------------------------------- %
+\section{Preliminaries} \label{sec:preliminaries}
+
+\subsection{The I/O Model}
+Model and sorting bound... \cite{Aggarwal87}
+
+\begin{table}[ht!]
+  \centering
+  
+  \begin{tabular}{c|c|c}
+           & time         & I/O
+    \\ \hline
+    Linear & $N$          & $N/B$
+    \\
+    Sort   & $N \log_2 N$ & $N/B \log_{M/B} N/B$
+  \end{tabular}
+  
+  \caption{Comparison of common time bounds with same I/O bounds}
+  \label{tab:time_vs_io}
+\end{table}
+
+Priority Queues... \cite{Arge04}
+
+\subsubsection{Cache-oblivious Algorithms}
+Tall cache assumption ...
+
+Priority Queues... \cite{Arge07, Sanders2001}
+
+\subsection{Ordered Boolean Decision Diagrams}
+Definition and recursive solution with memoization table \cite{Bryant86, Dijk16}
+
+\subsubsection{I/O Bounds of OBDDs}
+\begin{theorem}[\cite{Arge96}] \label{thm:reduce_io_lower_bound}
+
+  Reduction of an OBBD $G$ with minimal pair, level, depth first or breadth
+  first blocking requires $\Omega(\sort(N))$ I/Os in the worst case.
+\end{theorem}
+
+\begin{theorem}[\cite{Arge96}] \label{thm:apply_io_worst_case}
+
+  The Dynamic Programming \Apply\ algorithm on two OBDDs of size $N_1, N_2$
+  followed up by a \Reduce\ operation requires $O(N_1 \cdot N_2)$ I/Os in the
+  worst case.
+\end{theorem}
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
