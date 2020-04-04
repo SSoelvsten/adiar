@@ -1,0 +1,18 @@
+\begin{tikzpicture}
+  \fill[black!5!white] (0,0) rectangle ++(6.4,.8);
+  
+  \draw[black!60!white, pattern=north east lines, pattern color=black!40!white]
+       (0,0) rectangle ++(0.2,.8)
+       node[pos=.5]{\small\color{black} $0$};
+
+  \draw[black!60!white, pattern=north west lines, pattern color=black!40!white]
+       (0.2,0) rectangle ++(2,.8)
+       node[pos=.5]{\small\color{black} \lstinline{label}};
+
+  \draw[black!60!white, pattern=north east lines, pattern color=black!40!white]
+       (2.2,0) rectangle ++(4.2,.8)
+       node[pos=.5]{\small\color{black} \lstinline{index}};
+
+  \draw[black!80!white]
+       (0,0) rectangle ++(6.4,.8);
+\end{tikzpicture}
