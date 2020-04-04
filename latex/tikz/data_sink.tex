@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+  \fill[black!5!white] (0,0) rectangle ++(6.4,.8);
+  
+  \draw[black!60!white, pattern=north east lines, pattern color=black!40!white]
+       (0,0) rectangle ++(0.2,.8)
+       node[pos=.5]{\small\color{black} $1$};
+  \draw[black!60!white, pattern=north west lines, pattern color=black!40!white]
+       (6.2,0) rectangle ++(0.2,.8)
+       node[pos=.5]{\small\color{black} \lstinline{v}};
+
+  \draw[black!80!white]
+       (0,0) rectangle ++(6.4,.8)
+       node[pos=.5]{\small\color{gray} $0, 0, \dots$ \hspace{3.5cm} $\dots, 0$};
+\end{tikzpicture}
