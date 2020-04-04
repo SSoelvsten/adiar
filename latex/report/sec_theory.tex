@@ -387,8 +387,25 @@ retrieved from \ApplyQrec\ which requires $O(\sort(N_1 N_2))$ I/Os. By the same
 account the algorithm also spends $O(N_1 N_2 \cdot \log (N_1 N_2))$ time for
 computation. \cite{Arge96}
 
-\subsection{Relational Product} \label{sec:theory__relational_product}
+\subsection{Equality} \label{sec:theory__equal}
+Two reduced OBDDs represent the same boolean function if and only if they are
+isomorphic \cite[Theorem 1]{Bryant86}. This immediately yields a simple
+recursive algorithm that decides the equality of two OBDDs $G_1$ and $G_2$.
+Using the same approach as for the \Apply\ algorithm above and a single priority
+queue \EqualQrec\, one can directly translates this algorithm into an I/O
+efficient algorithm for \Equal\ that only uses $O(\sort(\min(N_1, N_2)))$ I/Os and
+time.
 
+Since nodes directly contain the label and index of their children, the
+algorithm can be further optimised. Rather than testing for equality of the node
+pair $(v_1,v_2)$ itself, one can check both $(v_1.\mathit{low},
+v_2.\mathit{low})$ and $(v_1.\mathit{high}, v_2.\mathit{high})$. While the root
+will have to be checked seperately at first, the algorithm will be able to
+terminate earlier when given two not equal OBDDs. Since the algorithms
+terminates on the first violation, the space and time usage reduces to
+$O(\sort(\min(N_1, N_2)))$ I/O and time complexity.
+
+\subsection{Relational Product} \label{sec:theory__relational_product}
 
 
 %%% Local Variables:
