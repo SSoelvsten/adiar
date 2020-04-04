@@ -2,12 +2,62 @@
 % CONCLUSION
 % ---------------------------------------------------------------------------- %
 \section{Conclusion} \label{sec:conclusion}
+Following up on the work of \cite{Arge96}, we have expanded the use of
+time-forward processing to create an I/O efficient \Reduce\ and \Apply\
+algorithm to propose I/O efficient algorithms for all the most commonly used
+OBDD algorithms. Since none of these algorithms use the block size $B$ or the
+memory size $M$, then the I/O optimal sorting algorithm and priority queue can
+be replaced for a Cache-oblivious or Cache-aware implementation to immediately
+yield an optimal algorithm of both types. The I/O and time complexity of these
+algorithms are summarised in Table~\ref{tab:summary_efficiency}.
+
+\begin{table}[ht!]
+  \centering
+  \begin{tabular}{c | c | c}
+    \emph{Algorithm} & \emph{I/O complexity} & \emph{Time complexity}
+    \\ \hline
+    \Evaluate & $O(n)$ & $O(n)$
+    \\
+    \Reduce & $O(\sort(N))$ & $O(N \log_2 N)$
+    \\
+    \Restrict & $O(\sort(N))$ & $O(N \log_2 N)$
+    \\
+    \Apply & $O(\sort(N_1 N_2))$ & $O(N_1 N_2 \cdot \log_2 (N_1 N_2))$
+    \\
+    \Equal & $O(\sort(\min(N_1, N_2)))$ & $O(\min(N_1 N_2) \cdot \log_2 (\min(N_1 N_2)))$
+    \\
+  \end{tabular}
+  \caption{The worst-case I/O and time complexity of the proposed algorithms.
+    $N$ is the number of nodes in an OBDD while $n$ is the number of variables}
+  \label{tab:summary_efficiency}
+\end{table}
+
+We do not prove any I/O lower bound for these algorithms, leaving the
+I/O optimality of all algorithms but of the \Reduce\ (proven in \cite{Arge96})
+still an open problem.
+
+Since all algorithms that transform the OBDDs make use of a following \Reduce\
+we also have looked into and propose optimisations on said algorithm of
+\cite{Arge96}. The analysis shows that the priority queue used and the sorting
+at each level is the bottleneck for this algorithm. To gain a considerable
+speedup of the algorithm we propose to handle recursion on sinks outside the
+priority queue and to apply the first reduction rule of \cite{Bryant86} early to
+minimise the number of nodes sorted.
+
 
 % If promising, then future work:
 % - Currently all nodes are in reverse order of how they are processed
 %   - If these algorithm could output in the order of the next, then this could
 %     lead to a speedup by pipelining the execution of all these algorithms!
 % - Complement edges to minimise the size of the OBBD
+
+
+These algorithms make use of multiple $O(N)$ sized lists and priority queues,
+which may result in a linear increase of the space used compared to other
+algorithms. Furthermore, the algorithms \Restrict\ and \Apply\ make use of a
+subsequent separate \Reduce\ algorithm. We also still leave for a later
+practical implementation the question of whether the increased space usage and
+separation of algorithms to guarantee I/O efficiency is worth it.
 
 
 %%% Local Variables:
