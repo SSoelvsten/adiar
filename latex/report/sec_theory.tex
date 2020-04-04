@@ -40,7 +40,8 @@ nodes. This is a direct consequence of the iterative design of all the
 algorithms below. All manipulating algorithms are followed by a \Reduce, which
 outputs the nodes bottom-up. That means, that an OBDD as outputted by \Reduce\
 can be traversed with the \Evaluate\ function in Code~\ref{lst:evaluate}, which
-easily can be seen for $n$ variables will take $O(n)$ time and $O(n)$ I/Os.
+easily can be seen for $n$ variables will take $O(n)$ time and $O(\min(n, N/B))$
+I/Os.
 \begin{lstfloat}[ht!]
   \centering
 
@@ -397,13 +398,13 @@ efficient algorithm for \Equal\ that only uses $O(\sort(\min(N_1, N_2)))$ I/Os a
 time.
 
 Since nodes directly contain the label and index of their children, the
-algorithm can be further optimised. Rather than testing for equality of the node
-pair $(v_1,v_2)$ itself, one can check both $(v_1.\mathit{low},
-v_2.\mathit{low})$ and $(v_1.\mathit{high}, v_2.\mathit{high})$. While the root
-will have to be checked seperately at first, the algorithm will be able to
-terminate earlier when given two not equal OBDDs. Since the algorithms
-terminates on the first violation, the space and time usage reduces to
-$O(\sort(\min(N_1, N_2)))$ I/O and time complexity.
+algorithm can be further optimised. Rather than testing for equality of the
+label in the node pair $(v_1,v_2)$ itself, one instead checks both
+$(v_1.\mathit{low}, v_2.\mathit{low})$ and $(v_1.\mathit{high},
+v_2.\mathit{high})$. This makes algorithm able to terminate earlier when given
+two not equal OBDDs. Since the algorithms terminates on the first violation, the
+space and time usage reduces to $O(\sort(\min(N_1, N_2)))$ I/O and time
+complexity.
 
 \subsection{Relational Product} \label{sec:theory__relational_product}
 
