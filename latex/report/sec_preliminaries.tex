@@ -17,7 +17,7 @@ Model and sorting bound... \cite{Aggarwal87}
     Sort   & $N \log_2 N$ & $N/B \log_{M/B} N/B$
   \end{tabular}
   
-  \caption{Comparison of common time bounds with same I/O bounds}
+  \caption{Comparison of common time bounds and their respective I/O bounds}
   \label{tab:time_vs_io}
 \end{table}
 
@@ -29,7 +29,15 @@ Tall cache assumption ...
 Priority Queues... \cite{Arge07, Sanders2001}
 
 \subsection{Ordered Boolean Decision Diagrams}
-Definition and recursive solution with memoization table \cite{Bryant86, Dijk16}
+Definition and recursive solution with memoization table \cite{Bryant86,
+  Brace90, Dijk16}.
+
+Reduced OBBD's \cite[Definition2]{Bryant86}
+
+Complementary edges \cite{Brace90}
+
+Use of memoization table and motivation for I/O efficiency \todocite
+
 
 \subsubsection{I/O Bounds of OBDDs}
 \begin{theorem}[\cite{Arge96}] \label{thm:reduce_io_lower_bound}

@@ -57,7 +57,7 @@ other hand, the \Reduce\ algorithm expects the to-be-reduced list of nodes are
 in topological order. Due to this, all sorting of the input nodes can be omitted
 for the sake of optimisation. \cite{Arge96}
 
-\subsection{Reduce} \label{sec:theory_reduce}
+\subsection{Reduce} \label{sec:theory__reduce}
 The \Reduce\ algorithm makes use of the following three data structures:
 
 \begin{itemize}
@@ -173,7 +173,8 @@ whether to retrieve $0$, $1$, or $2$ elements out of \ReduceQdep. Since $v$
 already is in memory, the decrease in size of \ReduceQdep\ will heavily outweigh
 the computational cost. To be more precise, for $N_s \leq 2N$ many sink-arcs the
 number of elements inserted into and extracted from \ReduceQdep\ decreases by
-$N_s$. This decreases the number of I/Os to $O(sort(2N - N_s))$ and time.
+$N_s$. This decreases the number of I/Os to $O(\max(sort(2N - N_s),N/B))$ and
+time.
 
 \todo[inline]{Experimentally settle the value of $N_s$ relative to $N$}
 
@@ -221,7 +222,7 @@ L_{j,\mathit{red:1}}$ and the same number of I/Os spent on moving of data.
   or we just have to do actual experiments on the implementation.}
 
 \clearpage
-\subsection{Restrict} \label{sec:theory_restrict}
+\subsection{Restrict} \label{sec:theory__restrict}
 Before we present the \Apply\ algorithm we present the simpler top-down
 algorithm \Restrict, which given an OBDD $G$ and an assignment vector $A$ of
 tuples $(x_i, \mathit{value})$ outputs a reduced OBDD $G_{| x_i = v_i ,\ \forall
@@ -386,7 +387,8 @@ retrieved from \ApplyQrec\ which requires $O(\sort(N_1 N_2))$ I/Os. By the same
 account the algorithm also spends $O(N_1 N_2 \cdot \log (N_1 N_2))$ time for
 computation. \cite{Arge96}
 
-\subsection{Relational Product}
+\subsection{Relational Product} \label{sec:theory__relational_product}
+
 
 
 %%% Local Variables:
