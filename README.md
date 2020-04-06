@@ -61,7 +61,7 @@ This results in the following questions to improve the speed
       
     - Need to investigate the following data structures and algorithms:
       
-      - [ ] Parallelisable sorting algorithms
+      - [X] Parallelisable sorting algorithms (Sorting in TPIE is parallelised)
       - [ ] Parallelisable priority queue
 
     - In the _Reduce_ algorithm:
