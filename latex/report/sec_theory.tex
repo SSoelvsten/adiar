@@ -12,10 +12,11 @@ The underlying idea of all the algorithms given below is to exploit that OBDD's
 are directed acyclic graphs. If all nodes of an OBDD is sorted first by their
 label and secondly by their unique identifier, then that constitutes a
 topological sorting. As long as the dependency of computation only is one-way in
-the OBDD, then a recursive algorithm can instead be handled by scanning through
-all nodes in topological order and ``forward'' information to its children or
-parent. This \emph{Time-Forward Processing} is done by use of one more priority
-queues that are carefully synchronised with the scanning of the nodes \todocite.
+the OBDD, then a recursive algorithm can instead be handled by a single sweep
+through all nodes in topological order and ``forward'' information to its
+children or parent. This \emph{Time-Forward Processing} is done by use of one
+more priority queues that are carefully synchronised with the scanning of the
+nodes \todocite.
 
 These queues are aligned with the scan through the list of nodes by sorting all
 their entries by the same topological ordering. At the time of forwarding the
@@ -72,8 +73,8 @@ The \Reduce\ algorithm makes use of the following three data structures:
   sorted with respect to the label and index of \lstinline{t}.
 
   This is the transposed graph and it is used to determine whereto send the
-  result \lstinline{t'} of computation on \lstinline{t}. This constitutes all
-  the parents \lstinline{s} of \lstinline{t}.
+  result \lstinline{t'} of computation on \lstinline{t}. That is, the list
+  contains all the parents \lstinline{s} of \lstinline{t}.
 
 \item The priority queue \ReduceQdep\ of 3-tuples
   \lstinline{(s: Node, t': NodeArc.Link, b: bool)} sorted with
@@ -100,10 +101,10 @@ nodes.
   \label{lst:reduce_init}
 \end{lstfloat}
 
-The \Reduce\ algorithm applies the reduction rules of \textcite{Bryant86} on all
-nodes of each layer using the \lstinline{reduce_layer} subroutine depicted in
-Code~\ref{lst:reduce_bryant}. The output are the three lists
-\lstinline{O}$_{\mathit{out}}$, \lstinline{O}$_{\mathit{red:}1}$,
+The \Reduce\ algorithm applies the reduction rules of \textcite[Definition
+5]{Bryant86} on all nodes of each layer using the \lstinline{reduce_layer}
+subroutine depicted in Code~\ref{lst:reduce_bryant}. The output are the three
+lists \lstinline{O}$_{\mathit{out}}$, \lstinline{O}$_{\mathit{red:}1}$,
 \lstinline{O}$_{\mathit{red:}2}$ of tuples \lstinline{(w,w',i)} of mapping
 between the original nodes \lstinline{w} of the input and nodes \lstinline{w'}
 that are to be or already have been outputted. The \lstinline{i} value contains
