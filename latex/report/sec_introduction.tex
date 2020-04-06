@@ -2,7 +2,41 @@
 % INTRODUCTION
 % ---------------------------------------------------------------------------- %
 \section{Introduction} \label{sec:intro}
+An Ordered Boolean Decision Diagram (OBDD) is a directed acyclic graph that
+represents a boolean function in a compact and canonical form. Each node
+represents a boolean variable $x_i$ and has two outgoing arcs corresponding to
+the two values of $x_i$. The evaluation, composition and manipulation of boolean
+functions in an OBDD translates into graph traversal and manipulation
+algorithms. By exhaustively applying reduction-rules, one can ensure the graph
+is the minimal representation of a boolean function \cite{Bryant86}. The use of
+OBDDs have become a core stable in symbolic model checkers such as \emph{MCK}
+\cite{Gammie04} and \emph{MCMAS} \cite{Lomuscio17}, circuit design \todocite,
+and other applications of Software and Hardware Verification.
 
+A lot has been done to minimise the memory footprint and optimise the speed of
+this data structure, such as the work of \textcite{Karplus88} and
+\textcite{Brace90} back in the late 80s and early 90s. Still to this day,
+attempts are made to further optimise OBDDs, such as the work of
+\textcite{Dijk16}. A common idea deployed in these solutions is to add a
+memoisation table to the recursive algorithm. This not only stops unneeed
+recomputation, but at the same time allows to ensure the minimal size of the
+OBDD by directly applying the reduction rules as part of the lookup. In
+practice, the memory hierarchy creates a bottleneck on this memoisation table,
+since every lookup in the table will result in a cache miss when the data
+structure becomes too large. Furthermore, the use of such of such a table across
+multiple manipulations results in needing to do garbage collection to remove dead
+nodes \cite{Karplus88,Brace90,Dijk16}.
+
+In 1996, \textcite{Arge96} proposed to use a different approach to compute the
+manipulations of OBDDs. Using time-forward processing one can rewrite a
+recursive algorithm into a non-recursive iterative one, where the recursion is
+postponed until the needed data is in memory. A description was given of the two
+basic OBDD algorithms \Reduce\ and \Apply\ that only uses the I/O sorting bound
+in the worst case.
+
+We follow up on Arge's work, by extending the idea of using time-forward
+processing to the other commonly used algorithms for OBDDs and identifying
+multiple ways to optimise the constants in them.
 
 %%% Local Variables:
 %%% mode: latex
