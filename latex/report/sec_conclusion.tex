@@ -18,13 +18,13 @@ algorithms are summarised in Table~\ref{tab:summary_efficiency}.
     \\ \hline
     \Evaluate & $O(\min(n, N/B))$ & $O(n)$
     \\
-    \Reduce & $O(\sort(N))$ & $O(N \log_2 N)$
+    \Reduce & $O(\sort(N))$ & $O(\sort(N))$
     \\
-    \Restrict & $O(\sort(N))$ & $O(N \log_2 N)$
+    \Restrict & $O(\sort(N))$ & $O(\sort(N))$
     \\
-    \Apply & $O(\sort(N_1 N_2))$ & $O(N_1 N_2 \cdot \log_2 (N_1 N_2))$
+    \Apply & $O(\sort(N_1 N_2))$ & $O(\sort(N_1 N_2))$
     \\
-    \Equal & $O(\sort(\min(N_1, N_2)))$ & $O(\min(N_1 N_2) \cdot \log_2 (\min(N_1 N_2)))$
+    \Equal & $O(\sort(\min(N_1, N_2)))$ & $O(\sort(\min(N_1, N_2)))$
     \\
   \end{tabular}
   \caption{The worst-case I/O and time complexity of the proposed algorithms.
@@ -53,13 +53,14 @@ the bottleneck of the algorithm.
 %     lead to a speedup by pipelining the execution of all these algorithms!
 % - Complement edges to minimise the size of the OBBD
 
-
 These algorithms make use of multiple $O(N)$ sized lists and priority queues,
 which may result in a linear increase of the space used compared to other
 algorithms. Furthermore, the algorithms \Restrict\ and \Apply\ make use of a
-subsequent separate \Reduce\ algorithm. We also still leave for a later
-practical implementation the question of whether the increased space usage and
-separation of algorithms to guarantee I/O efficiency is worth it.
+subsequent separate \Reduce\ algorithm. For the \Apply\ algorithm, this may
+result in a massive increase of the intermediate result to be reduced.  We
+leave for a later practical implementation the question of whether this increase
+in space usage and separation of algorithms to guarantee I/O efficiency is worth
+it.
 
 
 %%% Local Variables:
