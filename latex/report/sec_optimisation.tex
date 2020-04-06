@@ -1,0 +1,114 @@
+% ---------------------------------------------------------------------------- %
+% OPTIMISATIONS DESCRIPTION
+% ---------------------------------------------------------------------------- %
+\section{Optimisations} \label{sec:optimisations}
+The primary intent of the presentation of the algorithms above was to convey the
+idea of Time Forward Processing applied on the topological ordering og OBDDs.
+This closely followed the algorithm as in \cite{Arge96}. We will now point out
+multiple avenues to improve the constants in the I/O and time complexity at the
+cost of the code complexity.
+
+\subsection{Reduce: Early application of the first reduction rule}
+A node that is to be reduced by the first reduction rule is never to be
+outputted, but only has to be inserted into \ReduceQdep. At the time of merging
+with processed children in lines $19$ through $24$ in
+Code~\ref{lst:reduce_algorithm}, the tuple \lstinline{(v,t1,a)} can immediately
+be placed in \ReduceQdep\ instead of appending to $L_j$. While this requires a
+second scan of \ReduceLdep\ costing linear I/Os and computation-time, this
+minimises the size of $L_j$ whos elements are subsequently sorted thrice.
+
+For $N_{\mathit{red}:1} \leq N$ many nodes that are removed by the first
+reduction rule, this saves multiple $O(sort(N_{\mathit{red:1}}))$ I/Os at the
+cost of a single $O(N/B)$ I/Os of scanning. Let $c_{\mathit{scan}}$ and
+$c_{\mathit{sort}}$ be the respective constants, then a speedup is gained when
+the following inequality is satisfied.
+\begin{alignat*}{2}
+  &&c_{\mathit{scan}} \cdot \frac{N}{B}
+  & \leq 3 \cdot c_{\mathit{sort}} \cdot \frac{N_{\mathit{red:1}}}{B}
+           \log_{M/B} \left( \frac{N_{\mathit{red:1}}}{B} \right)
+  \\ \ArrowBetweenLines
+  &&\frac{c_{\mathit{scan}}}{3 \cdot c_{\mathit{sort}}}
+  & \leq \frac{N_{\mathit{red:1}} \log_{M/B} N_{\mathit{red:1}} / B}{N}
+\end{alignat*}
+Dropping the $\log_{M/B} N_{\mathit{red:1}} / B$ term gives a lower bound on the
+ratio $N_{\mathit{red:1}} / N$ based on the ratio $c_{\mathit{scan}} /
+c_{\mathit{sort}}$.
+\begin{equation}
+    \frac{c_{\mathit{scan}}}{3 \cdot c_{\mathit{sort}}} \leq \frac{N_s}{N}
+\end{equation}
+This constitutes a very pessimistic lower bound, as not only the term was
+dropped but also it lacks accounting for the $O(N_{\mathit{red:1}} / B)$ I/Os
+spent on scanning the $N_{\mathit{red:1}}$ elements in $L_j,
+L_{j,\mathit{red:1}}$ and the same number of I/Os spent on moving of data.
+
+\todo[inline]{Experimentally settle a value for the ratios $c_{\mathit{scan}} /
+  c_{\mathit{sort}}$ and $N_{\mathit{red:1}} / N$ to determine whether this is
+  satisfied in practice. If not, then the analysis has to be more fine-grained
+  or we just have to do actual experiments on the implementation.}
+
+\subsection{Representation of nodes for faster sorting}
+Inspired by \cite{Dijk16} we propose to represent the \lstinline{NodeArc} type
+of Code~\ref{lst:data} as a single 64-bit integer as shown in
+Figure~\ref{fig:data}. A \lstinline{NodeArc.Sink} of value $v \in \{0,1\}$ is
+represented by a $1$-flag on the most significant bit, $v$ on the least
+significant bit, and all other bits set to $0$.\footnote{Notice, that we as such
+  leave room for sinks taking on non-boolean values of up to $2^{63}$ bits.} A
+\lstinline{NodeArc.Link} has a $0$-flag on the most significant bit, the next
+$k$-bits dedicated to the \lstinline{label}, and finally the $63-k$ least
+significant bits contain the \lstinline{value}. A reasonable value for $k$ is
+$21$, since this supports an OBDD of up to $2^k = 2^{21} \approx 2 \cdot 10^7$
+variables and of size up to $2^{63-k} = 2^{42} \approx 4.45 \cdot 10^{12}$
+nodes.
+
+\todo[inline]{Intermediate results may be larger than $10^{12}$ nodes. This can
+  stay within this setup by resetting the ``index'' for each layer. This
+  preserves the ordering.}
+
+\begin{figure}[ht!]
+  \centering
+
+  \begin{subfigure}{0.49\linewidth}
+    \centering \input{../tikz/data_sink.tex}
+    \caption{\lstinline{NodeArc.Sink\{value: v\}} where \lstinline{v} $\in
+      \{0,1\}$}
+    \label{fig:data_sink}
+  \end{subfigure}
+  \begin{subfigure}{0.49\linewidth}
+    \centering \input{../tikz/data_link.tex}
+    \caption{\lstinline{NodeArc.Link\{label, index\}}}
+    \label{fig:data_link}
+  \end{subfigure}
+
+  \caption{Visual representation of data layout. The least significant bit is
+    right-most.}
+  \label{fig:data}
+\end{figure}
+
+A \lstinline{Node} can then be represented by $3$ $64$-bit numbers: Two $64$-bit
+integers for each child and another $64$ bits for the \lstinline{label} and
+\lstinline{index} of the node itself with the same layout as for
+\lstinline{NodeArc.Link}.
+
+One should notice, that the sorting in the previous section with this layout is
+a trivial sorting on $64$-bit numbers. In the case of the bottom-up sweep
+algorithm, the sorting is in descending order, while the top-down sweep
+algorithms use a sorting in ascending order. Tuples $(t_1,t_2)$ in \Apply\ and
+\Equal\ are then $64$-bit numbers $\min(t_1,t_2)$ when \lstinline{data} is not
+present. Since \lstinline{data} is only present for pairs of nodes with the same
+\lstinline{label}, then the number to sort by simply becomes $\max(t_1,t_2)$.
+Whether it is faster to repeatedly compute $\min$ and $\max$ during sorting, or
+precompute it at insertion time at the cost of increasing the size of each
+element by another $64$-bits, is worth experimental investigation.
+
+The representation of variables \lstinline{Node} and \lstinline{NodeArc} as a
+single $64$-bit integers does result in having to do bit shifts and bit masking
+to access the values. Such instructions though are computationally very cheap,
+and are quickly offset by the smaller memory size and especially the much
+cheaper comparisons during sorting. This reduction to numbers might even open up
+investigating the use of $O(N)$ time and $O(\sort(N))$ I/O non-comparative sorting
+algorithm, such as the ones in \todocite.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

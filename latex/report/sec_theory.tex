@@ -1,8 +1,8 @@
 % ---------------------------------------------------------------------------- %
-% THE ALGORITHM IN THEORY
+% THE BASIC ALGORITHM DESCRIPTION
 % ---------------------------------------------------------------------------- %
 \newpage
-\section{Cache-oblivious OBDD algorithms} \label{sec:theory}
+\section{OBDD manipulations using Time-Forward Processing} \label{sec:theory}
 
 For completeness we provide both the \Reduce\ and \Apply\ algorithms of
 \cite{Arge96}. We expand on these algorithms with a set of other algorithms for
@@ -130,10 +130,18 @@ is presented in Code~\ref{lst:reduce_algorithm}.
 It proceeds by computing and outputting the reduced OBDD bottom-up and layer for
 layer. This is done by a single scan through the work list \ReduceLwork, where
 the nodes of each layer are merged with the result of the recursion to then
-apply the reduction rules of \cite{Bryant86} on the whole layer. The recursive
-dependencies are handled through \ReduceQdep\ which is synchronised with the
-scan of \ReduceLwork\ using \ReduceLdep\ to determine whereto forward outputted
-results in \ReduceQdep.
+apply the reduction rules on the whole layer. The recursive dependencies are
+handled through \ReduceQdep\ which is synchronised with the scan of
+\ReduceLwork\ using \ReduceLdep\ to determine whereto forward outputted results
+in \ReduceQdep.
+For each element of \ReduceLdep\ a single element will be added to \ReduceQdep,
+which will result in a total $2 N$ insertions and extractions from \ReduceQdep,
+which in the worst-case uses $O(sort(N))$ I/Os. On each layer all nodes are
+sorted thrice, which when all layers are combined results in another
+$O(sort(N))$ total number of I/Os. Hence, the algorithm runs within the optimal
+$O(sort(N))$ I/O bound \cite{Arge96}. By similar obsevations we can also
+conclude, that the algorithm has an $O(N \log_2 N)$ time complexity.
+
 
 \begin{lstfloat}
   \centering
@@ -144,38 +152,21 @@ results in \ReduceQdep.
   \label{lst:reduce_algorithm}
 \end{lstfloat}
 
-For each element of \ReduceLdep\ a single element will be added to \ReduceQdep,
-which will result in a total $2 N$ insertions and extractions from \ReduceQdep,
-which in the worst-case uses $O(sort(N))$ I/Os. On each layer all nodes are
-sorted thrice, which when all layers are combined results in another
-$O(sort(N))$ total number of I/Os. Hence, the algorithm runs within the optimal
-$O(sort(N))$ I/O bound \cite{Arge96}. By similar obsevations we can also
-conclude, that the algorithm has an $O(N \log N)$ time complexity.
-
-\newpage
-\subsubsection{Optimisations} \label{sec:reduce_optimisations}
-The primary intent of the presentation of the \Reduce\ algorithm above was to
-convey the idea of Time Forward Processing applied on the topological ordering
-og OBDDs. This closely followed the algorithm as in \cite{Arge96}. We will now
-point out multiple avenues to improve the constants in the I/O and time
-complexity at the cost of the code complexity.
-
-\paragraph{Only non-sink-dependencies in $\mathbf{\ReduceQdep}$}
-The merging of a node $v \in \ReduceLwork$ with the processed children retrieved
-from the queue \ReduceQdep\ serves to connect the resulting $v'$ to its already
-outputted children. A child of $v$ that is a sink is already fully reduced. A
-sink neither is an outputted element, since sinks always are stored directly
-within their parents. Hence, the information stored in $v$ is sufficient for its
-sink children.
-
-By this observation, we conclude that \ReduceQdep\ can merely be initialised to
-$\emptyset$ at the cost of a few conditional statements on $v$ to determine
-whether to retrieve $0$, $1$, or $2$ elements out of \ReduceQdep. Since $v$
-already is in memory, the decrease in size of \ReduceQdep\ will heavily outweigh
-the computational cost. To be more precise, for $N_s \leq 2N$ many sink-arcs the
-number of elements inserted into and extracted from \ReduceQdep\ decreases by
-$N_s$. This decreases the number of I/Os to $O(\max(sort(2N - N_s),N/B))$ and
-time.
+\clearpage
+We have until now chosen solely to focus on the use of a priority queue to
+control the recursion. This presentation follows the algorithm as described in
+\cite{Arge96}. One should observe though, that the merging of a node $v \in
+\ReduceLwork$ with the processed children retrieved from the queue \ReduceQdep\
+only serves to connect the resulting $v'$ to its children that have already been
+outputted. A child of $v$, that is a sink, is already fully reduced. Neither is
+a sink an outputted element, since sinks always are stored directly within their
+parents. Hence, the information stored in $v$ is sufficient for its sink
+children, and \ReduceQdep\ can merely be initialised to $\emptyset$ at the cost
+of a few conditional statements during the merge to determine whether to
+retrieve $0$, $1$, or $2$ elements. Since $v$ already is in memory, the decrease
+in size of \ReduceQdep\ will heavily outweigh the computational cost. To be more
+precise, for $N_s \leq 2N$ many sink-arcs the number of elements inserted into
+and extracted from \ReduceQdep\ decreases by $N_s$.
 
 \todo[inline]{Experimentally settle the value of $N_s$ relative to $N$}
 
@@ -184,45 +175,6 @@ applied. It is possible for these algorithms to populate \ReduceQdep\ with
 sink-dependencies during their execution, but for the sake of clarity we will
 leave out how in the subsequent sections and only provide $\emptyset$.
 
-\paragraph{Early application of first reduction rule}
-A node that is to be reduced by the first reduction rule is never to be
-outputted, but only has to be inserted into \ReduceQdep. At the time of merging
-with processed children in lines $19$ through $24$ in
-Code~\ref{lst:reduce_algorithm}, the tuple \lstinline{(v,t1,a)} can immediately
-be placed in \ReduceQdep\ instead of appending to $L_j$. While this requires a
-second scan of \ReduceLdep\ costing linear I/Os and computation-time, this
-minimises the size of $L_j$ whos elements are subsequently sorted thrice.
-
-For $N_{\mathit{red}:1} \leq N$ many nodes that are removed by the first
-reduction rule, this saves multiple $O(sort(N_{\mathit{red:1}}))$ I/Os at the
-cost of a single $O(N/B)$ I/Os of scanning. Let $c_{\mathit{scan}}$ and
-$c_{\mathit{sort}}$ be the respective constants, then a speedup is gained when
-the following inequality is satisfied.
-\begin{alignat*}{2}
-  &&c_{\mathit{scan}} \cdot \frac{N}{B}
-  & \leq 3 \cdot c_{\mathit{sort}} \cdot \frac{N_{\mathit{red:1}}}{B}
-           \log_{M/B} \left( \frac{N_{\mathit{red:1}}}{B} \right)
-  \\ \ArrowBetweenLines
-  &&\frac{c_{\mathit{scan}}}{3 \cdot c_{\mathit{sort}}}
-  & \leq \frac{N_{\mathit{red:1}} \log_{M/B} N_{\mathit{red:1}} / B}{N}
-\end{alignat*}
-Dropping the $\log_{M/B} N_{\mathit{red:1}} / B$ term gives a lower bound on the
-ratio $N_{\mathit{red:1}} / N$ based on the ratio $c_{\mathit{scan}} /
-c_{\mathit{sort}}$.
-\begin{equation}
-    \frac{c_{\mathit{scan}}}{3 \cdot c_{\mathit{sort}}} \leq \frac{N_s}{N}
-\end{equation}
-This constitutes a very pessimistic lower bound, as not only the term was
-dropped but also it lacks accounting for the $O(N_{\mathit{red:1}} / B)$ I/Os
-spent on scanning the $N_{\mathit{red:1}}$ elements in $L_j,
-L_{j,\mathit{red:1}}$ and the same number of I/Os spent on moving of data.
-
-\todo[inline]{Experimentally settle a value for the ratios $c_{\mathit{scan}} /
-  c_{\mathit{sort}}$ and $N_{\mathit{red:1}} / N$ to determine whether this is
-  satisfied in practice. If not, then the analysis has to be more fine-grained
-  or we just have to do actual experiments on the implementation.}
-
-\clearpage
 \subsection{Restrict} \label{sec:theory__restrict}
 Before we present the \Apply\ algorithm we present the simpler top-down
 algorithm \Restrict, which given an OBDD $G$ and an assignment vector $A$ of
