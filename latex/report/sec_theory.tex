@@ -279,16 +279,17 @@ Since this queue has to be synchronised with the scan of both list of nodes at
 the same time, then the sorting is a bit more complicated than in the prior
 given algorithms. The data structure used is:
 \begin{itemize}
-\item The priority queue \ApplyQrec\ of 4-tuples \lstinline{((s$_1$,s$_2$), (t$_1$,t$_2$), b, data)}
-  where \lstinline{s$_1$, s$_2$} are of type \lstinline{Node}, \lstinline{t$_1$, t$_2$}
-  of type \lstinline{NodeArc}, \lstinline{b} of \lstinline{bool} and
+\item The priority queue \ApplyQrec\ of 4-tuples \lstinline{(s', (t$_1$,t$_2$), b, data)}
+  where \lstinline{s'} is of type \lstinline{Node}, \lstinline{t$_1$, t$_2$} of
+  type \lstinline{NodeArc}, \lstinline{b} of \lstinline{bool} and
   \lstinline{data} of \lstinline{Option(Node)}.
 
   This forwards requests for recursion from processing the pair of nodes $(s_1,
-  s_2)$ to $(t_1,t_2)$ through a $b$-arc. The \lstinline{data} element is used
-  when $t_1$ and $t_2$ have the same label such that the first visited can be
-  forwarded to to the second for processing. Hence, the sorting of an element is
-  dependant on whether \lstinline{data} is provided in the tuple.
+  s_2)$ output as \lstinline{s'} to $(t_1,t_2)$ through a $b$-arc. The
+  \lstinline{data} element is used when $t_1$ and $t_2$ have the same label such
+  that the first visited can be forwarded to to the second for processing.
+  Hence, the sorting of an element is dependant on whether \lstinline{data} is
+  provided in the tuple.
 
   \begin{itemize}
   \item If \lstinline{data} is \lstinline{None}, then it is sorted first with

@@ -12,7 +12,7 @@
 
          v' := { index: iO--, label: label, low: low', high: high' }
          if !is_sink(low'): $\ApplyQrec$.insert((v,low',False,None))
-         if !is_sink(high'): $\ApplyQrec$.insert((v,high',False,None))
+         if !is_sink(high'): $\ApplyQrec$.insert((v,high',True,None))
 
          return v'
 \end{blstlisting}
