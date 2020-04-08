@@ -1,0 +1,4 @@
+[submodule "test/bandit"]
+	path = test/bandit
+	url = https://github.com/banditcpp/bandit
+	branch = headers-only
