@@ -1,5 +1,6 @@
 # Cache-Oblivious OBDD Manipulation
 [![MIT License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](LICENSE.md)
+![test](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/test/badge.svg?branch=master)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
