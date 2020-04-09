@@ -1,0 +1,28 @@
+\begin{tikzpicture}
+  \draw[black, thick] (0,0) rectangle ++(3,2) node[pos=.5] {\Apply};
+
+  \node[circle, draw=black, fill=white, minimum size=3pt, label=left:{$G_1 \rightarrow$}]
+       (apply_i_1) at (0,1.55) {};
+  \node[circle, draw=black, fill=white, minimum size=3pt, label=left:{$G_2 \rightarrow$}]
+       (apply_i_2) at (0,1) {};
+  \node[circle, draw=black, fill=white, minimum size=3pt, label=left:{op $\rightarrow$}]
+       (apply_i_2) at (0,0.35) {};
+       
+  \node[circle, draw=black, fill=white, minimum size=3pt]
+       (apply_o_1) at (3,1.4) {};
+  \node[circle, draw=black, fill=white, minimum size=3pt]
+       (apply_o_2) at (3,0.55) {};
+
+  \draw[black, thick] (6,0) rectangle ++(3,2) node[pos=.5] {\Reduce};;
+
+  \node[circle, draw=black, fill=white, minimum size=3pt]
+       (reduce_i_1) at (6,1.4) {};
+  \node[circle, draw=black, fill=white, minimum size=3pt]
+       (reduce_i_2) at (6,0.55) {};
+
+  \draw[arrows={-angle 90}] (apply_o_1)  -- node[above] {\ReduceLwork}  (reduce_i_1);
+  \draw[arrows={-angle 90}] (apply_o_2)  -- node[below] {\ReduceLdep}  (reduce_i_2);
+       
+  \node[circle, draw=black, fill=white, minimum size=3pt, label=right:{$\rightarrow G'$}]
+       (reduce_o_1) at (9,1) {};
+\end{tikzpicture}

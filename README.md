@@ -86,6 +86,13 @@ Contributions are very welcome. If one investigates possible extensions and
 optimisations, and they prove fruitful, then please submit a pull request! The
 following are
 
+### Integrate reduction into the other algorithms
+One major issue with the _Time-Forward Processing_ approach is that the
+intermediate graph after the _Apply_ and before its subsequent _Reduce_ can be
+quadratic in size. That is, given two OBBDs of size _10⁹_ (24GB each) will
+before the reduce possibly be _10¹⁸_! The same also applies for the
+_Substitute_ and _RelProd_ algorithms etc.
+
 ### Use non-comparison based sorting on numbers
 The sorting in multiple variables has already been reduced to a simple sorting
 on a single 64-bit key in the representation of nodes and arcs. It should be
