@@ -46,6 +46,62 @@ L_{j,\mathit{red:1}}$ and the same number of I/Os spent on moving of data.
   satisfied in practice. If not, then the analysis has to be more fine-grained
   or we just have to do actual experiments on the implementation.}
 
+\subsection{Improving memory footprint of data structures}
+One should notice in all the algorithms above, that at no point is it important
+to store an entire node in the transposed graph or in the priority queue. The
+only information needed to be forwarded and needed to sort by is the
+\lstinline{index} and \lstinline{label}. The only exception to this is the
+forwarding of information across the layer in the \lstinline{data} value in the
+\Apply, \Equal algorithms. In all other cases, the \lstinline{Node}s of the data
+structures can be treated as the $1/3$ as big \lstinline{NodeArc.Link}. While
+this does not directly change the number of entries, it does allow for a
+considerable higher number of entries to be in memory at the same time.
+
+\subsection{Improving space efficiency of Apply}
+The \Apply\ algorithm as depicted in section~\ref{sec:theory__apply} is
+completely decoupled from the following \Reduce. As depicted in
+Figure~\ref{fig:apply_reduce_simple_pipeline} the \Apply algorithm outputs the
+combined OBDD in unreduced form in \ReduceLwork\ together with the transposed
+graph \ReduceLdep. This results in the \Reduce\ algorithm must work on two
+inputs of quadratic size.
+
+\begin{figure}[ht!]
+  \centering
+
+  \input{../tikz/apply_reduce_simple_pipeline.tex}
+  
+  \caption{The current pipeline between \Apply\ and \Reduce}
+  \label{fig:apply_reduce_simple_pipeline}
+\end{figure}
+
+As such, the only part that can only be done during the top-down traversal of
+the \Apply\ is the construction of the transposed graph. All other parts of the
+\Apply\ algorithm can be moved into the following bottom-up traversal of the
+\Reduce\ algorithm. The following \Reduce\ can even work on the original two
+graphs $G_1$ and $G_2$ as the work list \ReduceLwork\ by using a similar
+subprocedure like \lstinline{apply_step} and extending the priority queue
+\ReduceQdep\ to forward \lstinline{data} across the layer. Given the operator,
+the sink-values can also be resolved in the \Reduce.
+
+These observations turn the pipeline of
+Figure~\ref{fig:apply_reduce_simple_pipeline} to the more specialised pipeline
+of Figure~\ref{fig:apply_reduce_optimised_pipeline}. This potentially reduces
+the size of the work-list dramatically at the cost of a minor size-increase in
+the transposed graph to contain \lstinline{Node}-tuples in both directions, and
+the need to forward information across a layer during the merge with elements
+from the priority queue \ReduceQdep.
+
+\begin{figure}[ht!]
+  \centering
+
+  \input{../tikz/apply_reduce_optimised_pipeline.tex}
+  
+  \caption{A more space efficient pipeline between \Apply\ and \Reduce}
+  \label{fig:apply_reduce_optimised_pipeline}
+\end{figure}
+
+
+
 \subsection{Representation of nodes for faster sorting}
 Inspired by \cite{Dijk16} we propose to represent the \lstinline{NodeArc} type
 of Code~\ref{lst:data} as a single 64-bit integer as shown in
