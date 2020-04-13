@@ -1,4 +1,4 @@
-# Cache-Oblivious OBDD Manipulation
+# COOM: Cache-Oblivious OBDD Manipulation
 [![MIT License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](LICENSE.md)
 ![test](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/test/badge.svg?branch=master)
 
@@ -9,12 +9,14 @@ I/O complexity and performance of OBDD Manipulation.
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [Cache-Oblivious OBDD Manipulation](#cache-oblivious-obdd-manipulation)
+- [COOM: Cache-Oblivious OBDD Manipulation](#coom-cache-oblivious-obdd-manipulation)
     - [Introduction](#introduction)
-    - [Repository Content](#repository-content)
-        - [LaTeX](#latex)
-        - [C++ implementation](#c-implementation)
+    - [LaTeX Report](#latex-report)
+    - [C++ implementation](#c-implementation)
+        - [Dependencies](#dependencies)
+        - [Make](#make)
     - [Future Work](#future-work)
+        - [Integrate reduction into the other algorithms](#integrate-reduction-into-the-other-algorithms)
         - [Use non-comparison based sorting on numbers](#use-non-comparison-based-sorting-on-numbers)
         - [Pipelining](#pipelining)
         - [Parallelisation](#parallelisation)
@@ -44,16 +46,13 @@ Following up on Arge's work, we extend this approach to other core OBDD
 algorithms and implement it in C++ to benchmark the performance in practice
 compared to conventional recursive procedures.
 
-## Repository Content
-The repository contains multiple works on the same
-
-### LaTeX
+## LaTeX Report
 This folder contains LaTeX figures, listings and reports that describes the
 algorithm and on a more abstract level. The LaTeX projects have immediate
 dependencies to my [LaTeX preamble](https://github.com/SSoelvsten/LaTeX-Preamble_and_Examples),
 which should be cloned next to this one.
 
-### C++ implementation
+## C++ implementation
 The `./src/` folder contains a _C++_ implementation of the proposed algorithm,
 which are accompanied by unit tests in `./test/`. Every commit on master and
 pull request submitted will automatically have the test-suite run.
@@ -68,6 +67,7 @@ The project makes use of the following dependencies
 - [Bandit](https://github.com/banditcpp/bandit):
   Writing and running unit tests
 
+### Dependencies
 All dependencies are directly imported as submodules. If you have not cloned the
 repository recursively, then run the following commands
 ```bash
@@ -75,11 +75,23 @@ git submodule init
 git submodule update
 ```
 
-The root _Makefile_ provides the following for targets
+### Building
+The project is build with _CMake_, though for convenience I have simplified the
+_CMake_ interactions to a single `make` use of the root _Makefile_ which works
+on a local machine. This has only been tested on `Ubuntu 18.04 LTS` and does
+depend on `apt`.
+```python
++ build                # Build everything
+|- build-test          # Build unit tests
 
-| Target | Effect             |
-|--------|--------------------|
-| `test` | Run all test cases |
++ clean                # Clean 'build/' folder
+
++ test                 # Compile and run tests
+
++ setup                # Fetch all project dependencies
+|- setup-c             # Run 'sudo apt get' on all C++ library dependencies
+|- setup-submodules    # Setup and update all submodules
+```
 
 ## Future Work
 Contributions are very welcome. If one investigates possible extensions and
