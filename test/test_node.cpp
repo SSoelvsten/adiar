@@ -1,4 +1,5 @@
-#include <../src/node.cpp>
+#include <node.cpp>
+using namespace coom;
 
 go_bandit([]() {
     describe("Node and arcs", []() {

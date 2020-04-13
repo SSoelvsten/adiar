@@ -1,4 +1,7 @@
-[submodule "test/bandit"]
-	path = test/bandit
-	url = https://github.com/banditcpp/bandit
+[submodule "external/bandit"]
+	path = external/bandit
+	url = git@github.com:banditcpp/bandit.git
 	branch = headers-only
+[submodule "external/tpie"]
+	path = external/tpie
+	url = git://github.com/thomasmoelhave/tpie

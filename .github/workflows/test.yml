@@ -15,6 +15,18 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-    - uses: skx/github-action-tester@master
-      with:
-        script: .github/run_tests.sh
+    - name: Apt | install boost
+      run: sudo apt-get install libboost-all-dev
+    - name: Apt | install aptitude
+      run: sudo apt-get install aptitude
+    - name: CMake | mkdir build
+      run: cmake -E make_directory ${{runner.workspace}}/build
+    - name: CMake | configure
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE
+    - name: Cmake | build unit tests
+      working-directory: ${{runner.workspace}}/build
+      run: cmake --build . --target test_unit
+    - name: Run unit tests
+      working-directory: ${{runner.workspace}}/build
+      run: ./test/test_unit --reporter=info --colorizer=light

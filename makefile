@@ -1,10 +1,43 @@
-test: | compile-test run-test clean-test
+.PHONY: clean build test
 
-compile-test:
-	@g++ -Itest/ -std=c++11 -o run_test.out test/test.cpp
+# ============================================================================ #
+#  BUILD
+# ============================================================================ #
+build-cmake:
+	@mkdir -p build/ && cd build/ && cmake ..
 
-run-test: | compile-test
-	@./run_test.out --reporter=info --colorizer=light
+build-test: | build-cmake
+	@cd build/ && make test_unit
 
-clean-test:
-	@rm run_test.out
+build: | build-cmake build-test
+
+# ============================================================================ #
+#  CLEAN
+# ============================================================================ #
+clean:
+	@rm -r -f build/
+
+# ============================================================================ #
+#  TEST
+# ============================================================================ #
+test: | build-test
+	@./build/test/test_unit --reporter=info --colorizer=light
+
+# ============================================================================ #
+#  SETUP DEPENDENCIES
+# ============================================================================ #
+setup: | setup-submodules setup-c
+
+setup-c:
+	sudo apt install g++
+
+	sudo apt install cmake
+	sudo apt install libboost-all-dev
+	sudo apt install aptitude
+
+setup-submodules:
+	git submodule init
+	git submodule update
+
+	cd external/bandit && git submodule init && git submodule update
+	cd external/tpie && git checkout master
