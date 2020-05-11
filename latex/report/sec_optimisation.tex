@@ -110,6 +110,13 @@ cheaper comparisons during sorting. This reduction to numbers might even open up
 investigating the use of $O(N)$ time and $O(\sort(N))$ I/O non-comparative sorting
 algorithm, such as the ones in \todocite.
 
+\subsection{Equality checking}
+One should notice, that all algorithms as they have been described above are
+\emph{stable} in the sense, that the ordering of nodes within each layer is
+preserved. That means, one can check whether an OBDD $G$ is unchanged after one
+or more manipulations by comparing it with the result $G'$ in a single linear
+scan, which only takes $O(N/B)$ I/Os.
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "main"

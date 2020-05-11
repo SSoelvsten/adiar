@@ -18,13 +18,13 @@ algorithms are summarised in Table~\ref{tab:summary_efficiency}.
     \\ \hline
     \Evaluate & $O(\min(n, N/B))$ & $O(n)$
     \\
-    \Reduce & $O(\sort(N))$ & $O(\sort(N))$
+    \Reduce & $O(\sort(N))$ & --
     \\
-    \Restrict & $O(\sort(N))$ & $O(\sort(N))$
+    \Restrict & $O(\sort(N))$ & --
     \\
-    \Apply & $O(\sort(N_1 N_2))$ & $O(\sort(N_1 N_2))$
+    \Apply & $O(\sort(N_1 N_2))$ & --
     \\
-    \Equal & $O(\sort(\min(N_1, N_2)))$ & $O(\sort(\min(N_1, N_2)))$
+    \Isomorphic & $O(N_1 = N_2 \ ?\ \sort(N_1) : 1)$ & --
     \\
   \end{tabular}
   \caption{The worst-case I/O and time complexity of the proposed algorithms.
