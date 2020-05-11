@@ -1,0 +1,29 @@
+\begin{blstlisting}[language=pseudo]
+  node_of_edge(low: Edge, high: edge) : Node
+      return Node {
+        index=low.source.index,
+        label=low.source.label,
+        low=low.target,
+        high=high.target
+      }
+
+  edges_of_node(v: Node) : (Edge, Edge)
+      source_arc := NodeArc{
+        index=v.index
+        label=v.label
+      }
+  
+      low := Edge {
+        source=source_arc,
+        is_high=false,
+        target=v.low
+      }
+
+      high := Edge {
+        source=source_arc,
+        is_high=false,
+        target=v.high        
+      }
+      
+      return (low, high);
+\end{blstlisting}
