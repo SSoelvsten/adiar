@@ -49,8 +49,8 @@ compared to conventional recursive procedures.
 ## LaTeX Report
 This folder contains LaTeX figures, listings and reports that describes the
 algorithm and on a more abstract level. The LaTeX projects have immediate
-dependencies to my [LaTeX preamble](https://github.com/SSoelvsten/LaTeX-Preamble_and_Examples),
-which should be cloned next to this one.
+dependencies to my [LaTeX preamble](https://github.com/SSoelvsten/LaTeX-Preamble_and_Examples), 
+which is included as a submodule dependency.
 
 ## C++ implementation
 The `./src/` folder contains a _C++_ implementation of the proposed algorithm,
