@@ -8,58 +8,45 @@ This closely followed the algorithm as in \cite{Arge96}. We will now point out
 multiple avenues to improve the constants in the I/O and time complexity at the
 cost of the code complexity.
 
-\subsection{Reduce: Separate sink-dependency list}
-The main bottleneck of the algorithm is the use of the priority queue
-\ReduceQdep, why we would want to minimise the number of elements within.
-In the algorithm we assumed \ReduceQdep\ is prepopulated with the sink
-dependencies and were able to do do so in all prior algorithms.
+\subsection{Reduce}
+Since \Reduce\ is used at the end of all other algorithms, any small ounce of
+speed one can squeeze out of this function will have noticable implications on
+the speed of the others.
+
+\subsubsection{Separate sink-dependency list}
+The main bottleneck of the \Reduce\ algorithm is the use of the priority queue
+\ReduceQdep, why we would want to minimise the number of elements within. In the
+algorithm we assumed \ReduceQdep\ is prepopulated with the sink dependencies and
+were able to do do so in all prior algorithms.
 
 We notice, that the sink-dependencies always are placed in \ReduceQdep\ in
-topological order, which means all \lstinline{Edge}s are already are sorted with
-respect to their \lstinline{source}. Hence, one can instead prepopulate a list
+topological order, which means all \lstinline{Edge}s are are sorted with respect
+to their \lstinline{source}. Hence, one can instead prepopulate a list
 $L_{\mathit{Red:}Sinks}$, from which the sink dependencies are retrieved rather
 than from \ReduceQdep.
 
 \todo[inline]{Experimentally settle the ratio of sinks relative to $N$ to
   discern the possible speedup.}
 
-\subsection{Reduce: Early application of the first reduction rule}
-A node that is to be reduced by the first reduction rule is never to be
-outputted, but only has to be inserted into \ReduceQdep. At the time of merging
-with processed children in lines $19$ through $24$ in
-Code~\ref{lst:reduce_algorithm}, the tuple \lstinline{(v,t1,a)} can immediately
-be placed in \ReduceQdep\ instead of appending to $L_j$. While this requires a
-second scan of \ReduceLdep\ costing linear I/Os and computation-time, this
-minimises the size of $L_j$ whos elements are subsequently sorted thrice.
+\subsubsection{Early application of the first reduction rule}
+At the time of extracting the dependencies \lstinline{e_low} and
+\lstinline{e_high} of a node \lstinline{v} from \ReduceQdep, one already has all
+the information needed to potentially apply the first reduction rule. Hence, one
+may immediately populate the list of rule 1 reduced nodes,
+$L_{j:\mathit{red}:1}$ instead of extracting it later in
+\lstinline{reduce_layer}. This will save one from having to scan those elements
+multiple times.
 
-For $N_{\mathit{red}:1} \leq N$ many nodes that are removed by the first
-reduction rule, this saves multiple $O(sort(N_{\mathit{red:1}}))$ I/Os at the
-cost of a single $O(N/B)$ I/Os of scanning. Let $c_{\mathit{scan}}$ and
-$c_{\mathit{sort}}$ be the respective constants, then a speedup is gained when
-the following inequality is satisfied.
-\begin{alignat*}{2}
-  &&c_{\mathit{scan}} \cdot \frac{N}{B}
-  & \leq 3 \cdot c_{\mathit{sort}} \cdot \frac{N_{\mathit{red:1}}}{B}
-           \log_{M/B} \left( \frac{N_{\mathit{red:1}}}{B} \right)
-  \\ \ArrowBetweenLines
-  &&\frac{c_{\mathit{scan}}}{3 \cdot c_{\mathit{sort}}}
-  & \leq \frac{N_{\mathit{red:1}} \log_{M/B} N_{\mathit{red:1}} / B}{N}
-\end{alignat*}
-Dropping the $\log_{M/B} N_{\mathit{red:1}} / B$ term gives a lower bound on the
-ratio $N_{\mathit{red:1}} / N$ based on the ratio $c_{\mathit{scan}} /
-c_{\mathit{sort}}$.
-\begin{equation}
-    \frac{c_{\mathit{scan}}}{3 \cdot c_{\mathit{sort}}} \leq \frac{N_s}{N}
-\end{equation}
-This constitutes a very pessimistic lower bound, as not only the term was
-dropped but also it lacks accounting for the $O(N_{\mathit{red:1}} / B)$ I/Os
-spent on scanning the $N_{\mathit{red:1}}$ elements in $L_j,
-L_{j,\mathit{red:1}}$ and the same number of I/Os spent on moving of data.
+\todo[inline]{Experimentally settle a value the number of rule-1 reduced nodes.}
 
-\todo[inline]{Experimentally settle a value for the ratios $c_{\mathit{scan}} /
-  c_{\mathit{sort}}$ and $N_{\mathit{red:1}} / N$ to determine whether this is
-  satisfied in practice. If not, then the analysis has to be more fine-grained
-  or we just have to do actual experiments on the implementation.}
+\subsubsection{Implicit merge of the reduction lists}
+One should notice, that one does not need to concatenate and sort the three
+lists $L_{j,\mathit{out}}$, $L_{j,\mathit{red:}1}$, $L_{j,\mathit{red:}2}$ to
+create $L_{j:F}$, since one may instead merely sort the three lists and
+implicitly take \lstinline{(w,w',_)} from $L_{j:F}$ by picking the next eleement
+from either of the three lists, similarly to the classic \lstinline{merge}
+subprocedure of merge sort.
+
 
 \subsection{Representation of nodes for faster sorting}
 Inspired by \cite{Dijk16} we propose to represent the \lstinline{NodeArc} type
