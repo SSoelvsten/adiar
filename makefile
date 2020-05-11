@@ -36,8 +36,4 @@ setup-c:
 	sudo apt install aptitude
 
 setup-submodules:
-	git submodule init
-	git submodule update
-
-	cd external/bandit && git submodule init && git submodule update
-	cd external/tpie && git checkout master
+	git submodule update --init --recursive
