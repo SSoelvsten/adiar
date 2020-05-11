@@ -11,7 +11,9 @@ cost of the code complexity.
 \subsection{Reduce}
 Since \Reduce\ is used at the end of all other algorithms, any small ounce of
 speed one can squeeze out of this function will have noticable implications on
-the speed of the others.
+the speed of the others. In the presentation of the algorithm above, we already
+improved the algorithm by merging the input OBDD with the supporting data
+structure of the transposed graph, but we also propose the optimisations below.
 
 \subsubsection{Separate sink-dependency list}
 The main bottleneck of the \Reduce\ algorithm is the use of the priority queue
