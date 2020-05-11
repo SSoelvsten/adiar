@@ -1,26 +1,33 @@
 \begin{blstlisting}
   apply_node((v$_1$, v$_2$) : Node$\times$Node,
              (t$_1$, t$_2$) : NodeArc$\times$NodeArc,
-             data : Option(Node)):
-      label := min(t$_1$.label = t$_2$.label)
+             data : Option(Node),
+             new_index : int
+             op: bool$\times$bool $\rightarrow$ bool):
 
-      if $_1$.label <> t$_2$.label:
-          if label = v$_1$.label:
-              low := (v$_1$.low, t$_2$)
-              high := (v$_1$.high, t$_2$)
-          else:
-              low := (v$_1$.low, t$_2$)
-              high := (v$_1$.high, t$_2$)
-      else:
-          v$_1'$ := case data of None => v$_1$
-                         | Some(v$_o$) => if v$_o$.index = t$_1$.index
-                                     then v$_o$ else v$_1$
-          v$_2'$ := case data of None => v$_2$
-                         | Some(v$_o$) => if v$_o$.index = t$_2$.index
-                                     then v$_o$ else v$_2$
+    label' := min(t$_1$.label = t$_2$.label)
 
-          low := ((v$_1'$.low, v$_2'$.low)
-          high := ((v$_1'$.high, v$_2'$.high)
+    if t$_1$.label <>  t$_2$.label:
+      low := if label' = v$_1$.label then (v$_1$.low, t$_2$) else (v$_1$.low, t$_2$)
+      high := if label' = v$_1$.label then (v$_1$.high, t$_2$) else (v$_1$.high, t$_2$)
+    else:
+      v$_1'$ := case data of None => v$_1$
+                     | Some(v$_o$) => if v$_o$.index = t$_1$.index
+                                 then v$_o$ else v$_1$
+      v$_2'$ := case data of None => v$_2$
+                     | Some(v$_o$) => if v$_o$.index = t$_2$.index
+                                 then v$_o$ else v$_2$
 
-      return (label, low, high)
+      low := ((v$_1'$.low, v$_2'$.low)
+      high := ((v$_1'$.high, v$_2'$.high)
+
+    low' = case low of
+           | (Sink{value$_1$}, Sink{value$_2$}) =>  Sink{op(value$_1$, value$_2$)}
+           | _ => low
+
+    high' = case high of
+            | (Sink{value$_1$}, Sink{value$_2$}) =>  Sink{op(value$_1$, value$_2$)}
+            | _ => high
+
+    return (label', low', high')
 \end{blstlisting}

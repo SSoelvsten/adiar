@@ -168,28 +168,23 @@ N)$ time complexity.
 Before we present the \Apply\ algorithm we present the simpler top-down
 algorithm \Restrict, which given an OBDD $G$ and an assignment vector $A$ of
 tuples $(x_i, \mathit{value})$ outputs a reduced OBDD $G_{| x_i = v_i ,\ \forall
-  (x_i,v_i) \in A}$ as shown in Code~\ref{lst:restrict}.  This uses the data
+  (x_i,v_i) \in A}$ as shown in Code~\ref{lst:restrict}. This uses the data
 structure:
 
 \begin{itemize}
-\item The priority queue \RestrictQrec\ of 3-tuples
-    \lstinline{(s: Node, t: NodeArc.Link, b: bool)} sorted with respect to
-    \lstinline{t} only.
+\item The priority queue \RestrictQrec\ of \lstinline{Edge}s sorted with respect
+  to \lstinline{target} only.
 
-  These $(s,t,b)$-tuples in the priority queue are used to forward recursion
-  requests from $s$ to non-sink children $t$ along a $b$-arc.
+  These edges in the priority queue are used to forward recursion requests from
+  \lstinline{source} to non-sink children \lstinline{target} along a $b$-arc.
 \end{itemize}
 
 The algorithm as depicted in Code~\ref{lst:restrict} essentially traverses the
 OBDD recursively, either keeping the node and recursing along both outgoing arcs
 or skipping the node and only recursing on the arc according to the assignment.
-The recursion is controlled using \RestrictQrec. Since this only traverses the
-data structure top-down, the nodes traversed do not know the index of their
-children before they are outputted later. Hence, these nodes will not contain an
-actual index to their children. Luckily, these references can be fixed as part
-of the bottom-up traversal of the final \Reduce. Furthermore, due to the
-top-down traversal of the OBDD, the \ReduceLforward\, \ReduceLdep\ of \Reduce\ can
-be initialised during the traversal.
+The recursion is controlled using \RestrictQrec. Due to the top-down traversal
+of the OBDD, the \ReduceLforward\ and \ReduceQdep\ of \Reduce\ can be
+initialised during the traversal.
 
 \begin{lstfloat}
   \centering
@@ -201,13 +196,14 @@ be initialised during the traversal.
 \end{lstfloat}
 
 By the ordering of tuples in \RestrictQrec, nodes are visited in topological
-order, which also is the blocking of \GV on disk. This means every block is
+order, which also is the blocking of \GV\ on disk. This means every block is
 fetched at most once and at most $O(N/B)$ I/Os are used as part of the look up
-of vertices in \GV. At most $2N$ requests are placed and retrieved from \Q\
-which will only require $O(sort(N))$ I/Os. let $N' \leq N$ be the number of
-nodes outputted for the later \Reduce, which then also only uses another
-$O(sort(N')) = O(sort(N))$ I/Os. In total the \Restrict\ algorithm performs
-the full substitution and reduction in $O(sort(N))$ I/Os and $O(N \log N)$ time.
+of vertices in \lstinline{G}. At most $2N$ requests are placed and retrieved
+from \Q\ which will only require $O(sort(N))$ I/Os. let $N' \leq N$ be the
+number of nodes outputted for the later \Reduce, which then also only uses
+another $O(sort(N')) = O(sort(N))$ I/Os. In total the \Restrict\ algorithm
+performs the full substitution and reduction in $O(sort(N))$ I/Os and $O(N \log
+N)$ time.
 
 \clearpage
 \subsection{Apply} \label{sec:theory__apply}
@@ -220,10 +216,10 @@ Since this queue has to be synchronised with the scan of both list of nodes at
 the same time, then the sorting is a bit more complicated than in the prior
 given algorithms. The data structure used is:
 \begin{itemize}
-\item The priority queue \ApplyQrec\ of 4-tuples \lstinline{(s', (t$_1$,t$_2$), b, data)}
-  where \lstinline{s'} is of type \lstinline{Node}, \lstinline{t$_1$, t$_2$} of
-  type \lstinline{NodeArc}, \lstinline{b} of \lstinline{bool} and
-  \lstinline{data} of \lstinline{Option(Node)}.
+\item The priority queue \ApplyQrec\ of 4-tuples \lstinline{(s', (t$_1$,t$_2$), is_high, data)}
+  where \lstinline{s'}, \lstinline{t$_1$}, and \lstinline{t$_2$} are of
+  type \lstinline{NodeArc}, \lstinline{is_high} of \lstinline{bool} and
+  \lstinline{data} of \lstinline{Option(NodeArc)}.
 
   This forwards requests for recursion from processing the pair of nodes $(s_1,
   s_2)$ output as \lstinline{s'} to $(t_1,t_2)$ through a $b$-arc. The
@@ -235,8 +231,8 @@ given algorithms. The data structure used is:
   \begin{itemize}
   \item If \lstinline{data} is \lstinline{None}, then it is sorted first with
     respect to $\min(t_1.\mathit{label},t_2.\mathit{label})$, secondly with
-    respect to $\min(t_1.\mathit{index},t_2.\mathit{index})$. Sinks come after
-    nodes.
+    respect to $\min(t_1.\mathit{index},t_2.\mathit{index})$. Sinks
+    (\lstinline{NodeArc.Sink}) come after nodes\\(\lstinline{NodeArc.Link}).
 
   \item If \lstinline{data} is \lstinline{Some(v)}, then it is still first
     sorted with respect to $\min(t_1.\mathit{label},t_2.\mathit{label})$, but
@@ -251,9 +247,9 @@ used up until this point.
 
 To match the general sorting above the \lstinline{apply_step} function below in
 Code~\ref{lst:apply_step} mutates variables $\mathit{iW}_1$ and $\mathit{iW}_2$
-being indices in the respective input lists $G_1.V$ and $G_2.V$ of vertices
-together with the matching nodes $v_1$ and $v_2$. This function used later in
-\Apply, where the mutated variables are initialised.
+being indices in the respective input lists \lstinline{G$_1$} and
+\lstinline{G$_2$} of vertices together with the corresponding vertices $v_1$ and
+$v_2$. These mutated variables are initialised in the main \Apply\ algorithm.
 \begin{lstfloat}
   \centering
 
@@ -269,45 +265,38 @@ output node is $\min(v_1.\mathit{label},v_2.\mathit{label})$. In the case the
 two labels of $v_1$ and $v_2$ differ, then the recursion is only dependent on
 the node with the smallest label. Otherwise, \lstinline{data} is used to send
 the data of the first-seen node to the second for processing later, such that
-both are in memory simultaneously. That is, for all cases but when
-\lstinline{data} should be forwarded, then whereto recurse can be resolved as
-depicted in Code~\ref{lst:apply_node}.
+both are in memory simultaneously. Since sinks are stored in parents, then the
+the recursion through \ApplyQrec\ is omitted in favour of resolving the
+resulting child to then be placed in \ReduceQdep.
 
+That is, for all cases but when \lstinline{data} is not present yet both
+\lstinline{t$_1$} and \lstinline{t$_2$} have the same label, then the node pair
+to recurse to or the sink to output can be resolved by the function
+\lstinline{apply_node} as depicted in Code~\ref{lst:apply_node}.
 \begin{lstfloat}[ht!]
   \centering
 
   \input{../listing/apply_node.tex}
 
-  \caption{Resolving which direction to recurse on request for $(w_1, w_2)$ while
-    being at $(v_1, v_2)$.}
+  \caption{Resolving the label and children of the $(v_1, v_2)$ pair.}
   \label{lst:apply_node}
 \end{lstfloat}
 
-Similar to \Restrict, this makes the algorithm traverse both OBDDs top-down
-and hence output nodes before their children. This leaves no ability to include
-a direct reference to them. Again, this is fixed during the later \Reduce, for
-which the sorting is satisfied by merely supplying indices in order of
-outputting the vertices.
-
-The base case of recursion on a child is when it reaches two sinks. Since sinks
-are stored in parents, the recursive call inserted into \ApplyQrec\ can be
-omitted in favour of applying the operator on both sinks. Hence, given the
-label, low and high nodes from Code~\ref{lst:apply_node} and the operand, then
-the node to be outputted can be resolved as depicted in
-\lstinline{apply_recurse_node} in Code~\ref{lst:apply_recurse_node}.
-
-\begin{lstfloat}[ht!]
+\newpage
+The initial recursion requests are then created from the root pair of nodes from
+the same notion resolved as in \lstinline{apply_root} in
+Code~\ref{lst:apply_root}.
+\begin{lstfloat}[hb!]
   \centering
 
-  \input{../listing/apply_recurse_node.tex}
+  \input{../listing/apply_root.tex}
 
-  \caption{Construction of to-be-outputted node \lstinline{v'} and recursing
-    using \ApplyQrec.}
-  \label{lst:apply_recurse_node}
+  \caption{Resolving the root pair $(v_1, v_2)$.}
+  \label{lst:apply_root}
 \end{lstfloat}
 
 Putting everything above together, we can create the \Apply\ algorithm as
-presented in Code~\ref{lst:apply_algorithm}
+presented in Code~\ref{lst:apply_algorithm}.
 
 \begin{lstfloat}[ht!]
   \centering
@@ -322,31 +311,30 @@ presented in Code~\ref{lst:apply_algorithm}
 Let $N_1$ and $N_2$ be the respective sizes of $G_1$ and $G_2$. By the nature of
 how both lists are scanned, then only $O(N_1 + N_2)$ I/Os are spent on scanning
 the nodes. There is at most $N_1 \cdot N_2$ many nodes being outputted,
-resulting in at most $O(N_1 N_2)$ I/Os spent on writing the output for the later
-\Reduce\ that will take $O(\sort(N_1 N_2))$ I/Os. Each element creates up to two
-requests for recursions, each of which may be reinserted to forward data later
-into the queue. That means, an $O(N_1 N_2)$ number of elements are inserted and
-retrieved from \ApplyQrec\ which requires $O(\sort(N_1 N_2))$ I/Os. By the same
-account the algorithm also spends $O(N_1 N_2 \cdot \log (N_1 N_2))$ time for
-computation. \cite{Arge96}
+resulting in at most $O(N_1 N_2 / B)$ I/Os spent on writing the output for the
+later \Reduce\ that will take $O(\sort(N_1 N_2))$ I/Os. Each element creates up
+to two requests for recursions, each of which may be reinserted to forward data
+later into the queue. That means, an $O(N_1 N_2)$ number of elements are
+inserted and retrieved from \ApplyQrec\ which requires $O(\sort(N_1 N_2))$ I/Os.
+By the same account the algorithm also spends $O(N_1 N_2 \cdot \log_2 (N_1 N_2))$
+time for computation. \cite{Arge96}
 
 \subsection{Isomorphism} \label{sec:theory__equal}
 Two reduced OBDDs represent the same boolean function if and only if they are
-isomorphic \cite[Theorem 1]{Bryant86}. This immediately yields a simple
-recursive algorithm that decides the equality of two OBDDs $G_1$ and $G_2$.
-Using the same approach as for the \Apply\ algorithm above and a single priority
-queue \EqualQrec\, one can directly translates this algorithm into an I/O
-efficient algorithm for \Equal\ that only uses $O(\sort(\min(N_1, N_2)))$ I/Os and
-time.
+isomorphic \cite[Theorem 1]{Bryant86}. Hence, no two reduced OBDDs with
+different number of nodes can be isomorphic. Using the same approach as for the
+\Apply\ algorithm above and a single priority queue \IsomorphicQrec\, one can
+traverse both graphs and check that they behave similarly. This then results in
+an I/O bound of $O(\sort(N_1 \cdot N_2))$ I/Os and time.
 
 Since nodes directly contain the label and index of their children, the
 algorithm can be further optimised. Rather than testing for equality of the
 label in the node pair $(v_1,v_2)$ itself, one instead checks both
 $(v_1.\mathit{low}, v_2.\mathit{low})$ and $(v_1.\mathit{high},
-v_2.\mathit{high})$. This makes algorithm able to terminate earlier when given
-two not equal OBDDs. Since the algorithms terminates on the first violation, the
-space and time usage reduces to $O(\sort(\min(N_1, N_2)))$ I/O and time
-complexity.
+v_2.\mathit{high})$ to be the same sink-value or pointer to nodes of the same
+layer. This makes the algorithm able to terminate earlier when given two unequal
+OBDDs. Since the algorithms terminates on the first violation, the space and
+time usage reduces to $O(\sort(N_1))$ I/O and time complexity.
 
 \subsection{Exists} \label{sec:theory__exists}
 \todo[inline]{

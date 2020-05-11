@@ -52,7 +52,7 @@ subprocedure of merge sort.
 
 \subsection{Representation of nodes for faster sorting}
 Inspired by \cite{Dijk16} we propose to represent the \lstinline{NodeArc} type
-of Code~\ref{lst:data} as a single 64-bit integer as shown in
+of Code~\ref{lst:data_node} as a single 64-bit integer as shown in
 Figure~\ref{fig:data}. A \lstinline{NodeArc.Sink} of value $v \in \{0,1\}$ is
 represented by a $1$-flag on the most significant bit, $v$ on the least
 significant bit, and all other bits set to $0$.\footnote{Notice, that we as such
