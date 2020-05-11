@@ -25,14 +25,15 @@ the receiving node would result in a full I/O used, which is not desired. To
 mitigate this, all nodes store both the label and unique identifier of their
 children. Since the label for the children is stored within the parent, then
 there is no need to explicitly store the $0$- and $1$-sinks as nodes in the
-graph. The data stored for each node then is as depicted in Code~\ref{lst:data}.
+graph. The data stored for each node then is as depicted in
+Code~\ref{lst:data_node}.
 \begin{lstfloat}[ht!]
   \centering
 
-  \input{../listing/data.tex}
+  \input{../listing/data_node.tex}
 
   \caption{The information stored in each node of the OBDD}
-  \label{lst:data}
+  \label{lst:data_node}
 \end{lstfloat}
 
 The reader should notice, that the Nodes contains no direct pointers to its
@@ -56,50 +57,60 @@ I/Os.
 Except \Reduce, all algorithms given below assume that the input OBDD is reduced
 and in reverse topological order, as outputted by the \Reduce\ algorithm. On the
 other hand, the \Reduce\ algorithm expects the to-be-reduced list of nodes are
-in topological order. Due to this, all sorting of the input nodes can be omitted
-for the sake of optimisation. \cite{Arge96}
+in topological order - as outputted by the other algorithms. Due to this, all
+initial sorting of the input nodes can be omitted. \cite{Arge96}
 
-\subsection{Reduce} \label{sec:theory__reduce}
-The \Reduce\ algorithm makes use of the following three data structures:
-
-\begin{itemize}
-\item The list \ReduceLwork\ of all nodes $v \in V$ sorted with respect to $v$.
-
-  This provides a work-order to processing the nodes in reverse topological
-  order for the reduction.
-
-\item The list \ReduceLdep\ of 3-tuples
-  \lstinline{(s: Node, t: NodeArc.Link, b: bool)}
-  sorted with respect to the label and index of \lstinline{t}.
-
-  This is the transposed graph and it is used to determine whereto send the
-  result \lstinline{t'} of computation on \lstinline{t}. That is, the list
-  contains all the parents \lstinline{s} of \lstinline{t}.
-
-\item The priority queue \ReduceQdep\ of 3-tuples
-  \lstinline{(s: Node, t': NodeArc.Link, b: bool)} sorted with
-  respect to \lstinline{s} and secondly by \lstinline{b}.
-
-  This priority queue is used to forward the result \lstinline{t'} of processing
-  nodes \lstinline{t} $\in \ReduceLwork$ to nodes in $\ReduceLwork$ dependent on
-  the result \lstinline{t'}.
-\end{itemize}
-These datastructures can be initialised as depicted in
-Code~\ref{lst:reduce_init}. \ReduceLwork\ can be populated in topological order
-in $O(\sort(N))$ I/Os. \ReduceLdep\ can also be populated with all dependencies
-to non-sink children and sorted in $O(N/B + \sort(N)) = O(\sort(N))$ I/Os. For
-simplicity of the presentation of the \Reduce\ algorithm we populate
-\ReduceQdep\ with all results of computation to the implicitly-stored sink
-nodes.
+Arge~\cite{Arge96} suggests to exploit the above by rather representing the OBDD
+by its edges, rather than its nodes. Since \lstinline{NodeArc} contains all the
+data of a \lstinline{Node}, then this leads to a representation as a list of
+\lstinline{Edge}s as in Code~\ref{lst:data_edge}. The \Evaluate\ algorithm above
+still works by finding the out-going arcs of node $i$ at indices $2i$ and
+$2i+1$. In fact, all node-based algorithms below may as well be done on the
+edge-based representation.
 
 \begin{lstfloat}[ht!]
   \centering
 
-  \input{../listing/reduce_init.tex}
+  \input{../listing/data_edge.tex}
 
-  \caption{Initialisation of datastructures for \Reduce}
-  \label{lst:reduce_init}
+  \caption{The information stored in each edge of the edge-based representation}
+  \label{lst:data_edge}
 \end{lstfloat}
+
+One should note, that a single node now takes up at least $4/3$ as much space as
+before, since the \lstinline{source} has to be stored for both edges. In fact
+nothing is gained when the edges are in topological order. On the other hand,
+reverse topological order is merely sorting the list of edges by
+\lstinline{target}. From this, we notice that one of the supporting data
+structures of the \Reduce\ algorithm as described by Arge~\cite{Arge96} is
+exactly the edge-based representation sorted by \lstinline{target}. Hence, we
+will opt to merge this data structure and the input OBDD. This both simplifies
+the algorithm, but much more importantly it also reduces the memory footprint by
+at least a third.
+
+\subsection{Reduce} \label{sec:theory__reduce}
+The \Reduce\ algorithm makes use of the following two data structures:
+
+\begin{itemize}
+\item The input list \ReduceLforward\ of \lstinline{Edge}s sorted in decreasing
+  order with respect to \lstinline{target}. This provides a work-order to
+  processing the nodes in reverse topological order for the reduction.
+  Furthermore, this also directly provides which nodes \lstinline{s} depend on
+  the computation result \lstinline{t'} of a node \lstinline{t}.
+
+\item The priority queue \ReduceQdep\ of \lstinline{Edge}s sorted with
+  respect to \lstinline{source} and secondly by \lstinline{is_high}.
+
+  This priority queue is used to forward the result \lstinline{t'} of processing
+  nodes \lstinline{t} as per \ReduceLforward\ to any nodes \lstinline{s} with an
+  edge to \lstinline{t}.
+\end{itemize}
+We assume, that \ReduceLforward\ does not contain any edges with \lstinline{target}
+a sink, but rather that \ReduceQdep\ has already been populated with all sink
+dependencies. One can sort \ReduceLforward\ and move all sink edges to
+\ReduceQdep\ within the $O(\sort(N))$ I/Os bound, but we will instead ensure all
+algorithms in the next sections instead create \ReduceLforward\ in sorted order
+and populate \ReduceQdep\ with all the sink dependencies.
 
 The \Reduce\ algorithm applies the reduction rules of \textcite[Definition
 5]{Bryant86} on all nodes of each layer using the \lstinline{reduce_layer}
@@ -121,28 +132,27 @@ reduction rule.
   \label{lst:reduce_bryant}
 \end{lstfloat}
 
-\newpage
-We are now ready to present the \Reduce\ algorithm. The algorithm takes as
-argument all the three datastructures described above and assumes they all are
-initialised. We choose to do this, to make explicit the ability of the later
-algorithms to populate all three datastructures for free. The \Reduce\ algorithm
-is presented in Code~\ref{lst:reduce_algorithm}.
+We are now ready to present the \Reduce\ algorithm as it is depicted in
+Code~\ref{lst:reduce_algorithm}. The algorithm takes as argument both
+datastructures described above and assumes they are initialised. It proceeds by
+computing and outputting the reduced OBDD bottom-up and layer for layer
+according to the reverse topological order. Upon having processed layer $j$
+according to Code~\ref{lst:reduce_bryant} above, then the reduced layer is
+immediately outputted and all nodes \lstinline{s} that depend on the outputted
+node \lstinline{t'} in layer $j$ is forwarded \lstinline{t'} through
+\ReduceQdep\ as per the edge \lstinline{(s,t)} in \ReduceLforward. Since
+\ReduceQdep\ already contains all sink-dependencies and due to the bottom-up
+processing of the layers then \ReduceQdep\ will always contain all dependencies
+when one begins to process any layer $k < j$.
 
-It proceeds by computing and outputting the reduced OBDD bottom-up and layer for
-layer. This is done by a single scan through the work list \ReduceLwork, where
-the nodes of each layer are merged with the result of the recursion to then
-apply the reduction rules on the whole layer. The recursive dependencies are
-handled through \ReduceQdep\ which is synchronised with the scan of
-\ReduceLwork\ using \ReduceLdep\ to determine whereto forward outputted results
-in \ReduceQdep.
-For each element of \ReduceLdep\ a single element will be added to \ReduceQdep,
-which will result in a total $2 N$ insertions and extractions from \ReduceQdep,
-which in the worst-case uses $O(sort(N))$ I/Os. On each layer all nodes are
-sorted thrice, which when all layers are combined results in another
-$O(sort(N))$ total number of I/Os. Hence, the algorithm runs within the optimal
-$O(sort(N))$ I/O bound \cite{Arge96}. By similar obsevations we can also
-conclude, that the algorithm has an $O(N \log_2 N)$ time complexity.
-
+A total of $2 N$ edges will be inserted into \ReduceQdep\ and then later again
+extracted, while \ReduceLforward\ is scanned once at the end to forward
+information. This totals a $O(\sort(4N) + N/B) = O(\sort(N))$ number of I/Os
+spent. On each layer all nodes are sorted twice, which when all layers are
+combined results in another $O(\sort(N))$ total number of I/Os. Hence, the
+algorithm runs within the optimal $O(\sort(N))$ I/O bound \cite{Arge96}. By
+similar obsevations we can also conclude, that the algorithm has an $O(N \log_2
+N)$ time complexity.
 
 \begin{lstfloat}
   \centering
@@ -154,28 +164,6 @@ conclude, that the algorithm has an $O(N \log_2 N)$ time complexity.
 \end{lstfloat}
 
 \clearpage
-We have until now chosen solely to focus on the use of a priority queue to
-control the recursion. This presentation follows the algorithm as described in
-\cite{Arge96}. One should observe though, that the merging of a node $v \in
-\ReduceLwork$ with the processed children retrieved from the queue \ReduceQdep\
-only serves to connect the resulting $v'$ to its children that have already been
-outputted. A child of $v$, that is a sink, is already fully reduced. Neither is
-a sink an outputted element, since sinks always are stored directly within their
-parents. Hence, the information stored in $v$ is sufficient for its sink
-children, and \ReduceQdep\ can merely be initialised to $\emptyset$ at the cost
-of a few conditional statements during the merge to determine whether to
-retrieve $0$, $1$, or $2$ elements. Since $v$ already is in memory, the decrease
-in size of \ReduceQdep\ will heavily outweigh the computational cost. To be more
-precise, for $N_s \leq 2N$ many sink-arcs the number of elements inserted into
-and extracted from \ReduceQdep\ decreases by $N_s$.
-
-\todo[inline]{Experimentally settle the value of $N_s$ relative to $N$}
-
-When presenting the other algorithms below we will assume this optimisation is
-applied. It is possible for these algorithms to populate \ReduceQdep\ with
-sink-dependencies during their execution, but for the sake of clarity we will
-leave out how in the subsequent sections and only provide $\emptyset$.
-
 \subsection{Restrict} \label{sec:theory__restrict}
 Before we present the \Apply\ algorithm we present the simpler top-down
 algorithm \Restrict, which given an OBDD $G$ and an assignment vector $A$ of
@@ -200,7 +188,7 @@ data structure top-down, the nodes traversed do not know the index of their
 children before they are outputted later. Hence, these nodes will not contain an
 actual index to their children. Luckily, these references can be fixed as part
 of the bottom-up traversal of the final \Reduce. Furthermore, due to the
-top-down traversal of the OBDD, the \ReduceLwork\, \ReduceLdep\ of \Reduce\ can
+top-down traversal of the OBDD, the \ReduceLforward\, \ReduceLdep\ of \Reduce\ can
 be initialised during the traversal.
 
 \begin{lstfloat}

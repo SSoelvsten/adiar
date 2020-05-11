@@ -1,34 +1,28 @@
 \begin{blstlisting}
-    Reduce($\ReduceLwork$: Node[],
-           $\ReduceLdep$: (Node,NodeArc,bool)[],
-           $\ReduceQdep$: PriorityQueue<(Node$\times$NodeArc$\times$bool)>):
+    Reduce($\ReduceLforward$: Edge[], $\ReduceQdep$: PriorityQueue<Edge>): Node[]
       // Index of next output in stream
       iO = 0
 
-      // Index into *@\color{cGray} $\ReduceLwork$@*
-      iW := $\ReduceLwork$.length - 1
-      v := $\ReduceLwork$[iW]
-
-      // Index into *@\color{cGray} $\ReduceLdep$@*
-      iD = $\ReduceLdep$.length - 1
+      // Index into *@\color{cGray} $\ReduceLforward$@*
+      iF := $\ReduceLforward$.length - 1
 
       // Process bottom-up each layer except for the root-layer
       for j := n-1 downto 2:
           $L_{j}$ := []
 
           // Merge nodes of layer j with result of prior computations
-          while v.label = j:
-              (_, t1, _) := $\ReduceQdep$.extract_max()
-              (_, t2, _) := $\ReduceQdep$.extract_max()
+          while $\ReduceQdep$.peek().source.label = j:
+              e_low  := $\ReduceQdep$.extract_max()
+              e_high := $\ReduceQdep$.extract_max()
 
-              $L_{j}$.append((v,t1,t2))
-              v := $\ReduceLwork$[--iW]
+              $L_{j}$.append(node_of_edges(e_low, e_high))
 
           // Apply reduction rules
           ($L_{j,\mathit{out}}$, $L_{j,\mathit{red:}1}$, $L_{j,\mathit{red:}2}$) = reduce_layer($L_{j}$)
 
-          // Output to-be outputted nodes and distribute output index
-          sort (w,w',i) in $L_{j,\mathit{out}}$ and $L_{j,\mathit{red:}2}$ by i
+          // Notice, to-be outputted nodes in $\color{cGray}L_{j,\mathit{out}}$ and rule-2-reduced nodes
+          // nodes in $\color{cGray}L_{j,\mathit{red:}2}$ are already sorted in decreasingly order
+          // according to i.
 
           iR2 = 0
           for (w,w',i) in $L_{j,\mathit{out}}$:
@@ -39,14 +33,18 @@
                   $L_{j,\mathit{red:}2}$[iR2++][1].index := w'.index
 
           // Forward processing information to layers j-1 .. 1
-          $L_{j,\mathit{forward}}$ := $L_{j,\mathit{out}}$ ++ $L_{j,\mathit{red:}1}$ ++ $L_{j,\mathit{red:}2}$
-          sort (w,w',i) in $L_{j,\mathit{forward}}$ by w.index
+          $L_{j:F}$ := $L_{j,\mathit{out}}$ ++ $L_{j,\mathit{red:}1}$ ++ $L_{j,\mathit{red:}2}$
+          sort (w,w',i) in $L_{j:F$ by w.index
 
-          (s, t, b) := $\ReduceLdep$[iD]
-          for (w,w') in $L_{j,\mathit{out}}$, $L_{j,\mathit{red:}2}$:
-              while t = w:
-                  $\ReduceQdep$.insert((s,w',b))
-                  (s, t, b) := L2[--iD]
+          { source, is_high, target } := $\ReduceLdep$[iF]
+          for (w,w',_) in $L_{j:F}$:
+              while target = w:
+                  $\ReduceQdep$.insert({
+                    source=source,
+                    is_high=is_high,
+                    target=nodearc_of_node(w')
+                  })
+                  { source, is_high, target } := $\ReduceLdep$[--iF]
 
       // Process the root
       (_, t_low,  _) := $\ReduceQdep$.extract_max()
