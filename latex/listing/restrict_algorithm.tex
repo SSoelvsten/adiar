@@ -1,59 +1,59 @@
 \begin{blstlisting}
-  Restrict(G : OBDD, A : (int, bool)[]):
-      sort (l,v) in A *@by@* l
-      $\RestrictQrec$ = $\emptyset$ : PriorityQueue<(Node$\times$NodeArc.Link$\times$bool)>
-      $\ReduceLwork, \ReduceLdep$ := [] : Node[] | (Node,NodeArc,bool)[]
+  Restrict(G : Node[], A : (int, bool)[]) : Node[] + NodeArc.Sink
+    sort (l,v) in A *@by@* l
+    $\RestrictQrec$, $\ReduceQdep$ := $\emptyset$ : PriorityQueue<Edge>
+    $\ReduceLforward$ := [] : Edge[]
+    iA := 0
+    (a_label, a_value) := A[iA]
 
-      iA := 0
-      (a_label, a_value) := A[iA]
+    // Process the root and create initial recursion requests
+    v = G.V[G.V.length - 1]
+    if a_label = v.label:
+      rec_child := if a_value then v.high else v.low
 
-      // Process the root and create initial recursion requests
-      v = G.V[G.V.length - 1]
-      if a_label = v.label:
-          if a_value:
-              if is_sink(v.high): return sink-only OBDD v.high.value
-              $\RestrictQrec$.insert ((NIL, v.high, True))
-          else:
-              if is_sink(v.low): return sink-only OBDD v.low.value
-              $\RestrictQrec$.insert((NIL, v.low, False))
+      if is_sink(rec_child): return NodeArc.Sink{ value=v.high.value }
+      $\RestrictQrec$.insert(Edge{source=NIL, is_high=a_value, target=rec_child})
 
-          (a_label, a_value) := A[++iA]
+      (a_label, a_value) := A[++iA]
+    else:
+      (low_edge, high_edge) := edges_of_node(v)
+
+      if is_sink(v.low): $\ReduceQdep$.insert(low_edge)
+      else: $\ReduceLforward$.append(low_edge)
+            $\RestrictQrec$.insert(low_edge)
+      if is_sink(v.high): $\ReduceQdep$.insert(high_edge)
+      else: $\ReduceLforward$.append(high_edge)
+            $\RestrictQrec$.insert(high_edge)
+
+    // Process all to-be-visited nodes in topological order
+    while !$\RestrictQrec$.empty():
+      Edge{ source, is_high, target } := $\RestrictQrec$.extract_min()
+      v := G.V[target.index]
+
+      // Skip to-be-substituted variables that we didn't see
+      while iA < A.length $\land$ a_label < v.label:
+        (a_label, a_value) := A[++iA]
+
+      // Process node and forward information
+      if a_label = label:
+        rec_child := if a_value then v.high else v.low
+        request := Edge{ source, is_high=a_value, target=rec_child }
+
+        if is_sink(rec_child)
+        then if source = NIL
+          then: return NodeArc.Sink{ value=rec_child.value }
+          else: $\ReduceQdep$.insert(request)
+        else: $\ReduceLforward$.append(request)
+              $\RestrictQrec$.insert(request)
       else:
-          $\ReduceLwork$.append(v)
-          high_request := (v, v.high, True)
-          low_request := $\RestrictQrec$.insert(v, v.low, False)
+        $\RestrictQrec$.insert(edges_of_node(v))
 
-          if !is_sink(v.high): $\RestrictQrec$.insert(high_request)
-          if !is_sink(v.low):  $\RestrictQrec$.insert(low_request)
+        if source <> NIL:
+          while True:
+            $\ReduceLforward$.append(Edge{ source, is_high, target })
+            if !$\RestrictQrec$.empty() $\land$ $\RestrictQrec$.peek_min().target = target:
+              Edge{ source, is_high, target } := $\RestrictQrec$.extract_min()
+            else: break
 
-      // Process all to-be-visited nodes in topological order
-      while !$\RestrictQrec$.empty():
-          (s,t,a) := $\RestrictQrec$.extract_min()
-          v := G.V[t.index]
-
-          // Skip to-be-substituted variables that we didn't see
-          while a_label < v.label: (a_label, a_value) := A[++iA]
-
-          // Forward the desired information
-          if a_label <> v.label:
-              $\ReduceLwork$.append(v)
-              $\RestrictQrec$.insert((v, v.low, False), (v, v.high, True))
-
-              // v is outputted: dependencies (if any) to v can be
-              // locked in place
-              if s <> NIL:
-                  while True:
-                      $\ReduceLdep$.append((s,t,a))
-                      if $\RestrictQrec$.peek_min()[1] = v:
-                          (s,t,a) := $\RestrictQrec$.extract_min()
-                      else: break
-          else:
-              rec_child := if a_value then v.high else v.low
-              recurse := !is_sink(rec_child)
-              request := (s, rec_child, a_value)
-
-              if recurse: $\RestrictQrec$.insert(request)
-              else if s = NIL: return sink-only OBDD rec_child.value
-
-      return Reduce($\ReduceLwork, \ReduceLdep, \emptyset$)
+    return Reduce($\ReduceLforward, \ReduceQdep$)
 \end{blstlisting}
