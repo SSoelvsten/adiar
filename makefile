@@ -22,6 +22,7 @@ clean:
 # ============================================================================ #
 test: | build-test
 	@./build/test/test_unit --reporter=info --colorizer=light
+	@rm test_stream_1.tpie
 
 # ============================================================================ #
 #  SETUP DEPENDENCIES

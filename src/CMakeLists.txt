@@ -21,7 +21,7 @@ generate_export_header(coom DEFINE_NO_DEPRECATED)
 
 # ============================================================================ #
 # Link dependencies
-# target_link_libraries(coom tpie)
+target_link_libraries(coom tpie)
 
 # ============================================================================ #
 # Setup as library
