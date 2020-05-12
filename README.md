@@ -1,5 +1,6 @@
 # COOM: Cache-Oblivious OBDD Manipulation
 [![MIT License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](LICENSE.md)
+[![Built with TPIE](https://img.shields.io/badge/built%20with-TPIE-blue)](https://users-cs.au.dk/~rav/tpie/)
 ![test](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/test/badge.svg?branch=master)
 
 Following up on the work of [[Arge96](/bib/%5Barge%5D%20IO%20Complexity%20of%20OBDD%20Manipulation.pdf)],
