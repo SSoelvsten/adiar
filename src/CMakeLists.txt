@@ -3,11 +3,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 # ============================================================================ #
 # Link up files for the library
 set(HEADERS
-  node.h
+  data.h
 )
 
 set(SOURCES
-  node.cpp
+  data.cpp
 )
 
 if (COOM_SHARED)
