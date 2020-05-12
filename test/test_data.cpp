@@ -206,17 +206,37 @@ go_bandit([]() {
             AssertThat(std::is_pod<arc>::value, Is().True());
           });
 
-        it("should use minimal space on NodeArcs and Node", [&]() {
-            auto test_arc_node = create_node_ptr(42,2);
-            auto test_arc_sink = create_sink (false);
-            auto test_node = create_node(1,
-                                         8,
-                                         test_arc_node,
-                                         test_arc_sink);
+        it("should use 8 bytes of memory for a Node Ptr", [&]() {
+            auto node_ptr = create_node_ptr(42,2);
+            AssertThat(sizeof(node_ptr), Is().EqualTo(8));
+          });
 
-            AssertThat(sizeof(test_arc_sink), Is().EqualTo(8));
-            AssertThat(sizeof(test_arc_node), Is().EqualTo(8));
-            AssertThat(sizeof(test_node), Is().EqualTo(3 * 8));
+        it("should use 8 bytes of memory for a Sink", [&]() {
+            auto sink = create_sink (false);
+            AssertThat(sizeof(sink), Is().EqualTo(8));
+          });
+
+        it("should use 24 bytes of memory for a Node", [&]() {
+            auto node_ptr = create_node_ptr(42,2);
+            auto sink = create_sink (false);
+            auto node = create_node(1,
+                                    8,
+                                    node_ptr,
+                                    sink);
+
+            AssertThat(sizeof(node), Is().EqualTo(3 * 8));
+          });
+
+        it("should use 24 bytes of memory for an Arc", [&]() {
+            auto node_ptr = create_node_ptr(42,2);
+            auto sink = create_sink (false);
+            auto arc = create_arc(node_ptr,
+                                  false,
+                                  sink);
+
+            // For C++ a struct has to be word-aligned, which means the 1 bit
+            // boolean field will have to take up a whole word (8b) instead.
+            AssertThat(sizeof(arc), Is().EqualTo(3*8));
           });
       });
   });
