@@ -40,12 +40,8 @@ if (COMPILE_TEST)
 endif()
 
 # ============================================================================ #
-# As a library
+# install COOM as a library to use
 # ============================================================================ #
-install(DIRECTORY com
+install(DIRECTORY src/coom
         DESTINATION include
-        FILES_MATCHING REGEX "\\.h$|\\.inl$"
-        PATTERN "deadcode" EXCLUDE)
-
-install(DIRECTORY share/coom
-        DESTINATION share)
+        FILES_MATCHING REGEX "\\.h$")
