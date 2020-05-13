@@ -1,5 +1,5 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef COOM_DATA_H
+#define COOM_DATA_H
 
 namespace coom {
   extern const uint64_t MAX_INDEX;
@@ -48,4 +48,4 @@ namespace coom {
   bool operator!= (const arc& a, const arc& b);
 }
 
-#endif // NODE_H
+#endif // COOM_DATA_H

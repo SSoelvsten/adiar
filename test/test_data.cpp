@@ -1,4 +1,5 @@
-#include <data.cpp>
+#include <coom/data.cpp>
+
 using namespace coom;
 
 go_bandit([]() {

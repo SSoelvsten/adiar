@@ -4,10 +4,18 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 # Link up files for the library
 set(HEADERS
   data.h
+  evaluate.h
+  reduce.h
+  restrict.h
+  apply.h
 )
 
 set(SOURCES
   data.cpp
+  evaluate.cpp
+  reduce.cpp
+  restrict.cpp
+  apply.cpp
 )
 
 if (COOM_SHARED)

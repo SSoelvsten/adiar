@@ -1,3 +1,6 @@
+#ifndef COOM_DATA_CPP
+#define COOM_DATA_CPP
+
 #include <assert.h>
 #include <stdint.h>
 
@@ -154,3 +157,4 @@ namespace coom {
   }
 }
 
+#endif // COOM_DATA_CPP
