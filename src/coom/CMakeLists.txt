@@ -2,21 +2,22 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 
 # ============================================================================ #
 # Link up files for the library
+
 set(HEADERS
+  apply.h
   coom.h
   data.h
   evaluate.h
   reduce.h
   restrict.h
-  apply.h
 )
 
 set(SOURCES
+  apply.cpp
   data.cpp
   evaluate.cpp
   reduce.cpp
   restrict.cpp
-  apply.cpp
 )
 
 if (COOM_SHARED)
@@ -30,12 +31,13 @@ generate_export_header(coom)
 
 # ============================================================================ #
 # Link dependencies
-target_link_libraries(coom tpie)
+target_link_libraries(coom PRIVATE tpie)
 
 # ============================================================================ #
 # Setup as library
 
-target_include_directories(coom PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_include_directories(coom PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/..
+                                       ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 set_target_properties(coom PROPERTIES
   # Language settings
@@ -44,10 +46,15 @@ set_target_properties(coom PROPERTIES
   C_STANDARD_REQUIRED ON
   CXX_STANDARD 17
   CXX_STANDARD_REQUIRED ON
-)
+  CXX_VISIBILITY_PRESET hidden
 
-set_target_properties(coom PROPERTIES FOLDER coom)
-set_property(TARGET tpie PROPERTY POSITION_INDEPENDENT_CODE ON)
+  # Linkage?
+  FOLDER coom
+
+  # Other
+  VERSION ${PROJECT_VERSION}
+  POSITION_INDEPENDENT_CODE ON
+)
 
 install(TARGETS coom
         LIBRARY DESTINATION lib
