@@ -1,5 +1,5 @@
 #include <tpie/tpie.h>
-#include <restrict.cpp>
+#include <coom/restrict.cpp>
 
 using namespace coom;
 
