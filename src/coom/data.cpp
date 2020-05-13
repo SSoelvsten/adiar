@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <stdint.h>
 
+#include "data.h"
+
 namespace coom {
   /****************************************************************************/
   /*  CONSTANTS                                                               */
@@ -73,13 +75,6 @@ namespace coom {
   /****************************************************************************/
   /*  Node                                                                    */
   /****************************************************************************/
-  struct node
-  {
-    uint64_t node_ptr;
-    uint64_t low;
-    uint64_t high;
-  };
-
   inline node create_node(uint64_t label, uint64_t index, uint64_t low, uint64_t high)
   {
     return { create_node_ptr(label, index) , low, high };
@@ -118,13 +113,6 @@ namespace coom {
   /****************************************************************************/
   /*  ARC                                                                     */
   /****************************************************************************/
-  struct arc
-  {
-    uint64_t source;
-    bool is_high;
-    uint64_t target;
-  };
-
   inline arc create_arc(uint64_t source, bool is_high, uint64_t target)
   {
     return { source, is_high, target };

@@ -1,5 +1,5 @@
 #include <tpie/tpie.h>
-#include <evaluate.cpp>
+#include <coom/evaluate.cpp>
 
 using namespace coom;
 

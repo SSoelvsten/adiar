@@ -32,10 +32,20 @@ add_subdirectory (src)
 
 # ============================================================================ #
 # Test Files
-# ======================================2====================================== #
+# ============================================================================ #
 option(COMPILE_TEST "Build coom unit tests" ON)
 if (COMPILE_TEST)
   # enable_testing() # No need, as we use Bandit
   add_subdirectory (test)
 endif()
 
+# ============================================================================ #
+# As a library
+# ============================================================================ #
+install(DIRECTORY com
+        DESTINATION include
+        FILES_MATCHING REGEX "\\.h$|\\.inl$"
+        PATTERN "deadcode" EXCLUDE)
+
+install(DIRECTORY share/coom
+        DESTINATION share)

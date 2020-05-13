@@ -3,9 +3,9 @@
 using namespace snowhouse;
 using namespace bandit;
 
-#include "test_data.cpp"
 #include "test_tpie.cpp"
 
+#include "test_coom_data.cpp"
 #include "test_coom_evaluate.cpp"
 #include "test_coom_reduce.cpp"
 #include "test_coom_restrict.cpp"

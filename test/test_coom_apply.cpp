@@ -1,5 +1,5 @@
 #include <tpie/tpie.h>
-#include <apply.cpp>
+#include <coom/apply.cpp>
 
 using namespace coom;
 

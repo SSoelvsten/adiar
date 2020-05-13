@@ -1,5 +1,5 @@
 #include <tpie/tpie.h>
-#include <reduce.cpp>
+#include <coom/reduce.cpp>
 
 using namespace coom;
 

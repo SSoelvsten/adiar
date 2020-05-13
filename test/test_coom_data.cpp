@@ -3,7 +3,7 @@
 using namespace coom;
 
 go_bandit([]() {
-    describe("Node and arcs", []() {
+    describe("COOM: Node and arcs", []() {
 
         it("should store and retrieve value in Sink arcs", [&]() {
             auto arc = create_sink(true);
