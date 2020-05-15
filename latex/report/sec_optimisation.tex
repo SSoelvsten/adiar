@@ -119,6 +119,16 @@ preserved. That means, one can check whether an OBDD $G$ is unchanged after one
 or more manipulations by comparing it with the result $G'$ in a single linear
 scan, which only takes $O(N/B)$ I/Os.
 
+\todo[inline]{This is still too slow! In model checking, one wants to compute
+  the transitive closure by repeatedly applying \RelProd\ and checking whether
+  the output is unchanged. This check is in conventional OBDD libraries done in
+  $O(1)$ time with a mere pointer comparison.
+
+  \begin{center}
+    We should be able to do the same with taint tracking?
+  \end{center}
+}
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "main"
