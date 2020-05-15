@@ -241,7 +241,59 @@ go_bandit([]() {
 
             // For C++ a struct has to be word-aligned, which means the 1 bit
             // boolean field will have to take up a whole word (8b) instead.
+
+            // When we need to store more data in an edge we can do so without
+            // more bits by use of bit-magic, similar to the node_ptrs.
             AssertThat(sizeof(arc), Is().EqualTo(3*8));
+          });
+
+        it("should extract low arc from node", [&]() {
+            auto node = create_node(7,42,
+                                    create_node_ptr(8,21),
+                                    create_node_ptr(9,8));
+
+            auto arc = low_arc_of_node(node);
+
+            AssertThat(label_of(arc.source), Is().EqualTo(7));
+            AssertThat(id_of(arc.source), Is().EqualTo(42));
+            AssertThat(arc.is_high, Is().False());
+            AssertThat(label_of(arc.target), Is().EqualTo(8));
+            AssertThat(id_of(arc.target), Is().EqualTo(21));
+          });
+
+        it("should extract high arc from node", [&]() {
+            auto node = create_node(11,13,
+                                    create_node_ptr(8,21),
+                                    create_node_ptr(9,8));
+
+            auto arc = high_arc_of_node(node);
+
+            AssertThat(label_of(arc.source), Is().EqualTo(11));
+            AssertThat(id_of(arc.source), Is().EqualTo(13));
+            AssertThat(arc.is_high, Is().True());
+            AssertThat(label_of(arc.target), Is().EqualTo(9));
+            AssertThat(id_of(arc.target), Is().EqualTo(8));
+          });
+
+        it("should combine low and high arcs into single node", [&]() {
+            auto low_arc = create_arc(create_node_ptr(17,42),
+                                      false,
+                                      create_node_ptr(9,8));
+
+            auto high_arc = create_arc(create_node_ptr(17,42),
+                                      false,
+                                      create_node_ptr(8,21));
+
+            auto node = node_of_arcs(low_arc, high_arc);
+
+            AssertThat(label_of(node), Is().EqualTo(17));
+            AssertThat(id_of(node), Is().EqualTo(42));
+
+            AssertThat(label_of(node.low), Is().EqualTo(label_of(low_arc.target)));
+            AssertThat(id_of(node.low), Is().EqualTo(id_of(low_arc.target)));
+
+            AssertThat(label_of(node.high), Is().EqualTo(label_of(high_arc.target)));
+            AssertThat(id_of(node.high), Is().EqualTo(id_of(high_arc.target)));
           });
       });
   });

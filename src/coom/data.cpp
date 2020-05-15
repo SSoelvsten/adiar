@@ -143,6 +143,29 @@ namespace coom {
   {
     return !(a==b);
   }
+
+  /****************************************************************************/
+  /*  CONVERTERS                                                              */
+  /****************************************************************************/
+  inline arc low_arc_of_node(node& n)
+  {
+    return { n.node_ptr, false, n.low };
+  }
+
+  inline arc high_arc_of_node(node& n)
+  {
+    return { n.node_ptr, true, n.high };
+  }
+
+  inline node node_of_arcs(arc& low, arc& high)
+  {
+#if COOM_DEBUG
+    assert (low.source == high.source);
+    assert (low.is_high == false);
+    assert (high.is_high == true);
+#endif
+    return { low.source, low.target, high.target };
+  }
 }
 
 #endif // COOM_DATA_CPP
