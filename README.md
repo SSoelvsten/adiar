@@ -12,10 +12,10 @@ I/O complexity and performance of OBDD Manipulation.
 
 - [COOM: Cache-Oblivious OBDD Manipulation](#coom-cache-oblivious-obdd-manipulation)
     - [Introduction](#introduction)
-    - [LaTeX Report](#latex-report)
+    - [Documentation](#documentation)
     - [C++ implementation](#c-implementation)
         - [Dependencies](#dependencies)
-        - [Make](#make)
+        - [Building](#building)
     - [Future Work](#future-work)
         - [Integrate reduction into the other algorithms](#integrate-reduction-into-the-other-algorithms)
         - [Use non-comparison based sorting on numbers](#use-non-comparison-based-sorting-on-numbers)
@@ -47,10 +47,12 @@ Following up on Arge's work, we extend this approach to other core OBDD
 algorithms and implement it in C++ to benchmark the performance in practice
 compared to conventional recursive procedures.
 
-## LaTeX Report
-This folder contains LaTeX figures, listings and reports that describes the
-algorithm and on a more abstract level. The LaTeX projects have immediate
-dependencies to my [LaTeX preamble](https://github.com/SSoelvsten/LaTeX-Preamble_and_Examples), 
+## Documentation
+Documentation is provided as a technical report written in LaTeX. It provides
+figures, listings that describes the algorithm on an abstract level together
+with a description of and benchmarks of the implementation. The LaTeX projects
+have immediate dependencies to my
+[LaTeX preamble](https://github.com/SSoelvsten/LaTeX-Preamble_and_Examples),
 which is included as a submodule dependency.
 
 ## C++ implementation

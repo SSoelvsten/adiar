@@ -1,6 +1,7 @@
-# LaTeX
-To allow reusability and maintainability, then many parts of the source has been
-split into multiple files. The following are the different folders
+# Documentation
+The documentation is provided as a _LaTeX_ document. To allow reusability and
+maintainability, then many parts of the source has been split into multiple
+files. The following are the different folders
 
 - `listing/`: All _lstlisting_ code snippets
 - `tikz/`: All _tikz_ drawings
@@ -15,11 +16,11 @@ split into multiple files. The following are the different folders
     - [ ] vs. [Sylvan](https://github.com/utwente-fmt/sylvan)
 
 If the benchmarks seem promising and worth reporting, then the report will be
-reworked into one or more papers.
+reworked into one or more papers, which will be placed in a separate folder.
 
 ## Compilation
-Either compile the `main.tex` file or just use the provided `Makefile` with the
-`report` target.
+Either compile the `main.tex` of `report/` or just use the provided `Makefile`
+with the `report` target.
 
 ## Dependencies
 The main versions of all documents uses my preamble, which can be found [here](
