@@ -33,7 +33,7 @@
 
       // Resolve current node and recurse
       (v', low', high') := apply_node((v$_1$,v$_2$), (t$_1$,t$_2$), data, iO--, op)
-      
+
       if is_sink(low'):
         $\ReduceQdep$.insert(Edge{ source=v', is_high=False, target=low' })
       else:

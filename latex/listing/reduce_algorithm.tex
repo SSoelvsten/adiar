@@ -47,7 +47,7 @@
           Edge{ source, is_high, target } := $\ReduceLforward$[--iF]
 
     // Process the root
-    (_, t_low,  _) := $\ReduceQdep$.extract_max()
-    (_, t_high, _) := $\ReduceQdep$.extract_max()
-    output { label: v.label, index: iO, low: t_low, high: t_high }
+    (_, t_low,  _) := $\ReduceQdep$.extract_max().target
+    (_, t_high, _) := $\ReduceQdep$.extract_max().target
+    output { label: v.label, index: indexO, low: t_low, high: t_high }
 \end{blstlisting}

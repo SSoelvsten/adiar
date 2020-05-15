@@ -1,19 +1,17 @@
 \begin{blstlisting}
-  Restrict(G : Node[], A : (int, bool)[]) : Node[] + NodeArc.Sink
-    sort (l,v) in A *@by@* l
+  Restrict(G : Node[], A : int$\times$bool[]) : Node[] + NodeArc.Sink
     $\RestrictQrec$, $\ReduceQdep$ := $\emptyset$ : PriorityQueue<Edge>
     $\ReduceLforward$ := [] : Edge[]
     iA := 0
     (a_label, a_value) := A[iA]
 
     // Process the root and create initial recursion requests
-    v = G.V[G.V.length - 1]
+    v = G[G.length - 1]
     if a_label = v.label:
       rec_child := if a_value then v.high else v.low
+      if is_sink(rec_child): return NodeArc.Sink{ value: rec_child.value }
 
-      if is_sink(rec_child): return NodeArc.Sink{ value=v.high.value }
-      $\RestrictQrec$.insert(Edge{source=NIL, is_high=a_value, target=rec_child})
-
+      $\RestrictQrec$.insert(Edge{source: NIL, is_high: a_value, target: rec_child})
       (a_label, a_value) := A[++iA]
     else:
       (low_edge, high_edge) := edges_of_node(v)
@@ -28,7 +26,7 @@
     // Process all to-be-visited nodes in topological order
     while !$\RestrictQrec$.empty():
       Edge{ source, is_high, target } := $\RestrictQrec$.extract_min()
-      v := G.V[target.index]
+      v := G[target.index]
 
       // Skip to-be-substituted variables that we didn't see
       while iA < A.length $\land$ a_label < v.label:
@@ -37,7 +35,7 @@
       // Process node and forward information
       if a_label = label:
         rec_child := if a_value then v.high else v.low
-        request := Edge{ source, is_high=a_value, target=rec_child }
+        request := Edge{ source, is_high: a_value, target: rec_child }
 
         if is_sink(rec_child)
         then if source = NIL

@@ -1,5 +1,7 @@
 \begin{blstlisting}
-  reduce_layer(nodes: Node[]) : Node[]$\times$Node[]$\times$Node[]
+  type Node$^2$ = Node$\times$Node
+
+  reduce_layer(nodes: Node[]) : Node$^2$[]$\times$Node$^2$[]$\times$Node$^2$[]
     sort $w \in $ nodes by low first and high second
     O$_{\mathit{out}}$, O$_{\mathit{red:}1}$, O$_{\mathit{red:}2}$ = []
 
