@@ -45,10 +45,22 @@ multiple times.
 One should notice, that one does not need to concatenate and sort the three
 lists $L_{j,\mathit{out}}$, $L_{j,\mathit{red:}1}$, $L_{j,\mathit{red:}2}$ to
 create $L_{j:F}$, since one may instead merely sort the three lists and
-implicitly take \lstinline{(w,w',_)} from $L_{j:F}$ by picking the next eleement
+implicitly take \lstinline{(w,w')} from $L_{j:F}$ by picking the next element
 from either of the three lists, similarly to the classic \lstinline{merge}
 subprocedure of merge sort.
 
+\subsection{Omitting the index} \label{sec:optimisations__no_index}
+When one processes a large data set, then one inevitably will do so by
+processing a stream. This will then be with an iterator with which one may
+\emph{seek} forward or backwards through the stream. Due to the physical nature
+of harddisks, almost no time is lost due to this; the readhead still needs to
+move, the disk needs to spin, and the branch prediction is able to prefetch a
+lot of values.
+
+Since all \lstinline{Node}s and \lstinline{Edge}s are sorted with respect to a
+\lstinline{label} and \lstinline{id}, then the index itself is not needed to
+identify the needed value. Hence, to save space, we may choose to completely
+omit the index and instead only rely on the ordering.
 
 \subsection{Representation of nodes for faster sorting}
 Inspired by \cite{Dijk16} we propose to represent the \lstinline{NodeArc} type
@@ -59,14 +71,12 @@ significant bit, and all other bits set to $0$.\footnote{Notice, that we as such
   leave room for sinks taking on non-boolean values of up to $2^{63}$ bits.} A
 \lstinline{NodeArc.Link} has a $0$-flag on the most significant bit, the next
 $k$-bits dedicated to the \lstinline{label}, and finally the $63-k$ least
-significant bits contain the \lstinline{value}. A reasonable value for $k$ is
-$21$, since this supports an OBDD of up to $2^k = 2^{21} \approx 2 \cdot 10^7$
-variables and of size up to $2^{63-k} = 2^{42} \approx 4.45 \cdot 10^{12}$
-nodes.
+significant bits contain the \lstinline{id}.
 
-\todo[inline]{Intermediate results may be larger than $10^{12}$ nodes. This can
-  stay within this setup by resetting the ``index'' for each layer. This
-  preserves the ordering.}
+A \lstinline{Node} can then be represented by $3$ $64$-bit numbers:
+Two $64$-bit integers for each child and another $64$ bits for the
+\lstinline{label} and \lstinline{index} of the node itself with the same layout
+as for \lstinline{NodeArc.Link}.
 
 \begin{figure}[ht!]
   \centering
@@ -88,21 +98,28 @@ nodes.
   \label{fig:data}
 \end{figure}
 
-A \lstinline{Node} can then be represented by $3$ $64$-bit numbers: Two $64$-bit
-integers for each child and another $64$ bits for the \lstinline{label} and
-\lstinline{index} of the node itself with the same layout as for
-\lstinline{NodeArc.Link}.
+Reexamining the algorithms above, one will notice that only the combination of
+\lstinline{label} and \lstinline{id} has to be unique, not \lstinline{id} by
+itself. Hence, \lstinline{id} may be reset for each layer, thereby enlarging the
+possible size of each layer and with it the total number of nodes in the graph.
+A reasonable value for $k$ is $28$, since this supports OBDDs of up to $2.6
+\cdot 10^8$ variables, $3.4 \cdot 10^{10}$ nodes per layer for a total
+$2^{63}$ nodes in the OBDD.
 
-One should notice, that the sorting in the previous section with this layout is
-a trivial sorting on $64$-bit numbers. In the case of the bottom-up sweep
-algorithm, the sorting is in descending order, while the top-down sweep
-algorithms use a sorting in ascending order. Tuples $(t_1,t_2)$ in \Apply\ and
-\Equal\ are then $64$-bit numbers $\min(t_1,t_2)$ when \lstinline{data} is not
-present. Since \lstinline{data} is only present for pairs of nodes with the same
-\lstinline{label}, then the number to sort by simply becomes $\max(t_1,t_2)$.
-Whether it is faster to repeatedly compute $\min$ and $\max$ during sorting, or
-precompute it at insertion time at the cost of increasing the size of each
-element by another $64$-bits, is worth experimental investigation.
+One should notice, that the sorting in the previous section with this layout in
+a single number is now reduced to a mere trivial sorting on $64$-bit numbers. In
+the case of the bottom-up sweep algorithm, the sorting is in descending order,
+while the top-down sweep algorithms is in ascending order. Tuples $(t_1,t_2)$ in
+\Apply\ and \Isomorphic\ are then $64$-bit numbers $\min(t_1,t_2)$ when
+\lstinline{data} is not present. Since \lstinline{data} is only present for
+pairs of nodes with the same \lstinline{label}, then the number to sort by
+simply becomes $\max(t_1,t_2)$. Whether it is faster to repeatedly compute
+$\min$ and $\max$ during sorting, or precompute it at insertion time at the cost
+of increasing the size of each element by another $64$-bits, is worth
+experimental investigation.
+
+\todo[inline]{Experimentally settle whether one should precompute for the
+  sorting algorithm or instead save space usage.}
 
 The representation of variables \lstinline{Node} and \lstinline{NodeArc} as a
 single $64$-bit integers does result in having to do bit shifts and bit masking

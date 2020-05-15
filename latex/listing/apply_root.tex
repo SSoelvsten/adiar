@@ -7,7 +7,7 @@
                                        | > => (v$_1$, v$_2$.high)
                                        | = => (v$_1$.high, v$_2$.high)
 
-    root' := Link{ index=0, label=min(t$_1$.label = t$_2$.label) }
+    root' := Link{ index: 0, id: 0, label=min(t$_1$.label = t$_2$.label) }
 
     return (root', low', high')
 \end{blstlisting}

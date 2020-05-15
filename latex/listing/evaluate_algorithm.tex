@@ -4,9 +4,9 @@
 
     while True:
       if x[node.label]:
-        case v.high of Sink{ value }        => return value
-                     | Link{ index, label } => v := G.V[index]
+        case v.high of Sink{value}            => return value
+                     | Link{index, id, label} => v := G.V[index]
       else:
-        case v.low of Sink{ value }         => return value
-                    | Link{ index, label }  => v := G.V[index]
+        case v.low of Sink{value}             => return value
+                    | Link{index, id, label}  => v := G.V[index]
 \end{blstlisting}

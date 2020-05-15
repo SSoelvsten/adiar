@@ -1,6 +1,11 @@
 \begin{blstlisting}[language=pseudo, numbers=none]
-  Type NodeArc = Sink of { value: bool }
-               | Link of { index: int, label: int }
+  Type NodeArc = Sink of { value : bool }
+               | Link of { index : int, id : int, label : int }
 
-  Struct Node { index: int, label: int, low: NodeArc, high: NodeArc }
+  Struct Node {
+    id    : int,
+    label : int,
+    low   : NodeArc,
+    high  : NodeArc
+  }
 \end{blstlisting}

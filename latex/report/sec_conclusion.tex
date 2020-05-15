@@ -9,26 +9,29 @@ OBDD algorithms. Since none of these algorithms use the block size $B$ or the
 memory size $M$, then the I/O optimal sorting algorithm and priority queue can
 be replaced for a Cache-oblivious or Cache-aware implementation to immediately
 yield an optimal algorithm of both types. The I/O and time complexity of these
-algorithms are summarised in Table~\ref{tab:summary_efficiency}.
+algorithms are summarised in Table~\ref{tab:summary_efficiency}.\footnote{The
+  $O(\min(n, N/B))$ in the \Evaluate\ bound is simplified to $O(N/B)$ due to
+  section \ref{sec:optimisations__no_index}}
 
 \begin{table}[ht!]
   \centering
-  \begin{tabular}{c | c | c}
-    \emph{Algorithm} & \emph{I/O complexity} & \emph{Time complexity}
-    \\ \hline
-    \Evaluate & $O(\min(n, N/B))$ & $O(n)$
+  \begin{tabular}{c | c}
+    \emph{Algorithm} & \emph{I/O complexity}
+    \\ \hline \hline
+    \Evaluate & $O(N/B)$
     \\
-    \Reduce & $O(\sort(N))$ & --
+    \Reduce & $O(\sort(N))$
     \\
-    \Restrict & $O(\sort(N))$ & --
+    \Restrict & $O(\sort(N))$
     \\
-    \Apply & $O(\sort(N_1 N_2))$ & --
+    \Apply & $O(\sort(N_1 N_2))$
     \\
-    \Isomorphic & $O(\sort(N_1 N_2))$ & --
+    \Isomorphic & $O(\sort(\min(N_1, N_2)))$
     \\
   \end{tabular}
-  \caption{The worst-case I/O and time complexity of the proposed algorithms.
-    $N$ is the number of nodes in an OBDD while $n$ is the number of variables}
+  \caption{The worst-case I/O complexity of the proposed algorithms. $N$ is the
+    number of nodes in an OBDD while $n$ is the number of variables. The time
+    bounds are equivalent.}
   \label{tab:summary_efficiency}
 \end{table}
 

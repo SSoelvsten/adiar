@@ -1,10 +1,7 @@
 \begin{blstlisting}
   Reduce($\ReduceLforward$: Edge[], $\ReduceQdep$: PriorityQueue<Edge>): Node[]
-    // Index of next output in stream
-    iO = 0
-
-    // Index into *@\color{cGray} $\ReduceLforward$@*
-    iF := $\ReduceLforward$.length - 1
+    indexO = 0; idO = MAX    // Index and id of next output
+    iF := $\ReduceLforward$.length - 1         // Index into *@\color{cGray} $\ReduceLforward$@*
 
     // Process bottom-up each layer except for the root-layer
     for j := n-1 downto 2:
@@ -25,7 +22,7 @@
       //   nodes in $\color{cGray}L_{j,\mathit{red:}2}$ are still sorted by their children.
       iR2 = 0
       for (w,w') in $L_{j,\mathit{out}}$:
-        w'.index := iO++
+        w'.index := indexO++; w'.id := idO--
         output w'
 
         while iR2 < $L_{j,\mathit{red:}2}$.length $\land$ $L_{j,\mathit{red:}2}$[iR2].low = w'.low
