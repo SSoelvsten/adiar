@@ -4,7 +4,6 @@ using namespace coom;
 
 go_bandit([]() {
     describe("COOM: Node and arcs", []() {
-
         it("should store and retrieve value in Sink arcs", [&]() {
             auto arc = create_sink(true);
             AssertThat(value_of(arc), Is().True());
@@ -21,17 +20,17 @@ go_bandit([]() {
             AssertThat(label_of(arc), Is().EqualTo(21));
           });
 
-        it("should store and retrieve index in Node Ptr", [&]() {
+        it("should store and retrieve id in Node Ptr", [&]() {
             auto arc = create_node_ptr(2,42);
-            AssertThat(index_of(arc), Is().EqualTo(42));
+            AssertThat(id_of(arc), Is().EqualTo(42));
 
             arc = create_node_ptr(2,21);
-            AssertThat(index_of(arc), Is().EqualTo(21));
+            AssertThat(id_of(arc), Is().EqualTo(21));
           });
 
         it("should sort Sink arcs after Node Ptr", [&]() {
             // Create a node arc with the highest possible raw value
-            auto arc_node = create_node_ptr(MAX_LABEL,MAX_INDEX);
+            auto arc_node = create_node_ptr(MAX_LABEL,MAX_ID);
 
             // Create a sink arc with the lowest raw value
             auto arc_sink = create_sink(false);
@@ -48,7 +47,7 @@ go_bandit([]() {
           });
 
         it("should not recognise Node Ptr as Sinks", [&]() {
-            auto arc_node_max = create_node_ptr(MAX_LABEL,MAX_INDEX);
+            auto arc_node_max = create_node_ptr(MAX_LABEL,MAX_ID);
             AssertThat(is_sink(arc_node_max), Is().False());
 
             auto arc_node_min = create_node_ptr(0,0);
@@ -63,7 +62,7 @@ go_bandit([]() {
           });
 
         it("should recognise Node Ptr as such", [&]() {
-            auto arc_node_max = create_node_ptr(MAX_LABEL,MAX_INDEX);
+            auto arc_node_max = create_node_ptr(MAX_LABEL,MAX_ID);
             AssertThat(is_node_ptr(arc_node_max), Is().True());
 
             auto arc_node_min = create_node_ptr(0,0);
@@ -85,7 +84,7 @@ go_bandit([]() {
             AssertThat(is_node_ptr(sink_t), Is().False());
           });
 
-        it("should sort Node Ptr by label, then by index", [&]() {
+        it("should sort Node Ptr by label, then by id", [&]() {
             auto node_1_2 = create_node_ptr(1,2);
             auto node_2_1 = create_node_ptr(2,1);
             auto node_2_2 = create_node_ptr(2,2);
@@ -124,7 +123,7 @@ go_bandit([]() {
             AssertThat(node_1 != node_4, Is().True());
           });
 
-        it("should sort Node by label, then by index", [&]() {
+        it("should sort Node by label, then by id", [&]() {
             auto sink_f = create_sink (false);
             auto sink_t = create_sink (true);
 

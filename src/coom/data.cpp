@@ -10,10 +10,10 @@ namespace coom {
   /****************************************************************************/
   /*  CONSTANTS                                                               */
   /****************************************************************************/
-  const uint8_t  INDEX_BITS = 42;
-  const uint8_t  LABEL_BITS = 64 - 1 - INDEX_BITS;
+  const uint8_t  ID_BITS = 42;
+  const uint8_t  LABEL_BITS = 64 - 1 - ID_BITS;
 
-  const uint64_t MAX_INDEX  = (1ull << INDEX_BITS) - 1;
+  const uint64_t MAX_ID  = (1ull << ID_BITS) - 1;
   const uint64_t MAX_LABEL  = (1ull << LABEL_BITS) - 1;
 
   /****************************************************************************/
@@ -29,24 +29,24 @@ namespace coom {
   /****************************************************************************/
   /*  NODE PTR                                                                */
   /****************************************************************************/
-  inline uint64_t create_node_ptr(uint64_t label, uint64_t index)
+  inline uint64_t create_node_ptr(uint64_t label, uint64_t id)
   {
 #if COOM_DEBUG
     assert (label < MAX_LABEL);
-    assert (index < MAX_INDEX);
+    assert (id < MAX_ID);
 #endif
 
-    return (label << INDEX_BITS) + index;
+    return (label << ID_BITS) + id;
   }
 
   inline uint64_t label_of(uint64_t n)
   {
-    return (n >> INDEX_BITS);
+    return (n >> ID_BITS);
   }
 
-  inline uint64_t index_of(uint64_t n)
+  inline uint64_t id_of(uint64_t n)
   {
-    return n & ((1ull << INDEX_BITS) - 1);
+    return n & ((1ull << ID_BITS) - 1);
   }
 
   inline bool is_node_ptr(uint64_t n)
@@ -73,16 +73,16 @@ namespace coom {
   }
 
   /****************************************************************************/
-  /*  Node                                                                    */
+  /*  NODE                                                                    */
   /****************************************************************************/
-  inline node create_node(uint64_t label, uint64_t index, uint64_t low, uint64_t high)
+  inline node create_node(uint64_t label, uint64_t id, uint64_t low, uint64_t high)
   {
-    return { create_node_ptr(label, index) , low, high };
+    return { create_node_ptr(label, id) , low, high };
   }
 
-  inline uint64_t index_of(node n)
+  inline uint64_t id_of(node n)
   {
-    return index_of(n.node_ptr);
+    return id_of(n.node_ptr);
   }
 
   inline uint64_t label_of(node n)
