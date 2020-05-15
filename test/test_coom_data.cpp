@@ -4,6 +4,11 @@ using namespace coom;
 
 go_bandit([]() {
     describe("COOM: Node and arcs", []() {
+        it("should recognise Nil", [&]() {
+            auto some_value = NIL;
+            AssertThat(is_nil(some_value), Is().True());
+          });
+
         it("should store and retrieve value in Sink arcs", [&]() {
             auto arc = create_sink(true);
             AssertThat(value_of(arc), Is().True());
