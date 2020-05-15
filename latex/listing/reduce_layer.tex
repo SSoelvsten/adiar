@@ -17,14 +17,14 @@
           high: w.high
         }
 
-        O$_{\mathit{out}}$.append(w,w',w.index)
+        O$_{\mathit{out}}$.append(w,w')
         i++
 
         // Reduction rule 2:
         while i < data.length:
           o = data[i]
           if w.low = o.low $\land$ w.high = o.high:
-            O$_{\mathit{red:}2}$.append((o,w',w.index))
+            O$_{\mathit{red:}2}$.append((o,w'))
             i++
           else break
 

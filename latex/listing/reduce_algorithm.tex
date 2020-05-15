@@ -20,24 +20,24 @@
       // Apply reduction rules
       ($L_{j,\mathit{out}}$, $L_{j,\mathit{red:}1}$, $L_{j,\mathit{red:}2}$) = reduce_layer($L_{j}$)
 
-      // Notice, to-be outputted nodes in $\color{cGray}L_{j,\mathit{out}}$ and rule-2-reduced
-      // nodes in $\color{cGray}L_{j,\mathit{red:}2}$ are already sorted in decreasing
-      // order according to i.
-
+      // Add index and id to output and its related reduced nodes
+      //   Notice, to-be outputted nodes in $\color{cGray}L_{j,\mathit{out}}$ and rule-2-reduced
+      //   nodes in $\color{cGray}L_{j,\mathit{red:}2}$ are still sorted by their children.
       iR2 = 0
-      for (w,w',i) in $L_{j,\mathit{out}}$:
+      for (w,w') in $L_{j,\mathit{out}}$:
         w'.index := iO++
         output w'
 
-        while iR2 < $L_{j,\mathit{red:}2}$.length $\land$ $L_{j,\mathit{red:}2}$[iR2] is (_,_,i):
+        while iR2 < $L_{j,\mathit{red:}2}$.length $\land$ $L_{j,\mathit{red:}2}$[iR2].low = w'.low
+                                 $\land$ $L_{j,\mathit{red:}2}$[iR2].high = w'.high
           $L_{j,\mathit{red:}2}$[iR2++][1].index := w'.index
 
       // Forward processing information to layers j-1 .. 1
       $L_{j:F}$ := $L_{j,\mathit{out}}$ ++ $L_{j,\mathit{red:}1}$ ++ $L_{j,\mathit{red:}2}$
-      sort (w,w',i) in $L_{j:F}$ by w.index
+      sort (w,w') in $L_{j:F}$ by w.index
 
       Edge{ source, is_high, target } := $\ReduceLforward$[iF]
-      for (w,w',_) in $L_{j:F}$:
+      for (w,w') in $L_{j:F}$:
         while target = w:
           $\ReduceQdep$.insert({
             source=source,
