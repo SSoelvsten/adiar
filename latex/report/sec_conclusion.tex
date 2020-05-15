@@ -53,15 +53,6 @@ the bottleneck of the algorithm.
 %     lead to a speedup by pipelining the execution of all these algorithms!
 % - Complement edges to minimise the size of the OBBD
 
-These algorithms make use of multiple $O(N)$ sized lists and priority queues,
-which may result in a linear increase of the space used compared to other
-algorithms. Furthermore, the algorithms \Restrict\ and \Apply\ make use of a
-subsequent separate \Reduce\ algorithm. For the \Apply\ algorithm, this may
-result in a massive increase of the intermediate result to be reduced.  We
-leave for a later practical implementation the question of whether this increase
-in space usage and separation of algorithms to guarantee I/O efficiency is worth
-it.
-
 
 %%% Local Variables:
 %%% mode: latex
