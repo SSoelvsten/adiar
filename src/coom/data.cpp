@@ -51,7 +51,7 @@ namespace coom {
 
   inline bool is_node_ptr(uint64_t n)
   {
-    return is_nil(n) || (n < (1ull << 63));
+    return n < (1ull << 63);
   }
 
   /****************************************************************************/

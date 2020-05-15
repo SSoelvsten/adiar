@@ -72,8 +72,8 @@ go_bandit([]() {
             AssertThat(is_node_ptr(arc_node), Is().True());
           });
 
-        it("should recognise Nil as Node Ptr", [&]() {
-            AssertThat(is_node_ptr(NIL), Is().True());
+        it("should distinguish Nil from Node Ptr", [&]() {
+            AssertThat(is_node_ptr(NIL), Is().False());
           });
 
         it("should not recognise Sinks as Node Ptr", [&]() {
