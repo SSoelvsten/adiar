@@ -4,7 +4,11 @@
     iF := $\ReduceLforward$.length - 1         // Index into *@\color{cGray} $\ReduceLforward$@*
 
     // Process bottom-up each layer except for the root-layer
-    for j := n-1 downto 2:
+    for j := n-1 downto 1:
+      // No nodes left to process or no nodes with this label?
+      if $\ReduceQdep$.empty() $\lor$ $\ReduceQdep$.peek().label <> j:
+        continue
+
       $L_{j}$ := []
 
       // Merge nodes of layer j with result of prior computations
@@ -42,9 +46,4 @@
             target=nodearc_of_node(w')
           })
           Edge{ source, is_high, target } := $\ReduceLforward$[--iF]
-
-    // Process the root
-    (_, t_low,  _) := $\ReduceQdep$.extract_max().target
-    (_, t_high, _) := $\ReduceQdep$.extract_max().target
-    output { label: v.label, index: indexO, low: t_low, high: t_high }
 \end{blstlisting}
