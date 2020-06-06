@@ -27,8 +27,9 @@ to their \lstinline{source}. Hence, one can instead prepopulate a list
 $L_{\mathit{Red:}Sinks}$, from which the sink dependencies are retrieved rather
 than from \ReduceQdep.
 
-\todo[inline]{Experimentally settle the ratio of sinks relative to $N$ to
-  discern the possible speedup.}
+\todo[inline, caption={Experiment: ratio of sink-arcs}]
+{Experimentally settle the ratio of sinks relative to $N$ to discern the
+  possible speedup.}
 
 \subsubsection{Early application of the first reduction rule}
 At the time of extracting the dependencies \lstinline{e_low} and
@@ -39,7 +40,8 @@ $L_{j:\mathit{red}:1}$ instead of extracting it later in
 \lstinline{reduce_layer}. This will save one from having to scan those elements
 multiple times.
 
-\todo[inline]{Experimentally settle a value the number of rule-1 reduced nodes.}
+\todo[inline, caption={Experiment: ratio of rule-1 reduced}]
+{Experimentally settle a value the number of rule-1 reduced nodes.}
 
 \subsubsection{Implicit merge of the reduction lists}
 One should notice, that one does not need to concatenate and sort the three
@@ -118,8 +120,9 @@ $\min$ and $\max$ during sorting, or precompute it at insertion time at the cost
 of increasing the size of each element by another $64$-bits, is worth
 experimental investigation.
 
-\todo[inline]{Experimentally settle whether one should precompute for the
-  sorting algorithm or instead save space usage.}
+\todo[inline, caption={Experiment: Precompute sorting number}]
+{Experimentally settle whether one should precompute for the sorting algorithm
+  or instead save space usage.}
 
 The representation of variables \lstinline{Node} and \lstinline{NodeArc} as a
 single $64$-bit integers does result in having to do bit shifts and bit masking
@@ -136,11 +139,11 @@ preserved. That means, one can check whether an OBDD $G$ is unchanged after one
 or more manipulations by comparing it with the result $G'$ in a single linear
 scan, which only takes $O(N/B)$ I/Os.
 
-\todo[inline]{This is still too slow! In model checking, one wants to compute
-  the transitive closure by repeatedly applying \RelProd\ and checking whether
-  the output is unchanged. This check is in conventional OBDD libraries done in
-  $O(1)$ time with a mere pointer comparison.
-
+\todo[inline, caption={Algorithm: $O(1)$ time change checking}]
+{This is still too slow! In model checking, one wants to compute the transitive
+  closure by repeatedly applying \RelProd\ and checking whether the output is
+  unchanged. This check is in conventional OBDD libraries done in $O(1)$ time
+  with a mere pointer comparison.
   \begin{center}
     We should be able to do the same with taint tracking?
   \end{center}

@@ -4,42 +4,38 @@
 \section{Preliminaries} \label{sec:preliminaries}
 
 \subsection{The I/O Model}
-Model and sorting bound... \cite{Aggarwal87}
+\todo[inline, caption={Preliminary: The I/O Model}]
+{Model and sorting bound... \cite{Aggarwal87}}
 
-\begin{table}[ht!]
-  \centering
-  
-  \begin{tabular}{c|c|c}
-           & time         & I/O
-    \\ \hline
-    Linear & $N$          & $N/B$
-    \\
-    Sort   & $N \log_2 N$ & $\tfrac{N}{B} \cdot \log_{M/B} \tfrac{N}{B}$
-  \end{tabular}
-  
-  \caption{Comparison of common time bounds and their respective I/O bounds}
-  \label{tab:time_vs_io}
-\end{table}
+\begin{equation*}
+  \underbrace{N/B}_{\text{linear}}
+  <
+  \underbrace{N/B \log_{M/B} N/B}_{\text{sorting bound}}
+  \ll
+  N
+\end{equation*}
 
-Priority Queues... \cite{Arge04}
+
+\todo[inline, caption={Preliminary: Priority Queues}]
+{Priority Queues... \cite{Arge04}}
 
 \subsubsection{Cache-oblivious Algorithms}
-Tall cache assumption ...
-
-Priority Queues... \cite{Arge07, Sanders2001}
+\todo[inline, caption={Preliminary: Cache-oblivious Algorithms}]
+{Definition of cache-oblivious algorithms and the tall cache assumption.
+  \cite{Arge04}. Priority Queues are possible \cite{Arge07, Sanders2001}.}
 
 \subsection{Ordered Boolean Decision Diagrams}
-Definition and recursive solution with memoization table \cite{Bryant86,
-  Brace90, Dijk16}.
-
-Reduced OBBD's \cite[Definition2]{Bryant86}
-
-Complementary edges \cite{Brace90}
-
-Use of memoization table and motivation for I/O efficiency \todocite
-
+\todo[inline, caption={Preliminary: OBBDs}]
+{Definition and recursive solution with memoization table \cite{Bryant86,
+    Brace90, Dijk16}. Reduced OBBD's \cite[Definition2]{Bryant86}. Complementary
+  edges \cite{Brace90}. Use of memoization table and motivation for I/O
+  efficiency \cite{Brace90, Dijk16}.}
 
 \subsubsection{I/O Bounds of OBDDs}
+\todo[inline, caption={Preliminary: I/O OBBD Memoization issues}]
+{Using a memoization table inherently will result in a lot of cache misses, when
+the forest becomes large enough.}
+
 \begin{theorem}[\cite{Arge96}] \label{thm:reduce_io_lower_bound}
 
   Reduction of an OBBD $G$ with minimal pair, level, depth first or breadth
