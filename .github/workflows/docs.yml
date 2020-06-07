@@ -1,0 +1,41 @@
+name: docs
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:      
+  build_report:
+    name: Build report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - uses: xu-cheng/latex-action@master
+        name: Compile Report
+        with:
+          root_file: main.tex
+          working_directory: docs/report/
+
+      - uses: actions/upload-artifact@v1
+        name: Upload artifact
+        with:
+          name: docs
+          path: docs/report/main.pdf
+
+  clean_artifacts:
+    name: Clean up artifacts
+    runs-on: ubuntu-latest
+    needs: build_report
+
+    steps:
+    - name: Remove older artifacts
+      uses: c-hive/gha-remove-artifacts@v1
+      with:
+        age: '1 second'
+        skip-tags: true
+        skip-recent: 1
