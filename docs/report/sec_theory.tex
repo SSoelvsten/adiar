@@ -65,7 +65,7 @@ in our description of them. \cite{Arge96}
 Arge~\cite{Arge96} suggests to further exploit the above by rather representing
 the OBDD by its edges, rather than its nodes. Since \lstinline{NodeArc} contains
 all the identifying information of a \lstinline{Node}, then this leads to a
-representation as a list of \lstinline{Edge}s as in Code~\ref{lst:data_edge}.
+representation as a list of \lstinline{Edges} as in Code~\ref{lst:data_edge}.
 The \Evaluate\ algorithm above still works by finding the out-going arcs of node
 $i$ at indices $2i$ and $2i+1$. In fact, all node-based algorithms below may as
 well be done on the edge-based representation.
@@ -80,7 +80,7 @@ well be done on the edge-based representation.
 \end{lstfloat}
 
 One should note, that a single \lstinline{Node} when represented as two
-\lstinline{Edge}s now takes up at least $4/3$ as much space as before, since the
+\lstinline{Edges} now takes up at least $4/3$ as much space as before, since the
 \lstinline{source} has to be stored for both edges. In fact nothing is gained
 when the edges are in topological order. On the other hand, reverse topological
 order is obtained merely by sorting the list of edges by \lstinline{target}.
@@ -95,14 +95,14 @@ least a third.
 The \Reduce\ algorithm makes use of the following two data structures:
 
 \begin{itemize}
-\item The input list \ReduceLforward\ of \lstinline{Edge}s sorted in increasing
+\item The input list \ReduceLforward\ of \lstinline{Edges} sorted in increasing
   order with respect to \lstinline{target}. This provides a work-order to
   processing the nodes in reverse topological order for the reduction by
   traversing the list backwards. Furthermore, this also directly provides which
   nodes \lstinline{s} depend on the computation result \lstinline{t'} of a node
   \lstinline{t}.
 
-\item The priority queue \ReduceQdep\ of \lstinline{Edge}s sorted with
+\item The priority queue \ReduceQdep\ of \lstinline{Edges} sorted with
   respect to \lstinline{source} and secondly by \lstinline{is_high}.
 
   This priority queue is used to forward the result \lstinline{t'} of processing
@@ -172,7 +172,7 @@ Before we present the \Apply\ algorithm we present the simpler top-down
 algorithm \Restrict, which task as input
 
 \begin{itemize}
-\item The input list \lstinline{G} of \lstinline{Node}s in reverse topological
+\item The input list \lstinline{G} of \lstinline{Nodes} in reverse topological
   order, i.e. sorted in decreasing order to \lstinline{label} and then
   \lstinline{id}. The root is then at the very end, and the next node to be
   processed can be found by seeking backwards.
@@ -183,7 +183,7 @@ algorithm \Restrict, which task as input
 \end{itemize}
 from which the graph \lstinline{G}$_{| x_i = v_i ,\ \forall (x_i,v_i) \in A}$
 will be computed and then reduced by a succeeding use of \Reduce. Internally
-this uses the priority queue \RestrictQrec\ of \lstinline{Edge}s sorted with
+this uses the priority queue \RestrictQrec\ of \lstinline{Edges} sorted with
 respect to \lstinline{target} only. These edges in the priority queue are used
 to forward recursion requests from \lstinline{source} to non-sink children
 \lstinline{target} along a $b$-arc.
@@ -220,7 +220,7 @@ N)$ time.
 The \Apply\ algorithm computes the to-be reduced combined OBDD given the input
 \begin{itemize}
 \item The input lists \lstinline{G}$_1$ and \lstinline{G}$_2$ of
-  \lstinline{Node}s to be combined, sorted in decreasing order by
+  \lstinline{Nodes} to be combined, sorted in decreasing order by
   \lstinline{label} and then \lstinline{id}.
 
 \item A binary operator \lstinline{op} to obtain the resulting sink of two sinks
