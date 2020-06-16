@@ -50,6 +50,15 @@ implicitly take \lstinline{(w,w')} from $L_{j:F}$ by picking the next element
 from either of the three lists, similarly to the classic \lstinline{merge}
 subprocedure of merge sort.
 
+\subsection{Exists}
+\todo[inline, caption={Algorithm: Reduce optimisations that apply to Exists}]
+{ There are quite a few optimisations from Reduce that apply, remember to list
+  them. }
+
+\todo[inline, caption={Algorithm: Process multiple layers in Exists}]
+{ As long as there are no edges between nodes of a layer, then they are
+  independent and one can even process all these layers in bulk. }
+
 \subsection{Omitting the index} \label{sec:optimisations__no_index}
 When one processes a large data set, then one inevitably will do so by
 processing a stream. This will then be with an iterator with which one may

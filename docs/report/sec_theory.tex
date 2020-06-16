@@ -325,7 +325,6 @@ the \Apply\ algorithm as presented in Code~\ref{lst:apply_algorithm}.
   \label{lst:apply_algorithm}
 \end{lstfloat}
 
-\clearpage
 Let $N_1$ and $N_2$ be the respective sizes of $G_1$ and $G_2$. By the nature of
 how both lists are scanned, then only $O(N_1 + N_2)$ I/Os are spent on scanning
 the nodes. There is at most $N_1 \cdot N_2$ many nodes being outputted,
@@ -337,6 +336,7 @@ inserted and retrieved from \ApplyQrec\ which requires $O(\sort(N_1 N_2))$ I/Os.
 By the same account the algorithm also spends $O(N_1 N_2 \cdot \log_2 (N_1 N_2))$
 time for computation. \cite{Arge96}
 
+\clearpage
 \subsection{Isomorphism} \label{sec:theory__equal}
 Two reduced OBDDs represent the same boolean function if and only if they are
 isomorphic \cite[Theorem 1]{Bryant86}. Hence, no two reduced OBDDs with
@@ -354,15 +354,117 @@ OBDDs. Since the algorithms terminates on the first violation, the space and
 time usage reduces to $O(\sort(\min(N_1, N_2)))$ I/O and time complexity.
 
 \subsection{Exists} \label{sec:theory__exists}
-\todo[inline, caption={Algorithm: Exists}]{
-  Can this algorithm be translated in a way, that is not just naively recreating
-  the recursive algorithm within the tree traversal?
-}
+
+Following up on the design of \Restrict\ and \Apply\ above, one may think to
+implement an \Exists\ algorithm by a single sweep down and then reduce in a single
+sweep back up again. On the down sweep, in an unquantified layer one follows
+both outgoing arcs of the current node. A node \lstinline{v} on a quantified
+layer is skipped to instead connect \lstinline{v}'s parents with the \emph{or}
+of it's two children \lstinline{v.low} and \lstinline{v.high}. As such, this
+idea is sound, but one runs into the issue of the possible exponential increase
+in the OBDD; at each quantified layer a single arc is the composition of two.
+For $n'$ many variables to quantify, one will have to maintain request of up to
+$2^{n'}$ nodes each. \todo[inline, caption={Algorithm: Exists in a single
+  sweep?}]{ Can you bridge the exponential nature somehow into a separate
+  counter or id to restrict yourself to a constant number of nodes? What if you
+  initially keep the to-be quantified nodes? }
+
+Instead we will process the resulting OBDD bottom-up while maintaining the
+intermediate result of all the processed layers beneath the current. When a node
+\lstinline{v} in a layer has to be quantified, then the disjunction of their
+children is computed in a subprocedure similar to \Apply\ that goes back down
+again in the intermediate result to compute the new nodes needed. For this, we
+will make use of the following data structures.
+
+\begin{itemize}
+\item The input list \lstinline{G} of \lstinline{Nodes} sorted in reverse
+  topological order, i.e. in decreasing order by \lstinline{label} and then by
+  \lstinline{id}.
+
+\item The input list \lstinline{V} of to-be quantified variable
+  \lstinline{labels}, also sorted in reverse.
+
+\item The list \ExistsLforward\ of non-sink \lstinline{Edges} in \lstinline{G}
+  sorted in decreasing order by their target. Similar to \ReduceLforward\ this
+  provides a work-order of nodes in reverse topological order and together with
+  where information has to be forwarded.
+
+\item The priority queue \ExistsQdep\ with \lstinline{Edges} sorted with respect
+  to their \lstinline{source} and secondly by \lstinline{is_high}. This again is
+  used similar to the priority queue \ReduceQdep.
+
+\item The list \ExistsLres\ of nodes sorted in reverse topological order. This
+  will contain the intermediate reduced partial result of layers beneath the
+  currently processed.
+\end{itemize}
+
+The \Exists\ algorithm proceeds by processing nodes layer-by-layer. If the layer
+is not to be quantified, then the layer merely needs to be reduced based on the
+result of the layers below. The reduced nodes are then placed in \ExistsLres.
+When a layer has to be quantified, then one of the following cases apply to a
+node \lstinline{v} in the layer
+
+\begin{enumerate}
+\item A child of \lstinline{v} is a sink with its \lstinline{value} being
+  \lstinline{True}. The disjunction of its children would be the same and this
+  sink may be directly forwarded to any dependencies on \lstinline{v}.
+
+\item Similarly, for a sink-child with its \lstinline{value} being
+  \lstinline{False}, then one may merely forward the other child.
+
+\item Otherwise, the or of \lstinline{v.low} and \lstinline{v.high} has
+  to be processed. This would require new nodes in the layers below, which
+  then have to be reprocessed.
+\end{enumerate}
+
+While traversing the layer and gathering the results of computation one can
+identify which case of the above that applies. Since all nodes on the same layer
+are independent, one may postpone processing the \emph{or} of their children
+until one can do them all at once.
+
+Reprocessing all layers below is then done with a modified version of \Apply\ on
+the list \ExistsLres. The algorithm \lstinline{exists_or} differs from \Apply\
+that it is optimised for the disjunction on a single OBDD, allows multiple
+initial requests to be provided with a priority queue, and it is stable with
+regards to the naming of nodes present before processing. The last part is
+important, since the priority queue \ExistsQdep\ may contain forwarded results
+from layers within \ExistsLres. For the same reason, \lstinline{exists_or} also
+takes \ExistsLforward\ as a third argument, to determine whether a node is dead
+or some node to-be processed later is dependant on it. For this to work, the
+algorithm also needs to maintain \ExistsLforward\ for processing later layers by
+replacing the node name of quantified nodes with the result of their
+computation.
+
+We omit the pseudocode of \lstinline{exists_or} while the pseudocode \Exists\
+can be found in Code~\ref{lst:exists}. Let $n' \leq n$ be the number of layers
+to be quantified, then $n'$ times will \lstinline{exists_or} be called to sweep
+back down through \ExistsLres, each time spending $\sort(\abs{\ExistsLres})$
+I/Os. The maximum size of \ExistsLres\ when having processed $j$ to-be
+quantified layers is $N^j$, so the sum of total nodes processed by
+\lstinline{exists_or} is $O ( (N (N^{n'} - 1)) / (N - 1) ) = O(N^{n'})$
+resulting in a total of $O(\sort(N^{n'}))$ number of I/Os. Reducing
+non-quantified layers only will take an $O(\sort(N))$ number of I/Os, and the
+number of requests in \ExistsQdep is $2N$, which by itself also only will
+contribute with another $O(\sort(N))$ number of I/Os. The total number of I/Os
+then is $O(\sort(N^{n'})$. The same analysis also applies to time spent.
+
+\begin{lstfloat}[ht!]
+  \centering
+
+  \input{../listing/exists.tex}
+
+  \caption{The \Exists\ algorithm}
+  \label{lst:exists}
+\end{lstfloat}
+
+\todo[inline, caption={Algorithm: Exists as a pipeline?}]{
+  Could one do a multi-sweep only downwards? That is, first settle the topmost
+  existential, then the second topmost existential and so on. This could be
+  fully pipelined... }
 
 \subsection{Relational Product} \label{sec:theory__relational_product}
 \todo[inline, caption={Algorithm: Relational Product}]{
-  Can this algorithm be translated in a way, that is not just naively recreating
-  the recursive algorithm within the tree traversal?
+  We should be able to do the same as for \Exists?
 }
 
 
