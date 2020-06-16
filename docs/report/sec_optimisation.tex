@@ -71,14 +71,14 @@ Figure~\ref{fig:data}. A \lstinline{NodeArc.Sink} of value $v \in \{0,1\}$ is
 represented by a $1$-flag on the most significant bit, $v$ on the least
 significant bit, and all other bits set to $0$.\footnote{Notice, that we as such
   leave room for sinks taking on non-boolean values of up to $2^{63}$ bits.} A
-\lstinline{NodeArc.Link} has a $0$-flag on the most significant bit, the next
+\lstinline{NodeArc.Ptr} has a $0$-flag on the most significant bit, the next
 $k$-bits dedicated to the \lstinline{label}, and finally the $63-k$ least
 significant bits contain the \lstinline{id}.
 
 A \lstinline{Node} can then be represented by $3$ $64$-bit numbers:
 Two $64$-bit integers for each child and another $64$ bits for the
 \lstinline{label} and \lstinline{index} of the node itself with the same layout
-as for \lstinline{NodeArc.Link}.
+as for \lstinline{NodeArc.Ptr}.
 
 \begin{figure}[ht!]
   \centering
@@ -91,7 +91,7 @@ as for \lstinline{NodeArc.Link}.
   \end{subfigure}
   \begin{subfigure}{0.49\linewidth}
     \centering \input{../tikz/data_link.tex}
-    \caption{\lstinline{NodeArc.Link\{label, index\}}}
+    \caption{\lstinline{NodeArc.Ptr\{label, index\}}}
     \label{fig:data_link}
   \end{subfigure}
 
