@@ -21,8 +21,8 @@ algorithm we assumed \ReduceQdep\ is prepopulated with the sink dependencies and
 were able to do do so in all prior algorithms.
 
 We notice, that the sink-dependencies always are placed in \ReduceQdep\ in
-topological order, which means all \lstinline{Edge}s are are sorted with respect
-to their \lstinline{source}. Hence, one can instead prepopulate a list
+topological order, which means all \lstinline{Edge}s are sorted with respect to
+their \lstinline{source}. Hence, one can instead prepopulate a list
 $L_{\mathit{Red:}Sinks}$, from which the sink dependencies are retrieved rather
 than from \ReduceQdep.
 
