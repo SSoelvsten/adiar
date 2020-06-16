@@ -3,7 +3,7 @@
     indexO = 0; idO = MAX    // Index and id of next output
     iF := $\ReduceLforward$.length - 1         // Index into *@\color{cGray} $\ReduceLforward$@*
 
-    // Process bottom-up each layer except for the root-layer
+    // Process bottom-up each layer
     for j := n-1 downto 1:
       // No nodes left to process or no nodes with this label?
       if $\ReduceQdep$.empty() $\lor$ $\ReduceQdep$.peek().label <> j:
@@ -35,15 +35,13 @@
 
       // Forward processing information to layers j-1 .. 1
       $L_{j:F}$ := $L_{j,\mathit{out}}$ ++ $L_{j,\mathit{red:}1}$ ++ $L_{j,\mathit{red:}2}$
-      sort (w,w') in $L_{j:F}$ by w.index
 
       Edge{ source, is_high, target } := $\ReduceLforward$[iF]
-      for (w,w') in $L_{j:F}$:
+      for (w,w') in $L_{j:F}$ sorted by w.index:
         while target = w:
           $\ReduceQdep$.insert({
-            source=source,
-            is_high=is_high,
-            target=nodearc_of_node(w')
-          })
+            source: source,
+            is_high: is_high,
+            target: nodearc_of_node(w') })
           Edge{ source, is_high, target } := $\ReduceLforward$[--iF]
 \end{blstlisting}
