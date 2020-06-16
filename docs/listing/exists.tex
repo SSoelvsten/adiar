@@ -1,0 +1,50 @@
+\begin{blstlisting}
+  Exists(G : Node[], V : int[]): Node[] + NodeArc.Sink
+    $\ExistsLforward$ : Edge[] :=      *@non-sink edges of G sorted by@* target
+    $\ExistsQdep$ : PriorityQueue<Edge> :=      {sink edges of G}
+    $\ExistsLres$ : Node[] + NodeArc.Sink :=     []
+
+    iF := $\ExistsLforward$.length-1
+    
+    // Extract to-be quantified variables
+    iV := V.length-1; v := V[iV]
+
+    // Process bottom-up each layer
+    for j := n-1 downto 1:
+      if j <> v:
+        *@process layer similar to \Reduce@*, *@output@* into $\ExistsLres$
+      else:
+        $L_{j.\mathit{shortcut}}$, $L_{j.\mathit{or}}$ : Node$^2$[] :=    []
+        $Q_{j,\mathit{or}}$ : PriorityQueue<Edge> :=    $\emptyset$
+        
+        while $\ExistsQdep$.peek().source.label = j:
+          e_low := $\ExistsQdep$.extract_max(); e_high := $\ExistsQdep$.extract_max()
+
+          // Shortcut ?
+          t := NIL
+          if (is_sink(e_low) $\land$ e_low.value) $\lor$
+             (is_sink(e_high) $\land$ e_high.value):
+            t := Sink{ value: True }
+          else if is_sink(e_low) $\lor$ is_sink(e_high):
+            t := if is_sink(e_low) then e_high else e_low
+
+          if t <> NIL: // Shortcut*@\color{cGray}{!}@*
+            $L_{j,\mathit{shortcut}}$.append( (e_low.source, t) )
+          else: // Otherwise, 'or' both children... later...
+            $Q_{j,\mathit{or}}$.insert( (e_low, e_high) )
+
+        if !$Q_{j,\mathit{or}}$.empty(): // Sweep back down
+          ($L_{j.\mathit{or}}$, $\ExistsLres$) := exists_or($\ExistsLres$, $Q_{j,\mathit{or}}$, $\ExistsLforward$)
+
+        // Forward processing for layers j-1 .. 1
+        Edge{ source, is_high, target } := $\ExistsLforward$[iD]
+        for (w,w') in $L_{j.\mathit{shortcut}}$ ++ $L_{j.\mathit{or}}$ sorted by w.index:
+          while target = w:
+            // Maintain *@\color{gray} $\ExistsLforward$@*
+            $\ExistsLforward$[iD] :=     Edge{ source, is_high, w' }
+            // Forward information
+            $\ExistsQdep$.insert({source, is_high, target: nodearc_of_node(w')})
+            Edge{ source, is_high, target } := $\ExistsLforward$[--iD]
+          
+    return $\ExistsLres$
+\end{blstlisting}

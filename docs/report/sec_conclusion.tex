@@ -28,10 +28,12 @@ algorithms are summarised in Table~\ref{tab:summary_efficiency}.\footnote{The
     \\
     \Isomorphic & $O(\sort(\min(N_1, N_2)))$
     \\
+    \Exists & $O(\sort(N^{n'}))$
   \end{tabular}
   \caption{The worst-case I/O complexity of the proposed algorithms. $N$ is the
-    number of nodes in an OBDD while $n$ is the number of variables. The time
-    bounds are equivalent.}
+    number of nodes in an OBDD while $n$ is the number of variables, and $n'
+    \leq n$ is the number of to-be quantified variables. The time bounds are
+    equivalent.}
   \label{tab:summary_efficiency}
 \end{table}
 
