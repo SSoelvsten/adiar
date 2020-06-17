@@ -23,11 +23,6 @@ void create_test_stream_1(const char * filename) {
 }
 
 go_bandit([]() {
-    tpie::tpie_init();
-
-    size_t available_memory_mb = 128;
-    tpie::get_memory_manager().set_limit(available_memory_mb*1024*1024);
-
     describe("TPIE", [&]() {
         auto test_stream_1_name = "test_stream_1.tpie";
         create_test_stream_1(test_stream_1_name);
@@ -78,9 +73,10 @@ go_bandit([]() {
 
                 AssertThat(xs.can_read(), Is().False());
 
-                // go back to beginning
+                // go back to beginning (one can only seek the beginning with 0 or the end).
                 xs.seek(0);
 
+                // read the first again and overwrite the next
                 AssertThat(xs.read(), Is().EqualTo(1));
                 xs.write(42);
                 AssertThat(xs.read(), Is().EqualTo(3));
@@ -227,7 +223,5 @@ go_bandit([]() {
               });
           });
       });
-
-      tpie::tpie_finish();
   });
 
