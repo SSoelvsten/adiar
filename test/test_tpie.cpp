@@ -9,24 +9,20 @@
  * https://github.com/Mortal/tpieex
  */
 
-struct Item {
-	unsigned long long a, b, c;
-};
-
-void create_test_stream_1(const char * filename) {
-	tpie::file_stream<int> xs;
-  // Remove "compression_normal" to create an uncompressed stream instead.
-	xs.open(filename, tpie::open::write_only | tpie::open::compression_normal);
-	xs.write(42);
-	xs.write(7);
-	xs.write(18);
-}
-
 go_bandit([]() {
     describe("TPIE", [&]() {
         auto test_stream_1_name = "test_stream_1.tpie";
-        create_test_stream_1(test_stream_1_name);
 
+        // Create test stream
+        tpie::file_stream<int> xs;
+        // Remove "compression_normal" to create an uncompressed stream instead.
+        xs.open(test_stream_1_name, tpie::open::write_only | tpie::open::compression_normal);
+        xs.write(42);
+        xs.write(7);
+        xs.write(18);
+
+        // One can only have one file open in one place at a time
+        xs.close();
 
         describe("File Streams", [&test_stream_1_name]() {
             it("should read stream forwards", [&test_stream_1_name]() {
@@ -187,7 +183,7 @@ go_bandit([]() {
                 xs.write(42);
               });
 
-            it("should open an anonymous temporary files", [&]() {
+            it("should open an anonymous temporary file", [&]() {
                 tpie::file_stream<int> xs;
                 xs.open();
                 AssertThat(xs.can_read(), Is().False());
