@@ -22,10 +22,10 @@ namespace coom
   /// \param reduce_node_arcs The (ptr,ptr) arcs sorted by target in order
   /// \param reduce_sink_arcs The (ptr,sink) arcs sorted by source in order
   //////////////////////////////////////////////////////////////////////////////
-  void restrict(tpie::file_stream<node> nodes,
-                tpie::file_stream<assignment> assignment,
-                tpie::file_stream<arc> reduce_node_arcs,
-                tpie::file_stream<arc> reduce_sink_arcs);
+  void restrict(tpie::file_stream<node>* nodes,
+                tpie::file_stream<assignment>* assignment,
+                tpie::file_stream<arc>* reduce_node_arcs,
+                tpie::file_stream<arc>* reduce_sink_arcs);
 }
 
 #endif // COOM_RESTRICT_H
