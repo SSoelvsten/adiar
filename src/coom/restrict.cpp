@@ -8,16 +8,11 @@
 
 namespace coom
 {
-  void restrict(tpie::file_stream<node>* nodes_ptr,
-                tpie::file_stream<assignment>* assignment_ptr,
-                tpie::file_stream<arc>* reduce_node_arcs_ptr,
-                tpie::file_stream<arc>* reduce_sink_arcs_ptr)
+  void restrict(tpie::file_stream<node> &nodes,
+                tpie::file_stream<assignment> assignment,
+                tpie::file_stream<arc> &reduce_node_arcs,
+                tpie::file_stream<arc> &reduce_sink_arcs)
   {
-    auto nodes = *nodes_ptr;
-    auto assignment = *assignment_ptr;
-    auto reduce_node_arcs = *reduce_node_arcs_ptr;
-    auto reduce_sink_arcs = *reduce_sink_arcs_ptr;
-
     return;
   }
 }

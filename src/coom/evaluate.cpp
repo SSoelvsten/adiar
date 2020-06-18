@@ -8,12 +8,9 @@
 
 namespace coom
 {
-  bool evaluate(tpie::file_stream<node>* nodes_ptr,
-                tpie::file_stream<bool>* assignment_ptr)
+  bool evaluate(tpie::file_stream<node> &nodes,
+                tpie::file_stream<bool> &assignment)
   {
-    auto nodes = *nodes_ptr;
-    auto assignment = *assignment_ptr;
-
     return false;
   }
 }

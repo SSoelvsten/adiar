@@ -41,11 +41,11 @@ namespace coom
   /// \param reduce_node_arcs The (ptr,ptr) arcs sorted by target in order
   /// \param reduce_sink_arcs The (ptr,sink) arcs sorted by source in order
   //////////////////////////////////////////////////////////////////////////////
-  void apply(tpie::file_stream<node>* nodes_1,
-             tpie::file_stream<node>* nodes_2,
-             bool_op op,
-             tpie::file_stream<arc>* reduce_node_arcs,
-             tpie::file_stream<arc>* reduce_sink_arcs);
+  void apply(tpie::file_stream<node> &nodes_1,
+             tpie::file_stream<node> &nodes_2,
+             bool_op &op,
+             tpie::file_stream<arc> &reduce_node_arcs,
+             tpie::file_stream<arc> &reduce_sink_arcs);
 }
 
 #endif // COOM_APPLY_H

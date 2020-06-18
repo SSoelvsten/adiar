@@ -112,6 +112,38 @@ go_bandit([]() {
                 xs.set_position(position);
                 AssertThat(xs.read(), Is().EqualTo(18));
               });
+
+            it("should be forwardable as a pointer", [&]() {
+                auto func = [&](tpie::file_stream<int> &fs) -> void {
+                  AssertThat(fs.is_open(), Is().True());
+
+                  AssertThat(fs.can_read(), Is().True());
+                  AssertThat(fs.read(), Is().EqualTo(21));
+                  AssertThat(fs.can_read(), Is().False());
+
+                  fs.write(42);
+                };
+
+                tpie::file_stream<int> xs;
+                xs.open("test_stream_2.tpie");
+
+                auto start_pos = xs.get_position();
+
+                xs.write(21);
+                xs.set_position(start_pos);
+
+                AssertThat(xs.can_read(), Is().True());
+                func(xs);
+                AssertThat(xs.can_read(), Is().False());
+
+                xs.set_position(start_pos);
+
+                AssertThat(xs.can_read(), Is().True());
+                AssertThat(xs.read(), Is().EqualTo(21));
+                AssertThat(xs.can_read(), Is().True());
+                AssertThat(xs.read(), Is().EqualTo(42));
+                AssertThat(xs.can_read(), Is().False());
+              });
           });
 
         describe("Merge Sort Queue", [&test_stream_1_name]() {
