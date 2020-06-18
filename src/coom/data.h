@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 namespace coom {
-  extern const uint64_t MAX_INDEX;
   extern const uint64_t MAX_LABEL;
+  extern const uint64_t MAX_ID;
 
 
   extern const uint64_t NIL;
