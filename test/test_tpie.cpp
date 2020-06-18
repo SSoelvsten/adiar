@@ -208,7 +208,7 @@ go_bandit([]() {
         describe("Temporary Files", [&]() {
             tpie::temp_file temporary_file = tpie::temp_file(); // one can parse a persistency boolean if needed
 
-            it("should open a (shareable) temporary file", [&]() {
+            it("should open a (shareable) temporary file", [&temporary_file]() {
                 tpie::file_stream<int> xs;
                 xs.open(temporary_file);
 
@@ -242,7 +242,7 @@ go_bandit([]() {
               });
 
 
-            it("should reopen the (shareable) temporary file", [&]() {
+            it("should reopen the (shareable) temporary file", [&temporary_file]() {
                 tpie::file_stream<int> xs;
                 xs.open(temporary_file);
 
