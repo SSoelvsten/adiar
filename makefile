@@ -21,8 +21,9 @@ clean:
 #  TEST
 # ============================================================================ #
 test: | build-test
+	@rm -rf *.tpie
 	@./build/test/test_unit --reporter=info --colorizer=light
-	@rm test_stream_1.tpie
+	@rm -rf *.tpie
 
 # ============================================================================ #
 #  SETUP DEPENDENCIES
