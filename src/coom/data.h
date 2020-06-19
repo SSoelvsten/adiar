@@ -34,6 +34,10 @@ namespace coom {
   uint64_t index_of(const node& n);
   uint64_t label_of(const node& n);
 
+  node create_sink_node(bool value);
+  bool is_sink_node(const node& n);
+  bool value_of(const node& n);
+
   bool operator< (const node& a, const node& b);
   bool operator> (const node& a, const node& b);
   bool operator== (const node& a, const node& b);

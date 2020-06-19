@@ -80,13 +80,37 @@ namespace coom {
     return { create_node_ptr(label, id) , low, high };
   }
 
+  inline node create_sink_node(bool value)
+  {
+    return { create_sink(value) , NIL, NIL };
+  }
+
+  inline bool is_sink_node(const node& n)
+  {
+    return is_sink(n.node_ptr);
+  }
+
+  inline bool value_of(const node& n)
+  {
+#if COOM_DEBUG
+    assert (is_sink(n));
+#endif
+    return value_of(n.node_ptr);
+  }
+
   inline uint64_t id_of(const node& n)
   {
+#if COOM_DEBUG
+    assert (!is_sink(n));
+#endif
     return id_of(n.node_ptr);
   }
 
   inline uint64_t label_of(const node& n)
   {
+#if COOM_DEBUG
+    assert (!is_sink(n));
+#endif
     return label_of(n.node_ptr);
   }
 

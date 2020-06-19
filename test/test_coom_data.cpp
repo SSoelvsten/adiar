@@ -176,6 +176,32 @@ go_bandit([]() {
 
                 AssertThat(sizeof(node), Is().EqualTo(3 * 8));
               });
+
+            // For the edge case of a sink-only OBDD without internal nodes, we need
+            // a "sink" node.
+            it("should recognise sink nodes as such", [&]() {
+                auto sink_node_T = create_sink_node(true);
+                AssertThat(is_sink_node(sink_node_T), Is().True());
+
+                auto sink_node_F = create_sink_node(true);
+                AssertThat(is_sink_node(sink_node_F), Is().True());
+              });
+
+            it("should recognise normal nodes not as sink nodes", [&]() {
+                auto node_1 = create_node(42,2,create_sink(false),create_sink(true));
+                AssertThat(is_sink_node(node_1), Is().False());
+
+                auto node_2 = create_node(0,0,create_sink(true), node_1.node_ptr);
+                AssertThat(is_sink_node(node_2), Is().False());
+              });
+
+            it("should retrive value of a sink node", [&]() {
+                auto sink_node_T = create_sink_node(true);
+                AssertThat(value_of(sink_node_T), Is().True());
+
+                auto sink_node_F = create_sink_node(false);
+                AssertThat(value_of(sink_node_F), Is().False());
+              });
           });
 
         describe("Arcs", [&]() {
