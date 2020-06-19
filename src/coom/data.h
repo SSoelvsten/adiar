@@ -31,14 +31,13 @@ namespace coom {
   };
 
   node create_node(uint64_t label, uint64_t index, uint64_t low, uint64_t high);
-  uint64_t index_of(node n);
-  uint64_t label_of(node n);
+  uint64_t index_of(const node& n);
+  uint64_t label_of(const node& n);
 
   bool operator< (const node& a, const node& b);
   bool operator> (const node& a, const node& b);
   bool operator== (const node& a, const node& b);
   bool operator!= (const node& a, const node& b);
-
 
   struct arc
   {
@@ -53,6 +52,10 @@ namespace coom {
   bool operator> (const arc& a, const arc& b);
   bool operator== (const arc& a, const arc& b);
   bool operator!= (const arc& a, const arc& b);
+
+  arc low_arc_of_node(const node& n);
+  arc high_arc_of_node(const node& n);
+  node node_of_arcs(const arc& low, const arc& high);
 }
 
 

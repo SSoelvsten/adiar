@@ -80,12 +80,12 @@ namespace coom {
     return { create_node_ptr(label, id) , low, high };
   }
 
-  inline uint64_t id_of(node n)
+  inline uint64_t id_of(const node& n)
   {
     return id_of(n.node_ptr);
   }
 
-  inline uint64_t label_of(node n)
+  inline uint64_t label_of(const node& n)
   {
     return label_of(n.node_ptr);
   }
@@ -147,17 +147,17 @@ namespace coom {
   /****************************************************************************/
   /*  CONVERTERS                                                              */
   /****************************************************************************/
-  inline arc low_arc_of_node(node& n)
+  inline arc low_arc_of_node(const node& n)
   {
     return { n.node_ptr, false, n.low };
   }
 
-  inline arc high_arc_of_node(node& n)
+  inline arc high_arc_of_node(const node& n)
   {
     return { n.node_ptr, true, n.high };
   }
 
-  inline node node_of_arcs(arc& low, arc& high)
+  inline node node_of_arcs(const arc& low, const arc& high)
   {
 #if COOM_DEBUG
     assert (low.source == high.source);
