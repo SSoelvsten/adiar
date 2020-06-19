@@ -7,7 +7,7 @@ using namespace bandit;
 #include "test_tpie.cpp"
 
 #include "test_coom_data.cpp"
-//#include "test_coom_evaluate.cpp"
+#include "test_coom_evaluate.cpp"
 //#include "test_coom_count_paths.cpp"
 #include "test_coom_negate.cpp"
 //#include "test_coom_reduce.cpp"
