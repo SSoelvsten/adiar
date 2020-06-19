@@ -24,7 +24,7 @@ jobs:
     - name: CMake | configure
       working-directory: ${{runner.workspace}}/build
       run: cmake $GITHUB_WORKSPACE
-    - name: Cmake | build unit tests
+    - name: CMake | build unit tests
       working-directory: ${{runner.workspace}}/build
       run: cmake --build . --target test_unit
     - name: Run unit tests

@@ -20,9 +20,12 @@ int main(int argc, char* argv[]) {
   tpie::get_memory_manager().set_limit(available_memory_mb*1024*1024);
 
   // Run tests
-  return bandit::run(argc, argv);
+  auto bandit_ret = bandit::run(argc, argv);
 
   // Close all of TPIE down again
   tpie::tpie_finish();
+
+  if (bandit_ret != 0) return bandit_ret;
+  return 0;
 }
 
