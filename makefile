@@ -26,6 +26,20 @@ test: | build-test
 	@rm -rf *.tpie
 
 # ============================================================================ #
+#  COOM_MAIN for console debugging
+#
+#  TODO: Remove on publication...
+# ============================================================================ #
+coom_main:
+	@mkdir -p build/
+	@cd build/ && cmake -DCOOM_DEBUG=ON -DCOOM_ASSERT=ON ..
+	@cd build/ && make coom_main
+	@rm -rf *.tpie
+	@echo "" && echo ""
+	@./build/src/coom/coom_main
+	@rm -rf *.tpie
+
+# ============================================================================ #
 #  SETUP DEPENDENCIES
 #
 #  TODO: Remove on publication...

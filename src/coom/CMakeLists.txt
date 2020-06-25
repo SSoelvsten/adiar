@@ -7,6 +7,7 @@ set(HEADERS
   apply.h
   coom.h
   data.h
+  data_pty.h
   evaluate.h
   reduce.h
   restrict.h
@@ -15,6 +16,7 @@ set(HEADERS
 set(SOURCES
   apply.cpp
   data.cpp
+  data_pty.cpp
   evaluate.cpp
   reduce.cpp
   restrict.cpp
@@ -67,3 +69,12 @@ set_target_properties(coom PROPERTIES
 install(TARGETS coom
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
+
+
+# ============================================================================ #
+# TODO: DELETE WHEN PRINT OUTPUT IS NOT NEEDED
+add_executable (coom_main main.cpp)
+target_link_libraries(coom_main tpie)
+target_link_libraries(coom_main coom)
+
+target_compile_definitions(coom_main PRIVATE COOM_DEBUG=1 COOM_ASSERT=1)
