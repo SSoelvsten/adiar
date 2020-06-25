@@ -14,7 +14,7 @@ namespace coom {
 
   uint64_t create_node_ptr(uint64_t label, uint64_t index);
   uint64_t label_of(uint64_t n);
-  uint64_t index_of(uint64_t n);
+  uint64_t id_of(uint64_t n);
   bool is_node_ptr(uint64_t n);
 
 
@@ -31,7 +31,7 @@ namespace coom {
   };
 
   node create_node(uint64_t label, uint64_t index, uint64_t low, uint64_t high);
-  uint64_t index_of(const node& n);
+  uint64_t id_of(const node& n);
   uint64_t label_of(const node& n);
 
   node create_sink_node(bool value);
