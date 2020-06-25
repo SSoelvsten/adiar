@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
   // Close all of TPIE down again
   tpie::tpie_finish();
 
-  if (bandit_ret != 0) return bandit_ret;
-  return 0;
+  if (bandit_ret != 0) exit(bandit_ret);
+  exit(0);
 }
 
