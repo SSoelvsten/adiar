@@ -161,22 +161,40 @@ cheaper comparisons during sorting. This reduction to numbers might even open up
 investigating the use of $O(N)$ time and $O(\sort(N))$ I/O non-comparative sorting
 algorithm, such as the ones in \todocite.
 
-\subsection{Equality checking}
+\subsection{Equality Checking}
 One should notice, that all algorithms as they have been described above are
 \emph{stable} in the sense, that the ordering of nodes within each layer is
 preserved. That means, one can check whether an OBDD $G$ is unchanged after one
 or more manipulations by comparing it with the result $G'$ in a single linear
 scan, which only takes $O(N/B)$ I/Os.
 
-\todo[inline, caption={Algorithm: $O(1)$ time change checking}]
-{This is still too slow! In model checking, one wants to compute the transitive
-  closure by repeatedly applying \RelProd\ and checking whether the output is
-  unchanged. This check is in conventional OBDD libraries done in $O(1)$ time
-  with a mere pointer comparison.
-  \begin{center}
-    We should be able to do the same with taint tracking?
-  \end{center}
-}
+\subsubsection{Taint Tracking}
+The primary use case for equality checking is in model checking, where one wants
+to compute the transitive closure by repeatedly applying \RelProd\ until the set
+of states are unchanged. The memoisation table approach is able to do so with an
+equality check with in $O(1)$ time by merely comparing pointers. If one wants to
+achieve the same in the algorithms above, then one needs to deploy the use of
+taint tracking.
+
+For the \Exists\ and \RelProd\ one can decrease this all the way down to an
+$O(1)$ operation by introducing taint tracking in \lstinline{Nodes} and
+\lstinline{Edges}: \lstinline{False} if it is an original node and
+\lstinline{True} otherwise. On a top-down sweep any newly generated node will be
+tainted with \lstinline{True} while original nodes are marked \lstinline{False}.
+The taint tracking is propagated bottom-up during the \Reduce\ by a disjunction
+of the taint label on its two children.
+
+While the \Reduce\ already favours keeping the original node, one should ensure
+this definitely is the case. The \lstinline{exists_or} and
+\lstinline{relprod_or} algorithms simultaneously cannot choose to garbage
+collect any original nodes early by the off-chance, that they might get
+reintroduced later. Instead, the \lstinline{exists_or} will keep all the
+original nodes up until the very last quantification downward sweep, and
+similarly the \lstinline{relprod_or} only discards the original dead nodes of
+\lstinline{S} when processing the root layer. This adds up to another
+$O(sort(N^{n'}))$ amount of work, which does not change their asymptotic running
+time or I/O bound.
+
 
 %%% Local Variables:
 %%% mode: latex
