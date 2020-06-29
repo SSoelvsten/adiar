@@ -43,6 +43,8 @@ elements multiple times.
 {Experimentally settle a value the number of rule-1 reduced nodes.}
 
 \subsubsection{Implicit merge of the reduction lists}
+\label{sec:optimisations_reduce__merge}
+
 One should notice, that one does not need to concatenate and sort the three
 lists $L_{j,\mathit{out}}$, $L_{j,\mathit{red:}1}$, $L_{j,\mathit{red:}2}$ to
 create $L_{j:F}$, since one may instead merely sort the three lists and
@@ -61,14 +63,22 @@ number of requests in \ApplyQrec\ when sink-nodes become part of the requests.
 { Experimentally conclude how many requests and intermediate nodes one can save
   when choosing to short-circuit. }
 
-\subsection{Exists}
-\todo[inline, caption={Algorithm: Reduce optimisations that apply to Exists}]
-{ There are quite a few optimisations from Reduce that apply, remember to list
-  them. }
+\subsection{Exists and Relational Product}
+Since the \Exists\ and \RelProd\ algorithms work bottom-up, then some of the
+optimisations for \Reduce\ also applies to both of these. We especially want to
+highlight the merging of lists of results to be forwarded as described above in
+Section~\ref{sec:optimisations_reduce__merge}.
 
-\todo[inline, caption={Algorithm: Process multiple layers in Exists}]
-{ As long as there are no edges between nodes of a layer, then they are
-  independent and one can even process all these layers in bulk. }
+One would also notice, that one can postpone the recomputation of \ExistsLres\
+and \textbf{??} with the expensive \lstinline{exists_or} and
+\lstinline{relprod_or} until a layer depends on requests yet not processed. That
+is, if there are no \lstinline{Edges} between any \lstinline{Nodes} in multiple
+successive layers, then one may create requests from and reduce all these layers
+before sweeping down.
+
+\todo[inline, caption={Experiment: Number of down sweeps}]
+{ Experimentally conclude how many layers can be taken in bulk. In practice are
+  there always some dependency within the layer? It would seem likely. }
 
 \subsection{Omitting the index} \label{sec:optimisations__no_index}
 When one processes a large data set, then one inevitably will do so by
