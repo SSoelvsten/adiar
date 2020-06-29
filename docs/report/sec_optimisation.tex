@@ -36,8 +36,8 @@ At the time of extracting the dependencies \lstinline{e_low} and
 the information needed to potentially apply the first reduction rule. Hence, one
 may immediately populate the list of rule 1 reduced nodes,
 $L_{j:\mathit{red}:1}$ instead of extracting it later in
-\lstinline{reduce_layer}. This will save one from having to scan those elements
-multiple times.
+\lstinline{reduce_layer}. This will save one from having to scan and sort those
+elements multiple times.
 
 \todo[inline, caption={Experiment: ratio of rule-1 reduced}]
 {Experimentally settle a value the number of rule-1 reduced nodes.}
