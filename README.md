@@ -19,11 +19,13 @@ performance of OBDD Manipulation.
     - [Documentation](#documentation)
         - [Dependencies](#dependencies-1)
     - [Future Work](#future-work)
-        - [Integrate reduction into the other algorithms](#integrate-reduction-into-the-other-algorithms)
-        - [Use non-comparison based sorting on numbers](#use-non-comparison-based-sorting-on-numbers)
-        - [Pipelining](#pipelining)
-        - [Parallelisation](#parallelisation)
-            - [Delegation of tasks to the GPU](#delegation-of-tasks-to-the-gpu)
+        - [Optimisations](#optimisations)
+            - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
+            - [Pipelining](#pipelining)
+            - [Parallelisation](#parallelisation)
+        - [Extensions](#extensions)
+            - [Complement Edges](#complement-edges)
+            - [Non-boolean Decision Diagrams](#non-boolean-decision-diagrams)
     - [References](#references)
 
 <!-- markdown-toc end -->
@@ -120,34 +122,23 @@ Contributions are very welcome. If one investigates possible extensions and
 optimisations, and they prove fruitful, then please submit a pull request! The
 following are ideas for avenues to explore.
 
-### Add Complement Edges
-Currently we do not support complement edges, though one can expect about a 7%
-factor decrease in the size of the OBDD from using said technique.
-[[Brace90](#references)]
+### Optimisations
 
-### Integrate reduction into the Apply algorithm
-One major issue with the _Time-Forward Processing_ approach is that the
-intermediate graph after the _Apply_ and before its subsequent _Reduce_ can be
-quadratic in size. That is, given two OBBDs of size _10⁹_ (24GB each) will
-before the reduce possibly be _10¹⁸_!
-
-### Pipelining
-Can we fully embrace the idea of pipelining by making the algorithms streamable
- (e.g. [Arge17](#references))?
-
-- [ ] While the output is already sorted for the next algorithm, the computation
-      order of every algorithm still is in reverse of the input given. That is,
-      _Apply_ has to finish processing before the following _Reduce_ can start
-      and vica versa. Is it possible though to output in the order used for
-      computation to make them all into streaming algorithms?
-
-### Use non-comparison based sorting on numbers
+#### Non-comparison based sorting on numbers
 The sorting in multiple variables has already been reduced to a simple sorting
 on a single 64-bit key in the representation of nodes and arcs. It should be
 possible to exploit this with a radix sort for an _O(N)_ time complexity, though
 maybe not due to the _O(sort(N))_ I/O lower bound.
 
-### Parallelisation
+#### Pipelining
+While the output is already sorted for the next algorithm, the computation order
+of every algorithm still is in reverse of the input given. That is, _Apply_ has
+to finish processing before the following _Reduce_ can start and vica versa. Is
+it possible though to output in the order used for computation to make them all
+into streaming algorithms and with that fully embrace the idea of pipelining
+(e.g. [Arge17](#references))?
+
+#### Parallelisation
 The idea of Time-Forward-Processing is inherently sequential, but can we
 parallelise parts of the algorithm? We would first need to investigate
 parallelising the underlying data structures and algorithms:
@@ -175,7 +166,8 @@ Using these we have the following ideas for parallelisation.
         they can work in parallel, as long as the output is sorted for the
         later _Reduce_.
 
-#### Delegation of tasks to the GPU
+**Delegation of tasks to the GPU**
+
 Can the algorithm or parts of it be moved to the much faster GPU? By the design
 of the algorithms, every layer in the OBDD is processed independently of each
 other. The CPU can merge the Priority Queue with the whole layer to then
@@ -191,6 +183,22 @@ Data structures to look into:
       the layer inside the GPU. This also improves the speed and size of the
       priority queue in the main memory that would only be used for
       communication between layers.
+
+### Extensions
+
+#### Complement Edges
+Currently, we do not support complement edges, though one can expect about a 7%
+factor decrease in the size of the OBDD from using said technique. In the
+recursive algorithms, one can even expect a factor two decrease in the
+algorithms execution time [[Brace90](#references)].
+
+#### Non-boolean Decision Diagrams
+One can easily extend the proposed representation of sink nodes to encompass
+non-boolean values, such as integers or floats. Thereby, the algorithms
+immediately yield a Cache-oblivious implementation of the _Multi-Terminal Binary
+Decision Diagrams_ (MTBDD) of [[Fujita97](#references)]. By solely using an
+edge-based representation of the data-structure one can also implement a
+_Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)].
 
 ## References
 
@@ -226,6 +234,16 @@ Data structures to look into:
   Tom van Dijk, Jaco van de Pol. “_Sylvan: multi-core framework for decision
   diagrams_”. In: _International Journal on Software Tools for Technology
   Transfer_. 2016
+
+- [[Fujita97](https://link.springer.com/article/10.1023/A:1008647823331#citeas)]
+  M. Fujita, P.C. McGeer, J.C.-Y. Yang . “_Multi-Terminal Binary Decision
+  Diagrams: An Efficient Data Structure for Matrix Representation_”. In: _Formal
+  Methods in System Design_. 2012
+
+- [Kam98]
+  Timothy Kam, Tiziano Villa, Robert K. Brayton, and L. Sangiovanni-vincentelli
+  Alberto. “_Multi-valued decision diagrams: Theory and applications_”. In:
+  _Multiple- Valued Logic 4.1_ 1998
 
 - [[Mølhave12](https://dl.acm.org/doi/pdf/10.1145/2367574.2367579)]
   Thomas Mølhave. “_Using TPIE for Processing Massive Data Sets in C++_”. 2012
