@@ -13,10 +13,11 @@ performance of OBDD Manipulation.
 
 - [COOM: Cache-Oblivious OBDD Manipulation](#coom-cache-oblivious-obdd-manipulation)
     - [Introduction](#introduction)
-    - [Documentation](#documentation)
     - [C++ implementation](#c-implementation)
         - [Dependencies](#dependencies)
         - [Building](#building)
+    - [Documentation](#documentation)
+        - [Dependencies](#dependencies-1)
     - [Future Work](#future-work)
         - [Integrate reduction into the other algorithms](#integrate-reduction-into-the-other-algorithms)
         - [Use non-comparison based sorting on numbers](#use-non-comparison-based-sorting-on-numbers)
@@ -48,14 +49,6 @@ Following up on Arge's work, we extend this approach to other core OBDD
 algorithms and implement it in C++ to benchmark the performance in practice
 compared to conventional recursive procedures.
 
-## Documentation
-Documentation is provided as a technical report written in LaTeX. It provides
-figures, listings that describes the algorithm on an abstract level together
-with a description of and benchmarks of the implementation. The LaTeX projects
-have immediate dependencies to my
-[LaTeX preamble](https://github.com/SSoelvsten/LaTeX-Preamble_and_Examples),
-which is included as a submodule dependency.
-
 ## C++ implementation
 The `./src/` folder contains a _C++_ implementation of the proposed algorithm,
 which are accompanied by unit tests in `./test/`. Every commit on master and
@@ -74,9 +67,23 @@ The project makes use of the following dependencies
 ### Dependencies
 All dependencies are directly imported as submodules. If you have not cloned the
 repository recursively, then run the following commands
+
 ```bash
 git submodule init
 git submodule update
+```
+
+One also needs a _C++_ compiler of ones choice. All development has currently
+been with the _g++_ compiler, so we cannot guarantee other compilers will work
+out-of-the-box. The project also has dependencies on _CMake_, _Boost Library_,
+and _Aptitude_. On Ubuntu 18+ you can obtain all these dependencies with the
+following commands.
+
+```bash
+apt install g++
+apt install cmake
+apt install libboost-all-dev
+apt install aptitude
 ```
 
 ### Building
@@ -96,6 +103,17 @@ depend on `apt`.
 |- setup-c             # Run 'sudo apt get' on all C++ library dependencies
 |- setup-submodules    # Setup and update all submodules
 ```
+
+## Documentation
+The primary documentation is provided as a technical report written in LaTeX. It
+provides figures, listings that describes the algorithm on an abstract level
+together with a description of and benchmarks of the implementation.
+
+### Dependencies
+The LaTeX documents have immediate dependencies to my [LaTeX
+preamble](https://github.com/SSoelvsten/LaTeX-Preamble_and_Examples), which is
+included as a submodule dependency (See [C++/Dependencies](#dependencies)).
+
 
 ## Future Work
 Contributions are very welcome. If one investigates possible extensions and
