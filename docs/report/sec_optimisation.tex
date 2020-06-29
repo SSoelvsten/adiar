@@ -50,6 +50,17 @@ implicitly take \lstinline{(w,w')} from $L_{j:F}$ by picking the next element
 from either of the three lists, similarly to the classic \lstinline{merge}
 subprocedure of merge sort.
 
+\subsection{Apply}
+Some boolean operators, such as \emph{or}, \emph{and}, and \emph{implication}
+all allow for the ability to short-circuit their evaluation. At the start of the
+\Apply\ one can evaluate all combinations of the given operator \lstinline{op}
+to then conclude what evaluations can be short-circuited. This may decrease the
+number of requests in \ApplyQrec\ when sink-nodes become part of the requests.
+
+\todo[inline, caption={Experiment: Efficiency of short-circuit}]
+{ Experimentally conclude how many requests and intermediate nodes one can save
+  when choosing to short-circuit. }
+
 \subsection{Exists}
 \todo[inline, caption={Algorithm: Reduce optimisations that apply to Exists}]
 { There are quite a few optimisations from Reduce that apply, remember to list
