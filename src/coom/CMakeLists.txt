@@ -26,6 +26,14 @@ else()
   add_library(coom STATIC ${HEADERS} ${SOURCES})
 endif()
 
+if (COOM_DEBUG)
+  target_compile_definitions(coom PRIVATE COOM_DEBUG=1)
+endif()
+
+if (COOM_ASSERT)
+    target_compile_definitions(coom PRIVATE COOM_ASSERT=1)
+endif()
+
 include(GenerateExportHeader)
 generate_export_header(coom)
 

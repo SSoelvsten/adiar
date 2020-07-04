@@ -31,7 +31,7 @@ namespace coom {
   /****************************************************************************/
   inline uint64_t create_node_ptr(uint64_t label, uint64_t id)
   {
-#if COOM_DEBUG
+#if COOM_ASSERT
     assert (label < MAX_LABEL);
     assert (id < MAX_ID);
 #endif
@@ -92,24 +92,24 @@ namespace coom {
 
   inline bool value_of(const node& n)
   {
-#if COOM_DEBUG
-    assert (is_sink(n));
+#if COOM_ASSERT
+    assert (is_sink_node(n));
 #endif
     return value_of(n.node_ptr);
   }
 
   inline uint64_t id_of(const node& n)
   {
-#if COOM_DEBUG
-    assert (!is_sink(n));
+#if COOM_ASSERT
+    assert (!is_sink_node(n));
 #endif
     return id_of(n.node_ptr);
   }
 
   inline uint64_t label_of(const node& n)
   {
-#if COOM_DEBUG
-    assert (!is_sink(n));
+#if COOM_ASSERT
+    assert (!is_sink_node(n));
 #endif
     return label_of(n.node_ptr);
   }
@@ -183,7 +183,7 @@ namespace coom {
 
   inline node node_of_arcs(const arc& low, const arc& high)
   {
-#if COOM_DEBUG
+#if COOM_ASSERT
     assert (low.source == high.source);
     assert (low.is_high == false);
     assert (high.is_high == true);

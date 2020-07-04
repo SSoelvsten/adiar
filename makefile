@@ -3,13 +3,13 @@
 # ============================================================================ #
 #  BUILD
 # ============================================================================ #
-build-cmake:
+build:
 	@mkdir -p build/ && cd build/ && cmake ..
 
-build-test: | build-cmake
+build-test:
+	@mkdir -p build/
+	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=ON ..
 	@cd build/ && make test_unit
-
-build: | build-cmake build-test
 
 # ============================================================================ #
 #  CLEAN
