@@ -144,6 +144,25 @@ go_bandit([]() {
                 AssertThat(xs.read(), Is().EqualTo(42));
                 AssertThat(xs.can_read(), Is().False());
               });
+
+            it("should report number of elements in stream", [&]() {
+                tpie::file_stream<int> xs;
+                xs.open();
+
+                AssertThat(xs.size(), Is().EqualTo(0));
+
+                xs.write(42);
+                AssertThat(xs.size(), Is().EqualTo(1));
+
+                xs.write(21);
+                AssertThat(xs.size(), Is().EqualTo(2));
+
+                xs.write(14);
+                AssertThat(xs.size(), Is().EqualTo(3));
+
+                xs.write(7);
+                AssertThat(xs.size(), Is().EqualTo(4));
+              });
           });
 
         describe("Merge Sort Queue", [&test_stream_1_name]() {
