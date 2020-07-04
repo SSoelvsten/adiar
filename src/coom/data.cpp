@@ -32,8 +32,8 @@ namespace coom {
   inline uint64_t create_node_ptr(uint64_t label, uint64_t id)
   {
 #if COOM_ASSERT
-    assert (label < MAX_LABEL);
-    assert (id < MAX_ID);
+    assert (label <= MAX_LABEL);
+    assert (id <= MAX_ID);
 #endif
 
     return (label << ID_BITS) + id;
