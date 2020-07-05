@@ -4,7 +4,9 @@
 // COOM Imports
 #include "data.cpp"
 #include "data_pty.cpp"
+
 #include "reduce.cpp"
+#include "restrict.cpp"
 
 
 int main(int argc, char* argv[]) {
