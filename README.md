@@ -42,14 +42,14 @@ bound. An _Apply_ that will have to output a minimal OBDD has by extension the
 same bound.
 
 He then provides a description of an I/O optimal external-memory algorithm for
-both _Reduce_ and _Apply_. It makes use of _Time-Forward Processing_ to delay
+both _Reduce_ and _Apply_. They makes use of _Time-Forward Processing_ to delay
 recursion until the needed data is in memory. These algorithms are designed,
 such that the output of _Reduce_ is already in sorted order for the following
 _Apply_ algorithm, and vica versa. When further looking into these algorithms,
-we notice, that the algorithm does not explicitly make use of _M_ or _B_ but
-only an I/O efficient sorting algorithm and priority queue. Both of these can be
-substituted for a _Cache-oblivious_, such as [[Sanders01](#references)], or
-_Cache-aware_ instance to immediately yield an optimal algorithm of both types!
+we notice, that they do not explicitly make use of _M_ or _B_ but only an I/O
+efficient sorting algorithm and priority queue. Both of these can be substituted
+for a _Cache-oblivious_, such as [[Sanders01](#references)], or _Cache-aware_
+instance to immediately yield an optimal algorithm of both types!
 
 Following up on Arge's work, we extend this approach to other core OBDD
 algorithms and implement it in C++ to benchmark the performance in practice
@@ -57,8 +57,8 @@ compared to conventional recursive procedures.
 
 
 ## Installation
-The algorithms are implemented in _C++_ making use of the following external
-dependencies
+The algorithms are implemented in _C++_ creating a fully fledged OBDD library.
+They make use of the following external dependencies
 
 - [TPIE](https://github.com/thomasmoelhave/tpie):
   Framework for implementation of I/O efficient algorithms. It directly provides
@@ -71,18 +71,17 @@ dependencies
 
 ### Dependencies
 All dependencies are directly imported as submodules. If you have not cloned the
-repository recursively, then run the following commands
+repository recursively, then run the following command
 
 ```bash
-git submodule init
-git submodule update
+git submodule update --init --recursive
 ```
 
 One also needs a _C++_ compiler of ones choice. All development has currently
 been with the _g++_ compiler, so we cannot guarantee other compilers will work
-out-of-the-box. The project also has dependencies on _CMake_, _Boost Library_,
-and _Aptitude_. On Ubuntu 18+ you can obtain all these dependencies with the
-following commands.
+out-of-the-box. The project also has dependencies on _CMake_, the _Boost
+Library_, and _Aptitude_. On Ubuntu 18+ you can obtain all these dependencies
+with the following commands.
 
 ```bash
 apt install g++
@@ -112,20 +111,21 @@ various verification and satisfaction problems.
 
 ### In your own project
 To use this OBDD implementation in your own project, then _CMake_ still needs to
-be properly configured (e.g. see issue [#4](/issues/4)). Contributions and help
-to this end would be very much appreciated.
+be properly configured (e.g. see issue
+[#4](https://github.com/SSoelvsten/cache-oblivious-obdd/issues/4)).
+Contributions and help to this end would be very much appreciated.
 
 
 ## Documentation
 The primary documentation is provided as a technical report written in LaTeX. It
 provides figures, listings that describes the algorithm on an abstract level
-together with a description of and benchmarks of the implementation.
+together with a description and benchmarks of the implementation.
 
 
 ## Future Work
-Contributions are very welcome. If one investigates possible extensions and
-optimisations, and they prove fruitful, then please submit a pull request! The
-following are ideas for avenues to explore.
+In the following we list multiple avenues for optimisations and extensions which
+may constitute interesting undergraduate research projects. We would love to see
+the results of such projects as pull requests to improve the main project.
 
 ### Optimisations
 
@@ -148,28 +148,30 @@ The idea of Time-Forward-Processing is inherently sequential, but can we
 parallelise parts of the algorithm? We would first need to investigate
 parallelising the underlying data structures and algorithms:
 
-  - [X] Parallelisable sorting algorithms (Sorting in TPIE is parallelised)
-  - [ ] Parallelisable priority queue, such as the one in
-        [[Sitchinava12](#references)]
+- Parallel traversal of the same file stream
+
+- Parallelisable sorting algorithms (Sorting in TPIE is parallelised)
+  
+- Parallelisable priority queue, such as the one in
+  [[Sitchinava12](#references)]
 
 Using these we have the following ideas for parallelisation.
 
 - In the _Reduce_ algorithm:
 
-  - [ ] Parallelise applying the reduction at each layer, since at that
-        point all information is already given and it would then be
-        _p_-parallel scans through a single list.
+  - Parallelise applying the reduction at each layer, since at that point all
+    information is already given and it would then be _p_-parallel scans through
+    a single list.
 
 - In the _Apply_ algorithm:
 
-  - [ ] Notice at the time of processing a resulting layer (i.e. consider
-        the output label), all requests for that layer already have been
-        added to the queue. All requests at said layer are of the form _(v₁,
-        v₂)_ with label _min(v₁.label, v₂.label)_ and will always create
-        requests for nodes with a strictly higher level. So if each worker
-        process can be fed with information from the request-queue, then
-        they can work in parallel, as long as the output is sorted for the
-        later _Reduce_.
+  - Notice at the time of processing a resulting layer (i.e. consider the output
+    label), all requests for that layer already have been added to the queue.
+    All requests at said layer are of the form _(v₁, v₂)_ with label
+    _min(v₁.label, v₂.label)_ and will always create requests for nodes with a
+    strictly higher level. So if each worker process can be fed with information
+    from the request-queue, then they can work in parallel, as long as the
+    output is sorted for the later _Reduce_.
 
 **Delegation of tasks to the GPU**
 
@@ -180,14 +182,13 @@ delegate the processing of the whole layer to the GPU.
 
 Data structures to look into:
 
-- [ ] Sorting Algorithm. Here one might want to explot the avenue of
-      [non-comparison based sorting](#use-non-comparison-based-sorting-on-numbers)
-      at the same time.
+- Sorting Algorithm. Here one might want to explot the avenue of [non-comparison
+  based sorting](#use-non-comparison-based-sorting-on-numbers) at the same time.
 
-- [ ] Priority Queue. This one can then be used to forward information across
-      the layer inside the GPU. This also improves the speed and size of the
-      priority queue in the main memory that would only be used for
-      communication between layers.
+- Priority Queue. This one can then be used to forward information across the
+  layer inside the GPU. This also improves the speed and size of the priority
+  queue in the main memory that would only be used for communication between
+  layers.
 
 ### Extensions
 
@@ -203,7 +204,8 @@ non-boolean values, such as integers or floats. Thereby, the algorithms
 immediately yield a Cache-oblivious implementation of the _Multi-Terminal Binary
 Decision Diagrams_ (MTBDD) of [[Fujita97](#references)]. By solely using an
 edge-based representation of the data-structure one can also implement a
-_Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)].
+_Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)]. The latter may
+result in major rewrites of the algorithms.
 
 
 ## Credits
