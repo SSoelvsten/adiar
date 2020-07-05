@@ -28,6 +28,7 @@ performance of OBDD Manipulation.
             - [Complement Edges](#complement-edges)
             - [Non-boolean Decision Diagrams](#non-boolean-decision-diagrams)
     - [License](#license)
+    - [Credits](#credits)
     - [References](#references)
 
 <!-- markdown-toc end -->
@@ -203,6 +204,17 @@ immediately yield a Cache-oblivious implementation of the _Multi-Terminal Binary
 Decision Diagrams_ (MTBDD) of [[Fujita97](#references)]. By solely using an
 edge-based representation of the data-structure one can also implement a
 _Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)].
+
+
+## Credits
+
+- **[Steffan Sølvsten](https://github.com/SSoelvsten)**:
+  [soelvsten@cs.au.dk](mailto:soelvsten@cs.au.dk)
+
+Thank you, to the following wonderful people:
+
+- **[Jaco van de Pol](https://github.com/jacopol)**:
+  Supervisor and extremely supportive sparring partner.
 
 
 ## License
