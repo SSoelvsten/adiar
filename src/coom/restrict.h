@@ -14,18 +14,17 @@ namespace coom
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Restrict a given node-based OBDD based on a partial assignment.
   ///
-  /// \param node_arcs Edges (source, target) sorted by target in reverse-
-  ///                  topological order.
-  /// \param sink_arcs Edges (source,sink) sorted by source in reverse-
-  ///                  topological order.
+  /// \param nodes_in   input stream of OBDD; sorted in reverse topological
+  ///                   order.
   ///
-  /// \param reduce_node_arcs The (ptr,ptr) arcs sorted by target in order
-  /// \param reduce_sink_arcs The (ptr,sink) arcs sorted by source in order
+  /// \param assignment Assignment sorted in order of label (and expected
+  ///                   unique)
+  ///
+  /// \param nodes_out  (empty) output stream for result OBDD
   //////////////////////////////////////////////////////////////////////////////
-  void restrict(tpie::file_stream<node> &nodes,
-                tpie::file_stream<assignment> &assignment,
-                tpie::file_stream<arc> &reduce_node_arcs,
-                tpie::file_stream<arc> &reduce_sink_arcs);
+  void restrict(tpie::file_stream<node> &in_nodes,
+                tpie::file_stream<assignment> &in_assignment,
+                tpie::file_stream<node> &out_nodes);
 }
 
 #endif // COOM_RESTRICT_H
