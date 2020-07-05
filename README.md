@@ -13,11 +13,12 @@ performance of OBDD Manipulation.
 
 - [COOM: Cache-Oblivious OBDD Manipulation](#coom-cache-oblivious-obdd-manipulation)
     - [Introduction](#introduction)
-    - [C++ implementation](#c-implementation)
+    - [Installation](#installation)
         - [Dependencies](#dependencies)
-        - [Building](#building)
+    - [Usage](#usage)
+        - [Examples and benchmarks](#examples-and-benchmarks)
+        - [In your own project](#in-your-own-project)
     - [Documentation](#documentation)
-        - [Dependencies](#dependencies-1)
     - [Future Work](#future-work)
         - [Optimisations](#optimisations)
             - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
@@ -29,6 +30,7 @@ performance of OBDD Manipulation.
     - [References](#references)
 
 <!-- markdown-toc end -->
+
 
 ## Introduction
 In [[Arge96](/bib/%5Barge%5D%20IO%20Complexity%20of%20OBDD%20Manipulation.pdf)],
@@ -51,12 +53,11 @@ Following up on Arge's work, we extend this approach to other core OBDD
 algorithms and implement it in C++ to benchmark the performance in practice
 compared to conventional recursive procedures.
 
-## C++ implementation
-The `./src/` folder contains a _C++_ implementation of the proposed algorithm,
-which are accompanied by unit tests in `./test/`. Every commit on master and
-pull request submitted will automatically have the test-suite run.
 
-The project makes use of the following dependencies
+## Installation
+The algorithms are implemented in _C++_ making use of the following external
+dependencies
+
 - [TPIE](https://github.com/thomasmoelhave/tpie):
   Framework for implementation of I/O efficient algorithms. It directly provides
   sorting algorithms and a priotity queue. Both are much faster than the
@@ -88,33 +89,35 @@ apt install libboost-all-dev
 apt install aptitude
 ```
 
-### Building
+## Usage
 The project is build with _CMake_, though for convenience I have simplified the
-_CMake_ interactions to a single `make` use of the root _Makefile_ which works
-on a local machine. This has only been tested on `Ubuntu 18.04 LTS` and does
-depend on `apt`.
-```python
-+ build                # Build everything
-|- build-test          # Build unit tests
+_CMake_ interactions to a single _Makefile_ which works on a local machine. This
+has only been tested on `Ubuntu 18.04 LTS`.
 
-+ clean                # Clean 'build/' folder
+The primary targets are as follows
 
-+ test                 # Compile and run tests
+| target  | effect                 |
+|---------|------------------------|
+| `build` | Build the source files |
+| `clean` | Remove all build files |
+| `test`  | Run all unit tests     |
 
-+ setup                # Fetch all project dependencies
-|- setup-c             # Run 'sudo apt get' on all C++ library dependencies
-|- setup-submodules    # Setup and update all submodules
-```
+
+### Examples and benchmarks
+The _/examples_ folder contains examples for using the data structure to solve
+various verification and satisfaction problems.
+
+
+### In your own project
+To use this OBDD implementation in your own project, then _CMake_ still needs to
+be properly configured (e.g. see issue [#4](/issues/4)). Contributions and help
+to this end would be very much appreciated.
+
 
 ## Documentation
 The primary documentation is provided as a technical report written in LaTeX. It
 provides figures, listings that describes the algorithm on an abstract level
 together with a description of and benchmarks of the implementation.
-
-### Dependencies
-The LaTeX documents have immediate dependencies to my [LaTeX
-preamble](https://github.com/SSoelvsten/LaTeX-Preamble_and_Examples), which is
-included as a submodule dependency (See [C++/Dependencies](#dependencies)).
 
 
 ## Future Work
@@ -199,6 +202,7 @@ immediately yield a Cache-oblivious implementation of the _Multi-Terminal Binary
 Decision Diagrams_ (MTBDD) of [[Fujita97](#references)]. By solely using an
 edge-based representation of the data-structure one can also implement a
 _Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)].
+
 
 ## References
 
