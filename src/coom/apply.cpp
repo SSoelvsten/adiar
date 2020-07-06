@@ -10,7 +10,7 @@ namespace coom
 {
   void apply(tpie::file_stream<node> &nodes_1,
              tpie::file_stream<node> &nodes_2,
-             bool_op &op,
+             const bool_op &op,
              tpie::file_stream<arc> &reduce_node_arcs,
              tpie::file_stream<arc> &reduce_sink_arcs)
   {
