@@ -69,6 +69,8 @@ namespace coom {
     }
     out << "}" << std::endl;
     out.close();
+
+    system(("dot -Tpng " + filename + ".dot" + " -o " + filename + ".png").c_str());
   }
 }
 
