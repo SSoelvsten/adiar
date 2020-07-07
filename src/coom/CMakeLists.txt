@@ -72,6 +72,14 @@ install(TARGETS coom
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
 
+# ============================================================================ #
+# Setup DOT file printer
+add_executable (coom_dot dot.cpp)
+target_link_libraries(coom_dot tpie)
+target_link_libraries(coom_dot coom)
+
+target_compile_definitions(coom_dot PRIVATE COOM_DEBUG=0 COOM_ASSERT=0)
+
 
 # ============================================================================ #
 # TODO: DELETE WHEN PRINT OUTPUT IS NOT NEEDED
