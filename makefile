@@ -26,6 +26,15 @@ test: | build-test
 	@rm -rf *.tpie
 
 # ============================================================================ #
+#  DOT FILE output for visual debugging
+# ============================================================================ #
+dot:
+	@mkdir -p build/
+	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=OFF ..
+	@cd build/ && make coom_dot
+	@./build/src/coom/coom_dot
+
+# ============================================================================ #
 #  COOM_MAIN for console debugging
 #
 #  TODO: Remove on publication...
