@@ -86,8 +86,29 @@ int main(const int argc, const char* argv[]) {
   if (argc == 1) {
     tpie::log_info() << "Please provide a filename(s) to print" << std::endl;
 
+    // TODO: Remove from here...
+    tpie::log_info() << "(Will create dot_test.tpie for testing)" << std::endl;
+
+    tpie::file_stream<coom::node> file_stream;
+    file_stream.open("dot_test.tpie", tpie::open::write_only | tpie::open::compression_normal);
+
+    file_stream.write(coom::create_node(2, coom::MAX_ID,
+                                        coom::create_sink(false),
+                                        coom::create_sink(true)));
+
+    file_stream.write(coom::create_node(1, coom::MAX_ID,
+                                        coom::create_node_ptr(2,coom::MAX_ID),
+                                        coom::create_sink(true)));
+
+    file_stream.write(coom::create_node(0, coom::MAX_ID,
+                                        coom::create_node_ptr(2,coom::MAX_ID),
+                                        coom::create_node_ptr(1,coom::MAX_ID)));
+    file_stream.close();
+
+    // TODO: Remove until here...
+
     tpie::tpie_finish();
-    exit(1);
+    exit(0); // TODO: Make into non-zero
   }
 
   // ===== OUTPUT DOT FILE =====
