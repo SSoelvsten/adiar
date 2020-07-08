@@ -218,6 +218,9 @@ Thank you, to the following wonderful people:
 - **[Jaco van de Pol](https://github.com/jacopol)**:
   Supervisor and extremely supportive sparring partner.
 
+- **[Mathias Rav](https://github.com/Mortal)**:
+  Developer of TPIE and always helpful oracle about everything _TPIE_ and _C++_.
+
 
 ## License
 The software and documentation files in this repository are provided under the
