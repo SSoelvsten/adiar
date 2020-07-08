@@ -90,6 +90,20 @@ apt install libboost-all-dev
 apt install aptitude
 ```
 
+As a visual aid, the internal representation of the Decision Diagrams can be
+output as [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language))
+files. These can then be turned into a graphical representation by use of a
+number of tools. Internally, the program also attempts to produce a picture
+using _dot_, which can be installed as follows.
+
+```bash
+apt install graphviz
+```
+
+The installation of _graphviz_ or any other _dot_ tool is not, per se, necessary
+to run the algorithms, though one will not automatically obtain _.png_ files,
+and one has to ignore the printout of failed system calls.
+
 ## Usage
 The project is build with _CMake_, though for convenience I have simplified the
 _CMake_ interactions to a single _Makefile_ which works on a local machine. This
