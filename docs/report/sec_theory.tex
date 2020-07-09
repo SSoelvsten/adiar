@@ -462,6 +462,15 @@ then is $O(\sort(N^{n'})$. The same analysis also applies to time spent.
   existential, then the second topmost existential and so on. This could be
   fully pipelined... }
 
+\subsection{Forall} \label{sec:theory__relational_product}
+Since $\forall \phi \equiv \neg \exists \neg \phi$ then with the implementation
+of \Exists\ above one immediately gets an $O(\sort(N^{n'})$ algorithm. Negating
+an OBDD can be done in a single sweep in $O(N)$ time and $O(N/B)$ I/Os, or it
+can even lazily be done by inverting the sinks first when they have been
+retrieved, which results in no extra number of I/Os and only $O(N)$ extra amount
+of work.
+
+
 \subsection{Relational Product} \label{sec:theory__relational_product}
 \todo[inline, caption={Algorithm: Relational Product}]{
   We should be able to do the same as for \Exists?
