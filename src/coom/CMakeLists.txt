@@ -82,7 +82,6 @@ target_link_libraries(coom_dot coom)
 
 target_compile_definitions(coom_dot PRIVATE COOM_DEBUG=0 COOM_ASSERT=0)
 
-
 # ============================================================================ #
 # Setup MAIN target
 add_executable (coom_main main.cpp)
