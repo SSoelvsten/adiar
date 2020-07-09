@@ -10,6 +10,7 @@ set(HEADERS
   data.h
   data_pty.h
   evaluate.h
+  negate.cpp
   reduce.h
   restrict.h
 )
@@ -20,6 +21,7 @@ set(SOURCES
   data.cpp
   data_pty.cpp
   evaluate.cpp
+  negate.cpp
   reduce.cpp
   restrict.cpp
 )
