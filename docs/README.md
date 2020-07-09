@@ -1,5 +1,7 @@
 # Documentation
-We provide a LaTeX_ document acting as a Blue Paper for documentation.
+We provide a The documentation in two ways: A _LaTeX_ document acting as a Blue
+Paper and a collection of _Markdown_ files to be used with GitHub pages and as a
+documentation, and API Reference.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
@@ -8,6 +10,7 @@ We provide a LaTeX_ document acting as a Blue Paper for documentation.
     - [LaTeX Blue Paper](#latex-blue-paper)
         - [Dependencies](#dependencies)
         - [Compilation](#compilation)
+    - [Markdown Documentation](#markdown-documentation)
 
 <!-- markdown-toc end -->
 
@@ -38,3 +41,9 @@ git submodule update --init --recursive
 ### Compilation
 Either compile `main.tex` in the `report/` folder or just use the provided
 `Makefile` with the `report` target.
+
+
+## Markdown Documentation
+In [_INDEX.md_](./INDEX.md) and the other markdown files we provide an easy to
+read documentation (published on GitHub pages) with the primary purpose to focus
+on how to use the software.
