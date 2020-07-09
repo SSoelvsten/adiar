@@ -42,47 +42,27 @@ go_bandit([]() {
             AssertThat(coom::count_paths(obdd), Is().EqualTo(8));
           });
 
-        it("can count paths with a sink predicate", [&obdd]() {
+        it("can count paths leading to T sinks", [&obdd]() {
             auto number_of_true_paths = coom::count_paths(obdd, is_true);
             AssertThat(number_of_true_paths, Is().EqualTo(3));
+          });
 
+        it("can count paths leading to F sinks", [&obdd]() {
             auto number_of_false_paths = coom::count_paths(obdd, is_false);
             AssertThat(number_of_false_paths, Is().EqualTo(5));
+          });
 
+        it("can count paths leading to any sinks", [&obdd]() {
+            auto number_of_false_paths = coom::count_paths(obdd, is_any);
+            AssertThat(number_of_false_paths, Is().EqualTo(8));
+          });
+
+        it("can count paths on a never happy predicate", [&obdd]() {
             auto all_paths_rejected = coom::count_paths(obdd,
                                                         [](uint64_t sink) -> bool {
-                return false;
-              });
+                                                          return false;
+                                                        });
             AssertThat(all_paths_rejected, Is().EqualTo(0));
-          });
-
-        it("can count paths with a node predicate", [&obdd]() {
-            auto number_of_even_only_paths = coom::count_paths(obdd,
-                                                          [](node n) -> bool {
-                return label_of(n) % 2 == 0;
-              });
-            AssertThat(number_of_even_only_paths, Is().EqualTo(1));
-
-            auto number_of_odd_only_paths = coom::count_paths(obdd,
-                                                         [](node n) -> bool {
-                return label_of(n) % 2 == 1;
-              });
-            AssertThat(number_of_odd_only_paths, Is().EqualTo(1));
-
-            auto number_of_paths_less_than_3 = coom::count_paths(obdd,
-                                                                 [](node n) -> bool {
-                return label_of(n) < 3;
-              });
-            AssertThat(number_of_paths_less_than_3, Is().EqualTo(4));
-          });
-
-        it("can count paths with a node and sink predicate", [&obdd]() {
-            auto number_of_even_paths_less_than_3 = coom::count_paths(obdd,
-                                                                      [](node n) -> bool {
-                                                                        return label_of(n) < 3;
-                                                                      },
-                                                                      is_false);
-            AssertThat(number_of_even_paths_less_than_3, Is().EqualTo(2));
           });
 
         it("should count no paths in a true sink-only OBDD", [&]() {
@@ -92,8 +72,6 @@ go_bandit([]() {
 
             AssertThat(coom::count_paths(obdd), Is().EqualTo(0));
             AssertThat(coom::count_paths(obdd, is_true), Is().EqualTo(0));
-            AssertThat(coom::count_paths(obdd, [](node n) -> bool { return label_of(n) < 3; }),
-                       Is().EqualTo(0));
           });
 
         it("should count no paths in a false sink-only OBDD", [&]() {
@@ -103,10 +81,6 @@ go_bandit([]() {
 
             AssertThat(coom::count_paths(obdd), Is().EqualTo(0));
             AssertThat(coom::count_paths(obdd, is_true), Is().EqualTo(0));
-            AssertThat(coom::count_paths(obdd,
-                                         [](node n) -> bool { return label_of(n) % 3 == 0; },
-                                         is_false),
-                       Is().EqualTo(0));
           });
       });
   });
