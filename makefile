@@ -47,20 +47,3 @@ main:
 	@echo "" && echo ""
 	@./build/src/coom/coom_main
 	@rm -rf *.tpie
-
-# ============================================================================ #
-#  SETUP DEPENDENCIES
-#
-#  TODO: Remove on publication...
-# ============================================================================ #
-setup: | setup-submodules setup-c
-
-setup-c:
-	sudo apt install g++
-
-	sudo apt install cmake
-	sudo apt install libboost-all-dev
-	sudo apt install aptitude
-
-setup-submodules:
-	git submodule update --init --recursive
