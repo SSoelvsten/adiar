@@ -155,7 +155,7 @@ of every algorithm still is in reverse of the input given. That is, _Apply_ has
 to finish processing before the following _Reduce_ can start and vica versa. Is
 it possible though to output in the order used for computation to make them all
 into streaming algorithms and with that fully embrace the idea of pipelining
-(e.g. [Arge17](#references))?
+(e.g. [[Arge17](#references)])?
 
 #### Parallelisation
 The idea of Time-Forward-Processing is inherently sequential, but can we
