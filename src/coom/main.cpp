@@ -3,10 +3,16 @@
 
 // COOM Imports
 #include "data.cpp"
-#include "data_pty.cpp"
+
+#include "debug_data.cpp"
+#include "debug.cpp"
+
+#include "assert.cpp"
 
 #include "reduce.cpp"
 #include "restrict.cpp"
+
+using namespace coom;
 
 
 int main(int argc, char* argv[]) {
@@ -19,8 +25,6 @@ int main(int argc, char* argv[]) {
 
   // ===== COOM =====
   // Your code here...
-
-
 
 
 

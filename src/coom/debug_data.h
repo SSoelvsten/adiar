@@ -1,9 +1,11 @@
 #ifndef COOM_DEBUG_DATA_H
 #define COOM_DEBUG_DATA_H
 
+#include <tpie/tpie.h>
 #include <tpie/file_stream.h>
 
 #include <stdint.h>
+
 #include "data.h"
 
 namespace coom { namespace debug {
