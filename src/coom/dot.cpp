@@ -17,35 +17,6 @@
 #include "dot.h"
 
 namespace coom {
-  void output_dot_nodes(tpie::file_stream<node>& nodes, std::ofstream& out)
-  {
-    nodes.seek(0, tpie::file_stream_base::end);
-    out << "\tnode [shape=box];" << std::endl;
-
-    while (nodes.can_read_back()) {
-      auto node = nodes.read_back();
-
-      out << "\tn"
-          << node.node_ptr
-          << " [label=<x<SUB>"
-          << label_of(node)
-          << "</SUB>, id<SUB>"
-          << (id_of(node)) << "</SUB>>, style=rounded];"
-          << std::endl;
-    }
-  }
-
-  void output_dot_arcs(tpie::file_stream<node>& nodes, std::ofstream& out)
-  {
-    nodes.seek(0, tpie::file_stream_base::end);
-    while (nodes.can_read_back()) {
-      auto node = nodes.read_back();
-
-      out << "\tn" << node.node_ptr << " -> " << "n" << node.low << " [style=solid];" << std::endl;
-      out << "\tn" << node.node_ptr << " -> " << "n" << node.high << "[style=dashed];"  << std::endl;
-    }
-  }
-
   void output_dot(tpie::file_stream<node>& nodes, std::string filename)
   {
     std::ofstream out;
@@ -55,18 +26,50 @@ namespace coom {
 
     nodes.seek(0);
 
-    if (nodes.size() == 1 && is_sink_node(nodes.peek())) {
-      out << "\t" << value_of(nodes.read()) << " [shape=box];" << std::endl;
-    } else if (nodes.size() > 0) {
-      out << "\t// Nodes" << std::endl;
-      output_dot_nodes(nodes, out);
+    if (nodes.size() == 1 && is_sink_node(nodes.peek()))
+      {
+        out << "\t" << value_of(nodes.read()) << " [shape=box];" << std::endl;
+      }
+    else if (nodes.size() > 0)
+      {
+        out << "\t// Nodes" << std::endl;
 
-      out << "\tn" << create_sink(false) << " [label=\"0\"];" << std::endl;
-      out << "\tn" << create_sink(true) << " [label=\"1\"];" << std::endl;
+        nodes.seek(0, tpie::file_stream_base::end);
+        out << "\tnode [shape=box];" << std::endl;
 
-      out <<  std::endl << "\t// Arcs" << std::endl;
-      output_dot_arcs(nodes, out);
-    }
+        while (nodes.can_read_back())
+          {
+            auto node = nodes.read_back();
+
+            out << "\tn"
+                << node.node_ptr
+                << " [label=<x<SUB>"
+                << label_of(node)
+                << "</SUB>, id<SUB>"
+                << (id_of(node)) << "</SUB>>, style=rounded];"
+                << std::endl;
+          }
+
+        out << "\tn" << create_sink(false) << " [label=\"0\"];" << std::endl;
+        out << "\tn" << create_sink(true) << " [label=\"1\"];" << std::endl;
+
+        out <<  std::endl << "\t// Arcs" << std::endl;
+
+        nodes.seek(0, tpie::file_stream_base::end);
+        while (nodes.can_read_back())
+          {
+            auto node = nodes.read_back();
+
+            out << "\tn" << node.node_ptr
+                << " -> "
+                << "n" << node.low
+                << " [style=solid];" << std::endl;
+            out << "\tn" << node.node_ptr
+                << " -> "
+                << "n" << node.high
+                << "[style=dashed];"  << std::endl;
+          }
+      }
     out << "}" << std::endl;
     out.close();
 
