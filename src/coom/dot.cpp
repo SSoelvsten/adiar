@@ -75,6 +75,52 @@ namespace coom {
 
     system(("dot -Tpng " + filename + ".dot" + " -o " + filename + ".png").c_str());
   }
+
+  void output_dot(tpie::file_stream<arc>& node_arcs,
+                  tpie::file_stream<arc>& sink_arcs,
+                  std::string filename)
+  {
+    std::ofstream out;
+    out.open(filename + ".dot");
+
+    out << "digraph OBDD {" << std::endl;
+
+    node_arcs.seek(0);
+    out << "\t// Node Arcs" << std::endl;
+
+    while (node_arcs.can_read())
+      {
+        arc a = node_arcs.read();
+        out << "\t"
+            << "n" << label_of(a.target) << "_" << id_of(a.target)
+            << " -> "
+            << "n" << label_of(a.source) << "_" << id_of(a.source)
+            << " [style=" << (a.is_high ? "dashed" : "solid") << ", color=blue];"
+            << std::endl;
+      }
+
+    sink_arcs.seek(0);
+    out << std::endl << "\t// Sink Arcs" << std::endl;
+
+    out << "\ts0 [shape=box, label=\"0\"];" << std::endl;
+    out << "\ts1 [shape=box, label=\"1\"];" << std::endl;
+
+    while (sink_arcs.can_read())
+      {
+        arc a = sink_arcs.read();
+        out << "\t"
+            << "n" << label_of(a.source) << "_" << id_of(a.source)
+            << " -> "
+            << "s" << value_of(a.target)
+            << " [style=" << (a.is_high ? "dashed" : "solid") << ", color=red];"
+            << std::endl;
+          }
+
+    out << "\t{ rank=min; s0 s1 }" << std::endl << "}" << std::endl;
+    out.close();
+
+    system(("dot -Tpng " + filename + ".dot" + " -o " + filename + ".png").c_str());
+  }
 }
 
 int main(const int argc, const char* argv[]) {
@@ -108,6 +154,33 @@ int main(const int argc, const char* argv[]) {
                                         coom::create_node_ptr(1,coom::MAX_ID)));
     file_stream.close();
 
+    tpie::log_info() << "(Will test DOT output of arc streams directly)" << std::endl;
+
+    tpie::file_stream<coom::arc> node_arcs;
+    node_arcs.open();
+
+    auto n1 = coom::create_node_ptr(0,0);
+    auto n2 = coom::create_node_ptr(1,0);
+    auto n3 = coom::create_node_ptr(2,0);
+    auto n4 = coom::create_node_ptr(2,1);
+
+    node_arcs.write(coom::create_arc(n1,true,n2));
+    node_arcs.write(coom::create_arc(n1,false,n3));
+    node_arcs.write(coom::create_arc(n2,false,n3));
+    node_arcs.write(coom::create_arc(n2,true,n4));
+
+    tpie::file_stream<coom::arc> sink_arcs;
+    sink_arcs.open();
+
+    auto sink_T = coom::create_sink(true);
+    auto sink_F = coom::create_sink(false);
+
+    sink_arcs.write(coom::create_arc(n3,false,sink_F));
+    sink_arcs.write(coom::create_arc(n3,true,sink_T));
+    sink_arcs.write(coom::create_arc(n4,false,sink_T));
+    sink_arcs.write(coom::create_arc(n4,true,sink_T));
+
+    coom::output_dot(node_arcs, sink_arcs, "dot_test_arcs");
     // TODO: Remove until here...
 
     tpie::tpie_finish();
