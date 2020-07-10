@@ -12,7 +12,7 @@
 #include <tpie/tpie_log.h>
 
 // COOM Imports
-#include "data.cpp"
+#include "data.cpp" // TODO: Only header file
 
 #include "dot.h"
 
