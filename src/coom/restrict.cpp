@@ -7,6 +7,8 @@
 #include "data.h"
 #include "reduce.h"
 
+#include "assert.h"
+
 #include "debug.h"
 #include "debug_data.h"
 
@@ -196,7 +198,11 @@ namespace coom
     assert (out_nodes.size() == 0);
 #endif
     debug::println_algorithm_start("RESTRICT");
+
+    assert::is_valid_input_stream(in_nodes);
     debug::println_file_stream(in_nodes, "in_nodes");
+
+    assert::is_valid_output_stream(out_nodes);
 
     tpie::file_stream<arc> reduce_node_arcs;
     reduce_node_arcs.open();
@@ -206,16 +212,9 @@ namespace coom
 
     restrict(in_nodes, in_assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-    if (reduce_node_arcs.size() > 0 || reduce_sink_arcs.size() > 0) {
-#if COOM_ASSERT
-      assert (out_nodes.size() == 0);
-#endif
+    if (out_nodes.size() == 0) {
       reduce(reduce_node_arcs, reduce_sink_arcs, out_nodes);
     } else {
-#if COOM_ASSERT
-      assert (out_nodes.size() == 1);
-#endif
-
       debug::println_file_stream(out_nodes, "out_nodes");
     }
 

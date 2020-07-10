@@ -4,6 +4,7 @@
 using namespace snowhouse;
 using namespace bandit;
 
+#include <coom/assert.cpp>
 #include <coom/debug.cpp>
 #include <coom/debug_data.cpp>
 

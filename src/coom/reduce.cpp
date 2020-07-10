@@ -10,6 +10,8 @@
 #include "debug.h"
 #include "debug_data.h"
 
+#include "assert.h"
+
 #include "reduce.h"
 
 namespace coom
@@ -46,8 +48,14 @@ namespace coom
               tpie::file_stream<node> &out_nodes)
   {
     debug::println_algorithm_start("REDUCE");
+
+    assert::is_valid_input_stream(in_node_arcs);
     debug::println_file_stream(in_node_arcs, "in_node_arcs");
+
+    assert::is_valid_input_stream(in_sink_arcs);
     debug::println_file_stream(in_sink_arcs, "in_sink_arcs");
+
+    assert::is_valid_output_stream(out_nodes);
 
     //Set-up
     uint64_t id0 = MAX_ID;

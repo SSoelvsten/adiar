@@ -5,6 +5,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 
 set(HEADERS
   apply.h
+  assert.h
   coom.h
   count.h
   data.h
@@ -18,6 +19,7 @@ set(HEADERS
 
 set(SOURCES
   apply.cpp
+  assert.cpp
   count.cpp
   data.cpp
   debug.cpp
