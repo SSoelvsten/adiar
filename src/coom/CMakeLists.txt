@@ -8,7 +8,8 @@ set(HEADERS
   coom.h
   count.h
   data.h
-  data_pty.h
+  debug.h
+  debug_data.h
   evaluate.h
   negate.cpp
   reduce.h
@@ -19,7 +20,8 @@ set(SOURCES
   apply.cpp
   count.cpp
   data.cpp
-  data_pty.cpp
+  debug.cpp
+  debug_data.cpp
   evaluate.cpp
   negate.cpp
   reduce.cpp

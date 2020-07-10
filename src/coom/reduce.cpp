@@ -1,12 +1,14 @@
 #ifndef COOM_REDUCE_CPP
 #define COOM_REDUCE_CPP
 
+#include <tpie/tpie.h>
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
 #include <tpie/priority_queue.h>
 
 #include "data.h"
-#include "data_pty.h"
+#include "debug.h"
+#include "debug_data.h"
 
 #include "reduce.h"
 
@@ -43,14 +45,9 @@ namespace coom
               tpie::file_stream<arc> &in_sink_arcs,
               tpie::file_stream<node> &out_nodes)
   {
-#if COOM_DEBUG
-    tpie::log_info() << "//===\\\\ REDUCE //===\\\\\n";
-    tpie::log_info() << "in_node_arcs: ";
-    coom::println_file_stream(in_node_arcs);
-
-    tpie::log_info() << "in_sink_arcs: ";
-    coom::println_file_stream(in_sink_arcs);
-#endif
+    debug::println_algorithm_start("REDUCE");
+    debug::println_file_stream(in_node_arcs, "in_node_arcs");
+    debug::println_file_stream(in_sink_arcs, "in_sink_arcs");
 
     //Set-up
     uint64_t id0 = MAX_ID;
@@ -314,17 +311,15 @@ namespace coom
       if (!in_node_arcs.can_read_back() && !in_sink_arcs.can_read_back() && out_nodes.size() == 0)
       {
         out_nodes.write(create_sink_node(value_of(current_map.new_node_ptr)));
+
+        debug::println_file_stream(out_nodes, "out_nodes");
+        debug::println_algorithm_end("REDUCE");
         return;
       }
     }
 
-    return;
-
-#if COOM_DEBUG
-    tpie::log_info() << "out_nodes: ";
-    coom::println_file_stream(out_nodes);
-    tpie::log_info() << "\\\\===// REDUCE \\\\===//\n";
-#endif
+    debug::println_file_stream(out_nodes, "out_nodes");
+    debug::println_algorithm_end("REDUCE");
   }
 } // namespace coom
 

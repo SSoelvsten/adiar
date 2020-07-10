@@ -2,10 +2,14 @@
 #define COOM_RESTRICT_CPP
 
 #include <tpie/file_stream.h>
-#include "data.h"
-#include "data_pty.h"
-#include "reduce.h"
 #include <tpie/priority_queue.h>
+
+#include "data.h"
+#include "reduce.h"
+
+#include "debug.h"
+#include "debug_data.h"
+
 #include "restrict.h"
 
 namespace coom
@@ -191,11 +195,8 @@ namespace coom
 #if COOM_ASSERT
     assert (out_nodes.size() == 0);
 #endif
-#if COOM_DEBUG
-    tpie::log_info() << "//===\\\\ RESTRICT //===\\\\\n";
-    tpie::log_info() << "in_nodes: ";
-    coom::println_file_stream(in_nodes);
-#endif
+    debug::println_algorithm_start("RESTRICT");
+    debug::println_file_stream(in_nodes, "in_nodes");
 
     tpie::file_stream<arc> reduce_node_arcs;
     reduce_node_arcs.open();
@@ -215,15 +216,10 @@ namespace coom
       assert (out_nodes.size() == 1);
 #endif
 
-#if COOM_DEBUG
-      tpie::log_info() << "out_nodes: ";
-      coom::println_file_stream(out_nodes);
-#endif
+      debug::println_file_stream(out_nodes, "out_nodes");
     }
 
-#if COOM_DEBUG
-    tpie::log_info() << "\\\\===// RESTRICT \\\\===//\n";
-#endif
+    debug::println_algorithm_end("RESTRICT");
   }
 }
 

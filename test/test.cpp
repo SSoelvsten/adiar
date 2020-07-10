@@ -4,6 +4,9 @@
 using namespace snowhouse;
 using namespace bandit;
 
+#include <coom/debug.cpp>
+#include <coom/debug_data.cpp>
+
 #include "test_tpie.cpp"
 
 #include "test_coom_data.cpp"
