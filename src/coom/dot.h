@@ -6,7 +6,8 @@
 #include "data.h"
 
 namespace coom {
-  void println_dot(tpie::file_stream<node>& nodes);
+  void output_dot(tpie::file_stream<node>& nodes,
+                  std::string filename);
 }
 
 #endif // COOM_DOT_H
