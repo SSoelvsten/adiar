@@ -144,7 +144,7 @@ namespace coom {
 
   bool operator< (const arc& a, const arc& b)
   {
-    return (a.target < b.target)
+    return (a.source < b.source)
       || (a.source == b.source && ((a.is_high < b.is_high)
                                    || (a.target < b.target))
           );
@@ -152,7 +152,7 @@ namespace coom {
 
   bool operator> (const arc& a, const arc& b)
   {
-    return (a.target > b.target)
+    return (a.source > b.source)
       || (a.source == b.source && ((a.is_high > b.is_high)
                                    || (a.target > b.target))
           );
