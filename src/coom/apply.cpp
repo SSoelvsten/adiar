@@ -9,6 +9,16 @@
 
 namespace coom
 {
+  bool can_right_shortcut (const bool_op &op, const uint64_t sink)
+  {
+    return op(create_sink(false), sink) == op(create_sink(true), sink);
+  }
+
+  bool can_left_shortcut (const bool_op &op, const uint64_t sink)
+  {
+    return op(sink, create_sink(false)) == op(sink, create_sink(true));
+  }
+
   void apply(tpie::file_stream<node> &in_nodes_1,
              tpie::file_stream<node> &in_nodes_2,
              const bool_op &op,
@@ -48,6 +58,32 @@ namespace coom
     if (is_sink_node(root_1) && is_sink_node(root_2)) {
       node res_sink_node = node {
         op(root_1.node_ptr, root_2.node_ptr),
+        NIL,
+        NIL
+      };
+
+      out_nodes.write(res_sink_node);
+
+#if COOM_DEBUG
+      tpie::log_info() << "out_nodes: ";
+      println_file_stream(out_nodes);
+#endif
+    } else if (is_sink_node(root_1) && can_left_shortcut(op, root_1.node_ptr)) {
+      node res_sink_node = node {
+        op(root_1.node_ptr, create_sink(false)),
+        NIL,
+        NIL
+      };
+
+      out_nodes.write(res_sink_node);
+
+#if COOM_DEBUG
+      tpie::log_info() << "out_nodes: ";
+      println_file_stream(out_nodes);
+#endif
+    } else if (is_sink_node(root_2) && can_right_shortcut(op, root_2.node_ptr)) {
+      node res_sink_node = node {
+        op(create_sink(false), root_2.node_ptr),
         NIL,
         NIL
       };
