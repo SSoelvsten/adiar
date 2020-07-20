@@ -34,18 +34,17 @@ namespace coom
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Restrict a given node-based OBDD based on a partial assignment.
   ///
-  /// \param nodes_1 Nodes in reverse topological order of the first OBDD.
-  /// \param nodes_2 Nodes in reverse topological order of the first OBDD.
+  /// \param out_nodes_1 Nodes in reverse topological order of the first OBDD.
+  /// \param out_nodes_2 Nodes in reverse topological order of the second OBDD.
   /// \param op Binary boolean operator to be applied.
   ///
-  /// \param reduce_node_arcs The (ptr,ptr) arcs sorted by target in order
-  /// \param reduce_sink_arcs The (ptr,sink) arcs sorted by source in order
+  /// \param out_nodes The output stream to send the nodes in reverse topological
+  ///                  order.
   //////////////////////////////////////////////////////////////////////////////
-  void apply(tpie::file_stream<node> &nodes_1,
-             tpie::file_stream<node> &nodes_2,
+  void apply(tpie::file_stream<node> &in_nodes_1,
+             tpie::file_stream<node> &in_nodes_2,
              const bool_op &op,
-             tpie::file_stream<arc> &reduce_node_arcs,
-             tpie::file_stream<arc> &reduce_sink_arcs);
+             tpie::file_stream<node> &out_nodes);
 }
 
 #endif // COOM_APPLY_H
