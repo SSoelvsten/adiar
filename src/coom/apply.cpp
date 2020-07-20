@@ -46,7 +46,13 @@ namespace coom
     auto root_2 = in_nodes_2.read_back();
 
     if (is_sink_node(root_1) && is_sink_node(root_2)) {
-      // TODO: Implement...
+      node res_sink_node = node {
+        op(root_1.node_ptr, root_2.node_ptr),
+        NIL,
+        NIL
+      };
+
+      out_nodes.write(res_sink_node);
 
 #if COOM_DEBUG
       tpie::log_info() << "out_nodes: ";

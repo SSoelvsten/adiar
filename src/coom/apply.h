@@ -13,7 +13,7 @@ namespace coom
 
   const bool_op and_op = [] (uint64_t sink1, uint64_t sink2) -> uint64_t
   {
-    return sink1 ^ sink2;
+    return sink1 & sink2;
   };
 
   const bool_op or_op = [] (uint64_t sink1, uint64_t sink2) -> uint64_t
