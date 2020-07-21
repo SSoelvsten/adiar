@@ -85,10 +85,7 @@ Library_, and _Aptitude_. On Ubuntu 18+ you can obtain all these dependencies
 with the following commands.
 
 ```bash
-apt install g++
-apt install cmake
-apt install libboost-all-dev
-apt install aptitude
+apt install g++ cmake libboost-all-dev aptitude
 ```
 
 As a visual aid, the internal representation of the Decision Diagrams can be
@@ -117,6 +114,12 @@ The primary targets are as follows
 | `build` | Build the source files |
 | `clean` | Remove all build files |
 | `test`  | Run all unit tests     |
+
+For development and more we also provide the following targets
+
+| target          | effect                                                       |
+|-----------------|--------------------------------------------------------------|
+| `dot F=<files>` | Convert TPIE persisted file streams `<files>` into DOT files |
 
 
 ### Examples and benchmarks
