@@ -63,11 +63,11 @@ namespace coom {
             out << "\tn" << node.node_ptr
                 << " -> "
                 << "n" << node.low
-                << " [style=solid];" << std::endl;
+                << " [style=dashed];" << std::endl;
             out << "\tn" << node.node_ptr
                 << " -> "
                 << "n" << node.high
-                << "[style=dashed];"  << std::endl;
+                << "[style=solid];"  << std::endl;
           }
       }
     out << "}" << std::endl;
@@ -95,7 +95,7 @@ namespace coom {
             << "n" << label_of(a.target) << "_" << id_of(a.target)
             << " -> "
             << "n" << label_of(a.source) << "_" << id_of(a.source)
-            << " [style=" << (a.is_high ? "dashed" : "solid") << ", color=blue];"
+            << " [style=" << (a.is_high ? "solid" : "dashed") << ", color=blue];"
             << std::endl;
       }
 
@@ -112,7 +112,7 @@ namespace coom {
             << "n" << label_of(a.source) << "_" << id_of(a.source)
             << " -> "
             << "s" << value_of(a.target)
-            << " [style=" << (a.is_high ? "dashed" : "solid") << ", color=red];"
+            << " [style=" << (a.is_high ? "solid" : "dashed") << ", color=red];"
             << std::endl;
           }
 
