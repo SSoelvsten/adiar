@@ -27,8 +27,9 @@ performance of OBDD Manipulation.
         - [Extensions](#extensions)
             - [Complement Edges](#complement-edges)
             - [Non-boolean Decision Diagrams](#non-boolean-decision-diagrams)
-    - [License](#license)
+            - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
     - [Credits](#credits)
+    - [License](#license)
     - [References](#references)
 
 <!-- markdown-toc end -->
@@ -221,6 +222,12 @@ edge-based representation of the data-structure one can also implement a
 _Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)]. The latter may
 result in major rewrites of the algorithms.
 
+#### Free Boolean Decision Diagrams
+One can remove the restriction of ordering the decision diagram to then
+potentially compress the data structure even more. These Free Binary Decision
+Diagrams (FBDD) of [[Meinel94](#references)] may also be possible to implement
+in the setting of Time-forward processing used here.
+
 
 ## Credits
 
@@ -285,6 +292,10 @@ The software and documentation files in this repository are provided under the
   Timothy Kam, Tiziano Villa, Robert K. Brayton, and L. Sangiovanni-vincentelli
   Alberto. “_Multi-valued decision diagrams: Theory and applications_”. In:
   _Multiple- Valued Logic 4.1_ 1998
+
+- [Meinel94]
+  J. Gergov and C. Meinel. “_Efficient analysis and manipulation of OBDDs can
+  be extended to FBDDs_”. 1994
 
 - [[Mølhave12](https://dl.acm.org/doi/pdf/10.1145/2367574.2367579)]
   Thomas Mølhave. “_Using TPIE for Processing Massive Data Sets in C++_”. 2012
