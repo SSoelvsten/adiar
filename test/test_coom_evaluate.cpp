@@ -195,6 +195,29 @@ go_bandit([]() {
             AssertThat(coom::evaluate(skip_obdd, assignment), Is().False());
           });
 
+        it("should return T on OBDD with non-zero root with assignment (F,T)", [&]() {
+            /*
+                                 ---- x0
+
+                     1           ---- x1
+                    / \
+                    F T
+             */
+
+            tpie::file_stream<node> non_zero_obdd;
+            non_zero_obdd.open();
+
+            auto non_zero_n1 = create_node(1,0, sink_F, sink_T);
+            non_zero_obdd.write(non_zero_n1);
+
+            tpie::file_stream<bool> assignment;
+            assignment.open();
+
+            assignment.write(false);
+            assignment.write(true);
+
+            AssertThat(coom::evaluate(non_zero_obdd, assignment), Is().True());
+          });
 
         it("should return F on F sink-only OBDD", [&]() {
             tpie::file_stream<node> obdd2;
