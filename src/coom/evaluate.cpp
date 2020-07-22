@@ -18,7 +18,7 @@ namespace coom
     //få fat i roden
     node v = nodes.read_back();
     bool x = assignment.read();
-    int label = label_of(v);
+    int label = 0;
 
     //check om træet kun er en sink
     if(is_sink_node(v)) {
