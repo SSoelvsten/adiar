@@ -50,7 +50,7 @@ go_bandit([]() {
             /*
                  1
                 / \
-                F 2
+                T 2
                  / \
                  T |
                    |
@@ -62,7 +62,7 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 2, false });
+            assignment.write({ 2, true });
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -96,16 +96,16 @@ go_bandit([]() {
             auto sink_T = create_sink(true);
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np1, false, sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np1, false, sink_T)));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np2, false, sink_T)));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np2, false, sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np5, false, sink_F)));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np2, true, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np5, true, sink_T)));
           });
 
         it("should bridge layers. [2]. Assignment: (_,F,_,_)", [&obdd]() {
@@ -162,6 +162,18 @@ go_bandit([]() {
           });
 
         it("should bridge layers [3]. Assignment: (_,T,_,_)", [&obdd]() {
+          /*
+             1
+            / \
+            | 2
+            |/ \
+            3   4
+           / \ / \
+           F T T 5
+                / \
+                F T
+          */  
+            
             /*
                   1
                  / \
@@ -219,7 +231,7 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, false, sink_F)));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, false, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, true, sink_T)));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np4, false, sink_T)));
