@@ -22,7 +22,6 @@ performance of OBDD Manipulation.
     - [Future Work](#future-work)
         - [Optimisations](#optimisations)
             - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
-            - [Pipelining](#pipelining)
             - [Parallelisation](#parallelisation)
         - [Extensions](#extensions)
             - [Complement Edges](#complement-edges)
@@ -146,20 +145,15 @@ may constitute interesting undergraduate research projects. We would love to see
 the results of such projects as pull requests to improve the main project.
 
 ### Optimisations
+There are quite a few avenues of trying to shave off a few significant constants
+in the running time. Both suggestions below also make the GPU an intriguing
+subject for a possible heavy improvement in the running time.
 
 #### Non-comparison based sorting on numbers
 The sorting in multiple variables has already been reduced to a simple sorting
 on a single 64-bit key in the representation of nodes and arcs. It should be
 possible to exploit this with a radix sort for an _O(N)_ time complexity, though
-maybe not due to the _O(sort(N))_ I/O lower bound.
-
-#### Pipelining
-While the output is already sorted for the next algorithm, the computation order
-of every algorithm still is in reverse of the input given. That is, _Apply_ has
-to finish processing before the following _Reduce_ can start and vica versa. Is
-it possible though to output in the order used for computation to make them all
-into streaming algorithms and with that fully embrace the idea of pipelining
-(e.g. [[Arge17](#references)])?
+maybe one will not gain too much due to the _O(sort(N))_ I/O lower bound.
 
 #### Parallelisation
 The idea of Time-Forward-Processing is inherently sequential, but can we
@@ -168,45 +162,60 @@ parallelising the underlying data structures and algorithms:
 
 - Parallel traversal of the same file stream
 
-- Parallelisable sorting algorithms (Sorting in TPIE is parallelised)
+- Parallelisable sorting algorithms (Sorting in TPIE is parallelised).
   
-- Parallelisable priority queue, such as the one in
-  [[Sitchinava12](#references)]
+- Parallelisable Cache-oblivious priority queue, such as the one in
+  [[Sitchinava12](#references****.
 
-Using these we have the following ideas for parallelisation.
+**Layer-aware priority queue**
 
-- In the _Reduce_ algorithm:
+Already just allowing the priority queue to be sorted on a different thread than
+where all other computation happens may improve performance. But, since all
+computation is layer by layer and (except for _Apply_ and _Reduce_) no
+information goes across the same layer, then one may prepare the next layer
+(_i+1_) while processing the current (_i_). When information is pushed from
+layer _i_ to _i+1_ one may then just sort those nodes separately and merge the
+two sorted lists implicitly when popping elements later.
 
-  - Parallelise applying the reduction at each layer, since at that point all
-    information is already given and it would then be _p_-parallel scans through
-    a single list.
+**Distribute nodes and information (in order) to worker-threads**
 
-- In the _Apply_ algorithm:
+Let the main thread merely distribute the work: The file-stream is a work-queue
+synchronised with the priority queue for other processes to take their jobs. The
+main thread also is the only one allowed to pop from the priority queue. One may
+also need a process to collect, manage and sort the output of all the workers or
+force them to output in the right order using another priority queue.
 
-  - Notice at the time of processing a resulting layer (i.e. consider the output
-    label), all requests for that layer already have been added to the queue.
-    All requests at said layer are of the form _(v₁, v₂)_ with label
-    _min(v₁.label, v₂.label)_ and will always create requests for nodes with a
-    strictly higher level. So if each worker process can be fed with information
-    from the request-queue, then they can work in parallel, as long as the
-    output is sorted for the later _Reduce_.
+The basic idea would then be to let a worker thread pop the next node from the
+file stream and extracts from the priority queue the forwarded information they
+need. They then process their information, push new information to be forwarded
+into the priority queue and return the to-be outputted node or arcs.
 
-**Delegation of tasks to the GPU**
+Since each layer is independent, then all processes only need to wait for each
+other to finish when going from one layer to another. With
+[semaphores](https://en.wikipedia.org/wiki/Semaphore_(programming)) one can both
+implement a fast and hardware-supported lock on popping the jobs from the file
+stream and a barrier for synchronisation of threads when crossing from one layer
+to the next.
 
-Can the algorithm or parts of it be moved to the much faster GPU? By the design
-of the algorithms, every layer in the OBDD is processed independently of each
-other. The CPU can merge the Priority Queue with the whole layer to then
-delegate the processing of the whole layer to the GPU.
+**Parallelising Reduction Rule 2 computations**
 
-Data structures to look into:
+The biggest bottleneck is the priority queue (see above suggestion) and the
+sorting of nodes withing each layer of the _Reduce_ step. The computations
+involved with Reduction Rule 1 are so few, that one cannot win from
+parallelising it. The other list of possibly to-be reduced by Reduction Rule 2
+nodes start by being sorted by their label and id to then go through two
+sortings:
 
-- Sorting Algorithm. Here one might want to explot the avenue of [non-comparison
-  based sorting](#use-non-comparison-based-sorting-on-numbers) at the same time.
+1. By their children to make the children-related nodes direct neighbours.
 
-- Priority Queue. This one can then be used to forward information across the
-  layer inside the GPU. This also improves the speed and size of the priority
-  queue in the main memory that would only be used for communication between
-  layers.
+2. Back to their label and id to put them back in order with the transposed
+   graph of where to forward information for later.
+
+Between step _1_ and _2_ the list is split into two in a linear sweep: The list
+of nodes to keep and the ones to remove in favour of another one kept. One may
+include the linear sweep inside the merge procedure of the first parallelised
+sorting to immediately generate these two lists and with that hopefully improve
+the running time.
 
 ### Extensions
 
