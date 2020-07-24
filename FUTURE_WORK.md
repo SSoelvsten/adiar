@@ -6,21 +6,22 @@ may constitute interesting undergraduate research projects.
 **Table of Contents**
 
 - [Future Work](#future-work)
-    - [Optimisations](#optimisations)
+    - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
         - [Parallelisation](#parallelisation)
             - [Layer-aware priority queus](#layer-aware-priority-queus)
             - [Parallelising Reduction Rule 2 computations](#parallelising-reduction-rule-2-computations)
             - [Distribute nodes and information (in order) to worker-threads](#distribute-nodes-and-information-in-order-to-worker-threads)
-    - [Extensions](#extensions)
+    - [Optimising the OBDD](#optimising-the-obdd)
         - [Complement Edges](#complement-edges)
+    - [Extensions](#extensions)
         - [Non-boolean Decision Diagrams](#non-boolean-decision-diagrams)
         - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
 
 <!-- markdown-toc end -->
 
 
-## Optimisations
+## Optimising the current algorithms
 There are quite a few avenues of trying to shave off a few significant constants
 in the running time on the current algorithms. Both suggestions below also make
 the GPU an intriguing subject for a possible heavy improvement in the running
@@ -97,13 +98,16 @@ stream and a barrier for synchronisation of threads when crossing from one layer
 to the next.
 
 
-## Extensions
+## Optimising the OBDD
 
 ### Complement Edges
 Currently, we do not support complement edges, though one can expect about a 7%
 factor decrease in the size of the OBDD from using said technique. In the
 recursive algorithms, one can even expect a factor two decrease in the
 algorithms execution time [[Brace90](#references)].
+
+
+## Extensions
 
 ### Non-boolean Decision Diagrams
 One can easily extend the proposed representation of sink nodes to encompass
