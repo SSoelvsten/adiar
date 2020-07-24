@@ -10,7 +10,7 @@ may constitute interesting undergraduate research projects.
         - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
         - [Parallelisation](#parallelisation)
             - [Layer-aware priority queus](#layer-aware-priority-queus)
-            - [Parallelising Reduction Rule 2 computations](#parallelising-reduction-rule-2-computations)
+            - [Reduction Rule 2 within the merge sorting](#reduction-rule-2-within-the-merge-sorting)
             - [Distribute nodes and information (in order) to worker-threads](#distribute-nodes-and-information-in-order-to-worker-threads)
     - [Optimising the OBDD](#optimising-the-obdd)
         - [Complement Edges](#complement-edges)
@@ -56,7 +56,7 @@ layer _i_ to _i+1_ one may then just sort those nodes separately and merge the
 two sorted lists implicitly when popping elements later.
 
 
-#### Parallelising Reduction Rule 2 computations
+#### Reduction Rule 2 within the merge sorting
 
 The biggest bottleneck is the priority queue (see above suggestion) and the
 sorting of nodes within each layer of the _Reduce_ step. The computations
