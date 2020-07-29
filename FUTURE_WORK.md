@@ -24,7 +24,7 @@ may constitute interesting undergraduate research projects.
 
 ## Optimising the current algorithms
 There are quite a few avenues of trying to shave off a few significant constants
-in the running time on the current algorithms. Both suggestions below also make
+in the running time on the current algorithms. All suggestions below also make
 the GPU an intriguing subject for a possible heavy improvement in the running
 time.
 
@@ -52,15 +52,17 @@ three different sub-structures.
 1. **Layer i → Layer j > i+1**
 
     This is information we need in an arbitrary long time into the future, so we
-    have to deal with these by an internal priority queue as before. We may
-    choose to postpone pushing elements into it until all the next layer is
-    reached by means of an intermediate FIFO queue.
+    have to deal with these by an internal priority queue as before. 
+
+    We may choose to postpone pushing elements into it until all the next layer
+    is reached by means of an intermediate FIFO queue. This way we can keep the
+    priority queue as small as possible at all times.
 
 2. **Layer i → Layer i+1**
 
-    When information is pushed from layer _i_ to _i+1_ one may then just sort
-    those nodes separately after all layer computations are done and then merge
-    the two sorted lists implicitly when popping elements later.
+    When information is pushed from layer _i_ to _i+1_ one may just sort those
+    nodes separately from the priority queue above when all layer computations
+    are done.
 
     Assuming most requests are from layer _i_ to _i+1_, then based on
     [[Mølhave12](/README.md#references)] this will hopefully constitute a major
@@ -69,19 +71,19 @@ three different sub-structures.
 
 3. **Layer i → Layer i**
 
-    Since the priority queue is keeping track of which layer one is at, then
-    when information is sent across to a later node on the same layer, then this
-    can be dealt with by a second priority queue.
+    This is information we may immediately need, and needs to be sorted on the
+    fly, so we still have to use a priority queue. Placing it in a secondary
+    priority queue may make it clash less with the sorting in the other one?
+
+    In algorithms such as _Apply_, only nodes in this secondary priority queue
+    actually will some _data_ to be sent across the layer. In the two prior
+    cases this field has to be occupied merely by a dummy node. That is, the
+    first two data structures do not need this field, which takes up _3·64_ bits
+    of data. So, we can make the total memory footprint much smaller and with it
+    allow many more elements to be closer to the processor!
 
 We may then _pop_ from our layer-aware priority queue by an implicit merge of
 these three data structures above.
-
-The third data structure only is needed for algorithms such as _Apply_, where
-nodes are sent as _data_ across the layer. In the first two cases this field is
-occupied merely by a dummy _NIL_ variable. That is, the first two data
-structures do not need this field that takes up _3·64_ bits of data, and we can
-make the total memory footprint much smaller and with it allow many more
-elements to be closer to the processor.
 
 
 ### Parallelisation
