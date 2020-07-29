@@ -37,11 +37,9 @@ dot:
 	@./build/src/coom/coom_dot ${F}
 
 # ============================================================================ #
-#  COOM_MAIN for console debugging
-#
-#  TODO: Remove on publication...
+#  MAIN for console debugging
 # ============================================================================ #
-coom_main:
+main:
 	@mkdir -p build/
 	@cd build/ && cmake -DCOOM_DEBUG=ON -DCOOM_ASSERT=ON ..
 	@cd build/ && make coom_main
