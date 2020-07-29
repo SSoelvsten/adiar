@@ -112,6 +112,7 @@ For development and more we also provide the following targets
 | target          | effect                                                       |
 |-----------------|--------------------------------------------------------------|
 | `dot F=<files>` | Convert TPIE persisted file streams `<files>` into DOT files |
+| `main`          | Run the _main_ function in `main.cpp` with console debugging |
 
 
 ### Examples and benchmarks

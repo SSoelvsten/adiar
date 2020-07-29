@@ -84,7 +84,7 @@ target_compile_definitions(coom_dot PRIVATE COOM_DEBUG=0 COOM_ASSERT=0)
 
 
 # ============================================================================ #
-# TODO: DELETE WHEN PRINT OUTPUT IS NOT NEEDED
+# Setup MAIN target
 add_executable (coom_main main.cpp)
 target_link_libraries(coom_main tpie)
 target_link_libraries(coom_main coom)
