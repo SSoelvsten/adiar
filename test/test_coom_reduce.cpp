@@ -49,7 +49,6 @@ go_bandit([]() {
 
             coom::reduce(in_node_arcs, in_sink_arcs, out_nodes);
 
-
             // Check it looks all right
             out_nodes.seek(0);
 
@@ -116,7 +115,6 @@ go_bandit([]() {
 
             coom::reduce(in_node_arcs, in_sink_arcs, out_nodes);
 
-
             // Check it looks all right
             out_nodes.seek(0);
 
@@ -131,7 +129,7 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n2
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(3,MAX_ID))));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n1
@@ -181,7 +179,6 @@ go_bandit([]() {
 
             coom::reduce(in_node_arcs, in_sink_arcs, out_nodes);
 
-
             // Check it looks all right
             out_nodes.seek(0);
 
@@ -208,9 +205,9 @@ go_bandit([]() {
                 | | \      =>      |/ \
                 3 4 T              4  T
                 |X|               / \
-                5 T               5 T
-               / \               / \
-               F T               F T
+                5 6               5  6 
+               / \ \\            / \ \\
+               F T T F           F T T F
             */
 
             auto n1 = create_node_ptr(0,0);
@@ -256,16 +253,16 @@ go_bandit([]() {
 
             AssertThat(out_nodes.can_read(), Is().True());
 
-            // n6
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(3, MAX_ID, sink_T, sink_F)));
+            // n5
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(3, MAX_ID, sink_F, sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
-            // n5
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(3, MAX_ID-1, sink_F, sink_T)));
+            // n6
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(3, MAX_ID-1, sink_T, sink_F)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n4
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID, create_node_ptr(3, MAX_ID), create_node_ptr(3, MAX_ID-1))));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n2
@@ -377,7 +374,6 @@ go_bandit([]() {
             auto sink_F = create_sink(false);
 
             in_sink_arcs.write(create_arc(n1,true,sink_T));
-            in_sink_arcs.write(create_arc(n2,true,sink_T));
             in_sink_arcs.write(create_arc(n3,false,sink_F));
             in_sink_arcs.write(create_arc(n3,true,sink_T));
             in_sink_arcs.write(create_arc(n4,false,sink_F));
@@ -446,7 +442,7 @@ go_bandit([]() {
 
             in_sink_arcs.write(create_arc(n4,false,sink_F));
             in_sink_arcs.write(create_arc(n4,true,sink_T));
-            in_sink_arcs.write(create_arc(n5,true,sink_F));
+            in_sink_arcs.write(create_arc(n5,true,sink_T));
             in_sink_arcs.write(create_arc(n6,false,sink_F));
             in_sink_arcs.write(create_arc(n6,true,sink_T));
             in_sink_arcs.write(create_arc(n7,false,sink_T));
@@ -459,6 +455,17 @@ go_bandit([]() {
 
             coom::reduce(in_node_arcs, in_sink_arcs, out_nodes);
 
+            /*
+                     1                         1
+                    / \                       / \
+                   2   3                     2   3
+                  / \ / \                    |\ /|
+                 4   5   6        =>          \T/
+                / \ / \ / \                    6
+                F T 7 T F T                   / \
+                   / \                        F T
+                   T T
+            */
 
             // Check it looks all right
             out_nodes.seek(0);
@@ -469,16 +476,16 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
-            // n3
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID, sink_T, create_node_ptr(2, MAX_ID))));
+            // n2
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
-            // n2
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID), sink_T)));
+            // n3
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID-1, sink_T, create_node_ptr(2, MAX_ID))));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n1
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(1,MAX_ID-1), create_node_ptr(1, MAX_ID))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(1, MAX_ID-1))));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
@@ -504,7 +511,7 @@ go_bandit([]() {
 
             in_node_arcs.write(create_arc(n1,true,n2));
             in_node_arcs.write(create_arc(n1,false,n3));
-            in_node_arcs.write(create_arc(n2,true,n3));
+            in_node_arcs.write(create_arc(n2,false,n3));
             in_node_arcs.write(create_arc(n2,true,n4));
 
             tpie::file_stream<arc> in_sink_arcs;
@@ -618,7 +625,7 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
-        it("is stable", [&]() {
+        /*it("is stable", [&]() {
             /*
                  1                    1
                 / \                  / \
@@ -629,7 +636,7 @@ go_bandit([]() {
                T F F T              T F F T
             */
 
-            auto n1 = create_node_ptr(0,0);
+            /*auto n1 = create_node_ptr(0,0);
             auto n2 = create_node_ptr(1,0);
             auto n3 = create_node_ptr(2,0);
             auto n4 = create_node_ptr(2,1);
@@ -681,6 +688,6 @@ go_bandit([]() {
             // n1
             AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(2,MAX_ID-1), create_node_ptr(1,MAX_ID))));
             AssertThat(out_nodes.can_read(), Is().False());
-          });
+          });*/
       });
   });
