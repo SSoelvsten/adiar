@@ -166,8 +166,8 @@ go_bandit([]() {
         obdd_x0.write(create_node(0,MAX_ID, sink_F, sink_T));
 
         tpie::file_stream<node> obdd_not_x0;
-        obdd_x0.open();
-        obdd_x0.write(create_node(0,MAX_ID, sink_T, sink_F));
+        obdd_not_x0.open();
+        obdd_not_x0.write(create_node(0,MAX_ID, sink_T, sink_F));
 
         tpie::file_stream<node> obdd_x1;
         obdd_x1.open();
@@ -255,7 +255,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_x0, obdd_x1, xor_op, reduce_node_arcs, reduce_sink_arcs);
+            apply(obdd_x0, obdd_x1, implies_op, reduce_node_arcs, reduce_sink_arcs);
 
             reduce_node_arcs.seek(0);
 
@@ -286,7 +286,7 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
 
-        it("should OR (and shortcut) on x₀ and x₁", [&]() {
+        it("should OR (and shortcut) on x₀ and x2", [&]() {
             /*
                    1     ---- x0
                   / \
@@ -303,7 +303,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_x0, obdd_x1, xor_op, reduce_node_arcs, reduce_sink_arcs);
+            apply(obdd_x0, obdd_x2, or_op, reduce_node_arcs, reduce_sink_arcs);
 
             reduce_node_arcs.seek(0);
 
@@ -373,7 +373,7 @@ go_bandit([]() {
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
 
-            apply(obdd_x0, obdd_not_x0, and_op, out_nodes);
+            apply(obdd_F_1, obdd_x0, and_op, out_nodes);
 
             out_nodes.seek(0);
 
@@ -432,10 +432,10 @@ go_bandit([]() {
         obdd_2.open();
 
         auto n2_2 = create_node(3,MAX_ID, sink_T, sink_F);
-        obdd_2.write(n1_2);
+        obdd_2.write(n2_2);
 
         auto n2_1 = create_node(1,MAX_ID, n2_2.node_ptr, sink_T);
-        obdd_2.write(n1_1);
+        obdd_2.write(n2_1);
 
         //                 END
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
@@ -516,60 +516,60 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_1, obdd_x2, or_op, reduce_node_arcs, reduce_sink_arcs);
+            apply(obdd_2, obdd_x2, xor_op, reduce_node_arcs, reduce_sink_arcs);
 
             reduce_node_arcs.seek(0);
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        false,
-                                                                        create_node_ptr(1,0))));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        true,
-                                                                        create_node_ptr(1,1))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
                                                                         false,
                                                                         create_node_ptr(2,0))));
 
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
                                                                         true,
                                                                         create_node_ptr(2,1))));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
+                                                                        false,
+                                                                        create_node_ptr(3,0))));
+
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
+                                                                        true,
+                                                                        create_node_ptr(3,1))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
             reduce_sink_arcs.seek(0);
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,1),
                                                                         false,
                                                                         create_sink(true))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,1),
                                                                         true,
                                                                         create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,0),
                                                                         false,
                                                                         create_sink(true))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,0),
                                                                         true,
                                                                         create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,1),
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,1),
                                                                         false,
                                                                         create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,1),
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,1),
                                                                         true,
                                                                         create_sink(true))));
 
@@ -588,16 +588,9 @@ go_bandit([]() {
                                  (3,2)          (3,T)   (4,T)         ---- x2
                                  /   \          /   \   /   \
                                  |   |      (F,T)   (T,T)   |
-                                 \__ / _____________________/
-                                    X /
-                                   / X
-                                   |/ \_________________
-                                   X                    \
-                                  / \______              \
-                                 /         \              \
-                             (5,T)         (F,2)          (T,2)       ---- x3
-                             /   \         /   \          /   \
-                         (F,T)   (T,T)  (F,T)  (F,F)  (T,T)   (T,F)
+                              (F,2) (T,2)                 (5,T)       ---- x3
+                              /  \    /  \                /   \
+                          (F,T)(F,F)(T,T)(T,F)         (F,T) (T,T)    
          */
 
         it("should OR (and shortcut) OBBD₁ and OBBD₂", [&]() {
@@ -610,7 +603,9 @@ go_bandit([]() {
                         \_ _/
                           4        ---- x2
                          / \
-                         T F
+                         5  T      ---- x3
+                        / \
+                        T F
              */
 
             tpie::file_stream<arc> reduce_node_arcs;
@@ -639,6 +634,10 @@ go_bandit([]() {
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
                                                                         false,
                                                                         create_node_ptr(2,0))));
+
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
+                                                                        false,
+                                                                        create_node_ptr(3,0))));                                                            
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
@@ -656,13 +655,18 @@ go_bandit([]() {
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
+                                                                        true,
+                                                                        create_sink(true))));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,0),
                                                                         false,
                                                                         create_sink(true))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,0),
                                                                         true,
-                                                                        create_sink(false))));
+                                                                        create_sink(false))));                                                                                                                           
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
@@ -678,14 +682,10 @@ go_bandit([]() {
                       /      |    \
                      4       5     6                 ---- x2
                     / \     / \_ _/ \
-                    | F     F   T   |
-                    \______   ______/
-                           \ /
-                            X
-                           / \
-                          7   8                      ---- x3
-                         / \ / \
-                         F T T F
+                    F 7     F   T   8                ---- x3
+                     / \           / \
+                     T F           F T 
+
              */
 
             tpie::file_stream<arc> reduce_node_arcs;
@@ -694,7 +694,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_1, obdd_2, or_op, reduce_node_arcs, reduce_sink_arcs);
+            apply(obdd_1, obdd_2, and_op, reduce_node_arcs, reduce_sink_arcs);
 
             reduce_node_arcs.seek(0);
 
@@ -723,12 +723,12 @@ go_bandit([]() {
                                                                         true,
                                                                         create_node_ptr(2,2))));
 
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,2),
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
                                                                         true,
                                                                         create_node_ptr(3,0))));
 
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,1),
-                                                                        false,
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,2),
+                                                                        true,
                                                                         create_node_ptr(3,1))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
@@ -737,7 +737,7 @@ go_bandit([]() {
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
-                                                                        true,
+                                                                        false,
                                                                         create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
@@ -758,22 +758,22 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,0),
                                                                         false,
-                                                                        create_sink(false))));
+                                                                        create_sink(true))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,0),
                                                                         true,
-                                                                        create_sink(true))));
+                                                                        create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,1),
                                                                         false,
-                                                                        create_sink(true))));
+                                                                        create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,1),
                                                                         true,
-                                                                        create_sink(false))));
+                                                                        create_sink(true))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
@@ -788,7 +788,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_1, obdd_2, or_op, reduce_node_arcs, reduce_sink_arcs);
+            apply(obdd_1, obdd_2, xor_op, reduce_node_arcs, reduce_sink_arcs);
 
             reduce_node_arcs.seek(0);
 
@@ -817,16 +817,16 @@ go_bandit([]() {
                                                                         true,
                                                                         create_node_ptr(2,2))));
 
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,2),
-                                                                        true,
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
+                                                                        false,
                                                                         create_node_ptr(3,0))));
 
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
                                                                         true,
                                                                         create_node_ptr(3,1))));
 
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
-                                                                        false,
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,2),
+                                                                        true,
                                                                         create_node_ptr(3,2))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
@@ -834,24 +834,19 @@ go_bandit([]() {
             reduce_sink_arcs.seek(0);
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
-                                                                        true,
-                                                                        create_sink(false))));
-
-            AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,1),
                                                                         false,
-                                                                        create_sink(false))));
+                                                                        create_sink(true))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,1),
                                                                         true,
-                                                                        create_sink(true))));
+                                                                        create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,2),
                                                                         false,
-                                                                        create_sink(true))));
+                                                                        create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,0),
@@ -866,22 +861,22 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,1),
                                                                         false,
-                                                                        create_sink(true))));
+                                                                        create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,1),
                                                                         true,
-                                                                        create_sink(false))));
+                                                                        create_sink(true))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,2),
                                                                         false,
-                                                                        create_sink(false))));
+                                                                        create_sink(true))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,2),
                                                                         true,
-                                                                        create_sink(true))));
+                                                                        create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
