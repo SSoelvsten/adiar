@@ -94,7 +94,7 @@ namespace coom
 
       //Set-up for L_j
       tpie::merge_sorter<node, true, decltype(reduce_node_children_lt)> sorter1(reduce_node_children_lt);
-      sorter1.set_available_memory(tpie::get_memory_manager().available());
+      sorter1.set_available_memory(tpie::get_memory_manager().available() / 2);
       sorter1.begin();
 
       //Pull out all nodes from redD and in_sink_arcs for this layer and check reduction 1
@@ -186,7 +186,7 @@ namespace coom
 
       //Set up L_j_red2/out
       tpie::merge_sorter<mapping, true, decltype(reduce_node_ptr_lt)> sorter2(reduce_node_ptr_lt);
-      sorter2.set_available_memory(tpie::get_memory_manager().available());
+      sorter2.set_available_memory(tpie::get_memory_manager().available() / 2);
       sorter2.begin();
 
       //Pull the rest from L_j and check for reduction 2
