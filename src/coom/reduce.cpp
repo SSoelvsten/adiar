@@ -2,15 +2,13 @@
 #define COOM_REDUCE_CPP
 
 #include <tpie/file_stream.h>
-
+#include <tpie/sort.h>
 #include <tpie/priority_queue.h>
 
 #include "data.h"
 #include "data_pty.h"
 
 #include "reduce.h"
-
-#include <tpie/sort.h>
 
 namespace coom
 {
@@ -27,6 +25,18 @@ namespace coom
     {
       return (a.source > b.source || (a.source == b.source && a.is_high));
     }
+  };
+
+  //Predicate for L_j
+  const auto reduce_node_children_lt = [](const node &a, const node &b) -> bool {
+    return a.high > b.high ||
+           (a.high == b.high && a.low > b.low) ||
+           (a.high == b.high && a.low == b.low && a > b);
+  };
+
+  //Predicate for L_j_red2/out
+  const auto reduce_node_ptr_lt = [](const mapping &a, const mapping &b) -> bool {
+    return a.old_node_ptr > b.old_node_ptr;
   };
 
   void reduce(tpie::file_stream<arc> &in_node_arcs,
@@ -49,26 +59,10 @@ namespace coom
     in_node_arcs.seek(0, tpie::file_stream_base::end);
     tpie::progress_indicator_null pi;
 
-    //Predicate for L_j
-    auto node_children_lt = [&](const node &a, const node &b) -> bool {
-      return a.high > b.high ||
-             (a.high == b.high && a.low > b.low) ||
-             (a.high == b.high && a.low == b.low && a > b);
-    };
-
-    //Predicate for L_j_red2/out
-    auto node_ptr_lt = [&](const mapping &a, const mapping &b) -> bool {
-      return a.old_node_ptr > b.old_node_ptr;
-    };
-
     //Check to see if in_node_arcs and in_sink_arcs are empty
     //Edge case where we only return a sink
     if (!in_node_arcs.can_read_back())
     {
-      if (!in_sink_arcs.can_read_back())
-      {
-        return;
-      }
       arc e_high = in_sink_arcs.read_back();
       arc e_low = in_sink_arcs.read_back();
       if (e_high.target == e_low.target)
@@ -84,26 +78,19 @@ namespace coom
 
     //Find the first edge and its label
     arc current_arc = in_node_arcs.read_back();
-    int label = label_of(current_arc.target);
+    uint64_t label = label_of(current_arc.target);
     arc current_sink_arc = in_sink_arcs.read_back();
+    bool use_current_sink = true;
 
     //Process bottom-up each layer
-    while (label >= 0)
+    while (in_sink_arcs.can_read_back() || !redD.empty())
     {
-      //No nodes left to process or no nodes with this label?
-      if ((!in_sink_arcs.can_read_back() && redD.empty()) || (!redD.empty() && label_of(redD.top().source) != label))
-      {
-        label = label - 1;
-        continue;
-      }
-
       //Reset ID for this layer
       id0 = MAX_ID;
 
       //Set-up for L_j_red1
       tpie::file_stream<mapping> reduction_rule_1_mapping;
       reduction_rule_1_mapping.open();
-      reduction_rule_1_mapping.seek(0);
 
       //Set-up for L_j
       tpie::merge_sorter<node, true, decltype(reduce_node_children_lt)> sorter1(reduce_node_children_lt);
@@ -123,6 +110,10 @@ namespace coom
           if (in_sink_arcs.can_read_back())
           {
             current_sink_arc = in_sink_arcs.read_back();
+          }
+          else
+          {
+            use_current_sink = false;
           }
         }
 
@@ -151,6 +142,10 @@ namespace coom
             if (in_sink_arcs.can_read_back())
             {
               current_sink_arc = in_sink_arcs.read_back();
+            }
+            else
+            {
+              use_current_sink = false;
             }
           }
           //Pull two from redD
@@ -225,7 +220,6 @@ namespace coom
       sorter2.end();
       sorter2.calc(pi);
 
-
       //Find the first mappings from L_j_red1 and L_j_red2/out
       reduction_rule_1_mapping.seek(0);
       mapping red1 = {0, 0};
@@ -244,11 +238,10 @@ namespace coom
         new_red2 = true;
       }
 
-      
       mapping current_map;
       bool red1_current;
 
-      //Pass all the mappings to Q 
+      //Pass all the mappings to Q
       while (new_red1 || new_red2)
       {
         //Find the mapping with largest old_node_ptr
@@ -284,7 +277,6 @@ namespace coom
           if (reduction_rule_1_mapping.can_read())
           {
             red1 = reduction_rule_1_mapping.read();
-            new_red1 = true;
           }
           else
           {
@@ -296,7 +288,6 @@ namespace coom
           if (sorter2.can_pull())
           {
             red2 = sorter2.pull();
-            new_red2 = true;
           }
           else
           {
@@ -307,7 +298,19 @@ namespace coom
 
       //Move on to the next layer (check if everything has been reduced down to one sink)
       reduction_rule_1_mapping.close();
-      label = label - 1;
+
+      if (!redD.empty() || use_current_sink)
+      {
+        if (redD.empty() || (use_current_sink && label_of(current_sink_arc.source) > label_of(redD.top().source)))
+        {
+          label = label_of(current_sink_arc.source);
+        }
+        else
+        {
+          label = label_of(redD.top().source);
+        }
+      }
+
       if (!in_node_arcs.can_read_back() && !in_sink_arcs.can_read_back() && out_nodes.size() == 0)
       {
         out_nodes.write(create_sink_node(value_of(current_map.new_node_ptr)));
