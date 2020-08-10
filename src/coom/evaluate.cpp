@@ -45,74 +45,40 @@ namespace coom
     assert::is_valid_input_stream(nodes);
     debug::println_file_stream(nodes, "nodes");
 
-    //reset streams
     nodes.seek(0, tpie::file_stream_base::end);
+    node current_node = nodes.read_back();
+
     assignment.seek(0);
+    bool assignment_value = assignment.read();
+    uint64_t assignment_label = 0;
 
-    //få fat i roden
-    node v = nodes.read_back();
-    bool x = assignment.read();
-    uint64_t label = 0;
-
-    //check om træet kun er en sink
-    if(is_sink_node(v)) {
-      debug::println_evaluate_return(v.node_ptr);
+    if(is_sink_node(current_node)) {
+      debug::println_evaluate_return(current_node.node_ptr);
       debug::println_algorithm_end("EVALUATE");
 
-      return value_of(v);
+      return value_of(current_node);
     }
 
-    //gennemløb af træet
     while (true) {
-      //find det rigtige assignment
-      while(label_of(v) > label) {
-        x = assignment.read();
-        label = label + 1;
+      while(label_of(current_node) > assignment_label) {
+        assignment_value = assignment.read();
+        assignment_label++;
       }
 
-      debug::print_evaluate_assignment(label, x);
+      debug::print_evaluate_assignment(assignment_label, assignment_value);
 
-      //check værdien for variablen
-      if(x) {
+      uint64_t next_node_ptr = assignment_value ? current_node.high : current_node.low;
 
-        //find high for noden og gem
-        uint64_t high = v.high;
+      if(is_sink(next_node_ptr)) {
+        debug::println_evaluate_return(next_node_ptr);
+        debug::println_algorithm_end("EVALUATE");
 
-        //check om high er en sink og returner
-        if(is_sink(high)) {
-          debug::println_evaluate_return(high);
-          debug::println_algorithm_end("EVALUATE");
-
-          return value_of(high);
-        }
-
-        debug::println_evaluate_seek(high);
-
-        //søg efter high
-        while(v.node_ptr < high) {
-            v = nodes.read_back();
-        }
+        return value_of(next_node_ptr);
       }
 
-      else {
-
-        //som high, bare low - find low for noden og gem
-        uint64_t low = v.low;
-
-        //check om low er en sink og returner
-        if(is_sink(low)) {
-          debug::println_evaluate_return(low);
-          debug::println_algorithm_end("EVALUATE");
-
-          return value_of(low);
-        }
-
-        debug::println_evaluate_seek(low);
-
-        //søg efter low
-        while(v.node_ptr < low) {
-            v = nodes.read_back();
-        }
+      debug::println_evaluate_seek(next_node_ptr);
+      while(current_node.node_ptr < next_node_ptr) {
+        current_node = nodes.read_back();
       }
     }
   }
