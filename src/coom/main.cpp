@@ -9,6 +9,7 @@
 
 #include "assert.cpp"
 
+#include "evaluate.cpp"
 #include "reduce.cpp"
 #include "restrict.cpp"
 
