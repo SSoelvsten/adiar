@@ -6,7 +6,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set(HEADERS
   apply.h
   coom.h
-  count_paths.h
+  count.h
   data.h
   data_pty.h
   evaluate.h
@@ -17,7 +17,7 @@ set(HEADERS
 
 set(SOURCES
   apply.cpp
-  count_paths.cpp
+  count.cpp
   data.cpp
   data_pty.cpp
   evaluate.cpp
