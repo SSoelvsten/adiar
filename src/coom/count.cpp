@@ -2,7 +2,9 @@
 #define COOM_COUNT_CPP
 
 #include <tpie/file_stream.h>
+
 #include "data.h"
+#include "util.cpp"
 
 #include "count.h"
 
@@ -12,6 +14,16 @@ namespace coom
                         const sink_pred &sink_pred,
                         const bool count_skipped_layers)
   {
+    tpie::file_stream<arc> node_arcs;
+    node_arcs.open();
+
+    tpie::file_stream<arc> sink_arcs;
+    sink_arcs.open();
+
+    transpose_obdd(nodes, node_arcs, sink_arcs);
+
+    // TODO: Do something on the transposed graph...
+
     return 0;
   }
 
