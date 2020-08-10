@@ -10,6 +10,16 @@
 
 namespace coom
 {
+  struct partial_sum { uint64_t node_ptr; uint64_t sum; };
+
+  struct count_queue_lt
+  {
+    bool operator()(const partial_sum &a, const partial_sum &b)
+    {
+      return false;
+    }
+  };
+
   inline uint64_t count(tpie::file_stream<node> &nodes,
                         const sink_pred &sink_pred,
                         const bool count_skipped_layers)
