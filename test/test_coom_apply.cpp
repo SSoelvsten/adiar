@@ -180,7 +180,7 @@ go_bandit([]() {
         //                     END
         // == CREATE SINGLE VARIABLE FOR UNIT TESTS ==
 
-        it("should XOR x₀ and x₁", [&]() {
+        it("should XOR x0 and x1", [&]() {
             /* The order on the leaves are due to the sorting of sink requests
                after evaluating x0
 
@@ -238,7 +238,7 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
 
-        it("should IMPLY (and shortcut) on x₀ and x₁", [&]() {
+        it("should IMPLY (and shortcut) on x0 and x1", [&]() {
             /* The order on the leaves are due to the sorting of sink requests
                after evaluating x0
 
@@ -286,7 +286,7 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
 
-        it("should OR (and shortcut) on x₀ and x2", [&]() {
+        it("should OR (and shortcut) on x0 and x2", [&]() {
             /*
                    1     ---- x0
                   / \
@@ -335,7 +335,7 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
 
-        it("should AND x₀ and !x₀", [&]() {
+        it("should AND x0 and !x0", [&]() {
             /*
                    1     ---- x0
                   / \
@@ -369,7 +369,7 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
 
-        it("should AND (and shortcut) F and x₀", [&]() {
+        it("should AND (and shortcut) F and x0", [&]() {
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
 
@@ -440,7 +440,7 @@ go_bandit([]() {
         //                 END
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
 
-        it("should IMPLY (and shortcut) F and OBBD₁", [&]() {
+        it("should IMPLY (and shortcut) F and OBBD1", [&]() {
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
 
@@ -454,7 +454,7 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
-        it("should OR (and shortcut) OBBD₁ and T", [&]() {
+        it("should OR (and shortcut) OBBD 1 and T", [&]() {
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
 
@@ -468,7 +468,7 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
-        it("should OR (and shortcut) OBBD₂ and T", [&]() {
+        it("should OR (and shortcut) OBBD 2 and T", [&]() {
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
 
@@ -482,7 +482,7 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
-        it("should AND (and shortcut) F and OBBD₂", [&]() {
+        it("should AND (and shortcut) F and OBBD 2", [&]() {
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
 
@@ -496,7 +496,7 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
-        it("should XOR OBBD₂ and x₂", [&]() {
+        it("should XOR OBBD 2 and x2", [&]() {
             /*
                                          ---- x0
 
@@ -590,10 +590,10 @@ go_bandit([]() {
                                  |   |      (F,T)   (T,T)   |
                               (F,2) (T,2)                 (5,T)       ---- x3
                               /  \    /  \                /   \
-                          (F,T)(F,F)(T,T)(T,F)         (F,T) (T,T)    
+                          (F,T)(F,F)(T,T)(T,F)         (F,T) (T,T)
          */
 
-        it("should OR (and shortcut) OBBD₁ and OBBD₂", [&]() {
+        it("should OR (and shortcut) OBBD 1 and OBBD 2", [&]() {
             /*
                            1       ---- x0
                           / \
@@ -637,7 +637,7 @@ go_bandit([]() {
 
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,0),
                                                                         false,
-                                                                        create_node_ptr(3,0))));                                                            
+                                                                        create_node_ptr(3,0))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
@@ -666,12 +666,12 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,0),
                                                                         true,
-                                                                        create_sink(false))));                                                                                                                           
+                                                                        create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
 
-        it("should AND (and shortcut) OBBD₁ and OBBD₂", [&]() {
+        it("should AND (and shortcut) OBBD 1 OBBD 2", [&]() {
             /*
                             1                        ---- x0
                            / \
@@ -684,7 +684,7 @@ go_bandit([]() {
                     / \     / \_ _/ \
                     F 7     F   T   8                ---- x3
                      / \           / \
-                     T F           F T 
+                     T F           F T
 
              */
 
@@ -778,7 +778,7 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
 
-        it("should XOR OBBD₁ and OBBD₂", [&]() {
+        it("should XOR OBBD 1 and 2", [&]() {
             /* There is no shortcutting possible on an XOR, so see the product
                construction above. */
 
