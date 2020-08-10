@@ -10,7 +10,7 @@
 
 namespace coom
 {
-  struct lt {
+  struct restrict_lt {
     bool operator ()(const arc& a, const arc& b) {
       return (a.target < b.target || 
       (a.target == b.target && (is_nil(a.source) || (!is_nil(b.source) && a.source < b.source))) || 
@@ -25,7 +25,7 @@ namespace coom
                 tpie::file_stream<arc> &reduce_sink_arcs)
   {
 
-    tpie::priority_queue<arc, lt> resD;
+    tpie::priority_queue<arc, restrict_lt> resD;
     in_nodes.seek(0, tpie::file_stream_base::end); 
     in_assignment.seek(0);
     auto v = in_nodes.read_back();
