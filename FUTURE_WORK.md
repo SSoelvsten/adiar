@@ -10,6 +10,7 @@ may constitute interesting undergraduate research projects.
         - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
         - [Layer-aware priority queue](#layer-aware-priority-queue)
         - [Parallelisation](#parallelisation)
+            - [Use of TPIE pipelining](#use-of-tpie-pipelining)
             - [Parallel Layer-aware priority queue](#parallel-layer-aware-priority-queue)
             - [Reduction Rule 2 within the merge sorting](#reduction-rule-2-within-the-merge-sorting)
             - [Distribute nodes and information (in order) to worker-threads](#distribute-nodes-and-information-in-order-to-worker-threads)
@@ -97,6 +98,20 @@ we have in parallel access to the underlying data structures and algorithms:
   
 - Parallelisable Cache-oblivious priority queue, such as the one in
   [[Sitchinava12](#references)].
+
+
+#### Use of TPIE pipelining
+All of our algorithms are of the form of sweeps through the OBDD or in the case
+of negation a mere mapping on the stream. Specifically for such cases TPIE has a
+[pipelining](https://users-cs.au.dk/rav/tpie/doc/master/pipelining.html)
+framework. If all our algorithms are rewritten to be of this form, then we may
+explicitly parallelise independent computations in a bottom-up manner.
+
+This might make the [parallel layer-aware priority
+queue](#parallel-layer-aware-priority-queue) below difficult to implement at the
+same time, but this major rewrite may for free give a massive increase in the
+overall speed of _all_ computations.
+
 
 #### Parallel Layer-aware priority queue
 
