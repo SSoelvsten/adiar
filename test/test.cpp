@@ -12,12 +12,16 @@ using namespace bandit;
 // TPIE setup unit tests
 #include "test_tpie.cpp"
 
-// COOM unit tests
+// COOM | data structure
+#include "coom/test_merge_sorter.cpp"
+
+// COOM | data types
 #include "coom/test_data.cpp"
 
 #include "coom/test_assignment.cpp"
 #include "coom/test_pred.cpp"
 
+// COOM | algorithms
 #include "coom/test_evaluate.cpp"
 #include "coom/test_count.cpp"
 #include "coom/test_negate.cpp"
@@ -25,6 +29,7 @@ using namespace bandit;
 #include "coom/test_reduce.cpp"
 #include "coom/test_apply.cpp"
 
+// COOM | other
 #include "coom/test_build.cpp"
 
 int main(int argc, char* argv[]) {

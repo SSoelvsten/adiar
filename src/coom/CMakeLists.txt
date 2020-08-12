@@ -15,6 +15,7 @@ set(HEADERS
   debug_assignment.h
   debug_data.h
   evaluate.h
+  merge_sorter.h
   negate.h
   pred.h
   reduce.h
@@ -32,6 +33,7 @@ set(SOURCES
   debug_assignment.cpp
   debug_data.cpp
   evaluate.cpp
+  merge_sorter.cpp
   negate.cpp
   pred.cpp
   reduce.cpp
