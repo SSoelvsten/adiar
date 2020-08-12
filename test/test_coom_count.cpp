@@ -2,7 +2,7 @@
 
 #include <coom/data.cpp>
 
-#include <coom/count_paths.cpp>
+#include <coom/count.cpp>
 
 using namespace coom;
 
@@ -32,7 +32,7 @@ go_bandit([]() {
         auto n3 = create_node(2,0, sink_F, n4.node_ptr);
         obdd.write(n3);
 
-        auto n2 = create_node(1,0, n3.node_ptr, sink_T);
+        auto n2 = create_node(1,0, n3.node_ptr, n4.node_ptr);
         obdd.write(n2);
 
         auto n1 = create_node(0,0, n3.node_ptr, n2.node_ptr);
@@ -88,12 +88,12 @@ go_bandit([]() {
         describe("Assignment", [&obdd]() {
             it("can count assignments leading to T sinks", [&obdd]() {
                 auto number_of_true_assignments = coom::count_assignments(obdd, is_true);
-                AssertThat(number_of_true_assignments, Is().EqualTo(7));
+                AssertThat(number_of_true_assignments, Is().EqualTo(5));
               });
 
             it("can count assignments leading to F sinks", [&obdd]() {
                 auto number_of_false_assignments = coom::count_assignments(obdd, is_false);
-                AssertThat(number_of_false_assignments, Is().EqualTo(9));
+                AssertThat(number_of_false_assignments, Is().EqualTo(11));
               });
 
             it("can count assignments leading to any sinks", [&obdd]() {
