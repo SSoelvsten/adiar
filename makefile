@@ -22,9 +22,9 @@ clean:
 #  TEST
 # ============================================================================ #
 test: | build-test
-	@rm -rf *.tpie
+	@rm -rf *.tpie *.coom
 	@./build/test/test_unit --reporter=info --colorizer=light
-	@rm -rf *.tpie
+	@rm -rf *.tpie *.coom
 
 # ============================================================================ #
 #  DOT FILE output for visual debugging
@@ -44,10 +44,10 @@ main:
 	@mkdir -p build/
 	@cd build/ && cmake -DCOOM_DEBUG=ON -DCOOM_ASSERT=ON ..
 	@cd build/ && make coom_main
-	@rm -rf *.tpie
+	@rm -rf *.tpie *.coom
 	@echo "" && echo ""
 	@./build/src/coom/coom_main
-	@rm -rf *.tpie
+	@rm -rf *.tpie *.coom
 
 # ============================================================================ #
 #  EXAMPLES
