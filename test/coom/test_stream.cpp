@@ -314,5 +314,52 @@ go_bandit([]() {
                 AssertThat(is.pull(), Is().EqualTo(4));
               });
           });
+
+        describe("node_stream", [&]() {
+            auto sink_T = create_sink(true);
+            auto sink_F = create_sink(false);
+
+            out_stream out = out_stream<node>();
+
+            // The OBDD for Evaluate
+
+            auto n5 = create_node(3,0, sink_F, sink_T);
+            out << n5;
+
+            auto n4 = create_node(2,1, sink_T, n5.node_ptr);
+            out << n4;
+
+            auto n3 = create_node(2,0, sink_F, sink_T);
+            out << n3;
+
+            auto n2 = create_node(1,0, n3.node_ptr, n4.node_ptr);
+            out << n2;
+
+            auto n1 = create_node(0,0, n3.node_ptr, n2.node_ptr);
+            out << n1;
+
+            node_stream obdd = node_stream(out);
+
+            it("reads in reverse of output", [&]() {
+                obdd.reset();
+
+                AssertThat(obdd.pull(), Is().EqualTo(n1));
+                AssertThat(obdd.pull(), Is().EqualTo(n2));
+                AssertThat(obdd.pull(), Is().EqualTo(n3));
+                AssertThat(obdd.pull(), Is().EqualTo(n4));
+                AssertThat(obdd.pull(), Is().EqualTo(n5));
+              });
+
+            it("can negate the obdd", [&]() {
+                obdd.reset();
+                obdd.negate();
+
+                AssertThat(obdd.pull(), Is().EqualTo(n1));
+                AssertThat(obdd.pull(), Is().EqualTo(n2));
+                AssertThat(obdd.pull(), Is().EqualTo(create_node(2,0, sink_T, sink_F)));
+                AssertThat(obdd.pull(), Is().EqualTo(create_node(2,1, sink_F, n5.node_ptr)));
+                AssertThat(obdd.pull(), Is().EqualTo(create_node(3,0, sink_T, sink_F)));
+              });
+          });
       });
   });

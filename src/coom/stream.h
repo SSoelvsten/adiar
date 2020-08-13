@@ -87,6 +87,22 @@ namespace coom {
 
 
   //////////////////////////////////////////////////////////////////////////////
+  /// node_stream as the primary class for the end user
+  //////////////////////////////////////////////////////////////////////////////
+  template<> class negator<node>
+  {
+  protected:
+    node negate(const node& x) {
+      uint64_t low = is_sink(x.low) ? 1 ^ x.low : x.low;
+      uint64_t high = is_sink(x.high) ? 1 ^ x.high : x.high;
+      return { x.node_ptr, low, high };
+    }
+  };
+
+  typedef in_stream<node, reverse<node>, negator<node>> node_stream;
+
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Generic write-only stream
   //////////////////////////////////////////////////////////////////////////////
   template <typename T> class out_stream {
