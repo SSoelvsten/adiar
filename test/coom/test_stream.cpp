@@ -361,5 +361,60 @@ go_bandit([]() {
                 AssertThat(obdd.pull(), Is().EqualTo(create_node(3,0, sink_T, sink_F)));
               });
           });
+
+        describe("arc_stream", [&]() {
+            out_stream out = out_stream<arc>();
+
+            // A unit test from Reduce
+
+            auto n1 = create_node_ptr(0,0);
+            auto n2 = create_node_ptr(1,0);
+            auto n3 = create_node_ptr(2,0);
+            auto n4 = create_node_ptr(2,1);
+
+            out.push(create_arc(n1,true,n2));
+            out.push(create_arc(n1,false,n3));
+            out.push(create_arc(n2,false,n3));
+            out.push(create_arc(n2,true,n4));
+
+            auto sink_T = create_sink(true);
+            auto sink_F = create_sink(false);
+
+            out.push(create_arc(n3,false,sink_F));
+            out.push(create_arc(n3,true,sink_T));
+            out.push(create_arc(n4,false,sink_T));
+            out.push(create_arc(n4,true,sink_T));
+
+            arc_stream arcs = arc_stream(out);
+
+            it("reads in reverse of output", [&]() {
+                arcs.reset();
+
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n4,true,sink_T)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n4,false,sink_T)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n3,true,sink_T)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n3,false,sink_F)));
+
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n2,true,n4)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n2,false,n3)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n1,false,n3)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n1,true,n2)));
+              });
+
+            it("can negate the arcs", [&]() {
+                arcs.reset();
+                arcs.negate();
+
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n4,true,sink_F)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n4,false,sink_F)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n3,true,sink_F)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n3,false,sink_T)));
+
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n2,true,n4)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n2,false,n3)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n1,false,n3)));
+                AssertThat(arcs.pull(), Is().EqualTo(create_arc(n1,true,n2)));
+              });
+          });
       });
   });
