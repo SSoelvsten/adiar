@@ -46,7 +46,7 @@ go_bandit([]() {
 
             it("should take up 8 bytes of memory", [&]() {
                 auto sink = create_sink (false);
-                AssertThat(sizeof(sink), Is().EqualTo(8));
+                AssertThat(sizeof(sink), Is().EqualTo(8u));
               });
           });
 
@@ -111,7 +111,7 @@ go_bandit([]() {
 
             it("should take up 8 bytes of memory", [&]() {
                 auto node_ptr = create_node_ptr(42,2);
-                AssertThat(sizeof(node_ptr), Is().EqualTo(8));
+                AssertThat(sizeof(node_ptr), Is().EqualTo(8u));
               });
           });
 
@@ -174,7 +174,7 @@ go_bandit([]() {
                                         node_ptr,
                                         sink);
 
-                AssertThat(sizeof(node), Is().EqualTo(3 * 8));
+                AssertThat(sizeof(node), Is().EqualTo(3u * 8u));
               });
 
             // For the edge case of a sink-only OBDD without internal nodes, we need
@@ -294,7 +294,7 @@ go_bandit([]() {
 
                 // When we need to store more data in an edge we can do so without
                 // more bits by use of bit-magic, similar to the node_ptrs.
-                AssertThat(sizeof(arc), Is().EqualTo(3*8));
+                AssertThat(sizeof(arc), Is().EqualTo(3u * 8u));
               });
           });
 
