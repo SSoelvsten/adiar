@@ -78,6 +78,10 @@ namespace coom
       {
         out_nodes.write(node_of_arcs(e_low, e_high));
       }
+
+      debug::println_file_stream(out_nodes, "out_nodes");
+      debug::println_algorithm_end("REDUCE");
+
       return;
     }
 
