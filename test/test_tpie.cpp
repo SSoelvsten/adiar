@@ -149,19 +149,19 @@ go_bandit([]() {
                 tpie::file_stream<int> xs;
                 xs.open();
 
-                AssertThat(xs.size(), Is().EqualTo(0));
+                AssertThat(xs.size(), Is().EqualTo(0u));
 
                 xs.write(42);
-                AssertThat(xs.size(), Is().EqualTo(1));
+                AssertThat(xs.size(), Is().EqualTo(1u));
 
                 xs.write(21);
-                AssertThat(xs.size(), Is().EqualTo(2));
+                AssertThat(xs.size(), Is().EqualTo(2u));
 
                 xs.write(14);
-                AssertThat(xs.size(), Is().EqualTo(3));
+                AssertThat(xs.size(), Is().EqualTo(3u));
 
                 xs.write(7);
-                AssertThat(xs.size(), Is().EqualTo(4));
+                AssertThat(xs.size(), Is().EqualTo(4u));
               });
           });
 
@@ -205,7 +205,7 @@ go_bandit([]() {
                 pq.push(18);
 
                 // Pop one
-                AssertThat(pq.size(), Is().EqualTo(3));
+                AssertThat(pq.size(), Is().EqualTo(3u));
                 AssertThat(pq.empty(), Is().False());
 
                 AssertThat(pq.top(), Is().EqualTo(7));
