@@ -9,6 +9,8 @@
 
 #include "assert.cpp"
 
+#include "apply.cpp"
+#include "count.cpp"
 #include "evaluate.cpp"
 #include "reduce.cpp"
 #include "restrict.cpp"

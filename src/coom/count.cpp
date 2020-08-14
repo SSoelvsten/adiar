@@ -5,13 +5,43 @@
 #include <tpie/priority_queue.h>
 
 #include "data.h"
-#include "data_pty.h"
-#include "util.cpp"
+
+#include "debug.h"
+#include "debug_data.h"
+
+#include "assert.h"
 
 #include "count.h"
 
 namespace coom
 {
+  namespace debug
+  {
+    inline void println_count_low_sum(const uint64_t node_ptr, const uint64_t count)
+    {
+#if COOM_DEBUG
+      debug::print_node_ptr(node_ptr);
+      tpie::log_info() << " | low : " << count << std::endl;
+#endif
+    }
+
+    inline void println_count_high_sum(const uint64_t node_ptr, const uint64_t count)
+    {
+#if COOM_DEBUG
+      debug::print_node_ptr(node_ptr);
+      tpie::log_info() << " | high : " << count << std::endl;
+#endif
+    }
+
+    inline void println_count_result(const uint64_t count)
+    {
+#if COOM_DEBUG
+      tpie::log_info() << std::endl << "total : " << count << std::endl;
+#endif
+    }
+
+  }
+
   struct partial_sum
   {
     uint64_t node_ptr;
@@ -30,6 +60,11 @@ namespace coom
                         const sink_pred &sink_pred,
                         const bool count_skipped_layers)
   {
+    debug::println_algorithm_start("COUNT");
+
+    assert::is_valid_input_stream(nodes);
+    debug::println_file_stream(nodes, "nodes");
+
     nodes.seek(0);
     uint64_t biggest_label = label_of(nodes.read());
 
@@ -45,12 +80,16 @@ namespace coom
       {
         uint64_t new_sum_low = count_skipped_layers ? 1 << (biggest_label - label_of(root)) : 1;
         result = result + new_sum_low;
+        debug::println_count_low_sum(root.node_ptr, new_sum_low);
+      } else {
+        debug::println_count_low_sum(root.node_ptr, 0);
       }
     }
     else
     {
       uint64_t new_sum_low = count_skipped_layers ?  1 << (label_of(root.low) - label_of(root) - 1) : 1;
       partial_sums.push({root.low, new_sum_low});
+      debug::println_count_low_sum(root.node_ptr, new_sum_low);
     }
     if (is_sink(root.high))
     {
@@ -58,14 +97,18 @@ namespace coom
       {
         uint64_t new_sum_high = count_skipped_layers ? 1 << (biggest_label - label_of(root)) : 1;
         result = result + new_sum_high;
+
+        debug::println_count_high_sum(root.node_ptr, new_sum_high);
+      } else {
+        debug::println_count_high_sum(root.node_ptr, 0);
       }
     }
     else
     {
       uint64_t new_sum_high = count_skipped_layers ? 1 << (label_of(root.high) - label_of(root) - 1) : 1;
       partial_sums.push({root.high, new_sum_high});
+      debug::println_count_high_sum(root.node_ptr, new_sum_high);
     }
-
 
     //Take out the rest of the nodes and process them one by one
     node current_node;
@@ -90,12 +133,16 @@ namespace coom
         {
           uint64_t new_sum_low = count_skipped_layers ? next_sum * (1 << (biggest_label - label_of(current_node))) : next_sum;
           result = result + new_sum_low;
+          debug::println_count_low_sum(current_node.node_ptr, new_sum_low);
+        } else {
+          debug::println_count_low_sum(current_node.node_ptr, 0);
         }
       }
       else
       {
         uint64_t new_sum_low = count_skipped_layers ? next_sum * (1 << (label_of(current_node.low) - label_of(current_node) - 1)) : next_sum;
         partial_sums.push({current_node.low, new_sum_low});
+        debug::println_count_low_sum(current_node.node_ptr, new_sum_low);
       }
 
       if (is_sink(current_node.high))
@@ -104,14 +151,21 @@ namespace coom
         {
           uint64_t new_sum_high = count_skipped_layers ? next_sum * (1 << (biggest_label - label_of(current_node))) : next_sum;
           result = result + new_sum_high;
+          debug::println_count_high_sum(current_node.node_ptr, new_sum_high);
+        } else {
+          debug::println_count_high_sum(current_node.node_ptr, 0);
         }
       }
       else
       {
         uint64_t new_sum_high = count_skipped_layers ? next_sum * (1 << (label_of(current_node.high) - label_of(current_node) - 1)) : next_sum;
         partial_sums.push({current_node.high, new_sum_high});
+        debug::println_count_high_sum(current_node.node_ptr, new_sum_high);
       }
     }
+
+    debug::println_count_result(result);
+    debug::println_algorithm_end("COUNT");
     return result;
   }
 
