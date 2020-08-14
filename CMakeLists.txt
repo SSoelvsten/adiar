@@ -46,3 +46,8 @@ endif()
 install(DIRECTORY src/coom
         DESTINATION include
         FILES_MATCHING REGEX "\\.h$")
+
+# ============================================================================ #
+# Examples
+# ============================================================================ #
+add_subdirectory (example)

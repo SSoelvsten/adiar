@@ -119,6 +119,10 @@ For development and more we also provide the following targets
 The _/examples_ folder contains examples for using the data structure to solve
 various verification and satisfaction problems.
 
+| target                   | Example                                                     |
+|--------------------------|-------------------------------------------------------------|
+| `example-n-queens N=<?>` | N-Queens board creation and counting satisfying assignments |
+
 
 ### In your own project
 To use this OBDD implementation in your own project, then _CMake_ still needs to
