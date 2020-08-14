@@ -14,7 +14,7 @@ namespace coom
   /// \return Whether to count the path ending in sink
   typedef std::function<bool(uint64_t)> sink_pred;
 
-  const sink_pred is_any = [] (uint64_t sink) -> bool
+  const sink_pred is_any = [] (uint64_t /* sink */) -> bool
   {
     return true;
   };

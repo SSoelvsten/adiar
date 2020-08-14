@@ -7,14 +7,14 @@
 #include "debug.h"
 
 namespace coom { namespace debug {
-    void println_algorithm_start(const std::string algo_name)
+    void println_algorithm_start([[maybe_unused]] const std::string algo_name)
     {
 #if COOM_DEBUG
       tpie::log_info() << "//===\\\\ " << algo_name << " //===\\\\" << std::endl;
 #endif
     }
 
-    void println_algorithm_end(const std::string algo_name)
+    void println_algorithm_end([[maybe_unused]] const std::string algo_name)
     {
 #if COOM_DEBUG
       tpie::log_info() << "\\\\===// " << algo_name << " \\\\===//" << std::endl;

@@ -17,7 +17,8 @@ namespace coom
 {
   namespace debug
   {
-    inline void println_count_low_sum(const uint64_t node_ptr, const uint64_t count)
+    inline void println_count_low_sum([[maybe_unused]] const uint64_t node_ptr,
+                                      [[maybe_unused]] const uint64_t count)
     {
 #if COOM_DEBUG
       debug::print_node_ptr(node_ptr);
@@ -25,7 +26,8 @@ namespace coom
 #endif
     }
 
-    inline void println_count_high_sum(const uint64_t node_ptr, const uint64_t count)
+    inline void println_count_high_sum([[maybe_unused]] const uint64_t node_ptr,
+                                       [[maybe_unused]] const uint64_t count)
     {
 #if COOM_DEBUG
       debug::print_node_ptr(node_ptr);
@@ -33,7 +35,7 @@ namespace coom
 #endif
     }
 
-    inline void println_count_result(const uint64_t count)
+    inline void println_count_result([[maybe_unused]] const uint64_t count)
     {
 #if COOM_DEBUG
       tpie::log_info() << std::endl << "total : " << count << std::endl;

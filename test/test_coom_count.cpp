@@ -94,7 +94,7 @@ go_bandit([]() {
 
             it("can count paths on a never happy predicate", [&obdd_1]() {
                 auto all_paths_rejected = coom::count_paths(obdd_1,
-                                                            [](uint64_t sink) -> bool {
+                                                            [](uint64_t /* sink */) -> bool {
                                                               return false;
                                                             });
                 AssertThat(all_paths_rejected, Is().EqualTo(0));

@@ -9,7 +9,7 @@
 #include "debug.h"
 
 namespace coom { namespace assert {
-    void is_valid_input_stream(tpie::file_stream<node>& in)
+    void is_valid_input_stream([[maybe_unused]] tpie::file_stream<node>& in)
     {
 #if COOM_ASSERT
       assert(in.is_open());
@@ -18,7 +18,7 @@ namespace coom { namespace assert {
 #endif
     }
 
-    void is_valid_input_stream(tpie::file_stream<arc>& in)
+    void is_valid_input_stream([[maybe_unused]] tpie::file_stream<arc>& in)
     {
 #if COOM_ASSERT
       assert(in.is_open());
@@ -26,7 +26,7 @@ namespace coom { namespace assert {
 #endif
     }
 
-    template <typename T> void is_valid_output_stream(tpie::file_stream<T>& out)
+    template <typename T> void is_valid_output_stream([[maybe_unused]] tpie::file_stream<T>& out)
     {
 #if COOM_ASSERT
       assert(out.is_open());

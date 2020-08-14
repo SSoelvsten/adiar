@@ -19,21 +19,21 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void print_node_ptr(uint64_t n)
+    void print_node_ptr([[maybe_unused]] uint64_t n)
     {
 #if COOM_DEBUG
       tpie::log_info() << "[* " << label_of(n) << " : " << id_of(n) << " *]";
 #endif
     }
 
-    void print_sink_ptr(uint64_t n)
+    void print_sink_ptr([[maybe_unused]] uint64_t n)
     {
 #if COOM_DEBUG
       tpie::log_info() << "[* " << value_of(n) << " *]";
 #endif
     }
 
-    void print_child(uint64_t n)
+    void print_child([[maybe_unused]] uint64_t n)
     {
 #if COOM_DEBUG
       if (is_nil(n))
@@ -55,7 +55,7 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void print_node(const node& n)
+    void print_node([[maybe_unused]] const node& n)
     {
 #if COOM_DEBUG
       tpie::log_info() << "([ ";
@@ -78,7 +78,7 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void println_node(const node& n)
+    void println_node([[maybe_unused]] const node& n)
     {
 #if COOM_DEBUG
       print_node(n);
@@ -86,7 +86,7 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void print_arc(const arc& a)
+    void print_arc([[maybe_unused]] const arc& a)
     {
 #if COOM_DEBUG
       tpie::log_info() << "( ";
@@ -106,7 +106,7 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void println_arc(const arc& a)
+    void println_arc([[maybe_unused]] const arc& a)
     {
 #if COOM_DEBUG
       print_arc(a);
@@ -114,7 +114,8 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void print_file_stream(tpie::file_stream<node>& nodes, std::string name)
+    void print_file_stream([[maybe_unused]] tpie::file_stream<node>& nodes,
+                           [[maybe_unused]] std::string name)
     {
 #if COOM_DEBUG
       auto original_pos = nodes.get_position();
@@ -133,12 +134,13 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void print_file_stream(tpie::file_stream<node>& nodes)
+    void print_file_stream([[maybe_unused]] tpie::file_stream<node>& nodes)
     {
       print_file_stream(nodes, "file_stream<node>");
     }
 
-    void println_file_stream(tpie::file_stream<node>& nodes, std::string name)
+    void println_file_stream([[maybe_unused]] tpie::file_stream<node>& nodes,
+                             [[maybe_unused]] std::string name)
     {
 #if COOM_DEBUG
       print_file_stream(nodes, name);
@@ -146,12 +148,13 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void println_file_stream(tpie::file_stream<node>& nodes)
+    void println_file_stream([[maybe_unused]] tpie::file_stream<node>& nodes)
     {
       println_file_stream(nodes, "file_stream<node>");
     }
 
-    void print_file_stream(tpie::file_stream<arc>& arcs, std::string name)
+    void print_file_stream([[maybe_unused]] tpie::file_stream<arc>& arcs,
+                           [[maybe_unused]] std::string name)
     {
 #if COOM_DEBUG
       auto original_pos = arcs.get_position();
@@ -170,12 +173,13 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void print_file_stream(tpie::file_stream<arc>& arcs)
+    void print_file_stream([[maybe_unused]] tpie::file_stream<arc>& arcs)
     {
       print_file_stream(arcs, "file_stream<arc>");
     }
 
-    void println_file_stream(tpie::file_stream<arc>& arcs, std::string name)
+    void println_file_stream([[maybe_unused]] tpie::file_stream<arc>& arcs,
+                             [[maybe_unused]] std::string name)
     {
 #if COOM_DEBUG
       print_file_stream(arcs, name);
@@ -183,7 +187,7 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void println_file_stream(tpie::file_stream<arc>& arcs)
+    void println_file_stream([[maybe_unused]] tpie::file_stream<arc>& arcs)
     {
       println_file_stream(arcs, "file_stream<arc>");
     }
