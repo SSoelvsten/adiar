@@ -3,8 +3,12 @@
 
 #include <tpie/priority_queue.h>
 #include <tpie/file_stream.h>
+
 #include "data.h"
 #include "data_pty.h"
+
+#include "reduce.h"
+
 #include "apply.h"
 
 
@@ -453,6 +457,7 @@ namespace coom
       reduce_sink_arcs.open();
 
       apply(in_nodes_1, in_nodes_2, op, reduce_node_arcs, reduce_sink_arcs);
+      reduce(reduce_node_arcs, reduce_sink_arcs, out_nodes);
     }
 #if COOM_DEBUG
     tpie::log_info() << "\\\\===// APPLY \\\\===//" << std::endl;
