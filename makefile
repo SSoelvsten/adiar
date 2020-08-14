@@ -11,6 +11,7 @@ build-test:
 	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=ON ..
 	@cd build/ && make test_unit
 
+
 # ============================================================================ #
 #  CLEAN
 # ============================================================================ #
@@ -47,3 +48,20 @@ main:
 	@echo "" && echo ""
 	@./build/src/coom/coom_main
 	@rm -rf *.tpie
+
+# ============================================================================ #
+#  EXAMPLES
+# ============================================================================ #
+N = 8
+
+example-n-queens:
+  # Build
+	@mkdir -p build/
+	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=OFF ..
+
+	@cd build/ && make n_queens
+
+  # Run
+	@echo ""
+	@./build/example/n_queens ${N}
+	@echo ""
