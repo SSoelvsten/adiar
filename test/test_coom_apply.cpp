@@ -478,7 +478,7 @@ go_bandit([]() {
         obdd_3.write(n3_2);
 
         auto n3_1 = create_node(0,MAX_ID, n3_2.node_ptr, n3_3.node_ptr);
-        obdd_3.write(n3_2);
+        obdd_3.write(n3_1);
 
         //                 END
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
@@ -622,6 +622,8 @@ go_bandit([]() {
         /* The product construction of obbd_1 and obdd_2 above is as follows in sorted order.
 
                                             (1,1)                     ---- x0
+                                            \_ _/
+                                             _X_                      // Match in min, but differ on max
                                             /   \
                                         (3,1)   (2,1)                 ---- x1
                                        /    \_ _/    \
@@ -663,12 +665,12 @@ go_bandit([]() {
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        false,
+                                                                        true,
                                                                         create_node_ptr(1,0))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        true,
+                                                                        false,
                                                                         create_node_ptr(1,1))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
@@ -721,6 +723,7 @@ go_bandit([]() {
         it("should AND (and shortcut) OBBD 1 OBBD 2", [&]() {
             /*
                             1                        ---- x0
+                            X
                            / \
                           2   3                      ---- x1
                          / \ / \
@@ -747,11 +750,11 @@ go_bandit([]() {
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        false,
+                                                                        true,
                                                                         create_node_ptr(1,0))));
 
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        true,
+                                                                        false,
                                                                         create_node_ptr(1,1))));
 
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
@@ -762,11 +765,11 @@ go_bandit([]() {
                                                                         false,
                                                                         create_node_ptr(2,0))));
 
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
                                                                         true,
                                                                         create_node_ptr(2,1))));
 
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
                                                                         true,
                                                                         create_node_ptr(2,2))));
 
@@ -841,12 +844,12 @@ go_bandit([]() {
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        false,
+                                                                        true,
                                                                         create_node_ptr(1,0))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        true,
+                                                                        false,
                                                                         create_node_ptr(1,1))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
@@ -860,12 +863,12 @@ go_bandit([]() {
                                                                         create_node_ptr(2,0))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
                                                                         true,
                                                                         create_node_ptr(2,1))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
                                                                         true,
                                                                         create_node_ptr(2,2))));
 
@@ -946,16 +949,18 @@ go_bandit([]() {
                            ________/   \_______
                           /                    \
                         (2,3)                  (3,2)          ---- x1
-                        /   \________ ________/   \
-                        |            X            |           //      (5,3) (7,3) (4,3) (6,4)
-                        \__ ________/ \________ __/           // min:   0     0     0     1
-                        ___X___             ___X___           // max:   1     3     0     2
-                       /       \           /       \
-                      /         \         /         \
-                   (4,3)       (5,3)   (6,4)      (7,3)       ---- x2
-                    / \         / \     / \        / \
-                (F,F) (T,T) (T,F) |  __/   \   (T,F) (F,T)
-                                  \ /       \
+                        /   \_________ ________/   \
+                        |             X             \           //      (5,3) (7,3) (4,3) (6,4)
+                        \__ _________/ \            |          // min:   0     0     0     1
+                        ___X___         \           |          // max:   1     3     0     2
+                       /       \         \          |
+                      /         \         \         |
+                   (4,3)       (5,3)    (7,3)     (6,4)       ---- x2
+                    / \         / \      / \       / \
+                (F,F) (T,T) (T,F) |  (T,F) (F,T)  /  |
+                                  |   ___________/   |
+                                  |  /         ______/
+                                  \ /         /
                                  (8,T)  --  (T,5)             ---- x3
                                  /   \      /   \
                               (F,T) (T,T) (T,F) (T,T)
@@ -991,13 +996,13 @@ go_bandit([]() {
                                                                         false,
                                                                         create_node_ptr(2,1))));
 
-            AssertThat(reduce_node_arcs.can_read(), Is().True()); // (6,4)
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
+            AssertThat(reduce_node_arcs.can_read(), Is().True()); // (7,3)
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
                                                                         true,
                                                                         create_node_ptr(2,2))));
 
-            AssertThat(reduce_node_arcs.can_read(), Is().True()); // (7,3)
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
+            AssertThat(reduce_node_arcs.can_read(), Is().True()); // (6,4)
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
                                                                         true,
                                                                         create_node_ptr(2,3))));
 
@@ -1007,12 +1012,12 @@ go_bandit([]() {
                                                                         create_node_ptr(3,0))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,2),
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,3),
                                                                         false,
                                                                         create_node_ptr(3,0))));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True()); // (T,5)
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,2),
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,3),
                                                                         true,
                                                                         create_node_ptr(3,1))));
 
@@ -1036,12 +1041,12 @@ go_bandit([]() {
                                                                         create_sink(true))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,3),
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,2),
                                                                         false,
                                                                         create_sink(true))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,3),
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(2,2),
                                                                         true,
                                                                         create_sink(true))));
 
@@ -1063,9 +1068,9 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(3,1),
                                                                         true,
-                                                                        create_sink(true))));
+                                                                        create_sink(false))));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
       });
-  });
+  }); 
