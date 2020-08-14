@@ -5,9 +5,12 @@
 #include <tpie/file_stream.h>
 
 #include "data.h"
-#include "data_pty.h"
-
 #include "reduce.h"
+
+#include "debug.h"
+#include "debug_data.h"
+
+#include "assert.h"
 
 #include "apply.h"
 
@@ -385,18 +388,15 @@ namespace coom
              const bool_op &op,
              tpie::file_stream<node> &out_nodes)
   {
-#if COOM_ASSERT
-    assert(in_nodes_1.size() > 0);
-    assert(in_nodes_2.size() > 0);
-    assert(out_nodes.size() == 0);
-#endif
-#if COOM_DEBUG
-    tpie::log_info() << "//===\\\\ APPLY //===\\\\" << std::endl;
-    tpie::log_info() << "in_nodes_1: ";
-    println_file_stream(in_nodes_1);
-    tpie::log_info() << "in_nodes_2: ";
-    println_file_stream(in_nodes_2);
-#endif
+    debug::println_algorithm_start("APPLY");
+
+    assert::is_valid_input_stream(in_nodes_1);
+    debug::println_file_stream(in_nodes_1, "in_nodes 1");
+
+    assert::is_valid_input_stream(in_nodes_2);
+    debug::println_file_stream(in_nodes_2, "in_nodes 2");
+
+    assert::is_valid_output_stream(out_nodes);
 
     in_nodes_1.seek(0, tpie::file_stream_base::end);
     in_nodes_2.seek(0, tpie::file_stream_base::end);
@@ -412,11 +412,7 @@ namespace coom
           NIL};
 
       out_nodes.write(res_sink_node);
-
-#if COOM_DEBUG
-      tpie::log_info() << "out_nodes: ";
-      println_file_stream(out_nodes);
-#endif
+      debug::println_file_stream(out_nodes, "out_nodes");
     }
     else if (is_sink_node(root_1) && can_left_shortcut(op, root_1.node_ptr))
     {
@@ -426,11 +422,7 @@ namespace coom
           NIL};
 
       out_nodes.write(res_sink_node);
-
-#if COOM_DEBUG
-      tpie::log_info() << "out_nodes: ";
-      println_file_stream(out_nodes);
-#endif
+      debug::println_file_stream(out_nodes, "out_nodes");
     }
     else if (is_sink_node(root_2) && can_right_shortcut(op, root_2.node_ptr))
     {
@@ -440,11 +432,7 @@ namespace coom
           NIL};
 
       out_nodes.write(res_sink_node);
-
-#if COOM_DEBUG
-      tpie::log_info() << "out_nodes: ";
-      println_file_stream(out_nodes);
-#endif
+      debug::println_file_stream(out_nodes, "out_nodes");
     }
     else
     {
@@ -457,9 +445,7 @@ namespace coom
       apply(in_nodes_1, in_nodes_2, op, reduce_node_arcs, reduce_sink_arcs);
       reduce(reduce_node_arcs, reduce_sink_arcs, out_nodes);
     }
-#if COOM_DEBUG
-    tpie::log_info() << "\\\\===// APPLY \\\\===//" << std::endl;
-#endif
+    debug::println_algorithm_end("APPLY");
   }
 } // namespace coom
 
