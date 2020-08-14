@@ -147,11 +147,21 @@ the results of such projects as pull requests to improve the main project.
 
 Thank you, to the following wonderful people:
 
+- **[Anna Blume Jakobsen](https://github.com/bluekeladry)**: Bachelor student,
+  who implemented _Apply_, _Evaluate_, _Count Assignments_, _Count Paths_,
+  _Reduce_, and _Restrict_ as part of a summer project (cf. [Talent Track
+  Project](TALENT_TRACK.md)).
+
 - **[Jaco van de Pol](https://github.com/jacopol)**:
   Supervisor and extremely supportive sparring partner.
 
 - **[Mathias Rav](https://github.com/Mortal)**:
   Developer of TPIE and always helpful oracle about everything _TPIE_ and _C++_.
+
+- **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
+  Bachelor student, who implemented _Apply_, _Evaluate_, _Count Assignments_,
+  _Count Paths_, _Reduce_, and _Restrict_ as part of a summer project (cf.
+  [Talent Track Project](TALENT_TRACK.md)).
 
 
 ## License
