@@ -32,7 +32,7 @@ namespace coom
     bool from_1;
   };
 
-  struct lt
+  struct apply_lt
   {
     bool operator()(const tuple &a, const tuple &b)
     {
@@ -41,7 +41,7 @@ namespace coom
     }
   };
 
-  struct lt_data
+  struct apply_lt_data
   {
     bool operator()(const tuple_data &a, const tuple_data &b)
     {
@@ -70,8 +70,8 @@ namespace coom
     auto sink_T = create_sink(true);
     in_nodes_1.seek(0, tpie::file_stream_base::end);
     in_nodes_2.seek(0, tpie::file_stream_base::end);
-    tpie::priority_queue<tuple, lt> appD;
-    tpie::priority_queue<tuple_data, lt_data> appD_data;
+    tpie::priority_queue<tuple, apply_lt> appD;
+    tpie::priority_queue<tuple_data, apply_lt_data> appD_data;
     node v1 = in_nodes_1.read_back();
     node v2 = in_nodes_2.read_back();
     uint64_t id0 = 0;
