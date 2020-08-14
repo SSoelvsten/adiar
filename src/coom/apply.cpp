@@ -181,9 +181,7 @@ namespace coom
     {
       //Check if we should read from appD or appD_data
       if(appD_data.empty() ||
-         std::min(appD.top().t1, appD.top().t2) < std::max(appD_data.top().t1, appD_data.top().t2) ||
-        (std::min(appD.top().t1, appD.top().t2) == std::max(appD_data.top().t1, appD_data.top().t2)
-         && std::max(appD.top().t1, appD.top().t2) < std::min(appD_data.top().t1, appD_data.top().t2)))
+         std::min(appD.top().t1, appD.top().t2) < std::max(appD_data.top().t1, appD_data.top().t2))
       {
         tuple current_tuple = appD.top();
         appD.pop();
