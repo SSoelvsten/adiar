@@ -333,7 +333,7 @@ go_bandit([]() {
                                           create_node_ptr(9,8));
 
                 auto high_arc = create_arc(create_node_ptr(17,42),
-                                           false,
+                                           true,
                                            create_node_ptr(8,21));
 
                 auto node = node_of_arcs(low_arc, high_arc);

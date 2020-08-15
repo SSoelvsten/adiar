@@ -68,6 +68,10 @@ namespace coom
     debug::println_file_stream(nodes, "nodes");
 
     nodes.seek(0);
+    if (is_sink_node(nodes.peek())) {
+      return 0u;
+    }
+
     uint64_t biggest_label = label_of(nodes.read());
 
     nodes.seek(0, tpie::file_stream_base::end);
