@@ -247,10 +247,12 @@ namespace coom
           }
         }
       } else {
-        while (v1.node_ptr != t1 && v2.node_ptr != t2) {
-          if (v1.node_ptr <= v2.node_ptr && in_nodes_1.can_read_back()) {
+        if (t1 < t2) {
+          while (v1.node_ptr < t1) {
             v1 = in_nodes_1.read_back();
-          } else {
+          }
+        } else {
+          while (v2.node_ptr < t2) {
             v2 = in_nodes_2.read_back();
           }
         }
