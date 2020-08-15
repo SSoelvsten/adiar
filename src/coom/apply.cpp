@@ -14,7 +14,6 @@
 
 #include "apply.h"
 
-
 namespace coom
 {
   struct tuple
@@ -69,189 +68,141 @@ namespace coom
              tpie::file_stream<arc> &reduce_node_arcs,
              tpie::file_stream<arc> &reduce_sink_arcs)
   {
-    //Set-up
-    auto sink_T = create_sink(true);
+    // Set-up
     in_nodes_1.seek(0, tpie::file_stream_base::end);
     in_nodes_2.seek(0, tpie::file_stream_base::end);
+
     tpie::priority_queue<tuple, apply_lt> appD;
     tpie::priority_queue<tuple_data, apply_lt_data> appD_data;
+
     node v1 = in_nodes_1.read_back();
     node v2 = in_nodes_2.read_back();
-    uint64_t id0 = 0;
-    uint64_t current_label = 0;
+    uint64_t out_index = 0;
 
-    //Process root and create initial recursion requests (apply_root)
-    uint64_t label_v1 = label_of(v1);
-    uint64_t label_v2 = label_of(v2);
-    uint64_t low1;
-    uint64_t low2;
-    uint64_t high1;
-    uint64_t high2;
-    if (label_v1 < label_v2)
-    {
+    // Process root and create initial recursion requests
+    uint64_t low1, low2;
+    uint64_t high1, high2;
+
+    uint64_t prior_label = std::min(label_of(v1), label_of(v2));
+    uint64_t root = create_node_ptr(prior_label, out_index);
+
+    if (label_of(v1) < label_of(v2)) {
       low1 = v1.low;
       high1 = v1.high;
       low2 = v2.node_ptr;
       high2 = v2.node_ptr;
-      if (in_nodes_1.can_read_back())
-      {
-        v1 = in_nodes_1.read_back();
-      }
-    }
-    else if (label_v1 > label_v2)
-    {
+    } else if (label_of(v1) > label_of(v2)) {
       low1 = v1.node_ptr;
       high1 = v1.node_ptr;
       low2 = v2.low;
       high2 = v2.high;
-      if (in_nodes_2.can_read_back())
-      {
-        v2 = in_nodes_2.read_back();
-      }
-    }
-    else
-    {
+    } else {
       low1 = v1.low;
       high1 = v1.high;
       low2 = v2.low;
       high2 = v2.high;
-      if (in_nodes_1.can_read_back())
-      {
-        v1 = in_nodes_1.read_back();
-      }
-      if (in_nodes_2.can_read_back())
-      {
-        v2 = in_nodes_2.read_back();
-      }
     }
 
-
-    uint64_t root = create_node_ptr(std::min(label_v1, label_v2), 0);
-    current_label = std::min(label_v1, label_v2);
-    //Shortcut the root
-    if (is_sink(low1) && is_sink(low2))
-    {
+    // Shortcut the root
+    if (is_sink(low1) && is_sink(low2)) {
       arc new_arc = create_arc(root, false, op(low1, low2));
       reduce_sink_arcs.write(new_arc);
-    }
-    else if (is_sink(low1) && can_left_shortcut(op, low1))
-    {
-      arc new_arc = create_arc(root, false, op(low1, sink_T));
+    } else if (is_sink(low1) && can_left_shortcut(op, low1)) {
+      arc new_arc = create_arc(root, false, op(low1, create_sink(true)));
       reduce_sink_arcs.write(new_arc);
-    }
-    else if (is_sink(low2) && can_right_shortcut(op, low2))
-    {
-      arc new_arc = create_arc(root, false, op(sink_T, low2));
+    } else if (is_sink(low2) && can_right_shortcut(op, low2)) {
+      arc new_arc = create_arc(root, false, op(create_sink(true), low2));
       reduce_sink_arcs.write(new_arc);
-    }
-    else
-    {
+    } else {
       appD.push({root, low1, low2, false});
     }
-    if (is_sink(high1) && is_sink(high2))
-    {
+
+    if (is_sink(high1) && is_sink(high2)) {
       arc new_arc = create_arc(root, true, op(high1, high2));
       reduce_sink_arcs.write(new_arc);
-    }
-    else if (is_sink(high1) && can_left_shortcut(op, high1))
-    {
-      arc new_arc = create_arc(root, true, op(high1, sink_T));
+    } else if (is_sink(high1) && can_left_shortcut(op, high1)) {
+      arc new_arc = create_arc(root, true, op(high1, create_sink(true)));
       reduce_sink_arcs.write(new_arc);
-    }
-    else if (is_sink(high2) && can_right_shortcut(op, high2))
-    {
-      arc new_arc = create_arc(root, true, op(sink_T, high2));
+    } else if (is_sink(high2) && can_right_shortcut(op, high2)) {
+      arc new_arc = create_arc(root, true, op(create_sink(true), high2));
       reduce_sink_arcs.write(new_arc);
-    }
-    else
-    {
+    } else {
       appD.push({root, high1, high2, true});
     }
 
-    label_v1 = label_of(v1);
-    label_v2 = label_of(v2);
-
-    //Process all nodes in topological order of both OBDDs
+    // Process all nodes in topological order of both OBDDs
     uint64_t source;
-    uint64_t t1;
-    uint64_t t2;
+    uint64_t t1, t2;
     bool is_high;
+
+    bool with_data, from_1 = false;
     node data;
-    bool from_1;
-    bool with_data;
 
-    while (!appD.empty() || !appD_data.empty())
-    {
-      //Check if we should read from appD or appD_data
-      if(appD_data.empty() ||
-         std::min(appD.top().t1, appD.top().t2) < std::max(appD_data.top().t1, appD_data.top().t2))
-      {
-        tuple current_tuple = appD.top();
-        appD.pop();
+    while (!appD.empty() || !appD_data.empty()) {
+      // Merge requests from  appD or appD_data
+      if (appD_data.empty() ||
+         std::min(appD.top().t1, appD.top().t2) < std::max(appD_data.top().t1, appD_data.top().t2)) {
         with_data = false;
-        source = current_tuple.source;
-        t1 = current_tuple.t1;
-        t2 = current_tuple.t2;
-        is_high = current_tuple.is_high;
-      }
-      else
-      {
-        tuple_data current_tuple = appD_data.top();
-        appD_data.pop();
-        with_data = true;
-        source = current_tuple.source;
-        t1 = current_tuple.t1;
-        t2 = current_tuple.t2;
-        is_high = current_tuple.is_high;
-        data = current_tuple.data;
-        from_1 = current_tuple.from_1;
+        source = appD.top().source;
+        t1 = appD.top().t1;
+        t2 = appD.top().t2;
+        is_high = appD.top().is_high;
 
-        if(from_1 && data.node_ptr == v1.node_ptr) {
-          v2 = in_nodes_2.read_back();
-          label_v2 = label_of(v2);
-        }
-        else if(!from_1 && data.node_ptr == v2.node_ptr) {
+        appD.pop();
+      } else {
+        with_data = true;
+        source = appD_data.top().source;
+        t1 = appD_data.top().t1;
+        t2 = appD_data.top().t2;
+        is_high = appD_data.top().is_high;
+        data = appD_data.top().data;
+        from_1 = appD_data.top().from_1;
+
+        appD_data.pop();
+      }
+
+      // Seek request partially in stream
+      if (t1 == t2) {
+        while (v1.node_ptr < t1) {
           v1 = in_nodes_1.read_back();
         }
-      }
-
-      //Forward if none match request (apply_step)
-      while (v1.node_ptr != t1 && v2.node_ptr != t2)
-      {
-        node new_v1 = v1;
-        if (v1.node_ptr <= v2.node_ptr)
-        {
-          new_v1 = in_nodes_1.read_back(); //Ikke overskrive v1!
-        }
-        if (v1.node_ptr >= v2.node_ptr)
-        {
+        while (v2.node_ptr < t2) {
           v2 = in_nodes_2.read_back();
-          label_v2 = label_of(v2);
         }
-        v1 = new_v1;
+      } else if (with_data) {
+        if (from_1) {
+          while (v2.node_ptr != t2) {
+            v2 = in_nodes_2.read_back();
+          }
+        } else {
+          while (v1.node_ptr != t1) {
+            v1 = in_nodes_1.read_back();
+          }
+        }
+      } else {
+        while (v1.node_ptr != t1 && v2.node_ptr != t2) {
+          if (v1.node_ptr <= v2.node_ptr) {
+            v1 = in_nodes_1.read_back();
+          } else {
+            v2 = in_nodes_2.read_back();
+          }
+        }
       }
 
       // Forward information across the layer
-      if (label_of(t1) == label_of(t2) && (v1.node_ptr != t1 || v2.node_ptr != t2) && !with_data)
-      {
-        node v0;
-        bool from_1;
-        if(v1.node_ptr == t1) {
-          v0 = v1;
-          from_1 = true;
-        }
-        else {
-          v0 = v2;
-          from_1 = false;
-        }
+      if (label_of(t1) == label_of(t2)
+          && (v1.node_ptr != t1 || v2.node_ptr != t2)
+          && !with_data) {
+        from_1 = v1.node_ptr == t1;
+        node v0 = from_1 ? v1 : v2;
+
         appD_data.push({source, t1, t2, is_high, v0, from_1});
-        while (!appD.empty() && (appD.top().t1 == t1 && appD.top().t2 == t2))
-        {
-          tuple current_tuple = appD.top();
-          source = current_tuple.source;
-          t1 = current_tuple.t1;
-          t2 = current_tuple.t2;
-          is_high = current_tuple.is_high;
+
+        while (!appD.empty() && (appD.top().t1 == t1 && appD.top().t2 == t2)) {
+          source = appD.top().source;
+          t1 = appD.top().t1;
+          t2 = appD.top().t2;
+          is_high = appD.top().is_high;
           appD.pop();
           appD_data.push({source, t1, t2, is_high, v0, from_1});
         }
@@ -259,124 +210,89 @@ namespace coom
       }
 
       // Resolve current node and recurse
-      uint64_t label_t1 = label_of(t1);
-      uint64_t label_t2 = label_of(t2);
-      uint64_t new_label = std::min(label_t1, label_t2);
+      uint64_t out_label = std::min(label_of(t1), label_of(t2));
       uint64_t low1;
       uint64_t low2;
       uint64_t high1;
       uint64_t high2;
 
-      if (label_t1 != label_t2)
-      {
-        if (new_label == label_t1)
-        {
+      if (label_of(t1) != label_of(t2)) {
+        if (t1 < t2) { // label_of(t1) == out_label
           low1 = v1.low;
           high1 = v1.high;
           low2 = t2;
           high2 = t2;
-        }
-        else
-        {
+        } else {
           low1 = t1;
           high1 = t1;
           low2 = v2.low;
           high2 = v2.high;
         }
-      }
-      else
-      {
-        node v1a = v1;
-        node v2a = v2;
-        if (with_data)
-        {
-          if(from_1) {
-            v1a = data;
-          }
-          else {
-            v2a = data;
-          }
-        }
+      } else {
+        node v1a = with_data && from_1 ? data : v1;
+        node v2a = with_data && !from_1 ? data : v2;
+
         low1 = v1a.low;
         high1 = v1a.high;
         low2 = v2a.low;
         high2 = v2a.high;
       }
 
-      // Check shortcuts
-      if (current_label != new_label)
-      {
-        id0 = 0;
-        current_label = new_label;
-      }
-      uint64_t new_node_ptr = create_node_ptr(new_label, id0);
-      id0 = id0 + 1;
+      // Create new node
+      out_index = prior_label < out_label ? 0 : out_index;
+      uint64_t out_node_ptr = create_node_ptr(out_label, out_index);
 
-      if (is_sink(low1) && is_sink(low2))
-      {
-        arc new_arc = create_arc(new_node_ptr, false, op(low1, low2));
+      prior_label = out_label;
+      out_index++;
+
+      // Output outgoing sink arcs or recurse
+      if (is_sink(low1) && is_sink(low2)) {
+        arc new_arc = create_arc(out_node_ptr, false, op(low1, low2));
         reduce_sink_arcs.write(new_arc);
-      }
-      else if (is_sink(low1) && can_left_shortcut(op, low1))
-      {
-        arc new_arc = create_arc(new_node_ptr, false, op(low1, sink_T));
+      } else if (is_sink(low1) && can_left_shortcut(op, low1)) {
+        arc new_arc = create_arc(out_node_ptr, false, op(low1, create_sink(true)));
         reduce_sink_arcs.write(new_arc);
-      }
-      else if (is_sink(low2) && can_right_shortcut(op, low2))
-      {
-        arc new_arc = create_arc(new_node_ptr, false, op(sink_T, low2));
+      } else if (is_sink(low2) && can_right_shortcut(op, low2)) {
+        arc new_arc = create_arc(out_node_ptr, false, op(create_sink(true), low2));
         reduce_sink_arcs.write(new_arc);
-      }
-      else
-      {
-        appD.push({new_node_ptr, low1, low2, false});
-      }
-      if (is_sink(high1) && is_sink(high2))
-      {
-        arc new_arc = create_arc(new_node_ptr, true, op(high1, high2));
-        reduce_sink_arcs.write(new_arc);
-      }
-      else if (is_sink(high1) && can_left_shortcut(op, high1))
-      {
-        arc new_arc = create_arc(new_node_ptr, true, op(high1, sink_T));
-        reduce_sink_arcs.write(new_arc);
-      }
-      else if (is_sink(high2) && can_right_shortcut(op, high2))
-      {
-        arc new_arc = create_arc(new_node_ptr, true, op(sink_T, high2));
-        reduce_sink_arcs.write(new_arc);
-      }
-      else
-      {
-        appD.push({new_node_ptr, high1, high2, true});
+      } else {
+        appD.push({out_node_ptr, low1, low2, false});
       }
 
-      while (true)
-      {
-        arc new_arc = create_arc(source, is_high, new_node_ptr);
+      if (is_sink(high1) && is_sink(high2)) {
+        arc new_arc = create_arc(out_node_ptr, true, op(high1, high2));
+        reduce_sink_arcs.write(new_arc);
+      } else if (is_sink(high1) && can_left_shortcut(op, high1)) {
+        arc new_arc = create_arc(out_node_ptr, true, op(high1, create_sink(true)));
+        reduce_sink_arcs.write(new_arc);
+      } else if (is_sink(high2) && can_right_shortcut(op, high2)) {
+        arc new_arc = create_arc(out_node_ptr, true, op(create_sink(true), high2));
+        reduce_sink_arcs.write(new_arc);
+      } else {
+        appD.push({out_node_ptr, high1, high2, true});
+      }
+
+      // Output ingoing arcs
+      while (true) {
+        arc new_arc = create_arc(source, is_high, out_node_ptr);
         reduce_node_arcs.write(new_arc);
 
-        if (!appD.empty() && (appD.top().t1 == t1 && appD.top().t2 == t2))
-        {
-          tuple current_tuple = appD.top();
+        if (!appD.empty()
+            && (appD.top().t1 == t1 && appD.top().t2 == t2)) {
+          source = appD.top().source;
+          t1 = appD.top().t1;
+          t2 = appD.top().t2;
+          is_high = appD.top().is_high;
           appD.pop();
-          source = current_tuple.source;
-          t1 = current_tuple.t1;
-          t2 = current_tuple.t2;
-          is_high = current_tuple.is_high;
-        }
-        else if (!appD_data.empty() && (appD_data.top().t1 == t1 && appD_data.top().t2 == t2))
-        {
-          tuple_data current_tuple = appD_data.top();
+        } else if (!appD_data.empty()
+                   && (appD_data.top().t1 == t1 && appD_data.top().t2 == t2)) {
+          source = appD_data.top().source;
+          t1 = appD_data.top().t1;
+          t2 = appD_data.top().t2;
+          is_high = appD_data.top().is_high;
+          data = appD_data.top().data;
           appD_data.pop();
-          source = current_tuple.source;
-          t1 = current_tuple.t1;
-          t2 = current_tuple.t2;
-          is_high = current_tuple.is_high;
-          data = current_tuple.data;
-        }
-        else
-        {
+        } else {
           break;
         }
       }
