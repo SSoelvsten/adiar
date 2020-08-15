@@ -205,8 +205,9 @@ namespace coom
 
     while (!appD.empty() || !appD_data.empty()) {
       // Merge requests from  appD or appD_data
-      if (appD_data.empty() ||
-         std::min(appD.top().t1, appD.top().t2) < std::max(appD_data.top().t1, appD_data.top().t2)) {
+      if (!appD.empty() && (appD_data.empty() ||
+                            std::min(appD.top().t1, appD.top().t2) <
+                            std::max(appD_data.top().t1, appD_data.top().t2))) {
         with_data = false;
         source = appD.top().source;
         t1 = appD.top().t1;
