@@ -57,25 +57,21 @@ namespace coom
 
     assert::is_valid_output_stream(out_nodes);
 
-    //Set-up
-    uint64_t id0 = MAX_ID;
+    //Set up
     tpie::priority_queue<arc, reduce_queue_lt> redD;
     in_sink_arcs.seek(0, tpie::file_stream_base::end);
     in_node_arcs.seek(0, tpie::file_stream_base::end);
     tpie::progress_indicator_null pi;
 
-    //Check to see if in_node_arcs and in_sink_arcs are empty
-    //Edge case where we only return a sink
-    if (!in_node_arcs.can_read_back())
-    {
+    // Check to see if in_node_arcs is empty
+    if (!in_node_arcs.can_read_back()) {
       arc e_high = in_sink_arcs.read_back();
       arc e_low = in_sink_arcs.read_back();
-      if (e_high.target == e_low.target)
-      {
+
+      // Apply reduction rule 1 if applicable
+      if (e_high.target == e_low.target) {
         out_nodes.write(create_sink_node(value_of(e_low.target)));
-      }
-      else
-      {
+      } else {
         out_nodes.write(node_of_arcs(e_low, e_high));
       }
 
@@ -85,244 +81,175 @@ namespace coom
       return;
     }
 
-    //Find the first edge and its label
-    arc current_arc = in_node_arcs.read_back();
-    uint64_t label = label_of(current_arc.target);
-    arc current_sink_arc = in_sink_arcs.read_back();
-    bool use_current_sink = true;
+    // Find the first edge and its label
+    arc next_node_arc = in_node_arcs.read_back();
+    bool has_next_node_arc = true;
 
-    //Process bottom-up each layer
-    while (in_sink_arcs.can_read_back() || !redD.empty())
-    {
-      //Reset ID for this layer
-      id0 = MAX_ID;
+    uint64_t label = label_of(next_node_arc.target);
 
-      //Set-up for L_j_red1
+    arc next_sink_arc = in_sink_arcs.read_back();
+    bool has_next_sink = true;
+
+    // Process bottom-up each layer
+    while (has_next_sink || !redD.empty()) {
+      // Set up for L_j_red1
       tpie::file_stream<mapping> reduction_rule_1_mapping;
       reduction_rule_1_mapping.open();
 
-      //Set-up for L_j
+      // Set-up for L_j
       tpie::merge_sorter<node, true, decltype(reduce_node_children_lt)> sorter1(reduce_node_children_lt);
       sorter1.set_available_memory(tpie::get_memory_manager().available() / 2);
       sorter1.begin();
 
-      //Pull out all nodes from redD and in_sink_arcs for this layer and check reduction 1
-      arc e_high;
-      arc e_low;
-      while ((in_sink_arcs.can_read_back() && label_of(current_sink_arc.source) == label) || (!redD.empty() && label_of(redD.top().source) == label))
-      {
-        //Pull both from in_sink_arcs
-        if (redD.empty() || (in_sink_arcs.can_read_back() && redD.top().source < current_sink_arc.source))
-        {
-          e_high = current_sink_arc;
-          e_low = in_sink_arcs.read_back();
-          if (in_sink_arcs.can_read_back())
-          {
-            current_sink_arc = in_sink_arcs.read_back();
-          }
-          else
-          {
-            use_current_sink = false;
-          }
-        }
+      // Pull out all nodes from redD and in_sink_arcs for this layer
+      while ((has_next_sink && label_of(next_sink_arc.source) == label)
+             || (!redD.empty() && label_of(redD.top().source) == label)) {
+        // Pull both from in_sink_arcs
+        arc e_high;
+        arc e_low;
 
-        //Pull at least one from redD
-        else
-        {
-          arc top = redD.top();
-          //Pull one from redD and one from in_sink_arcs
-          if (top.source == current_sink_arc.source)
-          {
-            //high from redD, low from in_sink_arcs
-            if (top.is_high)
-            {
-              e_high = top;
-              redD.pop();
-              e_low = current_sink_arc;
-            }
-            //high from in_sink_arcs, low from redD
-            else
-            {
-              e_high = current_sink_arc;
-              e_low = top;
-              redD.pop();
-            }
-            //Update current_sink_arc if possible
-            if (in_sink_arcs.can_read_back())
-            {
-              current_sink_arc = in_sink_arcs.read_back();
-            }
-            else
-            {
-              use_current_sink = false;
-            }
+        if (redD.empty() || (has_next_sink && redD.top().source < next_sink_arc.source)) {
+          e_high = next_sink_arc;
+          e_low = in_sink_arcs.read_back();
+
+          if (in_sink_arcs.can_read_back()) {
+            next_sink_arc = in_sink_arcs.read_back();
+          } else {
+            has_next_sink = false;
           }
-          //Pull two from redD
-          else
-          {
-            e_high = top;
+        } else { // Pull at least one from redD
+          // Pull one from redD and one from in_sink_arcs
+          if (redD.top().source == next_sink_arc.source) {
+            e_high = redD.top().is_high ? redD.top() : next_sink_arc;
+            e_low = redD.top().is_high ? next_sink_arc : redD.top();
+            redD.pop();
+
+            if (in_sink_arcs.can_read_back()) {
+              next_sink_arc = in_sink_arcs.read_back();
+            } else {
+              has_next_sink = false;
+            }
+          } else { // Pull both from redD
+            e_high = redD.top();
             redD.pop();
             e_low = redD.top();
             redD.pop();
           }
         }
 
-        //Check if the pulled arcs can be reduced with reduction 1
-        if (e_high.source == e_low.source && e_high.target == e_low.target)
-        {
-          //Write a mapping to L_j_red1
+        // Apply Reduction rule 1
+        if (e_high.target == e_low.target) {
           reduction_rule_1_mapping.write({e_low.source, e_low.target});
-        }
-        else
-        {
-          //Write a node to L_j
+        } else {
           sorter1.push(node_of_arcs(e_low, e_high));
         }
       }
 
-      // Sort L_j
+      // Output nodes and apply Reduction rule 2
       sorter1.end();
       sorter1.calc(pi);
 
-      //Pull the first element from L_j if possible
-      node current_node;
-      bool could_pull = false;
-      if (sorter1.can_pull())
-      {
-        current_node = sorter1.pull();
-        could_pull = true;
-      }
-
-      //Set up L_j_red2/out
       tpie::merge_sorter<mapping, true, decltype(reduce_node_ptr_lt)> sorter2(reduce_node_ptr_lt);
       sorter2.set_available_memory(tpie::get_memory_manager().available() / 2);
       sorter2.begin();
 
-      //Pull the rest from L_j and check for reduction 2
-      while (sorter1.can_pull())
-      {
-        //Find the node to compare with the current
-        node next_node = sorter1.pull();
-        if (current_node.low == next_node.low && current_node.high == next_node.high)
-        {
-          //The nodes are equal, "throw away" the second (pass it to L_j_red2/out)
-          sorter2.push({next_node.node_ptr, create_node_ptr(label, id0)});
-        }
-        else
-        {
-          //The nodes are not equal, pass the first to L_j_red2/out and out_nodes and continue with the second
-          out_nodes.write(create_node(label, id0, current_node.low, current_node.high));
-          sorter2.push({current_node.node_ptr, create_node_ptr(label, id0)});
-          id0 = id0 - 1;
-          current_node = next_node;
-        }
-      }
+      if (sorter1.can_pull()) {
+        uint64_t out_id = MAX_ID;
+        node current_node = sorter1.pull();
 
-      //Write the last node to L_j_red2/out and out_nodes
-      if (could_pull)
-      {
-        out_nodes.write(create_node(label, id0, current_node.low, current_node.high));
-        sorter2.push({current_node.node_ptr, create_node_ptr(label, id0)});
+        node out_node = create_node(label, out_id, current_node.low, current_node.high);
+        out_nodes.write(out_node);
+        out_id--;
+
+        sorter2.push({ current_node.node_ptr, out_node.node_ptr });
+
+        // Pull the rest from L_j and check for reduction 2
+        while (sorter1.can_pull()) {
+          node next_node = sorter1.pull();
+          if (current_node.low == next_node.low && current_node.high == next_node.high) {
+            sorter2.push({ next_node.node_ptr, out_node.node_ptr });
+          } else {
+            current_node = next_node;
+
+            node out_node = create_node(label, out_id, current_node.low, current_node.high);
+            out_nodes.write(out_node);
+            out_id--;
+
+            sorter2.push({current_node.node_ptr, out_node.node_ptr});
+          }
+        }
       }
 
       // Sort L_j_red2/out
       sorter2.end();
       sorter2.calc(pi);
 
-      //Find the first mappings from L_j_red1 and L_j_red2/out
+      // Find the first mappings from L_j_red1 and L_j_red2/out
       reduction_rule_1_mapping.seek(0);
-      mapping red1 = {0, 0};
-      bool new_red1 = false;
-      if (reduction_rule_1_mapping.can_read())
-      {
-        red1 = reduction_rule_1_mapping.read();
-        new_red1 = true;
+      mapping next_red1 = {0, 0};
+      bool has_next_red1 = reduction_rule_1_mapping.can_read();
+      if (has_next_red1) {
+        next_red1 = reduction_rule_1_mapping.read();
       }
 
-      mapping red2 = {0, 0};
-      bool new_red2 = false;
-      if (sorter2.can_pull())
-      {
-        red2 = sorter2.pull();
-        new_red2 = true;
+      mapping next_red2 = {0, 0};
+      bool has_next_red2 = sorter2.can_pull();
+      if (has_next_red2) {
+        next_red2 = sorter2.pull();
       }
 
-      mapping current_map;
-      bool red1_current;
+      // Pass all the mappings to Q
+      while (has_next_red1 || has_next_red2) {
+        // Find the mapping with largest old_node_ptr
+        bool is_red1_current = !has_next_red2 ||
+                               (has_next_red1 && next_red1.old_node_ptr > next_red2.old_node_ptr);
+        mapping current_map = is_red1_current ? next_red1 : next_red2;
 
-      //Pass all the mappings to Q
-      while (new_red1 || new_red2)
-      {
-        //Find the mapping with largest old_node_ptr
-        if ((new_red1 && red1.old_node_ptr > red2.old_node_ptr) || !new_red2)
-        {
-          current_map = red1;
-          red1_current = true;
-        }
-        else
-        {
-          current_map = red2;
-          red1_current = false;
-        }
-
-        //Find all arcs that have sources that match the current mapping's old_node_ptr
-        while (current_map.old_node_ptr == current_arc.target)
-        {
-          arc new_arc = create_arc(current_arc.source, current_arc.is_high, current_map.new_node_ptr);
+        // Find all arcs that have sources that match the current mapping's old_node_ptr
+        while (has_next_node_arc && current_map.old_node_ptr == next_node_arc.target) {
+          arc new_arc = create_arc(next_node_arc.source,
+                                   next_node_arc.is_high,
+                                   current_map.new_node_ptr);
           redD.push(new_arc);
-          if (in_node_arcs.can_read_back())
-          {
-            current_arc = in_node_arcs.read_back();
-          }
-          else
-          {
-            break;
+          if (in_node_arcs.can_read_back()) {
+            next_node_arc = in_node_arcs.read_back();
+          } else {
+            has_next_node_arc = false;
           }
         }
 
-        //Update the mapping that was used
-        if (red1_current)
-        {
-          if (reduction_rule_1_mapping.can_read())
-          {
-            red1 = reduction_rule_1_mapping.read();
+        // Update the mapping that was used
+        if (is_red1_current) {
+          if (reduction_rule_1_mapping.can_read()) {
+            next_red1 = reduction_rule_1_mapping.read();
+          } else {
+            has_next_red1 = false;
           }
-          else
-          {
-            new_red1 = false;
-          }
-        }
-        else
-        {
-          if (sorter2.can_pull())
-          {
-            red2 = sorter2.pull();
-          }
-          else
-          {
-            new_red2 = false;
+        } else {
+          if (sorter2.can_pull()) {
+            next_red2 = sorter2.pull();
+          } else {
+            has_next_red2 = false;
           }
         }
       }
 
-      //Move on to the next layer (check if everything has been reduced down to one sink)
+      // Move on to the next layer
       reduction_rule_1_mapping.close();
 
-      if (!redD.empty() || use_current_sink)
-      {
-        if (redD.empty() || (use_current_sink && label_of(current_sink_arc.source) > label_of(redD.top().source)))
-        {
-          label = label_of(current_sink_arc.source);
-        }
-        else
-        {
+      if (!redD.empty() || has_next_sink) {
+        if (redD.empty() || (has_next_sink && next_sink_arc.source > redD.top().source)) {
+          label = label_of(next_sink_arc.source);
+        } else {
           label = label_of(redD.top().source);
         }
       }
 
-      if (!in_node_arcs.can_read_back() && !in_sink_arcs.can_read_back() && out_nodes.size() == 0)
-      {
-        out_nodes.write(create_sink_node(value_of(current_map.new_node_ptr)));
+      // Check if everything has been reduced down to one sink
+      if (!in_node_arcs.can_read_back() &&
+          !has_next_sink &&
+          out_nodes.size() == 0) {
+        out_nodes.write({ next_red1.new_node_ptr, NIL, NIL });
 
         debug::println_file_stream(out_nodes, "out_nodes");
         debug::println_algorithm_end("REDUCE");
