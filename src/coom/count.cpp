@@ -73,97 +73,96 @@ namespace coom
     nodes.seek(0, tpie::file_stream_base::end);
     tpie::priority_queue<partial_sum, count_queue_lt> partial_sums;
 
-    //Take root out and put its children into the priority queue or count them immediately if they are sinks
+    // Take root out and put its children into the priority queue
+    // or count them immediately if they are sinks
     node root = nodes.read_back();
     uint64_t result = 0;
-    if (is_sink(root.low))
-    {
-      if (sink_pred(root.low))
-      {
-        uint64_t new_sum_low = count_skipped_layers ? 1 << (biggest_label - label_of(root)) : 1;
-        result = result + new_sum_low;
-        debug::println_count_low_sum(root.node_ptr, new_sum_low);
-      } else {
-        debug::println_count_low_sum(root.node_ptr, 0);
+
+    uint64_t sum = 0;
+    if (is_sink(root.low)) {
+      if (sink_pred(root.low)) {
+        sum = count_skipped_layers
+          ? 1 << (biggest_label - label_of(root))
+          : 1;
+
+        result = result + sum;
       }
-    }
-    else
-    {
-      uint64_t new_sum_low = count_skipped_layers ?  1 << (label_of(root.low) - label_of(root) - 1) : 1;
-      partial_sums.push({root.low, new_sum_low});
-      debug::println_count_low_sum(root.node_ptr, new_sum_low);
-    }
-    if (is_sink(root.high))
-    {
-      if (sink_pred(root.high))
-      {
-        uint64_t new_sum_high = count_skipped_layers ? 1 << (biggest_label - label_of(root)) : 1;
-        result = result + new_sum_high;
+    } else {
+      sum = count_skipped_layers
+        ?  1 << (label_of(root.low) - label_of(root) - 1)
+        : 1;
 
-        debug::println_count_high_sum(root.node_ptr, new_sum_high);
-      } else {
-        debug::println_count_high_sum(root.node_ptr, 0);
+      partial_sums.push({root.low, sum});
+    }
+
+    debug::println_count_low_sum(root.node_ptr, sum);
+
+    sum = 0;
+    if (is_sink(root.high)) {
+      if (sink_pred(root.high)) {
+        sum = count_skipped_layers
+          ? 1 << (biggest_label - label_of(root))
+          : 1;
+
+        result = result + sum;
       }
-    }
-    else
-    {
-      uint64_t new_sum_high = count_skipped_layers ? 1 << (label_of(root.high) - label_of(root) - 1) : 1;
-      partial_sums.push({root.high, new_sum_high});
-      debug::println_count_high_sum(root.node_ptr, new_sum_high);
+    } else {
+      sum = count_skipped_layers
+        ? 1 << (label_of(root.high) - label_of(root) - 1)
+        : 1;
+
+      partial_sums.push({root.high, sum});
     }
 
-    //Take out the rest of the nodes and process them one by one
-    node current_node;
-    partial_sum current_sum;
-    while (nodes.can_read_back())
-    {
-      current_node = nodes.read_back();
-      uint64_t next_sum = 0;
+    debug::println_count_high_sum(root.node_ptr, sum);
 
-      //Pull out all "edges" that point to the current node and add their paths
-      while (!partial_sums.empty() && partial_sums.top().node_ptr == current_node.node_ptr)
-      {
-        current_sum = partial_sums.top();
+    // Take out the rest of the nodes and process them one by one
+    while (nodes.can_read_back()) {
+      node current_node = nodes.read_back();
+      sum = 0;
+
+      // Sum all ingoing arcs
+      while (!partial_sums.empty() && partial_sums.top().node_ptr == current_node.node_ptr) {
+        sum += partial_sums.top().sum;
         partial_sums.pop();
-        next_sum = next_sum + current_sum.sum;
       }
 
-      //Put children of the current node into the priority queue or count them if they are sinks
-      if (is_sink(current_node.low))
-      {
-        if (sink_pred(current_node.low))
-        {
-          uint64_t new_sum_low = count_skipped_layers ? next_sum * (1 << (biggest_label - label_of(current_node))) : next_sum;
-          result = result + new_sum_low;
-          debug::println_count_low_sum(current_node.node_ptr, new_sum_low);
-        } else {
-          debug::println_count_low_sum(current_node.node_ptr, 0);
-        }
-      }
-      else
-      {
-        uint64_t new_sum_low = count_skipped_layers ? next_sum * (1 << (label_of(current_node.low) - label_of(current_node) - 1)) : next_sum;
-        partial_sums.push({current_node.low, new_sum_low});
-        debug::println_count_low_sum(current_node.node_ptr, new_sum_low);
-      }
+      // Put children of the current node into the priority queue or count them if they are sinks
+      uint64_t sum_low = 0;
+      if (is_sink(current_node.low)) {
+        if (sink_pred(current_node.low)) {
+          sum_low = sum * (count_skipped_layers
+                           ? 1 << (biggest_label - label_of(current_node))
+                           : 1);
 
-      if (is_sink(current_node.high))
-      {
-        if (sink_pred(current_node.high))
-        {
-          uint64_t new_sum_high = count_skipped_layers ? next_sum * (1 << (biggest_label - label_of(current_node))) : next_sum;
-          result = result + new_sum_high;
-          debug::println_count_high_sum(current_node.node_ptr, new_sum_high);
-        } else {
-          debug::println_count_high_sum(current_node.node_ptr, 0);
+          result += sum_low;
         }
+      } else {
+        sum_low = sum * (count_skipped_layers
+                         ? 1 << (label_of(current_node.low) - label_of(current_node) - 1)
+                         : 1);
+
+        partial_sums.push({current_node.low, sum_low});
       }
-      else
-      {
-        uint64_t new_sum_high = count_skipped_layers ? next_sum * (1 << (label_of(current_node.high) - label_of(current_node) - 1)) : next_sum;
-        partial_sums.push({current_node.high, new_sum_high});
-        debug::println_count_high_sum(current_node.node_ptr, new_sum_high);
+      debug::println_count_low_sum(current_node.node_ptr, sum_low);
+
+      uint64_t sum_high = 0;
+      if (is_sink(current_node.high)) {
+        if (sink_pred(current_node.high)) {
+          sum_high = sum * (count_skipped_layers
+                            ? 1 << (biggest_label - label_of(current_node))
+                            : 1);
+
+          result += sum_high;
+        }
+      } else {
+        sum_high = sum * (count_skipped_layers
+                          ? 1 << (label_of(current_node.high) - label_of(current_node) - 1)
+                          : 1);
+
+        partial_sums.push({current_node.high, sum_high});
       }
+      debug::println_count_high_sum(current_node.node_ptr, sum_high);
     }
 
     debug::println_count_result(result);
