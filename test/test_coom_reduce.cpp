@@ -9,11 +9,11 @@ go_bandit([]() {
     describe("COOM: Reduce", [&]() {
         it("can apply reduction rule 1 on sink arcs", [&]() {
             /*
-                 1                  1
+                 1                  1     ---- x0
                 / \                / \
-                | 2                | 2
+                | 2                | 2    ---- x1
                 |/ \      =>       |/ \
-                3  4               3  |
+                3  4               3  |   ---- x2
                / \//               |\ /
                F  T                F T
             */
@@ -55,27 +55,33 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n3
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID,
+                                                                  sink_F,
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n2
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n1
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  create_node_ptr(1,MAX_ID))));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
         it("can apply reduction rule 1 on node arcs", [&]() {
             /*
-                 1                  1
+                 1                  1        ---- x0
                 / \                / \
-                | 2                | 2
+                | 2                | 2       ---- x1
                 |/ \      =>       |/ \
-                3  4               3   \
+                3  4               3   \     ---- x2
                / \ \\             / \  |
-               F T  5             F T  5
+               F T  5             F T  5     ---- x3
                    / \                / \
                    F T                F T
             */
@@ -129,21 +135,25 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n2
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(3,MAX_ID))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  create_node_ptr(3,MAX_ID))));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n1
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  create_node_ptr(1,MAX_ID))));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
         it("can apply reduction rule 2 on sink arcs", [&]() {
             /*
-               1                  1
+               1                  1      ---- x0
               / \                / \
-              | 2_               | 2
+              | 2_               | 2     ---- x1
               | | \      =>      |/ \
-              3 4 T              4  T
+              3 4 T              4  T    ---- x2
               |X|               / \
               F T               F T
             */
@@ -185,27 +195,33 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n4
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID,
+                                                                  sink_F,
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n2
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n1
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  create_node_ptr(1,MAX_ID))));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
         it("can apply reduction rule 2 on node arcs", [&]() {
             /*
-                 1                  1
+                 1                  1       ---- x0
                 / \                / \
-                | 2_               | 2
+                | 2_               | 2      ---- x1
                 | | \      =>      |/ \
-                3 4 T              4  T
+                3 4 T              4  T     ---- x2
                 |X|               / \
-                5 6               5  6 
+                5 6               5  6      ---- x3
                / \ \\            / \ \\
                F T T F           F T T F
             */
@@ -262,27 +278,33 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n4
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID, create_node_ptr(3, MAX_ID), create_node_ptr(3, MAX_ID-1))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID,
+                                                                  create_node_ptr(3, MAX_ID),
+                                                                  create_node_ptr(3, MAX_ID-1))));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n2
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n1
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  create_node_ptr(1,MAX_ID))));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
         it("can apply reduction rule 2 on node and sink arcs", [&]() {
             /*
-                 1                  1
+                 1                  1     ---- x0
                 / \                / \
-                | 2_               | 2
+                | 2_               | 2    ---- x1
                 | | \      =>      |/ \
-                3 4 T              4  T
+                3 4 T              4  T   ---- x2
                 |X|               / \
-                5 T               5 T
+                5 T               5 T     ---- x3
                / \               / \
                F T               F T
             */
@@ -332,25 +354,31 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n4
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID, create_node_ptr(3,MAX_ID), sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID,
+                                                                  create_node_ptr(3,MAX_ID),
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n2
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n1
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  create_node_ptr(1,MAX_ID))));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
         it("can apply both reduction rule 1 and 2", [&]() {
             /*
-                 1                  1
+                 1                  1     ---- x0
                 / \                / \
-                2 T                | T
+                2 T                | T    ---- x1
                / \        =>       |
-               3 4                 4
+               3 4                 4      ---- x2
                |X|                / \
                F T                F T
             */
@@ -393,24 +421,28 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n4
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID,
+                                                                  sink_F,
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n1
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(2,MAX_ID), sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                  create_node_ptr(2,MAX_ID),
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
         it("can reduce nodes in 'disjoint' branches", [&]() {
             /*
-                     1                         1
+                     1                         1      ---- x0
                     / \                       / \
-                   2   3                     2   3
-                  / \ / \                    |\ /|
-                 4   5   6        =>          \T/
-                / \ / \ / \                    6
-                F T 7 T F T                   / \
-                   / \                        F T
+                   2   3                     2_ _3    ---- x1
+                  / \ / \                    \_T_/
+                 4   5   6        =>           6     ---- x2
+                / \ / \ / \                   / \
+                F T 7 T F T                   F T     ---- x3
+                   / \
                    T T
             */
 
@@ -455,48 +487,44 @@ go_bandit([]() {
 
             coom::reduce(in_node_arcs, in_sink_arcs, out_nodes);
 
-            /*
-                     1                         1
-                    / \                       / \
-                   2   3                     2   3
-                  / \ / \                    |\ /|
-                 4   5   6        =>          \T/
-                / \ / \ / \                    6
-                F T 7 T F T                   / \
-                   / \                        F T
-                   T T
-            */
-
             // Check it looks all right
             out_nodes.seek(0);
 
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n6
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID,
+                                                                  sink_F,
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n2
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), sink_T)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID,
+                                                                  create_node_ptr(2, MAX_ID),
+                                                                  sink_T)));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n3
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID-1, sink_T, create_node_ptr(2, MAX_ID))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, MAX_ID-1,
+                                                                  sink_T,
+                                                                  create_node_ptr(2, MAX_ID))));
             AssertThat(out_nodes.can_read(), Is().True());
 
             // n1
-            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(1, MAX_ID-1))));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                  create_node_ptr(1,MAX_ID),
+                                                                  create_node_ptr(1, MAX_ID-1))));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
 
         it("can reduce the root", [&]() {
             /*
-                 1
+                 1                         ---- x0
                 / \
-                | 2
+                | 2                        ---- x1
                 |/ \        =>
-                3  4                4
+                3  4                4      ---- x2
                 |X/                / \
                 F T                F T
             */
@@ -545,7 +573,7 @@ go_bandit([]() {
 
         it("can reduce down to a sink (1)", [&]() {
             /*
-                 1                 F
+                 1                 F       ---- x0
                 / \      =>
                 F F
             */
