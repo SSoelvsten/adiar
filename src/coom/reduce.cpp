@@ -104,11 +104,11 @@ namespace coom
       // Pull out all nodes from redD and in_sink_arcs for this layer
       while ((has_next_sink && label_of(next_sink_arc.source) == label)
              || (!redD.empty() && label_of(redD.top().source) == label)) {
-        // Pull both from in_sink_arcs
-        arc e_high;
         arc e_low;
+        arc e_high;
 
         if (redD.empty() || (has_next_sink && redD.top().source < next_sink_arc.source)) {
+          // Pull both from in_sink_arcs
           e_high = next_sink_arc;
           e_low = in_sink_arcs.read_back();
 
@@ -120,8 +120,8 @@ namespace coom
         } else { // Pull at least one from redD
           // Pull one from redD and one from in_sink_arcs
           if (redD.top().source == next_sink_arc.source) {
-            e_high = redD.top().is_high ? redD.top() : next_sink_arc;
             e_low = redD.top().is_high ? next_sink_arc : redD.top();
+            e_high = redD.top().is_high ? redD.top() : next_sink_arc;
             redD.pop();
 
             if (in_sink_arcs.can_read_back()) {
