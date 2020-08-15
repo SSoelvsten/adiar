@@ -156,16 +156,31 @@ namespace coom
       high1 = v1.high;
       low2 = v2.node_ptr;
       high2 = v2.node_ptr;
+
+      if (in_nodes_1.can_read_back()) {
+        v1 = in_nodes_1.read_back();
+      }
     } else if (label_of(v1) > label_of(v2)) {
       low1 = v1.node_ptr;
       high1 = v1.node_ptr;
       low2 = v2.low;
       high2 = v2.high;
+
+      if (in_nodes_2.can_read_back()) {
+        v2 = in_nodes_2.read_back();
+      }
     } else {
       low1 = v1.low;
       high1 = v1.high;
       low2 = v2.low;
       high2 = v2.high;
+
+      if (in_nodes_1.can_read_back()) {
+        v1 = in_nodes_1.read_back();
+      }
+      if (in_nodes_2.can_read_back()) {
+        v2 = in_nodes_2.read_back();
+      }
     }
 
     // Shortcut the root
@@ -230,6 +245,15 @@ namespace coom
       debug::println_apply_request(t1,t2);
 
       // Seek request partially in stream
+      if (label_of(t1) == label_of(t2)) {
+        while (label_of(v1.node_ptr) < label_of(t1)) {
+          v1 = in_nodes_1.read_back();
+        }
+        while (label_of(v2.node_ptr) < label_of(t2)) {
+          v2 = in_nodes_2.read_back();
+        }
+      }
+
       if (t1 == t2) {
         while (v1.node_ptr < t1) {
           v1 = in_nodes_1.read_back();
