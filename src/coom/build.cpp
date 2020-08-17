@@ -1,0 +1,128 @@
+#ifndef COOM_MAKE_H
+#define COOM_MAKE_H
+
+#include <tpie/file_stream.h>
+
+#include "data.h"
+#include "assert.h"
+
+#include "build.h"
+
+namespace coom {
+  namespace assert {
+    void is_build_counter_valid_labels (uint64_t min_label, uint64_t max_label, uint64_t threshold) {
+      assert(min_label <= max_label);
+      assert(threshold <= max_label - min_label + 1);
+    }
+  }
+
+  void build_x(uint64_t label, tpie::file_stream<node> &out_nodes)
+  {
+    assert::is_valid_output_stream(out_nodes);
+    out_nodes.write(create_node(label, 0, create_sink(false), create_sink(true)));
+  }
+
+  void build_not_x(uint64_t label, tpie::file_stream<node> &out_nodes)
+  {
+    assert::is_valid_output_stream(out_nodes);
+    out_nodes.write(create_node(label, 0, create_sink(true), create_sink(false)));
+  }
+
+  void build_and(tpie::file_stream<uint64_t> &in_labels,
+                 tpie::file_stream<node> &out_nodes)
+  {
+    assert::is_valid_output_stream(out_nodes);
+    if (in_labels.size() == 0) {
+      out_nodes.write(create_sink_node(true));
+      return;
+    }
+
+    uint64_t low = create_sink(false);
+    uint64_t high = create_sink(true);
+
+    in_labels.seek(0, tpie::file_stream_base::end);
+
+    while(in_labels.can_read_back()) {
+      node next_node = create_node(in_labels.read_back(), 0, low, high);
+      high = next_node.node_ptr;
+      out_nodes.write(next_node);
+    }
+  }
+
+  void build_or(tpie::file_stream<uint64_t> &in_labels,
+                 tpie::file_stream<node> &out_nodes)
+  {
+    assert::is_valid_output_stream(out_nodes);
+    if (in_labels.size() == 0) {
+      out_nodes.write(create_sink_node(false));
+      return;
+    }
+
+    uint64_t low = create_sink(false);
+    uint64_t high = create_sink(true);
+
+    in_labels.seek(0, tpie::file_stream_base::end);
+
+    while(in_labels.can_read_back()) {
+      node next_node = create_node(in_labels.read_back(), 0, low, high);
+      low = next_node.node_ptr;
+      out_nodes.write(next_node);
+    }
+  }
+
+  inline uint64_t build_counter_min_id(uint64_t label, uint64_t max_label, uint64_t threshold)
+  {
+    return label > max_label - threshold
+      ? threshold - (max_label - label + 1)
+      : 0;
+  }
+
+  void build_counter(uint64_t min_label, uint64_t max_label,
+                    uint64_t threshold,
+                    tpie::file_stream<node> &out_nodes)
+  {
+    assert::is_valid_output_stream(out_nodes);
+    assert::is_build_counter_valid_labels(min_label, max_label, threshold);
+
+    uint64_t curr_label = max_label;
+
+    uint64_t gt_sink = create_sink(false); // create_sink(comparator(threshold + 1, threshold));
+    uint64_t eq_sink = create_sink(true);  // create_sink(comparator(threshold, threshold));
+    uint64_t lt_sink = create_sink(false); // create_sink(comparator(threshold - 1, threshold));
+
+    do {
+      // Start with the maximal number the accumulated value can be at
+      // up to this label.
+      uint64_t curr_id = std::min(curr_label, threshold);
+
+      // How small has the accumulated sum up to this point to be, such
+      // that it is still possible to reach threshold before max_label?
+      uint64_t min_id = build_counter_min_id(curr_label, max_label, threshold);
+
+      do {
+        uint64_t low;
+        if (curr_label == max_label) {
+          low = curr_id == threshold ? eq_sink : lt_sink;
+        } else if (curr_id < build_counter_min_id(curr_label+1, max_label, threshold)) {
+          low = lt_sink;
+        } else {
+          low = coom::create_node_ptr(curr_label + 1, curr_id);
+        }
+
+        uint64_t high;
+        if (curr_label == max_label) {
+          high = curr_id + 1 == threshold ? eq_sink : gt_sink;
+        } else if (curr_id == threshold) {
+          high = gt_sink;
+        } else {
+          high = coom::create_node_ptr(curr_label + 1, curr_id + 1);
+        }
+
+        out_nodes.write(coom::create_node(curr_label, curr_id, low, high));
+
+      } while (curr_id-- > min_id);
+    } while (curr_label-- > min_label);
+  }
+}
+
+#endif // COOM_BUILD_H
