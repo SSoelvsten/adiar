@@ -20,17 +20,16 @@ namespace coom
     inline void println_count_low_sum([[maybe_unused]] const uint64_t node_ptr,
                                       [[maybe_unused]] const uint64_t count)
     {
-#if COOM_DEBUG
+#if COOM_DEBUG >= 2
       debug::print_node_ptr(node_ptr);
-      tpie::log_info() << " | low : " << count << std::endl;
+      tpie::log_info() << " | low : " << count;
 #endif
     }
 
     inline void println_count_high_sum([[maybe_unused]] const uint64_t node_ptr,
                                        [[maybe_unused]] const uint64_t count)
     {
-#if COOM_DEBUG
-      debug::print_node_ptr(node_ptr);
+#if COOM_DEBUG >= 2
       tpie::log_info() << " | high : " << count << std::endl;
 #endif
     }

@@ -16,21 +16,21 @@ namespace coom
     inline void print_evaluate_assignment([[maybe_unused]] const uint64_t label,
                                           [[maybe_unused]] bool value)
     {
-#if COOM_DEBUG
+#if COOM_DEBUG >= 2
       tpie::log_info() << "| " << label << " := " << value << " ==> ";
 #endif
     }
 
     inline void println_evaluate_return([[maybe_unused]] const uint64_t sink)
     {
-#if COOM_DEBUG
+#if COOM_DEBUG >= 2
       tpie::log_info() << "return [ " << value_of(sink) << " ]" << std::endl;
 #endif
     }
 
     inline void println_evaluate_seek([[maybe_unused]] const uint64_t node_ptr)
     {
-#if COOM_DEBUG
+#if COOM_DEBUG >= 2
       tpie::log_info() << "seek   [ "
                        << label_of(node_ptr) << ", " << id_of(node_ptr)
                        << " ]" << std::endl;
