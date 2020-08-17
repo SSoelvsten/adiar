@@ -261,16 +261,15 @@ namespace coom
       debug::println_apply_request(t1,t2);
 
       // Seek request partially in stream
-      if (label_of(t1) == label_of(t2)) {
-        while (label_of(v1.node_ptr) < label_of(t1)) {
-          v1 = in_nodes_1.read_back();
-        }
-        while (label_of(v2.node_ptr) < label_of(t2)) {
+      if (is_sink(t1)) {
+        while (v2.node_ptr < t2) {
           v2 = in_nodes_2.read_back();
         }
-      }
-
-      if (with_data) {
+      } else if (is_sink(t2)) {
+        while (v1.node_ptr < t1) {
+          v1 = in_nodes_1.read_back();
+        }
+      } else if (with_data) {
         if (from_1) {
           while (v2.node_ptr < t2) {
             v2 = in_nodes_2.read_back();
@@ -280,15 +279,24 @@ namespace coom
             v1 = in_nodes_1.read_back();
           }
         }
+      } else if (t1 == t2) {
+        while (v1.node_ptr < t1) {
+          v1 = in_nodes_1.read_back();
+        }
+        while (v2.node_ptr < t2) {
+          v2 = in_nodes_2.read_back();
+        }
       } else {
-        if (t1 == t2) {
-          while (v1.node_ptr < t1) {
+        if (label_of(t1) == label_of(t2)) {
+          while (label_of(v1.node_ptr) < label_of(t1)) {
             v1 = in_nodes_1.read_back();
           }
-          while (v2.node_ptr < t2) {
+          while (label_of(v2.node_ptr) < label_of(t2)) {
             v2 = in_nodes_2.read_back();
           }
-        } else if (t1 < t2) {
+        }
+
+        if (t1 < t2) {
           while (v1.node_ptr < t1) {
             v1 = in_nodes_1.read_back();
           }
@@ -302,7 +310,7 @@ namespace coom
       debug::println_apply_position(v1,v2);
 
       // Forward information across the layer
-      if (label_of(t1) == label_of(t2)
+      if (!is_sink(t1) && !is_sink(t2) && label_of(t1) == label_of(t2)
           && (v1.node_ptr != t1 || v2.node_ptr != t2)
           && !with_data) {
         from_1 = v1.node_ptr == t1;
@@ -326,13 +334,13 @@ namespace coom
       uint64_t high1;
       uint64_t high2;
 
-      if (label_of(t1) != label_of(t2)) {
-        if (t1 < t2) { // ==> label_of(t1) < label_of(t2)
+      if (is_sink(t1) || is_sink(t2) || label_of(t1) != label_of(t2)) {
+        if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink(t2)
           low1 = v1.low;
           high1 = v1.high;
           low2 = t2;
           high2 = t2;
-        } else { // ==> label_of(t1) > label_of(t2)
+        } else { // ==> label_of(t1) > label_of(t2) || is_sink(t1)
           low1 = t1;
           high1 = t1;
           low2 = v2.low;
@@ -349,7 +357,7 @@ namespace coom
       }
 
       // Create new node
-      uint64_t out_label = std::min(label_of(t1), label_of(t2));
+      uint64_t out_label = label_of(std::min(t1, t2));
       out_index = prior_label != out_label ? 0 : out_index;
       prior_label = out_label;
 
