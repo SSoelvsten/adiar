@@ -276,6 +276,18 @@ go_bandit([]() {
 
                 AssertThat(arc_5 < arc_6, Is().True());
                 AssertThat(arc_6 > arc_5, Is().True());
+
+                // a good target should not overwrite a bad is_high
+                auto arc_7 = create_arc(create_node_ptr(2,2),
+                                        true,
+                                        create_node_ptr(3,2));
+
+                auto arc_8 = create_arc(create_node_ptr(2,2),
+                                        false,
+                                        create_node_ptr(3,3));
+
+                AssertThat(arc_7 < arc_8, Is().False());
+                AssertThat(arc_8 > arc_7, Is().False());
               });
 
             it("should be a POD", [&]() {
