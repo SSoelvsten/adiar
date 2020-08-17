@@ -148,10 +148,26 @@ namespace coom
     uint64_t low1, low2;
     uint64_t high1, high2;
 
-    uint64_t prior_label = std::min(label_of(v1), label_of(v2));
+    uint64_t prior_label = label_of(std::min(v1.node_ptr, v2.node_ptr));
     uint64_t root = create_node_ptr(prior_label, out_index);
 
-    if (label_of(v1) < label_of(v2)) {
+    if (is_sink_node(v1)) {
+      low1 = high1 = v1.node_ptr;
+      low2 = v2.low;
+      high2 = v2.high;
+
+      if (in_nodes_2.can_read_back()) {
+        v2 = in_nodes_2.read_back();
+      }
+    } else if (is_sink_node(v2)) {
+      low1 = v1.low;
+      high1 = v1.high;
+      low2 = high2 = v2.node_ptr;
+
+      if (in_nodes_1.can_read_back()) {
+        v1 = in_nodes_1.read_back();
+      }
+    } else  if (label_of(v1) < label_of(v2)) {
       low1 = v1.low;
       high1 = v1.high;
       low2 = v2.node_ptr;

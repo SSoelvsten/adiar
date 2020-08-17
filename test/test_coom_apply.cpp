@@ -180,6 +180,33 @@ go_bandit([]() {
         //                     END
         // == CREATE SINGLE VARIABLE FOR UNIT TESTS ==
 
+        it("should AND x0 and T", [&]() {
+            tpie::file_stream<arc> reduce_node_arcs;
+            reduce_node_arcs.open();
+
+            tpie::file_stream<arc> reduce_sink_arcs;
+            reduce_sink_arcs.open();
+
+            apply(obdd_x0, obdd_T_2, and_op, reduce_node_arcs, reduce_sink_arcs);
+
+            reduce_node_arcs.seek(0);
+            AssertThat(reduce_node_arcs.can_read(), Is().False());
+
+            reduce_sink_arcs.seek(0);
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
+                                                                        false,
+                                                                        create_sink(false))));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
+                                                                        true,
+                                                                        create_sink(true))));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().False());
+          });
+
         it("should XOR x0 and x1", [&]() {
             /* The order on the leaves are due to the sorting of sink requests
                after evaluating x0
