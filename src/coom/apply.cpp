@@ -20,7 +20,7 @@ namespace coom
     inline void println_apply_request([[maybe_unused]] uint64_t t1,
                                       [[maybe_unused]] uint64_t t2)
     {
-#if COOM_DEBUG
+#if COOM_DEBUG >= 2
       tpie::log_info() << std::endl << "| request: " << std::endl << "|   | ";
       print_child(t1);
       tpie::log_info() << std::endl << "|   | ";
@@ -32,7 +32,7 @@ namespace coom
     inline void println_apply_position([[maybe_unused]] const node& v1,
                                        [[maybe_unused]] const node& v2)
     {
-#if COOM_DEBUG
+#if COOM_DEBUG >= 2
       tpie::log_info() << "|  current: " << std::endl << "|     | ";
       print_node(v1);
       tpie::log_info() << std::endl << "|     | ";
@@ -47,7 +47,7 @@ namespace coom
                                          [[maybe_unused]] uint64_t high1,
                                          [[maybe_unused]] uint64_t high2)
     {
-#if COOM_DEBUG
+#if COOM_DEBUG >= 2
       tpie::log_info() << "|  resolved to: ";
       print_node_ptr(out_node_ptr);
       tpie::log_info() << std::endl << "|     | ";
@@ -60,7 +60,7 @@ namespace coom
 
     inline void println_apply_ingoing([[maybe_unused]] arc& out_arc)
     {
-#if COOM_DEBUG
+#if COOM_DEBUG >= 2
       tpie::log_info() << "|  in: ";
       debug::println_arc(out_arc);
 #endif
@@ -68,14 +68,14 @@ namespace coom
 
     inline void println_apply_done()
     {
-#if COOM_DEBUG
+#if COOM_DEBUG >= 2
       tpie::log_info() << "| done..." << std::endl;
 #endif
     }
 
     inline void println_apply_later()
     {
-#if COOM_DEBUG
+#if COOM_DEBUG >= 2
       tpie::log_info() << "| later..." << std::endl;
 #endif
     }
