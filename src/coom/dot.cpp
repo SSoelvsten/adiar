@@ -26,50 +26,79 @@ namespace coom {
 
     nodes.seek(0);
 
-    if (nodes.size() == 1 && is_sink_node(nodes.peek()))
-      {
-        out << "\t" << value_of(nodes.read()) << " [shape=box];" << std::endl;
+    if (nodes.size() == 1 && is_sink_node(nodes.peek())) {
+      out << "\t" << value_of(nodes.read()) << " [shape=box];" << std::endl;
+    } else if (nodes.size() > 0) {
+      out << "\t// Nodes" << std::endl;
+
+      nodes.seek(0, tpie::file_stream_base::end);
+      out << "\tnode [shape=box];" << std::endl;
+
+      while (nodes.can_read_back()) {
+        auto node = nodes.read_back();
+
+        out << "\tn"
+            << node.node_ptr
+            << " [label=<x<SUB>"
+            << label_of(node)
+            << "</SUB>, id<SUB>"
+            << (id_of(node)) << "</SUB>>, style=rounded];"
+            << std::endl;
       }
-    else if (nodes.size() > 0)
-      {
-        out << "\t// Nodes" << std::endl;
 
-        nodes.seek(0, tpie::file_stream_base::end);
-        out << "\tnode [shape=box];" << std::endl;
+      out << "\tn" << create_sink(false) << " [label=\"0\"];" << std::endl;
+      out << "\tn" << create_sink(true) << " [label=\"1\"];" << std::endl;
 
-        while (nodes.can_read_back())
-          {
-            auto node = nodes.read_back();
+      out <<  std::endl << "\t// Arcs" << std::endl;
 
-            out << "\tn"
-                << node.node_ptr
-                << " [label=<x<SUB>"
-                << label_of(node)
-                << "</SUB>, id<SUB>"
-                << (id_of(node)) << "</SUB>>, style=rounded];"
-                << std::endl;
-          }
+      nodes.seek(0, tpie::file_stream_base::end);
+      while (nodes.can_read_back()) {
+        auto node = nodes.read_back();
 
-        out << "\tn" << create_sink(false) << " [label=\"0\"];" << std::endl;
-        out << "\tn" << create_sink(true) << " [label=\"1\"];" << std::endl;
-
-        out <<  std::endl << "\t// Arcs" << std::endl;
-
-        nodes.seek(0, tpie::file_stream_base::end);
-        while (nodes.can_read_back())
-          {
-            auto node = nodes.read_back();
-
-            out << "\tn" << node.node_ptr
-                << " -> "
-                << "n" << node.low
-                << " [style=dashed];" << std::endl;
-            out << "\tn" << node.node_ptr
-                << " -> "
-                << "n" << node.high
-                << "[style=solid];"  << std::endl;
-          }
+        out << "\tn" << node.node_ptr
+            << " -> "
+            << "n" << node.low
+            << " [style=dashed];" << std::endl;
+        out << "\tn" << node.node_ptr
+            << " -> "
+            << "n" << node.high
+            << "[style=solid];"  << std::endl;
       }
+
+      out <<  std::endl << "\t// Ranks" << std::endl;
+      nodes.seek(0, tpie::file_stream_base::end);
+
+      node prev_node = nodes.read_back();
+      out << "\t{ rank=same; " << "n" << prev_node.node_ptr << " }" << std::endl;
+
+      bool has_next_node = nodes.can_read_back();
+      node next_node;
+      if (has_next_node) {
+        next_node = nodes.read_back();
+      }
+
+      while (has_next_node) {
+        out << "\t{ rank=same; " << "n" << next_node.node_ptr << " ";
+        prev_node = next_node;
+
+        if (nodes.can_read_back()) {
+          next_node = nodes.read_back();
+        } else {
+          has_next_node = false;
+        }
+
+        while(has_next_node && label_of(next_node) == label_of(prev_node)) {
+          out << "n" << next_node.node_ptr << " ";
+
+          if (nodes.can_read_back()) {
+            next_node = nodes.read_back();
+          } else {
+            has_next_node = false;
+          }
+        }
+        out << "}" << std::endl;
+      } while (has_next_node);
+    }
     out << "}" << std::endl;
     out.close();
 
