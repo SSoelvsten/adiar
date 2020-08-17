@@ -174,18 +174,13 @@ namespace coom
   }
 
   uint64_t count_paths(tpie::file_stream<node> &nodes,
-                       const sink_pred &sink_pred)
+                       const sink_pred &sink_pred = is_any)
   {
     return count(nodes, sink_pred, false);
   }
 
-  uint64_t count_paths(tpie::file_stream<node> &nodes)
-  {
-    return count_paths(nodes, coom::is_any);
-  }
-
-  uint64_t count_assignments(tpie::file_stream<node> &nodes,
-                             const sink_pred &sink_pred)
+  uint64_t count_assignments(tpie::file_stream<node>& nodes,
+                             const sink_pred& sink_pred = is_true)
   {
     return count(nodes, sink_pred, true);
   }
