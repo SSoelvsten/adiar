@@ -18,6 +18,8 @@ using namespace bandit;
 #include "test_coom_reduce.cpp"
 #include "test_coom_apply.cpp"
 
+#include "test_coom_build.cpp"
+
 int main(int argc, char* argv[]) {
   // Initialize TPIE
   tpie::tpie_init();
