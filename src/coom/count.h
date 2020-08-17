@@ -41,8 +41,6 @@ namespace coom
   uint64_t count_paths(tpie::file_stream<node> &nodes,
                        const sink_pred &sink_pred);
 
-  uint64_t count_paths(tpie::file_stream<node> &nodes);
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Count all assignments between the minimal and maximal label of a
   ///        given OBDD that satisfies a given predicate.
@@ -53,7 +51,7 @@ namespace coom
   /// \return The number of unique assignments.
   //////////////////////////////////////////////////////////////////////////////
   uint64_t count_assignment(tpie::file_stream<node> &nodes,
-                           const sink_pred &sink_pred);
+                            const sink_pred &sink_pred);
 }
 
 #endif // COOM_COUNT_PATHS_H

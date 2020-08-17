@@ -270,14 +270,7 @@ namespace coom
         }
       }
 
-      if (t1 == t2) {
-        while (v1.node_ptr < t1) {
-          v1 = in_nodes_1.read_back();
-        }
-        while (v2.node_ptr < t2) {
-          v2 = in_nodes_2.read_back();
-        }
-      } else if (with_data) {
+      if (with_data) {
         if (from_1) {
           while (v2.node_ptr < t2) {
             v2 = in_nodes_2.read_back();
@@ -288,7 +281,14 @@ namespace coom
           }
         }
       } else {
-        if (t1 < t2) {
+        if (t1 == t2) {
+          while (v1.node_ptr < t1) {
+            v1 = in_nodes_1.read_back();
+          }
+          while (v2.node_ptr < t2) {
+            v2 = in_nodes_2.read_back();
+          }
+        } else if (t1 < t2) {
           while (v1.node_ptr < t1) {
             v1 = in_nodes_1.read_back();
           }
@@ -321,7 +321,6 @@ namespace coom
       }
 
       // Resolve current node and recurse
-      uint64_t out_label = std::min(label_of(t1), label_of(t2));
       uint64_t low1;
       uint64_t low2;
       uint64_t high1;
@@ -350,6 +349,7 @@ namespace coom
       }
 
       // Create new node
+      uint64_t out_label = std::min(label_of(t1), label_of(t2));
       out_index = prior_label != out_label ? 0 : out_index;
       prior_label = out_label;
 
