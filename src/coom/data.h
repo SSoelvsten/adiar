@@ -50,7 +50,7 @@ namespace coom {
     uint64_t target;
   };
 
-  inline arc create_arc(uint64_t source, bool is_high, uint64_t target);
+  arc create_arc(uint64_t source, bool is_high, uint64_t target);
 
   bool operator< (const arc& a, const arc& b);
   bool operator> (const arc& a, const arc& b);

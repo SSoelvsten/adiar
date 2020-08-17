@@ -360,6 +360,5 @@ go_bandit([]() {
                 AssertThat(id_of(node.high), Is().EqualTo(id_of(high_arc.target)));
               });
           });
-
       });
   });
