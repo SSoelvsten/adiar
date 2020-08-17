@@ -82,7 +82,7 @@ install(TARGETS coom
 
 # ============================================================================ #
 # Setup DOT file printer
-add_executable (coom_dot dot.cpp)
+add_executable (coom_dot dot_main.cpp)
 target_link_libraries(coom_dot tpie)
 target_link_libraries(coom_dot coom)
 

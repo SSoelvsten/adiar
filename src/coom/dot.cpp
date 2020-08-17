@@ -12,7 +12,7 @@
 #include <tpie/tpie_log.h>
 
 // COOM Imports
-#include "data.cpp" // TODO: Only header file
+#include "data.h"
 
 #include "dot.h"
 
@@ -150,94 +150,6 @@ namespace coom {
 
     system(("dot -Tpng " + filename + ".dot" + " -o " + filename + ".png").c_str());
   }
-}
-
-int main(const int argc, const char* argv[]) {
-  // ===== TPIE =====
-  // Initialize
-  tpie::tpie_init();
-
-  size_t available_memory_mb = 128;
-  tpie::get_memory_manager().set_limit(available_memory_mb*1024*1024);
-
-  // ===== FAIL FAST ON MISSING ARGUMENT =====
-  if (argc == 1) {
-    tpie::log_info() << "Please provide a filename(s) to print" << std::endl;
-
-    // TODO: Remove from here...
-    tpie::log_info() << "(Will create dot_test.tpie for testing)" << std::endl;
-
-    tpie::file_stream<coom::node> file_stream;
-    file_stream.open("dot_test.tpie", tpie::open::write_only | tpie::open::compression_normal);
-
-    file_stream.write(coom::create_node(2, coom::MAX_ID,
-                                        coom::create_sink(false),
-                                        coom::create_sink(true)));
-
-    file_stream.write(coom::create_node(1, coom::MAX_ID,
-                                        coom::create_node_ptr(2,coom::MAX_ID),
-                                        coom::create_sink(true)));
-
-    file_stream.write(coom::create_node(0, coom::MAX_ID,
-                                        coom::create_node_ptr(2,coom::MAX_ID),
-                                        coom::create_node_ptr(1,coom::MAX_ID)));
-    file_stream.close();
-
-    tpie::log_info() << "(Will test DOT output of arc streams directly)" << std::endl;
-
-    tpie::file_stream<coom::arc> node_arcs;
-    node_arcs.open();
-
-    auto n1 = coom::create_node_ptr(0,0);
-    auto n2 = coom::create_node_ptr(1,0);
-    auto n3 = coom::create_node_ptr(2,0);
-    auto n4 = coom::create_node_ptr(2,1);
-
-    node_arcs.write(coom::create_arc(n1,true,n2));
-    node_arcs.write(coom::create_arc(n1,false,n3));
-    node_arcs.write(coom::create_arc(n2,false,n3));
-    node_arcs.write(coom::create_arc(n2,true,n4));
-
-    tpie::file_stream<coom::arc> sink_arcs;
-    sink_arcs.open();
-
-    auto sink_T = coom::create_sink(true);
-    auto sink_F = coom::create_sink(false);
-
-    sink_arcs.write(coom::create_arc(n3,false,sink_F));
-    sink_arcs.write(coom::create_arc(n3,true,sink_T));
-    sink_arcs.write(coom::create_arc(n4,false,sink_T));
-    sink_arcs.write(coom::create_arc(n4,true,sink_T));
-
-    coom::output_dot(node_arcs, sink_arcs, "dot_test_arcs");
-    // TODO: Remove until here...
-
-    tpie::tpie_finish();
-    exit(0); // TODO: Make into non-zero
-  }
-
-  // ===== OUTPUT DOT FILE =====
-  int arg = 1; // argument 0 is the executable
-
-  while (arg < argc) {
-    const char* filename = argv[arg];
-
-    tpie::file_stream<coom::node> file_stream;
-    file_stream.open(filename, tpie::open::read_only | tpie::open::compression_normal);
-
-    std::string filename_str(filename);
-    coom::output_dot(file_stream, filename_str);
-    file_stream.close();
-
-    arg += 1;
-  }
-
-  // ===== TPIE =====
-  // Close all of TPIE down again
-  tpie::tpie_finish();
-
-  // Return 'all good'
-  exit(0);
 }
 
 #endif // COOM_DOT_CPP
