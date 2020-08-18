@@ -2,12 +2,13 @@
 #define COOM_RESTRICT_H
 
 #include <tpie/file_stream.h>
+
 #include "data.h"
 
 namespace coom
 {
   struct assignment {
-    uint64_t index;
+    uint64_t label;
     bool value;
   };
 

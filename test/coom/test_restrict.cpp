@@ -1,6 +1,7 @@
 #include <tpie/tpie.h>
 
 #include <coom/reduce.cpp>
+#include <coom/pred.cpp>
 #include <coom/restrict.cpp>
 
 using namespace coom;
@@ -172,8 +173,8 @@ go_bandit([]() {
            F T T 5
                 / \
                 F T
-          */  
-            
+          */
+
             /*
                   1
                  / \
@@ -401,6 +402,57 @@ go_bandit([]() {
 
             AssertThat(out_nodes.can_read(), Is().True());
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(true)));
+            AssertThat(out_nodes.can_read(), Is().False());
+          });
+
+        it("should return T sink given a T sink", [&]() {
+            tpie::file_stream<node> in_nodes;
+            in_nodes.open();
+
+            in_nodes.write(create_sink_node(true));
+
+            tpie::file_stream<assignment> assignment;
+            assignment.open();
+
+            assignment.write({ 0, true });
+            assignment.write({ 2, true });
+            assignment.write({ 42, false });
+
+            tpie::file_stream<node> out_nodes;
+            out_nodes.open();
+
+            coom::restrict(in_nodes, assignment, out_nodes);
+
+            out_nodes.seek(0);
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(true)));
+            AssertThat(out_nodes.can_read(), Is().False());
+          });
+
+
+        it("should return F sink given a F sink", [&]() {
+            tpie::file_stream<node> in_nodes;
+            in_nodes.open();
+
+            in_nodes.write(create_sink_node(false));
+
+            tpie::file_stream<assignment> assignment;
+            assignment.open();
+
+            assignment.write({ 2, true });
+            assignment.write({ 21, true });
+            assignment.write({ 28, false });
+
+            tpie::file_stream<node> out_nodes;
+            out_nodes.open();
+
+            coom::restrict(in_nodes, assignment, out_nodes);
+
+            out_nodes.seek(0);
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(false)));
             AssertThat(out_nodes.can_read(), Is().False());
           });
       });

@@ -5,6 +5,7 @@
 #include <tpie/priority_queue.h>
 
 #include "data.h"
+#include "pred.h"
 #include "reduce.h"
 
 #include "assert.h"
@@ -40,12 +41,12 @@ namespace coom
     auto a = in_assignment.read();
 
     // Find the next assignment
-    while(in_assignment.can_read() && label_of(v) > a.index) {
+    while(in_assignment.can_read() && label_of(v) > a.label) {
       a = in_assignment.read();
     }
 
     //Process the root and create initial recursion requests
-    if(a.index == label_of(v)) {
+    if(a.label == label_of(v)) {
       uint64_t rec_child = a.value ? v.high : v.low;
 
       if(is_sink(rec_child)) {
@@ -75,12 +76,12 @@ namespace coom
       v = in_nodes.read_back();
 
       // Seek assignment
-      while(in_assignment.can_read() && label_of(v) > a.index) {
+      while(in_assignment.can_read() && label_of(v) > a.label) {
         a = in_assignment.read();
       }
 
       // Process node and forward information
-      if(a.index == label_of(v)) {
+      if(a.label == label_of(v)) {
         uint64_t rec_child = a.value ? v.high : v.low;
 
         while(!resD.empty() && resD.top().target == v.node_ptr) {
@@ -140,6 +141,14 @@ namespace coom
     debug::println_file_stream(in_nodes, "in_nodes");
 
     assert::is_valid_output_stream(out_nodes);
+
+    if (is_sink(in_nodes, is_any)) {
+      node n = in_nodes.can_read_back() ? in_nodes.read_back() : in_nodes.read();
+      out_nodes.write(n);
+      debug::println_file_stream(out_nodes, "out_nodes");
+      debug::println_algorithm_end("RESTRICT");
+      return;
+    }
 
     tpie::file_stream<arc> reduce_node_arcs;
     reduce_node_arcs.open();
