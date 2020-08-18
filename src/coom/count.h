@@ -2,33 +2,12 @@
 #define COOM_COUNT_PATHS_H
 
 #include <tpie/file_stream.h>
+
 #include "data.h"
+#include "pred.h"
 
 namespace coom
 {
-  //////////////////////////////////////////////////////////////////////////////
-  /// Some preset predicates
-  //////////////////////////////////////////////////////////////////////////////
-
-  /// \param sink
-  /// \return Whether to count the path ending in sink
-  typedef std::function<bool(uint64_t)> sink_pred;
-
-  const sink_pred is_any = [] (uint64_t /* sink */) -> bool
-  {
-    return true;
-  };
-
-  const sink_pred is_true = [] (uint64_t sink) -> bool
-  {
-    return value_of(sink);
-  };
-
-  const sink_pred is_false = [] (uint64_t sink) -> bool
-  {
-    return !value_of(sink);
-  };
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Count all unique (but not necessarily disjoint) paths that satisfy
   ///        given predicates.

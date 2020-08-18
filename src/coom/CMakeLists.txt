@@ -14,6 +14,7 @@ set(HEADERS
   debug_data.h
   evaluate.h
   negate.h
+  pred.h
   reduce.h
   restrict.h
 )
@@ -28,6 +29,7 @@ set(SOURCES
   debug_data.cpp
   evaluate.cpp
   negate.cpp
+  pred.cpp
   reduce.cpp
   restrict.cpp
 )

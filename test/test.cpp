@@ -20,6 +20,7 @@ using namespace bandit;
 #include "coom/test_reduce.cpp"
 #include "coom/test_apply.cpp"
 
+#include "coom/test_pred.cpp"
 #include "coom/test_build.cpp"
 
 int main(int argc, char* argv[]) {
