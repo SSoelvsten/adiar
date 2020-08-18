@@ -8,17 +8,19 @@ using namespace bandit;
 #include <coom/debug.cpp>
 #include <coom/debug_data.cpp>
 
+// TPIE setup unit tests
 #include "test_tpie.cpp"
 
-#include "test_coom_data.cpp"
-#include "test_coom_evaluate.cpp"
-#include "test_coom_count.cpp"
-#include "test_coom_negate.cpp"
-#include "test_coom_restrict.cpp"
-#include "test_coom_reduce.cpp"
-#include "test_coom_apply.cpp"
+// COOM unit tests
+#include "coom/test_data.cpp"
+#include "coom/test_evaluate.cpp"
+#include "coom/test_count.cpp"
+#include "coom/test_negate.cpp"
+#include "coom/test_restrict.cpp"
+#include "coom/test_reduce.cpp"
+#include "coom/test_apply.cpp"
 
-#include "test_coom_build.cpp"
+#include "coom/test_build.cpp"
 
 int main(int argc, char* argv[]) {
   // Initialize TPIE
