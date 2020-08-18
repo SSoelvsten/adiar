@@ -109,7 +109,7 @@ namespace coom
   const auto reduce_node_children_lt = [](const node &a, const node &b) -> bool {
     return a.high > b.high ||
            (a.high == b.high && a.low > b.low) ||
-           (a.high == b.high && a.low == b.low && a > b);
+           (a.high == b.high && a.low == b.low && a.node_ptr > b.node_ptr);
   };
 
   //Predicate for L_j_red2/out
@@ -257,7 +257,7 @@ namespace coom
             debug::println_reduce_red_2(next_node, false);
             current_node = next_node;
 
-            node out_node = create_node(label, out_id, current_node.low, current_node.high);
+            out_node = create_node(label, out_id, current_node.low, current_node.high);
             out_nodes.write(out_node);
             out_id--;
 
