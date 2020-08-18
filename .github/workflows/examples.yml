@@ -1,0 +1,47 @@
+name: examples
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  n_queens:
+    name: 'N-Queens'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - name: Apt | install boost aptitude
+      run: sudo apt install libboost-all-dev aptitude
+    - name: CMake | build
+      run: |
+        cmake -E make_directory ${{runner.workspace}}/build
+        cd ${{runner.workspace}}/build
+        cmake $GITHUB_WORKSPACE && cmake --build . --target n_queens
+    - name: Makefile | 1-Queens
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/n_queens 1
+    - name: Makefile | 2-Queens
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/n_queens 2
+    - name: Makefile | 3-Queens
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/n_queens 3
+    - name: Makefile | 4-Queens
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/n_queens 4
+    - name: Makefile | 5-Queens
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/n_queens 5
+    - name: Makefile | 6-Queens
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/n_queens 6
+    - name: Makefile | 7-Queens
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/n_queens 7
+

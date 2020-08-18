@@ -1,4 +1,4 @@
-# Examples
+# Examples ![examples](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/examples/badge.svg?branch=master)
 To benchmark the implementation and also to provide examples of how to use
 _COOM_ in your project, we provide multiple examples
 
