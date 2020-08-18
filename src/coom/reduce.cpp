@@ -16,6 +16,80 @@
 
 namespace coom
 {
+  namespace debug {
+    inline void println_reduce_layer([[maybe_unused]] uint64_t label)
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << std::endl << "| layer: " << label << std::endl;
+#endif
+    }
+
+    inline void println_reduce_red_1_start()
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|  reduction 1:" << std::endl;
+#endif
+    }
+
+    inline void println_reduce_red_1([[maybe_unused]] arc e_low,
+                                     [[maybe_unused]] arc e_high,
+                                     [[maybe_unused]] bool is_reduced)
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|   | ";
+      print_node(node_of_arcs(e_low, e_high));
+      if (is_reduced) {
+        tpie::log_info() << " [X]" << std::endl;
+      } else {
+        tpie::log_info() << " [ ]" << std::endl;
+      }
+#endif
+    }
+
+    inline void println_reduce_red_2_start()
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|  reduction 2:" << std::endl;
+#endif
+    }
+
+    inline void println_reduce_red_2([[maybe_unused]] node node,
+                                     [[maybe_unused]] bool is_reduced)
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|   | ";
+      print_node(node);
+      if (is_reduced) {
+        tpie::log_info() << " [X]" << std::endl;
+      } else {
+        tpie::log_info() << " [ ]" << std::endl;
+      }
+#endif
+    }
+
+    inline void println_reduce_forward_start()
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|  forward:" << std::endl;
+#endif
+    }
+
+    inline void println_reduce_forward([[maybe_unused]] uint64_t target,
+                                       [[maybe_unused]] uint64_t old_node_ptr,
+                                       [[maybe_unused]] uint64_t new_node_ptr)
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|   | ";
+      print_child(old_node_ptr);
+      tpie::log_info() << " -> ";
+      print_child(new_node_ptr);
+      tpie::log_info() << " to ";
+      print_child(target);
+      tpie::log_info() << std::endl;
+#endif
+    }
+  }
+
   struct mapping
   {
     uint64_t old_node_ptr;
@@ -92,6 +166,8 @@ namespace coom
 
     // Process bottom-up each layer
     while (has_next_sink || !redD.empty()) {
+      debug::println_reduce_layer(label);
+
       // Set up for L_j_red1
       tpie::file_stream<mapping> red1_mapping;
       red1_mapping.open();
@@ -100,6 +176,8 @@ namespace coom
       tpie::merge_sorter<node, true, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
       child_grouping.set_available_memory(tpie::get_memory_manager().available() / 2);
       child_grouping.begin();
+
+      debug::println_reduce_red_1_start();
 
       // Pull out all nodes from redD and in_sink_arcs for this layer
       while ((has_next_sink && label_of(next_sink_arc.source) == label)
@@ -138,13 +216,17 @@ namespace coom
 
         // Apply Reduction rule 1
         if (e_high.target == e_low.target) {
+          debug::println_reduce_red_1(e_low, e_high, true);
           red1_mapping.write({e_low.source, e_low.target});
         } else {
+          debug::println_reduce_red_1(e_low, e_high, false);
           child_grouping.push(node_of_arcs(e_low, e_high));
         }
       }
 
       // Output nodes and apply Reduction rule 2
+      debug::println_reduce_red_2_start();
+
       child_grouping.end();
       child_grouping.calc(pi);
 
@@ -161,14 +243,18 @@ namespace coom
         out_nodes.write(out_node);
         out_id--;
 
+        debug::println_reduce_red_2(current_node, false);
+
         red2_mapping.push({ current_node.node_ptr, out_node.node_ptr });
 
         // Output nodes and remap the ones match the one just output
         while (child_grouping.can_pull()) {
           node next_node = child_grouping.pull();
           if (current_node.low == next_node.low && current_node.high == next_node.high) {
+            debug::println_reduce_red_2(next_node, true);
             red2_mapping.push({ next_node.node_ptr, out_node.node_ptr });
           } else {
+            debug::println_reduce_red_2(next_node, false);
             current_node = next_node;
 
             node out_node = create_node(label, out_id, current_node.low, current_node.high);
@@ -198,6 +284,8 @@ namespace coom
         next_red2 = red2_mapping.pull();
       }
 
+      debug::println_reduce_forward_start();
+
       // Pass all the mappings to Q
       while (has_next_red1 || has_next_red2) {
         // Find the mapping with largest old_node_ptr
@@ -210,6 +298,10 @@ namespace coom
           arc new_arc = create_arc(next_node_arc.source,
                                    next_node_arc.is_high,
                                    current_map.new_node_ptr);
+          debug::println_reduce_forward(next_node_arc.source,
+                                        current_map.old_node_ptr,
+                                        current_map.new_node_ptr);
+
           redD.push(new_arc);
           if (in_node_arcs.can_read_back()) {
             next_node_arc = in_node_arcs.read_back();
