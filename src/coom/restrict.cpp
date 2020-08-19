@@ -19,6 +19,78 @@
 
 namespace coom
 {
+  namespace debug {
+    inline void println_file_stream([[maybe_unused]] tpie::file_stream<assignment> &in_assignment)
+    {
+#if COOM_DEBUG
+      auto original_pos = in_assignment.get_position();
+      in_assignment.seek(0);
+
+      tpie::log_info() << "in_assignment {" << std::endl;
+      while (in_assignment.can_read()) {
+        auto a = in_assignment.read();
+        tpie::log_info() << "\t" << a.label
+                         << " -> " << a.value << std::endl;
+      }
+      tpie::log_info() << "}" << std::endl;
+
+      in_assignment.set_position(original_pos);
+#endif
+    }
+
+
+    inline void println_restrict_request([[maybe_unused]] const arc& arc)
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << std::endl << "| request: ";
+      print_node_ptr(arc.target);
+      tpie::log_info() << std::endl;
+#endif
+    }
+
+    inline void println_restrict_position([[maybe_unused]] const node& v)
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|  current: " << std::endl << "|     | ";
+      print_node(v);
+      tpie::log_info() << std::endl;
+#endif
+    }
+
+    inline void println_restrict_skip([[maybe_unused]] uint64_t out_node_ptr)
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|  skip to: ";
+      print_child(out_node_ptr);
+      tpie::log_info() << std::endl;
+#endif
+    }
+
+    inline void println_restrict_keep()
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|  keep... " << std::endl;
+#endif
+    }
+
+    inline void println_restrict_request([[maybe_unused]] arc& out_arc)
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|  request: ";
+      debug::println_arc(out_arc);
+#endif
+    }
+
+    inline void println_restrict_ingoing([[maybe_unused]] arc& in_arc)
+    {
+#if COOM_DEBUG >= 2
+      tpie::log_info() << "|  in: ";
+      debug::println_arc(in_arc);
+#endif
+    }
+  }
+
+
   struct restrict_lt {
     bool operator ()(const arc& a, const arc& b) {
       return a.target < b.target || (a.target == b.target &&
@@ -75,7 +147,11 @@ namespace coom
 
     //Process all to-be-visited nodes in topological order
     while(!resD.empty()) {
+      debug::println_restrict_request(resD.top());
+
       v = in_nodes.read_back();
+
+      debug::println_restrict_position(v);
 
       // Seek assignment
       while(in_assignment.can_read() && label_of(v) > a.label) {
@@ -86,9 +162,13 @@ namespace coom
       if(a.label == label_of(v)) {
         uint64_t rec_child = a.value ? v.high : v.low;
 
+        debug::println_restrict_skip(rec_child);
+
         while(!resD.empty() && resD.top().target == v.node_ptr) {
           arc parent_arc = resD.top();
           arc request = create_arc(parent_arc.source, parent_arc.is_high, rec_child);
+
+          debug::println_restrict_request(request);
 
           if(is_sink(rec_child)) {
             if(is_nil(parent_arc.source)) {
@@ -105,8 +185,11 @@ namespace coom
           resD.pop();
         }
       } else {
+        debug::println_restrict_keep();
         // Outgoing arcs
         arc low_arc = low_arc_of_node(v);
+        debug::println_restrict_request(low_arc);
+
         if(is_sink(v.low)) {
           reduce_sink_arcs.write(low_arc);
         } else {
@@ -114,6 +197,7 @@ namespace coom
         }
 
         arc high_arc = high_arc_of_node(v);
+        debug::println_restrict_request(high_arc);
         if(is_sink(v.high)) {
           reduce_sink_arcs.write(high_arc);
         } else {
@@ -123,6 +207,8 @@ namespace coom
         // Ingoing arcs
         while(!resD.empty() && resD.top().target == v.node_ptr) {
           auto parent_arc = resD.top();
+          debug::println_restrict_ingoing(parent_arc);
+
           if(!is_nil(parent_arc.source)) {
             reduce_node_arcs.write(parent_arc);
           }
@@ -141,6 +227,8 @@ namespace coom
 
     assert::is_valid_input_stream(in_nodes);
     debug::println_file_stream(in_nodes, "in_nodes");
+
+    debug::println_file_stream(in_assignment);
 
     assert::is_valid_output_stream(out_nodes);
 
