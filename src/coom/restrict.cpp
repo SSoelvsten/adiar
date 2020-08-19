@@ -8,6 +8,8 @@
 #include "pred.h"
 #include "reduce.h"
 
+#include "util.cpp"
+
 #include "assert.h"
 
 #include "debug.h"
@@ -141,6 +143,13 @@ namespace coom
     debug::println_file_stream(in_nodes, "in_nodes");
 
     assert::is_valid_output_stream(out_nodes);
+
+    if (in_assignment.size() == 0) {
+      copy(in_nodes, out_nodes);
+      debug::println_file_stream(out_nodes, "out_nodes");
+      debug::println_algorithm_end("RESTRICT");
+      return;
+    }
 
     if (is_sink(in_nodes, is_any)) {
       node n = in_nodes.can_read_back() ? in_nodes.read_back() : in_nodes.read();

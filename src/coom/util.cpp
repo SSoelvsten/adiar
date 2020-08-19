@@ -29,6 +29,15 @@ namespace coom
 
     return;
   }
+
+  inline void copy(tpie::file_stream<node> &in_nodes,
+                   tpie::file_stream<node> &out_nodes)
+  {
+    in_nodes.seek(0);
+    while(in_nodes.can_read()) {
+      out_nodes.write(in_nodes.read());
+    }
+  }
 }
 
 #endif // COOM_UTIL_CPP
