@@ -430,7 +430,6 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
-
         it("should return F sink given a F sink", [&]() {
             tpie::file_stream<node> in_nodes;
             in_nodes.open();
@@ -453,6 +452,35 @@ go_bandit([]() {
 
             AssertThat(out_nodes.can_read(), Is().True());
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(false)));
+            AssertThat(out_nodes.can_read(), Is().False());
+          });
+
+        it("should return input unchanged when given an empty assignment", [&]() {
+            tpie::file_stream<assignment> assignment;
+            assignment.open();
+
+            tpie::file_stream<node> out_nodes;
+            out_nodes.open();
+
+            coom::restrict(obdd, assignment, out_nodes);
+
+            out_nodes.seek(0);
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(n5));
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(n4));
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(n3));
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(n2));
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(n1));
+
             AssertThat(out_nodes.can_read(), Is().False());
           });
       });
