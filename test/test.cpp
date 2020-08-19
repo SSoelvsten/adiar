@@ -7,12 +7,17 @@ using namespace bandit;
 #include <coom/assert.cpp>
 #include <coom/debug.cpp>
 #include <coom/debug_data.cpp>
+#include <coom/debug_assignment.cpp>
 
 // TPIE setup unit tests
 #include "test_tpie.cpp"
 
 // COOM unit tests
 #include "coom/test_data.cpp"
+
+#include "coom/test_assignment.cpp"
+#include "coom/test_pred.cpp"
+
 #include "coom/test_evaluate.cpp"
 #include "coom/test_count.cpp"
 #include "coom/test_negate.cpp"
@@ -20,7 +25,6 @@ using namespace bandit;
 #include "coom/test_reduce.cpp"
 #include "coom/test_apply.cpp"
 
-#include "coom/test_pred.cpp"
 #include "coom/test_build.cpp"
 
 int main(int argc, char* argv[]) {

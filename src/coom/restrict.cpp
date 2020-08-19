@@ -5,6 +5,7 @@
 #include <tpie/sort.h>
 #include <tpie/priority_queue.h>
 
+#include "assignment.h"
 #include "data.h"
 #include "pred.h"
 #include "reduce.h"
@@ -15,31 +16,13 @@
 
 #include "debug.h"
 #include "debug_data.h"
+#include "debug_assignment.h"
 
 #include "restrict.h"
 
 namespace coom
 {
   namespace debug {
-    inline void println_file_stream([[maybe_unused]] tpie::file_stream<assignment> &in_assignment)
-    {
-#if COOM_DEBUG
-      auto original_pos = in_assignment.get_position();
-      in_assignment.seek(0);
-
-      tpie::log_info() << "in_assignment {" << std::endl;
-      while (in_assignment.can_read()) {
-        auto a = in_assignment.read();
-        tpie::log_info() << "\t" << a.label
-                         << " -> " << a.value << std::endl;
-      }
-      tpie::log_info() << "}" << std::endl;
-
-      in_assignment.set_position(original_pos);
-#endif
-    }
-
-
     inline void println_restrict_request([[maybe_unused]] const arc& arc)
     {
 #if COOM_DEBUG >= 2
@@ -262,7 +245,7 @@ namespace coom
     assert::is_valid_input_stream(in_nodes);
     debug::println_file_stream(in_nodes, "in_nodes");
 
-    debug::println_file_stream(in_assignment);
+    debug::println_file_stream(in_assignment, "in_assignment");
 
     assert::is_valid_output_stream(out_nodes);
 

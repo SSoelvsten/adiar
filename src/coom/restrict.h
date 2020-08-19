@@ -4,14 +4,10 @@
 #include <tpie/file_stream.h>
 
 #include "data.h"
+#include "assignment.h"
 
 namespace coom
 {
-  struct assignment {
-    uint64_t label;
-    bool value;
-  };
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Restrict a given node-based OBDD based on a partial assignment.
   ///
