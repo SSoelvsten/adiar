@@ -1,9 +1,19 @@
+#include <vector>
+
 // TPIE Imports
 #include <tpie/tpie.h>
 #include <tpie/tpie_log.h>
 
 // COOM Imports
 #include <coom/data.cpp>
+#include <coom/assignment.cpp>
+
+#include <coom/debug_data.cpp>
+#include <coom/debug_assignment.cpp>
+#include <coom/debug.cpp>
+#include <coom/dot.cpp>
+
+#include <coom/assert.cpp>
 
 #include <coom/build.cpp>
 
@@ -11,18 +21,23 @@
 #include <coom/pred.cpp>
 #include <coom/count.cpp>
 #include <coom/reduce.cpp>
+#include <coom/restrict.cpp>
 #include <coom/negate.cpp>
-
-#include <coom/debug_data.cpp>
-#include <coom/debug.cpp>
-#include <coom/dot.cpp>
-
-#include <coom/assert.cpp>
 
 /* We represent the position (i,j) on the N x N board board as N*i + j. */
 inline uint64_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 {
   return (N * i) + j;
+}
+
+inline uint64_t i_of_label(uint64_t N, uint64_t label)
+{
+  return label / N;
+}
+
+inline uint64_t j_of_label(uint64_t N, uint64_t label)
+{
+  return label % N;
 }
 
 /* Given N we then know the last label  */
@@ -270,43 +285,208 @@ void n_queens_alo_row(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
  * place the queen in another non-conflicting column. So, with merely the AMO
  * constraint and the ALO constraint for rows, we already force all satisfying
  * assignments to be solutions to the N-Queens problem.
- *
- * So after combining the AMO and ALO constraints from above, we merely count
- * the number of satisfying assignments.
  */
-uint64_t n_queens(uint64_t N)
+void n_queens_amo_alo(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
 {
+  tpie::log_info() << "| " << N << "-Queens (AMO construction)"  << std::endl;
   tpie::file_stream<coom::node> amo;
   amo.open();
 
   n_queens_amo(N, 0, N, 0, N, amo);
 
+  tpie::log_info() << "| " << N << "-Queens (ALO row construction)"  << std::endl;
   tpie::file_stream<coom::node> alo_row;
   alo_row.open();
 
   n_queens_alo_row(N, alo_row);
 
-  tpie::file_stream<coom::node> n_queens;
-  n_queens.open();
+  tpie::log_info() << "| " << N << "-Queens (AMO-ALO construction)"  << std::endl;
+  coom::apply(amo, alo_row, coom::and_op, out_nodes);
+}
 
-  coom::apply(amo, alo_row, coom::and_op, n_queens);
-
-  uint64_t solutions = coom::count_assignments(n_queens, coom::is_true);
+/* So after combining the AMO and ALO constraints from above, we merely count
+ * the number of satisfying assignments.
+ */
+uint64_t n_queens_count(uint64_t N, tpie::file_stream<coom::node>& amo_alo)
+{
+  uint64_t solutions = coom::count_assignments(amo_alo, coom::is_true);
 
   tpie::log_info() << "| " << N << "-Queens (Counting assignments)"  << std::endl;
   tpie::log_info() << "|  | number of solutions: " << solutions << std::endl << std::endl;
-  n_queens.close();
 
   return solutions;
 }
 
+/*         N - QUEENS : pruning the search by partial assignment
+ *
+ * Based on: github.com/MartinFaartoft/n-queens-bdd/blob/master/report.tex
+ *
+ * If we want to list all the assignments, we have to do something else than
+ * merely count the number of satisfying assignments. We could then iterate over
+ * all possible assignments and use the OBDD to prune our search.
+ *
+ * We again construct the combined OBDD of the at-most-one restrictions with the
+ * at-least-one restriction for the rows. Then, starting at the left-most column
+ * we may attempt an assignment in each spot, and recurse. Recursion can be
+ * stopped early in two cases:
+ *
+ *   - If the given OBDD already is trivially false. We have placed a queen,
+ *     such that it conflicts with another.
+ *
+ *   - If the number of unique paths in the restricted OBDD is exactly one. Then
+ *     we are forced to place the remaining queens.
+ *
+ * For a sanity check, we also count the number of solutions we list.
+ */
+void n_queens_print_solution(std::vector<uint64_t>& assignment)
+{
+  tpie::log_info() << "|  |  | ";
+  for (uint64_t r : assignment) {
+    tpie::log_info() << r << " ";
+  }
+  tpie::log_info() << std::endl;
+}
+
+uint64_t n_queens_list(uint64_t N, uint64_t column,
+                       std::vector<uint64_t>& partial_assignment,
+                       tpie::file_stream<coom::node>& constraints)
+{
+  if (coom::is_sink(constraints, coom::is_false)) {
+    return 0;
+  }
+  uint64_t solutions = 0;
+
+  tpie::file_stream<coom::assignment> column_assignment;
+  tpie::file_stream<coom::node> restricted_constraints;
+
+  for (uint64_t row_q = 0; row_q < N; row_q++) {
+    partial_assignment.push_back(row_q);
+
+    // Construct the assignment for this entire column
+    column_assignment.open();
+
+    for (uint64_t row = 0; row < N; row++) {
+      coom::assignment assignment = { label_of_position(N, row, column), row == row_q };
+      column_assignment.write(assignment);
+    }
+
+    restricted_constraints.open();
+
+    coom::restrict(constraints, column_assignment, restricted_constraints);
+
+    if (coom::count_paths(restricted_constraints, coom::is_true) == 1) {
+      solutions += 1;
+
+      tpie::file_stream<coom::assignment> forced_assignment;
+      forced_assignment.open();
+
+      auto sort_by_column = [&N](const coom::assignment &a, const coom::assignment &b) -> bool {
+          return j_of_label(N, a.label) < j_of_label(N, b.label);
+        };
+
+      coom::get_assignment<decltype(sort_by_column)>(restricted_constraints,
+                                                     coom::is_true,
+                                                     forced_assignment,
+                                                     sort_by_column);
+
+      forced_assignment.seek(0);
+      while (forced_assignment.can_read()) {
+        coom::assignment a = forced_assignment.read();
+        if (a.value) {
+          partial_assignment.push_back(i_of_label(N, a.label));
+        }
+      }
+
+      n_queens_print_solution(partial_assignment);
+
+      for (int c = N-1; c > column; c--) {
+        partial_assignment.pop_back();
+      }
+    } else if (coom::is_sink(restricted_constraints, coom::is_true)) {
+      n_queens_print_solution(partial_assignment);
+      solutions += 1;
+    } else {
+      solutions += n_queens_list(N, column+1, partial_assignment, restricted_constraints);
+    }
+    column_assignment.close();
+    restricted_constraints.close();
+    partial_assignment.pop_back();
+  }
+
+  return solutions;
+}
+
+uint64_t n_queens_list(uint64_t N, tpie::file_stream<coom::node>& amo_alo)
+{
+  tpie::log_info() << "| " << N << "-Queens (Pruning search)"  << std::endl;
+  tpie::log_info() << "|  | solutions:" << std::endl;
+
+  if (N == 1) {
+    /* To make the recursive function work for N = 1 we would have to have the
+     * coom::count_paths check above at the beginning. That would in all other
+     * cases merely result in an unecessary counting of paths at the very
+     * start. */
+    std::vector<uint64_t> assignment { 0 };
+    n_queens_print_solution(assignment);
+
+    tpie::log_info() << "|  | number of solutions: " << 1 << std::endl << std::endl;
+    return 1;
+  }
+
+  std::vector<uint64_t> partial_assignment { };
+  partial_assignment.reserve(N);
+
+  uint64_t solutions = n_queens_list(N, 0, partial_assignment, amo_alo);
+
+  tpie::log_info() << "|  | number of solutions: " << solutions << std::endl << std::endl;
+
+  return solutions;
+}
+
+// expected number taken from:
+//  https://en.wikipedia.org/wiki/Eight_queens_puzzle#Counting_solutions
+uint64_t expected_result[28] = {
+  0,
+  1,
+  0,
+  0,
+  2,
+  10,
+  4,
+  40,
+  92,
+  352,
+  724,
+  2680,
+  14200,
+  73712,
+  365596,
+  2279184,
+  14772512,
+  95815104,
+  666090624,
+  4968057848,
+  39029188884,
+  314666222712,
+  2691008701644,
+  24233937684440,
+  227514171973736,
+  2207893435808352,
+  22317699616364044,
+  234907967154122528
+};
+
+/* Finally, to run the above we need to initialize the underlying TPIE library
+ * first, from which point all the file_streams, priority queues and sorters
+ * used are at our disposal.
+ */
 int main(int argc, char* argv[])
 {
   // ===== TPIE =====
   // Initialize
   tpie::tpie_init();
 
-  size_t available_memory_mb = 1024;
+  size_t available_memory_mb = 2 * 1024;
   tpie::get_memory_manager().set_limit(available_memory_mb*1024*1024);
 
   // ===== Parse argument =====
@@ -317,8 +497,8 @@ int main(int argc, char* argv[])
       tpie::log_info() << "Missing argument for upper bound on N" << std::endl;
     } else {
       N = std::stoi(argv[1]);
-      if (N == 0 || N > 24) {
-        tpie::log_info() << "N should be in interval [1;24]: " << argv[1] << std::endl;
+      if (N == 0 || N > 27) {
+        tpie::log_info() << "N should be in interval [1;27]: " << argv[1] << std::endl;
         N = 0;
       }
     }
@@ -335,82 +515,21 @@ int main(int argc, char* argv[])
 
   // ===== N Queens =====
 
-  // expected number taken from:
-  //  https://en.wikipedia.org/wiki/Eight_queens_puzzle#Counting_solutions
+  tpie::file_stream<coom::node> amo_alo;
+  amo_alo.open();
 
-  switch (N) {
-  case 1  :
-    assert (n_queens(1)  == 1);
-    break;
-  case 2  :
-    assert (n_queens(2)  == 0);
-    break;
-  case 3  :
-    assert (n_queens(3)  == 0);
-    break;
-  case 4  :
-    assert (n_queens(4)  == 2);
-    break;
-  case 5  :
-    assert (n_queens(5)  == 10);
-    break;
-  case 6  :
-    assert (n_queens(6)  == 4);
-    break;
-  case 7  :
-    assert (n_queens(7)  == 40);
-    break;
-  case 8  :
-    assert (n_queens(8)  == 92);
-    break;
-  case 9  :
-    assert (n_queens(9)  == 352);
-    break;
-  case 10 :
-    assert (n_queens(10) == 724);
-    break;
-  case 11 :
-    assert (n_queens(11) == 2680);
-    break;
-  case 12 :
-    assert (n_queens(12) == 14200);
-    break;
-  case 13 :
-    assert (n_queens(13) == 73712);
-    break;
-  case 14 :
-    assert (n_queens(14) == 365596);
-    break;
-  case 15 :
-    assert (n_queens(15) == 2279184);
-    break;
-  case 16 :
-    assert (n_queens(16) == 14772512);
-    break;
-  case 17 :
-    assert (n_queens(17) == 95815104);
-    break;
-  case 18 :
-    assert (n_queens(18) == 666090624);
-    break;
-  case 19 :
-    assert (n_queens(19) == 4968057848);
-    break;
-  case 20 :
-    assert (n_queens(20) == 39029188884);
-    break;
-  case 21 :
-    assert (n_queens(21) == 314666222712);
-    break;
-  case 22 :
-    assert (n_queens(22) == 2691008701644);
-    break;
-  case 23 :
-    assert (n_queens(23) == 24233937684440);
-    break;
-  case 24 :
-    assert (n_queens(24) == 227514171973736);
-    break;
+  n_queens_amo_alo(N, amo_alo);
+
+  bool correct_result = true;
+
+  // Run counting example
+  if (n_queens_count(N, amo_alo) != expected_result[N]) {
+    correct_result = false;
+  }
+
+  // Run enumeration example (for reasonably small N)
+  if (N <= 8 && n_queens_list(N, amo_alo) != expected_result[N]) {
+    correct_result = false;
   }
 
   // ===== TPIE =====
@@ -418,5 +537,5 @@ int main(int argc, char* argv[])
   tpie::tpie_finish();
 
   // Return 'all good'
-  exit(0);
+  exit(correct_result ? 0 : 1);
 }

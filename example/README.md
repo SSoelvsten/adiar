@@ -21,3 +21,8 @@ constructing an OBDD `amo` (at-most-one), that checks whether an assignment has
 any conflicts, and an OBDD `alo` (at-least-one), that checks whether at least
 one queen is placed on each row. On the combined OBDD one then counts the number
 of satisfying assignments.
+
+To list the solutions, we take the same OBDD, but instead of count the number of
+assignments within, we use it to prune a recursive enumeration of all possible
+queen placements. For up to _N = 8_ we run both the solution counting procedure
+and the enumeration procedure.
