@@ -483,5 +483,178 @@ go_bandit([]() {
 
             AssertThat(out_nodes.can_read(), Is().False());
           });
+
+        it("should have sink arcs restricted to a sink sorted [1]", []() {
+            /*
+                    1                 1
+                   / \              /   \
+                  2   3     =>     2     3
+                 / \ / \         /   \  / \
+                 4 F T F         F*  F  T F
+                / \
+                T F              * This arc will be resolved as the last one
+             */
+            auto sink_T = create_sink(true);
+            auto sink_F = create_sink(false);
+
+            tpie::file_stream<node> in_nodes;
+            in_nodes.open();
+
+            auto n4 = create_node(2,0, sink_T, sink_F);
+            in_nodes.write(n4);
+
+            auto n3 = create_node(1,1, sink_T, sink_F);
+            in_nodes.write(n3);
+
+            auto n2 = create_node(1,0, n4.node_ptr, sink_F);
+            in_nodes.write(n2);
+
+            auto n1 = create_node(0,0, n2.node_ptr, n3.node_ptr);
+            in_nodes.write(n1);
+
+            tpie::file_stream<assignment> assignment;
+            assignment.open();
+
+            assignment.write({ 2, true });
+
+            tpie::file_stream<node> out_nodes;
+            out_nodes.open();
+
+            tpie::file_stream<arc> reduce_node_arcs;
+            reduce_node_arcs.open();
+
+            tpie::file_stream<arc> reduce_sink_arcs;
+            reduce_sink_arcs.open();
+
+            restrict(in_nodes, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+
+            AssertThat(out_nodes.size(), Is().EqualTo(0));
+
+            reduce_node_arcs.seek(0);
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
+                                                                        false,
+                                                                        create_node_ptr(1,0))));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
+                                                                        true,
+                                                                        create_node_ptr(1,1))));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().False());
+
+            reduce_sink_arcs.seek(0);
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
+                                                                        false,
+                                                                        sink_F)));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
+                                                                        true,
+                                                                        sink_F)));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
+                                                                        false,
+                                                                        sink_T)));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
+                                                                        true,
+                                                                        sink_F)));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().False());
+          });
+
+        it("should have sink arcs restricted to a sink sorted [2]", []() {
+            /*
+                    1                _ 1 _
+                   / \              /     \
+                  2   3     =>     2       3
+                 / \ / \         /   \   /   \
+                 4 F 5 F         F*  F   T*  F
+                / \ / \
+                T F F T          * Both these will be resolved out-of-order!
+             */
+            auto sink_T = create_sink(true);
+            auto sink_F = create_sink(false);
+
+            tpie::file_stream<node> in_nodes;
+            in_nodes.open();
+
+            auto n5 = create_node(2,1, sink_F, sink_T);
+            in_nodes.write(n5);
+
+            auto n4 = create_node(2,0, sink_T, sink_F);
+            in_nodes.write(n4);
+
+            auto n3 = create_node(1,1, n5.node_ptr, sink_F);
+            in_nodes.write(n3);
+
+            auto n2 = create_node(1,0, n4.node_ptr, sink_F);
+            in_nodes.write(n2);
+
+            auto n1 = create_node(0,0, n2.node_ptr, n3.node_ptr);
+            in_nodes.write(n1);
+
+            tpie::file_stream<assignment> assignment;
+            assignment.open();
+
+            assignment.write({ 2, true });
+
+            tpie::file_stream<node> out_nodes;
+            out_nodes.open();
+
+            tpie::file_stream<arc> reduce_node_arcs;
+            reduce_node_arcs.open();
+
+            tpie::file_stream<arc> reduce_sink_arcs;
+            reduce_sink_arcs.open();
+
+            restrict(in_nodes, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+
+            AssertThat(out_nodes.size(), Is().EqualTo(0));
+
+            reduce_node_arcs.seek(0);
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
+                                                                        false,
+                                                                        create_node_ptr(1,0))));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
+                                                                        true,
+                                                                        create_node_ptr(1,1))));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().False());
+
+            reduce_sink_arcs.seek(0);
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
+                                                                        false,
+                                                                        sink_F)));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
+                                                                        true,
+                                                                        sink_F)));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
+                                                                        false,
+                                                                        sink_T)));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
+                                                                        true,
+                                                                        sink_F)));
+
+            AssertThat(reduce_sink_arcs.can_read(), Is().False());
+          });
       });
   });

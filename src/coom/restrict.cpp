@@ -2,6 +2,7 @@
 #define COOM_RESTRICT_CPP
 
 #include <tpie/file_stream.h>
+#include <tpie/sort.h>
 #include <tpie/priority_queue.h>
 
 #include "data.h"
@@ -119,7 +120,15 @@ namespace coom
       a = in_assignment.read();
     }
 
-    //Process the root and create initial recursion requests
+    tpie::file_stream<arc> good_sink_arcs;
+    good_sink_arcs.open();
+
+    tpie::file_stream<arc> bad_sink_arcs;
+    bad_sink_arcs.open();
+
+    arc latest_good_sink_arc = { 0, 0, 0 };
+
+    // Process the root and create initial recursion requests
     if(a.label == label_of(v)) {
       uint64_t rec_child = a.value ? v.high : v.low;
 
@@ -132,20 +141,22 @@ namespace coom
     } else {
       arc low_arc = low_arc_of_node(v);
       if(is_sink(v.low)) {
-        reduce_sink_arcs.write(low_arc);
+        latest_good_sink_arc = low_arc;
+        good_sink_arcs.write(low_arc);
       } else {
         resD.push(low_arc);
       }
 
       arc high_arc = high_arc_of_node(v);
       if(is_sink(v.high)) {
-        reduce_sink_arcs.write(high_arc);
+        latest_good_sink_arc = high_arc;
+        good_sink_arcs.write(high_arc);
       } else {
         resD.push(high_arc);
       }
     }
 
-    //Process all to-be-visited nodes in topological order
+    // Process all to-be-visited nodes in topological order
     while(!resD.empty()) {
       debug::println_restrict_request(resD.top());
 
@@ -175,8 +186,11 @@ namespace coom
               // We have restricted ourselves to a sink
               out_nodes.write(create_sink_node(value_of(rec_child)));
               return;
+            } else if (good_sink_arcs.size() > 0 && request < latest_good_sink_arc) {
+              bad_sink_arcs.write(request);
             } else {
-              reduce_sink_arcs.write(request);
+              good_sink_arcs.write(request);
+              latest_good_sink_arc = request;
             }
           } else {
             resD.push(request);
@@ -191,7 +205,8 @@ namespace coom
         debug::println_restrict_request(low_arc);
 
         if(is_sink(v.low)) {
-          reduce_sink_arcs.write(low_arc);
+          good_sink_arcs.write(low_arc);
+          latest_good_sink_arc = low_arc;
         } else {
           resD.push(low_arc);
         }
@@ -199,7 +214,8 @@ namespace coom
         arc high_arc = high_arc_of_node(v);
         debug::println_restrict_request(high_arc);
         if(is_sink(v.high)) {
-          reduce_sink_arcs.write(high_arc);
+          good_sink_arcs.write(high_arc);
+          latest_good_sink_arc = high_arc;
         } else {
           resD.push(high_arc);
         }
@@ -215,6 +231,24 @@ namespace coom
 
           resD.pop();
         }
+      }
+    }
+
+    tpie::progress_indicator_null pi;
+    tpie::sort(bad_sink_arcs, std::less<arc>(), pi);
+
+    debug::println_file_stream(good_sink_arcs, "good_sink_arcs");
+    debug::println_file_stream(bad_sink_arcs, "bad_sink_arcs");
+
+    good_sink_arcs.seek(0);
+    bad_sink_arcs.seek(0);
+
+    while (good_sink_arcs.can_read() || bad_sink_arcs.can_read()) {
+      if (!bad_sink_arcs.can_read() ||
+          good_sink_arcs.peek() < bad_sink_arcs.peek()) {
+        reduce_sink_arcs.write(good_sink_arcs.read());
+      } else {
+        reduce_sink_arcs.write(bad_sink_arcs.read());
       }
     }
   }
