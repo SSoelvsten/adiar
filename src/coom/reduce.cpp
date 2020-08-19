@@ -135,7 +135,7 @@ namespace coom
     tpie::priority_queue<arc, reduce_queue_lt> redD;
     in_sink_arcs.seek(0, tpie::file_stream_base::end);
     in_node_arcs.seek(0, tpie::file_stream_base::end);
-    tpie::progress_indicator_null pi;
+    tpie::dummy_progress_indicator pi;
 
     // Check to see if in_node_arcs is empty
     if (!in_node_arcs.can_read_back()) {
@@ -173,7 +173,7 @@ namespace coom
       red1_mapping.open();
 
       // Set-up for L_j
-      tpie::merge_sorter<node, true, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
+      tpie::merge_sorter<node, false, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
       child_grouping.set_available_memory(tpie::get_memory_manager().available() / 2);
       child_grouping.begin();
 
@@ -230,7 +230,7 @@ namespace coom
       child_grouping.end();
       child_grouping.calc(pi);
 
-      tpie::merge_sorter<mapping, true, decltype(reduce_node_ptr_lt)> red2_mapping(reduce_node_ptr_lt);
+      tpie::merge_sorter<mapping, false, decltype(reduce_node_ptr_lt)> red2_mapping(reduce_node_ptr_lt);
       red2_mapping.set_available_memory(tpie::get_memory_manager().available() / 2);
       red2_mapping.begin();
 
