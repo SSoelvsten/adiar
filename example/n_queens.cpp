@@ -1,4 +1,5 @@
 #include <vector>
+#include <chrono>
 
 // TPIE Imports
 #include <tpie/tpie.h>
@@ -23,6 +24,16 @@
 #include <coom/reduce.cpp>
 #include <coom/restrict.cpp>
 #include <coom/negate.cpp>
+
+/* A few chrono wrappers to improve readability of the code below */
+inline auto get_timestamp() {
+  return std::chrono::high_resolution_clock::now();
+}
+
+inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
+                        std::chrono::high_resolution_clock::time_point &after) {
+  return std::chrono::duration_cast<std::chrono::microseconds>(after - before).count();
+}
 
 /* We represent the position (i,j) on the N x N board board as N*i + j. */
 inline uint64_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
@@ -288,20 +299,42 @@ void n_queens_alo_row(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
  */
 void n_queens_amo_alo(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
 {
-  tpie::log_info() << "| " << N << "-Queens (AMO construction)"  << std::endl;
+  tpie::log_info() << "| " << N << "-Queens (Construction)"  << std::endl;
+  tpie::log_info() << "|  | " << N << "-Queens (AMO)"  << std::endl;
+
+  auto before_amo = get_timestamp();
   tpie::file_stream<coom::node> amo;
   amo.open();
 
   n_queens_amo(N, 0, N, 0, N, amo);
+  auto after_amo = get_timestamp();
 
-  tpie::log_info() << "| " << N << "-Queens (ALO row construction)"  << std::endl;
+  tpie::log_info() << "|  |  | time: " << duration_of(before_amo, after_amo) << " μs" << std::endl;
+
+  tpie::log_info() << "|  | " << N << "-Queens (ALO row construction)"  << std::endl;
+
+  auto before_alo = get_timestamp();
   tpie::file_stream<coom::node> alo_row;
   alo_row.open();
 
   n_queens_alo_row(N, alo_row);
+  auto after_alo = get_timestamp();
 
-  tpie::log_info() << "| " << N << "-Queens (AMO-ALO construction)"  << std::endl;
+  tpie::log_info() << "|  |  | time: " << duration_of(before_alo, after_alo) << " μs" << std::endl;
+
+  tpie::log_info() << "|  | " << N << "-Queens (AMO-ALO construction)"  << std::endl;
+
+  auto before_amo_alo = get_timestamp();
   coom::apply(amo, alo_row, coom::and_op, out_nodes);
+  auto after_amo_alo = get_timestamp();
+
+  tpie::log_info() << "|  |  | time: " << duration_of(before_amo_alo, after_amo_alo) << " μs" << std::endl;
+
+  tpie::log_info() << "|  | time: "
+                   << duration_of(before_amo, after_amo) +
+                      duration_of(before_alo, after_alo) +
+                      duration_of(before_amo_alo, after_amo_alo)
+                   << " μs" << std::endl;
 }
 
 /* So after combining the AMO and ALO constraints from above, we merely count
@@ -309,10 +342,13 @@ void n_queens_amo_alo(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
  */
 uint64_t n_queens_count(uint64_t N, tpie::file_stream<coom::node>& amo_alo)
 {
+  auto before = get_timestamp();
   uint64_t solutions = coom::count_assignments(amo_alo, coom::is_true);
+  auto after = get_timestamp();
 
   tpie::log_info() << "| " << N << "-Queens (Counting assignments)"  << std::endl;
-  tpie::log_info() << "|  | number of solutions: " << solutions << std::endl << std::endl;
+  tpie::log_info() << "|  | number of solutions: " << solutions << std::endl;
+  tpie::log_info() << "|  | time: " << duration_of(before, after) << " μs" << std::endl;
 
   return solutions;
 }
@@ -436,9 +472,12 @@ uint64_t n_queens_list(uint64_t N, tpie::file_stream<coom::node>& amo_alo)
   std::vector<uint64_t> partial_assignment { };
   partial_assignment.reserve(N);
 
+  auto before = get_timestamp();
   uint64_t solutions = n_queens_list(N, 0, partial_assignment, amo_alo);
+  auto after = get_timestamp();
 
-  tpie::log_info() << "|  | number of solutions: " << solutions << std::endl << std::endl;
+  tpie::log_info() << "|  | number of solutions: " << solutions << std::endl;
+  tpie::log_info() << "|  | time: " << duration_of(before, after) << " μs" << std::endl;
 
   return solutions;
 }
