@@ -63,7 +63,7 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 2, true });
+            assignment.write(create_assignment(2, true));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -74,7 +74,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            coom::restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0));
 
@@ -123,7 +123,7 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 1, false });
+            assignment.write(create_assignment(1, false));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -134,7 +134,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            coom::restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0));
 
@@ -163,18 +163,6 @@ go_bandit([]() {
           });
 
         it("should bridge layers [3]. Assignment: (_,T,_,_)", [&obdd]() {
-          /*
-             1
-            / \
-            | 2
-            |/ \
-            3   4
-           / \ / \
-           F T T 5
-                / \
-                F T
-          */
-
             /*
                   1
                  / \
@@ -191,7 +179,7 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 1, true });
+            assignment.write(create_assignment(1, true));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -202,7 +190,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            coom::restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0));
 
@@ -257,8 +245,8 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 0, true });
-            assignment.write({ 3, false });
+            assignment.write(create_assignment(0, true));
+            assignment.write(create_assignment(3, false));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -269,7 +257,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            coom::restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0));
 
@@ -314,9 +302,9 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 0, false });
-            assignment.write({ 1, true });
-            assignment.write({ 3, false });
+            assignment.write(create_assignment(0, false));
+            assignment.write(create_assignment(1, true));
+            assignment.write(create_assignment(3, false));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -327,7 +315,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            coom::restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0));
 
@@ -352,8 +340,8 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 0, false });
-            assignment.write({ 2, false });
+            assignment.write(create_assignment(0, false));
+            assignment.write(create_assignment(2, false));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -364,7 +352,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            coom::restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
             AssertThat(reduce_node_arcs.size(), Is().EqualTo(0));
             AssertThat(reduce_sink_arcs.size(), Is().EqualTo(0));
@@ -380,9 +368,9 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 0, true });
-            assignment.write({ 1, true });
-            assignment.write({ 2, false });
+            assignment.write(create_assignment(0, true));
+            assignment.write(create_assignment(1, true));
+            assignment.write(create_assignment(2, false));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -393,7 +381,7 @@ go_bandit([]() {
             tpie::file_stream<arc> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            coom::restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
             AssertThat(reduce_node_arcs.size(), Is().EqualTo(0));
             AssertThat(reduce_sink_arcs.size(), Is().EqualTo(0));
@@ -414,14 +402,14 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 0, true });
-            assignment.write({ 2, true });
-            assignment.write({ 42, false });
+            assignment.write(create_assignment(0, true));
+            assignment.write(create_assignment(2, true));
+            assignment.write(create_assignment(42, false));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
 
-            coom::restrict(in_nodes, assignment, out_nodes);
+            restrict(in_nodes, assignment, out_nodes);
 
             out_nodes.seek(0);
 
@@ -439,14 +427,14 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 2, true });
-            assignment.write({ 21, true });
-            assignment.write({ 28, false });
+            assignment.write(create_assignment(2, true));
+            assignment.write(create_assignment(21, true));
+            assignment.write(create_assignment(28, false));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
 
-            coom::restrict(in_nodes, assignment, out_nodes);
+            restrict(in_nodes, assignment, out_nodes);
 
             out_nodes.seek(0);
 
@@ -462,7 +450,7 @@ go_bandit([]() {
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
 
-            coom::restrict(obdd, assignment, out_nodes);
+            restrict(obdd, assignment, out_nodes);
 
             out_nodes.seek(0);
 
@@ -515,7 +503,7 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 2, true });
+            assignment.write(create_assignment(2, true));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -603,7 +591,7 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            assignment.write({ 2, true });
+            assignment.write(create_assignment(2, true));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
