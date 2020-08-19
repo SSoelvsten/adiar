@@ -143,7 +143,10 @@ namespace coom
     while(!resD.empty()) {
       debug::println_restrict_request(resD.top());
 
-      v = in_nodes.read_back();
+      // Seek requeted node
+      while (v.node_ptr != resD.top().target) {
+        v = in_nodes.read_back();
+      }
 
       debug::println_restrict_position(v);
 
