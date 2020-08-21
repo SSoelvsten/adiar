@@ -3,9 +3,11 @@
 
 // COOM Imports
 #include "data.cpp"
+#include "assignment.cpp"
 #include "pred.cpp"
 
 #include "debug_data.cpp"
+#include "debug_assignment.cpp"
 #include "debug.cpp"
 
 #include "assert.cpp"
