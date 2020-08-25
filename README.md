@@ -121,7 +121,7 @@ various verification and satisfaction problems.
 
 | target                   | Example                                                     |
 |--------------------------|-------------------------------------------------------------|
-| `example-n-queens N=<?>` | N-Queens board creation and counting satisfying assignments |
+| `example-n-queens N=<?>` | N-Queens board creation, counting and enumerating solutions |
 
 
 ### In your own project
