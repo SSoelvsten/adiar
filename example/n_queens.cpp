@@ -25,47 +25,38 @@
 #include <coom/restrict.cpp>
 #include <coom/negate.cpp>
 
-/* A few chrono wrappers to improve readability of the code below */
-inline auto get_timestamp() {
-  return std::chrono::high_resolution_clock::now();
-}
-
-inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
-                        std::chrono::high_resolution_clock::time_point &after) {
-  return std::chrono::duration_cast<std::chrono::milliseconds>(after - before).count();
-}
-
-/* To solve the N-Queens problem, we have to first choose some encoding of the
- * problem. To keep the example simple to follow and show multiple facets of how
- * to use COOM, we will take the simple row-by-row ordering of variables. That
- * is, we represent the position (i,j) on the N x N board board as the variable
- * with label:
+/*******************************************************************************
+ * We base our example for N-Queens on the procedure as described in the paper
+ * "Parallel Disk-Based Computation for Large, Monolithic Binary Decision
+ * Diagrams" by Daniel Kunkle, Vlad Slavici, and Gene Cooperman.
  *
- *                             N*i + j.
+ * We'd find it interesting to output the size of the largest OBDD, so we create
+ * the following global variable.
+ */
+uint64_t largest_intermediate = 0;
+
+/*******************************************************************************
+ *                             Variable ordering
+ *
+ * To solve the N-Queens problem, we have to first choose some encoding of the
+ * problem. Well stay with the simple row-by-row ordering of variables for now
+ * (see issue #42 for other suggestions). That is, we represent the position
+ * (i,j) on the N x N board board as the variable with label:
+ *
+ *                                 N*i + j.
  */
 inline uint64_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 {
   return (N * i) + j;
 }
 
-inline uint64_t i_of_label(uint64_t N, uint64_t label)
-{
-  return label / N;
-}
-
-inline uint64_t j_of_label(uint64_t N, uint64_t label)
-{
-  return label % N;
-}
-
-/*                 N - QUEENS : at-most-one (AMO) base case
+/*******************************************************************************
  *
  * Let us first restrict our attention to the base case of expressing a single
- * field (i,j). A single queen placed on (i,j) creates one single set of other
- * illegal positions: all on the same row, column or diagonals. If the queen is
- * not placed at (i,j) by x_ij being false, then it is trivially true. So, what
- * we construct is x_ij ==> !conflicts(x_ij), where conflicts is an OR of all
- * positions (k,l) that are on the same diagonals, row or column of (i,j).
+ * field (i,j). We need to express that a single queen is placed here, and that
+ * it is in no conflict with any other queens on the board; queens on the same
+ * row, column or diagonals. A single queen placed on (i,j) creates one single
+ * set of other
  *        __________
  *       | \ | /    |
  *       |  \|/     |
@@ -73,46 +64,45 @@ inline uint64_t j_of_label(uint64_t N, uint64_t label)
  *       |  /|\     |
  *       |_/_|_\____|
  *
+ * This essentially is the formula x_ij /\ !conflicts(i,j), where conflicts(i,j)
+ * is true if one or more queens are placed on conflicting positions.
+ *
  * We could construct this with the builders of COOM, but we can do even better
- * than that, since the resulting (reduced) OBDD is so well structured. For
- * conflicting position (k,l) < (i,j) (ordered with respect to the labelling
- * above), if they are true, then we may immediately go down to a node for x_ij
- * that checks whether x_ij is set to true. If it x_kl false, then we check the
- * next conflicting variable. If all (k,l) < (i,j) have been checked false, then
- * we check in a second node for (i,j) whether x_ij is set; if so, then we check
- * the rest of the chain for (k,l) > (i,j).
+ * than that! Since the resulting (reduced) OBDD is very well structured, we can
+ * explicitly construct it. All OBDDs are stored on disk bottom-up, so we'll
+ * have to start at the bottom rightmost and work ourselves backwards. We can
+ * skip all labels for positions that are not in conflict or are not (i,j). All
+ * the others, we have to check that they are not true, and for (i,j) that it
+ * is.
  *
  *            (k1,l1)
  *             /   \
- *       (k2,l2)   |
- *        /   \____|
- *        |        |
- *        .        .
- *        |        |
- *      (i,j)    (i,j)
- *       / \      / \
- *      T  (k,l)  T F
- *          / \
- *          . F
+ *       (k2,l2)   F
+ *        /   \
+ *        |   F
+ *        .
+ *        |
+ *      (i,j)
+ *       / \
+ *      T  |
+ *         .
+ *         |
+ *     (k3n,l3n)
+ *       /   \
+ *       T   F
  *
- * Since we realise this OBDD has such a simple structure and construct it
- * explicitly, then the work we do in the base case goes down to only O(N) time
- * and O(N/B) I/Os rather than O(sort(N)) in both time and I/Os. One pretty much
- * cannot do this base case faster.
+ * Since we construct it explicitly, then the work we do in the base case goes
+ * down to only O(N) time and O(N/B) I/Os rather than O(sort(N)) in both time
+ * and I/Os. One pretty much cannot do this base case faster.
  */
-void n_queens_amo(uint64_t N,
-                  uint64_t i, uint64_t j,
-                  tpie::file_stream<coom::node>& out_nodes)
+void n_queens_S(uint64_t N,
+                uint64_t i, uint64_t j,
+                tpie::file_stream<coom::node>& out_nodes)
 {
-  if (N == 1) {
-    out_nodes.write(coom::create_sink_node(true));
-    return;
-  }
+  out_nodes.open();
 
   uint64_t row = N - 1;
-
-  uint64_t low = coom::create_sink(true);
-  uint64_t high = coom::create_sink(false);
+  uint64_t next = coom::create_sink(true);
 
   do {
     uint64_t row_diff = std::max(row,i) - std::min(row,i);
@@ -125,260 +115,174 @@ void n_queens_amo(uint64_t N,
 
         // If (row, column) == (i,j), then the chain goes through high.
         if (column == j) {
-          // Node to check if the queen in question actually isn't placed anyway
-          coom::node no_queen_placed = coom::create_node(label_of_position(N,i,j), 1,
-                                                         coom::create_sink(true),
-                                                         coom::create_sink(false));
+          // Node to check whether the queen actually is placed, and if so
+          // whether all remaining possible conflicts have to be checked.
+          coom::node queen = coom::create_node(label_of_position(N,i,j), 0,
+                                               coom::create_sink(false),
+                                               next);
 
-          if (label != 0) {
-            out_nodes.write(no_queen_placed);
-            high = no_queen_placed.node_ptr;
-          }
-
-          // Node to check whether the chain has to be further followed
-          coom::node queen_placed = coom::create_node(label_of_position(N,i,j), 0,
-                                                      coom::create_sink(true),
-                                                      low);
-
-          if (low != coom::create_sink(true)) {
-            // This is the end of the chain
-            out_nodes.write(queen_placed);
-            low = queen_placed.node_ptr;
-          }
+          out_nodes.write(queen);
+          next = queen.node_ptr;
           continue;
         }
 
-        coom::node out_node = coom::create_node(label, 0, low, high);
+        coom::node out_node = coom::create_node(label, 0, next, coom::create_sink(false));
 
         out_nodes.write(out_node);
-        low = out_node.node_ptr;
+        next = out_node.node_ptr;
       } while (column-- > 0);
     } else {
       // On another row
       if (j + row_diff < N) {
         // Diagonal to the right is within bounds
         auto label = label_of_position(N, row, j + row_diff);
-        auto out_node = coom::create_node(label, 0, low, high);
+        auto out_node = coom::create_node(label, 0, next, coom::create_sink(false));
 
         out_nodes.write(out_node);
-        low = out_node.node_ptr;
+        next = out_node.node_ptr;
       }
 
       // Column
       uint64_t label = label_of_position(N, row, j);
-      coom::node out_node = coom::create_node(label, 0, low, high);
+      coom::node out_node = coom::create_node(label, 0, next, coom::create_sink(false));
 
       out_nodes.write(out_node);
-      low = out_node.node_ptr;
+      next = out_node.node_ptr;
 
       if (row_diff <= j) {
         // Diagonal to the left is within bounds
         uint64_t label = label_of_position(N, row, j - row_diff);
-        coom::node out_node = coom::create_node(label, 0, low, high);
+        coom::node out_node = coom::create_node(label, 0, next, coom::create_sink(false));
 
         out_nodes.write(out_node);
-        low = out_node.node_ptr;
+        next = out_node.node_ptr;
       }
     }
   } while (row-- > 0);
+
+  largest_intermediate = std::max(largest_intermediate, out_nodes.size());
 }
 
-/*                  N - QUEENS : at-most-one (AMO) recursion
+/*******************************************************************************
+ * Now that we have a formula n_queens_S that is true only when the queen is
+ * set, then we can combine them with an OR to ensure there is at-least-one
+ * queen on the row. Since n_queens_S is also only true when said queen has no
+ * conflicts, this also immediately contains all the at-most-one constraints on
+ * these queens.
  *
- * We can now split the board into four quadrants and then AND the conflicts together.
- *           _______                          _______
- *          |   |   |                        |       |
- *          |---|---|   == APPLY(AND) ==>    |       |
- *          |___|___|                        |_______|
+ * We could do the below in two ways:
  *
- * Here, we identify the subrectangle of the entire board with row_start and
- * column_start being inclusive and row_end and column_end being exclusive.
+ * - Recursively split the row in half until we reach the base case of
+ *   n_queens_S. This will minimise the number of Apply's that we will make.
+ *
+ * - Iteratively combine them similar to a list.fold in functional programming
+ *   languages. This will minimise the number of OBDDs that are "active" at any
+ *   given time, since we only need to persist the input and output of each
+ *   iteration.
+ *
+ * For COOM to be able to achieve optimality on disk, it sacrifices the
+ * possibility of a hash-table to instantiate the entire forest of all currently
+ * active OBDDs. In other words, each OBDD is completely separate and no memory
+ * is saved, if there is a major overlap. So, we will choose to do it
+ * iteratively.
  */
-void n_queens_amo(uint64_t N,
-                  uint64_t row_start, uint64_t row_end,
-                  uint64_t column_start, uint64_t column_end,
-                  tpie::file_stream<coom::node>& out_nodes)
+void n_queens_R(uint64_t N,
+                uint64_t row,
+                tpie::file_stream<coom::node>& out_nodes)
 {
-  // Recursed to a single field on the board?
-  if (row_start + 1 == row_end && column_start + 1 == column_end) {
-    n_queens_amo(N, row_start, column_start, out_nodes);
+  // We will have to "current" streams will swap being the current. We will
+  // start in curr_1.
+  bool from_1 = true;
+
+  tpie::file_stream<coom::node> curr_1;
+  tpie::file_stream<coom::node> curr_2;
+
+  tpie::file_stream<coom::node> next_S;
+  n_queens_S(N, row, 0, curr_1);
+
+  for (uint64_t j = 1; j < N; j++) {
+    n_queens_S(N, row, j, next_S);
+
+    tpie::file_stream<coom::node>& prev = from_1 ? curr_1 : curr_2;
+    tpie::file_stream<coom::node>& next = j == N-1 ? out_nodes : from_1 ? curr_2 : curr_1;
+    from_1 = !from_1;
+
+    next.open();
+
+    coom::apply(prev, next_S, coom::or_op, next);
+
+    largest_intermediate = std::max(largest_intermediate, next.size());
+
+    prev.close();
+    next_S.close();
+  }
+
+  if (curr_1.is_open()) {
+    curr_1.close();
+  }
+  if (curr_2.is_open()) {
+    curr_2.close();
+  }
+}
+
+/*******************************************************************************
+ * Now that we have each entire row done, we only need to combine them. Here we
+ * again iterate over all rows to combine them one-by-one. One can probably
+ * remove the code duplication that we now introduce.
+ */
+void n_queens_B(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
+{
+  if (N == 1) {
+    n_queens_S(N, 0, 0, out_nodes);
     return;
   }
 
-  auto row_split = row_end - (row_end - row_start) / 2;
-  auto column_split = column_end - (column_end - column_start) / 2;
+  bool from_1 = true;
 
-  if (row_start + 1 == row_end) {
-    // Already down to a single row: Recurse by only splitting on the column
-    tpie::file_stream<coom::node> out_left;
-    out_left.open();
+  tpie::file_stream<coom::node> curr_1;
+  tpie::file_stream<coom::node> curr_2;
 
-    n_queens_amo(N, row_start, row_end, column_start, column_split, out_left);
+  tpie::file_stream<coom::node> next_R;
 
-    tpie::file_stream<coom::node> out_right;
-    out_right.open();
+  n_queens_R(N, 0, curr_1);
 
-    n_queens_amo(N, row_start, row_end, column_split, column_end, out_right);
+  for (uint64_t i = 1; i < N; i++) {
+    n_queens_R(N, i, next_R);
 
-    coom::apply(out_left, out_right, coom::and_op, out_nodes);
-  } else if (column_start + 1 == column_end) {
-    // Already down to a single column: Recurse by only splitting on the row
-    tpie::file_stream<coom::node> out_top;
-    out_top.open();
+    tpie::file_stream<coom::node>& prev = from_1 ? curr_1 : curr_2;
+    tpie::file_stream<coom::node>& next = i == N-1 ? out_nodes : from_1 ? curr_2 : curr_1;
+    from_1 = !from_1;
 
-    n_queens_amo(N, row_start, row_split, column_start, column_end, out_top);
+    next.open();
 
-    tpie::file_stream<coom::node> out_bottom;
-    out_bottom.open();
+    coom::apply(prev, next_R, coom::and_op, next);
 
-    n_queens_amo(N, row_split, row_end, column_start, column_end, out_bottom);
+    largest_intermediate = std::max(largest_intermediate, next.size());
 
-    coom::apply(out_top, out_bottom, coom::and_op, out_nodes);
-  } else {
-    // Recurse into all four quadrants
-    tpie::file_stream<coom::node> out_left;
-    tpie::file_stream<coom::node> out_right;
+    prev.close();
+    next_R.close();
+  }
 
-    // Top two quadrants
-    out_left.open();
-    out_right.open();
-
-    n_queens_amo(N, row_start, row_split, column_start, column_split, out_left);
-    n_queens_amo(N, row_start, row_split, column_split, column_end, out_right);
-
-    tpie::file_stream<coom::node> out_top;
-    out_top.open();
-
-    coom::apply(out_left, out_right, coom::and_op, out_top);
-    out_left.close();
-    out_right.close();
-
-    // Bottom two quadrants
-    out_left.open();
-    out_right.open();
-
-    n_queens_amo(N, row_split, row_end, column_start, column_split, out_left);
-    n_queens_amo(N, row_split, row_end, column_split, column_end, out_right);
-
-    tpie::file_stream<coom::node> out_bottom;
-    out_bottom.open();
-
-    coom::apply(out_left, out_right, coom::and_op, out_bottom);
-    out_left.close();
-    out_right.close();
-
-    // Combine top and bottom half
-    coom::apply(out_top, out_bottom, coom::and_op, out_nodes);
+  if (curr_1.is_open()) {
+    curr_1.close();
+  }
+  if (curr_2.is_open()) {
+    curr_2.close();
   }
 }
 
-/*                  N - QUEENS : at-least-one (ALO) on rows
- *
- * The at-least-one for each row is, just like the AMO base case, very
- * structured. Due to our variable ordering, each row is an N'th of a chain,
- * that may on a high arc go the next N'th part of the chain or if one reaches
- * the end of the subchain without anyone satisfied, then one can reject.
+/*******************************************************************************
+ * So now that we have a single OBDD that is only true, when we have placed a
+ * queen on each row and none in conflict, it is only true, when the assignment
+ * is a solution to the N-Queens problem. So, now we can merely count the number
+ * of assignments that reach a true sink.
  */
-void n_queens_alo_row(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
+uint64_t n_queens_count(tpie::file_stream<coom::node>& board)
 {
-  uint64_t row = N-1;
-
-  uint64_t high = coom::create_sink(true);
-
-  do {
-    uint64_t low = coom::create_sink(false);
-    uint64_t col = N-1;
-
-    do {
-      coom::node next_node = coom::create_node(label_of_position(N, row, col), 0, low, high);
-      low = next_node.node_ptr;
-
-      out_nodes.write(next_node);
-      if (col == 0) {
-        high = next_node.node_ptr;
-      }
-    } while (col-- > 0);
-  } while (row-- > 0);
+  return coom::count_assignments(board, coom::is_true);
 }
 
-/*                  N - QUEENS : at-least-one (ALO) on columns
- *
- * The variable ordering does not allow us to do the at-least-one constraint for
- * columns as easily as above. The resulting OBDD would have most nodes encode
- * whether the other N-1 columns already have been satisfied. That would be
- * 2^(N-1) nodes for most variables. While variables on the first and last row
- * may shortcut quite a few cases, that is not enough to compensate for the
- * O(N^2) nodes for all the other O(N^2) variables. While we could construct
- * this in a complicated iterative procedure, the size of the OBDD does not seem
- * to make it worth much.
- *
- *           N - QUEENS : counting by number of satisfying assignments.
- *
- * Yet, we realise, that if one has to place at least one queen on every row,
- * but has to do so without creating any conflicts, then that is only possible
- * when one actually has a solution to the N-Queen problem. So, with merely the
- * AMO constraint and the ALO constraint for rows, we already force all
- * satisfying assignments to be solutions to the N-Queens problem.
- */
-void n_queens_amo_alo(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
-{
-  tpie::log_info() << "| " << N << "-Queens (Construction)"  << std::endl;
-  tpie::log_info() << "|  | " << N << "-Queens (AMO)"  << std::endl;
-
-  auto before_amo = get_timestamp();
-  tpie::file_stream<coom::node> amo;
-  amo.open();
-
-  n_queens_amo(N, 0, N, 0, N, amo);
-  auto after_amo = get_timestamp();
-
-  tpie::log_info() << "|  |  | time: " << duration_of(before_amo, after_amo) << " ms" << std::endl;
-  tpie::log_info() << "|  |  | size: " << amo.size() << std::endl;
-
-  tpie::log_info() << "|  | " << N << "-Queens (ALO row construction)"  << std::endl;
-
-  auto before_alo = get_timestamp();
-  tpie::file_stream<coom::node> alo_row;
-  alo_row.open();
-
-  n_queens_alo_row(N, alo_row);
-  auto after_alo = get_timestamp();
-
-  tpie::log_info() << "|  |  | time: " << duration_of(before_alo, after_alo) << " ms" << std::endl;
-  tpie::log_info() << "|  |  | size: " << alo_row.size() << std::endl;
-
-  tpie::log_info() << "|  | " << N << "-Queens (AMO-ALO construction)"  << std::endl;
-  auto before_amo_alo = get_timestamp();
-  coom::apply(amo, alo_row, coom::and_op, out_nodes);
-  auto after_amo_alo = get_timestamp();
-
-  tpie::log_info() << "|  |  | time: " << duration_of(before_amo_alo, after_amo_alo) << " ms" << std::endl;
-  tpie::log_info() << "|  |  | size: " << out_nodes.size() << std::endl;
-
-  tpie::log_info() << "|  | time: "
-                   << duration_of(before_amo, after_amo) +
-                      duration_of(before_alo, after_alo) +
-                      duration_of(before_amo_alo, after_amo_alo)
-                   << " ms" << std::endl;
-}
-
-/* So when given the entire board description with the AMO and ALO constraints
- * as constructed above, we merely count the number of satisfying assignments.
- */
-uint64_t n_queens_count(uint64_t N, tpie::file_stream<coom::node>& amo_alo)
-{
-  auto before = get_timestamp();
-  uint64_t solutions = coom::count_assignments(amo_alo, coom::is_true);
-  auto after = get_timestamp();
-
-  tpie::log_info() << "| " << N << "-Queens (Counting assignments)"  << std::endl;
-  tpie::log_info() << "|  | number of solutions: " << solutions << std::endl;
-  tpie::log_info() << "|  | time: " << duration_of(before, after) << " ms" << std::endl;
-
-  return solutions;
-}
-
-/*         N - QUEENS : pruning the search by partial assignment
+/*******************************************************************************
  *
  * Based on: github.com/MartinFaartoft/n-queens-bdd/blob/master/report.tex
  *
@@ -398,8 +302,17 @@ uint64_t n_queens_count(uint64_t N, tpie::file_stream<coom::node>& amo_alo)
  *   - If the number of unique paths in the restricted OBDD is exactly one. Then
  *     we are forced to place the remaining queens.
  *
- * For a sanity check, we also count the number of solutions we list.
+ * Since we want to back track in our choices, we may keep OBDDs for each
+ * column. This is easily achieved by writing it as a recursive procedure. One
+ * should notice though, that this will result in multiple OBDDs concurrently
+ * being instantiated in memory or on disk at the same time.
+ *
+ * In fact, let us keep track of that!
  */
+uint64_t deepest_column = 0;
+
+/* Let us isolate/hide the printing function, to keep the rest a little more
+ * clean. */
 void n_queens_print_solution(std::vector<uint64_t>& assignment)
 {
   tpie::log_info() << "|  |  | ";
@@ -409,6 +322,21 @@ void n_queens_print_solution(std::vector<uint64_t>& assignment)
   tpie::log_info() << std::endl;
 }
 
+/* At this point, we now also need to convert an assignment back into a position
+ * on the board. So, we'll also need the following two small functions. */
+inline uint64_t i_of_label(uint64_t N, uint64_t label)
+{
+  return label / N;
+}
+
+inline uint64_t j_of_label(uint64_t N, uint64_t label)
+{
+  return label % N;
+}
+
+/* At which point we can then implement the recursive procedure that takes care
+ * of a row and possibly recurses. For a sanity check, we also count the number
+ * of solutions we list. */
 uint64_t n_queens_list(uint64_t N, uint64_t column,
                        std::vector<uint64_t>& partial_assignment,
                        tpie::file_stream<coom::node>& constraints)
@@ -416,6 +344,8 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
   if (coom::is_sink(constraints, coom::is_false)) {
     return 0;
   }
+  deepest_column = std::max(deepest_column, column);
+
   uint64_t solutions = 0;
 
   tpie::file_stream<coom::assignment> column_assignment;
@@ -442,6 +372,8 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       tpie::file_stream<coom::assignment> forced_assignment;
       forced_assignment.open();
 
+      // Request a true assignment (well, only one exists), and have it ordered
+      // by the columns, such that we can use the output for our purposes.
       auto sort_by_column = [&N](const coom::assignment &a, const coom::assignment &b) -> bool {
           return j_of_label(N, a.label) < j_of_label(N, b.label);
         };
@@ -480,7 +412,6 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
 uint64_t n_queens_list(uint64_t N, tpie::file_stream<coom::node>& amo_alo)
 {
-  tpie::log_info() << "| " << N << "-Queens (Pruning search)"  << std::endl;
   tpie::log_info() << "|  | solutions:" << std::endl;
 
   if (N == 1) {
@@ -491,21 +422,13 @@ uint64_t n_queens_list(uint64_t N, tpie::file_stream<coom::node>& amo_alo)
     std::vector<uint64_t> assignment { 0 };
     n_queens_print_solution(assignment);
 
-    tpie::log_info() << "|  | number of solutions: " << 1 << std::endl << std::endl;
     return 1;
   }
 
   std::vector<uint64_t> partial_assignment { };
   partial_assignment.reserve(N);
 
-  auto before = get_timestamp();
-  uint64_t solutions = n_queens_list(N, 0, partial_assignment, amo_alo);
-  auto after = get_timestamp();
-
-  tpie::log_info() << "|  | number of solutions: " << solutions << std::endl;
-  tpie::log_info() << "|  | time: " << duration_of(before, after) << " ms" << std::endl;
-
-  return solutions;
+  return n_queens_list(N, 0, partial_assignment, amo_alo);
 }
 
 // expected number taken from:
@@ -540,6 +463,23 @@ uint64_t expected_result[28] = {
   22317699616364044,
   234907967154122528
 };
+
+
+/* A few chrono wrappers to improve readability of the code below */
+inline auto get_timestamp() {
+  return std::chrono::high_resolution_clock::now();
+}
+
+inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
+                        std::chrono::high_resolution_clock::time_point &after) {
+  return std::chrono::duration_cast<std::chrono::seconds>(after - before).count();
+}
+
+
+/* TODO: File size calculations should be available from COOM. */
+inline auto MB_of_size(tpie::stream_size_type size) {
+  return size * sizeof(coom::node) /* bytes */ / (1024 * 1024) /* in MB */;
+}
 
 /* Finally, to run the above we need to initialize the underlying TPIE library
  * first, from which point all the file_streams, priority queues and sorters
@@ -580,21 +520,49 @@ int main(int argc, char* argv[])
 
   // ===== N Queens =====
 
-  tpie::file_stream<coom::node> amo_alo;
-  amo_alo.open();
+  tpie::file_stream<coom::node> board;
 
-  n_queens_amo_alo(N, amo_alo);
+  tpie::log_info() << "| " << N << "-Queens : Board construction"  << std::endl;
+  auto before_board = get_timestamp();
+  n_queens_B(N, board);
+  auto after_board = get_timestamp();
 
-  bool correct_result = true;
+  tpie::log_info() << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
+
+  auto largest_MB = MB_of_size(largest_intermediate);
+  tpie::log_info() << "|  | largest OBDD: " << largest_intermediate << " nodes" << std::endl;
+  tpie::log_info() << "|  |               " << (largest_MB > 0 ? std::to_string(largest_MB) : "< 1") << " MB"<< std::endl;
+
+  auto final_MB = MB_of_size(board.size());
+  tpie::log_info() << "|  | final size: " << board.size() << " nodes"<< std::endl;
+  tpie::log_info() << "|  |             " << (final_MB > 0 ? std::to_string(final_MB) : "< 1") << " MB"<< std::endl;
 
   // Run counting example
-  if (n_queens_count(N, amo_alo) != expected_result[N]) {
-    correct_result = false;
-  }
+  auto before_count = get_timestamp();
+  uint64_t solutions = n_queens_count(board);
+  auto after_count = get_timestamp();
+
+  tpie::log_info() << "| " << N << "-Queens : Counting assignments"  << std::endl;
+  tpie::log_info() << "|  | number of solutions: " << solutions << std::endl;
+  tpie::log_info() << "|  | time: " << duration_of(before_count, after_count) << " s" << std::endl;
+
+  bool correct_result = solutions == expected_result[N];
 
   // Run enumeration example (for reasonably small N)
-  if (N <= 8 && n_queens_list(N, amo_alo) != expected_result[N]) {
-    correct_result = false;
+  if (N <= 8) {
+    tpie::log_info() << "| " << N << "-Queens (Pruning search)"  << std::endl;
+    auto before_list = get_timestamp();
+    uint64_t listed_solutions = n_queens_list(N, board);
+    auto after_list = get_timestamp();
+
+    correct_result = correct_result && listed_solutions == expected_result[N];
+
+    tpie::log_info() << "|  | number of solutions: " << listed_solutions << std::endl;
+    tpie::log_info() << "|  | deepest recursion: " << deepest_column << " columns" << std::endl;
+
+    auto estimated_MB = MB_of_size(deepest_column * 2 * board.size());
+    tpie::log_info() << "|  | estimated maximal memory usage: " << (estimated_MB > 0 ? std::to_string(estimated_MB) : "< 1") << " MB" << std::endl;
+    tpie::log_info() << "|  | time: " << duration_of(before_list, after_list) << " s" << std::endl;
   }
 
   // ===== TPIE =====

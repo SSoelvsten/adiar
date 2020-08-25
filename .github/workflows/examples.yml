@@ -44,4 +44,7 @@ jobs:
     - name: Makefile | 7-Queens
       working-directory: ${{runner.workspace}}/build
       run: ./example/n_queens 7
+    - name: Makefile | 8-Queens
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/n_queens 8
 
