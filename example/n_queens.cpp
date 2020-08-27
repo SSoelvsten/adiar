@@ -487,24 +487,24 @@ inline auto MB_of_size(tpie::stream_size_type size) {
  */
 int main(int argc, char* argv[])
 {
-  // ===== TPIE =====
-  // Initialize
-  tpie::tpie_init();
-
-  size_t available_memory_mb = 2 * 1024;
-  tpie::get_memory_manager().set_limit(available_memory_mb*1024*1024);
-
   // ===== Parse argument =====
   uint64_t N = 0;
+  size_t M = 1;
 
   try {
     if (argc == 1) {
-      tpie::log_info() << "Missing argument for upper bound on N" << std::endl;
+      tpie::log_info() << "Missing argument for N and M" << std::endl;
     } else {
       N = std::stoi(argv[1]);
       if (N == 0 || N > 27) {
         tpie::log_info() << "N should be in interval [1;27]: " << argv[1] << std::endl;
         N = 0;
+      }
+      if (argc == 3) {
+        M = std::stoi(argv[2]);
+        if (M <= 0) {
+          tpie::log_info() << "M should at least be 1: " << argv[2] << std::endl;
+        }
       }
     }
   } catch (std::invalid_argument const &ex) {
@@ -513,10 +513,17 @@ int main(int argc, char* argv[])
     tpie::log_info() << "Number out of range: " << argv[1] << std::endl;
   }
 
-  if (N == 0) {
-    tpie::tpie_finish();
+  if (N == 0 || M <= 0) {
     exit(1);
   }
+
+  // ===== TPIE =====
+  // Initialize
+  tpie::tpie_init();
+
+  tpie::get_memory_manager().set_limit(M * 1024 * 1024 * 1024);
+
+  tpie::log_info() << "| Initialized TPIE with " << M << " GB of memory"  << std::endl;
 
   // ===== N Queens =====
 
