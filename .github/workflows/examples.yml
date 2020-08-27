@@ -48,3 +48,24 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: ./example/n_queens 8
 
+  tic_tac_toe:
+    name: 'Tic-Tac-Toe'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - name: Apt | install boost aptitude
+      run: sudo apt install libboost-all-dev aptitude
+    - name: CMake | build
+      run: |
+        cmake -E make_directory ${{runner.workspace}}/build
+        cd ${{runner.workspace}}/build
+        cmake $GITHUB_WORKSPACE && cmake --build . --target tic_tac_toe
+    - name: Makefile | Tic-Tac-Toe (18)
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/tic_tac_toe 18
+    - name: Makefile | Tic-Tac-Toe (20)
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/tic_tac_toe 20

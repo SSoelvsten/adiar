@@ -53,8 +53,8 @@ main:
 #  EXAMPLES
 # ============================================================================ #
 M = 1
-N = 8
 
+example-n-queens: N := 8
 example-n-queens:
   # Build
 	@mkdir -p build/
@@ -65,4 +65,17 @@ example-n-queens:
   # Run
 	@echo ""
 	@./build/example/n_queens ${N} ${M}
+	@echo ""
+
+example-tic-tac-toe: N := 20
+example-tic-tac-toe:
+  # Build
+	@mkdir -p build/
+	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=OFF ..
+
+	@cd build/ && make tic_tac_toe
+
+  # Run
+	@echo ""
+	@./build/example/tic_tac_toe ${N} ${M}
 	@echo ""

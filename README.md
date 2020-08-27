@@ -2,7 +2,8 @@
 [![MIT License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](LICENSE.md)
 [![Built with TPIE](https://img.shields.io/badge/built%20with-TPIE-blue)](https://users-cs.au.dk/~rav/tpie/)
 [![test](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/test/badge.svg?branch=master)](/actions?query=workflow%3Atest)
-[![docs](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/docs/badge.svg?branch=master)](/actions?query=workflow%3Adocst)
+[![examples](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/examples/badge.svg?branch=master)](/actions?query=workflow%3Aexamples)
+[![docs](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/docs/badge.svg?branch=master)](/actions?query=workflow%3Adocs)
 
 Following up on the work of [[Arge96](#references)], this project investigates
 the use of _Time-Forward Processing_ to improve the I/O complexity and
@@ -117,11 +118,14 @@ For development and more we also provide the following targets
 
 ### Examples and benchmarks
 The _/examples_ folder contains examples for using the data structure to solve
-various verification and satisfaction problems.
+various verification and satisfaction problems. The `main` function also also
+includes timing how long it takes to solve and computing other interesting
+statistics.
 
-| target                   | Example                                                     |
-|--------------------------|-------------------------------------------------------------|
-| `example-n-queens N=<?>` | N-Queens board creation, counting and enumerating solutions |
+| target                      | Example                                                           |
+|-----------------------------|-------------------------------------------------------------------|
+| `example-n-queens N=<?>`    | N-Queens board creation, counting and enumerating solutions       |
+| `example-tic-tac-toe N=<?>` | Counting the number of ties on a 3D 4✕4✕4 with _N_ crosses placed |
 
 
 ### In your own project
@@ -216,6 +220,11 @@ The software and documentation files in this repository are provided under the
   Timothy Kam, Tiziano Villa, Robert K. Brayton, and L. Sangiovanni-vincentelli
   Alberto. “_Multi-valued decision diagrams: Theory and applications_”. In:
   _Multiple- Valued Logic 4.1_ 1998
+
+- [[Kunkle10](https://dl.acm.org/doi/abs/10.1145/1837210.1837222)] Daniel
+  Kunkle, Vlad Slavici, Gene Cooperman. “_Parallel Disk-Based Computation for
+  Large, Monolithic Binary Decision Diagrams_”. In: _ PASCO '10: Proceedings of
+  the 4th International Workshop on Parallel and Symbolic Computation_. 2010
 
 - [Meinel94]
   J. Gergov and C. Meinel. “_Efficient analysis and manipulation of OBDDs can
