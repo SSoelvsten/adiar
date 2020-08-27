@@ -90,6 +90,11 @@ namespace coom
     }
   }
 
+  inline auto bytes_from_size(tpie::file_stream<arc> &in_node_arcs,
+                              tpie::file_stream<arc> &in_sink_arcs) {
+    return sizeof(coom::node) * ((in_node_arcs.size() + in_sink_arcs.size()) / 2);
+  }
+
   struct mapping
   {
     uint64_t old_node_ptr;
@@ -137,6 +142,12 @@ namespace coom
     in_node_arcs.seek(0, tpie::file_stream_base::end);
     tpie::dummy_progress_indicator pi;
 
+    auto max_sorter_memory = std::max(// Take at least enough space to make the merge_sorter not cry
+                                      sizeof(node) * 124 * 1024 + 15 * 1024 * 1024,
+                                      // Take at most a quarter of memory or half of the input size
+                                      std::min(tpie::get_memory_manager().available() / 4,
+                                               bytes_from_size(in_node_arcs, in_sink_arcs) / 2));
+
     // Check to see if in_node_arcs is empty
     if (!in_node_arcs.can_read_back()) {
       arc e_high = in_sink_arcs.read_back();
@@ -174,7 +185,7 @@ namespace coom
 
       // Set-up for L_j
       tpie::merge_sorter<node, false, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
-      child_grouping.set_available_memory(tpie::get_memory_manager().available() / 2);
+      child_grouping.set_available_memory(max_sorter_memory);
       child_grouping.begin();
 
       debug::println_reduce_red_1_start();
@@ -231,7 +242,7 @@ namespace coom
       child_grouping.calc(pi);
 
       tpie::merge_sorter<mapping, false, decltype(reduce_node_ptr_lt)> red2_mapping(reduce_node_ptr_lt);
-      red2_mapping.set_available_memory(tpie::get_memory_manager().available() / 2);
+      red2_mapping.set_available_memory(max_sorter_memory);
       red2_mapping.begin();
 
       if (child_grouping.can_pull()) {
