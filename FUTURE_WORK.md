@@ -8,7 +8,6 @@ may constitute interesting undergraduate research projects.
 - [Future Work](#future-work)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
-        - [Layer-aware priority queue](#layer-aware-priority-queue)
         - [Parallelisation](#parallelisation)
             - [Use of TPIE pipelining](#use-of-tpie-pipelining)
             - [Parallel Layer-aware priority queue](#parallel-layer-aware-priority-queue)
@@ -34,58 +33,6 @@ The sorting in multiple variables has already been reduced to a simple sorting
 on a single 64-bit key in the representation of nodes and arcs. It should be
 possible to exploit this with a radix sort for an _O(N)_ time complexity, though
 maybe one will not gain too much due to the _O(sort(N))_ I/O lower bound.
-
-
-### Layer-aware priority queue
-
-The primary bottleneck of the algorithms are the priority queues. All algorithms
-(except for _Reduce_) both _push_ and _pop_ from their priority queue in a mixed
-order. Yet, all algorithms are layer-by-layer and most elements that are pushed
-are not to be used until after the whole layer has been dealt with. We may
-postpone dealing with the pushed elements until after all computations are done
-within the same layer.
-
-The priority queue may either know the current layer being processed by being
-told so by the main algorithm or just look into its internal data structures to
-derive it. Knowing we are at layer _i_ we may then split the priority queue into
-three different sub-structures.
-
-1. **Layer i → Layer j > i+1**
-
-    This is information we need in an arbitrary long time into the future, so we
-    have to deal with these by an internal priority queue as before. 
-
-    We may choose to postpone pushing elements into it until all the next layer
-    is reached by means of an intermediate FIFO queue. This way we can keep the
-    priority queue as small as possible at all times.
-
-2. **Layer i → Layer i+1**
-
-    When information is pushed from layer _i_ to _i+1_ one may just sort those
-    nodes separately from the priority queue above when all layer computations
-    are done.
-
-    Assuming most requests are from layer _i_ to _i+1_, then based on
-    [[Mølhave12](/README.md#references)] this will hopefully constitute a major
-    improvement in the running time, since a priority queue is much slower at
-    sorting elements than the `merge_sorter`.
-
-3. **Layer i → Layer i**
-
-    This is information we may immediately need, and needs to be sorted on the
-    fly, so we still have to use a priority queue. Placing it in a secondary
-    priority queue may make it clash less with the sorting in the other one?
-
-    In algorithms such as _Apply_, only nodes in this secondary priority queue
-    actually will some _data_ to be sent across the layer. In the two prior
-    cases this field has to be occupied merely by a dummy node. That is, the
-    first two data structures do not need this field, which takes up _3·64_ bits
-    of data. So, we can make the total memory footprint much smaller and with it
-    allow many more elements to be closer to the processor!
-
-We may then _pop_ from our layer-aware priority queue by an implicit merge of
-these three data structures above.
-
 
 ### Parallelisation
 The idea of Time-Forward-Processing is inherently sequential, but can we
