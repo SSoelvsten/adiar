@@ -6,10 +6,12 @@ may constitute interesting undergraduate research projects.
 **Table of Contents**
 
 - [Future Work](#future-work)
+    - [Implementation of missing algorithms](#implementation-of-missing-algorithms)
+        - [Function composition](#function-composition)
+        - [If-Then-Else](#if-then-else)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
         - [Parallelisation](#parallelisation)
-            - [Use of TPIE pipelining](#use-of-tpie-pipelining)
             - [Parallel Layer-aware priority queue](#parallel-layer-aware-priority-queue)
             - [Reduction Rule 2 within the merge sorting](#reduction-rule-2-within-the-merge-sorting)
             - [Distribute nodes and information (in order) to worker-threads](#distribute-nodes-and-information-in-order-to-worker-threads)
@@ -21,6 +23,36 @@ may constitute interesting undergraduate research projects.
 
 <!-- markdown-toc end -->
 
+
+## Implementation of missing algorithms
+There are a few valuable additions to the current project by adding a few
+non-vital but still very valuable operators/algorithms. All of these of course
+should be made in the style of _Time-Forward Processing_ like the rest.
+
+
+### Function composition
+The _Composition_ of two OBDDs _f_ and _g_ for some label _i ∊ [n]_ is
+_f ∘<sub>i</sub> g (x)_ and is to be interpreted as _f(x<sub>1</sub>, ...,
+x<sub>i-1</sub>, g(x<sub>1</sub>, ..., x<sub>n</sub>), x<sub>i+1</sub>, ...,
+x<sub>n</sub>)_.
+
+### If-Then-Else
+The _ITE_ operator takes three OBDDs _f_, _g_, and _h_ and constructs an OBDD
+which resembles the _(f ∧ g) ∨ (¬f ∧ h)_ formula. That is, if _f_ is true,
+then output the value of _g_; otherwise output the value of _h_. one should be
+able to reproduce the ideas in _Apply_ to do a simultaneous sweep over all three
+OBDDs simultaneously in one go and gain a major performance gain over
+constructing the above formula with `coom::apply` and `coom:negate`.
+
+One can also encode many other interesting operators within the ITE operator,
+where it might be worth investigating the performance difference between the use
+of _ITE_ rather than the other implementation of the algorithm
+
+| Operator    | Operator (formula) | ITE form                         |
+|-------------|--------------------|----------------------------------|
+| Composition | f(x, g(y), z)      | ITE(g(x), f(x, 1, z), f(x, 0, z) |
+| Existence   | ∃y : f(x, y, z)    | ITE(f(x, 1, z), 1, f(x, 0, z))   |
+| Forall      | ∀y : f(x, y, z)    | ITE(f(x, 1, z), f(x, 0, z), 0)   |
 
 ## Optimising the current algorithms
 There are quite a few avenues of trying to shave off a few significant constants
@@ -45,19 +77,6 @@ we have in parallel access to the underlying data structures and algorithms:
   
 - Parallelisable Cache-oblivious priority queue, such as the one in
   [[Sitchinava12](#references)].
-
-
-#### Use of TPIE pipelining
-All of our algorithms are of the form of sweeps through the OBDD or in the case
-of negation a mere mapping on the stream. Specifically for such cases TPIE has a
-[pipelining](https://users-cs.au.dk/rav/tpie/doc/master/pipelining.html)
-framework. If all our algorithms are rewritten to be of this form, then we may
-explicitly parallelise independent computations in a bottom-up manner.
-
-This might make the [parallel layer-aware priority
-queue](#parallel-layer-aware-priority-queue) below difficult to implement at the
-same time, but this major rewrite may for free give a massive increase in the
-overall speed of _all_ computations.
 
 
 #### Parallel Layer-aware priority queue
