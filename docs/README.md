@@ -26,8 +26,7 @@ split into multiple files. The following are the different folders
 | `report/`  | The *tex*t files for the blue paper |
 
 If the benchmarks seem promising and worth reporting, then the report will be
-reworked into one or more papers, which may also be placed in their respective
-folders.
+reworked into one or more papers.
 
 ### Dependencies
 The main versions of all documents uses my preamble, which can be found [here](
@@ -44,6 +43,4 @@ Either compile `main.tex` in the `report/` folder or just use the provided
 
 
 ## Markdown Documentation
-In [_INDEX.md_](./INDEX.md) and the other markdown files we provide an easy to
-read documentation (published on GitHub pages) with the primary purpose to focus
-on how to use the software.
+See the Github Pages branch.

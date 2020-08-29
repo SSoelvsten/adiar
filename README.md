@@ -139,9 +139,10 @@ together with a description and benchmarks of the implementation.
 
 ## Future Work
 There are many possible avenues of improving on this approach to the data
-structure. We list quite a few [FUTURE_WORK.md](/FUTURE_WORK.md). Many of these
-may constitute interesting undergraduate research projects. We would love to see
-the results of such projects as pull requests to improve the main project.
+structure. We list quite a few in [FUTURE_WORK.md](/FUTURE_WORK.md). Many of
+these may constitute interesting undergraduate research projects. We would love
+to see the results of such projects as pull requests to improve the main
+project.
 
 
 ## Credits
