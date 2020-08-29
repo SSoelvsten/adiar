@@ -153,8 +153,7 @@ Thank you, to the following wonderful people:
 
 - **[Anna Blume Jakobsen](https://github.com/bluekeladry)**: Bachelor student,
   who implemented _Apply_, _Evaluate_, _Count Assignments_, _Count Paths_,
-  _Reduce_, and _Restrict_ as part of a summer project (cf. [Talent Track
-  Project](TALENT_TRACK.md)).
+  _Reduce_, and _Restrict_ as part of a summer project.
 
 - **[Jaco van de Pol](https://github.com/jacopol)**:
   Supervisor and extremely supportive sparring partner.
@@ -164,8 +163,7 @@ Thank you, to the following wonderful people:
 
 - **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
   Bachelor student, who implemented _Apply_, _Evaluate_, _Count Assignments_,
-  _Count Paths_, _Reduce_, and _Restrict_ as part of a summer project (cf.
-  [Talent Track Project](TALENT_TRACK.md)).
+  _Count Paths_, _Reduce_, and _Restrict_ as part of a summer project.
 
 
 ## License
