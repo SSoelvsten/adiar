@@ -240,56 +240,6 @@ go_bandit([]() {
                 AssertThat(arc_5 != arc_6, Is().True());
               });
 
-            it("should sort by source, then by is_high, then by target", [&]() {
-                // first by source
-                auto arc_1 = create_arc(create_node_ptr(0,41),
-                                        true,
-                                        create_node_ptr(2,2));
-
-                auto arc_2 = create_arc(create_node_ptr(0,42),
-                                        false,
-                                        create_node_ptr(2,2));
-
-                AssertThat(arc_1 < arc_2, Is().True());
-                AssertThat(arc_2 > arc_1, Is().True());
-
-                // then by is_high
-                auto arc_3 = create_arc(create_node_ptr(0,42),
-                                        false,
-                                        create_node_ptr(2,2));
-
-                auto arc_4 = create_arc(create_node_ptr(0,42),
-                                        true,
-                                        create_node_ptr(1,0));
-
-                AssertThat(arc_3 < arc_4, Is().True());
-                AssertThat(arc_4 > arc_3, Is().True());
-
-                // then by target
-                auto arc_5 = create_arc(create_node_ptr(2,2),
-                                        true,
-                                        create_node_ptr(3,2));
-
-                auto arc_6 = create_arc(create_node_ptr(2,2),
-                                        true,
-                                        create_node_ptr(3,3));
-
-                AssertThat(arc_5 < arc_6, Is().True());
-                AssertThat(arc_6 > arc_5, Is().True());
-
-                // a good target should not overwrite a bad is_high
-                auto arc_7 = create_arc(create_node_ptr(2,2),
-                                        true,
-                                        create_node_ptr(3,2));
-
-                auto arc_8 = create_arc(create_node_ptr(2,2),
-                                        false,
-                                        create_node_ptr(3,3));
-
-                AssertThat(arc_7 < arc_8, Is().False());
-                AssertThat(arc_8 > arc_7, Is().False());
-              });
-
             it("should be a POD", [&]() {
                 AssertThat(std::is_pod<arc>::value, Is().True());
               });

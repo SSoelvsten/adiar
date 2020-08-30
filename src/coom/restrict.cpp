@@ -84,6 +84,12 @@ namespace coom
     }
   };
 
+  const auto restrict_sink_lt = [](const arc& a, const arc& b) -> bool {
+    return (a.source < b.source)
+    || (a.source == b.source && a.is_high < b.is_high)
+    || (a.source == b.source && a.is_high == b.is_high && a.target < b.target);
+  };
+
   void restrict(tpie::file_stream<node> &in_nodes,
                 tpie::file_stream<assignment> &in_assignment,
                 tpie::file_stream<node> &out_nodes,
@@ -172,7 +178,7 @@ namespace coom
               // We have restricted ourselves to a sink
               out_nodes.write(create_sink_node(value_of(rec_child)));
               return;
-            } else if (good_sink_arcs.size() > 0 && request < latest_good_sink_arc) {
+            } else if (good_sink_arcs.size() > 0 && restrict_sink_lt(request, latest_good_sink_arc)) {
               bad_sink_arcs.write(request);
             } else {
               good_sink_arcs.write(request);
@@ -221,7 +227,7 @@ namespace coom
     }
 
     tpie::progress_indicator_null pi;
-    tpie::sort(bad_sink_arcs, std::less<arc>(), pi);
+    tpie::sort(bad_sink_arcs, restrict_sink_lt, pi);
 
     debug::println_file_stream(good_sink_arcs, "good_sink_arcs");
     debug::println_file_stream(bad_sink_arcs, "bad_sink_arcs");
@@ -231,7 +237,7 @@ namespace coom
 
     while (good_sink_arcs.can_read() || bad_sink_arcs.can_read()) {
       if (!bad_sink_arcs.can_read() ||
-          good_sink_arcs.peek() < bad_sink_arcs.peek()) {
+          restrict_sink_lt(good_sink_arcs.peek(), bad_sink_arcs.peek())) {
         reduce_sink_arcs.write(good_sink_arcs.read());
       } else {
         reduce_sink_arcs.write(bad_sink_arcs.read());
