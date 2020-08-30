@@ -142,20 +142,6 @@ namespace coom {
     return { source, is_high, target };
   }
 
-  bool operator< (const arc& a, const arc& b)
-  {
-    return (a.source < b.source)
-      || (a.source == b.source && a.is_high < b.is_high)
-      || (a.source == b.source && a.is_high == b.is_high && a.target < b.target);
-  }
-
-  bool operator> (const arc& a, const arc& b)
-  {
-    return (a.source > b.source)
-      || (a.source == b.source && a.is_high > b.is_high)
-      || (a.source == b.source && a.is_high == b.is_high && a.target > b.target);
-  }
-
   bool operator== (const arc& a, const arc& b)
   {
     return a.source == b.source && a.is_high == b.is_high && a.target == b.target;
