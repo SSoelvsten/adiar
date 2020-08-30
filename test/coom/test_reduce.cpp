@@ -18,30 +18,29 @@ go_bandit([]() {
                F  T                F T
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
-            auto n3 = create_node_ptr(2,0);
-            auto n4 = create_node_ptr(2,1);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
+            ptr_t n3 = create_node_ptr(2,0);
+            ptr_t n4 = create_node_ptr(2,1);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,true,n2));
-            in_node_arcs.write(create_arc(n1,false,n3));
-            in_node_arcs.write(create_arc(n2,false,n3));
-            in_node_arcs.write(create_arc(n2,true,n4));
+            in_node_arcs.write({ flag(n1),n2 });
+            in_node_arcs.write({ n1,n3 });
+            in_node_arcs.write({ n2,n3 });
+            in_node_arcs.write({ flag(n2),n4 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
-            in_sink_arcs.write(create_arc(n3,false,sink_F));
-            in_sink_arcs.write(create_arc(n3,true,sink_T));
-            in_sink_arcs.write(create_arc(n4,false,sink_T));
-            in_sink_arcs.write(create_arc(n4,true,sink_T));
-
+            in_sink_arcs.write({ n3,sink_F });
+            in_sink_arcs.write({ flag(n3),sink_T });
+            in_sink_arcs.write({ n4,sink_T });
+            in_sink_arcs.write({ flag(n4),sink_T });
 
             // Reduce it
             tpie::file_stream<node> out_nodes;
@@ -86,33 +85,33 @@ go_bandit([]() {
                    F T                F T
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
-            auto n3 = create_node_ptr(2,0);
-            auto n4 = create_node_ptr(2,1);
-            auto n5 = create_node_ptr(3,0);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
+            ptr_t n3 = create_node_ptr(2,0);
+            ptr_t n4 = create_node_ptr(2,1);
+            ptr_t n5 = create_node_ptr(3,0);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,true,n2));
-            in_node_arcs.write(create_arc(n1,false,n3));
-            in_node_arcs.write(create_arc(n2,false,n3));
-            in_node_arcs.write(create_arc(n2,true,n4));
-            in_node_arcs.write(create_arc(n4,false,n5));
-            in_node_arcs.write(create_arc(n4,true,n5));
+            in_node_arcs.write({ flag(n1),n2 });
+            in_node_arcs.write({ n1,n3 });
+            in_node_arcs.write({ n2,n3 });
+            in_node_arcs.write({ flag(n2),n4 });
+            in_node_arcs.write({ n4,n5 });
+            in_node_arcs.write({ flag(n4),n5 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
-            in_sink_arcs.write(create_arc(n3,false,sink_F));
-            in_sink_arcs.write(create_arc(n3,true,sink_T));
+            in_sink_arcs.write({ n3,sink_F });
+            in_sink_arcs.write({ flag(n3),sink_T });
 
-            in_sink_arcs.write(create_arc(n5,false,sink_F));
-            in_sink_arcs.write(create_arc(n5,true,sink_T));
+            in_sink_arcs.write({ n5,sink_F });
+            in_sink_arcs.write({ flag(n5),sink_T });
 
 
             // Reduce it
@@ -158,29 +157,29 @@ go_bandit([]() {
               F T               F T
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
-            auto n3 = create_node_ptr(2,0);
-            auto n4 = create_node_ptr(2,1);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
+            ptr_t n3 = create_node_ptr(2,0);
+            ptr_t n4 = create_node_ptr(2,1);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,true,n2));
-            in_node_arcs.write(create_arc(n1,false,n3));
-            in_node_arcs.write(create_arc(n2,false,n4));
+            in_node_arcs.write({ flag(n1),n2 });
+            in_node_arcs.write({ n1,n3 });
+            in_node_arcs.write({ n2,n4 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
-            in_sink_arcs.write(create_arc(n2,true,sink_T));
-            in_sink_arcs.write(create_arc(n3,false,sink_F));
-            in_sink_arcs.write(create_arc(n3,true,sink_T));
-            in_sink_arcs.write(create_arc(n4,false,sink_F));
-            in_sink_arcs.write(create_arc(n4,true,sink_T));
+            in_sink_arcs.write({ flag(n2),sink_T });
+            in_sink_arcs.write({ n3,sink_F });
+            in_sink_arcs.write({ flag(n3),sink_T });
+            in_sink_arcs.write({ n4,sink_F });
+            in_sink_arcs.write({ flag(n4),sink_T });
 
 
             // Reduce it
@@ -226,35 +225,35 @@ go_bandit([]() {
                F T T F           F T T F
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
-            auto n3 = create_node_ptr(2,0);
-            auto n4 = create_node_ptr(2,1);
-            auto n5 = create_node_ptr(3,0);
-            auto n6 = create_node_ptr(3,1);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
+            ptr_t n3 = create_node_ptr(2,0);
+            ptr_t n4 = create_node_ptr(2,1);
+            ptr_t n5 = create_node_ptr(3,0);
+            ptr_t n6 = create_node_ptr(3,1);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,true,n2));
-            in_node_arcs.write(create_arc(n1,false,n3));
-            in_node_arcs.write(create_arc(n2,false,n4));
-            in_node_arcs.write(create_arc(n3,false,n5));
-            in_node_arcs.write(create_arc(n4,false,n5));
-            in_node_arcs.write(create_arc(n3,true,n6));
-            in_node_arcs.write(create_arc(n4,true,n6));
+            in_node_arcs.write({ flag(n1),n2 });
+            in_node_arcs.write({ n1,n3 });
+            in_node_arcs.write({ n2,n4 });
+            in_node_arcs.write({ n3,n5 });
+            in_node_arcs.write({ n4,n5 });
+            in_node_arcs.write({ flag(n3),n6 });
+            in_node_arcs.write({ flag(n4),n6 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
-            in_sink_arcs.write(create_arc(n2,true,sink_T));
-            in_sink_arcs.write(create_arc(n5,false,sink_F));
-            in_sink_arcs.write(create_arc(n5,true,sink_T));
-            in_sink_arcs.write(create_arc(n6,false,sink_T));
-            in_sink_arcs.write(create_arc(n6,true,sink_F));
+            in_sink_arcs.write({ flag(n2),sink_T });
+            in_sink_arcs.write({ n5,sink_F });
+            in_sink_arcs.write({ flag(n5),sink_T });
+            in_sink_arcs.write({ n6,sink_T });
+            in_sink_arcs.write({ flag(n6),sink_F });
 
 
             // Reduce it
@@ -309,32 +308,32 @@ go_bandit([]() {
                F T               F T
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
-            auto n3 = create_node_ptr(2,0);
-            auto n4 = create_node_ptr(2,1);
-            auto n5 = create_node_ptr(3,0);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
+            ptr_t n3 = create_node_ptr(2,0);
+            ptr_t n4 = create_node_ptr(2,1);
+            ptr_t n5 = create_node_ptr(3,0);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,true,n2));
-            in_node_arcs.write(create_arc(n1,false,n3));
-            in_node_arcs.write(create_arc(n2,false,n4));
-            in_node_arcs.write(create_arc(n3,false,n5));
-            in_node_arcs.write(create_arc(n4,false,n5));
+            in_node_arcs.write({ flag(n1),n2 });
+            in_node_arcs.write({ n1,n3 });
+            in_node_arcs.write({ n2,n4 });
+            in_node_arcs.write({ n3,n5 });
+            in_node_arcs.write({ n4,n5 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            auto sink_T = create_sink_ptr(true);
+            auto sink_F = create_sink_ptr(false);
 
-            in_sink_arcs.write(create_arc(n2,true,sink_T));
-            in_sink_arcs.write(create_arc(n3,true,sink_T));
-            in_sink_arcs.write(create_arc(n4,true,sink_T));
-            in_sink_arcs.write(create_arc(n5,false,sink_F));
-            in_sink_arcs.write(create_arc(n5,true,sink_T));
+            in_sink_arcs.write({ flag(n2),sink_T });
+            in_sink_arcs.write({ flag(n3),sink_T });
+            in_sink_arcs.write({ flag(n4),sink_T });
+            in_sink_arcs.write({ n5,sink_F });
+            in_sink_arcs.write({ flag(n5),sink_T });
 
 
             // Reduce it
@@ -383,29 +382,29 @@ go_bandit([]() {
                F T                F T
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
-            auto n3 = create_node_ptr(2,0);
-            auto n4 = create_node_ptr(2,1);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
+            ptr_t n3 = create_node_ptr(2,0);
+            ptr_t n4 = create_node_ptr(2,1);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,false,n2));
-            in_node_arcs.write(create_arc(n2,false,n3));
-            in_node_arcs.write(create_arc(n2,true,n4));
+            in_node_arcs.write({ n1,n2 });
+            in_node_arcs.write({ n2,n3 });
+            in_node_arcs.write({ flag(n2),n4 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
-            in_sink_arcs.write(create_arc(n1,true,sink_T));
-            in_sink_arcs.write(create_arc(n3,false,sink_F));
-            in_sink_arcs.write(create_arc(n3,true,sink_T));
-            in_sink_arcs.write(create_arc(n4,false,sink_F));
-            in_sink_arcs.write(create_arc(n4,true,sink_T));
+            in_sink_arcs.write({ flag(n1),sink_T });
+            in_sink_arcs.write({ n3,sink_F });
+            in_sink_arcs.write({ flag(n3),sink_T });
+            in_sink_arcs.write({ n4,sink_F });
+            in_sink_arcs.write({ flag(n4),sink_T });
 
 
             // Reduce it
@@ -446,39 +445,39 @@ go_bandit([]() {
                    T T
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
-            auto n3 = create_node_ptr(1,1);
-            auto n4 = create_node_ptr(2,0);
-            auto n5 = create_node_ptr(2,1);
-            auto n6 = create_node_ptr(2,2);
-            auto n7 = create_node_ptr(3,0);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
+            ptr_t n3 = create_node_ptr(1,1);
+            ptr_t n4 = create_node_ptr(2,0);
+            ptr_t n5 = create_node_ptr(2,1);
+            ptr_t n6 = create_node_ptr(2,2);
+            ptr_t n7 = create_node_ptr(3,0);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,false,n2));
-            in_node_arcs.write(create_arc(n1,true,n3));
-            in_node_arcs.write(create_arc(n2,false,n4));
-            in_node_arcs.write(create_arc(n2,true,n5));
-            in_node_arcs.write(create_arc(n3,false,n5));
-            in_node_arcs.write(create_arc(n3,true,n6));
-            in_node_arcs.write(create_arc(n5,false,n7));
+            in_node_arcs.write({ n1,n2 });
+            in_node_arcs.write({ flag(n1),n3 });
+            in_node_arcs.write({ n2,n4 });
+            in_node_arcs.write({ flag(n2),n5 });
+            in_node_arcs.write({ n3,n5 });
+            in_node_arcs.write({ flag(n3),n6 });
+            in_node_arcs.write({ n5,n7 });
 
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
-            in_sink_arcs.write(create_arc(n4,false,sink_F));
-            in_sink_arcs.write(create_arc(n4,true,sink_T));
-            in_sink_arcs.write(create_arc(n5,true,sink_T));
-            in_sink_arcs.write(create_arc(n6,false,sink_F));
-            in_sink_arcs.write(create_arc(n6,true,sink_T));
-            in_sink_arcs.write(create_arc(n7,false,sink_T));
-            in_sink_arcs.write(create_arc(n7,true,sink_T));
+            in_sink_arcs.write({ n4,sink_F });
+            in_sink_arcs.write({ flag(n4),sink_T });
+            in_sink_arcs.write({ flag(n5),sink_T });
+            in_sink_arcs.write({ n6,sink_F });
+            in_sink_arcs.write({ flag(n6),sink_T });
+            in_sink_arcs.write({ n7,sink_T });
+            in_sink_arcs.write({ flag(n7),sink_T });
 
 
             // Reduce it
@@ -529,29 +528,29 @@ go_bandit([]() {
                 F T                F T
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
-            auto n3 = create_node_ptr(2,0);
-            auto n4 = create_node_ptr(2,1);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
+            ptr_t n3 = create_node_ptr(2,0);
+            ptr_t n4 = create_node_ptr(2,1);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,true,n2));
-            in_node_arcs.write(create_arc(n1,false,n3));
-            in_node_arcs.write(create_arc(n2,false,n3));
-            in_node_arcs.write(create_arc(n2,true,n4));
+            in_node_arcs.write({ flag(n1),n2 });
+            in_node_arcs.write({ n1,n3 });
+            in_node_arcs.write({ n2,n3 });
+            in_node_arcs.write({ flag(n2),n4 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
-            in_sink_arcs.write(create_arc(n3,false,sink_F));
-            in_sink_arcs.write(create_arc(n3,true,sink_T));
-            in_sink_arcs.write(create_arc(n4,false,sink_F));
-            in_sink_arcs.write(create_arc(n4,true,sink_T));
+            in_sink_arcs.write({ n3,sink_F });
+            in_sink_arcs.write({ flag(n3),sink_T });
+            in_sink_arcs.write({ n4,sink_F });
+            in_sink_arcs.write({ flag(n4),sink_T });
 
 
             // Reduce it
@@ -578,7 +577,7 @@ go_bandit([]() {
                 F F
             */
 
-            auto n1 = create_node_ptr(0,0);
+            ptr_t n1 = create_node_ptr(0,0);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
@@ -586,10 +585,10 @@ go_bandit([]() {
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_F = create_sink(false);
+            ptr_t sink_F = create_sink_ptr(false);
 
-            in_sink_arcs.write(create_arc(n1,false,sink_F));
-            in_sink_arcs.write(create_arc(n1,true,sink_F));
+            in_sink_arcs.write({ n1,sink_F });
+            in_sink_arcs.write({ flag(n1),sink_F });
 
 
             // Reduce it
@@ -605,7 +604,7 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().True());
 
             // F
-            AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(false)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
@@ -618,22 +617,22 @@ go_bandit([]() {
               T  T
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,true,n2));
+            in_node_arcs.write({ flag(n1),n2 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_T = create_sink(true);
+            ptr_t sink_T = create_sink_ptr(true);
 
-            in_sink_arcs.write(create_arc(n1,false,sink_T));
-            in_sink_arcs.write(create_arc(n2,false,sink_T));
-            in_sink_arcs.write(create_arc(n2,true,sink_T));
+            in_sink_arcs.write({ n1,sink_T });
+            in_sink_arcs.write({ n2,sink_T });
+            in_sink_arcs.write({ flag(n2),sink_T });
 
 
             // Reduce it
@@ -649,7 +648,7 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().True());
 
             // T
-            AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(true)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
@@ -664,35 +663,35 @@ go_bandit([]() {
               F T F T T F         F T T F
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
-            auto n3 = create_node_ptr(1,1);
-            auto n4 = create_node_ptr(2,0);
-            auto n5 = create_node_ptr(2,1);
-            auto n6 = create_node_ptr(2,2);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
+            ptr_t n3 = create_node_ptr(1,1);
+            ptr_t n4 = create_node_ptr(2,0);
+            ptr_t n5 = create_node_ptr(2,1);
+            ptr_t n6 = create_node_ptr(2,2);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,false,n2));
-            in_node_arcs.write(create_arc(n1,true,n3));
-            in_node_arcs.write(create_arc(n2,false,n4));
-            in_node_arcs.write(create_arc(n2,true,n5));
-            in_node_arcs.write(create_arc(n3,false,n5));
-            in_node_arcs.write(create_arc(n3,true,n6));
+            in_node_arcs.write({ n1,n2 });
+            in_node_arcs.write({ flag(n1),n3 });
+            in_node_arcs.write({ n2,n4 });
+            in_node_arcs.write({ flag(n2),n5 });
+            in_node_arcs.write({ n3,n5 });
+            in_node_arcs.write({ flag(n3),n6 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_F = create_sink(false);
-            auto sink_T = create_sink(true);
+            ptr_t sink_F = create_sink_ptr(false);
+            ptr_t sink_T = create_sink_ptr(true);
 
-            in_sink_arcs.write(create_arc(n4,false,sink_F));
-            in_sink_arcs.write(create_arc(n4,true,sink_T));
-            in_sink_arcs.write(create_arc(n5,false,sink_F));
-            in_sink_arcs.write(create_arc(n5,true,sink_T));
-            in_sink_arcs.write(create_arc(n6,false,sink_T));
-            in_sink_arcs.write(create_arc(n6,true,sink_F));
+            in_sink_arcs.write({ n4,sink_F });
+            in_sink_arcs.write({ flag(n4),sink_T });
+            in_sink_arcs.write({ n5,sink_F });
+            in_sink_arcs.write({ flag(n5),sink_T });
+            in_sink_arcs.write({ n6,sink_T });
+            in_sink_arcs.write({ flag(n6),sink_F });
 
             // Reduce it
             tpie::file_stream<node> out_nodes;
@@ -738,35 +737,35 @@ go_bandit([]() {
               T F T F F T         T F F T
             */
 
-            auto n1 = create_node_ptr(0,0);
-            auto n2 = create_node_ptr(1,0);
-            auto n3 = create_node_ptr(1,1);
-            auto n4 = create_node_ptr(2,0);
-            auto n5 = create_node_ptr(2,1);
-            auto n6 = create_node_ptr(2,2);
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(1,0);
+            ptr_t n3 = create_node_ptr(1,1);
+            ptr_t n4 = create_node_ptr(2,0);
+            ptr_t n5 = create_node_ptr(2,1);
+            ptr_t n6 = create_node_ptr(2,2);
 
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,false,n2));
-            in_node_arcs.write(create_arc(n1,true,n3));
-            in_node_arcs.write(create_arc(n2,false,n4));
-            in_node_arcs.write(create_arc(n2,true,n5));
-            in_node_arcs.write(create_arc(n3,false,n5));
-            in_node_arcs.write(create_arc(n3,true,n6));
+            in_node_arcs.write({ n1,n2 });
+            in_node_arcs.write({ flag(n1),n3 });
+            in_node_arcs.write({ n2,n4 });
+            in_node_arcs.write({ flag(n2),n5 });
+            in_node_arcs.write({ n3,n5 });
+            in_node_arcs.write({ flag(n3),n6 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
 
-            auto sink_F = create_sink(false);
-            auto sink_T = create_sink(true);
+            ptr_t sink_F = create_sink_ptr(false);
+            ptr_t sink_T = create_sink_ptr(true);
 
-            in_sink_arcs.write(create_arc(n4,false,sink_T));
-            in_sink_arcs.write(create_arc(n4,true,sink_F));
-            in_sink_arcs.write(create_arc(n5,false,sink_T));
-            in_sink_arcs.write(create_arc(n5,true,sink_F));
-            in_sink_arcs.write(create_arc(n6,false,sink_F));
-            in_sink_arcs.write(create_arc(n6,true,sink_T));
+            in_sink_arcs.write({ n4,sink_T });
+            in_sink_arcs.write({ flag(n4),sink_F });
+            in_sink_arcs.write({ n5,sink_T });
+            in_sink_arcs.write({ flag(n5),sink_F });
+            in_sink_arcs.write({ n6,sink_F });
+            in_sink_arcs.write({ flag(n6),sink_T });
 
             // Reduce it
             tpie::file_stream<node> out_nodes;
@@ -820,10 +819,10 @@ go_bandit([]() {
             tpie::file_stream<arc> in_node_arcs;
             in_node_arcs.open();
 
-            in_node_arcs.write(create_arc(n1,true,n2));
-            in_node_arcs.write(create_arc(n1,false,n3));
-            in_node_arcs.write(create_arc(n2,false,n3));
-            in_node_arcs.write(create_arc(n2,true,n4));
+            in_node_arcs.write({ flag(n1),n2 });
+            in_node_arcs.write({ n1,false,n3 });
+            in_node_arcs.write({ n2,false,n3 });
+            in_node_arcs.write({ flag(n2),n4 });
 
             tpie::file_stream<arc> in_sink_arcs;
             in_sink_arcs.open();
@@ -831,10 +830,10 @@ go_bandit([]() {
             auto sink_T = create_sink(true);
             auto sink_F = create_sink(false);
 
-            in_sink_arcs.write(create_arc(n3,false,sink_T));
-            in_sink_arcs.write(create_arc(n3,true,sink_F));
-            in_sink_arcs.write(create_arc(n4,false,sink_F));
-            in_sink_arcs.write(create_arc(n4,true,sink_T));
+            in_sink_arcs.write({ n3,sink_T });
+            in_sink_arcs.write({ flag(n3),sink_F });
+            in_sink_arcs.write({ n4,sink_F });
+            in_sink_arcs.write({ flag(n4),sink_T });
 
 
             // Reduce it

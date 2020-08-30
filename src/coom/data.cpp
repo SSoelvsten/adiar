@@ -8,125 +8,155 @@
 
 namespace coom {
   /****************************************************************************/
-  /*  CONSTANTS                                                               */
+  /*  NIL PTR                                                                 */
+  /****************************************************************************/
+  const ptr_t NIL = UINT64_MAX - 1;
+
+  inline bool is_nil(ptr_t p)
+  {
+    // Check for flagged and unflagged NIL
+    return p >= NIL;
+  }
+
+  /****************************************************************************/
+  /*  COMMON VARIABLES AND GENERAL PTR                                        */
   /****************************************************************************/
   const uint8_t  ID_BITS = 42;
-  const uint8_t  LABEL_BITS = 64 - 1 - ID_BITS;
+  const uint8_t  LABEL_BITS = 64 - 2 - ID_BITS;
 
   const uint64_t MAX_ID  = (1ull << ID_BITS) - 1;
   const uint64_t MAX_LABEL  = (1ull << LABEL_BITS) - 1;
 
-  /****************************************************************************/
-  /*  NIL PTR                                                                 */
-  /****************************************************************************/
-  const uint64_t NIL = UINT64_MAX;
+  const uint64_t SINK_BIT = 0x8000000000000000ull;
+  const uint64_t FLAG_BIT = 0x0000000000000001ull;
 
-  inline bool is_nil(uint64_t n)
+  inline bool is_sink_ptr(ptr_t p)
   {
-    return n == NIL;
+    return !is_nil(p) && p >= SINK_BIT;
+  }
+
+  inline bool is_node_ptr(ptr_t p)
+  {
+    return p <= ~SINK_BIT;
+  }
+
+  inline bool is_flagged(ptr_t p)
+  {
+    return p & FLAG_BIT;
+  }
+
+  inline ptr_t flag(ptr_t p)
+  {
+    return p | FLAG_BIT;
+  }
+
+  inline ptr_t unflag(ptr_t p)
+  {
+    return p & (~FLAG_BIT);
   }
 
   /****************************************************************************/
   /*  NODE PTR                                                                */
   /****************************************************************************/
-  inline uint64_t create_node_ptr(uint64_t label, uint64_t id)
+  inline uid_t create_node_uid(uint64_t label, uint64_t id)
   {
 #if COOM_ASSERT
     assert (label <= MAX_LABEL);
     assert (id <= MAX_ID);
 #endif
 
-    return (label << ID_BITS) + id;
+    return (label << (ID_BITS + 1)) + (id << 1);
+  }
+
+  inline ptr_t create_node_ptr(uint64_t label, uint64_t id)
+  {
+    return create_node_uid(label, id);
   }
 
   inline uint64_t label_of(uint64_t n)
   {
-    return (n >> ID_BITS);
+    return n >> (ID_BITS + 1);
   }
 
   inline uint64_t id_of(uint64_t n)
   {
-    return n & ((1ull << ID_BITS) - 1);
-  }
-
-  inline bool is_node_ptr(uint64_t n)
-  {
-    return n < (1ull << 63);
+    return (n >> 1) & MAX_ID;
   }
 
   /****************************************************************************/
   /*  SINK ARC                                                                */
   /****************************************************************************/
-  inline uint64_t create_sink(bool v)
+  inline uint64_t create_sink_ptr(bool v)
   {
-    return 0x8000000000000000ull + v;
+    return SINK_BIT + (v << 1);
   }
 
   inline bool value_of(uint64_t n)
   {
-    return n & 0xeffffffffffffffull;
+    return (n & ~SINK_BIT) >> 1;
   }
 
-  inline bool is_sink(uint64_t n)
-  {
-    return !is_nil(n) && n >= (1ull << 63);
-  }
 
   /****************************************************************************/
   /*  NODE                                                                    */
   /****************************************************************************/
-  inline node create_node(uint64_t label, uint64_t id, uint64_t low, uint64_t high)
+  inline node create_node(uid_t uid, ptr_t low, ptr_t high)
   {
-    return { create_node_ptr(label, id) , low, high };
+    return { uid, low, high };
   }
 
-  inline node create_sink_node(bool value)
+  inline node create_node(uint64_t label, uint64_t id, ptr_t low, ptr_t high)
   {
-    return { create_sink(value) , NIL, NIL };
+    return create_node(create_node_uid(label, id), low, high);
   }
 
-  inline bool is_sink_node(const node& n)
+  inline node create_sink(bool value)
   {
-    return is_sink(n.node_ptr);
+    return { create_sink_ptr(value) , NIL, NIL };
+  }
+
+  inline bool is_sink(const node& n)
+  {
+    return n.uid >= SINK_BIT;
   }
 
   inline bool value_of(const node& n)
   {
 #if COOM_ASSERT
-    assert (is_sink_node(n));
+    assert (is_sink(n));
 #endif
-    return value_of(n.node_ptr);
+    return value_of(n.uid);
   }
 
   inline uint64_t id_of(const node& n)
   {
 #if COOM_ASSERT
-    assert (!is_sink_node(n));
+    assert (!is_sink(n));
 #endif
-    return id_of(n.node_ptr);
+    return id_of(n.uid);
   }
 
   inline uint64_t label_of(const node& n)
   {
 #if COOM_ASSERT
-    assert (!is_sink_node(n));
+    assert (!is_sink(n));
 #endif
-    return label_of(n.node_ptr);
+    return label_of(n.uid);
   }
 
   bool operator< (const node& a, const node& b)
   {
-    return a.node_ptr < b.node_ptr;
+    return a.uid < b.uid;
   }
 
   bool operator> (const node& a, const node& b)
   {
-    return a.node_ptr > b.node_ptr;
+    return a.uid > b.uid;
   }
 
   bool operator== (const node& a, const node& b)
   {
-    return a.node_ptr == b.node_ptr && a.low == b.low && a.high == b.high;
+    return a.uid == b.uid && a.low == b.low && a.high == b.high;
   }
 
   bool operator!= (const node& a, const node& b)
@@ -137,14 +167,14 @@ namespace coom {
   /****************************************************************************/
   /*  ARC                                                                     */
   /****************************************************************************/
-  inline arc create_arc(uint64_t source, bool is_high, uint64_t target)
+  inline bool is_high(arc& a)
   {
-    return { source, is_high, target };
+    return is_flagged(a.source);
   }
 
   bool operator== (const arc& a, const arc& b)
   {
-    return a.source == b.source && a.is_high == b.is_high && a.target == b.target;
+    return a.source == b.source && a.target == b.target;
   }
 
   bool operator!= (const arc& a, const arc& b)
@@ -155,22 +185,22 @@ namespace coom {
   /****************************************************************************/
   /*  CONVERTERS                                                              */
   /****************************************************************************/
-  inline arc low_arc_of_node(const node& n)
+  inline arc low_arc_of(const node& n)
   {
-    return { n.node_ptr, false, n.low };
+    return { n.uid, n.low };
   }
 
-  inline arc high_arc_of_node(const node& n)
+  inline arc high_arc_of(const node& n)
   {
-    return { n.node_ptr, true, n.high };
+    return { flag(n.uid), n.high };
   }
 
-  inline node node_of_arcs(const arc& low, const arc& high)
+  inline node node_of(const arc& low, const arc& high)
   {
 #if COOM_ASSERT
-    assert (low.source == high.source);
-    assert (low.is_high == false);
-    assert (high.is_high == true);
+    assert (unflag(low.source) == unflag(high.source));
+    assert (!is_flagged(low.source));
+    assert (is_flagged(high.source));
 #endif
     return { low.source, low.target, high.target };
   }

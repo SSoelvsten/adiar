@@ -26,7 +26,7 @@ namespace coom {
 
     nodes.seek(0);
 
-    if (nodes.size() == 1 && is_sink_node(nodes.peek())) {
+    if (nodes.size() == 1 && is_sink(nodes.peek())) {
       out << "\t" << value_of(nodes.read()) << " [shape=box];" << std::endl;
     } else if (nodes.size() > 0) {
       out << "\t// Nodes" << std::endl;
@@ -38,7 +38,7 @@ namespace coom {
         auto node = nodes.read_back();
 
         out << "\tn"
-            << node.node_ptr
+            << node.uid
             << " [label=<x<SUB>"
             << label_of(node)
             << "</SUB>, id<SUB>"
@@ -46,8 +46,8 @@ namespace coom {
             << std::endl;
       }
 
-      out << "\tn" << create_sink(false) << " [label=\"0\"];" << std::endl;
-      out << "\tn" << create_sink(true) << " [label=\"1\"];" << std::endl;
+      out << "\tn" << create_sink_ptr(false) << " [label=\"0\"];" << std::endl;
+      out << "\tn" << create_sink_ptr(true) << " [label=\"1\"];" << std::endl;
 
       out <<  std::endl << "\t// Arcs" << std::endl;
 
@@ -55,11 +55,11 @@ namespace coom {
       while (nodes.can_read_back()) {
         auto node = nodes.read_back();
 
-        out << "\tn" << node.node_ptr
+        out << "\tn" << node.uid
             << " -> "
             << "n" << node.low
             << " [style=dashed];" << std::endl;
-        out << "\tn" << node.node_ptr
+        out << "\tn" << node.uid
             << " -> "
             << "n" << node.high
             << "[style=solid];"  << std::endl;
@@ -69,7 +69,7 @@ namespace coom {
       nodes.seek(0, tpie::file_stream_base::end);
 
       node prev_node = nodes.read_back();
-      out << "\t{ rank=same; " << "n" << prev_node.node_ptr << " }" << std::endl;
+      out << "\t{ rank=same; " << "n" << prev_node.uid << " }" << std::endl;
 
       bool has_next_node = nodes.can_read_back();
       node next_node;
@@ -78,7 +78,7 @@ namespace coom {
       }
 
       while (has_next_node) {
-        out << "\t{ rank=same; " << "n" << next_node.node_ptr << " ";
+        out << "\t{ rank=same; " << "n" << next_node.uid << " ";
         prev_node = next_node;
 
         if (nodes.can_read_back()) {
@@ -88,7 +88,7 @@ namespace coom {
         }
 
         while(has_next_node && label_of(next_node) == label_of(prev_node)) {
-          out << "n" << next_node.node_ptr << " ";
+          out << "n" << next_node.uid << " ";
 
           if (nodes.can_read_back()) {
             next_node = nodes.read_back();
@@ -124,7 +124,7 @@ namespace coom {
             << "n" << label_of(a.target) << "_" << id_of(a.target)
             << " -> "
             << "n" << label_of(a.source) << "_" << id_of(a.source)
-            << " [style=" << (a.is_high ? "solid" : "dashed") << ", color=blue];"
+            << " [style=" << (is_flagged(a.source) ? "solid" : "dashed") << ", color=blue];"
             << std::endl;
       }
 
@@ -141,7 +141,7 @@ namespace coom {
             << "n" << label_of(a.source) << "_" << id_of(a.source)
             << " -> "
             << "s" << value_of(a.target)
-            << " [style=" << (a.is_high ? "solid" : "dashed") << ", color=red];"
+            << " [style=" << (is_flagged(a.source) ? "solid" : "dashed") << ", color=red];"
             << std::endl;
           }
 

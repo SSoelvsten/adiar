@@ -17,8 +17,8 @@
 namespace coom
 {
   namespace debug {
-    inline void println_apply_request([[maybe_unused]] uint64_t t1,
-                                      [[maybe_unused]] uint64_t t2)
+    inline void println_apply_request([[maybe_unused]] ptr_t t1,
+                                      [[maybe_unused]] ptr_t t2)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << std::endl << "| request: " << std::endl << "|   | ";
@@ -29,8 +29,8 @@ namespace coom
 #endif
     }
 
-    inline void println_apply_position([[maybe_unused]] const node& v1,
-                                       [[maybe_unused]] const node& v2)
+    inline void println_apply_position([[maybe_unused]] const node &v1,
+                                       [[maybe_unused]] const node &v2)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << "|  current: " << std::endl << "|     | ";
@@ -41,15 +41,15 @@ namespace coom
 #endif
     }
 
-    inline void println_apply_resolution([[maybe_unused]] uint64_t out_node_ptr,
-                                         [[maybe_unused]] uint64_t low1,
-                                         [[maybe_unused]] uint64_t low2,
-                                         [[maybe_unused]] uint64_t high1,
-                                         [[maybe_unused]] uint64_t high2)
+    inline void println_apply_resolution([[maybe_unused]] ptr_t out_uid,
+                                         [[maybe_unused]] ptr_t low1,
+                                         [[maybe_unused]] ptr_t low2,
+                                         [[maybe_unused]] ptr_t high1,
+                                         [[maybe_unused]] ptr_t high2)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << "|  resolved to: ";
-      print_node_ptr(out_node_ptr);
+      print_node_ptr(out_uid);
       tpie::log_info() << std::endl << "|     | ";
       debug::print_child(low1);       tpie::log_info() << ",";
       debug::print_child(low2);       tpie::log_info() << std::endl << "|     | ";
@@ -86,7 +86,6 @@ namespace coom
     uint64_t source;
     uint64_t t1;
     uint64_t t2;
-    bool is_high;
   };
 
   struct tuple_data
@@ -94,7 +93,6 @@ namespace coom
     uint64_t source;
     uint64_t t1;
     uint64_t t2;
-    bool is_high;
     node data;
     bool from_1;
   };
@@ -119,12 +117,12 @@ namespace coom
 
   bool can_right_shortcut(const bool_op &op, const uint64_t sink)
   {
-    return op(create_sink(false), sink) == op(create_sink(true), sink);
+    return op(create_sink_ptr(false), sink) == op(create_sink_ptr(true), sink);
   }
 
   bool can_left_shortcut(const bool_op &op, const uint64_t sink)
   {
-    return op(sink, create_sink(false)) == op(sink, create_sink(true));
+    return op(sink, create_sink_ptr(false)) == op(sink, create_sink_ptr(true));
   }
 
   void apply(tpie::file_stream<node> &in_nodes_1,
@@ -145,24 +143,24 @@ namespace coom
     uint64_t out_index = 0;
 
     // Process root and create initial recursion requests
-    uint64_t low1, low2;
-    uint64_t high1, high2;
+    ptr_t low1, low2;
+    ptr_t high1, high2;
 
-    uint64_t prior_label = label_of(std::min(v1.node_ptr, v2.node_ptr));
-    uint64_t root = create_node_ptr(prior_label, out_index);
+    uint64_t prior_label = label_of(std::min(v1.uid, v2.uid));
+    ptr_t root = create_node_ptr(prior_label, out_index);
 
-    if (is_sink_node(v1)) {
-      low1 = high1 = v1.node_ptr;
+    if (is_sink(v1)) {
+      low1 = high1 = v1.uid;
       low2 = v2.low;
       high2 = v2.high;
 
       if (in_nodes_2.can_read_back()) {
         v2 = in_nodes_2.read_back();
       }
-    } else if (is_sink_node(v2)) {
+    } else if (is_sink(v2)) {
       low1 = v1.low;
       high1 = v1.high;
-      low2 = high2 = v2.node_ptr;
+      low2 = high2 = v2.uid;
 
       if (in_nodes_1.can_read_back()) {
         v1 = in_nodes_1.read_back();
@@ -170,15 +168,15 @@ namespace coom
     } else  if (label_of(v1) < label_of(v2)) {
       low1 = v1.low;
       high1 = v1.high;
-      low2 = v2.node_ptr;
-      high2 = v2.node_ptr;
+      low2 = v2.uid;
+      high2 = v2.uid;
 
       if (in_nodes_1.can_read_back()) {
         v1 = in_nodes_1.read_back();
       }
     } else if (label_of(v1) > label_of(v2)) {
-      low1 = v1.node_ptr;
-      high1 = v1.node_ptr;
+      low1 = v1.uid;
+      high1 = v1.uid;
       low2 = v2.low;
       high2 = v2.high;
 
@@ -200,36 +198,35 @@ namespace coom
     }
 
     // Shortcut the root
-    if (is_sink(low1) && is_sink(low2)) {
-      arc new_arc = create_arc(root, false, op(low1, low2));
+    if (is_sink_ptr(low1) && is_sink_ptr(low2)) {
+      arc new_arc = { root, op(low1, low2) };
       reduce_sink_arcs.write(new_arc);
-    } else if (is_sink(low1) && can_left_shortcut(op, low1)) {
-      arc new_arc = create_arc(root, false, op(low1, create_sink(true)));
+    } else if (is_sink_ptr(low1) && can_left_shortcut(op, low1)) {
+      arc new_arc = { root, op(low1, create_sink_ptr(true)) };
       reduce_sink_arcs.write(new_arc);
-    } else if (is_sink(low2) && can_right_shortcut(op, low2)) {
-      arc new_arc = create_arc(root, false, op(create_sink(true), low2));
+    } else if (is_sink_ptr(low2) && can_right_shortcut(op, low2)) {
+      arc new_arc = { root,  op(create_sink_ptr(true), low2) };
       reduce_sink_arcs.write(new_arc);
     } else {
-      appD.push({root, low1, low2, false});
+      appD.push({root, low1, low2});
     }
 
-    if (is_sink(high1) && is_sink(high2)) {
-      arc new_arc = create_arc(root, true, op(high1, high2));
+    if (is_sink_ptr(high1) && is_sink_ptr(high2)) {
+      arc new_arc = { flag(root), op(high1, high2) };
       reduce_sink_arcs.write(new_arc);
-    } else if (is_sink(high1) && can_left_shortcut(op, high1)) {
-      arc new_arc = create_arc(root, true, op(high1, create_sink(true)));
+    } else if (is_sink_ptr(high1) && can_left_shortcut(op, high1)) {
+      arc new_arc = { flag(root), op(high1, create_sink_ptr(true)) };
       reduce_sink_arcs.write(new_arc);
-    } else if (is_sink(high2) && can_right_shortcut(op, high2)) {
-      arc new_arc = create_arc(root, true, op(create_sink(true), high2));
+    } else if (is_sink_ptr(high2) && can_right_shortcut(op, high2)) {
+      arc new_arc = { flag(root), op(create_sink_ptr(true), high2) };
       reduce_sink_arcs.write(new_arc);
     } else {
-      appD.push({root, high1, high2, true});
+      appD.push({ flag(root), high1, high2 });
     }
 
     // Process all nodes in topological order of both OBDDs
     uint64_t source;
     uint64_t t1, t2;
-    bool is_high;
 
     bool with_data, from_1 = false;
     node data;
@@ -243,7 +240,6 @@ namespace coom
         source = appD.top().source;
         t1 = appD.top().t1;
         t2 = appD.top().t2;
-        is_high = appD.top().is_high;
 
         appD.pop();
       } else {
@@ -251,7 +247,6 @@ namespace coom
         source = appD_data.top().source;
         t1 = appD_data.top().t1;
         t2 = appD_data.top().t2;
-        is_high = appD_data.top().is_high;
         data = appD_data.top().data;
         from_1 = appD_data.top().from_1;
 
@@ -261,47 +256,47 @@ namespace coom
       debug::println_apply_request(t1,t2);
 
       // Seek request partially in stream
-      if (is_sink(t1)) {
-        while (v2.node_ptr < t2) {
+      if (is_sink_ptr(t1)) {
+        while (v2.uid < t2) {
           v2 = in_nodes_2.read_back();
         }
-      } else if (is_sink(t2)) {
-        while (v1.node_ptr < t1) {
+      } else if (is_sink_ptr(t2)) {
+        while (v1.uid < t1) {
           v1 = in_nodes_1.read_back();
         }
       } else if (with_data) {
         if (from_1) {
-          while (v2.node_ptr < t2) {
+          while (v2.uid < t2) {
             v2 = in_nodes_2.read_back();
           }
         } else {
-          while (v1.node_ptr < t1) {
+          while (v1.uid < t1) {
             v1 = in_nodes_1.read_back();
           }
         }
       } else if (t1 == t2) {
-        while (v1.node_ptr < t1) {
+        while (v1.uid < t1) {
           v1 = in_nodes_1.read_back();
         }
-        while (v2.node_ptr < t2) {
+        while (v2.uid < t2) {
           v2 = in_nodes_2.read_back();
         }
       } else {
         if (label_of(t1) == label_of(t2)) {
-          while (label_of(v1.node_ptr) < label_of(t1)) {
+          while (label_of(v1.uid) < label_of(t1)) {
             v1 = in_nodes_1.read_back();
           }
-          while (label_of(v2.node_ptr) < label_of(t2)) {
+          while (label_of(v2.uid) < label_of(t2)) {
             v2 = in_nodes_2.read_back();
           }
         }
 
         if (t1 < t2) {
-          while (v1.node_ptr < t1) {
+          while (v1.uid < t1) {
             v1 = in_nodes_1.read_back();
           }
         } else {
-          while (v2.node_ptr < t2) {
+          while (v2.uid < t2) {
             v2 = in_nodes_2.read_back();
           }
         }
@@ -310,19 +305,18 @@ namespace coom
       debug::println_apply_position(v1,v2);
 
       // Forward information across the layer
-      if (!is_sink(t1) && !is_sink(t2) && label_of(t1) == label_of(t2)
-          && (v1.node_ptr != t1 || v2.node_ptr != t2)
+      if (!is_sink_ptr(t1) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)
+          && (v1.uid != t1 || v2.uid != t2)
           && !with_data) {
-        from_1 = v1.node_ptr == t1;
+        from_1 = v1.uid == t1;
         node v0 = from_1 ? v1 : v2;
 
-        appD_data.push({source, t1, t2, is_high, v0, from_1});
+        appD_data.push({source, t1, t2, v0, from_1});
 
         while (!appD.empty() && (appD.top().t1 == t1 && appD.top().t2 == t2)) {
           source = appD.top().source;
-          is_high = appD.top().is_high;
           appD.pop();
-          appD_data.push({source, t1, t2, is_high, v0, from_1});
+          appD_data.push({source, t1, t2, v0, from_1});
         }
         debug::println_apply_later();
         continue;
@@ -334,13 +328,13 @@ namespace coom
       uint64_t high1;
       uint64_t high2;
 
-      if (is_sink(t1) || is_sink(t2) || label_of(t1) != label_of(t2)) {
-        if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink(t2)
+      if (is_sink_ptr(t1) || is_sink_ptr(t2) || label_of(t1) != label_of(t2)) {
+        if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink_ptr(t2)
           low1 = v1.low;
           high1 = v1.high;
           low2 = t2;
           high2 = t2;
-        } else { // ==> label_of(t1) > label_of(t2) || is_sink(t1)
+        } else { // ==> label_of(t1) > label_of(t2) || is_sink_ptr(t1)
           low1 = t1;
           high1 = t1;
           low2 = v2.low;
@@ -361,41 +355,41 @@ namespace coom
       out_index = prior_label != out_label ? 0 : out_index;
       prior_label = out_label;
 
-      uint64_t out_node_ptr = create_node_ptr(out_label, out_index);
-      debug::println_apply_resolution(out_node_ptr, low1, low2, high1, high2);
+      uint64_t out_uid = create_node_uid(out_label, out_index);
+      debug::println_apply_resolution(out_uid, low1, low2, high1, high2);
 
       out_index++;
 
       // Output outgoing sink arcs or recurse
-      if (is_sink(low1) && is_sink(low2)) {
-        arc out_arc = create_arc(out_node_ptr, false, op(low1, low2));
+      if (is_sink_ptr(low1) && is_sink_ptr(low2)) {
+        arc out_arc = { out_uid, op(low1, low2) };
         reduce_sink_arcs.write(out_arc);
-      } else if (is_sink(low1) && can_left_shortcut(op, low1)) {
-        arc out_arc = create_arc(out_node_ptr, false, op(low1, create_sink(true)));
+      } else if (is_sink_ptr(low1) && can_left_shortcut(op, low1)) {
+        arc out_arc = { out_uid, op(low1, create_sink_ptr(true)) };
         reduce_sink_arcs.write(out_arc);
-      } else if (is_sink(low2) && can_right_shortcut(op, low2)) {
-        arc out_arc = create_arc(out_node_ptr, false, op(create_sink(true), low2));
+      } else if (is_sink_ptr(low2) && can_right_shortcut(op, low2)) {
+        arc out_arc = { out_uid, op(create_sink_ptr(true), low2) };
         reduce_sink_arcs.write(out_arc);
       } else {
-        appD.push({out_node_ptr, low1, low2, false});
+        appD.push({out_uid, low1, low2});
       }
 
-      if (is_sink(high1) && is_sink(high2)) {
-        arc out_arc = create_arc(out_node_ptr, true, op(high1, high2));
+      if (is_sink_ptr(high1) && is_sink_ptr(high2)) {
+        arc out_arc = { flag(out_uid), op(high1, high2) };
         reduce_sink_arcs.write(out_arc);
-      } else if (is_sink(high1) && can_left_shortcut(op, high1)) {
-        arc out_arc = create_arc(out_node_ptr, true, op(high1, create_sink(true)));
+      } else if (is_sink_ptr(high1) && can_left_shortcut(op, high1)) {
+        arc out_arc = { flag(out_uid), op(high1, create_sink_ptr(true)) };
         reduce_sink_arcs.write(out_arc);
-      } else if (is_sink(high2) && can_right_shortcut(op, high2)) {
-        arc out_arc = create_arc(out_node_ptr, true, op(create_sink(true), high2));
+      } else if (is_sink_ptr(high2) && can_right_shortcut(op, high2)) {
+        arc out_arc = { flag(out_uid), op(create_sink_ptr(true), high2) };
         reduce_sink_arcs.write(out_arc);
       } else {
-        appD.push({out_node_ptr, high1, high2, true});
+        appD.push({flag(out_uid), high1, high2});
       }
 
       // Output ingoing arcs
       while (true) {
-        arc out_arc = create_arc(source, is_high, out_node_ptr);
+        arc out_arc = { source, out_uid };
         reduce_node_arcs.write(out_arc);
         debug::println_apply_ingoing(out_arc);
 
@@ -403,13 +397,11 @@ namespace coom
           source = appD.top().source;
           t1 = appD.top().t1;
           t2 = appD.top().t2;
-          is_high = appD.top().is_high;
           appD.pop();
         } else if (!appD_data.empty() && appD_data.top().t1 == t1 && appD_data.top().t2 == t2) {
           source = appD_data.top().source;
           t1 = appD_data.top().t1;
           t2 = appD_data.top().t2;
-          is_high = appD_data.top().is_high;
           appD_data.pop();
         } else {
           break;
@@ -440,27 +432,29 @@ namespace coom
     auto root_1 = in_nodes_1.read_back();
     auto root_2 = in_nodes_2.read_back();
 
-    if (is_sink_node(root_1) && is_sink_node(root_2)) {
+    if (is_sink(root_1) && is_sink(root_2)) {
       node res_sink_node = node{
-          op(root_1.node_ptr, root_2.node_ptr),
+          op(root_1.uid, root_2.uid),
           NIL,
           NIL};
 
       out_nodes.write(res_sink_node);
       debug::println_file_stream(out_nodes, "out_nodes");
-    } else if (is_sink_node(root_1) && can_left_shortcut(op, root_1.node_ptr)) {
-      node res_sink_node = node{
-          op(root_1.node_ptr, create_sink(false)),
+    } else if (is_sink(root_1) && can_left_shortcut(op, root_1.uid)) {
+      node res_sink_node = {
+          op(root_1.uid, create_sink_ptr(false)),
           NIL,
-          NIL};
+          NIL
+      };
 
       out_nodes.write(res_sink_node);
       debug::println_file_stream(out_nodes, "out_nodes");
-    } else if (is_sink_node(root_2) && can_right_shortcut(op, root_2.node_ptr)) {
-      node res_sink_node = node{
-          op(create_sink(false), root_2.node_ptr),
+    } else if (is_sink(root_2) && can_right_shortcut(op, root_2.uid)) {
+      node res_sink_node = {
+          op(create_sink_ptr(false), root_2.uid),
           NIL,
-          NIL};
+          NIL
+      };
 
       out_nodes.write(res_sink_node);
       debug::println_file_stream(out_nodes, "out_nodes");

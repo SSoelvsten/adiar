@@ -1,9 +1,8 @@
 #ifndef COOM_ASSERT_H
 #define COOM_ASSERT_H
 
+#include <tpie/tpie.h>
 #include <tpie/file_stream.h>
-
-#include <stdint.h>
 
 #include "data.h"
 

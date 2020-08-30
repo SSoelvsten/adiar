@@ -20,25 +20,25 @@ go_bandit([]() {
                   F T
         */
 
-        auto sink_T = create_sink(true);
-        auto sink_F = create_sink(false);
+        ptr_t sink_T = create_sink_ptr(true);
+        ptr_t sink_F = create_sink_ptr(false);
 
         tpie::file_stream<node> obdd;
         obdd.open();
 
-        auto n5 = create_node(3,0, sink_F, sink_T);
+        node n5 = create_node(3,0, sink_F, sink_T);
         obdd.write(n5);
 
-        auto n4 = create_node(2,1, sink_T, n5.node_ptr);
+        node n4 = create_node(2,1, sink_T, n5.uid);
         obdd.write(n4);
 
-        auto n3 = create_node(2,0, sink_F, sink_T);
+        node n3 = create_node(2,0, sink_F, sink_T);
         obdd.write(n3);
 
-        auto n2 = create_node(1,0, n3.node_ptr, n4.node_ptr);
+        node n2 = create_node(1,0, n3.uid, n4.uid);
         obdd.write(n2);
 
-        auto n1 = create_node(0,0, n3.node_ptr, n2.node_ptr);
+        node n1 = create_node(0,0, n3.uid, n2.uid);
         obdd.write(n1);
 
         //                END
@@ -154,16 +154,16 @@ go_bandit([]() {
         tpie::file_stream<node> skip_obdd;
         skip_obdd.open();
 
-        auto skip_n4 = create_node(4,0, sink_F, sink_T);
+        node skip_n4 = create_node(4,0, sink_F, sink_T);
         skip_obdd.write(skip_n4);
 
-        auto skip_n3 = create_node(2,1, sink_T, skip_n4.node_ptr);
+        node skip_n3 = create_node(2,1, sink_T, skip_n4.uid);
         skip_obdd.write(skip_n3);
 
-        auto skip_n2 = create_node(2,0, sink_F, sink_T);
+        node skip_n2 = create_node(2,0, sink_F, sink_T);
         skip_obdd.write(skip_n2);
 
-        auto skip_n1 = create_node(0,0, skip_n2.node_ptr, skip_n3.node_ptr);
+        node skip_n1 = create_node(0,0, skip_n2.uid, skip_n3.uid);
         skip_obdd.write(skip_n1);
 
         //              END
@@ -223,7 +223,7 @@ go_bandit([]() {
             tpie::file_stream<node> obdd2;
             obdd2.open();
 
-            obdd2.write(create_sink_node(false));
+            obdd2.write(create_sink(false));
 
             tpie::file_stream<bool> assignment;
             assignment.open();
@@ -241,7 +241,7 @@ go_bandit([]() {
             tpie::file_stream<node> obdd2;
             obdd2.open();
 
-            obdd2.write(create_sink_node(true));
+            obdd2.write(create_sink(true));
 
             tpie::file_stream<bool> assignment;
             assignment.open();

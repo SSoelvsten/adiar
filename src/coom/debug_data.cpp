@@ -19,28 +19,28 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void print_node_ptr([[maybe_unused]] uint64_t n)
+    void print_node_ptr([[maybe_unused]] ptr_t n)
     {
 #if COOM_DEBUG
       tpie::log_info() << "[* " << label_of(n) << " : " << id_of(n) << " *]";
 #endif
     }
 
-    void print_sink_ptr([[maybe_unused]] uint64_t n)
+    void print_sink_ptr([[maybe_unused]] ptr_t n)
     {
 #if COOM_DEBUG
       tpie::log_info() << "[* " << value_of(n) << " *]";
 #endif
     }
 
-    void print_child([[maybe_unused]] uint64_t n)
+    void print_child([[maybe_unused]] ptr_t n)
     {
 #if COOM_DEBUG
       if (is_nil(n))
         {
           print_nil_ptr();
         }
-      else if (is_sink(n))
+      else if (is_sink_ptr(n))
         {
           print_sink_ptr(n);
         }
@@ -59,7 +59,7 @@ namespace coom { namespace debug {
     {
 #if COOM_DEBUG
       tpie::log_info() << "([ ";
-      if (is_sink_node(n))
+      if (is_sink(n))
         {
           bool value = value_of(n);
           tpie::log_info() << value;
@@ -92,7 +92,7 @@ namespace coom { namespace debug {
       tpie::log_info() << "( ";
       print_child(a.source);
       tpie::log_info() << " , ";
-      if (a.is_high)
+      if (is_flagged(a.source))
         {
           tpie::log_info() << " T ";
         }
