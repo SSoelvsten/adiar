@@ -8,6 +8,7 @@
 
 #include "assert.h"
 #include "debug.h"
+#include "debug_data.h"
 
 namespace coom
 {
@@ -21,14 +22,14 @@ namespace coom
 #endif
     }
 
-    inline void println_evaluate_return([[maybe_unused]] const uint64_t sink)
+    inline void println_evaluate_return([[maybe_unused]] const ptr_t sink_ptr)
     {
 #if COOM_DEBUG >= 2
-      tpie::log_info() << "return [ " << value_of(sink) << " ]" << std::endl;
+      tpie::log_info() << "return [ " << value_of(sink_ptr) << " ]" << std::endl;
 #endif
     }
 
-    inline void println_evaluate_seek([[maybe_unused]] const uint64_t node_ptr)
+    inline void println_evaluate_seek([[maybe_unused]] const ptr_t node_ptr)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << "seek   [ "
@@ -53,8 +54,8 @@ namespace coom
     bool assignment_value = assignment.read();
     uint64_t assignment_label = 0;
 
-    if(is_sink_node(current_node)) {
-      debug::println_evaluate_return(current_node.node_ptr);
+    if(is_sink(current_node)) {
+      debug::println_evaluate_return(current_node.uid);
       debug::println_algorithm_end("EVALUATE");
 
       return value_of(current_node);
@@ -68,17 +69,17 @@ namespace coom
 
       debug::print_evaluate_assignment(assignment_label, assignment_value);
 
-      uint64_t next_node_ptr = assignment_value ? current_node.high : current_node.low;
+      ptr_t next_ptr = unflag(assignment_value ? current_node.high : current_node.low);
 
-      if(is_sink(next_node_ptr)) {
-        debug::println_evaluate_return(next_node_ptr);
+      if(is_sink_ptr(next_ptr)) {
+        debug::println_evaluate_return(next_ptr);
         debug::println_algorithm_end("EVALUATE");
 
-        return value_of(next_node_ptr);
+        return value_of(next_ptr);
       }
 
-      debug::println_evaluate_seek(next_node_ptr);
-      while(current_node.node_ptr < next_node_ptr) {
+      debug::println_evaluate_seek(next_ptr);
+      while(current_node.uid < next_ptr) {
         current_node = nodes.read_back();
       }
     }

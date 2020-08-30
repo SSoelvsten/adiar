@@ -102,7 +102,7 @@ void n_queens_S(uint64_t N,
   out_nodes.open();
 
   uint64_t row = N - 1;
-  uint64_t next = coom::create_sink(true);
+  coom::ptr_t next = coom::create_sink_ptr(true);
 
   do {
     uint64_t row_diff = std::max(row,i) - std::min(row,i);
@@ -117,45 +117,45 @@ void n_queens_S(uint64_t N,
         if (column == j) {
           // Node to check whether the queen actually is placed, and if so
           // whether all remaining possible conflicts have to be checked.
-          coom::node queen = coom::create_node(label_of_position(N,i,j), 0,
-                                               coom::create_sink(false),
-                                               next);
+          coom::node_t queen = coom::create_node(label_of_position(N,i,j), 0,
+                                                 coom::create_sink_ptr(false),
+                                                 next);
 
           out_nodes.write(queen);
-          next = queen.node_ptr;
+          next = queen.uid;
           continue;
         }
 
-        coom::node out_node = coom::create_node(label, 0, next, coom::create_sink(false));
+        coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
         out_nodes.write(out_node);
-        next = out_node.node_ptr;
+        next = out_node.uid;
       } while (column-- > 0);
     } else {
       // On another row
       if (j + row_diff < N) {
         // Diagonal to the right is within bounds
-        auto label = label_of_position(N, row, j + row_diff);
-        auto out_node = coom::create_node(label, 0, next, coom::create_sink(false));
+        uint64_t label = label_of_position(N, row, j + row_diff);
+        coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
         out_nodes.write(out_node);
-        next = out_node.node_ptr;
+        next = out_node.uid;
       }
 
       // Column
       uint64_t label = label_of_position(N, row, j);
-      coom::node out_node = coom::create_node(label, 0, next, coom::create_sink(false));
+      coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
       out_nodes.write(out_node);
-      next = out_node.node_ptr;
+      next = out_node.uid;
 
       if (row_diff <= j) {
         // Diagonal to the left is within bounds
         uint64_t label = label_of_position(N, row, j - row_diff);
-        coom::node out_node = coom::create_node(label, 0, next, coom::create_sink(false));
+        coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
         out_nodes.write(out_node);
-        next = out_node.node_ptr;
+        next = out_node.uid;
       }
     }
   } while (row-- > 0);

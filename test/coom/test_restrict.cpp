@@ -23,31 +23,31 @@ go_bandit([]() {
                 F T
         */
 
-        auto sink_T = create_sink(true);
-        auto sink_F = create_sink(false);
+        ptr_t sink_T = create_sink_ptr(true);
+        ptr_t sink_F = create_sink_ptr(false);
 
         tpie::file_stream<node> obdd;
         obdd.open();
 
-        auto n5 = create_node(3,0, sink_F, sink_T);
+        node n5 = create_node(3,0, sink_F, sink_T);
         obdd.write(n5);
 
-        auto n4 = create_node(2,1, sink_T, n5.node_ptr);
+        node n4 = create_node(2,1, sink_T, n5.uid);
         obdd.write(n4);
 
-        auto n3 = create_node(2,0, sink_F, sink_T);
+        node n3 = create_node(2,0, sink_F, sink_T);
         obdd.write(n3);
 
-        auto n2 = create_node(1,0, n3.node_ptr, n4.node_ptr);
+        node n2 = create_node(1,0, n3.uid, n4.uid);
         obdd.write(n2);
 
-        auto n1 = create_node(0,0, n3.node_ptr, n2.node_ptr);
+        node n1 = create_node(0,0, n3.uid, n2.uid);
         obdd.write(n1);
 
         //                END
         // == CREATE OBDD FOR UNIT TESTS ==
 
-        it("should bridge layers [1]. Assignment: (_,_,T,_)", [&obdd]() {
+        it("should bridge layers [1]. Assignment: (_,_,T,_)", [&]() {
             /*
                  1
                 / \
@@ -81,35 +81,28 @@ go_bandit([]() {
             reduce_node_arcs.seek(0);
             reduce_sink_arcs.seek(0);
 
-            auto np1 = create_node_ptr(0,0);
-            auto np2 = create_node_ptr(1,0);
-            auto np5 = create_node_ptr(3,0);
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n1.uid), n2.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(np1, true, np2)));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(np2, true, np5)));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n2.uid), n5.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
-            auto sink_F = create_sink(false);
-            auto sink_T = create_sink(true);
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n1.uid, sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np1, false, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n2.uid, sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np2, false, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n5.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np5, false, sink_F)));
-
-            AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np5, true, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n5.uid), sink_T }));
           });
 
-        it("should bridge layers. [2]. Assignment: (_,F,_,_)", [&obdd]() {
+        it("should bridge layers. [2]. Assignment: (_,F,_,_)", [&]() {
             /*
                  1
                 / \
@@ -141,28 +134,22 @@ go_bandit([]() {
             reduce_node_arcs.seek(0);
             reduce_sink_arcs.seek(0);
 
-            auto np1 = create_node_ptr(0,0);
-            auto np3 = create_node_ptr(2,0);
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { n1.uid, n3.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(np1, false, np3)));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(np1, true, np3)));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n1.uid), n3.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
-            auto sink_F = create_sink(false);
-            auto sink_T = create_sink(true);
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n3.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, false, sink_F)));
-
-            AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, true, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n3.uid), sink_T }));
           });
 
-        it("should bridge layers [3]. Assignment: (_,T,_,_)", [&obdd]() {
+        it("should bridge layers [3]. Assignment: (_,T,_,_)", [&]() {
             /*
                   1
                  / \
@@ -197,42 +184,34 @@ go_bandit([]() {
             reduce_node_arcs.seek(0);
             reduce_sink_arcs.seek(0);
 
-            auto np1 = create_node_ptr(0,0);
-            auto np3 = create_node_ptr(2,0);
-            auto np4 = create_node_ptr(2,1);
-            auto np5 = create_node_ptr(3,0);
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { n1.uid, n3.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(np1, false, np3)));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n1.uid), n4.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(np1, true, np4)));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(np4, true, np5)));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n4.uid), n5.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
-            auto sink_F = create_sink(false);
-            auto sink_T = create_sink(true);
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n3.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, false, sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n3.uid), sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, true, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n4.uid, sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np4, false, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n5.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np5, false, sink_F)));
-
-            AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np5, true, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n5.uid), sink_T }));
           });
 
-        it("should remove root. Assignment: (T,_,_,F)", [&obdd]() {
+        it("should remove root. Assignment: (T,_,_,F)", [&]() {
             /*
                   2
                  / \
@@ -264,35 +243,28 @@ go_bandit([]() {
             reduce_node_arcs.seek(0);
             reduce_sink_arcs.seek(0);
 
-            auto np2 = create_node_ptr(1,0);
-            auto np3 = create_node_ptr(2,0);
-            auto np4 = create_node_ptr(2,1);
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { n2.uid, n3.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(np2, false, np3)));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(np2, true, np4)));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n2.uid), n4.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
-            auto sink_F = create_sink(false);
-            auto sink_T = create_sink(true);
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n3.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, false, sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n3.uid), sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, true, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n4.uid, sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np4, false, sink_T)));
-
-            AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np4, true, sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n4.uid), sink_F }));
           });
 
-        it("should ignore skipped variables. Assignment: (F,T,_,F)", [&obdd]() {
+        it("should ignore skipped variables. Assignment: (F,T,_,F)", [&]() {
             /*
                  3
                 / \
@@ -322,18 +294,13 @@ go_bandit([]() {
             reduce_node_arcs.seek(0);
             reduce_sink_arcs.seek(0);
 
-            auto np3 = create_node_ptr(2,0);
-
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
-            auto sink_F = create_sink(false);
-            auto sink_T = create_sink(true);
+            AssertThat(reduce_sink_arcs.can_read(), Is().True());
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n3.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, false, sink_F)));
-
-            AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(np3, true, sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n3.uid), sink_T }));
           });
 
         it("should return F sink. Assignment: (F,_,F,_)", [&obdd]() {
@@ -360,7 +327,7 @@ go_bandit([]() {
             out_nodes.seek(0);
 
             AssertThat(out_nodes.can_read(), Is().True());
-            AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(false)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
@@ -389,7 +356,7 @@ go_bandit([]() {
             out_nodes.seek(0);
 
             AssertThat(out_nodes.can_read(), Is().True());
-            AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(true)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
@@ -397,7 +364,7 @@ go_bandit([]() {
             tpie::file_stream<node> in_nodes;
             in_nodes.open();
 
-            in_nodes.write(create_sink_node(true));
+            in_nodes.write(create_sink(true));
 
             tpie::file_stream<assignment> assignment;
             assignment.open();
@@ -414,7 +381,7 @@ go_bandit([]() {
             out_nodes.seek(0);
 
             AssertThat(out_nodes.can_read(), Is().True());
-            AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(true)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
@@ -422,7 +389,7 @@ go_bandit([]() {
             tpie::file_stream<node> in_nodes;
             in_nodes.open();
 
-            in_nodes.write(create_sink_node(false));
+            in_nodes.write(create_sink(false));
 
             tpie::file_stream<assignment> assignment;
             assignment.open();
@@ -439,7 +406,7 @@ go_bandit([]() {
             out_nodes.seek(0);
 
             AssertThat(out_nodes.can_read(), Is().True());
-            AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(false)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
@@ -482,22 +449,22 @@ go_bandit([]() {
                 / \
                 T F              * This arc will be resolved as the last one
              */
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
             tpie::file_stream<node> in_nodes;
             in_nodes.open();
 
-            auto n4 = create_node(2,0, sink_T, sink_F);
+            node n4 = create_node(2,0, sink_T, sink_F);
             in_nodes.write(n4);
 
-            auto n3 = create_node(1,1, sink_T, sink_F);
+            node n3 = create_node(1,1, sink_T, sink_F);
             in_nodes.write(n3);
 
-            auto n2 = create_node(1,0, n4.node_ptr, sink_F);
+            node n2 = create_node(1,0, n4.uid, sink_F);
             in_nodes.write(n2);
 
-            auto n1 = create_node(0,0, n2.node_ptr, n3.node_ptr);
+            node n1 = create_node(0,0, n2.uid, n3.uid);
             in_nodes.write(n1);
 
             tpie::file_stream<assignment> assignment;
@@ -521,38 +488,26 @@ go_bandit([]() {
             reduce_node_arcs.seek(0);
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        false,
-                                                                        create_node_ptr(1,0))));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { n1.uid, n2.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        true,
-                                                                        create_node_ptr(1,1))));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n1.uid), n3.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
             reduce_sink_arcs.seek(0);
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
-                                                                        false,
-                                                                        sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n2.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
-                                                                        true,
-                                                                        sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n2.uid), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
-                                                                        false,
-                                                                        sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n3.uid, sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
-                                                                        true,
-                                                                        sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n3.uid), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
@@ -567,25 +522,25 @@ go_bandit([]() {
                 / \ / \
                 T F F T          * Both these will be resolved out-of-order!
              */
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
             tpie::file_stream<node> in_nodes;
             in_nodes.open();
 
-            auto n5 = create_node(2,1, sink_F, sink_T);
+            node n5 = create_node(2,1, sink_F, sink_T);
             in_nodes.write(n5);
 
-            auto n4 = create_node(2,0, sink_T, sink_F);
+            node n4 = create_node(2,0, sink_T, sink_F);
             in_nodes.write(n4);
 
-            auto n3 = create_node(1,1, n5.node_ptr, sink_F);
+            node n3 = create_node(1,1, n5.uid, sink_F);
             in_nodes.write(n3);
 
-            auto n2 = create_node(1,0, n4.node_ptr, sink_F);
+            node n2 = create_node(1,0, n4.uid, sink_F);
             in_nodes.write(n2);
 
-            auto n1 = create_node(0,0, n2.node_ptr, n3.node_ptr);
+            node n1 = create_node(0,0, n2.uid, n3.uid);
             in_nodes.write(n1);
 
             tpie::file_stream<assignment> assignment;
@@ -609,38 +564,26 @@ go_bandit([]() {
             reduce_node_arcs.seek(0);
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        false,
-                                                                        create_node_ptr(1,0))));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { n1.uid, n2.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(0,0),
-                                                                        true,
-                                                                        create_node_ptr(1,1))));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n1.uid), n3.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
             reduce_sink_arcs.seek(0);
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
-                                                                        false,
-                                                                        sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n2.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,0),
-                                                                        true,
-                                                                        sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n2.uid), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
-                                                                        false,
-                                                                        sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n3.uid, sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(create_node_ptr(1,1),
-                                                                        true,
-                                                                        sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n3.uid), sink_F} ));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });
@@ -663,31 +606,31 @@ go_bandit([]() {
             tpie::file_stream<node> dead_obdd;
             dead_obdd.open();
 
-            auto n9 = create_node(3,1, sink_T, sink_F);
+            node n9 = create_node(3,1, sink_T, sink_F);
             dead_obdd.write(n9);
 
-            auto n8 = create_node(3,0, sink_F, sink_T);
+            node n8 = create_node(3,0, sink_F, sink_T);
             dead_obdd.write(n8);
 
-            auto n7 = create_node(2,3, n9.node_ptr, sink_T);
+            node n7 = create_node(2,3, n9.uid, sink_T);
             dead_obdd.write(n7);
 
-            auto n6 = create_node(2,2, sink_T, n9.node_ptr);
+            node n6 = create_node(2,2, sink_T, n9.uid);
             dead_obdd.write(n6);
 
-            auto n5 = create_node(2,1, sink_F, n8.node_ptr);
+            node n5 = create_node(2,1, sink_F, n8.uid);
             dead_obdd.write(n5);
 
-            auto n4 = create_node(2,0, sink_T, sink_F);
+            node n4 = create_node(2,0, sink_T, sink_F);
             dead_obdd.write(n4);
 
-            auto n3 = create_node(1,1, n6.node_ptr, n7.node_ptr);
+            node n3 = create_node(1,1, n6.uid, n7.uid);
             dead_obdd.write(n3);
 
-            auto n2 = create_node(1,0, n4.node_ptr, n5.node_ptr);
+            node n2 = create_node(1,0, n4.uid, n5.uid);
             dead_obdd.write(n2);
 
-            auto n1 = create_node(0,0, n2.node_ptr, n3.node_ptr);
+            node n1 = create_node(0,0, n2.uid, n3.uid);
             dead_obdd.write(n1);
 
             tpie::file_stream<assignment> assignment;
@@ -711,58 +654,38 @@ go_bandit([]() {
             reduce_node_arcs.seek(0);
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(n1.node_ptr,
-                                                                        false,
-                                                                        n5.node_ptr)));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { n1.uid, n5.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(n1.node_ptr,
-                                                                        true,
-                                                                        n7.node_ptr)));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n1.uid), n7.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(n5.node_ptr,
-                                                                        true,
-                                                                        n8.node_ptr)));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n5.uid), n8.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(create_arc(n7.node_ptr,
-                                                                        false,
-                                                                        n9.node_ptr)));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { n7.uid, n9.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
             reduce_sink_arcs.seek(0);
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(n5.node_ptr,
-                                                                        false,
-                                                                        sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n5.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(n7.node_ptr,
-                                                                        true,
-                                                                        sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n7.uid), sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(n8.node_ptr,
-                                                                        false,
-                                                                        sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n8.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(n8.node_ptr,
-                                                                        true,
-                                                                        sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n8.uid), sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(n9.node_ptr,
-                                                                        false,
-                                                                        sink_T)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n9.uid, sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
-            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(create_arc(n9.node_ptr,
-                                                                        true,
-                                                                        sink_F)));
+            AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n9.uid), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
           });

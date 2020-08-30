@@ -37,7 +37,7 @@ namespace coom
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << "|   | ";
-      print_node(node_of_arcs(e_low, e_high));
+      print_node({ e_low.source, e_low.target, e_high.target });
       if (is_reduced) {
         tpie::log_info() << " [X]" << std::endl;
       } else {
@@ -75,14 +75,14 @@ namespace coom
     }
 
     inline void println_reduce_forward([[maybe_unused]] uint64_t target,
-                                       [[maybe_unused]] uint64_t old_node_ptr,
-                                       [[maybe_unused]] uint64_t new_node_ptr)
+                                       [[maybe_unused]] uint64_t old_uid,
+                                       [[maybe_unused]] uint64_t new_uid)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << "|   | ";
-      print_child(old_node_ptr);
+      print_child(old_uid);
       tpie::log_info() << " -> ";
-      print_child(new_node_ptr);
+      print_child(new_uid);
       tpie::log_info() << " to ";
       print_child(target);
       tpie::log_info() << std::endl;
@@ -97,30 +97,54 @@ namespace coom
 
   struct mapping
   {
-    uint64_t old_node_ptr;
-    uint64_t new_node_ptr;
+    uint64_t old_uid;
+    uint64_t new_uid;
   };
 
-  //Predicate for redD
+  // Predicate for priority queue
   struct reduce_queue_lt
   {
     bool operator()(const arc &a, const arc &b)
     {
-      return (a.source > b.source || (a.source == b.source && a.is_high));
+      // We want the high arc first, but that is already placed on the
+      // least-significant bit on the source variable.
+      return a.source > b.source;
     }
   };
 
-  //Predicate for L_j
+  //Predicate for sorting for common children
   const auto reduce_node_children_lt = [](const node &a, const node &b) -> bool {
     return a.high > b.high ||
            (a.high == b.high && a.low > b.low) ||
-           (a.high == b.high && a.low == b.low && a.node_ptr > b.node_ptr);
+           (a.high == b.high && a.low == b.low && a.uid > b.uid);
   };
 
-  //Predicate for L_j_red2/out
-  const auto reduce_node_ptr_lt = [](const mapping &a, const mapping &b) -> bool {
-    return a.old_node_ptr > b.old_node_ptr;
+  //Predicate for sorting back to original order
+  const auto reduce_uid_lt = [](const mapping &a, const mapping &b) -> bool {
+    return a.old_uid > b.old_uid;
   };
+
+  inline arc reduce_get_next(tpie::priority_queue<arc, reduce_queue_lt> &redD,
+                             tpie::file_stream<arc> &in_sink_arcs,
+                             arc &next_sink_arc,
+                             bool &has_next_sink)
+  {
+    if (redD.empty() || (has_next_sink && next_sink_arc.source > redD.top().source)) {
+      arc ret_value = next_sink_arc;
+
+      if (in_sink_arcs.can_read_back()) {
+        next_sink_arc = in_sink_arcs.read_back();
+      } else {
+        has_next_sink = false;
+      }
+
+      return ret_value;
+    } else {
+      arc ret_value = redD.top();
+      redD.pop();
+      return ret_value;
+    }
+  }
 
   void reduce(tpie::file_stream<arc> &in_node_arcs,
               tpie::file_stream<arc> &in_sink_arcs,
@@ -136,7 +160,7 @@ namespace coom
 
     assert::is_valid_output_stream(out_nodes);
 
-    //Set up
+    // Set up
     tpie::priority_queue<arc, reduce_queue_lt> redD;
     in_sink_arcs.seek(0, tpie::file_stream_base::end);
     in_node_arcs.seek(0, tpie::file_stream_base::end);
@@ -155,9 +179,9 @@ namespace coom
 
       // Apply reduction rule 1 if applicable
       if (e_high.target == e_low.target) {
-        out_nodes.write(create_sink_node(value_of(e_low.target)));
+        out_nodes.write(create_sink(value_of(e_low.target)));
       } else {
-        out_nodes.write(node_of_arcs(e_low, e_high));
+        out_nodes.write({ e_low.source, e_low.target, e_high.target });
       }
 
       debug::println_file_stream(out_nodes, "out_nodes");
@@ -193,45 +217,18 @@ namespace coom
       // Pull out all nodes from redD and in_sink_arcs for this layer
       while ((has_next_sink && label_of(next_sink_arc.source) == label)
              || (!redD.empty() && label_of(redD.top().source) == label)) {
-        arc e_low;
-        arc e_high;
+        arc e_high = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
+        arc e_low = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
 
-        if (redD.empty() || (has_next_sink && redD.top().source < next_sink_arc.source)) {
-          // Pull both from in_sink_arcs
-          e_high = next_sink_arc;
-          e_low = in_sink_arcs.read_back();
-
-          if (in_sink_arcs.can_read_back()) {
-            next_sink_arc = in_sink_arcs.read_back();
-          } else {
-            has_next_sink = false;
-          }
-        } else if (redD.top().source == next_sink_arc.source) {
-          // Pull one from redD and one from in_sink_arcs
-          e_low = redD.top().is_high ? next_sink_arc : redD.top();
-          e_high = redD.top().is_high ? redD.top() : next_sink_arc;
-          redD.pop();
-
-          if (in_sink_arcs.can_read_back()) {
-            next_sink_arc = in_sink_arcs.read_back();
-          } else {
-            has_next_sink = false;
-          }
-        } else {
-          // Pull both from redD
-          e_high = redD.top();
-          redD.pop();
-          e_low = redD.top();
-          redD.pop();
-        }
+        node_t n = node_of(e_low, e_high);
 
         // Apply Reduction rule 1
-        if (e_high.target == e_low.target) {
+        if (n.low == n.high) {
           debug::println_reduce_red_1(e_low, e_high, true);
-          red1_mapping.write({e_low.source, e_low.target});
+          red1_mapping.write({ n.uid, n.low });
         } else {
           debug::println_reduce_red_1(e_low, e_high, false);
-          child_grouping.push(node_of_arcs(e_low, e_high));
+          child_grouping.push(n);
         }
       }
 
@@ -241,7 +238,7 @@ namespace coom
       child_grouping.end();
       child_grouping.calc(pi);
 
-      tpie::merge_sorter<mapping, false, decltype(reduce_node_ptr_lt)> red2_mapping(reduce_node_ptr_lt);
+      tpie::merge_sorter<mapping, false, decltype(reduce_uid_lt)> red2_mapping(reduce_uid_lt);
       red2_mapping.set_available_memory(max_sorter_memory);
       red2_mapping.begin();
 
@@ -256,14 +253,14 @@ namespace coom
 
         debug::println_reduce_red_2(current_node, false);
 
-        red2_mapping.push({ current_node.node_ptr, out_node.node_ptr });
+        red2_mapping.push({ current_node.uid, out_node.uid });
 
         // Output nodes and remap the ones match the one just output
         while (child_grouping.can_pull()) {
           node next_node = child_grouping.pull();
           if (current_node.low == next_node.low && current_node.high == next_node.high) {
             debug::println_reduce_red_2(next_node, true);
-            red2_mapping.push({ next_node.node_ptr, out_node.node_ptr });
+            red2_mapping.push({ next_node.uid, out_node.uid });
           } else {
             debug::println_reduce_red_2(next_node, false);
             current_node = next_node;
@@ -272,7 +269,7 @@ namespace coom
             out_nodes.write(out_node);
             out_id--;
 
-            red2_mapping.push({current_node.node_ptr, out_node.node_ptr});
+            red2_mapping.push({current_node.uid, out_node.uid});
           }
         }
       }
@@ -299,19 +296,19 @@ namespace coom
 
       // Pass all the mappings to Q
       while (has_next_red1 || has_next_red2) {
-        // Find the mapping with largest old_node_ptr
+        // Find the mapping with largest old_uid
         bool is_red1_current = !has_next_red2 ||
-                               (has_next_red1 && next_red1.old_node_ptr > next_red2.old_node_ptr);
+                               (has_next_red1 && next_red1.old_uid > next_red2.old_uid);
         mapping current_map = is_red1_current ? next_red1 : next_red2;
 
-        // Find all arcs that have sources that match the current mapping's old_node_ptr
-        while (has_next_node_arc && current_map.old_node_ptr == next_node_arc.target) {
-          arc new_arc = create_arc(next_node_arc.source,
-                                   next_node_arc.is_high,
-                                   current_map.new_node_ptr);
+        // Find all arcs that have sources that match the current mapping's old_uid
+        while (has_next_node_arc && current_map.old_uid == next_node_arc.target) {
+          // The is_high flag is already included in next_node_arc.source
+          arc new_arc = { next_node_arc.source, current_map.new_uid };
+
           debug::println_reduce_forward(next_node_arc.source,
-                                        current_map.old_node_ptr,
-                                        current_map.new_node_ptr);
+                                        current_map.old_uid,
+                                        current_map.new_uid);
 
           redD.push(new_arc);
           if (in_node_arcs.can_read_back()) {
@@ -352,7 +349,7 @@ namespace coom
       if (!in_node_arcs.can_read_back() &&
           !has_next_sink &&
           out_nodes.size() == 0) {
-        out_nodes.write({ next_red1.new_node_ptr, NIL, NIL });
+        out_nodes.write({ next_red1.new_uid, NIL, NIL });
 
         debug::println_file_stream(out_nodes, "out_nodes");
         debug::println_algorithm_end("REDUCE");

@@ -1,12 +1,7 @@
 #ifndef COOM_ASSERT_CPP
 #define COOM_ASSERT_CPP
 
-#include <stdint.h>
-
-#include <tpie/tpie.h>
-#include <tpie/tpie_log.h>
-
-#include "debug.h"
+#include "assert.h"
 
 namespace coom { namespace assert {
     void is_valid_input_stream([[maybe_unused]] tpie::file_stream<node>& in)
@@ -26,7 +21,8 @@ namespace coom { namespace assert {
 #endif
     }
 
-    template <typename T> void is_valid_output_stream([[maybe_unused]] tpie::file_stream<T>& out)
+    template <typename T>
+    void is_valid_output_stream([[maybe_unused]] tpie::file_stream<T>& out)
     {
 #if COOM_ASSERT
       assert(out.is_open());

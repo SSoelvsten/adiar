@@ -11,24 +11,24 @@ namespace coom
   //////////////////////////////////////////////////////////////////////////////
   typedef std::function<uint64_t(uint64_t,uint64_t)> bool_op;
 
-  const bool_op and_op = [] (uint64_t sink1, uint64_t sink2) -> uint64_t
+  const bool_op and_op = [] (ptr_t sink1, ptr_t sink2) -> ptr_t
   {
     return sink1 & sink2;
   };
 
-  const bool_op or_op = [] (uint64_t sink1, uint64_t sink2) -> uint64_t
+  const bool_op or_op = [] (ptr_t sink1, ptr_t sink2) -> ptr_t
   {
     return sink1 | sink2;
   };
 
-  const bool_op xor_op = [] (uint64_t sink1, uint64_t sink2) -> uint64_t
+  const bool_op xor_op = [] (ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return create_sink(value_of(sink1) != value_of(sink2));
+    return create_sink_ptr(value_of(sink1) != value_of(sink2));
   };
 
-  const bool_op implies_op = [] (uint64_t sink1, uint64_t sink2) -> uint64_t
+  const bool_op implies_op = [] (ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return create_sink(value_of(sink1) ? value_of(sink2) : true);
+    return create_sink_ptr(value_of(sink1) ? value_of(sink2) : true);
   };
 
   //////////////////////////////////////////////////////////////////////////////

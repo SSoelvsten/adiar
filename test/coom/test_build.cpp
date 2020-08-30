@@ -5,8 +5,8 @@ using namespace coom;
 
 go_bandit([]() {
     describe("COOM: Make", [&]() {
-        auto sink_T = create_sink(true);
-        auto sink_F = create_sink(false);
+        ptr_t sink_T = create_sink_ptr(true);
+        ptr_t sink_F = create_sink_ptr(false);
 
         describe("build_x", [&]() {
             it("can create x0", [&]() {
@@ -110,7 +110,7 @@ go_bandit([]() {
                 out_nodes.seek(0);
 
                 AssertThat(out_nodes.can_read(), Is().True());
-                AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(true)));
+                AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
                 AssertThat(out_nodes.can_read(), Is().False());
               });
           });
@@ -161,7 +161,7 @@ go_bandit([]() {
                 out_nodes.seek(0);
 
                 AssertThat(out_nodes.can_read(), Is().True());
-                AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(false)));
+                AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
                 AssertThat(out_nodes.can_read(), Is().False());
               });
           });

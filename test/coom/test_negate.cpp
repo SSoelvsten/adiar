@@ -10,7 +10,7 @@ go_bandit([]() {
             tpie::file_stream<node> in_nodes;
             in_nodes.open();
 
-            in_nodes.write(create_sink_node(true));
+            in_nodes.write(create_sink(true));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -22,7 +22,7 @@ go_bandit([]() {
             out_nodes.seek(0);
 
             AssertThat(out_nodes.can_read(), Is().True());
-            AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(false)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
 
             AssertThat(out_nodes.can_read(), Is().False());
           });
@@ -31,7 +31,7 @@ go_bandit([]() {
             tpie::file_stream<node> in_nodes;
             in_nodes.open();
 
-            in_nodes.write(create_sink_node(false));
+            in_nodes.write(create_sink(false));
 
             tpie::file_stream<node> out_nodes;
             out_nodes.open();
@@ -43,7 +43,7 @@ go_bandit([]() {
             out_nodes.seek(0);
 
             AssertThat(out_nodes.can_read(), Is().True());
-            AssertThat(out_nodes.read(), Is().EqualTo(create_sink_node(true)));
+            AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
 
             AssertThat(out_nodes.can_read(), Is().False());
           });
@@ -62,8 +62,8 @@ go_bandit([]() {
             tpie::file_stream<node> in_nodes;
             in_nodes.open();
 
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
             // n3
             in_nodes.write(create_node(2, MAX_ID,
@@ -122,8 +122,8 @@ go_bandit([]() {
             tpie::file_stream<node> in_nodes;
             in_nodes.open();
 
-            auto sink_T = create_sink(true);
-            auto sink_F = create_sink(false);
+            ptr_t sink_T = create_sink_ptr(true);
+            ptr_t sink_F = create_sink_ptr(false);
 
             // n1
             in_nodes.write(create_node(2, MAX_ID,

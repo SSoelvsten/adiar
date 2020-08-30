@@ -58,7 +58,7 @@ namespace coom
 
     in_nodes.seek(0);
 
-    if (!is_sink_node(in_nodes.peek())) {
+    if (!is_sink(in_nodes.peek())) {
       node prior_node = in_nodes.read();
 
       // Since this is the deepest node in the topological order, it has to only
@@ -72,15 +72,15 @@ namespace coom
 
       while (in_nodes.can_read()) {
         // Find the first node, that has an outgoing arc to the prior node
-        while (in_nodes.peek().low != prior_node.node_ptr &&
-               in_nodes.peek().high != prior_node.node_ptr) {
+        while (in_nodes.peek().low != prior_node.uid &&
+               in_nodes.peek().high != prior_node.uid) {
           in_nodes.read();
         }
 
         node parent_node = in_nodes.read();
 
         uint64_t label = label_of(parent_node);
-        bool value = parent_node.high == prior_node.node_ptr;
+        bool value = parent_node.high == prior_node.uid;
 
         out_assignment.write({label, value});
         prior_node = parent_node;

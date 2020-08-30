@@ -20,7 +20,7 @@ namespace coom {
       return false;
     }
     node n = nodes.can_read() ? nodes.read() : nodes.read_back();
-    return is_sink_node(n) && sink_pred(n.node_ptr);
+    return is_sink(n) && sink_pred(n.uid);
   }
 }
 

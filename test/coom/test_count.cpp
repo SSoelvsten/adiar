@@ -20,22 +20,22 @@ go_bandit([]() {
              F T
         */
 
-        auto sink_T = create_sink(true);
-        auto sink_F = create_sink(false);
+        ptr_t sink_T = create_sink_ptr(true);
+        ptr_t sink_F = create_sink_ptr(false);
 
         tpie::file_stream<node> obdd_1;
         obdd_1.open();
 
-        auto n4 = create_node(3,0, sink_F, sink_T);
+        node n4 = create_node(3,0, sink_F, sink_T);
         obdd_1.write(n4);
 
-        auto n3 = create_node(2,0, sink_F, n4.node_ptr);
+        node n3 = create_node(2,0, sink_F, n4.uid);
         obdd_1.write(n3);
 
-        auto n2 = create_node(1,0, n3.node_ptr, n4.node_ptr);
+        node n2 = create_node(1,0, n3.uid, n4.uid);
         obdd_1.write(n2);
 
-        auto n1 = create_node(0,0, n3.node_ptr, n2.node_ptr);
+        node n1 = create_node(0,0, n3.uid, n2.uid);
         obdd_1.write(n1);
 
         /*
@@ -51,10 +51,10 @@ go_bandit([]() {
         tpie::file_stream<node> obdd_2;
         obdd_2.open();
 
-        auto n2_2 = create_node(2,0, sink_F, sink_T);
+        node n2_2 = create_node(2,0, sink_F, sink_T);
         obdd_2.write(n2_2);
 
-        auto n2_1 = create_node(1,0, n2_2.node_ptr, sink_T);
+        node n2_1 = create_node(1,0, n2_2.uid, sink_T);
         obdd_2.write(n2_1);
 
         describe("Paths", [&]() {
@@ -103,7 +103,7 @@ go_bandit([]() {
             it("should count no paths in a true sink-only OBDD", [&]() {
                 tpie::file_stream<node> obdd;
                 obdd.open();
-                obdd.write(create_sink_node(true));
+                obdd.write(create_sink(true));
 
                 AssertThat(coom::count_paths(obdd), Is().EqualTo(0));
                 AssertThat(coom::count_paths(obdd, is_true), Is().EqualTo(0));
@@ -112,7 +112,7 @@ go_bandit([]() {
             it("should count no paths in a false sink-only OBDD", [&]() {
                 tpie::file_stream<node> obdd;
                 obdd.open();
-                obdd.write(create_sink_node(false));
+                obdd.write(create_sink(false));
 
                 AssertThat(coom::count_paths(obdd), Is().EqualTo(0));
                 AssertThat(coom::count_paths(obdd, is_true), Is().EqualTo(0));
@@ -172,7 +172,7 @@ go_bandit([]() {
             it("should count no assignments in a true sink-only OBDD", [&]() {
                 tpie::file_stream<node> obdd;
                 obdd.open();
-                obdd.write(create_sink_node(true));
+                obdd.write(create_sink(true));
 
                 AssertThat(coom::count_assignments(obdd, is_false), Is().EqualTo(0));
                 AssertThat(coom::count_assignments(obdd, is_true), Is().EqualTo(0));
@@ -181,7 +181,7 @@ go_bandit([]() {
             it("should count no assignments in a false sink-only OBDD", [&]() {
                 tpie::file_stream<node> obdd;
                 obdd.open();
-                obdd.write(create_sink_node(false));
+                obdd.write(create_sink(false));
 
                 AssertThat(coom::count_assignments(obdd, is_false), Is().EqualTo(0));
                 AssertThat(coom::count_assignments(obdd, is_true), Is().EqualTo(0));
