@@ -9,17 +9,17 @@ may constitute interesting undergraduate research projects.
     - [Implementation of missing algorithms](#implementation-of-missing-algorithms)
         - [Function composition](#function-composition)
         - [If-Then-Else](#if-then-else)
+    - [Optimising the OBDD](#optimising-the-obdd)
+        - [Complement Edges](#complement-edges)
+    - [Extensions](#extensions)
+        - [Non-boolean Decision Diagrams](#non-boolean-decision-diagrams)
+        - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
         - [Parallelisation](#parallelisation)
             - [Parallel Layer-aware priority queue](#parallel-layer-aware-priority-queue)
             - [Reduction Rule 2 within the merge sorting](#reduction-rule-2-within-the-merge-sorting)
             - [Distribute nodes and information (in order) to worker-threads](#distribute-nodes-and-information-in-order-to-worker-threads)
-    - [Optimising the OBDD](#optimising-the-obdd)
-        - [Complement Edges](#complement-edges)
-    - [Extensions](#extensions)
-        - [Non-boolean Decision Diagrams](#non-boolean-decision-diagrams)
-        - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
 
 <!-- markdown-toc end -->
 
@@ -53,6 +53,34 @@ of _ITE_ rather than the other implementation of the algorithm
 | Composition | f(x, g(y), z)      | ITE(g(x), f(x, 1, z), f(x, 0, z) |
 | Existence   | ∃y : f(x, y, z)    | ITE(f(x, 1, z), 1, f(x, 0, z))   |
 | Forall      | ∀y : f(x, y, z)    | ITE(f(x, 1, z), f(x, 0, z), 0)   |
+
+
+## Optimising the OBDD
+
+### Complement Edges
+Currently, we do not support complement edges, though one can expect about a 7%
+factor decrease in the size of the OBDD from using said technique. In the
+recursive algorithms, one can even expect a factor two decrease in the
+algorithms execution time [[Brace90](#references)].
+
+
+## Extensions
+
+### Non-boolean Decision Diagrams
+One can easily extend the proposed representation of sink nodes to encompass
+non-boolean values, such as integers or floats. Thereby, the algorithms
+immediately yield a Cache-oblivious implementation of the _Multi-Terminal Binary
+Decision Diagrams_ (MTBDD) of [[Fujita97](#references)]. By solely using an
+edge-based representation of the data-structure one can also implement a
+_Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)]. The latter may
+result in major rewrites of the algorithms.
+
+### Free Boolean Decision Diagrams
+One can remove the restriction of ordering the decision diagram to then
+potentially compress the data structure even more. These Free Binary Decision
+Diagrams (FBDD) of [[Meinel94](#references)] may also be possible to implement
+in the setting of Time-forward processing used here.
+
 
 ## Optimising the current algorithms
 There are quite a few avenues of trying to shave off a few significant constants
@@ -133,30 +161,3 @@ other to finish when going from one layer to another. With
 implement a fast and hardware-supported lock on popping the jobs from the file
 stream and a barrier for synchronisation of threads when crossing from one layer
 to the next.
-
-
-## Optimising the OBDD
-
-### Complement Edges
-Currently, we do not support complement edges, though one can expect about a 7%
-factor decrease in the size of the OBDD from using said technique. In the
-recursive algorithms, one can even expect a factor two decrease in the
-algorithms execution time [[Brace90](#references)].
-
-
-## Extensions
-
-### Non-boolean Decision Diagrams
-One can easily extend the proposed representation of sink nodes to encompass
-non-boolean values, such as integers or floats. Thereby, the algorithms
-immediately yield a Cache-oblivious implementation of the _Multi-Terminal Binary
-Decision Diagrams_ (MTBDD) of [[Fujita97](#references)]. By solely using an
-edge-based representation of the data-structure one can also implement a
-_Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)]. The latter may
-result in major rewrites of the algorithms.
-
-### Free Boolean Decision Diagrams
-One can remove the restriction of ordering the decision diagram to then
-potentially compress the data structure even more. These Free Binary Decision
-Diagrams (FBDD) of [[Meinel94](#references)] may also be possible to implement
-in the setting of Time-forward processing used here.
