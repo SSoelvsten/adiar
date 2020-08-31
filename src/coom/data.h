@@ -69,15 +69,18 @@ namespace coom {
   extern const uint64_t MAX_LABEL;
   extern const uint64_t MAX_ID;
 
-  uid_t create_node_uid(uint64_t label, uint64_t id);
+  typedef uint64_t label_t;
+  typedef uint64_t id_t;
 
-  ptr_t create_node_ptr(uint64_t label, uint64_t id);
+  uid_t create_node_uid(label_t label, id_t id);
+
+  ptr_t create_node_ptr(label_t label, id_t id);
   ptr_t create_node_ptr(uid_t uid_t);
 
-  uint64_t label_of(ptr_t p);
-  uint64_t label_of(uid_t u);
-  uint64_t id_of(ptr_t p);
-  uint64_t id_of(uid_t u);
+  label_t label_of(ptr_t p);
+  label_t label_of(uid_t u);
+  id_t id_of(ptr_t p);
+  id_t id_of(uid_t u);
 
   //////////////////////////////////////////////////////////////////////////////
   /// When the sink flag is set, then we interpret the middle bits as the value
@@ -107,12 +110,13 @@ namespace coom {
 
   typedef node node_t;
 
-  node create_node(uint64_t label, uint64_t id, ptr_t low, ptr_t high);
-  node create_node(uid_t uid_t, ptr_t low, ptr_t high);
-  uint64_t id_of(const node& n);
-  uint64_t label_of(const node& n);
+  node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high);
+  node_t create_node(uid_t uid_t, ptr_t low, ptr_t high);
 
-  node create_sink(bool value);
+  label_t label_of(const node& n);
+  id_t id_of(const node& n);
+
+  node_t create_sink(bool value);
   bool is_sink(const node& n);
   bool value_of(const node& n);
 
@@ -147,10 +151,10 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   /// Finally, we can create some converters back and forth
   //////////////////////////////////////////////////////////////////////////////
-  arc low_arc_of(const node& n);
-  arc high_arc_of(const node& n);
+  arc_t low_arc_of(const node& n);
+  arc_t high_arc_of(const node& n);
 
-  node node_of(const arc& low, const arc& high);
+  node_t node_of(const arc& low, const arc& high);
 }
 
 

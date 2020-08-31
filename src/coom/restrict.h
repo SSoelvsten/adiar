@@ -19,9 +19,9 @@ namespace coom
   ///
   /// \param nodes_out  (empty) output stream for result OBDD
   //////////////////////////////////////////////////////////////////////////////
-  void restrict(tpie::file_stream<node> &in_nodes,
-                tpie::file_stream<assignment> &in_assignment,
-                tpie::file_stream<node> &out_nodes);
+  void restrict(tpie::file_stream<node_t> &in_nodes,
+                tpie::file_stream<assignment_t> &in_assignment,
+                tpie::file_stream<node_t> &out_nodes);
 }
 
 #endif // COOM_RESTRICT_H

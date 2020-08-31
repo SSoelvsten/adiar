@@ -14,7 +14,7 @@ namespace coom
 {
   namespace debug
   {
-    inline void print_evaluate_assignment([[maybe_unused]] const uint64_t label,
+    inline void print_evaluate_assignment([[maybe_unused]] const label_t label,
                                           [[maybe_unused]] bool value)
     {
 #if COOM_DEBUG >= 2
@@ -39,7 +39,7 @@ namespace coom
     }
   }
 
-  bool evaluate(tpie::file_stream<node> &nodes,
+  bool evaluate(tpie::file_stream<node_t> &nodes,
                 tpie::file_stream<bool> &assignment)
   {
     debug::println_algorithm_start("EVALUATE");
@@ -48,11 +48,11 @@ namespace coom
     debug::println_file_stream(nodes, "nodes");
 
     nodes.seek(0, tpie::file_stream_base::end);
-    node current_node = nodes.read_back();
+    node_t current_node = nodes.read_back();
 
     assignment.seek(0);
     bool assignment_value = assignment.read();
-    uint64_t assignment_label = 0;
+    label_t assignment_label = 0;
 
     if(is_sink(current_node)) {
       debug::println_evaluate_return(current_node.uid);

@@ -14,17 +14,17 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   typedef std::function<bool(uint64_t)> sink_pred;
 
-  const sink_pred is_any = [] (uint64_t /* sink */) -> bool
+  const sink_pred is_any = [] (ptr_t /* sink */) -> bool
     {
       return true;
     };
 
-  const sink_pred is_true = [] (uint64_t sink) -> bool
+  const sink_pred is_true = [] (ptr_t sink) -> bool
     {
       return value_of(sink);
     };
 
-  const sink_pred is_false = [] (uint64_t sink) -> bool
+  const sink_pred is_false = [] (ptr_t sink) -> bool
     {
       return !value_of(sink);
     };
@@ -37,7 +37,7 @@ namespace coom {
   ///                  checked with the given sink predicate. Default is any
   ///                  sink.
   //////////////////////////////////////////////////////////////////////////////
-  bool is_sink(tpie::file_stream<node>& nodes, const sink_pred& sink_pred);
+  bool is_sink(tpie::file_stream<node_t>& nodes, const sink_pred& sink_pred);
 }
 
 #endif // COOM_PRED_H

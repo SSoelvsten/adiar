@@ -6,9 +6,9 @@
 #include "assignment.h"
 
 namespace coom { namespace debug {
-    void println_file_stream(tpie::file_stream<assignment> &in_assignment,
+    void println_file_stream(tpie::file_stream<assignment_t> &in_assignment,
                              std::string name);
-    void println_file_stream(tpie::file_stream<assignment> &in_assignment);
+    void println_file_stream(tpie::file_stream<assignment_t> &in_assignment);
   }
 }
 

@@ -17,7 +17,7 @@
 #include "dot.h"
 
 namespace coom {
-  void output_dot(tpie::file_stream<node>& nodes, std::string filename)
+  void output_dot(tpie::file_stream<node_t>& nodes, std::string filename)
   {
     std::ofstream out;
     out.open(filename + ".dot");
@@ -68,11 +68,11 @@ namespace coom {
       out <<  std::endl << "\t// Ranks" << std::endl;
       nodes.seek(0, tpie::file_stream_base::end);
 
-      node prev_node = nodes.read_back();
+      node_t prev_node = nodes.read_back();
       out << "\t{ rank=same; " << "n" << prev_node.uid << " }" << std::endl;
 
       bool has_next_node = nodes.can_read_back();
-      node next_node;
+      node_t next_node;
       if (has_next_node) {
         next_node = nodes.read_back();
       }
@@ -105,8 +105,8 @@ namespace coom {
     system(("dot -Tpng " + filename + ".dot" + " -o " + filename + ".png").c_str());
   }
 
-  void output_dot(tpie::file_stream<arc>& node_arcs,
-                  tpie::file_stream<arc>& sink_arcs,
+  void output_dot(tpie::file_stream<arc_t>& node_arcs,
+                  tpie::file_stream<arc_t>& sink_arcs,
                   std::string filename)
   {
     std::ofstream out;
@@ -119,7 +119,7 @@ namespace coom {
 
     while (node_arcs.can_read())
       {
-        arc a = node_arcs.read();
+        arc_t a = node_arcs.read();
         out << "\t"
             << "n" << label_of(a.target) << "_" << id_of(a.target)
             << " -> "
@@ -136,7 +136,7 @@ namespace coom {
 
     while (sink_arcs.can_read())
       {
-        arc a = sink_arcs.read();
+        arc_t a = sink_arcs.read();
         out << "\t"
             << "n" << label_of(a.source) << "_" << id_of(a.source)
             << " -> "

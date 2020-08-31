@@ -62,22 +62,22 @@ go_bandit([]() {
             ptr_t sink_T = create_sink_ptr(true);
             ptr_t sink_F = create_sink_ptr(false);
 
-            tpie::file_stream<node> obdd;
+            tpie::file_stream<node_t> obdd;
             obdd.open();
 
-            node n5 = create_node(3,0, sink_F, sink_T);
+            node_t n5 = create_node(3,0, sink_F, sink_T);
             obdd.write(n5);
 
-            node n4 = create_node(2,1, sink_T, sink_F);
+            node_t n4 = create_node(2,1, sink_T, sink_F);
             obdd.write(n4);
 
-            node n3 = create_node(2,0, sink_F, n5.uid);
+            node_t n3 = create_node(2,0, sink_F, n5.uid);
             obdd.write(n3);
 
-            node n2 = create_node(1,0, n3.uid, n4.uid);
+            node_t n2 = create_node(1,0, n3.uid, n4.uid);
             obdd.write(n2);
 
-            node n1 = create_node(0,0, n2.uid, n4.uid);
+            node_t n1 = create_node(0,0, n2.uid, n4.uid);
             obdd.write(n1);
 
             tpie::file_stream<assignment> out_assignment;
@@ -117,22 +117,22 @@ go_bandit([]() {
             ptr_t sink_T = create_sink_ptr(true);
             ptr_t sink_F = create_sink_ptr(false);
 
-            tpie::file_stream<node> obdd;
+            tpie::file_stream<node_t> obdd;
             obdd.open();
 
-            node n5 = create_node(3,0, sink_F, sink_T);
+            node_t n5 = create_node(3,0, sink_F, sink_T);
             obdd.write(n5);
 
-            node n4 = create_node(2,1, sink_T, sink_F);
+            node_t n4 = create_node(2,1, sink_T, sink_F);
             obdd.write(n4);
 
-            node n3 = create_node(2,0, sink_F, n5.uid);
+            node_t n3 = create_node(2,0, sink_F, n5.uid);
             obdd.write(n3);
 
-            node n2 = create_node(1,0, n3.uid, n4.uid);
+            node_t n2 = create_node(1,0, n3.uid, n4.uid);
             obdd.write(n2);
 
-            node n1 = create_node(0,0, n2.uid, n4.uid);
+            node_t n1 = create_node(0,0, n2.uid, n4.uid);
             obdd.write(n1);
 
             tpie::file_stream<assignment> out_assignment;
@@ -174,25 +174,25 @@ go_bandit([]() {
             ptr_t sink_T = create_sink_ptr(true);
             ptr_t sink_F = create_sink_ptr(false);
 
-            tpie::file_stream<node> obdd;
+            tpie::file_stream<node_t> obdd;
             obdd.open();
 
-            node n6 = create_node(3,0, sink_F, sink_T);
+            node_t n6 = create_node(3,0, sink_F, sink_T);
             obdd.write(n6);
 
-            node n5 = create_node(2,2, sink_T, n6.uid);
+            node_t n5 = create_node(2,2, sink_T, n6.uid);
             obdd.write(n5);
 
-            node n4 = create_node(2,1, sink_T, sink_F);
+            node_t n4 = create_node(2,1, sink_T, sink_F);
             obdd.write(n4);
 
-            node n3 = create_node(2,0, sink_F, n6.uid);
+            node_t n3 = create_node(2,0, sink_F, n6.uid);
             obdd.write(n3);
 
-            node n2 = create_node(1,0, n3.uid, n4.uid);
+            node_t n2 = create_node(1,0, n3.uid, n4.uid);
             obdd.write(n2);
 
-            node n1 = create_node(0,0, n2.uid, n5.uid);
+            node_t n1 = create_node(0,0, n2.uid, n5.uid);
             obdd.write(n1);
 
             tpie::file_stream<assignment> out_assignment;
@@ -225,13 +225,13 @@ go_bandit([]() {
             ptr_t sink_T = create_sink_ptr(true);
             ptr_t sink_F = create_sink_ptr(false);
 
-            tpie::file_stream<node> obdd;
+            tpie::file_stream<node_t> obdd;
             obdd.open();
 
-            node n2 = create_node(1,0, sink_T, sink_T);
+            node_t n2 = create_node(1,0, sink_T, sink_T);
             obdd.write(n2);
 
-            node n1 = create_node(0,0, n2.uid, sink_F);
+            node_t n1 = create_node(0,0, n2.uid, sink_F);
             obdd.write(n1);
 
             tpie::file_stream<assignment> out_assignment;
@@ -262,22 +262,22 @@ go_bandit([]() {
             ptr_t sink_T = create_sink_ptr(true);
             ptr_t sink_F = create_sink_ptr(false);
 
-            tpie::file_stream<node> obdd;
+            tpie::file_stream<node_t> obdd;
             obdd.open();
 
-            node n5 = create_node(3,1, sink_F, sink_F);
+            node_t n5 = create_node(3,1, sink_F, sink_F);
             obdd.write(n5);
 
-            node n4 = create_node(3,0, sink_F, sink_F);
+            node_t n4 = create_node(3,0, sink_F, sink_F);
             obdd.write(n4);
 
-            node n3 = create_node(2,0, n4.uid, n5.uid);
+            node_t n3 = create_node(2,0, n4.uid, n5.uid);
             obdd.write(n3);
 
-            node n2 = create_node(1,0, sink_T, n3.uid);
+            node_t n2 = create_node(1,0, sink_T, n3.uid);
             obdd.write(n2);
 
-            node n1 = create_node(0,0, n2.uid, sink_F);
+            node_t n1 = create_node(0,0, n2.uid, sink_F);
             obdd.write(n1);
 
             tpie::file_stream<assignment> out_assignment;
@@ -295,7 +295,7 @@ go_bandit([]() {
           });
 
         it("should retrieve an empty assignment for sink-only OBDDs", [&]() {
-            tpie::file_stream<node> obdd;
+            tpie::file_stream<node_t> obdd;
             obdd.open();
             obdd.write(create_sink(true));
 
@@ -318,12 +318,12 @@ go_bandit([]() {
             ptr_t sink_T = create_sink_ptr(true);
             ptr_t sink_F = create_sink_ptr(false);
 
-            tpie::file_stream<node> obdd;
+            tpie::file_stream<node_t> obdd;
             obdd.open();
 
-            node n2 = create_node(1,0,sink_F, sink_T);
+            node_t n2 = create_node(1,0,sink_F, sink_T);
             obdd.write(n2);
-            node n1 = create_node(0,0,n2.uid, sink_T);
+            node_t n1 = create_node(0,0,n2.uid, sink_T);
             obdd.write(n1);
 
             tpie::file_stream<assignment> out_assignment;

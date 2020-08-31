@@ -17,7 +17,7 @@
 namespace coom
 {
   namespace debug {
-    inline void println_reduce_layer([[maybe_unused]] uint64_t label)
+    inline void println_reduce_layer([[maybe_unused]] label_t label)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << std::endl << "| layer: " << label << std::endl;
@@ -74,9 +74,9 @@ namespace coom
 #endif
     }
 
-    inline void println_reduce_forward([[maybe_unused]] uint64_t target,
-                                       [[maybe_unused]] uint64_t old_uid,
-                                       [[maybe_unused]] uint64_t new_uid)
+    inline void println_reduce_forward([[maybe_unused]] ptr_t target,
+                                       [[maybe_unused]] uid_t old_uid,
+                                       [[maybe_unused]] uid_t new_uid)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << "|   | ";
@@ -90,21 +90,21 @@ namespace coom
     }
   }
 
-  inline auto bytes_from_size(tpie::file_stream<arc> &in_node_arcs,
-                              tpie::file_stream<arc> &in_sink_arcs) {
+  inline auto bytes_from_size(tpie::file_stream<arc_t> &in_node_arcs,
+                              tpie::file_stream<arc_t> &in_sink_arcs) {
     return sizeof(coom::node) * ((in_node_arcs.size() + in_sink_arcs.size()) / 2);
   }
 
   struct mapping
   {
-    uint64_t old_uid;
-    uint64_t new_uid;
+    uid_t old_uid;
+    uid_t new_uid;
   };
 
   // Predicate for priority queue
   struct reduce_queue_lt
   {
-    bool operator()(const arc &a, const arc &b)
+    bool operator()(const arc_t &a, const arc_t &b)
     {
       // We want the high arc first, but that is already placed on the
       // least-significant bit on the source variable.
@@ -113,7 +113,7 @@ namespace coom
   };
 
   //Predicate for sorting for common children
-  const auto reduce_node_children_lt = [](const node &a, const node &b) -> bool {
+  const auto reduce_node_children_lt = [](const node_t &a, const node_t &b) -> bool {
     return a.high > b.high ||
            (a.high == b.high && a.low > b.low) ||
            (a.high == b.high && a.low == b.low && a.uid > b.uid);
@@ -124,13 +124,13 @@ namespace coom
     return a.old_uid > b.old_uid;
   };
 
-  inline arc reduce_get_next(tpie::priority_queue<arc, reduce_queue_lt> &redD,
-                             tpie::file_stream<arc> &in_sink_arcs,
-                             arc &next_sink_arc,
-                             bool &has_next_sink)
+  inline arc_t reduce_get_next(tpie::priority_queue<arc_t, reduce_queue_lt> &redD,
+                               tpie::file_stream<arc_t> &in_sink_arcs,
+                               arc_t &next_sink_arc,
+                               bool &has_next_sink)
   {
     if (redD.empty() || (has_next_sink && next_sink_arc.source > redD.top().source)) {
-      arc ret_value = next_sink_arc;
+      arc_t ret_value = next_sink_arc;
 
       if (in_sink_arcs.can_read_back()) {
         next_sink_arc = in_sink_arcs.read_back();
@@ -140,15 +140,15 @@ namespace coom
 
       return ret_value;
     } else {
-      arc ret_value = redD.top();
+      arc_t ret_value = redD.top();
       redD.pop();
       return ret_value;
     }
   }
 
-  void reduce(tpie::file_stream<arc> &in_node_arcs,
-              tpie::file_stream<arc> &in_sink_arcs,
-              tpie::file_stream<node> &out_nodes)
+  void reduce(tpie::file_stream<arc_t> &in_node_arcs,
+              tpie::file_stream<arc_t> &in_sink_arcs,
+              tpie::file_stream<node_t> &out_nodes)
   {
     debug::println_algorithm_start("REDUCE");
 
@@ -161,7 +161,7 @@ namespace coom
     assert::is_valid_output_stream(out_nodes);
 
     // Set up
-    tpie::priority_queue<arc, reduce_queue_lt> redD;
+    tpie::priority_queue<arc_t, reduce_queue_lt> redD;
     in_sink_arcs.seek(0, tpie::file_stream_base::end);
     in_node_arcs.seek(0, tpie::file_stream_base::end);
     tpie::dummy_progress_indicator pi;
@@ -174,8 +174,8 @@ namespace coom
 
     // Check to see if in_node_arcs is empty
     if (!in_node_arcs.can_read_back()) {
-      arc e_high = in_sink_arcs.read_back();
-      arc e_low = in_sink_arcs.read_back();
+      arc_t e_high = in_sink_arcs.read_back();
+      arc_t e_low = in_sink_arcs.read_back();
 
       // Apply reduction rule 1 if applicable
       if (e_high.target == e_low.target) {
@@ -191,12 +191,12 @@ namespace coom
     }
 
     // Find the first edge and its label
-    arc next_node_arc = in_node_arcs.read_back();
+    arc_t next_node_arc = in_node_arcs.read_back();
     bool has_next_node_arc = true;
 
-    uint64_t label = label_of(next_node_arc.target);
+    label_t label = label_of(next_node_arc.target);
 
-    arc next_sink_arc = in_sink_arcs.read_back();
+    arc_t next_sink_arc = in_sink_arcs.read_back();
     bool has_next_sink = true;
 
     // Process bottom-up each layer
@@ -208,7 +208,7 @@ namespace coom
       red1_mapping.open();
 
       // Set-up for L_j
-      tpie::merge_sorter<node, false, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
+      tpie::merge_sorter<node_t, false, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
       child_grouping.set_available_memory(max_sorter_memory);
       child_grouping.begin();
 
@@ -217,8 +217,8 @@ namespace coom
       // Pull out all nodes from redD and in_sink_arcs for this layer
       while ((has_next_sink && label_of(next_sink_arc.source) == label)
              || (!redD.empty() && label_of(redD.top().source) == label)) {
-        arc e_high = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
-        arc e_low = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
+        arc_t e_high = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
+        arc_t e_low = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
 
         node_t n = node_of(e_low, e_high);
 
@@ -244,10 +244,10 @@ namespace coom
 
       if (child_grouping.can_pull()) {
         // Output the first
-        uint64_t out_id = MAX_ID;
-        node current_node = child_grouping.pull();
+        id_t out_id = MAX_ID;
+        node_t current_node = child_grouping.pull();
 
-        node out_node = create_node(label, out_id, current_node.low, current_node.high);
+        node_t out_node = create_node(label, out_id, current_node.low, current_node.high);
         out_nodes.write(out_node);
         out_id--;
 
@@ -257,7 +257,7 @@ namespace coom
 
         // Output nodes and remap the ones match the one just output
         while (child_grouping.can_pull()) {
-          node next_node = child_grouping.pull();
+          node_t next_node = child_grouping.pull();
           if (current_node.low == next_node.low && current_node.high == next_node.high) {
             debug::println_reduce_red_2(next_node, true);
             red2_mapping.push({ next_node.uid, out_node.uid });
@@ -304,7 +304,7 @@ namespace coom
         // Find all arcs that have sources that match the current mapping's old_uid
         while (has_next_node_arc && current_map.old_uid == next_node_arc.target) {
           // The is_high flag is already included in next_node_arc.source
-          arc new_arc = { next_node_arc.source, current_map.new_uid };
+          arc_t new_arc = { next_node_arc.source, current_map.new_uid };
 
           debug::println_reduce_forward(next_node_arc.source,
                                         current_map.old_uid,

@@ -7,12 +7,12 @@ using namespace coom;
 go_bandit([]() {
     describe("COOM: Negate", [&]() {
         it("should negate a T sink-only OBDD into an F sink-only OBDD", [&]() {
-            tpie::file_stream<node> in_nodes;
+            tpie::file_stream<node_t> in_nodes;
             in_nodes.open();
 
             in_nodes.write(create_sink(true));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             // Negate it
@@ -28,12 +28,12 @@ go_bandit([]() {
           });
 
         it("should negate a F sink-only OBDD into an T sink-only OBDD", [&]() {
-            tpie::file_stream<node> in_nodes;
+            tpie::file_stream<node_t> in_nodes;
             in_nodes.open();
 
             in_nodes.write(create_sink(false));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             // Negate it
@@ -59,7 +59,7 @@ go_bandit([]() {
                   F T
             */
 
-            tpie::file_stream<node> in_nodes;
+            tpie::file_stream<node_t> in_nodes;
             in_nodes.open();
 
             ptr_t sink_T = create_sink_ptr(true);
@@ -80,7 +80,7 @@ go_bandit([]() {
                                        create_node_ptr(2, MAX_ID),
                                        create_node_ptr(1, MAX_ID)));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             // Negate it
@@ -119,7 +119,7 @@ go_bandit([]() {
                    F T
             */
 
-            tpie::file_stream<node> in_nodes;
+            tpie::file_stream<node_t> in_nodes;
             in_nodes.open();
 
             ptr_t sink_T = create_sink_ptr(true);
@@ -145,7 +145,7 @@ go_bandit([]() {
                                        create_node_ptr(1, MAX_ID-1),
                                        create_node_ptr(1, MAX_ID)));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             // Negate it

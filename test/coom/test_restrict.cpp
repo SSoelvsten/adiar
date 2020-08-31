@@ -26,22 +26,22 @@ go_bandit([]() {
         ptr_t sink_T = create_sink_ptr(true);
         ptr_t sink_F = create_sink_ptr(false);
 
-        tpie::file_stream<node> obdd;
+        tpie::file_stream<node_t> obdd;
         obdd.open();
 
-        node n5 = create_node(3,0, sink_F, sink_T);
+        node_t n5 = create_node(3,0, sink_F, sink_T);
         obdd.write(n5);
 
-        node n4 = create_node(2,1, sink_T, n5.uid);
+        node_t n4 = create_node(2,1, sink_T, n5.uid);
         obdd.write(n4);
 
-        node n3 = create_node(2,0, sink_F, sink_T);
+        node_t n3 = create_node(2,0, sink_F, sink_T);
         obdd.write(n3);
 
-        node n2 = create_node(1,0, n3.uid, n4.uid);
+        node_t n2 = create_node(1,0, n3.uid, n4.uid);
         obdd.write(n2);
 
-        node n1 = create_node(0,0, n3.uid, n2.uid);
+        node_t n1 = create_node(0,0, n3.uid, n2.uid);
         obdd.write(n1);
 
         //                END
@@ -65,13 +65,13 @@ go_bandit([]() {
 
             assignment.write(create_assignment(2, true));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
@@ -118,13 +118,13 @@ go_bandit([]() {
 
             assignment.write(create_assignment(1, false));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
@@ -168,13 +168,13 @@ go_bandit([]() {
 
             assignment.write(create_assignment(1, true));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
@@ -227,13 +227,13 @@ go_bandit([]() {
             assignment.write(create_assignment(0, true));
             assignment.write(create_assignment(3, false));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
@@ -278,13 +278,13 @@ go_bandit([]() {
             assignment.write(create_assignment(1, true));
             assignment.write(create_assignment(3, false));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
@@ -310,13 +310,13 @@ go_bandit([]() {
             assignment.write(create_assignment(0, false));
             assignment.write(create_assignment(2, false));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
@@ -339,13 +339,13 @@ go_bandit([]() {
             assignment.write(create_assignment(1, true));
             assignment.write(create_assignment(2, false));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
@@ -361,7 +361,7 @@ go_bandit([]() {
           });
 
         it("should return T sink given a T sink", [&]() {
-            tpie::file_stream<node> in_nodes;
+            tpie::file_stream<node_t> in_nodes;
             in_nodes.open();
 
             in_nodes.write(create_sink(true));
@@ -373,7 +373,7 @@ go_bandit([]() {
             assignment.write(create_assignment(2, true));
             assignment.write(create_assignment(42, false));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             restrict(in_nodes, assignment, out_nodes);
@@ -386,7 +386,7 @@ go_bandit([]() {
           });
 
         it("should return F sink given a F sink", [&]() {
-            tpie::file_stream<node> in_nodes;
+            tpie::file_stream<node_t> in_nodes;
             in_nodes.open();
 
             in_nodes.write(create_sink(false));
@@ -398,7 +398,7 @@ go_bandit([]() {
             assignment.write(create_assignment(21, true));
             assignment.write(create_assignment(28, false));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             restrict(in_nodes, assignment, out_nodes);
@@ -414,7 +414,7 @@ go_bandit([]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             restrict(obdd, assignment, out_nodes);
@@ -452,19 +452,19 @@ go_bandit([]() {
             ptr_t sink_T = create_sink_ptr(true);
             ptr_t sink_F = create_sink_ptr(false);
 
-            tpie::file_stream<node> in_nodes;
+            tpie::file_stream<node_t> in_nodes;
             in_nodes.open();
 
-            node n4 = create_node(2,0, sink_T, sink_F);
+            node_t n4 = create_node(2,0, sink_T, sink_F);
             in_nodes.write(n4);
 
-            node n3 = create_node(1,1, sink_T, sink_F);
+            node_t n3 = create_node(1,1, sink_T, sink_F);
             in_nodes.write(n3);
 
-            node n2 = create_node(1,0, n4.uid, sink_F);
+            node_t n2 = create_node(1,0, n4.uid, sink_F);
             in_nodes.write(n2);
 
-            node n1 = create_node(0,0, n2.uid, n3.uid);
+            node_t n1 = create_node(0,0, n2.uid, n3.uid);
             in_nodes.write(n1);
 
             tpie::file_stream<assignment> assignment;
@@ -472,13 +472,13 @@ go_bandit([]() {
 
             assignment.write(create_assignment(2, true));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             restrict(in_nodes, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
@@ -525,22 +525,22 @@ go_bandit([]() {
             ptr_t sink_T = create_sink_ptr(true);
             ptr_t sink_F = create_sink_ptr(false);
 
-            tpie::file_stream<node> in_nodes;
+            tpie::file_stream<node_t> in_nodes;
             in_nodes.open();
 
-            node n5 = create_node(2,1, sink_F, sink_T);
+            node_t n5 = create_node(2,1, sink_F, sink_T);
             in_nodes.write(n5);
 
-            node n4 = create_node(2,0, sink_T, sink_F);
+            node_t n4 = create_node(2,0, sink_T, sink_F);
             in_nodes.write(n4);
 
-            node n3 = create_node(1,1, n5.uid, sink_F);
+            node_t n3 = create_node(1,1, n5.uid, sink_F);
             in_nodes.write(n3);
 
-            node n2 = create_node(1,0, n4.uid, sink_F);
+            node_t n2 = create_node(1,0, n4.uid, sink_F);
             in_nodes.write(n2);
 
-            node n1 = create_node(0,0, n2.uid, n3.uid);
+            node_t n1 = create_node(0,0, n2.uid, n3.uid);
             in_nodes.write(n1);
 
             tpie::file_stream<assignment> assignment;
@@ -548,13 +548,13 @@ go_bandit([]() {
 
             assignment.write(create_assignment(2, true));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             restrict(in_nodes, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
@@ -603,34 +603,34 @@ go_bandit([]() {
                  Here, node 4 and 6 are going to be dead, when x1 -> T.
              */
 
-            tpie::file_stream<node> dead_obdd;
+            tpie::file_stream<node_t> dead_obdd;
             dead_obdd.open();
 
-            node n9 = create_node(3,1, sink_T, sink_F);
+            node_t n9 = create_node(3,1, sink_T, sink_F);
             dead_obdd.write(n9);
 
-            node n8 = create_node(3,0, sink_F, sink_T);
+            node_t n8 = create_node(3,0, sink_F, sink_T);
             dead_obdd.write(n8);
 
-            node n7 = create_node(2,3, n9.uid, sink_T);
+            node_t n7 = create_node(2,3, n9.uid, sink_T);
             dead_obdd.write(n7);
 
-            node n6 = create_node(2,2, sink_T, n9.uid);
+            node_t n6 = create_node(2,2, sink_T, n9.uid);
             dead_obdd.write(n6);
 
-            node n5 = create_node(2,1, sink_F, n8.uid);
+            node_t n5 = create_node(2,1, sink_F, n8.uid);
             dead_obdd.write(n5);
 
-            node n4 = create_node(2,0, sink_T, sink_F);
+            node_t n4 = create_node(2,0, sink_T, sink_F);
             dead_obdd.write(n4);
 
-            node n3 = create_node(1,1, n6.uid, n7.uid);
+            node_t n3 = create_node(1,1, n6.uid, n7.uid);
             dead_obdd.write(n3);
 
-            node n2 = create_node(1,0, n4.uid, n5.uid);
+            node_t n2 = create_node(1,0, n4.uid, n5.uid);
             dead_obdd.write(n2);
 
-            node n1 = create_node(0,0, n2.uid, n3.uid);
+            node_t n1 = create_node(0,0, n2.uid, n3.uid);
             dead_obdd.write(n1);
 
             tpie::file_stream<assignment> assignment;
@@ -638,13 +638,13 @@ go_bandit([]() {
 
             assignment.write(create_assignment(1, true));
 
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             restrict(dead_obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);

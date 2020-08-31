@@ -9,11 +9,13 @@
 namespace coom
 {
   struct assignment {
-    uint64_t label;
+    label_t label;
     bool value;
   };
 
-  assignment create_assignment(uint64_t label, bool value);
+  typedef assignment assignment_t;
+
+  assignment_t create_assignment(label_t label, bool value);
 
   bool operator< (const assignment& a, const assignment& b);
   bool operator> (const assignment& a, const assignment& b);
@@ -34,11 +36,11 @@ namespace coom
   /// \param comparator      The ordering for the outputted assignment. Default
   ///                        is in ascending order by the label.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename pred_t = std::less<assignment>>
-  bool get_assignment(tpie::file_stream<node> &in_nodes,
+  template<typename pred_t = std::less<assignment_t>>
+  bool get_assignment(tpie::file_stream<node_t> &in_nodes,
                       const sink_pred& sink_pred,
-                      tpie::file_stream<assignment> &out_assignment,
-                      const pred_t pred = std::less<assignment>());
+                      tpie::file_stream<assignment_t> &out_assignment,
+                      const pred_t pred = std::less<assignment_t>());
 }
 
 #endif // COOM_ASSIGNMENT_H

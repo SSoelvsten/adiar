@@ -58,7 +58,7 @@ namespace coom {
   /****************************************************************************/
   /*  NODE PTR                                                                */
   /****************************************************************************/
-  inline uid_t create_node_uid(uint64_t label, uint64_t id)
+  inline uid_t create_node_uid(label_t label, id_t id)
   {
 #if COOM_ASSERT
     assert (label <= MAX_LABEL);
@@ -68,17 +68,17 @@ namespace coom {
     return (label << (ID_BITS + 1)) + (id << 1);
   }
 
-  inline ptr_t create_node_ptr(uint64_t label, uint64_t id)
+  inline ptr_t create_node_ptr(label_t label, id_t id)
   {
     return create_node_uid(label, id);
   }
 
-  inline uint64_t label_of(uint64_t n)
+  inline label_t label_of(uint64_t n)
   {
     return n >> (ID_BITS + 1);
   }
 
-  inline uint64_t id_of(uint64_t n)
+  inline id_t id_of(uint64_t n)
   {
     return (n >> 1) & MAX_ID;
   }
@@ -86,7 +86,7 @@ namespace coom {
   /****************************************************************************/
   /*  SINK ARC                                                                */
   /****************************************************************************/
-  inline uint64_t create_sink_ptr(bool v)
+  inline ptr_t create_sink_ptr(bool v)
   {
     return SINK_BIT + (v << 1);
   }
@@ -105,7 +105,7 @@ namespace coom {
     return { uid, low, high };
   }
 
-  inline node create_node(uint64_t label, uint64_t id, ptr_t low, ptr_t high)
+  inline node create_node(label_t label, id_t id, ptr_t low, ptr_t high)
   {
     return create_node(create_node_uid(label, id), low, high);
   }
@@ -128,7 +128,7 @@ namespace coom {
     return value_of(n.uid);
   }
 
-  inline uint64_t id_of(const node& n)
+  inline id_t id_of(const node& n)
   {
 #if COOM_ASSERT
     assert (!is_sink(n));
@@ -136,7 +136,7 @@ namespace coom {
     return id_of(n.uid);
   }
 
-  inline uint64_t label_of(const node& n)
+  inline label_t label_of(const node& n)
   {
 #if COOM_ASSERT
     assert (!is_sink(n));

@@ -96,6 +96,11 @@ go_bandit([]() {
           });
 
         describe("Node Ptr", [&]() {
+            it("should store and retrieve label for Ptr with maximal id (unflagged)", [&]() {
+                ptr_t p = create_node_ptr(12,MAX_ID);
+                AssertThat(label_of(p), Is().EqualTo(12));
+              });
+
             it("should store and retrieve 42 label Ptr (unflagged)", [&]() {
                 ptr_t p = create_node_ptr(42,2);
                 AssertThat(label_of(p), Is().EqualTo(42));
@@ -109,6 +114,11 @@ go_bandit([]() {
             it("should store and retrieve MAX label Ptr (unflagged)", [&]() {
                 ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
                 AssertThat(label_of(p), Is().EqualTo(MAX_LABEL));
+              });
+
+            it("should store and retrieve label for Ptr with maximal id (flagged)", [&]() {
+                ptr_t p = flag(create_node_ptr(12,MAX_ID));
+                AssertThat(label_of(p), Is().EqualTo(12));
               });
 
             it("should store and retrieve 42 label Ptr (flagged)", [&]() {
@@ -309,10 +319,10 @@ go_bandit([]() {
             it("should take up 24 bytes of memory", [&]() {
                 ptr_t node_ptr = create_node_ptr(42,2);
                 ptr_t sink = create_sink_ptr(false);
-                node node = create_node(1,
-                                        8,
-                                        node_ptr,
-                                        sink);
+                node_t node = create_node(1,
+                                          8,
+                                          node_ptr,
+                                          sink);
 
                 AssertThat(sizeof(node), Is().EqualTo(3u * 8u));
               });
@@ -320,30 +330,30 @@ go_bandit([]() {
 
         describe("Sink nodes", [&]() {
             it("should recognise sink nodes as such", [&]() {
-                node sink_node_T = create_sink(true);
+                node_t sink_node_T = create_sink(true);
                 AssertThat(is_sink(sink_node_T), Is().True());
 
-                node sink_node_F = create_sink(false);
+                node_t sink_node_F = create_sink(false);
                 AssertThat(is_sink(sink_node_F), Is().True());
               });
 
             it("should recognise normal nodes not as sink nodes", [&]() {
-                node node_1 = create_node(42,2,
-                                          create_sink_ptr(false),
-                                          create_sink_ptr(true));
+                node_t node_1 = create_node(42,2,
+                                            create_sink_ptr(false),
+                                            create_sink_ptr(true));
                 AssertThat(is_sink(node_1), Is().False());
 
-                node node_2 = create_node(0,0,
-                                          create_sink_ptr(true),
-                                          node_1.uid);
+                node_t node_2 = create_node(0,0,
+                                            create_sink_ptr(true),
+                                            node_1.uid);
                 AssertThat(is_sink(node_2), Is().False());
               });
 
             it("should retrive value of a sink node", [&]() {
-                node sink_node_T = create_sink(true);
+                node_t sink_node_T = create_sink(true);
                 AssertThat(value_of(sink_node_T), Is().True());
 
-                node sink_node_F = create_sink(false);
+                node_t sink_node_F = create_sink(false);
                 AssertThat(value_of(sink_node_F), Is().False());
               });
           });
@@ -353,8 +363,8 @@ go_bandit([]() {
                 ptr_t source = create_node_ptr(4,2);
                 ptr_t target = create_node_ptr(42,3);
 
-                arc arc_1 = { source, target };
-                arc arc_2 = { source, target };
+                arc_t arc_1 = { source, target };
+                arc_t arc_2 = { source, target };
 
                 AssertThat(arc_1 == arc_2, Is().True());
                 AssertThat(arc_1 != arc_2, Is().False());
@@ -365,20 +375,20 @@ go_bandit([]() {
                 ptr_t node_ptr_2 = create_node_ptr(4,3);
                 ptr_t node_ptr_3 = create_node_ptr(3,2);
 
-                arc arc_1 = { node_ptr_1, node_ptr_2 };
-                arc arc_2 = { node_ptr_1, node_ptr_3 };
+                arc_t arc_1 = { node_ptr_1, node_ptr_2 };
+                arc_t arc_2 = { node_ptr_1, node_ptr_3 };
 
                 AssertThat(arc_1 == arc_2, Is().False());
                 AssertThat(arc_1 != arc_2, Is().True());
 
-                arc arc_3 = { node_ptr_1, node_ptr_2 };
-                arc arc_4 = { flag(node_ptr_1), node_ptr_2 };
+                arc_t arc_3 = { node_ptr_1, node_ptr_2 };
+                arc_t arc_4 = { flag(node_ptr_1), node_ptr_2 };
 
                 AssertThat(arc_3 == arc_4, Is().False());
                 AssertThat(arc_3 != arc_4, Is().True());
 
-                arc arc_5 = { node_ptr_1, node_ptr_2 };
-                arc arc_6 = { node_ptr_3, node_ptr_2 };
+                arc_t arc_5 = { node_ptr_1, node_ptr_2 };
+                arc_t arc_6 = { node_ptr_3, node_ptr_2 };
 
                 AssertThat(arc_5 == arc_6, Is().False());
                 AssertThat(arc_5 != arc_6, Is().True());
@@ -388,7 +398,7 @@ go_bandit([]() {
                 ptr_t node_ptr_1 = create_node_ptr(4,2);
                 ptr_t node_ptr_2 = create_node_ptr(4,3);
 
-                arc arc_low = { node_ptr_1, node_ptr_2 };
+                arc_t arc_low = { node_ptr_1, node_ptr_2 };
                 AssertThat(is_high(arc_low), Is().False());
               });
 
@@ -396,18 +406,18 @@ go_bandit([]() {
                 ptr_t node_ptr_1 = create_node_ptr(4,2);
                 ptr_t node_ptr_2 = create_node_ptr(4,3);
 
-                arc arc_high = { flag(node_ptr_1), node_ptr_2 };
+                arc_t arc_high = { flag(node_ptr_1), node_ptr_2 };
                 AssertThat(is_high(arc_high), Is().True());
               });
 
             it("should be a POD", [&]() {
-                AssertThat(std::is_pod<arc>::value, Is().True());
+                AssertThat(std::is_pod<arc_t>::value, Is().True());
               });
 
             it("should take up 16 bytes of memory", [&]() {
                 ptr_t node_ptr = create_node_ptr(42,2);
                 ptr_t sink = create_sink_ptr(false);
-                arc arc = { node_ptr, sink };
+                arc_t arc = { node_ptr, sink };
 
                 AssertThat(sizeof(arc), Is().EqualTo(2u * 8u));
               });
@@ -415,11 +425,11 @@ go_bandit([]() {
 
         describe("Converters", [&]() {
             it("should extract low arc from node", [&]() {
-                node node = create_node(7,42,
-                                        create_node_ptr(8,21),
-                                        create_node_ptr(9,8));
+                node_t node = create_node(7,42,
+                                          create_node_ptr(8,21),
+                                          create_node_ptr(9,8));
 
-                arc arc = low_arc_of(node);
+                arc_t arc = low_arc_of(node);
 
                 AssertThat(label_of(arc.source), Is().EqualTo(7));
                 AssertThat(id_of(arc.source), Is().EqualTo(42));
@@ -428,11 +438,11 @@ go_bandit([]() {
               });
 
             it("should extract high arc from node", [&]() {
-                node node = create_node(11,13,
-                                        create_node_ptr(8,21),
-                                        create_node_ptr(9,8));
+                node_t node = create_node(11,13,
+                                          create_node_ptr(8,21),
+                                          create_node_ptr(9,8));
 
-                arc arc = high_arc_of(node);
+                arc_t arc = high_arc_of(node);
 
                 AssertThat(label_of(arc.source), Is().EqualTo(11));
                 AssertThat(id_of(arc.source), Is().EqualTo(13));
@@ -441,10 +451,10 @@ go_bandit([]() {
               });
 
             it("should combine low and high arcs into single node", [&]() {
-                arc low_arc = { create_node_ptr(17,42), create_node_ptr(9,8) };
-                arc high_arc = { flag(create_node_ptr(17,42)), create_node_ptr(8,21) };
+                arc_t low_arc = { create_node_ptr(17,42), create_node_ptr(9,8) };
+                arc_t high_arc = { flag(create_node_ptr(17,42)), create_node_ptr(8,21) };
 
-                node node = node_of(low_arc, high_arc);
+                node_t node = node_of(low_arc, high_arc);
 
                 AssertThat(label_of(node), Is().EqualTo(17));
                 AssertThat(id_of(node), Is().EqualTo(42));

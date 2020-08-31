@@ -83,16 +83,16 @@ namespace coom
 
   struct tuple
   {
-    uint64_t source;
-    uint64_t t1;
-    uint64_t t2;
+    ptr_t source;
+    ptr_t t1;
+    ptr_t t2;
   };
 
   struct tuple_data
   {
-    uint64_t source;
-    uint64_t t1;
-    uint64_t t2;
+    ptr_t source;
+    ptr_t t1;
+    ptr_t t2;
     node data;
     bool from_1;
   };
@@ -115,21 +115,21 @@ namespace coom
     }
   };
 
-  bool can_right_shortcut(const bool_op &op, const uint64_t sink)
+  bool can_right_shortcut(const bool_op &op, const ptr_t sink)
   {
     return op(create_sink_ptr(false), sink) == op(create_sink_ptr(true), sink);
   }
 
-  bool can_left_shortcut(const bool_op &op, const uint64_t sink)
+  bool can_left_shortcut(const bool_op &op, const ptr_t sink)
   {
     return op(sink, create_sink_ptr(false)) == op(sink, create_sink_ptr(true));
   }
 
-  void apply(tpie::file_stream<node> &in_nodes_1,
-             tpie::file_stream<node> &in_nodes_2,
+  void apply(tpie::file_stream<node_t> &in_nodes_1,
+             tpie::file_stream<node_t> &in_nodes_2,
              const bool_op &op,
-             tpie::file_stream<arc> &reduce_node_arcs,
-             tpie::file_stream<arc> &reduce_sink_arcs)
+             tpie::file_stream<arc_t> &reduce_node_arcs,
+             tpie::file_stream<arc_t> &reduce_sink_arcs)
   {
     // Set-up
     in_nodes_1.seek(0, tpie::file_stream_base::end);
@@ -138,16 +138,16 @@ namespace coom
     tpie::priority_queue<tuple, apply_lt> appD;
     tpie::priority_queue<tuple_data, apply_lt_data> appD_data;
 
-    node v1 = in_nodes_1.read_back();
-    node v2 = in_nodes_2.read_back();
-    uint64_t out_index = 0;
+    node_t v1 = in_nodes_1.read_back();
+    node_t v2 = in_nodes_2.read_back();
+    id_t out_id = 0;
 
     // Process root and create initial recursion requests
     ptr_t low1, low2;
     ptr_t high1, high2;
 
-    uint64_t prior_label = label_of(std::min(v1.uid, v2.uid));
-    ptr_t root = create_node_ptr(prior_label, out_index);
+    label_t prior_label = label_of(std::min(v1.uid, v2.uid));
+    uid_t root_uid = create_node_uid(prior_label, out_id);
 
     if (is_sink(v1)) {
       low1 = high1 = v1.uid;
@@ -199,34 +199,34 @@ namespace coom
 
     // Shortcut the root
     if (is_sink_ptr(low1) && is_sink_ptr(low2)) {
-      arc new_arc = { root, op(low1, low2) };
+      arc_t new_arc = { root_uid, op(low1, low2) };
       reduce_sink_arcs.write(new_arc);
     } else if (is_sink_ptr(low1) && can_left_shortcut(op, low1)) {
-      arc new_arc = { root, op(low1, create_sink_ptr(true)) };
+      arc_t new_arc = { root_uid, op(low1, create_sink_ptr(true)) };
       reduce_sink_arcs.write(new_arc);
     } else if (is_sink_ptr(low2) && can_right_shortcut(op, low2)) {
-      arc new_arc = { root,  op(create_sink_ptr(true), low2) };
+      arc_t new_arc = { root_uid, op(create_sink_ptr(true), low2) };
       reduce_sink_arcs.write(new_arc);
     } else {
-      appD.push({root, low1, low2});
+      appD.push({ root_uid, low1, low2 });
     }
 
     if (is_sink_ptr(high1) && is_sink_ptr(high2)) {
-      arc new_arc = { flag(root), op(high1, high2) };
+      arc_t new_arc = { flag(root_uid), op(high1, high2) };
       reduce_sink_arcs.write(new_arc);
     } else if (is_sink_ptr(high1) && can_left_shortcut(op, high1)) {
-      arc new_arc = { flag(root), op(high1, create_sink_ptr(true)) };
+      arc_t new_arc = { flag(root_uid), op(high1, create_sink_ptr(true)) };
       reduce_sink_arcs.write(new_arc);
     } else if (is_sink_ptr(high2) && can_right_shortcut(op, high2)) {
-      arc new_arc = { flag(root), op(create_sink_ptr(true), high2) };
+      arc_t new_arc = { flag(root_uid), op(create_sink_ptr(true), high2) };
       reduce_sink_arcs.write(new_arc);
     } else {
-      appD.push({ flag(root), high1, high2 });
+      appD.push({ flag(root_uid), high1, high2 });
     }
 
     // Process all nodes in topological order of both OBDDs
-    uint64_t source;
-    uint64_t t1, t2;
+    ptr_t source;
+    ptr_t t1, t2;
 
     bool with_data, from_1 = false;
     node data;
@@ -309,7 +309,7 @@ namespace coom
           && !is_sink_ptr(t1) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)
           && (v1.uid != t1 || v2.uid != t2)) {
         bool from_1 = v1.uid == t1;
-        node v0 = from_1 ? v1 : v2;
+        node_t v0 = from_1 ? v1 : v2;
 
         appD_data.push({source, t1, t2, v0, from_1});
 
@@ -323,10 +323,10 @@ namespace coom
       }
 
       // Resolve current node and recurse
-      uint64_t low1;
-      uint64_t low2;
-      uint64_t high1;
-      uint64_t high2;
+      ptr_t low1;
+      ptr_t low2;
+      ptr_t high1;
+      ptr_t high2;
 
       if (is_sink_ptr(t1) || is_sink_ptr(t2) || label_of(t1) != label_of(t2)) {
         if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink_ptr(t2)
@@ -351,45 +351,45 @@ namespace coom
       }
 
       // Create new node
-      uint64_t out_label = label_of(std::min(t1, t2));
-      out_index = prior_label != out_label ? 0 : out_index;
+      label_t out_label = label_of(std::min(t1, t2));
+      out_id = prior_label != out_label ? 0 : out_id;
       prior_label = out_label;
 
-      uint64_t out_uid = create_node_uid(out_label, out_index);
+      uid_t out_uid = create_node_uid(out_label, out_id);
       debug::println_apply_resolution(out_uid, low1, low2, high1, high2);
 
-      out_index++;
+      out_id++;
 
       // Output outgoing sink arcs or recurse
       if (is_sink_ptr(low1) && is_sink_ptr(low2)) {
-        arc out_arc = { out_uid, op(low1, low2) };
+        arc_t out_arc = { out_uid, op(low1, low2) };
         reduce_sink_arcs.write(out_arc);
       } else if (is_sink_ptr(low1) && can_left_shortcut(op, low1)) {
-        arc out_arc = { out_uid, op(low1, create_sink_ptr(true)) };
+        arc_t out_arc = { out_uid, op(low1, create_sink_ptr(true)) };
         reduce_sink_arcs.write(out_arc);
       } else if (is_sink_ptr(low2) && can_right_shortcut(op, low2)) {
-        arc out_arc = { out_uid, op(create_sink_ptr(true), low2) };
+        arc_t out_arc = { out_uid, op(create_sink_ptr(true), low2) };
         reduce_sink_arcs.write(out_arc);
       } else {
         appD.push({out_uid, low1, low2});
       }
 
       if (is_sink_ptr(high1) && is_sink_ptr(high2)) {
-        arc out_arc = { flag(out_uid), op(high1, high2) };
+        arc_t out_arc = { flag(out_uid), op(high1, high2) };
         reduce_sink_arcs.write(out_arc);
       } else if (is_sink_ptr(high1) && can_left_shortcut(op, high1)) {
-        arc out_arc = { flag(out_uid), op(high1, create_sink_ptr(true)) };
+        arc_t out_arc = { flag(out_uid), op(high1, create_sink_ptr(true)) };
         reduce_sink_arcs.write(out_arc);
       } else if (is_sink_ptr(high2) && can_right_shortcut(op, high2)) {
-        arc out_arc = { flag(out_uid), op(create_sink_ptr(true), high2) };
+        arc_t out_arc = { flag(out_uid), op(create_sink_ptr(true), high2) };
         reduce_sink_arcs.write(out_arc);
       } else {
-        appD.push({flag(out_uid), high1, high2});
+        appD.push({ flag(out_uid), high1, high2 });
       }
 
       // Output ingoing arcs
       while (true) {
-        arc out_arc = { source, out_uid };
+        arc_t out_arc = { source, out_uid };
         reduce_node_arcs.write(out_arc);
 
         debug::println_apply_ingoing(out_arc);
@@ -408,10 +408,10 @@ namespace coom
     }
   }
 
-  void apply(tpie::file_stream<node> &in_nodes_1,
-             tpie::file_stream<node> &in_nodes_2,
+  void apply(tpie::file_stream<node_t> &in_nodes_1,
+             tpie::file_stream<node_t> &in_nodes_2,
              const bool_op &op,
-             tpie::file_stream<node> &out_nodes)
+             tpie::file_stream<node_t> &out_nodes)
   {
     debug::println_algorithm_start("APPLY");
 
@@ -426,11 +426,11 @@ namespace coom
     in_nodes_1.seek(0, tpie::file_stream_base::end);
     in_nodes_2.seek(0, tpie::file_stream_base::end);
 
-    auto root_1 = in_nodes_1.read_back();
-    auto root_2 = in_nodes_2.read_back();
+    node_t root_1 = in_nodes_1.read_back();
+    node_t root_2 = in_nodes_2.read_back();
 
     if (is_sink(root_1) && is_sink(root_2)) {
-      node res_sink_node = node{
+      node_t res_sink_node = node{
           op(root_1.uid, root_2.uid),
           NIL,
           NIL};
@@ -438,7 +438,7 @@ namespace coom
       out_nodes.write(res_sink_node);
       debug::println_file_stream(out_nodes, "out_nodes");
     } else if (is_sink(root_1) && can_left_shortcut(op, root_1.uid)) {
-      node res_sink_node = {
+      node_t res_sink_node = {
           op(root_1.uid, create_sink_ptr(false)),
           NIL,
           NIL
@@ -447,7 +447,7 @@ namespace coom
       out_nodes.write(res_sink_node);
       debug::println_file_stream(out_nodes, "out_nodes");
     } else if (is_sink(root_2) && can_right_shortcut(op, root_2.uid)) {
-      node res_sink_node = {
+      node_t res_sink_node = {
           op(create_sink_ptr(false), root_2.uid),
           NIL,
           NIL
@@ -456,10 +456,10 @@ namespace coom
       out_nodes.write(res_sink_node);
       debug::println_file_stream(out_nodes, "out_nodes");
     } else {
-      tpie::file_stream<arc> reduce_node_arcs;
+      tpie::file_stream<arc_t> reduce_node_arcs;
       reduce_node_arcs.open();
 
-      tpie::file_stream<arc> reduce_sink_arcs;
+      tpie::file_stream<arc_t> reduce_sink_arcs;
       reduce_sink_arcs.open();
 
       apply(in_nodes_1, in_nodes_2, op, reduce_node_arcs, reduce_sink_arcs);

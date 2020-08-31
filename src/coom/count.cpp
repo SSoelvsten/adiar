@@ -45,7 +45,7 @@ namespace coom
 
   struct partial_sum
   {
-    uint64_t uid;
+    uid_t uid;
     uint64_t sum;
   };
 
@@ -57,7 +57,7 @@ namespace coom
     }
   };
 
-  inline uint64_t count(tpie::file_stream<node> &nodes,
+  inline uint64_t count(tpie::file_stream<node_t> &nodes,
                         const sink_pred &sink_pred,
                         const bool count_skipped_layers)
   {
@@ -71,14 +71,14 @@ namespace coom
       return 0u;
     }
 
-    uint64_t biggest_label = label_of(nodes.read());
+    label_t biggest_label = label_of(nodes.read());
 
     nodes.seek(0, tpie::file_stream_base::end);
     tpie::priority_queue<partial_sum, count_queue_lt> partial_sums;
 
     // Take root out and put its children into the priority queue
     // or count them immediately if they are sinks
-    node root = nodes.read_back();
+    node_t root = nodes.read_back();
     uint64_t result = 0u;
 
     uint64_t sum = 0u;
@@ -121,7 +121,7 @@ namespace coom
 
     // Take out the rest of the nodes and process them one by one
     while (nodes.can_read_back()) {
-      node current_node = nodes.read_back();
+      node_t current_node = nodes.read_back();
       sum = 0u;
 
       // Sum all ingoing arcs
@@ -173,13 +173,13 @@ namespace coom
     return result;
   }
 
-  uint64_t count_paths(tpie::file_stream<node> &nodes,
+  uint64_t count_paths(tpie::file_stream<node_t> &nodes,
                        const sink_pred &sink_pred = is_any)
   {
     return count(nodes, sink_pred, false);
   }
 
-  uint64_t count_assignments(tpie::file_stream<node>& nodes,
+  uint64_t count_assignments(tpie::file_stream<node_t>& nodes,
                              const sink_pred& sink_pred = is_true)
   {
     return count(nodes, sink_pred, true);

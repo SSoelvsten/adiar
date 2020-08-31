@@ -9,7 +9,7 @@ namespace coom
   //////////////////////////////////////////////////////////////////////////////
   /// Some preset operators
   //////////////////////////////////////////////////////////////////////////////
-  typedef std::function<uint64_t(uint64_t,uint64_t)> bool_op;
+  typedef std::function<ptr_t(ptr_t,ptr_t)> bool_op;
 
   const bool_op and_op = [] (ptr_t sink1, ptr_t sink2) -> ptr_t
   {
@@ -41,10 +41,10 @@ namespace coom
   /// \param out_nodes The output stream to send the nodes in reverse topological
   ///                  order.
   //////////////////////////////////////////////////////////////////////////////
-  void apply(tpie::file_stream<node> &in_nodes_1,
-             tpie::file_stream<node> &in_nodes_2,
+  void apply(tpie::file_stream<node_t> &in_nodes_1,
+             tpie::file_stream<node_t> &in_nodes_2,
              const bool_op &op,
-             tpie::file_stream<node> &out_nodes);
+             tpie::file_stream<node_t> &out_nodes);
 }
 
 #endif // COOM_APPLY_H
