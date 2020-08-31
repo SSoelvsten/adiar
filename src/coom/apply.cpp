@@ -93,8 +93,9 @@ namespace coom
     ptr_t source;
     ptr_t t1;
     ptr_t t2;
-    node data;
     bool from_1;
+    ptr_t data_low;
+    ptr_t data_high;
   };
 
   struct apply_lt
@@ -225,11 +226,10 @@ namespace coom
     }
 
     // Process all nodes in topological order of both OBDDs
-    ptr_t source;
-    ptr_t t1, t2;
+    ptr_t source, t1, t2;
 
     bool with_data, from_1 = false;
-    node data;
+    ptr_t data_low = NIL, data_high = NIL;
 
     while (!appD.empty() || !appD_data.empty()) {
       // Merge requests from  appD or appD_data
@@ -247,8 +247,10 @@ namespace coom
         source = appD_data.top().source;
         t1 = appD_data.top().t1;
         t2 = appD_data.top().t2;
-        data = appD_data.top().data;
+
         from_1 = appD_data.top().from_1;
+        data_low = appD_data.top().data_low;
+        data_high = appD_data.top().data_high;
 
         appD_data.pop();
       }
@@ -311,12 +313,12 @@ namespace coom
         bool from_1 = v1.uid == t1;
         node_t v0 = from_1 ? v1 : v2;
 
-        appD_data.push({source, t1, t2, v0, from_1});
+        appD_data.push({ source, t1, t2, from_1, v0.low, v0.high });
 
         while (!appD.empty() && (appD.top().t1 == t1 && appD.top().t2 == t2)) {
           source = appD.top().source;
           appD.pop();
-          appD_data.push({source, t1, t2, v0, from_1});
+          appD_data.push({ source, t1, t2, from_1, v0.low, v0.high });
         }
         debug::println_apply_later();
         continue;
@@ -341,13 +343,10 @@ namespace coom
           high2 = v2.high;
         }
       } else {
-        node v1a = with_data && from_1 ? data : v1;
-        node v2a = with_data && !from_1 ? data : v2;
-
-        low1 = v1a.low;
-        high1 = v1a.high;
-        low2 = v2a.low;
-        high2 = v2a.high;
+        low1 = with_data && from_1 ? data_low : v1.low;
+        high1 = with_data && from_1 ? data_high : v1.high;
+        low2 = with_data && !from_1 ? data_low : v2.low;
+        high2 = with_data && !from_1 ? data_high : v2.high;
       }
 
       // Create new node
