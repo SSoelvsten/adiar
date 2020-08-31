@@ -10,7 +10,7 @@ go_bandit([]() {
 
         describe("build_x", [&]() {
             it("can create x0", [&]() {
-                tpie::file_stream<node> out_nodes;
+                tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
                 build_x(0, out_nodes);
@@ -23,7 +23,7 @@ go_bandit([]() {
               });
 
             it("can create x42", [&]() {
-                tpie::file_stream<node> out_nodes;
+                tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
                 build_x(42, out_nodes);
@@ -38,7 +38,7 @@ go_bandit([]() {
 
         describe("build_not_x", [&]() {
             it("can create !x1", [&]() {
-                tpie::file_stream<node> out_nodes;
+                tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
                 build_not_x(1, out_nodes);
@@ -51,7 +51,7 @@ go_bandit([]() {
               });
 
             it("can create !x3", [&]() {
-                tpie::file_stream<node> out_nodes;
+                tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
                 build_not_x(3, out_nodes);
@@ -73,7 +73,7 @@ go_bandit([]() {
                 in_labels.write(2);
                 in_labels.write(5);
 
-                tpie::file_stream<node> out_nodes;
+                tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
                 build_and(in_labels, out_nodes);
@@ -102,7 +102,7 @@ go_bandit([]() {
                 tpie::file_stream<uint64_t> in_labels;
                 in_labels.open();
 
-                tpie::file_stream<node> out_nodes;
+                tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
                 build_and(in_labels, out_nodes);
@@ -124,7 +124,7 @@ go_bandit([]() {
                 in_labels.write(2);
                 in_labels.write(5);
 
-                tpie::file_stream<node> out_nodes;
+                tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
                 build_or(in_labels, out_nodes);
@@ -153,7 +153,7 @@ go_bandit([]() {
                 tpie::file_stream<uint64_t> in_labels;
                 in_labels.open();
 
-                tpie::file_stream<node> out_nodes;
+                tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
                 build_or(in_labels, out_nodes);
@@ -168,7 +168,7 @@ go_bandit([]() {
 
         describe("build_counter", [&]() {
             it("creates counting to 3 in [0,8]", [&]() {
-                tpie::file_stream<node> out_nodes;
+                tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
                 build_counter(0, 8, 3, out_nodes);

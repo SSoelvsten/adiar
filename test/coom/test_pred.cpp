@@ -6,7 +6,7 @@ go_bandit([]() {
     describe("COOM: Predicates", []() {
         describe("is_sink", []() {
             it("should accept the correct sink-only OBDD [1]", [&]() {
-                tpie::file_stream<node> sink_T;
+                tpie::file_stream<node_t> sink_T;
                 sink_T.open();
                 sink_T.write(create_sink(true));
 
@@ -14,7 +14,7 @@ go_bandit([]() {
               });
 
             it("should accept the correct sink-only OBDD [2]", [&]() {
-                tpie::file_stream<node> sink_F;
+                tpie::file_stream<node_t> sink_F;
                 sink_F.open();
                 sink_F.write(create_sink(false));
 
@@ -23,7 +23,7 @@ go_bandit([]() {
 
 
             it("should reject the incorrect sink-only OBDD [1]", [&]() {
-                tpie::file_stream<node> sink_T;
+                tpie::file_stream<node_t> sink_T;
                 sink_T.open();
                 sink_T.write(create_sink(true));
 
@@ -31,7 +31,7 @@ go_bandit([]() {
               });
 
             it("should reject the incorrect sink-only OBDD [2]", [&]() {
-                tpie::file_stream<node> sink_F;
+                tpie::file_stream<node_t> sink_F;
                 sink_F.open();
                 sink_F.write(create_sink(false));
 
@@ -39,13 +39,13 @@ go_bandit([]() {
               });
 
             it("should have any sink as default", [&]() {
-                tpie::file_stream<node> sink_T;
+                tpie::file_stream<node_t> sink_T;
                 sink_T.open();
                 sink_T.write(create_sink(true));
 
                 AssertThat(is_sink(sink_T), Is().True());
 
-                tpie::file_stream<node> sink_F;
+                tpie::file_stream<node_t> sink_F;
                 sink_F.open();
                 sink_F.write(create_sink(false));
 
@@ -53,7 +53,7 @@ go_bandit([]() {
               });
 
             it("should reject the non-sink OBDD [1]", [&]() {
-                tpie::file_stream<node> x0;
+                tpie::file_stream<node_t> x0;
                 x0.open();
                 x0.write(create_node(0,MAX_ID,
                                      create_sink_ptr(false),
@@ -65,7 +65,7 @@ go_bandit([]() {
               });
 
             it("should reject the non-sink OBDD [2]", [&]() {
-                tpie::file_stream<node> x0_and_x1;
+                tpie::file_stream<node_t> x0_and_x1;
                 x0_and_x1.open();
 
                 x0_and_x1.write(create_node(1, MAX_ID,

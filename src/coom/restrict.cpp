@@ -23,7 +23,7 @@
 namespace coom
 {
   namespace debug {
-    inline void println_restrict_request([[maybe_unused]] const arc& arc)
+    inline void println_restrict_request([[maybe_unused]] const arc_t &arc)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << std::endl << "| request: ";
@@ -32,7 +32,7 @@ namespace coom
 #endif
     }
 
-    inline void println_restrict_position([[maybe_unused]] const node& v)
+    inline void println_restrict_position([[maybe_unused]] const node_t &v)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << "|  current: " << std::endl << "|     | ";
@@ -41,7 +41,7 @@ namespace coom
 #endif
     }
 
-    inline void println_restrict_skip([[maybe_unused]] uint64_t out_node_uid)
+    inline void println_restrict_skip([[maybe_unused]] uid_t out_node_uid)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << "|  skip to: ";
@@ -57,7 +57,7 @@ namespace coom
 #endif
     }
 
-    inline void println_restrict_request([[maybe_unused]] arc& out_arc)
+    inline void println_restrict_request([[maybe_unused]] arc_t &out_arc)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << "|  request: ";
@@ -65,7 +65,7 @@ namespace coom
 #endif
     }
 
-    inline void println_restrict_ingoing([[maybe_unused]] arc& in_arc)
+    inline void println_restrict_ingoing([[maybe_unused]] arc_t &in_arc)
     {
 #if COOM_DEBUG >= 2
       tpie::log_info() << "|  in: ";
@@ -76,45 +76,45 @@ namespace coom
 
 
   struct restrict_lt {
-    bool operator ()(const arc& a, const arc& b) {
+    bool operator ()(const arc_t& a, const arc_t& b) {
       return a.target < b.target;
     }
   };
 
-  const auto restrict_sink_lt = [](const arc& a, const arc& b) -> bool {
+  const auto restrict_sink_lt = [](const arc_t& a, const arc_t& b) -> bool {
     return a.source < b.source;
   };
 
-  void restrict(tpie::file_stream<node> &in_nodes,
-                tpie::file_stream<assignment> &in_assignment,
-                tpie::file_stream<node> &out_nodes,
-                tpie::file_stream<arc> &reduce_node_arcs,
-                tpie::file_stream<arc> &reduce_sink_arcs)
+  void restrict(tpie::file_stream<node_t> &in_nodes,
+                tpie::file_stream<assignment_t> &in_assignment,
+                tpie::file_stream<node_t> &out_nodes,
+                tpie::file_stream<arc_t> &reduce_node_arcs,
+                tpie::file_stream<arc_t> &reduce_sink_arcs)
   {
     tpie::priority_queue<arc, restrict_lt> resD;
 
     in_nodes.seek(0, tpie::file_stream_base::end);
     in_assignment.seek(0);
 
-    node n = in_nodes.read_back();
-    assignment a = in_assignment.read();
+    node_t n = in_nodes.read_back();
+    assignment_t a = in_assignment.read();
 
-    // Find the next assignment
+    // find the next assignment
     while(in_assignment.can_read() && label_of(n) > a.label) {
       a = in_assignment.read();
     }
 
-    tpie::file_stream<arc> good_sink_arcs;
+    tpie::file_stream<arc_t> good_sink_arcs;
     good_sink_arcs.open();
 
-    tpie::file_stream<arc> bad_sink_arcs;
+    tpie::file_stream<arc_t> bad_sink_arcs;
     bad_sink_arcs.open();
 
-    arc latest_good_sink_arc = { NIL, NIL };
+    arc_t latest_good_sink_arc = { NIL, NIL };
 
-    // Process the root and create initial recursion requests
+    // process the root and create initial recursion requests
     if(a.label == label_of(n)) {
-      uint64_t rec_child = a.value ? n.high : n.low;
+      ptr_t rec_child = a.value ? n.high : n.low;
 
       if(is_sink_ptr(rec_child)) {
         out_nodes.write(create_sink(value_of(rec_child)));
@@ -123,7 +123,7 @@ namespace coom
 
       resD.push({ NIL, rec_child });
     } else {
-      arc low_arc = low_arc_of(n);
+      arc_t low_arc = low_arc_of(n);
       if(is_sink_ptr(n.low)) {
         latest_good_sink_arc = low_arc;
         good_sink_arcs.write(low_arc);
@@ -131,7 +131,7 @@ namespace coom
         resD.push(low_arc);
       }
 
-      arc high_arc = high_arc_of(n);
+      arc_t high_arc = high_arc_of(n);
       if(is_sink_ptr(n.high)) {
         latest_good_sink_arc = high_arc;
         good_sink_arcs.write(high_arc);
@@ -140,37 +140,37 @@ namespace coom
       }
     }
 
-    // Process all to-be-visited nodes in topological order
+    // process all to-be-visited nodes in topological order
     while(!resD.empty()) {
       debug::println_restrict_request(resD.top());
 
-      // Seek requeted node
+      // seek requeted node
       while (n.uid != resD.top().target) {
         n = in_nodes.read_back();
       }
 
       debug::println_restrict_position(n);
 
-      // Seek assignment
+      // seek assignment
       while(in_assignment.can_read() && label_of(n) > a.label) {
         a = in_assignment.read();
       }
 
-      // Process node and forward information
+      // process node and forward information
       if(a.label == label_of(n)) {
-        uint64_t rec_child = a.value ? n.high : n.low;
+        ptr_t rec_child = a.value ? n.high : n.low;
 
         debug::println_restrict_skip(rec_child);
 
         while(!resD.empty() && resD.top().target == n.uid) {
-          arc parent_arc = resD.top();
-          arc request = { parent_arc.source, rec_child };
+          arc_t parent_arc = resD.top();
+          arc_t request = { parent_arc.source, rec_child };
 
           debug::println_restrict_request(request);
 
           if(is_sink_ptr(rec_child)) {
             if(is_nil(parent_arc.source)) {
-              // We have restricted ourselves to a sink
+              // we have restricted ourselves to a sink
               out_nodes.write(create_sink(value_of(rec_child)));
               return;
             } else if (good_sink_arcs.size() > 0 && restrict_sink_lt(request, latest_good_sink_arc)) {
@@ -187,8 +187,8 @@ namespace coom
         }
       } else {
         debug::println_restrict_keep();
-        // Outgoing arcs
-        arc low_arc = low_arc_of(n);
+        // outgoing arcs
+        arc_t low_arc = low_arc_of(n);
         debug::println_restrict_request(low_arc);
 
         if(is_sink_ptr(n.low)) {
@@ -198,7 +198,7 @@ namespace coom
           resD.push(low_arc);
         }
 
-        arc high_arc = high_arc_of(n);
+        arc_t high_arc = high_arc_of(n);
         debug::println_restrict_request(high_arc);
         if(is_sink_ptr(n.high)) {
           good_sink_arcs.write(high_arc);
@@ -209,7 +209,7 @@ namespace coom
 
         // Ingoing arcs
         while(!resD.empty() && resD.top().target == n.uid) {
-          auto parent_arc = resD.top();
+          arc_t parent_arc = resD.top();
           debug::println_restrict_ingoing(parent_arc);
 
           if(!is_nil(parent_arc.source)) {
@@ -240,9 +240,9 @@ namespace coom
     }
   }
 
-  void restrict(tpie::file_stream<node> &in_nodes,
+  void restrict(tpie::file_stream<node_t> &in_nodes,
                 tpie::file_stream<assignment> &in_assignment,
-                tpie::file_stream<node> &out_nodes)
+                tpie::file_stream<node_t> &out_nodes)
   {
     debug::println_algorithm_start("RESTRICT");
 
@@ -261,17 +261,17 @@ namespace coom
     }
 
     if (is_sink(in_nodes, is_any)) {
-      node n = in_nodes.can_read_back() ? in_nodes.read_back() : in_nodes.read();
+      node_t n = in_nodes.can_read_back() ? in_nodes.read_back() : in_nodes.read();
       out_nodes.write(n);
       debug::println_file_stream(out_nodes, "out_nodes");
       debug::println_algorithm_end("RESTRICT");
       return;
     }
 
-    tpie::file_stream<arc> reduce_node_arcs;
+    tpie::file_stream<arc_t> reduce_node_arcs;
     reduce_node_arcs.open();
 
-    tpie::file_stream<arc> reduce_sink_arcs;
+    tpie::file_stream<arc_t> reduce_sink_arcs;
     reduce_sink_arcs.open();
 
     restrict(in_nodes, in_assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);

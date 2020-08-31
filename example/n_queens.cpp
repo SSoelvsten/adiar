@@ -45,7 +45,7 @@ uint64_t largest_intermediate = 0;
  *
  *                                 N*i + j.
  */
-inline uint64_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
+inline coom::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 {
   return (N * i) + j;
 }
@@ -97,7 +97,7 @@ inline uint64_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
  */
 void n_queens_S(uint64_t N,
                 uint64_t i, uint64_t j,
-                tpie::file_stream<coom::node>& out_nodes)
+                tpie::file_stream<coom::node_t>& out_nodes)
 {
   out_nodes.open();
 
@@ -111,15 +111,14 @@ void n_queens_S(uint64_t N,
       // On row of the queen in question
       uint64_t column = N - 1;
       do {
-        uint64_t label = label_of_position(N, row, column);
+        coom::label_t label = label_of_position(N, row, column);
 
         // If (row, column) == (i,j), then the chain goes through high.
         if (column == j) {
           // Node to check whether the queen actually is placed, and if so
           // whether all remaining possible conflicts have to be checked.
-          coom::node_t queen = coom::create_node(label_of_position(N,i,j), 0,
-                                                 coom::create_sink_ptr(false),
-                                                 next);
+          coom::label_t label = label_of_position(N, i, j);
+          coom::node_t queen = coom::create_node(label, 0, coom::create_sink_ptr(false), next);
 
           out_nodes.write(queen);
           next = queen.uid;
@@ -135,7 +134,7 @@ void n_queens_S(uint64_t N,
       // On another row
       if (j + row_diff < N) {
         // Diagonal to the right is within bounds
-        uint64_t label = label_of_position(N, row, j + row_diff);
+        coom::label_t label = label_of_position(N, row, j + row_diff);
         coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
         out_nodes.write(out_node);
@@ -143,7 +142,7 @@ void n_queens_S(uint64_t N,
       }
 
       // Column
-      uint64_t label = label_of_position(N, row, j);
+      coom::label_t label = label_of_position(N, row, j);
       coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
       out_nodes.write(out_node);
@@ -151,7 +150,7 @@ void n_queens_S(uint64_t N,
 
       if (row_diff <= j) {
         // Diagonal to the left is within bounds
-        uint64_t label = label_of_position(N, row, j - row_diff);
+        coom::label_t label = label_of_position(N, row, j - row_diff);
         coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
         out_nodes.write(out_node);
@@ -188,23 +187,23 @@ void n_queens_S(uint64_t N,
  */
 void n_queens_R(uint64_t N,
                 uint64_t row,
-                tpie::file_stream<coom::node>& out_nodes)
+                tpie::file_stream<coom::node_t>& out_nodes)
 {
   // We will have to "current" streams will swap being the current. We will
   // start in curr_1.
   bool from_1 = true;
 
-  tpie::file_stream<coom::node> curr_1;
-  tpie::file_stream<coom::node> curr_2;
+  tpie::file_stream<coom::node_t> curr_1;
+  tpie::file_stream<coom::node_t> curr_2;
 
-  tpie::file_stream<coom::node> next_S;
+  tpie::file_stream<coom::node_t> next_S;
   n_queens_S(N, row, 0, curr_1);
 
   for (uint64_t j = 1; j < N; j++) {
     n_queens_S(N, row, j, next_S);
 
-    tpie::file_stream<coom::node>& prev = from_1 ? curr_1 : curr_2;
-    tpie::file_stream<coom::node>& next = j == N-1 ? out_nodes : from_1 ? curr_2 : curr_1;
+    tpie::file_stream<coom::node_t>& prev = from_1 ? curr_1 : curr_2;
+    tpie::file_stream<coom::node_t>& next = j == N-1 ? out_nodes : from_1 ? curr_2 : curr_1;
     from_1 = !from_1;
 
     next.open();
@@ -230,7 +229,7 @@ void n_queens_R(uint64_t N,
  * again iterate over all rows to combine them one-by-one. One can probably
  * remove the code duplication that we now introduce.
  */
-void n_queens_B(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
+void n_queens_B(uint64_t N, tpie::file_stream<coom::node_t>& out_nodes)
 {
   if (N == 1) {
     n_queens_S(N, 0, 0, out_nodes);
@@ -239,18 +238,18 @@ void n_queens_B(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
 
   bool from_1 = true;
 
-  tpie::file_stream<coom::node> curr_1;
-  tpie::file_stream<coom::node> curr_2;
+  tpie::file_stream<coom::node_t> curr_1;
+  tpie::file_stream<coom::node_t> curr_2;
 
-  tpie::file_stream<coom::node> next_R;
+  tpie::file_stream<coom::node_t> next_R;
 
   n_queens_R(N, 0, curr_1);
 
   for (uint64_t i = 1; i < N; i++) {
     n_queens_R(N, i, next_R);
 
-    tpie::file_stream<coom::node>& prev = from_1 ? curr_1 : curr_2;
-    tpie::file_stream<coom::node>& next = i == N-1 ? out_nodes : from_1 ? curr_2 : curr_1;
+    tpie::file_stream<coom::node_t>& prev = from_1 ? curr_1 : curr_2;
+    tpie::file_stream<coom::node_t>& next = i == N-1 ? out_nodes : from_1 ? curr_2 : curr_1;
     from_1 = !from_1;
 
     next.open();
@@ -277,7 +276,7 @@ void n_queens_B(uint64_t N, tpie::file_stream<coom::node>& out_nodes)
  * is a solution to the N-Queens problem. So, now we can merely count the number
  * of assignments that reach a true sink.
  */
-uint64_t n_queens_count(tpie::file_stream<coom::node>& board)
+uint64_t n_queens_count(tpie::file_stream<coom::node_t>& board)
 {
   return coom::count_assignments(board, coom::is_true);
 }
@@ -324,12 +323,12 @@ void n_queens_print_solution(std::vector<uint64_t>& assignment)
 
 /* At this point, we now also need to convert an assignment back into a position
  * on the board. So, we'll also need the following two small functions. */
-inline uint64_t i_of_label(uint64_t N, uint64_t label)
+inline uint64_t i_of_label(uint64_t N, coom::label_t label)
 {
   return label / N;
 }
 
-inline uint64_t j_of_label(uint64_t N, uint64_t label)
+inline uint64_t j_of_label(uint64_t N, coom::label_t label)
 {
   return label % N;
 }
@@ -339,7 +338,7 @@ inline uint64_t j_of_label(uint64_t N, uint64_t label)
  * of solutions we list. */
 uint64_t n_queens_list(uint64_t N, uint64_t column,
                        std::vector<uint64_t>& partial_assignment,
-                       tpie::file_stream<coom::node>& constraints)
+                       tpie::file_stream<coom::node_t>& constraints)
 {
   if (coom::is_sink(constraints, coom::is_false)) {
     return 0;
@@ -348,8 +347,8 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
   uint64_t solutions = 0;
 
-  tpie::file_stream<coom::assignment> column_assignment;
-  tpie::file_stream<coom::node> restricted_constraints;
+  tpie::file_stream<coom::assignment_t> column_assignment;
+  tpie::file_stream<coom::node_t> restricted_constraints;
 
   for (uint64_t row_q = 0; row_q < N; row_q++) {
     partial_assignment.push_back(row_q);
@@ -410,7 +409,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
   return solutions;
 }
 
-uint64_t n_queens_list(uint64_t N, tpie::file_stream<coom::node>& amo_alo)
+uint64_t n_queens_list(uint64_t N, tpie::file_stream<coom::node_t>& amo_alo)
 {
   tpie::log_info() << "|  | solutions:" << std::endl;
 

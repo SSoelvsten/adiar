@@ -16,8 +16,8 @@ namespace coom
   // TODO: One should notice, that this literally just is a negation-pipe on a
   //       stream. We can completely hide this with in the pipelining network
   //       or with a Decorator Pattern on the TPIE file_stream.
-  void negate(tpie::file_stream<node> &in_nodes,
-              tpie::file_stream<node> &out_nodes)
+  void negate(tpie::file_stream<node_t> &in_nodes,
+              tpie::file_stream<node_t> &out_nodes)
   {
     debug::println_algorithm_start("NEGATE");
 
@@ -34,7 +34,7 @@ namespace coom
     }
 
     while (in_nodes.can_read()) {
-      node n = in_nodes.read();
+      node_t n = in_nodes.read();
 
       ptr_t low_ptr = is_sink_ptr(n.low)
         ? create_sink_ptr(!value_of(n.low))

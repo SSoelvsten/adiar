@@ -23,19 +23,19 @@ go_bandit([]() {
         ptr_t sink_T = create_sink_ptr(true);
         ptr_t sink_F = create_sink_ptr(false);
 
-        tpie::file_stream<node> obdd_1;
+        tpie::file_stream<node_t> obdd_1;
         obdd_1.open();
 
-        node n4 = create_node(3,0, sink_F, sink_T);
+        node_t n4 = create_node(3,0, sink_F, sink_T);
         obdd_1.write(n4);
 
-        node n3 = create_node(2,0, sink_F, n4.uid);
+        node_t n3 = create_node(2,0, sink_F, n4.uid);
         obdd_1.write(n3);
 
-        node n2 = create_node(1,0, n3.uid, n4.uid);
+        node_t n2 = create_node(1,0, n3.uid, n4.uid);
         obdd_1.write(n2);
 
-        node n1 = create_node(0,0, n3.uid, n2.uid);
+        node_t n1 = create_node(0,0, n3.uid, n2.uid);
         obdd_1.write(n1);
 
         /*
@@ -48,13 +48,13 @@ go_bandit([]() {
            F  T
         */
 
-        tpie::file_stream<node> obdd_2;
+        tpie::file_stream<node_t> obdd_2;
         obdd_2.open();
 
-        node n2_2 = create_node(2,0, sink_F, sink_T);
+        node_t n2_2 = create_node(2,0, sink_F, sink_T);
         obdd_2.write(n2_2);
 
-        node n2_1 = create_node(1,0, n2_2.uid, sink_T);
+        node_t n2_1 = create_node(1,0, n2_2.uid, sink_T);
         obdd_2.write(n2_1);
 
         describe("Paths", [&]() {
@@ -101,7 +101,7 @@ go_bandit([]() {
               });
 
             it("should count no paths in a true sink-only OBDD", [&]() {
-                tpie::file_stream<node> obdd;
+                tpie::file_stream<node_t> obdd;
                 obdd.open();
                 obdd.write(create_sink(true));
 
@@ -110,7 +110,7 @@ go_bandit([]() {
               });
 
             it("should count no paths in a false sink-only OBDD", [&]() {
-                tpie::file_stream<node> obdd;
+                tpie::file_stream<node_t> obdd;
                 obdd.open();
                 obdd.write(create_sink(false));
 
@@ -119,7 +119,7 @@ go_bandit([]() {
               });
 
             it("should count paths of a root-only OBDD [1]", [&]() {
-                tpie::file_stream<node> obdd_1;
+                tpie::file_stream<node_t> obdd_1;
                 obdd_1.open();
                 obdd_1.write(create_node(1,0, sink_F, sink_T));
 
@@ -129,7 +129,7 @@ go_bandit([]() {
 
             it("should count paths of a root-only OBDD [2]", [&]() {
                 // Technically not correct input, but...
-                tpie::file_stream<node> obdd_2;
+                tpie::file_stream<node_t> obdd_2;
                 obdd_2.open();
                 obdd_2.write(create_node(1,0, sink_T, sink_T));
 
@@ -170,7 +170,7 @@ go_bandit([]() {
               });
 
             it("should count no assignments in a true sink-only OBDD", [&]() {
-                tpie::file_stream<node> obdd;
+                tpie::file_stream<node_t> obdd;
                 obdd.open();
                 obdd.write(create_sink(true));
 
@@ -179,7 +179,7 @@ go_bandit([]() {
               });
 
             it("should count no assignments in a false sink-only OBDD", [&]() {
-                tpie::file_stream<node> obdd;
+                tpie::file_stream<node_t> obdd;
                 obdd.open();
                 obdd.write(create_sink(false));
 
@@ -188,7 +188,7 @@ go_bandit([]() {
               });
 
             it("should count assignments of a root-only OBDD [1]", [&]() {
-                tpie::file_stream<node> obdd_1;
+                tpie::file_stream<node_t> obdd_1;
                 obdd_1.open();
                 obdd_1.write(create_node(1,0, sink_F, sink_T));
 
@@ -198,7 +198,7 @@ go_bandit([]() {
 
             it("should count assignments of a root-only OBDD [2]", [&]() {
                 // Technically not correct input, but...
-                tpie::file_stream<node> obdd_2;
+                tpie::file_stream<node_t> obdd_2;
                 obdd_2.open();
                 obdd_2.write(create_node(1,0, sink_T, sink_T));
 

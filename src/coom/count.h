@@ -17,7 +17,7 @@ namespace coom
   ///
   /// \return The number of unique paths.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t count_paths(tpie::file_stream<node> &nodes,
+  uint64_t count_paths(tpie::file_stream<node_t> &nodes,
                        const sink_pred &sink_pred);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ namespace coom
   ///
   /// \return The number of unique assignments.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t count_assignment(tpie::file_stream<node> &nodes,
+  uint64_t count_assignment(tpie::file_stream<node_t> &nodes,
                             const sink_pred &sink_pred);
 }
 

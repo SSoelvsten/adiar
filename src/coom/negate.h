@@ -13,8 +13,8 @@ namespace coom
   /// \param out_nodes Output nodes sorted by target similar to the input, but
   ///                  where all sinks are negated.
   //////////////////////////////////////////////////////////////////////////////
-  void negate(tpie::file_stream<node> &in_nodes,
-              tpie::file_stream<node> &out_nodes);
+  void negate(tpie::file_stream<node_t> &in_nodes,
+              tpie::file_stream<node_t> &out_nodes);
 }
 
 #endif // COOM_NEGATE_H

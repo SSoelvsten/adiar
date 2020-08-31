@@ -12,14 +12,14 @@
 #include "pred.h"
 
 namespace coom {
-  bool is_sink(tpie::file_stream<node>& nodes,
+  bool is_sink(tpie::file_stream<node_t>& nodes,
                const sink_pred& sink_pred = is_any)
   {
     assert::is_valid_input_stream(nodes);
     if (nodes.size() != 1) {
       return false;
     }
-    node n = nodes.can_read() ? nodes.read() : nodes.read_back();
+    node_t n = nodes.can_read() ? nodes.read() : nodes.read_back();
     return is_sink(n) && sink_pred(n.uid);
   }
 }

@@ -4,7 +4,7 @@
 #include "assert.h"
 
 namespace coom { namespace assert {
-    void is_valid_input_stream([[maybe_unused]] tpie::file_stream<node>& in)
+    void is_valid_input_stream([[maybe_unused]] tpie::file_stream<node_t>& in)
     {
 #if COOM_ASSERT
       assert(in.is_open());
@@ -13,7 +13,7 @@ namespace coom { namespace assert {
 #endif
     }
 
-    void is_valid_input_stream([[maybe_unused]] tpie::file_stream<arc>& in)
+    void is_valid_input_stream([[maybe_unused]] tpie::file_stream<arc_t>& in)
     {
 #if COOM_ASSERT
       assert(in.is_open());

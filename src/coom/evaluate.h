@@ -12,7 +12,7 @@ namespace coom
   /// \param nodes The node-based OBDD graph in reverse topological order.
   /// \return Sink-value after traversal according to the assignment.
   //////////////////////////////////////////////////////////////////////////////
-  bool evaluate(tpie::file_stream<node> &nodes,
+  bool evaluate(tpie::file_stream<node_t> &nodes,
                 tpie::file_stream<bool> &assignment);
 }
 

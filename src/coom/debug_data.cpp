@@ -66,9 +66,9 @@ namespace coom { namespace debug {
         }
       else
         {
-          auto label = label_of(n);
-          auto index = id_of(n);
-          tpie::log_info() << label << " , " << index;
+          label_t label = label_of(n);
+          id_t id = id_of(n);
+          tpie::log_info() << label << " , " << id;
         }
       tpie::log_info() << " ], ";
       print_child(n.low);
@@ -114,7 +114,7 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void print_file_stream([[maybe_unused]] tpie::file_stream<node>& nodes,
+    void print_file_stream([[maybe_unused]] tpie::file_stream<node_t>& nodes,
                            [[maybe_unused]] std::string name)
     {
 #if COOM_DEBUG
@@ -134,12 +134,12 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void print_file_stream([[maybe_unused]] tpie::file_stream<node>& nodes)
+    void print_file_stream([[maybe_unused]] tpie::file_stream<node_t>& nodes)
     {
-      print_file_stream(nodes, "file_stream<node>");
+      print_file_stream(nodes, "file_stream<node_t>");
     }
 
-    void println_file_stream([[maybe_unused]] tpie::file_stream<node>& nodes,
+    void println_file_stream([[maybe_unused]] tpie::file_stream<node_t>& nodes,
                              [[maybe_unused]] std::string name)
     {
 #if COOM_DEBUG
@@ -148,12 +148,12 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void println_file_stream([[maybe_unused]] tpie::file_stream<node>& nodes)
+    void println_file_stream([[maybe_unused]] tpie::file_stream<node_t>& nodes)
     {
-      println_file_stream(nodes, "file_stream<node>");
+      println_file_stream(nodes, "file_stream<node_t>");
     }
 
-    void print_file_stream([[maybe_unused]] tpie::file_stream<arc>& arcs,
+    void print_file_stream([[maybe_unused]] tpie::file_stream<arc_t>& arcs,
                            [[maybe_unused]] std::string name)
     {
 #if COOM_DEBUG
@@ -173,12 +173,12 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void print_file_stream([[maybe_unused]] tpie::file_stream<arc>& arcs)
+    void print_file_stream([[maybe_unused]] tpie::file_stream<arc_t>& arcs)
     {
-      print_file_stream(arcs, "file_stream<arc>");
+      print_file_stream(arcs, "file_stream<arc_t>");
     }
 
-    void println_file_stream([[maybe_unused]] tpie::file_stream<arc>& arcs,
+    void println_file_stream([[maybe_unused]] tpie::file_stream<arc_t>& arcs,
                              [[maybe_unused]] std::string name)
     {
 #if COOM_DEBUG
@@ -187,9 +187,9 @@ namespace coom { namespace debug {
 #endif
     }
 
-    void println_file_stream([[maybe_unused]] tpie::file_stream<arc>& arcs)
+    void println_file_stream([[maybe_unused]] tpie::file_stream<arc_t>& arcs)
     {
-      println_file_stream(arcs, "file_stream<arc>");
+      println_file_stream(arcs, "file_stream<arc_t>");
     }
   }
 }

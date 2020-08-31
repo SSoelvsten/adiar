@@ -7,22 +7,22 @@ go_bandit([]() {
     describe("COOM: Apply", [&]() {
         // == CREATE SINK-ONLY OBDD FOR UNIT TESTS ==
         //                  START
-        tpie::file_stream<node> obdd_F_1;
+        tpie::file_stream<node_t> obdd_F_1;
         obdd_F_1.open();
 
         obdd_F_1.write(create_sink(false));
 
-        tpie::file_stream<node> obdd_F_2;
+        tpie::file_stream<node_t> obdd_F_2;
         obdd_F_2.open();
 
         obdd_F_2.write(create_sink(false));
 
-        tpie::file_stream<node> obdd_T_1;
+        tpie::file_stream<node_t> obdd_T_1;
         obdd_T_1.open();
 
         obdd_T_1.write(create_sink(true));
 
-        tpie::file_stream<node> obdd_T_2;
+        tpie::file_stream<node_t> obdd_T_2;
         obdd_T_2.open();
 
         obdd_T_2.write(create_sink(true));
@@ -31,7 +31,7 @@ go_bandit([]() {
         // == CREATE SINK-ONLY OBDD FOR UNIT TESTS ==
 
         it("should XOR F and T sink-only OBDDs", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_F_1, obdd_T_2, xor_op, out_nodes);
@@ -45,7 +45,7 @@ go_bandit([]() {
           });
 
         it("should XOR T and T sink-only OBDDs", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_T_1, obdd_T_2, xor_op, out_nodes);
@@ -59,7 +59,7 @@ go_bandit([]() {
           });
 
         it("should AND F and T sink-only OBDDs", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_F_1, obdd_T_2, and_op, out_nodes);
@@ -73,7 +73,7 @@ go_bandit([]() {
           });
 
         it("should AND T and T sink-only OBDDs", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_T_1, obdd_T_2, and_op, out_nodes);
@@ -87,7 +87,7 @@ go_bandit([]() {
           });
 
         it("should OR T and F sink-only OBDDs", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_T_1, obdd_F_2, or_op, out_nodes);
@@ -101,7 +101,7 @@ go_bandit([]() {
           });
 
         it("should OR T and F sink-only OBDDs", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_F_1, obdd_F_2, or_op, out_nodes);
@@ -115,7 +115,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES F and T sink-only OBDDs", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_F_1, obdd_T_2, implies_op, out_nodes);
@@ -129,7 +129,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES T and F sink-only OBDDs", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_T_1, obdd_F_2, implies_op, out_nodes);
@@ -143,7 +143,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES T and T sink-only OBDDs", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_T_1, obdd_T_2, implies_op, out_nodes);
@@ -161,19 +161,19 @@ go_bandit([]() {
 
         // == CREATE SINGLE VARIABLE OBDDs FOR UNIT TESTS ==
         //                    START
-        tpie::file_stream<node> obdd_x0;
+        tpie::file_stream<node_t> obdd_x0;
         obdd_x0.open();
         obdd_x0.write(create_node(0,MAX_ID, sink_F, sink_T));
 
-        tpie::file_stream<node> obdd_not_x0;
+        tpie::file_stream<node_t> obdd_not_x0;
         obdd_not_x0.open();
         obdd_not_x0.write(create_node(0,MAX_ID, sink_T, sink_F));
 
-        tpie::file_stream<node> obdd_x1;
+        tpie::file_stream<node_t> obdd_x1;
         obdd_x1.open();
         obdd_x1.write(create_node(1,MAX_ID, sink_F, sink_T));
 
-        tpie::file_stream<node> obdd_x2;
+        tpie::file_stream<node_t> obdd_x2;
         obdd_x2.open();
         obdd_x2.write(create_node(2,MAX_ID, sink_F, sink_T));
 
@@ -181,10 +181,10 @@ go_bandit([]() {
         // == CREATE SINGLE VARIABLE FOR UNIT TESTS ==
 
         it("should AND x0 and T", [&]() {
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(obdd_x0, obdd_T_2, and_op, reduce_node_arcs, reduce_sink_arcs);
@@ -214,10 +214,10 @@ go_bandit([]() {
                 F T T F
              */
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(obdd_x0, obdd_x1, xor_op, reduce_node_arcs, reduce_sink_arcs);
@@ -260,10 +260,10 @@ go_bandit([]() {
                    F T
              */
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(obdd_x0, obdd_x1, implies_op, reduce_node_arcs, reduce_sink_arcs);
@@ -300,10 +300,10 @@ go_bandit([]() {
                  F T
              */
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(obdd_x0, obdd_x2, or_op, reduce_node_arcs, reduce_sink_arcs);
@@ -337,10 +337,10 @@ go_bandit([]() {
                   F F
              */
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(obdd_x0, obdd_not_x0, and_op, reduce_node_arcs, reduce_sink_arcs);
@@ -361,7 +361,7 @@ go_bandit([]() {
           });
 
         it("should AND (and shortcut) F and x0", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_F_1, obdd_x0, and_op, out_nodes);
@@ -389,22 +389,22 @@ go_bandit([]() {
                / \
                F T
          */
-        tpie::file_stream<node> obdd_1;
+        tpie::file_stream<node_t> obdd_1;
         obdd_1.open();
 
-        node n1_5 = create_node(3,MAX_ID, sink_F, sink_T);
+        node_t n1_5 = create_node(3,MAX_ID, sink_F, sink_T);
         obdd_1.write(n1_5);
 
-        node n1_4 = create_node(2,MAX_ID, sink_T, n1_5.uid);
+        node_t n1_4 = create_node(2,MAX_ID, sink_T, n1_5.uid);
         obdd_1.write(n1_4);
 
-        node n1_3 = create_node(2,MAX_ID-1, sink_F, sink_T);
+        node_t n1_3 = create_node(2,MAX_ID-1, sink_F, sink_T);
         obdd_1.write(n1_3);
 
-        node n1_2 = create_node(1,MAX_ID, n1_3.uid, n1_4.uid);
+        node_t n1_2 = create_node(1,MAX_ID, n1_3.uid, n1_4.uid);
         obdd_1.write(n1_2);
 
-        node n1_1 = create_node(0,MAX_ID, n1_3.uid, n1_2.uid);
+        node_t n1_1 = create_node(0,MAX_ID, n1_3.uid, n1_2.uid);
         obdd_1.write(n1_1);
 
         /*      OBBD 2
@@ -419,13 +419,13 @@ go_bandit([]() {
            / \
            T F
          */
-        tpie::file_stream<node> obdd_2;
+        tpie::file_stream<node_t> obdd_2;
         obdd_2.open();
 
-        node n2_2 = create_node(3,MAX_ID, sink_T, sink_F);
+        node_t n2_2 = create_node(3,MAX_ID, sink_T, sink_F);
         obdd_2.write(n2_2);
 
-        node n2_1 = create_node(1,MAX_ID, n2_2.uid, sink_T);
+        node_t n2_1 = create_node(1,MAX_ID, n2_2.uid, sink_T);
         obdd_2.write(n2_1);
 
         /*     OBDD 3
@@ -444,38 +444,38 @@ go_bandit([]() {
               F T
 
          */
-        tpie::file_stream<node> obdd_3;
+        tpie::file_stream<node_t> obdd_3;
         obdd_3.open();
 
-        node n3_8 = create_node(3,MAX_ID, sink_F, sink_T);
+        node_t n3_8 = create_node(3,MAX_ID, sink_F, sink_T);
         obdd_3.write(n3_8);
 
-        node n3_7 = create_node(2,MAX_ID, sink_T, sink_F);
+        node_t n3_7 = create_node(2,MAX_ID, sink_T, sink_F);
         obdd_3.write(n3_7);
 
-        node n3_6 = create_node(2,MAX_ID - 1, n3_8.uid, sink_T);
+        node_t n3_6 = create_node(2,MAX_ID - 1, n3_8.uid, sink_T);
         obdd_3.write(n3_6);
 
-        node n3_5 = create_node(2,MAX_ID - 2, sink_T, n3_8.uid);
+        node_t n3_5 = create_node(2,MAX_ID - 2, sink_T, n3_8.uid);
         obdd_3.write(n3_5);
 
-        node n3_4 = create_node(2,MAX_ID - 3, sink_F, sink_T);
+        node_t n3_4 = create_node(2,MAX_ID - 3, sink_F, sink_T);
         obdd_3.write(n3_4);
 
-        node n3_3 = create_node(1,MAX_ID, n3_4.uid, n3_6.uid);
+        node_t n3_3 = create_node(1,MAX_ID, n3_4.uid, n3_6.uid);
         obdd_3.write(n3_3);
 
-        node n3_2 = create_node(1,MAX_ID - 1, n3_5.uid, n3_7.uid);
+        node_t n3_2 = create_node(1,MAX_ID - 1, n3_5.uid, n3_7.uid);
         obdd_3.write(n3_2);
 
-        node n3_1 = create_node(0,MAX_ID, n3_2.uid, n3_3.uid);
+        node_t n3_1 = create_node(0,MAX_ID, n3_2.uid, n3_3.uid);
         obdd_3.write(n3_1);
 
         //                 END
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
 
         it("should IMPLY (and shortcut) F and OBBD1", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_F_1, obdd_1, implies_op, out_nodes);
@@ -489,7 +489,7 @@ go_bandit([]() {
           });
 
         it("should OR (and shortcut) OBBD 1 and T", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_1, obdd_T_2, or_op, out_nodes);
@@ -503,7 +503,7 @@ go_bandit([]() {
           });
 
         it("should OR (and shortcut) OBBD 2 and T", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_2, obdd_T_2, or_op, out_nodes);
@@ -517,7 +517,7 @@ go_bandit([]() {
           });
 
         it("should AND (and shortcut) F and OBBD 2", [&]() {
-            tpie::file_stream<node> out_nodes;
+            tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
             apply(obdd_F_1, obdd_2, and_op, out_nodes);
@@ -544,10 +544,10 @@ go_bandit([]() {
                 /   \     /   \
                 T   F     F   T
              */
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(obdd_2, obdd_x2, xor_op, reduce_node_arcs, reduce_sink_arcs);
@@ -624,10 +624,10 @@ go_bandit([]() {
                         T F
              */
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(obdd_1, obdd_2, or_op, reduce_node_arcs, reduce_sink_arcs);
@@ -689,10 +689,10 @@ go_bandit([]() {
 
              */
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(obdd_1, obdd_2, and_op, reduce_node_arcs, reduce_sink_arcs);
@@ -751,10 +751,10 @@ go_bandit([]() {
             /* There is no shortcutting possible on an XOR, so see the product
                construction above. */
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(obdd_1, obdd_2, xor_op, reduce_node_arcs, reduce_sink_arcs);
@@ -849,10 +849,10 @@ go_bandit([]() {
                               (F,T) (T,T) (T,F) (T,T)
             */
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(obdd_3, obdd_1, xor_op, reduce_node_arcs, reduce_sink_arcs);
@@ -922,73 +922,73 @@ go_bandit([]() {
 
         it("should AND two 3-Queens placements [1]", [&]() {
             // 3-Queens placement at (0,1)
-            tpie::file_stream<node> queen_0_1;
+            tpie::file_stream<node_t> queen_0_1;
             queen_0_1.open();
 
-            node q1_7 = create_node(7,0, sink_T, sink_F);
+            node_t q1_7 = create_node(7,0, sink_T, sink_F);
             queen_0_1.write(q1_7);
 
-            node q1_5 = create_node(5,0, q1_7.uid, sink_F);
+            node_t q1_5 = create_node(5,0, q1_7.uid, sink_F);
             queen_0_1.write(q1_5);
 
-            node q1_4 = create_node(4,0, q1_5.uid, sink_F);
+            node_t q1_4 = create_node(4,0, q1_5.uid, sink_F);
             queen_0_1.write(q1_4);
 
-            node q1_3 = create_node(3,0, q1_4.uid, sink_F);
+            node_t q1_3 = create_node(3,0, q1_4.uid, sink_F);
             queen_0_1.write(q1_3);
 
-            node q1_2 = create_node(2,0, q1_3.uid, sink_F);
+            node_t q1_2 = create_node(2,0, q1_3.uid, sink_F);
             queen_0_1.write(q1_2);
 
-            node q1_1_1 = create_node(1,1, sink_T, sink_F);
+            node_t q1_1_1 = create_node(1,1, sink_T, sink_F);
             queen_0_1.write(q1_1_1);
 
-            node q1_1_0 = create_node(1,0, sink_T, q1_2.uid);
+            node_t q1_1_0 = create_node(1,0, sink_T, q1_2.uid);
             queen_0_1.write(q1_1_0);
 
-            node q1_0 = create_node(0,0, q1_1_0.uid, q1_1_1.uid);
+            node_t q1_0 = create_node(0,0, q1_1_0.uid, q1_1_1.uid);
             queen_0_1.write(q1_0);
 
 
             // 3-Queens placement at (1,1)
-            tpie::file_stream<node> queen_1_1;
+            tpie::file_stream<node_t> queen_1_1;
             queen_1_1.open();
 
-            node q2_8 = create_node(8,0, sink_T, sink_F);
+            node_t q2_8 = create_node(8,0, sink_T, sink_F);
             queen_1_1.write(q2_8);
 
-            node q2_7 = create_node(7,0, q2_8.uid, sink_F);
+            node_t q2_7 = create_node(7,0, q2_8.uid, sink_F);
             queen_1_1.write(q2_7);
 
-            node q2_6 = create_node(6,0, q2_7.uid, sink_F);
+            node_t q2_6 = create_node(6,0, q2_7.uid, sink_F);
             queen_1_1.write(q2_6);
 
-            node q2_5 = create_node(5,0, q2_6.uid, sink_F);
+            node_t q2_5 = create_node(5,0, q2_6.uid, sink_F);
             queen_1_1.write(q2_5);
 
-            node q2_4_1 = create_node(4,1, sink_T, sink_F);
+            node_t q2_4_1 = create_node(4,1, sink_T, sink_F);
             queen_1_1.write(q2_4_1);
 
-            node q2_4_0 = create_node(4,0, sink_T, q2_5.uid);
+            node_t q2_4_0 = create_node(4,0, sink_T, q2_5.uid);
             queen_1_1.write(q2_4_0);
 
-            node q2_3 = create_node(3,0, q2_4_0.uid, q2_4_1.uid);
+            node_t q2_3 = create_node(3,0, q2_4_0.uid, q2_4_1.uid);
             queen_1_1.write(q2_3);
 
-            node q2_2 = create_node(2,0, q2_3.uid, q2_4_1.uid);
+            node_t q2_2 = create_node(2,0, q2_3.uid, q2_4_1.uid);
             queen_1_1.write(q2_2);
 
-            node q2_1 = create_node(1,0, q2_2.uid, q2_4_1.uid);
+            node_t q2_1 = create_node(1,0, q2_2.uid, q2_4_1.uid);
             queen_1_1.write(q2_1);
 
-            node q2_0 = create_node(0,0, q2_1.uid, q2_4_1.uid);
+            node_t q2_0 = create_node(0,0, q2_1.uid, q2_4_1.uid);
             queen_1_1.write(q2_0);
 
             // Apply it
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(queen_0_1, queen_1_1, and_op, reduce_node_arcs, reduce_sink_arcs);
@@ -1105,65 +1105,65 @@ go_bandit([]() {
 
         it("should AND two 3-Queens placements [2]", [&]() {
             // Queen placed at 2,0
-            tpie::file_stream<node> queen_2_0;
+            tpie::file_stream<node_t> queen_2_0;
             queen_2_0.open();
 
-            node q1_8 = create_node(8,0, sink_T, sink_F);
+            node_t q1_8 = create_node(8,0, sink_T, sink_F);
             queen_2_0.write(q1_8);
 
-            node q1_7 = create_node(7,0, q1_8.uid, sink_F);
+            node_t q1_7 = create_node(7,0, q1_8.uid, sink_F);
             queen_2_0.write(q1_7);
 
-            node q1_6_1 = create_node(6,1, sink_T, sink_F);
+            node_t q1_6_1 = create_node(6,1, sink_T, sink_F);
             queen_2_0.write(q1_6_1);
 
-            node q1_6_0 = create_node(6,0, sink_T, q1_7.uid);
+            node_t q1_6_0 = create_node(6,0, sink_T, q1_7.uid);
             queen_2_0.write(q1_6_0);
 
-            node q1_4 = create_node(4,0, q1_6_0.uid, q1_6_1.uid);
+            node_t q1_4 = create_node(4,0, q1_6_0.uid, q1_6_1.uid);
             queen_2_0.write(q1_4);
 
-            node q1_3 = create_node(3,0, q1_4.uid, q1_6_1.uid);
+            node_t q1_3 = create_node(3,0, q1_4.uid, q1_6_1.uid);
             queen_2_0.write(q1_3);
 
-            node q1_2 = create_node(2,0, q1_3.uid, q1_6_1.uid);
+            node_t q1_2 = create_node(2,0, q1_3.uid, q1_6_1.uid);
             queen_2_0.write(q1_2);
 
-            node q1_0 = create_node(0,0, q1_2.uid, q1_6_1.uid);
+            node_t q1_0 = create_node(0,0, q1_2.uid, q1_6_1.uid);
             queen_2_0.write(q1_0);
 
             // Queen placed at 2,1
-            tpie::file_stream<node> queen_2_1;
+            tpie::file_stream<node_t> queen_2_1;
             queen_2_1.open();
 
-            node q2_8 = create_node(8,0, sink_T, sink_F);
+            node_t q2_8 = create_node(8,0, sink_T, sink_F);
             queen_2_1.write(q2_8);
 
-            node q2_7_1 = create_node(7,1, sink_T, sink_F);
+            node_t q2_7_1 = create_node(7,1, sink_T, sink_F);
             queen_2_1.write(q2_7_1);
 
-            node q2_7_0 = create_node(7,0, sink_T, q2_8.uid);
+            node_t q2_7_0 = create_node(7,0, sink_T, q2_8.uid);
             queen_2_1.write(q2_7_0);
 
-            node q2_6 = create_node(6,0, q2_7_0.uid, q2_7_1.uid);
+            node_t q2_6 = create_node(6,0, q2_7_0.uid, q2_7_1.uid);
             queen_2_1.write(q2_6);
 
-            node q2_5 = create_node(5,0, q2_6.uid, q2_7_1.uid);
+            node_t q2_5 = create_node(5,0, q2_6.uid, q2_7_1.uid);
             queen_2_1.write(q2_5);
 
-            node q2_4 = create_node(4,0, q2_5.uid, q2_7_1.uid);
+            node_t q2_4 = create_node(4,0, q2_5.uid, q2_7_1.uid);
             queen_2_1.write(q2_4);
 
-            node q2_3 = create_node(3,0, q2_4.uid, q2_7_1.uid);
+            node_t q2_3 = create_node(3,0, q2_4.uid, q2_7_1.uid);
             queen_2_1.write(q2_3);
 
-            node q2_1 = create_node(1,0, q2_3.uid, q2_7_1.uid);
+            node_t q2_1 = create_node(1,0, q2_3.uid, q2_7_1.uid);
             queen_2_1.write(q2_1);
 
-            tpie::file_stream<arc> reduce_node_arcs;
+            tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
-            tpie::file_stream<arc> reduce_sink_arcs;
+            tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
             apply(queen_2_0, queen_2_1, and_op, reduce_node_arcs, reduce_sink_arcs);
