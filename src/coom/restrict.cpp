@@ -77,9 +77,7 @@ namespace coom
 
   struct restrict_lt {
     bool operator ()(const arc& a, const arc& b) {
-      return a.target < b.target || (a.target == b.target &&
-                                     (is_nil(a.source) ||
-                                      (!is_nil(b.source) && a.source < b.source)));
+      return a.target < b.target;
     }
   };
 
