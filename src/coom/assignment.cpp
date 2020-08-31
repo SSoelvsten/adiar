@@ -44,7 +44,7 @@ namespace coom
   }
 
   template<typename pred_t = std::less<assignment>>
-  void get_assignment(tpie::file_stream<node> &in_nodes,
+  bool get_assignment(tpie::file_stream<node> &in_nodes,
                       const sink_pred& sink_pred,
                       tpie::file_stream<assignment> &out_assignment,
                       const pred_t pred)
@@ -58,33 +58,40 @@ namespace coom
 
     in_nodes.seek(0);
 
-    if (!is_sink(in_nodes.peek())) {
-      node prior_node = in_nodes.read();
+    if (is_sink(in_nodes.peek())) {
+      return true;
+    }
 
-      // Since this is the deepest node in the topological order, it has to only
-      // have sinks as children. Assuming it is reduced, we also know they
-      // cannot be the same sink.
+    // Find the first node, that satisfies the predicate (if any)
+    node prior_node;
+    do {
+      prior_node = in_nodes.read();
+    } while (in_nodes.can_read() &&
+             (!is_sink_ptr(prior_node.low) || !sink_pred(prior_node.low)) &&
+             (!is_sink_ptr(prior_node.high) || !sink_pred(prior_node.high)));
 
-      uint64_t label = label_of(prior_node);
-      bool value = sink_pred(prior_node.high);
+    if ((!is_sink_ptr(prior_node.low) || !sink_pred(prior_node.low)) &&
+        (!is_sink_ptr(prior_node.high) || !sink_pred(prior_node.high))) {
+      return false;
+    }
+
+    uint64_t label = label_of(prior_node);
+    bool value = is_sink_ptr(prior_node.high) && sink_pred(prior_node.high);
+
+    out_assignment.write({ label, value });
+
+    // Output first-seen nodes that can lead to this node
+    while (in_nodes.can_read()) {
+      node parent_node;
+      do {
+        parent_node = in_nodes.read();
+      } while (parent_node.low != prior_node.uid && parent_node.high != prior_node.uid);
+
+      uint64_t label = label_of(parent_node);
+      bool value = parent_node.high == prior_node.uid;
 
       out_assignment.write({label, value});
-
-      while (in_nodes.can_read()) {
-        // Find the first node, that has an outgoing arc to the prior node
-        while (in_nodes.peek().low != prior_node.uid &&
-               in_nodes.peek().high != prior_node.uid) {
-          in_nodes.read();
-        }
-
-        node parent_node = in_nodes.read();
-
-        uint64_t label = label_of(parent_node);
-        bool value = parent_node.high == prior_node.uid;
-
-        out_assignment.write({label, value});
-        prior_node = parent_node;
-      }
+      prior_node = parent_node;
     }
 
     tpie::progress_indicator_null pi;
@@ -92,6 +99,8 @@ namespace coom
 
     debug::println_file_stream(out_assignment, "out_assignment");
     debug::println_algorithm_end("GET ASSIGNMENT");
+
+    return true;
   }
 }
 
