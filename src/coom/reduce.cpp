@@ -301,6 +301,10 @@ namespace coom
                                (has_next_red1 && next_red1.old_uid > next_red2.old_uid);
         mapping current_map = is_red1_current ? next_red1 : next_red2;
 
+#if COOM_ASSERT
+        assert(!has_next_node_arc || current_map.old_uid == next_node_arc.target);
+#endif
+
         // Find all arcs that have sources that match the current mapping's old_uid
         while (has_next_node_arc && current_map.old_uid == next_node_arc.target) {
           // The is_high flag is already included in next_node_arc.source
