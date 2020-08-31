@@ -305,10 +305,10 @@ namespace coom
       debug::println_apply_position(v1,v2);
 
       // Forward information across the layer
-      if (!is_sink_ptr(t1) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)
-          && (v1.uid != t1 || v2.uid != t2)
-          && !with_data) {
-        from_1 = v1.uid == t1;
+      if (!with_data
+          && !is_sink_ptr(t1) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)
+          && (v1.uid != t1 || v2.uid != t2)) {
+        bool from_1 = v1.uid == t1;
         node v0 = from_1 ? v1 : v2;
 
         appD_data.push({source, t1, t2, v0, from_1});
