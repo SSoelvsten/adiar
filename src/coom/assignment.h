@@ -35,7 +35,7 @@ namespace coom
   ///                        is in ascending order by the label.
   //////////////////////////////////////////////////////////////////////////////
   template<typename pred_t = std::less<assignment>>
-  void get_assignment(tpie::file_stream<node> &in_nodes,
+  bool get_assignment(tpie::file_stream<node> &in_nodes,
                       const sink_pred& sink_pred,
                       tpie::file_stream<assignment> &out_assignment,
                       const pred_t pred = std::less<assignment>());
