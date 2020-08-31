@@ -391,17 +391,14 @@ namespace coom
       while (true) {
         arc out_arc = { source, out_uid };
         reduce_node_arcs.write(out_arc);
+
         debug::println_apply_ingoing(out_arc);
 
         if (!appD.empty() && appD.top().t1 == t1 && appD.top().t2 == t2) {
           source = appD.top().source;
-          t1 = appD.top().t1;
-          t2 = appD.top().t2;
           appD.pop();
         } else if (!appD_data.empty() && appD_data.top().t1 == t1 && appD_data.top().t2 == t2) {
           source = appD_data.top().source;
-          t1 = appD_data.top().t1;
-          t2 = appD_data.top().t2;
           appD_data.pop();
         } else {
           break;
