@@ -31,9 +31,37 @@
  * Diagrams" by Daniel Kunkle, Vlad Slavici, and Gene Cooperman.
  *
  * We'd find it interesting to output the size of the largest OBDD, so we create
- * the following global variable.
+ * the following global variables. Also it would be of interest to see the best
+ * and worst ratio between sink and node arcs in the unreduced OBDDs
  */
-uint64_t largest_intermediate = 0;
+size_t largest_unreduced = 0;
+
+float best_sink_ratio = 0.0;
+float worst_sink_ratio = 1.0;
+
+inline void stats_unreduced(size_t node_arcs, size_t sink_arcs)
+{
+  size_t total_arcs = node_arcs + sink_arcs;
+  largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
+
+  float sink_ratio = float(sink_arcs) / float(total_arcs);
+  best_sink_ratio = std::max(best_sink_ratio, sink_ratio);
+  worst_sink_ratio = std::min(worst_sink_ratio, sink_ratio);
+}
+
+size_t largest_reduced = 0;
+
+float best_reduction_ratio = 1.0;
+float worst_reduction_ratio = 0.0;
+
+inline void stats_reduced(size_t unreduced_size, size_t reduced_size)
+{
+  largest_reduced = std::max(largest_reduced, reduced_size);
+
+  float reduction_ratio = float(reduced_size) / float(unreduced_size);
+  best_reduction_ratio = std::min(best_reduction_ratio, reduction_ratio);
+  worst_reduction_ratio = std::max(worst_reduction_ratio, reduction_ratio);
+}
 
 /*******************************************************************************
  *                             Variable ordering
@@ -159,7 +187,7 @@ void n_queens_S(uint64_t N,
     }
   } while (row-- > 0);
 
-  largest_intermediate = std::max(largest_intermediate, out_nodes.size());
+  largest_reduced = std::max(largest_reduced, out_nodes.size());
 }
 
 /*******************************************************************************
@@ -189,38 +217,55 @@ void n_queens_R(uint64_t N,
                 uint64_t row,
                 tpie::file_stream<coom::node_t>& out_nodes)
 {
-  // We will have to "current" streams will swap being the current. We will
-  // start in curr_1.
-  bool from_1 = true;
-
-  tpie::file_stream<coom::node_t> curr_1;
-  tpie::file_stream<coom::node_t> curr_2;
+  /* The main interface for the functions of COOM are of the form of one or more
+   * input streams converted into one output node stream. Most of these
+   * algorithms create in one sweep through the OBDD an intermediate result,
+   * which is then reduced afterwards in another sweep back again. The important
+   * thing to notice is, that the reduction is only dependent on the
+   * intermediate result and not the given input streams.
+   *
+   * When calling coom::apply(in1, in2, op, out) then even though in1 and in2
+   * may not be needed after the first sweep, the C++ compiler first sees it
+   * being a dead variable after the entire procedure has finished. That means,
+   * that both the input, the intermediate result and the output may have to
+   * exist in memory or on disk at the same time.
+   *
+   * If we explicitly call the reduce, we can make sure both inputs are cleaned
+   * up before we reduce us to the output. This will minimise the amount of
+   * space we concurrently occupy.
+   */
+  tpie::file_stream<coom::arc_t> reduce_node_arcs;
+  tpie::file_stream<coom::arc_t> reduce_sink_arcs;
 
   tpie::file_stream<coom::node_t> next_S;
-  n_queens_S(N, row, 0, curr_1);
+
+  out_nodes.open();
+  n_queens_S(N, row, 0, out_nodes);
 
   for (uint64_t j = 1; j < N; j++) {
+    next_S.open();
     n_queens_S(N, row, j, next_S);
 
-    tpie::file_stream<coom::node_t>& prev = from_1 ? curr_1 : curr_2;
-    tpie::file_stream<coom::node_t>& next = j == N-1 ? out_nodes : from_1 ? curr_2 : curr_1;
-    from_1 = !from_1;
+    reduce_node_arcs.open();
+    reduce_sink_arcs.open();
 
-    next.open();
+    coom::apply(out_nodes, next_S, coom::or_op, reduce_node_arcs, reduce_sink_arcs);
 
-    coom::apply(prev, next_S, coom::or_op, next);
-
-    largest_intermediate = std::max(largest_intermediate, next.size());
-
-    prev.close();
+    // close (and clean up) prior result
     next_S.close();
-  }
+    out_nodes.close();
 
-  if (curr_1.is_open()) {
-    curr_1.close();
-  }
-  if (curr_2.is_open()) {
-    curr_2.close();
+    stats_unreduced(reduce_node_arcs.size(), reduce_sink_arcs.size());
+
+    // open for next result
+    out_nodes.open();
+
+    coom::reduce(reduce_node_arcs, reduce_sink_arcs, out_nodes);
+
+    stats_reduced((reduce_node_arcs.size() + reduce_sink_arcs.size()) / 2, out_nodes.size());
+
+    reduce_node_arcs.close();
+    reduce_sink_arcs.close();
   }
 }
 
@@ -236,37 +281,35 @@ void n_queens_B(uint64_t N, tpie::file_stream<coom::node_t>& out_nodes)
     return;
   }
 
-  bool from_1 = true;
-
-  tpie::file_stream<coom::node_t> curr_1;
-  tpie::file_stream<coom::node_t> curr_2;
+  tpie::file_stream<coom::arc_t> reduce_node_arcs;
+  tpie::file_stream<coom::arc_t> reduce_sink_arcs;
 
   tpie::file_stream<coom::node_t> next_R;
 
-  n_queens_R(N, 0, curr_1);
+  out_nodes.open();
+  n_queens_R(N, 0, out_nodes);
 
   for (uint64_t i = 1; i < N; i++) {
     n_queens_R(N, i, next_R);
 
-    tpie::file_stream<coom::node_t>& prev = from_1 ? curr_1 : curr_2;
-    tpie::file_stream<coom::node_t>& next = i == N-1 ? out_nodes : from_1 ? curr_2 : curr_1;
-    from_1 = !from_1;
+    reduce_node_arcs.open();
+    reduce_sink_arcs.open();
 
-    next.open();
+    coom::apply(out_nodes, next_R, coom::and_op, reduce_node_arcs, reduce_sink_arcs);
 
-    coom::apply(prev, next_R, coom::and_op, next);
-
-    largest_intermediate = std::max(largest_intermediate, next.size());
-
-    prev.close();
     next_R.close();
-  }
+    out_nodes.close();
 
-  if (curr_1.is_open()) {
-    curr_1.close();
-  }
-  if (curr_2.is_open()) {
-    curr_2.close();
+    stats_unreduced(reduce_node_arcs.size(), reduce_sink_arcs.size());
+
+    out_nodes.open();
+
+    coom::reduce(reduce_node_arcs, reduce_sink_arcs, out_nodes);
+
+    stats_reduced((reduce_node_arcs.size() + reduce_sink_arcs.size()) / 2, out_nodes.size());
+
+    reduce_node_arcs.close();
+    reduce_sink_arcs.close();
   }
 }
 
@@ -522,7 +565,7 @@ int main(int argc, char* argv[])
 
   tpie::get_memory_manager().set_limit(M * 1024 * 1024 * 1024);
 
-  tpie::log_info() << "| Initialized TPIE with " << M << " GB of memory"  << std::endl;
+  tpie::log_info() << "| Initialized TPIE with " << M << " GB of memory"  << std::endl << "|" << std::endl;
 
   // ===== N Queens =====
 
@@ -535,9 +578,24 @@ int main(int argc, char* argv[])
 
   tpie::log_info() << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
 
-  auto largest_MB = MB_of_size(largest_intermediate);
-  tpie::log_info() << "|  | largest OBDD: " << largest_intermediate << " nodes" << std::endl;
-  tpie::log_info() << "|  |               " << (largest_MB > 0 ? std::to_string(largest_MB) : "< 1") << " MB"<< std::endl;
+  auto largest_unreduced_MB = (MB_of_size(largest_unreduced) * 3) / 2;
+  tpie::log_info() << "|  | largest OBDD (unreduced): " << largest_unreduced << " nodes" << std::endl;
+  tpie::log_info() << "|  |                           " << (largest_unreduced_MB > 0 ? std::to_string(largest_unreduced_MB) : "< 1")
+                                                        << " MB"<< std::endl;
+
+  tpie::log_info() << "|  | sink ratio: " << std::endl;
+  tpie::log_info() << "|  |  | best:  " << best_sink_ratio << std::endl;
+  tpie::log_info() << "|  |  | worst: " << worst_sink_ratio << std::endl;
+
+  auto largest_reduced_MB = MB_of_size(largest_reduced);
+  tpie::log_info() << "|  | largest OBDD (reduced)  : " << largest_reduced << " nodes" << std::endl;
+  tpie::log_info() << "|  |                           " << (largest_reduced_MB > 0 ? std::to_string(largest_reduced_MB) : "< 1")
+                                                        << " MB"<< std::endl;
+
+  tpie::log_info() << "|  | reduction ratio: " << std::endl;
+  tpie::log_info() << "|  |  | best:  " << best_reduction_ratio << std::endl;
+  tpie::log_info() << "|  |  | worst: " << worst_reduction_ratio << std::endl;
+
 
   auto final_MB = MB_of_size(board.size());
   tpie::log_info() << "|  | final size: " << board.size() << " nodes"<< std::endl;
