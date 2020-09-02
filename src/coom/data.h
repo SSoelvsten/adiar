@@ -155,6 +155,22 @@ namespace coom {
   arc_t high_arc_of(const node& n);
 
   node_t node_of(const arc& low, const arc& high);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Our layer-aware priority queue needs to manage which bucket corresponds to
+  /// which label to place things correctly or in an internal priority queue for
+  /// bucket overflows. To make things more efficient, we require the use of
+  /// meta information about the input OBDD streams.
+  //////////////////////////////////////////////////////////////////////////////
+  struct meta
+  {
+    label_t label;
+  };
+
+  typedef meta meta_t;
+
+  bool operator== (const arc& a, const arc& b);
+  bool operator!= (const arc& a, const arc& b);
 }
 
 

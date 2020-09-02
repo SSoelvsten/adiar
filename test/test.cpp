@@ -15,6 +15,8 @@ using namespace bandit;
 // COOM unit tests
 #include "coom/test_data.cpp"
 
+#include "coom/test_priority_queue.cpp"
+
 #include "coom/test_assignment.cpp"
 #include "coom/test_pred.cpp"
 
@@ -31,7 +33,7 @@ int main(int argc, char* argv[]) {
   // Initialize TPIE
   tpie::tpie_init();
 
-  size_t available_memory_mb = 128;
+  size_t available_memory_mb = 512;
   tpie::get_memory_manager().set_limit(available_memory_mb*1024*1024);
 
   // Run tests

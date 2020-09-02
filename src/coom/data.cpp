@@ -204,6 +204,19 @@ namespace coom {
 #endif
     return { low.source, low.target, high.target };
   }
+
+  /****************************************************************************/
+  /*  META                                                                    */
+  /****************************************************************************/
+  bool operator== (const meta& a, const meta& b)
+  {
+    return a.label == b.label;
+  }
+
+  bool operator!= (const meta& a, const meta& b)
+  {
+    return !(a==b);
+  }
 }
 
 #endif // COOM_DATA_CPP
