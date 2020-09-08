@@ -59,37 +59,37 @@ go_bandit([]() {
 
         describe("Paths", [&]() {
             it("can count number of non-disjunct paths", [&obdd_1]() {
-                AssertThat(coom::count_paths(obdd_1), Is().EqualTo(8));
+                AssertThat(coom::count_paths(obdd_1), Is().EqualTo(8u));
               });
 
             it("can count paths leading to T sinks [1]", [&obdd_1]() {
                 auto number_of_true_paths = coom::count_paths(obdd_1, is_true);
-                AssertThat(number_of_true_paths, Is().EqualTo(3));
+                AssertThat(number_of_true_paths, Is().EqualTo(3u));
               });
 
             it("can count paths leading to T sinks [2]", [&obdd_2]() {
                 auto number_of_true_paths = coom::count_paths(obdd_2, is_true);
-                AssertThat(number_of_true_paths, Is().EqualTo(2));
+                AssertThat(number_of_true_paths, Is().EqualTo(2u));
               });
 
             it("can count paths leading to F sinks [1]", [&obdd_1]() {
                 auto number_of_false_paths = coom::count_paths(obdd_1, is_false);
-                AssertThat(number_of_false_paths, Is().EqualTo(5));
+                AssertThat(number_of_false_paths, Is().EqualTo(5u));
               });
 
             it("can count paths leading to F sinks [2]", [&obdd_2]() {
                 auto number_of_false_paths = coom::count_paths(obdd_2, is_false);
-                AssertThat(number_of_false_paths, Is().EqualTo(1));
+                AssertThat(number_of_false_paths, Is().EqualTo(1u));
               });
 
             it("can count paths leading to any sinks [1]", [&obdd_1]() {
                 auto number_of_false_paths = coom::count_paths(obdd_1, is_any);
-                AssertThat(number_of_false_paths, Is().EqualTo(8));
+                AssertThat(number_of_false_paths, Is().EqualTo(8u));
               });
 
             it("can count paths leading to any sinks [2]", [&obdd_2]() {
                 auto number_of_false_paths = coom::count_paths(obdd_2, is_any);
-                AssertThat(number_of_false_paths, Is().EqualTo(3));
+                AssertThat(number_of_false_paths, Is().EqualTo(3u));
               });
 
             it("can count paths on a never happy predicate", [&obdd_1]() {
@@ -97,7 +97,7 @@ go_bandit([]() {
                                                             [](uint64_t /* sink */) -> bool {
                                                               return false;
                                                             });
-                AssertThat(all_paths_rejected, Is().EqualTo(0));
+                AssertThat(all_paths_rejected, Is().EqualTo(0u));
               });
 
             it("should count no paths in a true sink-only OBDD", [&]() {
@@ -105,8 +105,8 @@ go_bandit([]() {
                 obdd.open();
                 obdd.write(create_sink(true));
 
-                AssertThat(coom::count_paths(obdd), Is().EqualTo(0));
-                AssertThat(coom::count_paths(obdd, is_true), Is().EqualTo(0));
+                AssertThat(coom::count_paths(obdd), Is().EqualTo(0u));
+                AssertThat(coom::count_paths(obdd, is_true), Is().EqualTo(0u));
               });
 
             it("should count no paths in a false sink-only OBDD", [&]() {
@@ -114,8 +114,8 @@ go_bandit([]() {
                 obdd.open();
                 obdd.write(create_sink(false));
 
-                AssertThat(coom::count_paths(obdd), Is().EqualTo(0));
-                AssertThat(coom::count_paths(obdd, is_true), Is().EqualTo(0));
+                AssertThat(coom::count_paths(obdd), Is().EqualTo(0u));
+                AssertThat(coom::count_paths(obdd, is_true), Is().EqualTo(0u));
               });
 
             it("should count paths of a root-only OBDD [1]", [&]() {
@@ -123,8 +123,8 @@ go_bandit([]() {
                 obdd_1.open();
                 obdd_1.write(create_node(1,0, sink_F, sink_T));
 
-                AssertThat(coom::count_assignments(obdd_1, is_false), Is().EqualTo(1));
-                AssertThat(coom::count_assignments(obdd_1, is_true), Is().EqualTo(1));
+                AssertThat(coom::count_assignments(obdd_1, is_false), Is().EqualTo(1u));
+                AssertThat(coom::count_assignments(obdd_1, is_true), Is().EqualTo(1u));
               });
 
             it("should count paths of a root-only OBDD [2]", [&]() {
@@ -133,40 +133,40 @@ go_bandit([]() {
                 obdd_2.open();
                 obdd_2.write(create_node(1,0, sink_T, sink_T));
 
-                AssertThat(coom::count_assignments(obdd_2, is_false), Is().EqualTo(0));
-                AssertThat(coom::count_assignments(obdd_2, is_true), Is().EqualTo(2));
+                AssertThat(coom::count_assignments(obdd_2, is_false), Is().EqualTo(0u));
+                AssertThat(coom::count_assignments(obdd_2, is_true), Is().EqualTo(2u));
               });
           });
 
         describe("Assignment", [&]() {
             it("can count assignments leading to T sinks [1]", [&obdd_1]() {
                 auto number_of_true_assignments = coom::count_assignments(obdd_1, is_true);
-                AssertThat(number_of_true_assignments, Is().EqualTo(5));
+                AssertThat(number_of_true_assignments, Is().EqualTo(5u));
               });
 
             it("can count assignments leading to T sinks [2]", [&obdd_2]() {
                 auto number_of_true_assignments = coom::count_assignments(obdd_2, is_true);
-                AssertThat(number_of_true_assignments, Is().EqualTo(3));
+                AssertThat(number_of_true_assignments, Is().EqualTo(3u));
               });
 
             it("can count assignments leading to F sinks [1]", [&obdd_1]() {
                 auto number_of_false_assignments = coom::count_assignments(obdd_1, is_false);
-                AssertThat(number_of_false_assignments, Is().EqualTo(11));
+                AssertThat(number_of_false_assignments, Is().EqualTo(11u));
               });
 
             it("can count assignments leading to F sinks [2]", [&obdd_2]() {
                 auto number_of_false_assignments = coom::count_assignments(obdd_2, is_false);
-                AssertThat(number_of_false_assignments, Is().EqualTo(1));
+                AssertThat(number_of_false_assignments, Is().EqualTo(1u));
               });
 
             it("can count assignments leading to any sinks [1]", [&obdd_1]() {
                 auto number_of_assignments = coom::count_assignments(obdd_1, is_any);
-                AssertThat(number_of_assignments, Is().EqualTo(16));
+                AssertThat(number_of_assignments, Is().EqualTo(16u));
               });
 
             it("can count assignments leading to any sinks [2]", [&obdd_2]() {
                 auto number_of_assignments = coom::count_assignments(obdd_2, is_any);
-                AssertThat(number_of_assignments, Is().EqualTo(4));
+                AssertThat(number_of_assignments, Is().EqualTo(4u));
               });
 
             it("should count no assignments in a true sink-only OBDD", [&]() {
@@ -174,8 +174,8 @@ go_bandit([]() {
                 obdd.open();
                 obdd.write(create_sink(true));
 
-                AssertThat(coom::count_assignments(obdd, is_false), Is().EqualTo(0));
-                AssertThat(coom::count_assignments(obdd, is_true), Is().EqualTo(0));
+                AssertThat(coom::count_assignments(obdd, is_false), Is().EqualTo(0u));
+                AssertThat(coom::count_assignments(obdd, is_true), Is().EqualTo(0u));
               });
 
             it("should count no assignments in a false sink-only OBDD", [&]() {
@@ -183,8 +183,8 @@ go_bandit([]() {
                 obdd.open();
                 obdd.write(create_sink(false));
 
-                AssertThat(coom::count_assignments(obdd, is_false), Is().EqualTo(0));
-                AssertThat(coom::count_assignments(obdd, is_true), Is().EqualTo(0));
+                AssertThat(coom::count_assignments(obdd, is_false), Is().EqualTo(0u));
+                AssertThat(coom::count_assignments(obdd, is_true), Is().EqualTo(0u));
               });
 
             it("should count assignments of a root-only OBDD [1]", [&]() {
@@ -192,8 +192,8 @@ go_bandit([]() {
                 obdd_1.open();
                 obdd_1.write(create_node(1,0, sink_F, sink_T));
 
-                AssertThat(coom::count_assignments(obdd_1, is_false), Is().EqualTo(1));
-                AssertThat(coom::count_assignments(obdd_1, is_true), Is().EqualTo(1));
+                AssertThat(coom::count_assignments(obdd_1, is_false), Is().EqualTo(1u));
+                AssertThat(coom::count_assignments(obdd_1, is_true), Is().EqualTo(1u));
               });
 
             it("should count assignments of a root-only OBDD [2]", [&]() {
@@ -202,8 +202,8 @@ go_bandit([]() {
                 obdd_2.open();
                 obdd_2.write(create_node(1,0, sink_T, sink_T));
 
-                AssertThat(coom::count_assignments(obdd_2, is_false), Is().EqualTo(0));
-                AssertThat(coom::count_assignments(obdd_2, is_true), Is().EqualTo(2));
+                AssertThat(coom::count_assignments(obdd_2, is_false), Is().EqualTo(0u));
+                AssertThat(coom::count_assignments(obdd_2, is_true), Is().EqualTo(2u));
               });
           });
       });

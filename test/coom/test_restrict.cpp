@@ -76,7 +76,7 @@ go_bandit([]() {
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-            AssertThat(out_nodes.size(), Is().EqualTo(0));
+            AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
             reduce_sink_arcs.seek(0);
@@ -129,7 +129,7 @@ go_bandit([]() {
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-            AssertThat(out_nodes.size(), Is().EqualTo(0));
+            AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
             reduce_sink_arcs.seek(0);
@@ -179,7 +179,7 @@ go_bandit([]() {
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-            AssertThat(out_nodes.size(), Is().EqualTo(0));
+            AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
             reduce_sink_arcs.seek(0);
@@ -238,7 +238,7 @@ go_bandit([]() {
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-            AssertThat(out_nodes.size(), Is().EqualTo(0));
+            AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
             reduce_sink_arcs.seek(0);
@@ -289,7 +289,7 @@ go_bandit([]() {
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-            AssertThat(out_nodes.size(), Is().EqualTo(0));
+            AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
             reduce_sink_arcs.seek(0);
@@ -321,8 +321,8 @@ go_bandit([]() {
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-            AssertThat(reduce_node_arcs.size(), Is().EqualTo(0));
-            AssertThat(reduce_sink_arcs.size(), Is().EqualTo(0));
+            AssertThat(reduce_node_arcs.size(), Is().EqualTo(0u));
+            AssertThat(reduce_sink_arcs.size(), Is().EqualTo(0u));
 
             out_nodes.seek(0);
 
@@ -350,8 +350,8 @@ go_bandit([]() {
 
             restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-            AssertThat(reduce_node_arcs.size(), Is().EqualTo(0));
-            AssertThat(reduce_sink_arcs.size(), Is().EqualTo(0));
+            AssertThat(reduce_node_arcs.size(), Is().EqualTo(0u));
+            AssertThat(reduce_sink_arcs.size(), Is().EqualTo(0u));
 
             out_nodes.seek(0);
 
@@ -483,7 +483,7 @@ go_bandit([]() {
 
             restrict(in_nodes, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-            AssertThat(out_nodes.size(), Is().EqualTo(0));
+            AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
 
@@ -559,7 +559,7 @@ go_bandit([]() {
 
             restrict(in_nodes, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-            AssertThat(out_nodes.size(), Is().EqualTo(0));
+            AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
 
@@ -649,7 +649,7 @@ go_bandit([]() {
 
             restrict(dead_obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
 
-            AssertThat(out_nodes.size(), Is().EqualTo(0));
+            AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
 

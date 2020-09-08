@@ -98,17 +98,17 @@ go_bandit([]() {
         describe("Node Ptr", [&]() {
             it("should store and retrieve label for Ptr with maximal id (unflagged)", [&]() {
                 ptr_t p = create_node_ptr(12,MAX_ID);
-                AssertThat(label_of(p), Is().EqualTo(12));
+                AssertThat(label_of(p), Is().EqualTo(12u));
               });
 
             it("should store and retrieve 42 label Ptr (unflagged)", [&]() {
                 ptr_t p = create_node_ptr(42,2);
-                AssertThat(label_of(p), Is().EqualTo(42));
+                AssertThat(label_of(p), Is().EqualTo(42u));
               });
 
             it("should store and retrieve 21 label Ptr (unflagged)", [&]() {
                 ptr_t p = create_node_ptr(21,2);
-                AssertThat(label_of(p), Is().EqualTo(21));
+                AssertThat(label_of(p), Is().EqualTo(21u));
               });
 
             it("should store and retrieve MAX label Ptr (unflagged)", [&]() {
@@ -118,17 +118,17 @@ go_bandit([]() {
 
             it("should store and retrieve label for Ptr with maximal id (flagged)", [&]() {
                 ptr_t p = flag(create_node_ptr(12,MAX_ID));
-                AssertThat(label_of(p), Is().EqualTo(12));
+                AssertThat(label_of(p), Is().EqualTo(12u));
               });
 
             it("should store and retrieve 42 label Ptr (flagged)", [&]() {
                 ptr_t p = flag(create_node_ptr(42,2));
-                AssertThat(label_of(p), Is().EqualTo(42));
+                AssertThat(label_of(p), Is().EqualTo(42u));
               });
 
             it("should store and retrieve 21 label Ptr (flagged)", [&]() {
                 ptr_t p = flag(create_node_ptr(21,2));
-                AssertThat(label_of(p), Is().EqualTo(21));
+                AssertThat(label_of(p), Is().EqualTo(21u));
               });
 
             it("should store and retrieve MAX label Ptr (flagged)", [&]() {
@@ -138,12 +138,12 @@ go_bandit([]() {
 
             it("should store and retrieve 42 id (unflagged)", [&]() {
                 ptr_t p = create_node_ptr(2,42);
-                AssertThat(id_of(p), Is().EqualTo(42));
+                AssertThat(id_of(p), Is().EqualTo(42u));
               });
 
             it("should store and retrieve 21 id (unflagged)", [&]() {
                 ptr_t p = create_node_ptr(2,21);
-                AssertThat(id_of(p), Is().EqualTo(21));
+                AssertThat(id_of(p), Is().EqualTo(21u));
               });
 
             it("should store and retrieve MAX id (unflagged)", [&]() {
@@ -153,12 +153,12 @@ go_bandit([]() {
 
             it("should store and retrieve 42 id (flagged)", [&]() {
                 ptr_t p = flag(create_node_ptr(2,42));
-                AssertThat(id_of(p), Is().EqualTo(42));
+                AssertThat(id_of(p), Is().EqualTo(42u));
               });
 
             it("should store and retrieve 21 id (flagged)", [&]() {
                 ptr_t p = flag(create_node_ptr(2,21));
-                AssertThat(id_of(p), Is().EqualTo(21));
+                AssertThat(id_of(p), Is().EqualTo(21u));
               });
 
             it("should store and retrieve MAX id (flagged)", [&]() {
@@ -431,10 +431,10 @@ go_bandit([]() {
 
                 arc_t arc = low_arc_of(node);
 
-                AssertThat(label_of(arc.source), Is().EqualTo(7));
-                AssertThat(id_of(arc.source), Is().EqualTo(42));
-                AssertThat(label_of(arc.target), Is().EqualTo(8));
-                AssertThat(id_of(arc.target), Is().EqualTo(21));
+                AssertThat(label_of(arc.source), Is().EqualTo(7u));
+                AssertThat(id_of(arc.source), Is().EqualTo(42u));
+                AssertThat(label_of(arc.target), Is().EqualTo(8u));
+                AssertThat(id_of(arc.target), Is().EqualTo(21u));
               });
 
             it("should extract high arc from node", [&]() {
@@ -444,10 +444,10 @@ go_bandit([]() {
 
                 arc_t arc = high_arc_of(node);
 
-                AssertThat(label_of(arc.source), Is().EqualTo(11));
-                AssertThat(id_of(arc.source), Is().EqualTo(13));
-                AssertThat(label_of(arc.target), Is().EqualTo(9));
-                AssertThat(id_of(arc.target), Is().EqualTo(8));
+                AssertThat(label_of(arc.source), Is().EqualTo(11u));
+                AssertThat(id_of(arc.source), Is().EqualTo(13u));
+                AssertThat(label_of(arc.target), Is().EqualTo(9u));
+                AssertThat(id_of(arc.target), Is().EqualTo(8u));
               });
 
             it("should combine low and high arcs into single node", [&]() {
@@ -456,8 +456,8 @@ go_bandit([]() {
 
                 node_t node = node_of(low_arc, high_arc);
 
-                AssertThat(label_of(node), Is().EqualTo(17));
-                AssertThat(id_of(node), Is().EqualTo(42));
+                AssertThat(label_of(node), Is().EqualTo(17u));
+                AssertThat(id_of(node), Is().EqualTo(42u));
 
                 AssertThat(label_of(node.low), Is().EqualTo(label_of(low_arc.target)));
                 AssertThat(id_of(node.low), Is().EqualTo(id_of(low_arc.target)));

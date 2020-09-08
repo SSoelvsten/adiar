@@ -304,7 +304,7 @@ go_bandit([]() {
 
             AssertThat(get_assignment(obdd, is_true, out_assignment), Is().True());
 
-            AssertThat(out_assignment.size(), Is().EqualTo(0));
+            AssertThat(out_assignment.size(), Is().EqualTo(0u));
           });
 
         it("should retrieve failed empty assignment for never-happy predicate", [&]() {
@@ -333,7 +333,7 @@ go_bandit([]() {
                   return false;
                 }, out_assignment), Is().False());
 
-            AssertThat(out_assignment.size(), Is().EqualTo(0));
+            AssertThat(out_assignment.size(), Is().EqualTo(0u));
           });
       });
   });
