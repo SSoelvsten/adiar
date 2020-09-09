@@ -1,5 +1,7 @@
 .PHONY: clean build test
 
+MAKE_FLAGS=-j $$(nproc)
+
 # ============================================================================ #
 #  BUILD
 # ============================================================================ #
@@ -9,7 +11,7 @@ build:
 build-test:
 	@mkdir -p build/
 	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=ON ..
-	@cd build/ && make test_unit
+	@cd build/ && make $(MAKE_FLAGS) test_unit
 
 
 # ============================================================================ #
@@ -34,7 +36,7 @@ F =
 dot:
 	@mkdir -p build/
 	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=OFF ..
-	@cd build/ && make coom_dot
+	@cd build/ && make $(MAKE_FLAGS) coom_dot
 	@./build/src/coom/coom_dot ${F}
 
 # ============================================================================ #
@@ -43,7 +45,7 @@ dot:
 main:
 	@mkdir -p build/
 	@cd build/ && cmake -DCOOM_DEBUG=ON -DCOOM_ASSERT=ON ..
-	@cd build/ && make coom_main
+	@cd build/ && make $(MAKE_FLAGS) coom_main
 	@rm -rf *.tpie
 	@echo "" && echo ""
 	@./build/src/coom/coom_main
@@ -60,7 +62,7 @@ example-n-queens:
 	@mkdir -p build/
 	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=OFF ..
 
-	@cd build/ && make n_queens
+	@cd build/ && make $(MAKE_FLAGS) n_queens
 
   # Run
 	@echo ""
@@ -73,7 +75,7 @@ example-tic-tac-toe:
 	@mkdir -p build/
 	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=OFF ..
 
-	@cd build/ && make tic_tac_toe
+	@cd build/ && make $(MAKE_FLAGS) tic_tac_toe
 
   # Run
 	@echo ""
