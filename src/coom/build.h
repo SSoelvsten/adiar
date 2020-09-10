@@ -12,7 +12,9 @@ namespace coom
   /// \param label The label of the variable
   /// \param out_nodes A (yet empty) file_stream to output to
   //////////////////////////////////////////////////////////////////////////////
-  void build_x(label_t label, tpie::file_stream<node_t> &out_nodes);
+  void build_x(label_t label,
+               tpie::file_stream<node_t> &out_nodes,
+               tpie::file_stream<meta_t> &out_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an OBDD for the variable with the given label.
@@ -20,7 +22,9 @@ namespace coom
   /// \param label The label of the variable
   /// \param out_nodes A (yet empty) file_stream to output to
   //////////////////////////////////////////////////////////////////////////////
-  void build_not_x(label_t label, tpie::file_stream<node_t> &out_nodes);
+  void build_not_x(label_t label,
+                   tpie::file_stream<node_t> &out_nodes,
+                   tpie::file_stream<meta_t> &out_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an OBDD that is true only when all given labels are set to
@@ -30,7 +34,8 @@ namespace coom
   /// \param out_nodes A (yet empty) file_stream to output to
   //////////////////////////////////////////////////////////////////////////////
   void build_and(tpie::file_stream<label_t> &in_labels,
-                 tpie::file_stream<node_t> &out_nodes);
+                 tpie::file_stream<node_t> &out_nodes,
+                 tpie::file_stream<meta_t> &out_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an OBDD that is true only when at least one of the given
@@ -40,7 +45,8 @@ namespace coom
   /// \param out_nodes A (yet empty) file_stream to output to
   //////////////////////////////////////////////////////////////////////////////
   void build_or(tpie::file_stream<label_t> &in_labels,
-                tpie::file_stream<node_t> &out_nodes);
+                tpie::file_stream<node_t> &out_nodes,
+                tpie::file_stream<meta_t> &out_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an OBDD that is true when the number of variables set to
@@ -61,7 +67,8 @@ namespace coom
   //template <typename comparator = std::equal_to<uint64_t>()>
   void build_counter(label_t min_label, label_t max_label,
                      uint64_t threshold,
-                     tpie::file_stream<node_t> &out_nodes);
+                     tpie::file_stream<node_t> &out_nodes,
+                     tpie::file_stream<meta_t> &out_meta);
 }
 
 #endif // COOM_BUILD_H

@@ -27,6 +27,13 @@ go_bandit([]() {
 
         obdd_T_2.write(create_sink(true));
 
+
+        tpie::file_stream<meta_t> sink_meta_1;
+        sink_meta_1.open();
+
+        tpie::file_stream<meta_t> sink_meta_2;
+        sink_meta_2.open();
+
         //                   END
         // == CREATE SINK-ONLY OBDD FOR UNIT TESTS ==
 
@@ -34,7 +41,10 @@ go_bandit([]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_F_1, obdd_T_2, xor_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_F_1, sink_meta_1, obdd_T_2, sink_meta_2, xor_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -42,13 +52,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should XOR T and T sink-only OBDDs", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_T_1, obdd_T_2, xor_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_T_1, sink_meta_1, obdd_T_2, sink_meta_2, xor_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -56,13 +71,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should AND F and T sink-only OBDDs", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_F_1, obdd_T_2, and_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_F_1, sink_meta_1, obdd_T_2, sink_meta_2, and_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -70,13 +90,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should AND T and T sink-only OBDDs", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_T_1, obdd_T_2, and_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_T_1, sink_meta_1, obdd_T_2, sink_meta_2, and_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -84,13 +109,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should OR T and F sink-only OBDDs", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_T_1, obdd_F_2, or_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_T_1, sink_meta_1, obdd_F_2, sink_meta_2, or_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -98,13 +128,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should OR T and F sink-only OBDDs", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_F_1, obdd_F_2, or_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_F_1, sink_meta_1, obdd_F_2, sink_meta_2, or_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -112,13 +147,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should IMPLIES F and T sink-only OBDDs", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_F_1, obdd_T_2, implies_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_F_1, sink_meta_1, obdd_T_2, sink_meta_2, implies_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -126,13 +166,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should IMPLIES T and F sink-only OBDDs", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_T_1, obdd_F_2, implies_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_T_1, sink_meta_1, obdd_F_2, sink_meta_2, implies_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -140,13 +185,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should IMPLIES T and T sink-only OBDDs", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_T_1, obdd_T_2, implies_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_T_1, sink_meta_1, obdd_T_2, sink_meta_1, implies_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -154,6 +204,8 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         ptr_t sink_T = create_sink_ptr(true);
@@ -165,17 +217,37 @@ go_bandit([]() {
         obdd_x0.open();
         obdd_x0.write(create_node(0,MAX_ID, sink_F, sink_T));
 
+        tpie::file_stream<meta_t> meta_x0;
+        meta_x0.open();
+        meta_x0.write({0});
+
+
         tpie::file_stream<node_t> obdd_not_x0;
         obdd_not_x0.open();
         obdd_not_x0.write(create_node(0,MAX_ID, sink_T, sink_F));
+
+        tpie::file_stream<meta_t> meta_not_x0;
+        meta_not_x0.open();
+        meta_not_x0.write({0});
+
 
         tpie::file_stream<node_t> obdd_x1;
         obdd_x1.open();
         obdd_x1.write(create_node(1,MAX_ID, sink_F, sink_T));
 
+        tpie::file_stream<meta_t> meta_x1;
+        meta_x1.open();
+        meta_x1.write({1});
+
+
         tpie::file_stream<node_t> obdd_x2;
         obdd_x2.open();
         obdd_x2.write(create_node(2,MAX_ID, sink_F, sink_T));
+
+        tpie::file_stream<meta_t> meta_x2;
+        meta_x2.open();
+        meta_x2.write({2});
+
 
         //                     END
         // == CREATE SINGLE VARIABLE FOR UNIT TESTS ==
@@ -187,7 +259,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_x0, obdd_T_2, and_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(obdd_x0, meta_x0, obdd_T_2, sink_meta_2, and_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
             AssertThat(reduce_node_arcs.can_read(), Is().False());
@@ -201,6 +276,13 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should XOR x0 and x1", [&]() {
@@ -220,7 +302,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_x0, obdd_x1, xor_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(obdd_x0, meta_x0, obdd_x1, meta_x1, xor_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
 
@@ -247,6 +332,16 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should IMPLY (and shortcut) on x0 and x1", [&]() {
@@ -266,7 +361,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_x0, obdd_x1, implies_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(obdd_x0, meta_x0, obdd_x1, meta_x1, implies_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
 
@@ -287,6 +385,16 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should OR (and shortcut) on x0 and x2", [&]() {
@@ -306,7 +414,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_x0, obdd_x2, or_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(obdd_x0, meta_x0, obdd_x2, meta_x2, or_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
 
@@ -316,7 +427,6 @@ go_bandit([]() {
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
             reduce_sink_arcs.seek(0);
-
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), sink_T }));
@@ -328,6 +438,16 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should AND x0 and !x0", [&]() {
@@ -343,7 +463,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_x0, obdd_not_x0, and_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(obdd_x0, meta_x0, obdd_not_x0, meta_not_x0, and_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
 
@@ -358,13 +481,23 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should AND (and shortcut) F and x0", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_F_1, obdd_x0, and_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_F_1, sink_meta_1, obdd_x0, meta_x0, and_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -372,6 +505,8 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
@@ -407,6 +542,14 @@ go_bandit([]() {
         node_t n1_1 = create_node(0,MAX_ID, n1_3.uid, n1_2.uid);
         obdd_1.write(n1_1);
 
+        tpie::file_stream<meta_t> meta_1;
+        meta_1.open();
+
+        meta_1.write({3});
+        meta_1.write({2});
+        meta_1.write({1});
+        meta_1.write({0});
+
         /*      OBBD 2
 
                    ---- x0
@@ -427,6 +570,13 @@ go_bandit([]() {
 
         node_t n2_1 = create_node(1,MAX_ID, n2_2.uid, sink_T);
         obdd_2.write(n2_1);
+
+        tpie::file_stream<meta_t> meta_2;
+        meta_2.open();
+
+        meta_2.write({3});
+        meta_2.write({1});
+
 
         /*     OBDD 3
 
@@ -471,6 +621,15 @@ go_bandit([]() {
         node_t n3_1 = create_node(0,MAX_ID, n3_2.uid, n3_3.uid);
         obdd_3.write(n3_1);
 
+        tpie::file_stream<meta_t> meta_3;
+        meta_3.open();
+
+        meta_3.write({3});
+        meta_3.write({2});
+        meta_3.write({1});
+        meta_3.write({0});
+
+
         //                 END
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
 
@@ -478,7 +637,10 @@ go_bandit([]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_F_1, obdd_1, implies_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_F_1, sink_meta_1, obdd_1, meta_1, implies_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -486,13 +648,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should OR (and shortcut) OBBD 1 and T", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_1, obdd_T_2, or_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_1, meta_1, obdd_T_2, sink_meta_2, or_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -500,13 +667,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should OR (and shortcut) OBBD 2 and T", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_2, obdd_T_2, or_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_2, meta_2, obdd_T_2, sink_meta_2, or_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -514,13 +686,18 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should AND (and shortcut) F and OBBD 2", [&]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            apply(obdd_F_1, obdd_2, and_op, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            apply(obdd_F_1, sink_meta_1, obdd_2, meta_2, and_op, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -528,6 +705,8 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should XOR OBBD 2 and x2", [&]() {
@@ -550,7 +729,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_2, obdd_x2, xor_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(obdd_2, meta_2, obdd_x2, meta_x2, xor_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
 
@@ -588,6 +770,19 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         /* The product construction of obbd_1 and obdd_2 above is as follows in sorted order.
@@ -630,7 +825,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_1, obdd_2, or_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(obdd_1, meta_1, obdd_2, meta_2, or_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
 
@@ -669,6 +867,38 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should AND (and shortcut) OBBD 1 OBBD 2", [&]() {
@@ -695,7 +925,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_1, obdd_2, and_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(obdd_1, meta_1, obdd_2, meta_2, and_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
 
@@ -745,6 +978,22 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), sink_T }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should XOR OBBD 1 and 2", [&]() {
@@ -757,7 +1006,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_1, obdd_2, xor_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(obdd_1, meta_1, obdd_2, meta_2, xor_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
 
@@ -820,6 +1072,22 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,2)), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should XOR OBDD 3 and 1", [&]() {
@@ -855,7 +1123,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(obdd_3, obdd_1, xor_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(obdd_3, meta_3, obdd_1, meta_1, xor_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
 
@@ -918,6 +1189,22 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should AND two 3-Queens placements [1]", [&]() {
@@ -948,6 +1235,17 @@ go_bandit([]() {
 
             node_t q1_0 = create_node(0,0, q1_1_0.uid, q1_1_1.uid);
             queen_0_1.write(q1_0);
+
+            tpie::file_stream<meta_t> queen_0_1_meta;
+            queen_0_1_meta.open();
+
+            queen_0_1_meta.write({7});
+            queen_0_1_meta.write({5});
+            queen_0_1_meta.write({4});
+            queen_0_1_meta.write({3});
+            queen_0_1_meta.write({2});
+            queen_0_1_meta.write({1});
+            queen_0_1_meta.write({0});
 
 
             // 3-Queens placement at (1,1)
@@ -984,6 +1282,20 @@ go_bandit([]() {
             node_t q2_0 = create_node(0,0, q2_1.uid, q2_4_1.uid);
             queen_1_1.write(q2_0);
 
+            tpie::file_stream<meta_t> queen_1_1_meta;
+            queen_1_1_meta.open();
+
+            queen_1_1_meta.write({8});
+            queen_1_1_meta.write({7});
+            queen_1_1_meta.write({6});
+            queen_1_1_meta.write({5});
+            queen_1_1_meta.write({4});
+            queen_1_1_meta.write({3});
+            queen_1_1_meta.write({2});
+            queen_1_1_meta.write({1});
+            queen_1_1_meta.write({0});
+
+
             // Apply it
             tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
@@ -991,7 +1303,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(queen_0_1, queen_1_1, and_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            apply(queen_0_1, queen_0_1_meta, queen_1_1, queen_1_1_meta, and_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             reduce_node_arcs.seek(0);
 
@@ -1025,13 +1340,13 @@ go_bandit([]() {
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(3,0), create_node_ptr(4,1) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(1,1), create_node_ptr(4,2) }));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(4,2) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), create_node_ptr(4,2) }));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(1,1), create_node_ptr(4,2) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(4,0)), create_node_ptr(5,0) }));
@@ -1101,6 +1416,37 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(8,0)), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {0}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {1}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {2}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {3}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {4}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {5}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {6}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {7}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {8}));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should AND two 3-Queens placements [2]", [&]() {
@@ -1132,6 +1478,17 @@ go_bandit([]() {
             node_t q1_0 = create_node(0,0, q1_2.uid, q1_6_1.uid);
             queen_2_0.write(q1_0);
 
+            tpie::file_stream<meta_t> queen_2_0_meta;
+            queen_2_0_meta.open();
+
+            queen_2_0_meta.write({8});
+            queen_2_0_meta.write({7});
+            queen_2_0_meta.write({6});
+            queen_2_0_meta.write({4});
+            queen_2_0_meta.write({3});
+            queen_2_0_meta.write({2});
+            queen_2_0_meta.write({0});
+
             // Queen placed at 2,1
             tpie::file_stream<node_t> queen_2_1;
             queen_2_1.open();
@@ -1160,14 +1517,32 @@ go_bandit([]() {
             node_t q2_1 = create_node(1,0, q2_3.uid, q2_7_1.uid);
             queen_2_1.write(q2_1);
 
+            tpie::file_stream<meta_t> queen_2_1_meta;
+            queen_2_1_meta.open();
+
+            queen_2_1_meta.write({8});
+            queen_2_1_meta.write({7});
+            queen_2_1_meta.write({6});
+            queen_2_1_meta.write({5});
+            queen_2_1_meta.write({4});
+            queen_2_1_meta.write({3});
+            queen_2_1_meta.write({1});
+
+
+            // Apply it
             tpie::file_stream<arc_t> reduce_node_arcs;
             reduce_node_arcs.open();
 
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            apply(queen_2_0, queen_2_1, and_op, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
 
+            apply(queen_2_0, queen_2_0_meta, queen_2_1, queen_2_1_meta, and_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
+
+
+            // Check it
             reduce_node_arcs.seek(0);
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
@@ -1213,31 +1588,13 @@ go_bandit([]() {
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(5,0), create_node_ptr(6,0) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(5,0)), create_node_ptr(6,1) }));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(4,2), create_node_ptr(6,1) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(5,0)), create_node_ptr(6,1) }));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(5,1), create_node_ptr(6,2) }));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(4,0)), create_node_ptr(6,3) }));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,2)), create_node_ptr(6,3) }));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(5,1)), create_node_ptr(6,3) }));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), create_node_ptr(6,3) }));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(6,3) }));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(4,2)), create_node_ptr(6,3) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), create_node_ptr(6,3) }));
@@ -1246,7 +1603,25 @@ go_bandit([]() {
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(4,1)), create_node_ptr(6,3) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(4,2)), create_node_ptr(6,3) }));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(4,0)), create_node_ptr(6,3) }));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), create_node_ptr(6,3) }));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(3,2)), create_node_ptr(6,3) }));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(6,3) }));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), create_node_ptr(6,3) }));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(5,1)), create_node_ptr(6,3) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(6,0), create_node_ptr(7,0) }));
@@ -1261,16 +1636,16 @@ go_bandit([]() {
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(6,1)), create_node_ptr(7,1) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(6,3), create_node_ptr(7,2) }));
-
-            AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(6,1), create_node_ptr(7,2) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(7,1), create_node_ptr(8,0) }));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(6,3), create_node_ptr(7,2) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
-            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(7,0)), create_node_ptr(8,1) }));
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(7,0)), create_node_ptr(8,0) }));
+
+            AssertThat(reduce_node_arcs.can_read(), Is().True());
+            AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { create_node_ptr(7,1), create_node_ptr(8,1) }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
@@ -1307,6 +1682,37 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(create_node_ptr(8,1)), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {0}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {1}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {2}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {3}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {4}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {5}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {6}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {7}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {8}));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
       });
   });

@@ -2,9 +2,9 @@
 #define COOM_COUNT_CPP
 
 #include <tpie/file_stream.h>
-#include <tpie/priority_queue.h>
 
 #include "data.h"
+#include "priority_queue.cpp"
 
 #include "debug.h"
 #include "debug_data.h"
@@ -57,7 +57,16 @@ namespace coom
     }
   };
 
+  struct count_queue_label
+  {
+    label_t label_of(const partial_sum &s)
+    {
+      return coom::label_of(s.uid);
+    }
+  };
+
   inline uint64_t count(tpie::file_stream<node_t> &nodes,
+                        tpie::file_stream<meta_t> &meta,
                         const sink_pred &sink_pred,
                         const bool count_skipped_layers)
   {
@@ -74,7 +83,9 @@ namespace coom
     label_t biggest_label = label_of(nodes.read());
 
     nodes.seek(0, tpie::file_stream_base::end);
-    tpie::priority_queue<partial_sum, count_queue_lt> partial_sums;
+
+    priority_queue<partial_sum, count_queue_label, count_queue_lt, 1> partial_sums;
+    partial_sums.hook_meta_stream(meta);
 
     // Take root out and put its children into the priority queue
     // or count them immediately if they are sinks
@@ -85,15 +96,15 @@ namespace coom
     if (is_sink_ptr(root.low)) {
       if (sink_pred(root.low)) {
         sum = count_skipped_layers
-          ? 1 << (biggest_label - label_of(root))
-          : 1;
+          ? 1u << (biggest_label - label_of(root))
+          : 1u;
 
         result = result + sum;
       }
     } else {
       sum = count_skipped_layers
-        ?  1 << (label_of(root.low) - label_of(root) - 1)
-        : 1;
+        ? 1u << (label_of(root.low) - label_of(root) - 1)
+        : 1u;
 
       partial_sums.push({root.low, sum});
     }
@@ -104,15 +115,15 @@ namespace coom
     if (is_sink_ptr(root.high)) {
       if (sink_pred(root.high)) {
         sum = count_skipped_layers
-          ? 1 << (biggest_label - label_of(root))
-          : 1;
+          ? 1u << (biggest_label - label_of(root))
+          : 1u;
 
         result = result + sum;
       }
     } else {
       sum = count_skipped_layers
-        ? 1 << (label_of(root.high) - label_of(root) - 1)
-        : 1;
+        ? 1u << (label_of(root.high) - label_of(root) - 1)
+        : 1u;
 
       partial_sums.push({root.high, sum});
     }
@@ -124,26 +135,29 @@ namespace coom
       node_t current_node = nodes.read_back();
       sum = 0u;
 
+      if (partial_sums.current_layer() != label_of(current_node)) {
+        partial_sums.setup_next_layer();
+      }
+
       // Sum all ingoing arcs
-      while (!partial_sums.empty() && partial_sums.top().uid == current_node.uid) {
-        sum += partial_sums.top().sum;
-        partial_sums.pop();
+      while (partial_sums.can_pull() && partial_sums.top().uid == current_node.uid) {
+        sum += partial_sums.pull().sum;
       }
 
       // Put children of the current node into the priority queue or count them if they are sinks
-      uint64_t sum_low = 0;
+      uint64_t sum_low = 0u;
       if (is_sink_ptr(current_node.low)) {
         if (sink_pred(current_node.low)) {
           sum_low = sum * (count_skipped_layers
-                           ? 1 << (biggest_label - label_of(current_node))
-                           : 1);
+                           ? 1u << (biggest_label - label_of(current_node))
+                           : 1u);
 
           result += sum_low;
         }
       } else {
         sum_low = sum * (count_skipped_layers
-                         ? 1 << (label_of(current_node.low) - label_of(current_node) - 1)
-                         : 1);
+                         ? 1u << (label_of(current_node.low) - label_of(current_node) - 1u)
+                         : 1u);
 
         partial_sums.push({current_node.low, sum_low});
       }
@@ -153,15 +167,15 @@ namespace coom
       if (is_sink_ptr(current_node.high)) {
         if (sink_pred(current_node.high)) {
           sum_high = sum * (count_skipped_layers
-                            ? 1 << (biggest_label - label_of(current_node))
-                            : 1);
+                            ? 1u << (biggest_label - label_of(current_node))
+                            : 1u);
 
           result += sum_high;
         }
       } else {
         sum_high = sum * (count_skipped_layers
-                          ? 1 << (label_of(current_node.high) - label_of(current_node) - 1)
-                          : 1);
+                          ? 1u << (label_of(current_node.high) - label_of(current_node) - 1u)
+                          : 1u);
 
         partial_sums.push({current_node.high, sum_high});
       }
@@ -174,15 +188,17 @@ namespace coom
   }
 
   uint64_t count_paths(tpie::file_stream<node_t> &nodes,
-                       const sink_pred &sink_pred = is_any)
+                       tpie::file_stream<meta_t> &meta,
+                       const sink_pred &sink_pred)
   {
-    return count(nodes, sink_pred, false);
+    return count(nodes, meta, sink_pred, false);
   }
 
   uint64_t count_assignments(tpie::file_stream<node_t>& nodes,
-                             const sink_pred& sink_pred = is_true)
+                             tpie::file_stream<meta_t> &meta,
+                             const sink_pred& sink_pred)
   {
-    return count(nodes, sink_pred, true);
+    return count(nodes, meta, sink_pred, true);
   }
 } // namespace coom
 

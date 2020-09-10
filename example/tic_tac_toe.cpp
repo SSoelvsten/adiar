@@ -95,9 +95,11 @@ inline coom::label_t label_of_position(uint64_t i, uint64_t j, uint64_t k)
  * This again is very well structured and can be easily constructed explicitly.
  */
 void construct_is_not_winning(std::array<coom::label_t, 4>& line,
-                              tpie::file_stream<coom::node_t>& out_nodes)
+                              tpie::file_stream<coom::node_t>& out_nodes,
+                              tpie::file_stream<coom::meta_t>& out_meta)
 {
   out_nodes.open();
+  out_meta.open();
   uint64_t idx = 4 - 1;
 
   coom::ptr_t no_Xs_false = coom::create_sink_ptr(false);
@@ -120,6 +122,7 @@ void construct_is_not_winning(std::array<coom::label_t, 4>& line,
       out_nodes.write(some_Xs);
     }
     out_nodes.write(no_Xs);
+    out_meta.write({line[idx]});
 
     no_Xs_false = no_Xs.uid;
     if (idx == 1) { // The next is the root?
@@ -146,7 +149,9 @@ void construct_is_not_winning(std::array<coom::label_t, 4>& line,
  * difference between the label-value for the first cell and the fourth cell is
  * as small as possible.
  */
-size_t construct_is_tie(uint64_t N, tpie::file_stream<coom::node_t>& out_nodes)
+size_t construct_is_tie(uint64_t N,
+                        tpie::file_stream<coom::node_t>& out_nodes,
+                        tpie::file_stream<coom::meta_t>& out_meta)
 {
   // Compute all rows, columns, and diagonals. Most likely the optimiser already
   // precomputes this one.
@@ -211,37 +216,50 @@ size_t construct_is_tie(uint64_t N, tpie::file_stream<coom::node_t>& out_nodes)
 
   tpie::file_stream<coom::arc_t> reduce_node_arcs;
   tpie::file_stream<coom::arc_t> reduce_sink_arcs;
+  tpie::file_stream<coom::meta_t> reduce_meta;
 
   tpie::file_stream<coom::node_t> next_not_winning;
+  tpie::file_stream<coom::meta_t> next_not_winning_meta;
 
   out_nodes.open();
-  coom::build_counter(0, 63, N, out_nodes);
+  out_meta.open();
+  coom::build_counter(0, 63, N, out_nodes, out_meta);
 
   unsigned int idx = 0;
   for (auto &line : lines) {
     next_not_winning.open();
-    construct_is_not_winning(line, next_not_winning);
+    next_not_winning_meta.open();
+
+    construct_is_not_winning(line, next_not_winning, next_not_winning_meta);
 
     reduce_node_arcs.open();
     reduce_sink_arcs.open();
+    reduce_meta.open();
 
-    coom::apply(out_nodes, next_not_winning, coom::and_op, reduce_node_arcs, reduce_sink_arcs);
+    coom::apply(out_nodes, out_meta,
+                next_not_winning, next_not_winning_meta,
+                coom::and_op,
+                reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
     // close (and clean up) prior result
     out_nodes.close();
+    out_meta.close();
     next_not_winning.close();
+    next_not_winning_meta.close();
 
     stats_unreduced(reduce_node_arcs.size(), reduce_sink_arcs.size());
 
     // open for next result
     out_nodes.open();
+    out_meta.open();
 
-    coom::reduce(reduce_node_arcs, reduce_sink_arcs, out_nodes);
+    coom::reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta, out_nodes, out_meta);
 
     stats_reduced((reduce_node_arcs.size() + reduce_sink_arcs.size()) / 2, out_nodes.size());
 
     reduce_node_arcs.close();
     reduce_sink_arcs.close();
+    reduce_meta.close();
 
     idx++;
   }
@@ -337,10 +355,11 @@ int main(int argc, char* argv[])
   // ===== Tic-Tac-Toe =====
 
   tpie::log_info() << "| Tic-Tac-Toe (" << N << ") : Is-tie construction"  << std::endl;
-  tpie::file_stream<coom::node> is_tie;
+  tpie::file_stream<coom::node_t> is_tie;
+  tpie::file_stream<coom::meta_t> is_tie_meta;
 
   auto before_tie = get_timestamp();
-  size_t constraints = construct_is_tie(N, is_tie);
+  size_t constraints = construct_is_tie(N, is_tie, is_tie_meta);
   auto after_tie = get_timestamp();
 
   tpie::log_info() << "|  | constraints: " << constraints << " lines" << std::endl;
@@ -383,7 +402,7 @@ int main(int argc, char* argv[])
 
   tpie::log_info() << "| Tic-Tac-Toe (" << N << ") : Counting ties"  << std::endl;
   auto before_count = get_timestamp();
-  uint64_t solutions = coom::count_assignments(is_tie, coom::is_true);
+  uint64_t solutions = coom::count_assignments(is_tie, is_tie_meta, coom::is_true);
   auto after_count = get_timestamp();
 
   tpie::log_info() << "|  | number of ties: " << solutions << std::endl;

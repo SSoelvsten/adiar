@@ -20,8 +20,10 @@ namespace coom
   /// \param nodes_out  (empty) output stream for result OBDD
   //////////////////////////////////////////////////////////////////////////////
   void restrict(tpie::file_stream<node_t> &in_nodes,
+                tpie::file_stream<meta_t> &in_meta,
                 tpie::file_stream<assignment_t> &in_assignment,
-                tpie::file_stream<node_t> &out_nodes);
+                tpie::file_stream<node_t> &out_nodes,
+                tpie::file_stream<meta_t> &out_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain the unreduced intermediate result for restricting an OBDD by
@@ -55,10 +57,12 @@ namespace coom
   ///                         later reduce.
   //////////////////////////////////////////////////////////////////////////////
   void restrict(tpie::file_stream<node_t> &in_nodes,
+                tpie::file_stream<meta_t> &in_meta,
                 tpie::file_stream<assignment_t> &in_assignment,
                 tpie::file_stream<node_t> &out_nodes,
                 tpie::file_stream<arc_t> &reduce_node_arcs,
-                tpie::file_stream<arc_t> &reduce_sink_arcs);
+                tpie::file_stream<arc_t> &reduce_sink_arcs,
+                tpie::file_stream<meta_t> &reduce_meta);
 }
 
 #endif // COOM_RESTRICT_H

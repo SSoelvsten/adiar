@@ -7,12 +7,13 @@
 
 namespace coom
 {
-  inline void copy(tpie::file_stream<node_t> &in_nodes,
-                   tpie::file_stream<node_t> &out_nodes)
+  template<typename T>
+  inline void copy(tpie::file_stream<T> &in,
+                   tpie::file_stream<T> &out)
   {
-    in_nodes.seek(0);
-    while(in_nodes.can_read()) {
-      out_nodes.write(in_nodes.read());
+    in.seek(0);
+    while(in.can_read()) {
+      out.write(in.read());
     }
   }
 }

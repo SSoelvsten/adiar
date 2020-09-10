@@ -16,20 +16,27 @@ namespace coom {
     }
   }
 
-  void build_x(label_t label, tpie::file_stream<node_t> &out_nodes)
+  void build_x(label_t label,
+               tpie::file_stream<node_t> &out_nodes,
+               tpie::file_stream<meta_t> &out_meta)
   {
     assert::is_valid_output_stream(out_nodes);
     out_nodes.write(create_node(label, 0, create_sink_ptr(false), create_sink_ptr(true)));
+    out_meta.write({label});
   }
 
-  void build_not_x(label_t label, tpie::file_stream<node_t> &out_nodes)
+  void build_not_x(label_t label,
+                   tpie::file_stream<node_t> &out_nodes,
+                   tpie::file_stream<meta_t> &out_meta)
   {
     assert::is_valid_output_stream(out_nodes);
     out_nodes.write(create_node(label, 0, create_sink_ptr(true), create_sink_ptr(false)));
+    out_meta.write({label});
   }
 
   void build_and(tpie::file_stream<label_t> &in_labels,
-                 tpie::file_stream<node_t> &out_nodes)
+                 tpie::file_stream<node_t> &out_nodes,
+                 tpie::file_stream<meta_t> &out_meta)
   {
     assert::is_valid_output_stream(out_nodes);
     if (in_labels.size() == 0) {
@@ -43,14 +50,18 @@ namespace coom {
     in_labels.seek(0, tpie::file_stream_base::end);
 
     while(in_labels.can_read_back()) {
-      node_t next_node = create_node(in_labels.read_back(), 0, low, high);
+      label_t next_label = in_labels.read_back();
+      node_t next_node = create_node(next_label, 0, low, high);
+
       high = next_node.uid;
       out_nodes.write(next_node);
+      out_meta.write({next_label});
     }
   }
 
   void build_or(tpie::file_stream<label_t> &in_labels,
-                 tpie::file_stream<node_t> &out_nodes)
+                tpie::file_stream<node_t> &out_nodes,
+                tpie::file_stream<meta_t> &out_meta)
   {
     assert::is_valid_output_stream(out_nodes);
     if (in_labels.size() == 0) {
@@ -64,9 +75,12 @@ namespace coom {
     in_labels.seek(0, tpie::file_stream_base::end);
 
     while(in_labels.can_read_back()) {
-      node_t next_node = create_node(in_labels.read_back(), 0, low, high);
+      label_t next_label = in_labels.read_back();
+      node_t next_node = create_node(next_label, 0, low, high);
       low = next_node.uid;
+
       out_nodes.write(next_node);
+      out_meta.write({next_label});
     }
   }
 
@@ -79,7 +93,8 @@ namespace coom {
 
   void build_counter(label_t min_label, label_t max_label,
                      uint64_t threshold,
-                     tpie::file_stream<node_t> &out_nodes)
+                     tpie::file_stream<node_t> &out_nodes,
+                     tpie::file_stream<meta_t> &out_meta)
   {
     assert::is_valid_output_stream(out_nodes);
     assert::is_build_counter_valid_labels(min_label, max_label, threshold);
@@ -121,6 +136,7 @@ namespace coom {
         out_nodes.write(coom::create_node(curr_label, curr_id, low, high));
 
       } while (curr_id-- > min_id);
+      out_meta.write({curr_label});
     } while (curr_label-- > min_label);
   }
 }

@@ -12,13 +12,13 @@ go_bandit([]() {
         //               START
 
         /*
-             1
+             1         ---- x0
             / \
-            | 2
+            | 2        ---- x1
             |/ \
-            3   4
+            3   4      ---- x2
            / \ / \
-           F T T 5
+           F T T 5     ---- x3
                 / \
                 F T
         */
@@ -44,18 +44,26 @@ go_bandit([]() {
         node_t n1 = create_node(0,0, n3.uid, n2.uid);
         obdd.write(n1);
 
+        tpie::file_stream<meta_t> obdd_meta;
+        obdd_meta.open();
+
+        obdd_meta.write({3});
+        obdd_meta.write({2});
+        obdd_meta.write({1});
+        obdd_meta.write({0});
+
         //                END
         // == CREATE OBDD FOR UNIT TESTS ==
 
         it("should bridge layers [1]. Assignment: (_,_,T,_)", [&]() {
             /*
-                 1
+                 1      ---- x0
                 / \
-                T 2
+                T 2     ---- x1
                  / \
                  T |
                    |
-                   5
+                   5    ---- x3
                   / \
                   F T
             */
@@ -74,12 +82,14 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            restrict(obdd, obdd_meta, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
-            reduce_sink_arcs.seek(0);
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n1.uid), n2.uid }));
@@ -88,6 +98,8 @@ go_bandit([]() {
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n2.uid), n5.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
+
+            reduce_sink_arcs.seek(0);
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n1.uid, sink_T }));
@@ -100,15 +112,28 @@ go_bandit([]() {
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n5.uid), sink_T }));
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should bridge layers. [2]. Assignment: (_,F,_,_)", [&]() {
             /*
-                 1
+                 1      ---- x0
                 / \
                 | |
                 \ /
-                 3
+                 3      ---- x2
                 / \
                 F T
             */
@@ -127,12 +152,14 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            restrict(obdd, obdd_meta, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
-            reduce_sink_arcs.seek(0);
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { n1.uid, n3.uid }));
@@ -142,22 +169,34 @@ go_bandit([]() {
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
 
+            reduce_sink_arcs.seek(0);
+
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n3.uid, sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n3.uid), sink_T }));
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should bridge layers [3]. Assignment: (_,T,_,_)", [&]() {
             /*
-                  1
+                  1         ---- x0
                  / \
                 /   \
                 |   |
-                3   4
+                3   4       ---- x2
                / \ / \
-               F T T 5
+               F T T 5      ---- x3
                     / \
                     F T
             */
@@ -168,6 +207,7 @@ go_bandit([]() {
 
             assignment.write(create_assignment(1, true));
 
+
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
@@ -177,12 +217,15 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            restrict(obdd, obdd_meta, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
+
 
             AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
             reduce_node_arcs.seek(0);
-            reduce_sink_arcs.seek(0);
 
             AssertThat(reduce_node_arcs.can_read(), Is().True());
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { n1.uid, n3.uid }));
@@ -194,6 +237,8 @@ go_bandit([]() {
             AssertThat(reduce_node_arcs.read(), Is().EqualTo(arc { flag(n4.uid), n5.uid }));
 
             AssertThat(reduce_node_arcs.can_read(), Is().False());
+
+            reduce_sink_arcs.seek(0);
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { n3.uid, sink_F }));
@@ -209,14 +254,27 @@ go_bandit([]() {
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n5.uid), sink_T }));
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should remove root. Assignment: (T,_,_,F)", [&]() {
             /*
-                  2
+                  2     ---- x1
                  / \
                 /   \
-                3   4
+                3   4   ---- x2
                / \ / \
                F T T F
             */
@@ -236,7 +294,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            restrict(obdd, obdd_meta, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
@@ -262,11 +323,21 @@ go_bandit([]() {
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n4.uid), sink_F }));
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should ignore skipped variables. Assignment: (F,T,_,F)", [&]() {
             /*
-                 3
+                 3      ---- x2
                 / \
                 F T
             */
@@ -287,7 +358,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            restrict(obdd, obdd_meta, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
@@ -301,9 +375,16 @@ go_bandit([]() {
 
             AssertThat(reduce_sink_arcs.can_read(), Is().True());
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n3.uid), sink_T }));
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
-        it("should return F sink. Assignment: (F,_,F,_)", [&obdd]() {
+        it("should return F sink. Assignment: (F,_,F,_)", [&]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
@@ -319,10 +400,14 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            restrict(obdd, obdd_meta, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             AssertThat(reduce_node_arcs.size(), Is().EqualTo(0u));
             AssertThat(reduce_sink_arcs.size(), Is().EqualTo(0u));
+            AssertThat(reduce_meta.size(), Is().EqualTo(0u));
 
             out_nodes.seek(0);
 
@@ -331,7 +416,7 @@ go_bandit([]() {
             AssertThat(out_nodes.can_read(), Is().False());
           });
 
-        it("should return T sink. Assignment: (T,T,F,_)", [&obdd]() {
+        it("should return T sink. Assignment: (T,T,F,_)", [&]() {
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
@@ -348,10 +433,14 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            restrict(obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            restrict(obdd, obdd_meta, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             AssertThat(reduce_node_arcs.size(), Is().EqualTo(0u));
             AssertThat(reduce_sink_arcs.size(), Is().EqualTo(0u));
+            AssertThat(reduce_meta.size(), Is().EqualTo(0u));
 
             out_nodes.seek(0);
 
@@ -366,6 +455,9 @@ go_bandit([]() {
 
             in_nodes.write(create_sink(true));
 
+            tpie::file_stream<meta_t> in_meta;
+            in_meta.open();
+
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
@@ -376,13 +468,18 @@ go_bandit([]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            restrict(in_nodes, assignment, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            restrict(in_nodes, in_meta, assignment, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
             AssertThat(out_nodes.can_read(), Is().True());
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should return F sink given a F sink", [&]() {
@@ -390,6 +487,9 @@ go_bandit([]() {
             in_nodes.open();
 
             in_nodes.write(create_sink(false));
+
+            tpie::file_stream<meta_t> in_meta;
+            in_meta.open();
 
             tpie::file_stream<assignment> assignment;
             assignment.open();
@@ -401,13 +501,18 @@ go_bandit([]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            restrict(in_nodes, assignment, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            restrict(in_nodes, in_meta, assignment, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
             AssertThat(out_nodes.can_read(), Is().True());
             AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
             AssertThat(out_nodes.can_read(), Is().False());
+
+            AssertThat(out_meta.size(), Is().EqualTo(0u));
           });
 
         it("should return input unchanged when given an empty assignment", [&]() {
@@ -417,7 +522,10 @@ go_bandit([]() {
             tpie::file_stream<node_t> out_nodes;
             out_nodes.open();
 
-            restrict(obdd, assignment, out_nodes);
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            restrict(obdd, obdd_meta, assignment, out_nodes, out_meta);
 
             out_nodes.seek(0);
 
@@ -437,15 +545,31 @@ go_bandit([]() {
             AssertThat(out_nodes.read(), Is().EqualTo(n1));
 
             AssertThat(out_nodes.can_read(), Is().False());
+
+            out_meta.seek(0);
+
+            AssertThat(out_meta.can_read(), Is().True());
+            AssertThat(out_meta.read(), Is().EqualTo(meta_t {3}));
+
+            AssertThat(out_meta.can_read(), Is().True());
+            AssertThat(out_meta.read(), Is().EqualTo(meta_t {2}));
+
+            AssertThat(out_meta.can_read(), Is().True());
+            AssertThat(out_meta.read(), Is().EqualTo(meta_t {1}));
+
+            AssertThat(out_meta.can_read(), Is().True());
+            AssertThat(out_meta.read(), Is().EqualTo(meta_t {0}));
+
+            AssertThat(out_meta.can_read(), Is().False());
           });
 
         it("should have sink arcs restricted to a sink sorted [1]", []() {
             /*
-                    1                 1
+                    1                 1         ---- x0
                    / \              /   \
-                  2   3     =>     2     3
+                  2   3     =>     2     3      ---- x1
                  / \ / \         /   \  / \
-                 4 F T F         F*  F  T F
+                 4 F T F         F*  F  T F     ---- x2
                 / \
                 T F              * This arc will be resolved as the last one
              */
@@ -467,6 +591,13 @@ go_bandit([]() {
             node_t n1 = create_node(0,0, n2.uid, n3.uid);
             in_nodes.write(n1);
 
+            tpie::file_stream<meta_t> in_meta;
+            in_meta.open();
+
+            in_meta.write({2});
+            in_meta.write({1});
+            in_meta.write({0});
+
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
@@ -481,7 +612,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            restrict(in_nodes, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            restrict(in_nodes, in_meta, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
@@ -510,6 +644,16 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n3.uid), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {0}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {1}));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should have sink arcs restricted to a sink sorted [2]", []() {
@@ -543,6 +687,13 @@ go_bandit([]() {
             node_t n1 = create_node(0,0, n2.uid, n3.uid);
             in_nodes.write(n1);
 
+            tpie::file_stream<meta_t> in_meta;
+            in_meta.open();
+
+            in_meta.write({2});
+            in_meta.write({1});
+            in_meta.write({0});
+
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
@@ -557,7 +708,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            restrict(in_nodes, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            restrict(in_nodes, in_meta, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
@@ -586,6 +740,16 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n3.uid), sink_F} ));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {0}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {1}));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
 
         it("should skip 'dead' nodes", [&]() {
@@ -633,6 +797,14 @@ go_bandit([]() {
             node_t n1 = create_node(0,0, n2.uid, n3.uid);
             dead_obdd.write(n1);
 
+            tpie::file_stream<meta_t> dead_meta;
+            dead_meta.open();
+
+            dead_meta.write({3});
+            dead_meta.write({2});
+            dead_meta.write({1});
+            dead_meta.write({0});
+
             tpie::file_stream<assignment> assignment;
             assignment.open();
 
@@ -647,7 +819,10 @@ go_bandit([]() {
             tpie::file_stream<arc_t> reduce_sink_arcs;
             reduce_sink_arcs.open();
 
-            restrict(dead_obdd, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs);
+            tpie::file_stream<meta_t> reduce_meta;
+            reduce_meta.open();
+
+            restrict(dead_obdd, dead_meta, assignment, out_nodes, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
             AssertThat(out_nodes.size(), Is().EqualTo(0u));
 
@@ -688,6 +863,19 @@ go_bandit([]() {
             AssertThat(reduce_sink_arcs.read(), Is().EqualTo(arc { flag(n9.uid), sink_F }));
 
             AssertThat(reduce_sink_arcs.can_read(), Is().False());
+
+            reduce_meta.seek(0);
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {0}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {2}));
+
+            AssertThat(reduce_meta.can_read(), Is().True());
+            AssertThat(reduce_meta.read(), Is().EqualTo(meta_t {3}));
+
+            AssertThat(reduce_meta.can_read(), Is().False());
           });
       });
   });
