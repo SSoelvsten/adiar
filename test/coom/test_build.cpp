@@ -13,26 +13,44 @@ go_bandit([]() {
                 tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
-                build_x(0, out_nodes);
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_x(0, out_nodes, out_meta);
 
                 out_nodes.seek(0);
 
                 AssertThat(out_nodes.can_read(), Is().True());
                 AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, 0, sink_F, sink_T)));
                 AssertThat(out_nodes.can_read(), Is().False());
+
+                out_meta.seek(0);
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 0 }));
+                AssertThat(out_meta.can_read(), Is().False());
               });
 
             it("can create x42", [&]() {
                 tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
-                build_x(42, out_nodes);
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_x(42, out_nodes, out_meta);
 
                 out_nodes.seek(0);
 
                 AssertThat(out_nodes.can_read(), Is().True());
                 AssertThat(out_nodes.read(), Is().EqualTo(create_node(42, 0, sink_F, sink_T)));
                 AssertThat(out_nodes.can_read(), Is().False());
+
+                out_meta.seek(0);
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 42 }));
+                AssertThat(out_meta.can_read(), Is().False());
               });
           });
 
@@ -41,26 +59,44 @@ go_bandit([]() {
                 tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
-                build_not_x(1, out_nodes);
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_not_x(1, out_nodes, out_meta);
 
                 out_nodes.seek(0);
 
                 AssertThat(out_nodes.can_read(), Is().True());
                 AssertThat(out_nodes.read(), Is().EqualTo(create_node(1, 0, sink_T, sink_F)));
                 AssertThat(out_nodes.can_read(), Is().False());
+
+                out_meta.seek(0);
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 1 }));
+                AssertThat(out_meta.can_read(), Is().False());
               });
 
             it("can create !x3", [&]() {
                 tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
-                build_not_x(3, out_nodes);
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_not_x(3, out_nodes, out_meta);
 
                 out_nodes.seek(0);
 
                 AssertThat(out_nodes.can_read(), Is().True());
                 AssertThat(out_nodes.read(), Is().EqualTo(create_node(3, 0, sink_T, sink_F)));
                 AssertThat(out_nodes.can_read(), Is().False());
+
+                out_meta.seek(0);
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 3 }));
+                AssertThat(out_meta.can_read(), Is().False());
               });
           });
 
@@ -76,7 +112,10 @@ go_bandit([]() {
                 tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
-                build_and(in_labels, out_nodes);
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_and(in_labels, out_nodes, out_meta);
 
                 out_nodes.seek(0);
 
@@ -96,6 +135,19 @@ go_bandit([]() {
                                                                       create_node_ptr(2,0))));
 
                 AssertThat(out_nodes.can_read(), Is().False());
+
+                out_meta.seek(0);
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 5 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+                AssertThat(out_meta.can_read(), Is().False());
               });
 
             it("can create {} as trivially true", [&]() {
@@ -105,13 +157,18 @@ go_bandit([]() {
                 tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
-                build_and(in_labels, out_nodes);
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_and(in_labels, out_nodes, out_meta);
 
                 out_nodes.seek(0);
 
                 AssertThat(out_nodes.can_read(), Is().True());
                 AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
                 AssertThat(out_nodes.can_read(), Is().False());
+
+                AssertThat(out_meta.size(), Is().EqualTo(0u));
               });
           });
 
@@ -127,7 +184,10 @@ go_bandit([]() {
                 tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
-                build_or(in_labels, out_nodes);
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_or(in_labels, out_nodes, out_meta);
 
                 out_nodes.seek(0);
 
@@ -147,6 +207,19 @@ go_bandit([]() {
                                                                       sink_T)));
 
                 AssertThat(out_nodes.can_read(), Is().False());
+
+                out_meta.seek(0);
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 5 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+                AssertThat(out_meta.can_read(), Is().False());
               });
 
             it("can create {} as trivially false", [&]() {
@@ -156,13 +229,18 @@ go_bandit([]() {
                 tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
-                build_or(in_labels, out_nodes);
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_or(in_labels, out_nodes, out_meta);
 
                 out_nodes.seek(0);
 
                 AssertThat(out_nodes.can_read(), Is().True());
                 AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
                 AssertThat(out_nodes.can_read(), Is().False());
+
+                AssertThat(out_meta.size(), Is().EqualTo(0u));
               });
           });
 
@@ -171,7 +249,10 @@ go_bandit([]() {
                 tpie::file_stream<node_t> out_nodes;
                 out_nodes.open();
 
-                build_counter(0, 8, 3, out_nodes);
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_counter(0, 8, 3, out_nodes, out_meta);
 
                 out_nodes.seek(0);
 
@@ -311,6 +392,37 @@ go_bandit([]() {
                                                                       create_node_ptr(1,1))));
 
                 AssertThat(out_nodes.can_read(), Is().False());
+
+                out_meta.seek(0);
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 8 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 7 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 6 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 5 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 4 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 3 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 1 }));
+
+                AssertThat(out_meta.can_read(), Is().True());
+                AssertThat(out_meta.read(), Is().EqualTo(meta_t { 0 }));
+
+                AssertThat(out_meta.can_read(), Is().False());
               });
           });
       });

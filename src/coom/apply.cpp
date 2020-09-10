@@ -1,10 +1,9 @@
 #ifndef COOM_APPLY_CPP
 #define COOM_APPLY_CPP
 
-#include <tpie/priority_queue.h>
-#include <tpie/file_stream.h>
-
 #include "data.h"
+#include "priority_queue.cpp"
+
 #include "reduce.h"
 
 #include "debug.h"
@@ -98,7 +97,7 @@ namespace coom
     ptr_t data_high;
   };
 
-  struct apply_lt
+  struct apply_queue_lt
   {
     bool operator()(const tuple &a, const tuple &b)
     {
@@ -107,7 +106,15 @@ namespace coom
     }
   };
 
-  struct apply_lt_data
+  struct apply_queue_label
+  {
+    label_t label_of(const tuple &t)
+    {
+      return coom::label_of(std::min(t.t1, t.t2));
+    }
+  };
+
+  struct apply_queue_data_lt
   {
     bool operator()(const tuple_data &a, const tuple_data &b)
     {
@@ -127,28 +134,35 @@ namespace coom
   }
 
   void apply(tpie::file_stream<node_t> &in_nodes_1,
+             tpie::file_stream<meta_t> &in_meta_1,
              tpie::file_stream<node_t> &in_nodes_2,
+             tpie::file_stream<meta_t> &in_meta_2,
              const bool_op &op,
              tpie::file_stream<arc_t> &reduce_node_arcs,
-             tpie::file_stream<arc_t> &reduce_sink_arcs)
+             tpie::file_stream<arc_t> &reduce_sink_arcs,
+             tpie::file_stream<meta_t> &reduce_meta)
   {
     // Set-up
     in_nodes_1.seek(0, tpie::file_stream_base::end);
     in_nodes_2.seek(0, tpie::file_stream_base::end);
 
-    tpie::priority_queue<tuple, apply_lt> appD;
-    tpie::priority_queue<tuple_data, apply_lt_data> appD_data;
+    tpie::priority_queue<tuple_data, apply_queue_data_lt> appD_data;
+    priority_queue<tuple, apply_queue_label, apply_queue_lt, 2> appD;
+    appD.hook_meta_stream(in_meta_1);
+    appD.hook_meta_stream(in_meta_2);
 
     node_t v1 = in_nodes_1.read_back();
     node_t v2 = in_nodes_2.read_back();
+
+    label_t out_label = label_of(std::min(v1.uid, v2.uid));
     id_t out_id = 0;
 
     // Process root and create initial recursion requests
     ptr_t low1, low2;
     ptr_t high1, high2;
 
-    label_t prior_label = label_of(std::min(v1.uid, v2.uid));
-    uid_t root_uid = create_node_uid(prior_label, out_id);
+    uid_t root_uid = create_node_uid(out_label, out_id);
+    reduce_meta.write({ out_label });
 
     if (is_sink(v1)) {
       low1 = high1 = v1.uid;
@@ -231,11 +245,18 @@ namespace coom
     bool with_data, from_1 = false;
     ptr_t data_low = NIL, data_high = NIL;
 
-    while (!appD.empty() || !appD_data.empty()) {
+    while (appD.can_pull() || appD.has_next_layer() || !appD_data.empty()) {
+      if (!appD.can_pull() && appD_data.empty()) {
+        appD.setup_next_layer();
+        out_label = appD.current_layer();
+        reduce_meta.write({ out_label });
+        out_id = 0;
+      }
+
       // Merge requests from  appD or appD_data
-      if (!appD.empty() && (appD_data.empty() ||
-                            std::min(appD.top().t1, appD.top().t2) <
-                            std::max(appD_data.top().t1, appD_data.top().t2))) {
+      if (appD.can_pull() && (appD_data.empty() ||
+                                  std::min(appD.top().t1, appD.top().t2) <
+                                  std::max(appD_data.top().t1, appD_data.top().t2))) {
         with_data = false;
         source = appD.top().source;
         t1 = appD.top().t1;
@@ -315,9 +336,8 @@ namespace coom
 
         appD_data.push({ source, t1, t2, from_1, v0.low, v0.high });
 
-        while (!appD.empty() && (appD.top().t1 == t1 && appD.top().t2 == t2)) {
-          source = appD.top().source;
-          appD.pop();
+        while (appD.can_pull() && (appD.top().t1 == t1 && appD.top().t2 == t2)) {
+          source = appD.pull().source;
           appD_data.push({ source, t1, t2, from_1, v0.low, v0.high });
         }
         debug::println_apply_later();
@@ -350,10 +370,6 @@ namespace coom
       }
 
       // Create new node
-      label_t out_label = label_of(std::min(t1, t2));
-      out_id = prior_label != out_label ? 0 : out_id;
-      prior_label = out_label;
-
       uid_t out_uid = create_node_uid(out_label, out_id);
       debug::println_apply_resolution(out_uid, low1, low2, high1, high2);
 
@@ -393,9 +409,8 @@ namespace coom
 
         debug::println_apply_ingoing(out_arc);
 
-        if (!appD.empty() && appD.top().t1 == t1 && appD.top().t2 == t2) {
-          source = appD.top().source;
-          appD.pop();
+        if (appD.can_pull() && appD.top().t1 == t1 && appD.top().t2 == t2) {
+          source = appD.pull().source;
         } else if (!appD_data.empty() && appD_data.top().t1 == t1 && appD_data.top().t2 == t2) {
           source = appD_data.top().source;
           appD_data.pop();
@@ -408,9 +423,12 @@ namespace coom
   }
 
   void apply(tpie::file_stream<node_t> &in_nodes_1,
+             tpie::file_stream<meta_t> &in_meta_1,
              tpie::file_stream<node_t> &in_nodes_2,
+             tpie::file_stream<meta_t> &in_meta_2,
              const bool_op &op,
-             tpie::file_stream<node_t> &out_nodes)
+             tpie::file_stream<node_t> &out_nodes,
+             tpie::file_stream<meta_t> &out_meta)
   {
     debug::println_algorithm_start("APPLY");
 
@@ -421,6 +439,7 @@ namespace coom
     debug::println_file_stream(in_nodes_2, "in_nodes 2");
 
     assert::is_valid_output_stream(out_nodes);
+    assert::is_valid_output_stream(out_meta);
 
     in_nodes_1.seek(0, tpie::file_stream_base::end);
     in_nodes_2.seek(0, tpie::file_stream_base::end);
@@ -461,8 +480,11 @@ namespace coom
       tpie::file_stream<arc_t> reduce_sink_arcs;
       reduce_sink_arcs.open();
 
-      apply(in_nodes_1, in_nodes_2, op, reduce_node_arcs, reduce_sink_arcs);
-      reduce(reduce_node_arcs, reduce_sink_arcs, out_nodes);
+      tpie::file_stream<meta_t> reduce_meta;
+      reduce_meta.open();
+
+      apply(in_nodes_1, in_meta_1, in_nodes_2, in_meta_2, op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
+      reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta, out_nodes, out_meta);
     }
     debug::println_algorithm_end("APPLY");
   }

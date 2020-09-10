@@ -18,7 +18,9 @@ namespace coom
   //////////////////////////////////////////////////////////////////////////////
   void reduce(tpie::file_stream<arc_t> &in_node_arcs,
               tpie::file_stream<arc_t> &in_sink_arcs,
-              tpie::file_stream<node_t> &out_nodes);
+              tpie::file_stream<meta_t> &in_meta,
+              tpie::file_stream<node_t> &out_nodes,
+              tpie::file_stream<meta_t> &out_meta);
 }
 
 #endif // COOM_REDUCE_H

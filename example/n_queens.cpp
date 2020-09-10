@@ -125,9 +125,11 @@ inline coom::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
  */
 void n_queens_S(uint64_t N,
                 uint64_t i, uint64_t j,
-                tpie::file_stream<coom::node_t>& out_nodes)
+                tpie::file_stream<coom::node_t> &out_nodes,
+                tpie::file_stream<coom::meta_t> &out_meta)
 {
   out_nodes.open();
+  out_meta.open();
 
   uint64_t row = N - 1;
   coom::ptr_t next = coom::create_sink_ptr(true);
@@ -149,6 +151,7 @@ void n_queens_S(uint64_t N,
           coom::node_t queen = coom::create_node(label, 0, coom::create_sink_ptr(false), next);
 
           out_nodes.write(queen);
+          out_meta.write({label});
           next = queen.uid;
           continue;
         }
@@ -156,6 +159,7 @@ void n_queens_S(uint64_t N,
         coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
         out_nodes.write(out_node);
+        out_meta.write({label});
         next = out_node.uid;
       } while (column-- > 0);
     } else {
@@ -166,6 +170,7 @@ void n_queens_S(uint64_t N,
         coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
         out_nodes.write(out_node);
+        out_meta.write({label});
         next = out_node.uid;
       }
 
@@ -174,6 +179,7 @@ void n_queens_S(uint64_t N,
       coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
       out_nodes.write(out_node);
+      out_meta.write({label});
       next = out_node.uid;
 
       if (row_diff <= j) {
@@ -182,6 +188,7 @@ void n_queens_S(uint64_t N,
         coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
         out_nodes.write(out_node);
+        out_meta.write({label});
         next = out_node.uid;
       }
     }
@@ -215,7 +222,8 @@ void n_queens_S(uint64_t N,
  */
 void n_queens_R(uint64_t N,
                 uint64_t row,
-                tpie::file_stream<coom::node_t>& out_nodes)
+                tpie::file_stream<coom::node_t> &out_nodes,
+                tpie::file_stream<coom::meta_t> &out_meta)
 {
   /* The main interface for the functions of COOM are of the form of one or more
    * input streams converted into one output node stream. Most of these
@@ -236,36 +244,44 @@ void n_queens_R(uint64_t N,
    */
   tpie::file_stream<coom::arc_t> reduce_node_arcs;
   tpie::file_stream<coom::arc_t> reduce_sink_arcs;
+  tpie::file_stream<coom::meta_t> reduce_meta;
 
   tpie::file_stream<coom::node_t> next_S;
+  tpie::file_stream<coom::meta_t> next_S_meta;
 
   out_nodes.open();
-  n_queens_S(N, row, 0, out_nodes);
+  out_meta.open();
+  n_queens_S(N, row, 0, out_nodes, out_meta);
 
   for (uint64_t j = 1; j < N; j++) {
     next_S.open();
-    n_queens_S(N, row, j, next_S);
+    next_S_meta.open();
+    n_queens_S(N, row, j, next_S, next_S_meta);
 
     reduce_node_arcs.open();
     reduce_sink_arcs.open();
+    reduce_meta.open();
 
-    coom::apply(out_nodes, next_S, coom::or_op, reduce_node_arcs, reduce_sink_arcs);
+    coom::apply(out_nodes, out_meta, next_S, next_S_meta, coom::or_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
     // close (and clean up) prior result
     next_S.close();
     out_nodes.close();
+    out_meta.close();
 
     stats_unreduced(reduce_node_arcs.size(), reduce_sink_arcs.size());
 
     // open for next result
     out_nodes.open();
+    out_meta.open();
 
-    coom::reduce(reduce_node_arcs, reduce_sink_arcs, out_nodes);
+    coom::reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta, out_nodes, out_meta);
 
     stats_reduced((reduce_node_arcs.size() + reduce_sink_arcs.size()) / 2, out_nodes.size());
 
     reduce_node_arcs.close();
     reduce_sink_arcs.close();
+    reduce_meta.close();
   }
 }
 
@@ -274,42 +290,51 @@ void n_queens_R(uint64_t N,
  * again iterate over all rows to combine them one-by-one. One can probably
  * remove the code duplication that we now introduce.
  */
-void n_queens_B(uint64_t N, tpie::file_stream<coom::node_t>& out_nodes)
+void n_queens_B(uint64_t N,
+                tpie::file_stream<coom::node_t>& out_nodes,
+                tpie::file_stream<coom::meta_t> &out_meta)
 {
   if (N == 1) {
-    n_queens_S(N, 0, 0, out_nodes);
+    n_queens_S(N, 0, 0, out_nodes, out_meta);
     return;
   }
 
   tpie::file_stream<coom::arc_t> reduce_node_arcs;
   tpie::file_stream<coom::arc_t> reduce_sink_arcs;
+  tpie::file_stream<coom::meta_t> reduce_meta;
 
   tpie::file_stream<coom::node_t> next_R;
+  tpie::file_stream<coom::meta_t> next_R_meta;
 
   out_nodes.open();
-  n_queens_R(N, 0, out_nodes);
+  out_meta.open();
+  n_queens_R(N, 0, out_nodes, out_meta);
 
   for (uint64_t i = 1; i < N; i++) {
-    n_queens_R(N, i, next_R);
+    n_queens_R(N, i, next_R, next_R_meta);
 
     reduce_node_arcs.open();
     reduce_sink_arcs.open();
+    reduce_meta.open();
 
-    coom::apply(out_nodes, next_R, coom::and_op, reduce_node_arcs, reduce_sink_arcs);
+    coom::apply(out_nodes, out_meta, next_R, next_R_meta, coom::and_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
     next_R.close();
     out_nodes.close();
+    out_meta.close();
 
     stats_unreduced(reduce_node_arcs.size(), reduce_sink_arcs.size());
 
     out_nodes.open();
+    out_meta.open();
 
-    coom::reduce(reduce_node_arcs, reduce_sink_arcs, out_nodes);
+    coom::reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta, out_nodes, out_meta);
 
     stats_reduced((reduce_node_arcs.size() + reduce_sink_arcs.size()) / 2, out_nodes.size());
 
     reduce_node_arcs.close();
     reduce_sink_arcs.close();
+    reduce_meta.close();
   }
 }
 
@@ -319,9 +344,10 @@ void n_queens_B(uint64_t N, tpie::file_stream<coom::node_t>& out_nodes)
  * is a solution to the N-Queens problem. So, now we can merely count the number
  * of assignments that reach a true sink.
  */
-uint64_t n_queens_count(tpie::file_stream<coom::node_t>& board)
+uint64_t n_queens_count(tpie::file_stream<coom::node_t>& board,
+                        tpie::file_stream<coom::meta_t>& board_meta)
 {
-  return coom::count_assignments(board, coom::is_true);
+  return coom::count_assignments(board, board_meta, coom::is_true);
 }
 
 /*******************************************************************************
@@ -381,7 +407,8 @@ inline uint64_t j_of_label(uint64_t N, coom::label_t label)
  * of solutions we list. */
 uint64_t n_queens_list(uint64_t N, uint64_t column,
                        std::vector<uint64_t>& partial_assignment,
-                       tpie::file_stream<coom::node_t>& constraints)
+                       tpie::file_stream<coom::node_t>& constraints,
+                       tpie::file_stream<coom::meta_t>& constraints_meta)
 {
   if (coom::is_sink(constraints, coom::is_false)) {
     return 0;
@@ -392,6 +419,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
   tpie::file_stream<coom::assignment_t> column_assignment;
   tpie::file_stream<coom::node_t> restricted_constraints;
+  tpie::file_stream<coom::meta_t> restricted_constraints_meta;
 
   for (uint64_t row_q = 0; row_q < N; row_q++) {
     partial_assignment.push_back(row_q);
@@ -405,10 +433,11 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
     }
 
     restricted_constraints.open();
+    restricted_constraints_meta.open();
 
-    coom::restrict(constraints, column_assignment, restricted_constraints);
+    coom::restrict(constraints, constraints_meta, column_assignment, restricted_constraints, restricted_constraints_meta);
 
-    if (coom::count_paths(restricted_constraints, coom::is_true) == 1) {
+    if (coom::count_paths(restricted_constraints, restricted_constraints_meta, coom::is_true) == 1) {
       solutions += 1;
 
       tpie::file_stream<coom::assignment> forced_assignment;
@@ -442,7 +471,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       n_queens_print_solution(partial_assignment);
       solutions += 1;
     } else {
-      solutions += n_queens_list(N, column+1, partial_assignment, restricted_constraints);
+      solutions += n_queens_list(N, column+1, partial_assignment, restricted_constraints, restricted_constraints_meta);
     }
     column_assignment.close();
     restricted_constraints.close();
@@ -452,7 +481,9 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
   return solutions;
 }
 
-uint64_t n_queens_list(uint64_t N, tpie::file_stream<coom::node_t>& amo_alo)
+uint64_t n_queens_list(uint64_t N,
+                       tpie::file_stream<coom::node_t>& board,
+                       tpie::file_stream<coom::meta_t>& board_meta)
 {
   tpie::log_info() << "|  | solutions:" << std::endl;
 
@@ -470,7 +501,7 @@ uint64_t n_queens_list(uint64_t N, tpie::file_stream<coom::node_t>& amo_alo)
   std::vector<uint64_t> partial_assignment { };
   partial_assignment.reserve(N);
 
-  return n_queens_list(N, 0, partial_assignment, amo_alo);
+  return n_queens_list(N, 0, partial_assignment, board, board_meta);
 }
 
 // expected number taken from:
@@ -569,11 +600,12 @@ int main(int argc, char* argv[])
 
   // ===== N Queens =====
 
-  tpie::file_stream<coom::node> board;
+  tpie::file_stream<coom::node_t> board;
+  tpie::file_stream<coom::meta_t> board_meta;
 
   tpie::log_info() << "| " << N << "-Queens : Board construction"  << std::endl;
   auto before_board = get_timestamp();
-  n_queens_B(N, board);
+  n_queens_B(N, board, board_meta);
   auto after_board = get_timestamp();
 
   tpie::log_info() << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
@@ -603,7 +635,7 @@ int main(int argc, char* argv[])
 
   // Run counting example
   auto before_count = get_timestamp();
-  uint64_t solutions = n_queens_count(board);
+  uint64_t solutions = n_queens_count(board, board_meta);
   auto after_count = get_timestamp();
 
   tpie::log_info() << "| " << N << "-Queens : Counting assignments"  << std::endl;
@@ -616,7 +648,7 @@ int main(int argc, char* argv[])
   if (N <= 8) {
     tpie::log_info() << "| " << N << "-Queens (Pruning search)"  << std::endl;
     auto before_list = get_timestamp();
-    uint64_t listed_solutions = n_queens_list(N, board);
+    uint64_t listed_solutions = n_queens_list(N, board, board_meta);
     auto after_list = get_timestamp();
 
     correct_result = correct_result && listed_solutions == expected_result[N];

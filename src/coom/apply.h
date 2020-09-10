@@ -1,7 +1,11 @@
 #ifndef COOM_APPLY_H
 #define COOM_APPLY_H
 
+#include <tpie/tpie.h>
+#include <tpie/file_stream.h>
+
 #include <stdint.h>
+
 #include "data.h"
 
 namespace coom
@@ -46,9 +50,12 @@ namespace coom
   ///                  order.
   //////////////////////////////////////////////////////////////////////////////
   void apply(tpie::file_stream<node_t> &in_nodes_1,
+             tpie::file_stream<meta_t> &in_meta_1,
              tpie::file_stream<node_t> &in_nodes_2,
+             tpie::file_stream<meta_t> &in_meta_2,
              const bool_op &op,
-             tpie::file_stream<node_t> &out_nodes);
+             tpie::file_stream<node_t> &out_nodes,
+             tpie::file_stream<meta_t> &out_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain the unreduced intermediate result for combining two given
@@ -78,10 +85,13 @@ namespace coom
   ///                         later reduce.
   //////////////////////////////////////////////////////////////////////////////
   void apply(tpie::file_stream<node_t> &in_nodes_1,
+             tpie::file_stream<meta_t> &in_meta_1,
              tpie::file_stream<node_t> &in_nodes_2,
+             tpie::file_stream<meta_t> &in_meta_2,
              const bool_op &op,
              tpie::file_stream<arc_t> &reduce_node_arcs,
-             tpie::file_stream<arc_t> &reduce_sink_arcs);
+             tpie::file_stream<arc_t> &reduce_sink_arcs,
+             tpie::file_stream<meta_t> &reduce_meta);
 }
 
 #endif // COOM_APPLY_H

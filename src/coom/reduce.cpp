@@ -4,9 +4,10 @@
 #include <tpie/tpie.h>
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
-#include <tpie/priority_queue.h>
 
 #include "data.h"
+#include "priority_queue.cpp"
+
 #include "debug.h"
 #include "debug_data.h"
 
@@ -101,7 +102,8 @@ namespace coom
     uid_t new_uid;
   };
 
-  // Predicate for priority queue
+
+  // For priority queue
   struct reduce_queue_lt
   {
     bool operator()(const arc_t &a, const arc_t &b)
@@ -112,24 +114,36 @@ namespace coom
     }
   };
 
-  //Predicate for sorting for common children
+  struct reduce_queue_label
+  {
+    label_t label_of(const arc_t &a)
+    {
+      return coom::label_of(a.source);
+    }
+  };
+
+
+  // For sorting for common children
   const auto reduce_node_children_lt = [](const node_t &a, const node_t &b) -> bool {
     return a.high > b.high ||
            (a.high == b.high && a.low > b.low) ||
            (a.high == b.high && a.low == b.low && a.uid > b.uid);
   };
 
-  //Predicate for sorting back to original order
+
+  // For sorting back to original order
   const auto reduce_uid_lt = [](const mapping &a, const mapping &b) -> bool {
     return a.old_uid > b.old_uid;
   };
 
-  inline arc_t reduce_get_next(tpie::priority_queue<arc_t, reduce_queue_lt> &redD,
+
+  // Merging priority queue with sink_arc stream
+  inline arc_t reduce_get_next(priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, 1, std::greater<label_t>> &redD,
                                tpie::file_stream<arc_t> &in_sink_arcs,
                                arc_t &next_sink_arc,
                                bool &has_next_sink)
   {
-    if (redD.empty() || (has_next_sink && next_sink_arc.source > redD.top().source)) {
+    if (!redD.can_pull() || (has_next_sink && next_sink_arc.source > redD.top().source)) {
       arc_t ret_value = next_sink_arc;
 
       if (in_sink_arcs.can_read_back()) {
@@ -140,15 +154,16 @@ namespace coom
 
       return ret_value;
     } else {
-      arc_t ret_value = redD.top();
-      redD.pop();
-      return ret_value;
+      return redD.pull();
     }
   }
 
+
   void reduce(tpie::file_stream<arc_t> &in_node_arcs,
               tpie::file_stream<arc_t> &in_sink_arcs,
-              tpie::file_stream<node_t> &out_nodes)
+              tpie::file_stream<meta_t> &in_meta,
+              tpie::file_stream<node_t> &out_nodes,
+              tpie::file_stream<meta_t> &out_meta)
   {
     debug::println_algorithm_start("REDUCE");
 
@@ -159,9 +174,12 @@ namespace coom
     debug::println_file_stream(in_sink_arcs, "in_sink_arcs");
 
     assert::is_valid_output_stream(out_nodes);
+    assert::is_valid_output_stream(out_meta);
 
     // Set up
-    tpie::priority_queue<arc_t, reduce_queue_lt> redD;
+    priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, 1, std::greater<label_t>> redD(tpie::get_memory_manager().available() / 2);
+    redD.hook_meta_stream(in_meta);
+
     in_sink_arcs.seek(0, tpie::file_stream_base::end);
     in_node_arcs.seek(0, tpie::file_stream_base::end);
     tpie::dummy_progress_indicator pi;
@@ -194,13 +212,17 @@ namespace coom
     arc_t next_node_arc = in_node_arcs.read_back();
     bool has_next_node_arc = true;
 
-    label_t label = label_of(next_node_arc.target);
-
     arc_t next_sink_arc = in_sink_arcs.read_back();
     bool has_next_sink = true;
 
+    label_t label = label_of(next_sink_arc.source);
+
     // Process bottom-up each layer
-    while (has_next_sink || !redD.empty()) {
+    while (has_next_sink || redD.can_pull()) {
+#if COOM_ASSERT
+      assert (label == redD.current_layer());
+#endif
+
       debug::println_reduce_layer(label);
 
       // Set up for L_j_red1
@@ -215,8 +237,7 @@ namespace coom
       debug::println_reduce_red_1_start();
 
       // Pull out all nodes from redD and in_sink_arcs for this layer
-      while ((has_next_sink && label_of(next_sink_arc.source) == label)
-             || (!redD.empty() && label_of(redD.top().source) == label)) {
+      while ((has_next_sink && label_of(next_sink_arc.source) == label) || redD.can_pull()) {
         arc_t e_high = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
         arc_t e_low = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
 
@@ -246,6 +267,7 @@ namespace coom
         // Output the first
         id_t out_id = MAX_ID;
         node_t current_node = child_grouping.pull();
+        out_meta.write(meta_t {label});
 
         node_t out_node = create_node(label, out_id, current_node.low, current_node.high);
         out_nodes.write(out_node);
@@ -341,18 +363,17 @@ namespace coom
       // Move on to the next layer
       red1_mapping.close();
 
-      if (!redD.empty() || has_next_sink) {
-        if (redD.empty() || (has_next_sink && next_sink_arc.source > redD.top().source)) {
-          label = label_of(next_sink_arc.source);
+      if (redD.has_next_layer()) {
+        if (has_next_sink) {
+          redD.setup_next_layer(label_of(next_sink_arc.source));
         } else {
-          label = label_of(redD.top().source);
+          redD.setup_next_layer();
         }
-      }
-
-      // Check if everything has been reduced down to one sink
-      if (!in_node_arcs.can_read_back() &&
-          !has_next_sink &&
-          out_nodes.size() == 0) {
+        label = redD.current_layer();
+      } else if (out_nodes.size() == 0) {
+#if COOM_ASSERT
+        assert (!has_next_node_arc && !has_next_sink);
+#endif
         out_nodes.write({ next_red1.new_uid, NIL, NIL });
 
         debug::println_file_stream(out_nodes, "out_nodes");
