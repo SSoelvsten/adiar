@@ -457,7 +457,7 @@ namespace coom {
       assert (_label_comparator(front_bucket_label(), back_bucket_label()));
 #endif
 
-      // Sort all the currently active buckets
+      // Sort active buckets until we find one with some content
       for (size_t b = 0;
            !_has_next_from_bucket
              && has_next_bucket()
@@ -472,16 +472,19 @@ namespace coom {
       }
 
       // Are we still at an empty bucket and behind the overflow queue and the stop_label?
-      if (!_has_next_from_bucket && has_next_bucket()) {
-#if COOM_ASSERT
-        assert(!_overflow_queue.empty());
-#endif
-        label_t pq_label = LabelExt::label_of(_overflow_queue.top());
-        stop_label = has_stop_label && _label_comparator(stop_label, pq_label)
-          ? stop_label
-          : pq_label;
+      if (!_has_next_from_bucket && has_next_bucket() && (has_stop_label || !_overflow_queue.empty())) {
+        if (!has_stop_label || !_overflow_queue.empty()) {
+          label_t pq_label = LabelExt::label_of(_overflow_queue.top());
+          stop_label = has_stop_label && _label_comparator(stop_label, pq_label)
+            ? stop_label
+            : pq_label;
+        }
 
         if (_label_comparator(front_bucket_label(), stop_label)) {
+#if COOM_ASSERT
+          assert(!_overflow_queue.empty());
+#endif
+
           setup_next_bucket();
           while (has_next_bucket() && _label_comparator(front_bucket_label(), stop_label)) {
             if (pq_label_mgr<LabelComparator, MetaStreams>::can_pull()) {

@@ -1893,6 +1893,65 @@ go_bandit([]() {
 
          AssertThat(pq.has_next_layer(), Is().False());
       });
+
+      it("can forward to stop_label with an empty overflow queue", [&]() {
+         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+
+         tpie::file_stream<meta_t> meta_stream;
+         meta_stream.open();
+
+         meta_stream.write(meta_t {6}); // Overflow
+         meta_stream.write(meta_t {5}); // Overflow
+         meta_stream.write(meta_t {4}); // Bucket
+         meta_stream.write(meta_t {3}); // Bucket
+         meta_stream.write(meta_t {2}); // Bucket
+         meta_stream.write(meta_t {1}); // Bucket
+         meta_stream.write(meta_t {0});
+
+         pq.hook_meta_stream(meta_stream);
+
+         AssertThat(pq.size(), Is().EqualTo(0u));
+
+         pq.push(pq_test_data {3, 3});
+         AssertThat(pq.size(), Is().EqualTo(1u));
+
+         pq.push(pq_test_data {3, 1});
+         AssertThat(pq.size(), Is().EqualTo(2u));
+
+         AssertThat(pq.can_pull(), Is().False());
+         AssertThat(pq.current_layer(), Is().EqualTo(0u));
+         AssertThat(pq.has_next_layer(), Is().True());
+         pq.setup_next_layer(2u);
+
+         AssertThat(pq.current_layer(), Is().EqualTo(2u));
+         AssertThat(pq.can_pull(), Is().False());
+
+         pq.push(pq_test_data {3, 2});
+         AssertThat(pq.size(), Is().EqualTo(3u));
+
+         AssertThat(pq.can_pull(), Is().False());
+         AssertThat(pq.current_layer(), Is().EqualTo(2u));
+
+         AssertThat(pq.has_next_layer(), Is().True());
+         pq.setup_next_layer(4u);
+
+         AssertThat(pq.current_layer(), Is().EqualTo(3u));
+
+         AssertThat(pq.can_pull(), Is().True());
+         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
+         AssertThat(pq.size(), Is().EqualTo(2u));
+
+         AssertThat(pq.can_pull(), Is().True());
+         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 2}));
+         AssertThat(pq.size(), Is().EqualTo(1u));
+
+         AssertThat(pq.can_pull(), Is().True());
+         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 3}));
+         AssertThat(pq.size(), Is().EqualTo(0u));
+
+         AssertThat(pq.can_pull(), Is().False());
+         AssertThat(pq.has_next_layer(), Is().False());
+      });
     });
   });
  });
