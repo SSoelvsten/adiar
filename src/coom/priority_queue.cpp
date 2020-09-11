@@ -121,6 +121,10 @@ namespace coom {
     }
   };
 
+#ifndef COOM_PQ_BUCKETS
+#define COOM_PQ_BUCKETS 1u
+#endif
+
   //////////////////////////////////////////////////////////////////////////////
   /// A generic priority queue for OBDDs capable of improving performance by
   /// placing all pushed queue elements in buckets for the specific layer and
@@ -152,7 +156,7 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, typename LabelExt, typename TComparator = std::less<T>,
             size_t MetaStreams = 1, typename LabelComparator = std::less<label_t>,
-            size_t Buckets = 1>
+            size_t Buckets = COOM_PQ_BUCKETS>
   class priority_queue : private LabelExt, private pq_label_mgr<LabelComparator,MetaStreams>
   {
     static_assert(0 <= Buckets && Buckets <= 4, "The number of buckets may only be in [0;4]");
