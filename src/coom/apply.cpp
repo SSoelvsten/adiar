@@ -258,15 +258,7 @@ namespace coom
       debug::println_apply_request(t1,t2);
 
       // Seek request partially in stream
-      if (is_sink_ptr(t1)) {
-        while (v2.uid < t2) {
-          v2 = in_nodes_2.read_back();
-        }
-      } else if (is_sink_ptr(t2)) {
-        while (v1.uid < t1) {
-          v1 = in_nodes_1.read_back();
-        }
-      } else if (with_data) {
+      if (with_data) {
         if (from_1) {
           while (v2.uid < t2) {
             v2 = in_nodes_2.read_back();
@@ -275,13 +267,6 @@ namespace coom
           while (v1.uid < t1) {
             v1 = in_nodes_1.read_back();
           }
-        }
-      } else if (t1 == t2) {
-        while (v1.uid < t1) {
-          v1 = in_nodes_1.read_back();
-        }
-        while (v2.uid < t2) {
-          v2 = in_nodes_2.read_back();
         }
       } else {
         if (label_of(t1) == label_of(t2)) {
@@ -293,7 +278,22 @@ namespace coom
           }
         }
 
-        if (t1 < t2) {
+        if (is_sink_ptr(t1) || (t1 == v1.uid && std::min(t1,t2) == t2)) {
+          while (v2.uid < t2) {
+            v2 = in_nodes_2.read_back();
+          }
+        } else if (is_sink_ptr(t2) || (t2 == v2.uid && std::min(t1,t2) == t1)) {
+          while (v1.uid < t1) {
+            v1 = in_nodes_1.read_back();
+          }
+        } else if (t1 == t2) {
+          while (v1.uid < t1) {
+            v1 = in_nodes_1.read_back();
+          }
+          while (v2.uid < t2) {
+            v2 = in_nodes_2.read_back();
+          }
+        } else if (t1 < t2) {
           while (v1.uid < t1) {
             v1 = in_nodes_1.read_back();
           }
