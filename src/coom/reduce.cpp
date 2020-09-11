@@ -205,7 +205,6 @@ namespace coom
 
       // Set up for L_j_red1
       tpie::file_stream<mapping> red1_mapping;
-      red1_mapping.open();
 
       // Set-up for L_j
       tpie::merge_sorter<node_t, false, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
@@ -225,6 +224,9 @@ namespace coom
         // Apply Reduction rule 1
         if (n.low == n.high) {
           debug::println_reduce_red_1(e_low, e_high, true);
+          if (!red1_mapping.is_open()) {
+            red1_mapping.open();
+          }
           red1_mapping.write({ n.uid, n.low });
         } else {
           debug::println_reduce_red_1(e_low, e_high, false);
@@ -279,10 +281,10 @@ namespace coom
       red2_mapping.calc(pi);
 
       // Merging of red1_mapping and red2_mapping
-      red1_mapping.seek(0);
       mapping next_red1 = {0, 0};
-      bool has_next_red1 = red1_mapping.can_read();
+      bool has_next_red1 = red1_mapping.is_open() && red1_mapping.size() > 0;
       if (has_next_red1) {
+        red1_mapping.seek(0);
         next_red1 = red1_mapping.read();
       }
 
