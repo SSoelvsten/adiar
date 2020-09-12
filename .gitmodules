@@ -5,7 +5,3 @@
 [submodule "external/tpie"]
 	path = external/tpie
 	url = ../../thomasmoelhave/tpie
-[submodule "latex/preamble"]
-	path = docs/preamble
-	url = ../../SSoelvsten/LaTeX-Preamble_and_Examples.git
-	branch = preamble-only
