@@ -3,7 +3,6 @@
 [![Built with TPIE](https://img.shields.io/badge/built%20with-TPIE-blue)](https://users-cs.au.dk/~rav/tpie/)
 [![test](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/test/badge.svg?branch=master)](/actions?query=workflow%3Atest)
 [![examples](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/examples/badge.svg?branch=master)](/actions?query=workflow%3Aexamples)
-[![docs](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/docs/badge.svg?branch=master)](/actions?query=workflow%3Adocs)
 
 Following up on the work of [[Arge96](#references)], this project investigates
 the use of _Time-Forward Processing_ to improve the I/O complexity and
@@ -136,9 +135,13 @@ Contributions and help to this end would be very much appreciated.
 
 
 ## Documentation
-The primary documentation is provided as a technical report written in LaTeX. It
-provides figures, listings that describes the algorithm on an abstract level
-together with a description and benchmarks of the implementation.
+We provide the documentation in two ways:
+
+- A [Github Pages](https://ssoelvsten.github.io/coom/) website that provides an
+  API and reference for developers.
+
+- A [Technical Report](https://github.com/SSoelvsten/coom-report) providing
+  a “_academic_” documentation.
 
 
 ## Future Work
