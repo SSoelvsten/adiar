@@ -2,21 +2,21 @@
 #include <tpie/tpie.h>
 
 // COOM Imports
-#include "data.cpp"
-#include "assignment.cpp"
-#include "pred.cpp"
+#include <coom/data.cpp>
+#include <coom/assignment.cpp>
+#include <coom/pred.cpp>
 
-#include "debug_data.cpp"
-#include "debug_assignment.cpp"
-#include "debug.cpp"
+#include <coom/debug_data.cpp>
+#include <coom/debug_assignment.cpp>
+#include <coom/debug.cpp>
 
-#include "assert.cpp"
+#include <coom/assert.cpp>
 
-#include "apply.cpp"
-#include "count.cpp"
-#include "evaluate.cpp"
-#include "reduce.cpp"
-#include "restrict.cpp"
+#include <coom/apply.cpp>
+#include <coom/count.cpp>
+#include <coom/evaluate.cpp>
+#include <coom/reduce.cpp>
+#include <coom/restrict.cpp>
 
 using namespace coom;
 

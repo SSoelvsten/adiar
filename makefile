@@ -37,7 +37,7 @@ dot:
 	@mkdir -p build/
 	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=OFF ..
 	@cd build/ && make $(MAKE_FLAGS) coom_dot
-	@./build/src/coom/coom_dot ${F}
+	@./build/src/coom_dot ${F}
 
 # ============================================================================ #
 #  MAIN for console debugging
@@ -48,7 +48,7 @@ main:
 	@cd build/ && make $(MAKE_FLAGS) coom_main
 	@rm -rf *.tpie
 	@echo "" && echo ""
-	@./build/src/coom/coom_main
+	@./build/src/coom_main
 	@rm -rf *.tpie
 
 # ============================================================================ #
