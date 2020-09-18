@@ -1,6 +1,6 @@
 // TODO: Fix header files
-#include "data.cpp"
-#include "dot.cpp"
+#include <coom/data.cpp>
+#include <coom/dot.cpp>
 
 int main(const int argc, const char* argv[]) {
   // ===== TPIE =====
