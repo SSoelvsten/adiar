@@ -101,8 +101,6 @@ namespace coom {
     }
     out << "}" << std::endl;
     out.close();
-
-    system(("dot -Tpng " + filename + ".dot" + " -o " + filename + ".png").c_str());
   }
 
   void output_dot(tpie::file_stream<arc_t>& node_arcs,
@@ -147,8 +145,6 @@ namespace coom {
 
     out << "\t{ rank=min; s0 s1 }" << std::endl << "}" << std::endl;
     out.close();
-
-    system(("dot -Tpng " + filename + ".dot" + " -o " + filename + ".png").c_str());
   }
 }
 

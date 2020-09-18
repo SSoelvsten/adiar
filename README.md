@@ -114,6 +114,11 @@ For development and more we also provide the following targets
 | `dot F=<files>` | Convert TPIE persisted file streams `<files>` into DOT files |
 | `main`          | Run the _main_ function in `main.cpp` with console debugging |
 
+To further convert a _.dot_ file into a picture run the following command
+
+```
+dot -O -Tpng filename.dot
+```
 
 ### Examples and benchmarks
 The _/examples_ folder contains examples for using the data structure to solve
