@@ -15,24 +15,54 @@ namespace coom
   //////////////////////////////////////////////////////////////////////////////
   typedef std::function<ptr_t(ptr_t,ptr_t)> bool_op;
 
-  const bool_op and_op = [] (ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op and_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return sink1 & sink2;
+    return unflag(sink1 & sink2);
   };
 
-  const bool_op or_op = [] (ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op nand_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return sink1 | sink2;
+    return unflag(sink1 & sink2) ^ 2u;
   };
 
-  const bool_op xor_op = [] (ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op or_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return create_sink_ptr(value_of(sink1) != value_of(sink2));
+    return unflag(sink1 | sink2);
   };
 
-  const bool_op implies_op = [] (ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op nor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return unflag(sink1 | sink2) ^ 2u;
+  };
+
+  const bool_op xor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return create_sink_ptr(value_of(sink1) ^ value_of(sink2));
+  };
+
+  const bool_op implies_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
     return create_sink_ptr(value_of(sink1) ? value_of(sink2) : true);
+  };
+
+  const bool_op impliedby_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return create_sink_ptr(value_of(sink2) ? value_of(sink1) : true);
+  };
+
+  const bool_op equiv_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return create_sink_ptr(sink1 == sink2);
+  };
+
+  const bool_op diff_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return create_sink_ptr(value_of(sink1) && !value_of(sink2));
+  };
+
+  const bool_op less_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return create_sink_ptr(!value_of(sink1) && value_of(sink2));
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -41,13 +71,17 @@ namespace coom
   /// Creates the product construction of the two given OBDDs, which is then
   /// reduced into the minimal OBDD in the out_nodes.
   ///
-  /// \param out_nodes_1 Nodes in reverse topological order of the first OBDD.
-  /// \param out_nodes_2 Nodes in reverse topological order of the second OBDD.
+  /// \param in_nodes_1 Nodes in reverse topological order of the first OBDD.
+  /// \param in_meta_1  The meta stream related to in_nodes_1
+  ///
+  /// \param in_nodes_2 Nodes in reverse topological order of the second OBDD.
+  /// \param in_meta_2  The meta stream related to in_nodes_2
   ///
   /// \param op Binary boolean operator to be applied.
   ///
   /// \param out_nodes The output stream to send the nodes in reverse topological
   ///                  order.
+  /// \param out_meta  The output stream for the associated meta information
   //////////////////////////////////////////////////////////////////////////////
   void apply(tpie::file_stream<node_t> &in_nodes_1,
              tpie::file_stream<meta_t> &in_meta_1,
