@@ -201,7 +201,7 @@ go_bandit([]() {
             AssertThat(out_meta.can_read(), Is().False());
           });
 
-        it("can apply reduction rule 2 on sink arcs", [&]() {
+        it("can apply reduction rule 2 on sink arcs [1]", [&]() {
             /*
                1                  1      ---- x0
               / \                / \
@@ -288,6 +288,100 @@ go_bandit([]() {
 
             AssertThat(out_meta.can_read(), Is().True());
             AssertThat(out_meta.read(), Is().EqualTo(meta_t {0}));
+
+            AssertThat(out_meta.can_read(), Is().False());
+          });
+
+        it("can apply reduction rule 2 on sink arcs [2]", [&]() {
+            /*
+                    1      ---- x0            1
+                   / \                       / \
+                   | |     ---- x1           | |
+                   | |                       | |
+                   2 3     ---- x2    ==>    2 3
+                  / X \                     /\ /\
+                  F/ \T                     F | T
+                   4 5     ---- x3            4
+                  /| |\                      / \
+                  FT FT                      F T
+             */
+            ptr_t n1 = create_node_ptr(0,0);
+            ptr_t n2 = create_node_ptr(2,0);
+            ptr_t n3 = create_node_ptr(2,1);
+            ptr_t n4 = create_node_ptr(3,0);
+            ptr_t n5 = create_node_ptr(3,1);
+
+            tpie::file_stream<arc_t> in_node_arcs;
+            in_node_arcs.open();
+
+            in_node_arcs.write({ n1, n2 });
+            in_node_arcs.write({ flag(n1), n3 });
+            in_node_arcs.write({ n3, n4 });
+            in_node_arcs.write({ flag(n2), n5 });
+
+            tpie::file_stream<arc_t> in_sink_arcs;
+            in_sink_arcs.open();
+
+            ptr_t sink_F = create_sink_ptr(false);
+            ptr_t sink_T = create_sink_ptr(true);
+
+            in_sink_arcs.write({ n2, sink_F });
+            in_sink_arcs.write({ flag(n3), sink_T });
+            in_sink_arcs.write({ n4, sink_F });
+            in_sink_arcs.write({ flag(n4), sink_T });
+            in_sink_arcs.write({ n5, sink_F });
+            in_sink_arcs.write({ flag(n5), sink_T });
+
+            tpie::file_stream<meta_t> in_meta;
+            in_meta.open();
+
+            in_meta.write({0});
+            in_meta.write({2});
+            in_meta.write({3});
+
+
+            // Reduce it
+            tpie::file_stream<node_t> out_nodes;
+            out_nodes.open();
+
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            coom::reduce(in_node_arcs, in_sink_arcs, in_meta, out_nodes, out_meta);
+
+            // Check it looks all right
+            out_nodes.seek(0);
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(3, MAX_ID,
+                                                                  sink_F,
+                                                                  sink_T)));
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID,
+                                                                  create_node_ptr(3, MAX_ID),
+                                                                  sink_T)));
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(2, MAX_ID-1,
+                                                                  sink_F,
+                                                                  create_node_ptr(3, MAX_ID))));
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                  create_node_ptr(2, MAX_ID-1),
+                                                                  create_node_ptr(2, MAX_ID))));
+
+            AssertThat(out_nodes.can_read(), Is().False());
+
+            out_meta.seek(0);
+            AssertThat(out_meta.can_read(), Is().True());
+            AssertThat(out_meta.read(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(out_meta.can_read(), Is().True());
+            AssertThat(out_meta.read(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(out_meta.can_read(), Is().True());
+            AssertThat(out_meta.read(), Is().EqualTo(meta_t { 0 }));
 
             AssertThat(out_meta.can_read(), Is().False());
           });

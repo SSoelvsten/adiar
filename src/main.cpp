@@ -15,6 +15,8 @@
 #include <coom/apply.cpp>
 #include <coom/count.cpp>
 #include <coom/evaluate.cpp>
+#include <coom/exists.h>
+#include <coom/forall.h>
 #include <coom/reduce.cpp>
 #include <coom/restrict.cpp>
 
