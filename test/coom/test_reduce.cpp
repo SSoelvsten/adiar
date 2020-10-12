@@ -1070,5 +1070,107 @@ go_bandit([]() {
 
             AssertThat(out_meta.can_read(), Is().False());
           });
+
+        it("can return non-reducible single-node variable with MAX_ID (1)", [&]() {
+            /*
+                 1                 1       ---- x0
+                / \      =>       / \
+                F T               F T
+            */
+
+            ptr_t n1 = create_node_ptr(0,0);
+
+            tpie::file_stream<arc_t> in_node_arcs;
+            in_node_arcs.open();
+
+            tpie::file_stream<arc_t> in_sink_arcs;
+            in_sink_arcs.open();
+
+            ptr_t sink_F = create_sink_ptr(false);
+            ptr_t sink_T = create_sink_ptr(true);
+
+            in_sink_arcs.write({ n1,sink_F });
+            in_sink_arcs.write({ flag(n1),sink_T });
+
+            tpie::file_stream<meta_t> in_meta;
+            in_meta.open();
+
+            in_meta.write(meta_t {0});
+
+
+            // Reduce it
+            tpie::file_stream<node_t> out_nodes;
+            out_nodes.open();
+
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            coom::reduce(in_node_arcs, in_sink_arcs, in_meta, out_nodes, out_meta);
+
+
+            // Check it looks all right
+            out_nodes.seek(0);
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(0, MAX_ID, sink_F, sink_T)));
+            AssertThat(out_nodes.can_read(), Is().False());
+
+            out_meta.seek(0);
+
+            AssertThat(out_meta.can_read(), Is().True());
+            AssertThat(out_meta.read(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.can_read(), Is().False());
+          });
+
+        it("can return non-reducible single-node variable with MAX_ID (2)", [&]() {
+            /*
+                 1                 1       ---- x42
+                / \      =>       / \
+                F T               F T
+            */
+
+            ptr_t n1 = create_node_ptr(42,0);
+
+            tpie::file_stream<arc_t> in_node_arcs;
+            in_node_arcs.open();
+
+            tpie::file_stream<arc_t> in_sink_arcs;
+            in_sink_arcs.open();
+
+            ptr_t sink_F = create_sink_ptr(false);
+            ptr_t sink_T = create_sink_ptr(true);
+
+            in_sink_arcs.write({ n1,sink_F });
+            in_sink_arcs.write({ flag(n1),sink_T });
+
+            tpie::file_stream<meta_t> in_meta;
+            in_meta.open();
+
+            in_meta.write(meta_t {42});
+
+
+            // Reduce it
+            tpie::file_stream<node_t> out_nodes;
+            out_nodes.open();
+
+            tpie::file_stream<meta_t> out_meta;
+            out_meta.open();
+
+            coom::reduce(in_node_arcs, in_sink_arcs, in_meta, out_nodes, out_meta);
+
+
+            // Check it looks all right
+            out_nodes.seek(0);
+
+            AssertThat(out_nodes.can_read(), Is().True());
+            AssertThat(out_nodes.read(), Is().EqualTo(create_node(42, MAX_ID, sink_F, sink_T)));
+            AssertThat(out_nodes.can_read(), Is().False());
+
+            out_meta.seek(0);
+
+            AssertThat(out_meta.can_read(), Is().True());
+            AssertThat(out_meta.read(), Is().EqualTo(meta_t {42}));
+            AssertThat(out_meta.can_read(), Is().False());
+          });
       });
   });
