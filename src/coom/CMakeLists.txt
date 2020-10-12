@@ -15,6 +15,8 @@ set(HEADERS
   debug_assignment.h
   debug_data.h
   evaluate.h
+  exists.h
+  forall.h
   negate.h
   pred.h
   reduce.h
@@ -34,6 +36,7 @@ set(SOURCES
   evaluate.cpp
   negate.cpp
   pred.cpp
+  quantify.cpp
   reduce.cpp
   restrict.cpp
 )

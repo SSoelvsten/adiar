@@ -26,6 +26,7 @@ using namespace bandit;
 #include "coom/test_restrict.cpp"
 #include "coom/test_reduce.cpp"
 #include "coom/test_apply.cpp"
+#include "coom/test_quantify.cpp"
 
 #include "coom/test_build.cpp"
 

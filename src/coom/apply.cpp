@@ -80,6 +80,8 @@ namespace coom
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Data structures
   struct tuple
   {
     ptr_t source;
@@ -97,6 +99,8 @@ namespace coom
     ptr_t data_high;
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Priority queue functions
   struct apply_queue_lt
   {
     bool operator()(const tuple &a, const tuple &b)
@@ -123,6 +127,8 @@ namespace coom
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Helper functions
   bool can_right_shortcut(const bool_op &op, const ptr_t sink)
   {
     return op(create_sink_ptr(false), sink) == op(create_sink_ptr(true), sink);
@@ -133,6 +139,43 @@ namespace coom
     return op(sink, create_sink_ptr(false)) == op(sink, create_sink_ptr(true));
   }
 
+  template<typename LabelExt, typename Comparator, size_t meta_streams>
+  inline void apply_resolve_request(priority_queue<tuple, LabelExt, Comparator, meta_streams> &appD,
+                                    tpie::file_stream<arc_t> &reduce_sink_arcs,
+                                    const bool_op &op,
+                                    ptr_t source, ptr_t r1, ptr_t r2)
+  {
+    if (is_sink_ptr(r1) && is_sink_ptr(r2)) {
+      arc_t out_arc = { source, op(r1, r2) };
+      reduce_sink_arcs.write(out_arc);
+    } else if (is_sink_ptr(r1) && can_left_shortcut(op, r1)) {
+      arc_t out_arc = { source, op(r1, create_sink_ptr(true)) };
+      reduce_sink_arcs.write(out_arc);
+    } else if (is_sink_ptr(r2) && can_right_shortcut(op, r2)) {
+      arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
+      reduce_sink_arcs.write(out_arc);
+    } else {
+      appD.push({ source, r1, r2 });
+    }
+  }
+
+  template<typename LabelExt, typename Comparator, typename Comparator_data, size_t meta_streams>
+  inline bool apply_update_source_or_break(priority_queue<tuple, LabelExt, Comparator, meta_streams> &appD,
+                                           tpie::priority_queue<tuple_data, Comparator_data> &appD_data,
+                                           ptr_t &source, ptr_t t1, ptr_t t2)
+  {
+    if (appD.can_pull() && appD.top().t1 == t1 && appD.top().t2 == t2) {
+      source = appD.pull().source;
+    } else if (!appD_data.empty() && appD_data.top().t1 == t1 && appD_data.top().t2 == t2) {
+      source = appD_data.top().source;
+      appD_data.pop();
+    } else {
+      return true;
+    }
+    return false;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   void apply(tpie::file_stream<node_t> &in_nodes_1,
              tpie::file_stream<meta_t> &in_meta_1,
              tpie::file_stream<node_t> &in_nodes_2,
@@ -213,38 +256,10 @@ namespace coom
     }
 
     // Shortcut the root
-    if (is_sink_ptr(low1) && is_sink_ptr(low2)) {
-      arc_t new_arc = { root_uid, op(low1, low2) };
-      reduce_sink_arcs.write(new_arc);
-    } else if (is_sink_ptr(low1) && can_left_shortcut(op, low1)) {
-      arc_t new_arc = { root_uid, op(low1, create_sink_ptr(true)) };
-      reduce_sink_arcs.write(new_arc);
-    } else if (is_sink_ptr(low2) && can_right_shortcut(op, low2)) {
-      arc_t new_arc = { root_uid, op(create_sink_ptr(true), low2) };
-      reduce_sink_arcs.write(new_arc);
-    } else {
-      appD.push({ root_uid, low1, low2 });
-    }
-
-    if (is_sink_ptr(high1) && is_sink_ptr(high2)) {
-      arc_t new_arc = { flag(root_uid), op(high1, high2) };
-      reduce_sink_arcs.write(new_arc);
-    } else if (is_sink_ptr(high1) && can_left_shortcut(op, high1)) {
-      arc_t new_arc = { flag(root_uid), op(high1, create_sink_ptr(true)) };
-      reduce_sink_arcs.write(new_arc);
-    } else if (is_sink_ptr(high2) && can_right_shortcut(op, high2)) {
-      arc_t new_arc = { flag(root_uid), op(create_sink_ptr(true), high2) };
-      reduce_sink_arcs.write(new_arc);
-    } else {
-      appD.push({ flag(root_uid), high1, high2 });
-    }
+    apply_resolve_request(appD, reduce_sink_arcs, op, root_uid, low1, low2);
+    apply_resolve_request(appD, reduce_sink_arcs, op, flag(root_uid), high1, high2);
 
     // Process all nodes in topological order of both OBDDs
-    ptr_t source, t1, t2;
-
-    bool with_data, from_1 = false;
-    ptr_t data_low = NIL, data_high = NIL;
-
     while (appD.can_pull() || appD.has_next_layer() || !appD_data.empty()) {
       if (!appD.can_pull() && appD_data.empty()) {
         appD.setup_next_layer();
@@ -253,10 +268,14 @@ namespace coom
         out_id = 0;
       }
 
+      ptr_t source, t1, t2;
+      bool with_data, from_1 = false;
+      ptr_t data_low = NIL, data_high = NIL;
+
       // Merge requests from  appD or appD_data
       if (appD.can_pull() && (appD_data.empty() ||
-                                  std::min(appD.top().t1, appD.top().t2) <
-                                  std::max(appD_data.top().t1, appD_data.top().t2))) {
+                              std::min(appD.top().t1, appD.top().t2) <
+                              std::max(appD_data.top().t1, appD_data.top().t2))) {
         with_data = false;
         source = appD.top().source;
         t1 = appD.top().t1;
@@ -345,10 +364,7 @@ namespace coom
       }
 
       // Resolve current node and recurse
-      ptr_t low1;
-      ptr_t low2;
-      ptr_t high1;
-      ptr_t high2;
+      ptr_t low1, low2, high1, high2;
 
       if (is_sink_ptr(t1) || is_sink_ptr(t2) || label_of(t1) != label_of(t2)) {
         if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink_ptr(t2)
@@ -369,38 +385,14 @@ namespace coom
         high2 = with_data && !from_1 ? data_high : v2.high;
       }
 
-      // Create new node
+      // Resolve request
       uid_t out_uid = create_node_uid(out_label, out_id);
       debug::println_apply_resolution(out_uid, low1, low2, high1, high2);
 
       out_id++;
 
-      // Output outgoing sink arcs or recurse
-      if (is_sink_ptr(low1) && is_sink_ptr(low2)) {
-        arc_t out_arc = { out_uid, op(low1, low2) };
-        reduce_sink_arcs.write(out_arc);
-      } else if (is_sink_ptr(low1) && can_left_shortcut(op, low1)) {
-        arc_t out_arc = { out_uid, op(low1, create_sink_ptr(true)) };
-        reduce_sink_arcs.write(out_arc);
-      } else if (is_sink_ptr(low2) && can_right_shortcut(op, low2)) {
-        arc_t out_arc = { out_uid, op(create_sink_ptr(true), low2) };
-        reduce_sink_arcs.write(out_arc);
-      } else {
-        appD.push({out_uid, low1, low2});
-      }
-
-      if (is_sink_ptr(high1) && is_sink_ptr(high2)) {
-        arc_t out_arc = { flag(out_uid), op(high1, high2) };
-        reduce_sink_arcs.write(out_arc);
-      } else if (is_sink_ptr(high1) && can_left_shortcut(op, high1)) {
-        arc_t out_arc = { flag(out_uid), op(high1, create_sink_ptr(true)) };
-        reduce_sink_arcs.write(out_arc);
-      } else if (is_sink_ptr(high2) && can_right_shortcut(op, high2)) {
-        arc_t out_arc = { flag(out_uid), op(create_sink_ptr(true), high2) };
-        reduce_sink_arcs.write(out_arc);
-      } else {
-        appD.push({ flag(out_uid), high1, high2 });
-      }
+      apply_resolve_request(appD, reduce_sink_arcs, op, out_uid, low1, low2);
+      apply_resolve_request(appD, reduce_sink_arcs, op, flag(out_uid), high1, high2);
 
       // Output ingoing arcs
       while (true) {
@@ -409,12 +401,7 @@ namespace coom
 
         debug::println_apply_ingoing(out_arc);
 
-        if (appD.can_pull() && appD.top().t1 == t1 && appD.top().t2 == t2) {
-          source = appD.pull().source;
-        } else if (!appD_data.empty() && appD_data.top().t1 == t1 && appD_data.top().t2 == t2) {
-          source = appD_data.top().source;
-          appD_data.pop();
-        } else {
+        if (apply_update_source_or_break(appD, appD_data, source, t1, t2)) {
           break;
         }
       }
