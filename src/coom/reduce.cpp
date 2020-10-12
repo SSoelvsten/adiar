@@ -199,7 +199,11 @@ namespace coom
       if (e_high.target == e_low.target) {
         out_nodes.write(create_sink(value_of(e_low.target)));
       } else {
-        out_nodes.write({ e_low.source, e_low.target, e_high.target });
+        label_t label = label_of(e_low.source);
+        out_nodes.write(create_node(label, MAX_ID,
+                                    e_low.target,
+                                    e_high.target));
+        out_meta.write({ label });
       }
 
       debug::println_file_stream(out_nodes, "out_nodes");
@@ -269,7 +273,8 @@ namespace coom
         // Output the first
         id_t out_id = MAX_ID;
         node_t current_node = child_grouping.pull();
-        out_meta.write(meta_t {label});
+
+        out_meta.write({ label });
 
         node_t out_node = create_node(label, out_id, current_node.low, current_node.high);
         out_nodes.write(out_node);
