@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
   // Initialize
   tpie::tpie_init();
 
-  size_t available_memory_mb = 128;
+  size_t available_memory_mb = 1024;
   tpie::get_memory_manager().set_limit(available_memory_mb*1024*1024);
 
   // ===== COOM =====
