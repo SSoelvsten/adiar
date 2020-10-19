@@ -126,10 +126,11 @@ various verification and satisfaction problems. The `main` function also also
 includes timing how long it takes to solve and computing other interesting
 statistics.
 
-| target                      | Example                                                           |
-|-----------------------------|-------------------------------------------------------------------|
-| `example-n-queens N=<?>`    | N-Queens board creation, counting and enumerating solutions       |
-| `example-tic-tac-toe N=<?>` | Counting the number of ties on a 3D 4✕4✕4 with _N_ crosses placed |
+| target                               | Example                                                             |
+|--------------------------------------+---------------------------------------------------------------------|
+| `example-n-queens N=<?>`             | N-Queens board creation, counting and enumerating solutions         |
+| `example-pigeonhole-principle N=<?>` | Proves the isomorphism of the _Pigeonhole Principle_ does not exist |
+| `example-tic-tac-toe N=<?>`          | Counting the number of ties on a 3D 4✕4✕4 with _N_ crosses placed   |
 
 
 ### In your own project
