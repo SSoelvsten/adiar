@@ -69,6 +69,19 @@ example-n-queens:
 	@./build/example/n_queens ${N} ${M}
 	@echo ""
 
+example-pigeonhole-principle: N := 10
+example-pigeonhole-principle:
+  # Build
+	@mkdir -p build/
+	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=OFF ..
+
+	@cd build/ && make $(MAKE_FLAGS) pigeonhole_principle
+
+  # Run
+	@echo ""
+	@./build/example/pigeonhole_principle ${N} ${M}
+	@echo ""
+
 example-tic-tac-toe: N := 20
 example-tic-tac-toe:
   # Build

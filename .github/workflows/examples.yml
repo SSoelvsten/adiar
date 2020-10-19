@@ -48,6 +48,52 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: ./example/n_queens 8 1024
 
+  pigeonhole_principle:
+    name: 'Pigeonhole Principle'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - name: Apt | install boost aptitude
+      run: sudo apt install libboost-all-dev aptitude
+    - name: CMake | build
+      run: |
+        cmake -E make_directory ${{runner.workspace}}/build
+        cd ${{runner.workspace}}/build
+        cmake $GITHUB_WORKSPACE && cmake --build . --target pigeonhole_principle
+    - name: Makefile | 2 Pigeons
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/pigeonhole_principle 1 1024
+    - name: Makefile | 3 Pigeons
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/pigeonhole_principle 2 1024
+    - name: Makefile | 4 Pigeons
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/pigeonhole_principle 3 1024
+    - name: Makefile | 5 Pigeons
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/pigeonhole_principle 4 1024
+    - name: Makefile | 6 Pigeons
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/pigeonhole_principle 5 1024
+    - name: Makefile | 7 Pigeons
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/pigeonhole_principle 6 1024
+    - name: Makefile | 8 Pigeons
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/pigeonhole_principle 7 1024
+    - name: Makefile | 9 Pigeons
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/pigeonhole_principle 8 1024
+    - name: Makefile | 10 Pigeons
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/pigeonhole_principle 9 1024
+    - name: Makefile | 11 Pigeons
+      working-directory: ${{runner.workspace}}/build
+      run: ./example/pigeonhole_principle 10 1024
+
   tic_tac_toe:
     name: 'Tic-Tac-Toe'
     runs-on: ubuntu-latest
