@@ -4,9 +4,47 @@
 using namespace coom;
 
 go_bandit([]() {
-    describe("COOM: Make", [&]() {
+    describe("COOM: Build", [&]() {
         ptr_t sink_T = create_sink_ptr(true);
         ptr_t sink_F = create_sink_ptr(false);
+
+        describe("build_sink", [&]() {
+            it("can create true sink only", [&]() {
+                tpie::file_stream<node_t> out_nodes;
+                out_nodes.open();
+
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_sink(true, out_nodes, out_meta);
+
+                out_nodes.seek(0);
+
+                AssertThat(out_nodes.can_read(), Is().True());
+                AssertThat(out_nodes.read(), Is().EqualTo(create_sink(true)));
+                AssertThat(out_nodes.can_read(), Is().False());
+
+                AssertThat(out_meta.size(), Is().EqualTo(0u));
+              });
+
+            it("can create false sink only", [&]() {
+                tpie::file_stream<node_t> out_nodes;
+                out_nodes.open();
+
+                tpie::file_stream<meta_t> out_meta;
+                out_meta.open();
+
+                build_sink(false, out_nodes, out_meta);
+
+                out_nodes.seek(0);
+
+                AssertThat(out_nodes.can_read(), Is().True());
+                AssertThat(out_nodes.read(), Is().EqualTo(create_sink(false)));
+                AssertThat(out_nodes.can_read(), Is().False());
+
+                AssertThat(out_meta.size(), Is().EqualTo(0u));
+              });
+          });
 
         describe("build_x", [&]() {
             it("can create x0", [&]() {

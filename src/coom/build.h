@@ -7,9 +7,19 @@
 namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create an OBDD of only a single sink.
+  ///
+  /// \param value     The value for the sink
+  /// \param out_nodes A (yet empty) file_stream to output to
+  //////////////////////////////////////////////////////////////////////////////
+  void build_sink(bool value,
+                  tpie::file_stream<node_t> &out_nodes,
+                  tpie::file_stream<meta_t> &out_meta);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an OBDD for the variable with the given label.
   ///
-  /// \param label The label of the variable
+  /// \param label     The label of the variable
   /// \param out_nodes A (yet empty) file_stream to output to
   //////////////////////////////////////////////////////////////////////////////
   void build_x(label_t label,
@@ -19,7 +29,7 @@ namespace coom
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an OBDD for the variable with the given label.
   ///
-  /// \param label The label of the variable
+  /// \param label     The label of the variable
   /// \param out_nodes A (yet empty) file_stream to output to
   //////////////////////////////////////////////////////////////////////////////
   void build_not_x(label_t label,
