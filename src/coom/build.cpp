@@ -16,11 +16,21 @@ namespace coom {
     }
   }
 
+  void build_sink(bool value,
+                  tpie::file_stream<node_t> &out_nodes,
+                  tpie::file_stream<meta_t> &out_meta)
+  {
+    assert::is_valid_output_stream(out_nodes);
+    assert::is_valid_output_stream(out_meta);
+    out_nodes.write(create_sink(value));
+  }
+
   void build_x(label_t label,
                tpie::file_stream<node_t> &out_nodes,
                tpie::file_stream<meta_t> &out_meta)
   {
     assert::is_valid_output_stream(out_nodes);
+    assert::is_valid_output_stream(out_meta);
     out_nodes.write(create_node(label, 0, create_sink_ptr(false), create_sink_ptr(true)));
     out_meta.write({label});
   }
@@ -30,6 +40,7 @@ namespace coom {
                    tpie::file_stream<meta_t> &out_meta)
   {
     assert::is_valid_output_stream(out_nodes);
+    assert::is_valid_output_stream(out_meta);
     out_nodes.write(create_node(label, 0, create_sink_ptr(true), create_sink_ptr(false)));
     out_meta.write({label});
   }
@@ -39,6 +50,7 @@ namespace coom {
                  tpie::file_stream<meta_t> &out_meta)
   {
     assert::is_valid_output_stream(out_nodes);
+    assert::is_valid_output_stream(out_meta);
     if (in_labels.size() == 0) {
       out_nodes.write(create_sink(true));
       return;
@@ -64,6 +76,8 @@ namespace coom {
                 tpie::file_stream<meta_t> &out_meta)
   {
     assert::is_valid_output_stream(out_nodes);
+    assert::is_valid_output_stream(out_meta);
+
     if (in_labels.size() == 0) {
       out_nodes.write(create_sink(false));
       return;
@@ -97,6 +111,7 @@ namespace coom {
                      tpie::file_stream<meta_t> &out_meta)
   {
     assert::is_valid_output_stream(out_nodes);
+    assert::is_valid_output_stream(out_meta);
     assert::is_build_counter_valid_labels(min_label, max_label, threshold);
 
     label_t curr_label = max_label;
