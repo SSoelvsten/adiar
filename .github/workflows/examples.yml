@@ -25,28 +25,28 @@ jobs:
         cmake $GITHUB_WORKSPACE && cmake --build . --target n_queens
     - name: Makefile | 1-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 1
+      run: ./example/n_queens 1 1024
     - name: Makefile | 2-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 2
+      run: ./example/n_queens 2 1024
     - name: Makefile | 3-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 3
+      run: ./example/n_queens 3 1024
     - name: Makefile | 4-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 4
+      run: ./example/n_queens 4 1024
     - name: Makefile | 5-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 5
+      run: ./example/n_queens 5 1024
     - name: Makefile | 6-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 6
+      run: ./example/n_queens 6 1024
     - name: Makefile | 7-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 7
+      run: ./example/n_queens 7 1024
     - name: Makefile | 8-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 8
+      run: ./example/n_queens 8 1024
 
   tic_tac_toe:
     name: 'Tic-Tac-Toe'
@@ -65,7 +65,7 @@ jobs:
         cmake $GITHUB_WORKSPACE && cmake --build . --target tic_tac_toe
     - name: Makefile | Tic-Tac-Toe (18)
       working-directory: ${{runner.workspace}}/build
-      run: ./example/tic_tac_toe 18
+      run: ./example/tic_tac_toe 18 1024
     - name: Makefile | Tic-Tac-Toe (20)
       working-directory: ${{runner.workspace}}/build
-      run: ./example/tic_tac_toe 20
+      run: ./example/tic_tac_toe 20 1024

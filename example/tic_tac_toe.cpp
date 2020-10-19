@@ -348,9 +348,9 @@ int main(int argc, char* argv[])
   // Initialize
   tpie::tpie_init();
 
-  tpie::get_memory_manager().set_limit(M * 1024 * 1024 * 1024);
+  tpie::get_memory_manager().set_limit(M * 1024 * 1024);
 
-  tpie::log_info() << "| Initialized TPIE with " << M << " GB of memory"  << std::endl;
+  tpie::log_info() << "| Initialized TPIE with " << M << " MB of memory"  << std::endl;
 
   // ===== Tic-Tac-Toe =====
 
