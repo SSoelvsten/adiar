@@ -1,15 +1,12 @@
 #ifndef COOM_NEGATE_CPP
 #define COOM_NEGATE_CPP
 
-#include <tpie/file_stream.h>
-#include "data.h"
+#include "negate.h"
 
 #include "debug.h"
 #include "debug_data.h"
 
 #include "assert.h"
-
-#include "negate.h"
 
 namespace coom
 {

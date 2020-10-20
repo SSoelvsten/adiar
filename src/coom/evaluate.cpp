@@ -1,9 +1,6 @@
 #ifndef COOM_EVALUATE_CPP
 #define COOM_EVALUATE_CPP
 
-#include <tpie/file_stream.h>
-#include "data.h"
-
 #include "evaluate.h"
 
 #include "assert.h"

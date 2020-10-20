@@ -1,12 +1,9 @@
-#ifndef COOM_MAKE_H
-#define COOM_MAKE_H
-
-#include <tpie/file_stream.h>
-
-#include "data.h"
-#include "assert.h"
+#ifndef COOM_BUILD_CPP
+#define COOM_BUILD_CPP
 
 #include "build.h"
+
+#include "assert.h"
 
 namespace coom {
   namespace assert {
@@ -156,4 +153,4 @@ namespace coom {
   }
 }
 
-#endif // COOM_BUILD_H
+#endif // COOM_BUILD_CPP

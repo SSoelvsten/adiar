@@ -15,10 +15,8 @@ set(HEADERS
   debug_assignment.h
   debug_data.h
   evaluate.h
-  exists.h
-  forall.h
   negate.h
-  pred.h
+  quantify.h
   reduce.h
   restrict.h
 )
@@ -35,10 +33,11 @@ set(SOURCES
   debug_data.cpp
   evaluate.cpp
   negate.cpp
-  pred.cpp
+  priority_queue.cpp
   quantify.cpp
   reduce.cpp
   restrict.cpp
+  util.cpp
 )
 
 if (COOM_SHARED)

@@ -160,9 +160,8 @@ void construct_PHP_cnf(sat_solver &solver, uint64_t N)
 #include <coom/build.cpp>
 
 #include <coom/apply.cpp>
-#include <coom/pred.cpp>
 #include <coom/count.cpp>
-#include <coom/exists.h>
+#include <coom/quantify.cpp>
 #include <coom/reduce.cpp>
 
 /*******************************************************************************

@@ -1,6 +1,3 @@
-#include <tpie/tpie.h>
-#include <tpie/file_stream.h>
-
 #include <coom/priority_queue.cpp>
 
 using namespace coom;

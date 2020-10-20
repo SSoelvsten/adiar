@@ -11,61 +11,6 @@
 namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// Some preset operators
-  //////////////////////////////////////////////////////////////////////////////
-  typedef std::function<ptr_t(ptr_t,ptr_t)> bool_op;
-
-  const bool_op and_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return unflag(sink1 & sink2);
-  };
-
-  const bool_op nand_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return unflag(sink1 & sink2) ^ 2u;
-  };
-
-  const bool_op or_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return unflag(sink1 | sink2);
-  };
-
-  const bool_op nor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return unflag(sink1 | sink2) ^ 2u;
-  };
-
-  const bool_op xor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return create_sink_ptr(value_of(sink1) ^ value_of(sink2));
-  };
-
-  const bool_op implies_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return create_sink_ptr(value_of(sink1) ? value_of(sink2) : true);
-  };
-
-  const bool_op impliedby_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return create_sink_ptr(value_of(sink2) ? value_of(sink1) : true);
-  };
-
-  const bool_op equiv_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return create_sink_ptr(sink1 == sink2);
-  };
-
-  const bool_op diff_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return create_sink_ptr(value_of(sink1) && !value_of(sink2));
-  };
-
-  const bool_op less_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return create_sink_ptr(!value_of(sink1) && value_of(sink2));
-  };
-
-  //////////////////////////////////////////////////////////////////////////////
   /// \brief Given two OBDDs creates one as per an operator.
   ///
   /// Creates the product construction of the two given OBDDs, which is then

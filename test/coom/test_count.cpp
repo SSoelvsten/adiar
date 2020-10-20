@@ -1,7 +1,3 @@
-#include <tpie/tpie.h>
-
-#include <coom/data.cpp>
-
 #include <coom/count.cpp>
 
 using namespace coom;

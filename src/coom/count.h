@@ -4,7 +4,6 @@
 #include <tpie/file_stream.h>
 
 #include "data.h"
-#include "pred.h"
 
 namespace coom
 {
