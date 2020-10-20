@@ -83,6 +83,7 @@ example-pigeonhole-principle:
 	@echo ""
 
 example-tic-tac-toe: N := 20
+example-tic-tac-toe: M:= 1024
 example-tic-tac-toe:
   # Build
 	@mkdir -p build/
