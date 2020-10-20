@@ -2,6 +2,7 @@
 #define COOM_BUILD_H
 
 #include <tpie/file_stream.h>
+
 #include "data.h"
 
 namespace coom

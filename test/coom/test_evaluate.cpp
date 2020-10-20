@@ -1,4 +1,3 @@
-#include <tpie/tpie.h>
 #include <coom/evaluate.cpp>
 
 using namespace coom;

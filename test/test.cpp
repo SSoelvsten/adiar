@@ -18,7 +18,6 @@ using namespace bandit;
 #include "coom/test_priority_queue.cpp"
 
 #include "coom/test_assignment.cpp"
-#include "coom/test_pred.cpp"
 
 #include "coom/test_evaluate.cpp"
 #include "coom/test_count.cpp"

@@ -1,17 +1,14 @@
 #ifndef COOM_COUNT_CPP
 #define COOM_COUNT_CPP
 
-#include <tpie/file_stream.h>
+#include "count.h"
 
-#include "data.h"
 #include "priority_queue.cpp"
 
 #include "debug.h"
 #include "debug_data.h"
 
 #include "assert.h"
-
-#include "count.h"
 
 namespace coom
 {

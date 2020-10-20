@@ -2,6 +2,10 @@
 #define COOM_DATA_H
 
 #include <stdint.h>
+#include <functional>
+
+#include <tpie/tpie.h>
+#include <tpie/file_stream.h>
 
 namespace coom {
   //////////////////////////////////////////////////////////////////////////////
@@ -10,7 +14,7 @@ namespace coom {
   ///
   ///   | S | ???????????????????????????????????????????????????? | F |
   ///
-  /// Where these four parts represent the following variables:
+  /// Where these three parts represent the following variables:
   ///
   ///  - S : the is_sink flag. If the sink flag is set, the L and I areas differ
   ///        (see below for the sink type description).
@@ -97,6 +101,53 @@ namespace coom {
   bool value_of(ptr_t p);
   bool value_of(uid_t u);
 
+  typedef std::function<bool(ptr_t)> sink_pred;
+
+  extern const sink_pred is_any;
+  extern const sink_pred is_true;
+  extern const sink_pred is_false;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Using the above functions, we can define all the common binary operators
+  /// as functions working on pointers to sinks. These functions will always
+  /// return a sink pointer, where the flag bit is set to false.
+  ///
+  /// Using the knowledge of the bit layout, the following operators are
+  /// implemented in three or four fast bit operations:
+  ///
+  ///                          and, nand, or, nor, xor
+  ///
+  /// Whereas the rest do their computation using the value_of function defined
+  /// above, which are then going to be marginally slower.
+  //////////////////////////////////////////////////////////////////////////////
+  typedef std::function<ptr_t(ptr_t,ptr_t)> bool_op;
+
+  extern const bool_op and_op;
+  extern const bool_op nand_op;
+  extern const bool_op or_op;
+  extern const bool_op nor_op;
+  extern const bool_op xor_op;
+  extern const bool_op implies_op;
+  extern const bool_op impliedby_op;
+  extern const bool_op equiv_op;
+  extern const bool_op diff_op;
+  extern const bool_op less_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// At which point we can provide the following predicates for the operators
+  ///
+  /// - can_right_shortcut:      is op(T, sink) = op(F, sink) ?
+  ///
+  /// - can_left_shortcut:       is op(sink, T) = op(sink, F) ?
+  ///
+  /// - is_commutative:          is op(x,y) = op(y,x) ?
+  //////////////////////////////////////////////////////////////////////////////
+  bool can_right_shortcut(const bool_op &op, const ptr_t sink);
+  bool can_left_shortcut(const bool_op &op, const ptr_t sink);
+
+  bool is_commutative(const bool_op &op);
+
+
   //////////////////////////////////////////////////////////////////////////////
   /// A node then contains a unique identifier for said node in n.uid_t together
   /// with pointers to its children in n.low and n.high.
@@ -113,17 +164,18 @@ namespace coom {
   node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high);
   node_t create_node(uid_t uid_t, ptr_t low, ptr_t high);
 
-  label_t label_of(const node& n);
-  id_t id_of(const node& n);
+  label_t label_of(const node &n);
+  id_t id_of(const node &n);
 
   node_t create_sink(bool value);
-  bool is_sink(const node& n);
-  bool value_of(const node& n);
+  bool is_sink(const node &n);
+  bool value_of(const node &n);
 
-  bool operator< (const node& a, const node& b);
-  bool operator> (const node& a, const node& b);
-  bool operator== (const node& a, const node& b);
-  bool operator!= (const node& a, const node& b);
+  bool operator< (const node &a, const node &b);
+  bool operator> (const node &a, const node &b);
+  bool operator== (const node &a, const node &b);
+  bool operator!= (const node &a, const node &b);
+
 
   //////////////////////////////////////////////////////////////////////////////
   /// An arc contains a value for the source and one for the target. Notice,
@@ -143,10 +195,11 @@ namespace coom {
 
   typedef arc arc_t;
 
-  bool is_high(arc& a);
+  bool is_high(arc &a);
 
-  bool operator== (const arc& a, const arc& b);
-  bool operator!= (const arc& a, const arc& b);
+  bool operator== (const arc &a, const arc &b);
+  bool operator!= (const arc &a, const arc &b);
+
 
   //////////////////////////////////////////////////////////////////////////////
   /// Finally, we can create some converters back and forth
@@ -154,7 +207,8 @@ namespace coom {
   arc_t low_arc_of(const node& n);
   arc_t high_arc_of(const node& n);
 
-  node_t node_of(const arc& low, const arc& high);
+  node_t node_of(const arc &low, const arc &high);
+
 
   //////////////////////////////////////////////////////////////////////////////
   /// Our layer-aware priority queue needs to manage which bucket corresponds to
@@ -169,9 +223,30 @@ namespace coom {
 
   typedef meta meta_t;
 
-  bool operator== (const arc& a, const arc& b);
-  bool operator!= (const arc& a, const arc& b);
-}
+  bool operator== (const arc &a, const arc &b);
+  bool operator!= (const arc &a, const arc &b);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// An OBDD is then described as the combined list of nodes and its meta
+  /// information.
+  ///
+  ///        ( tpie::file_stream<node_t> , tpie::file_stream<meta_t>)
+  ///
+  //////////////////////////////////////////////////////////////////////////////
+
+  // TODO: Create a wrapper for the two streams...
+  //       Switch from tpie::file_stream to tpie::file to be able to reuse the
+  //       same file multiple times.
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Check whether a given OBDD is sink-only and satisfies the given sink_pred.
+  ///
+  /// \param nodes     The given OBDD of nodes in reverse topological order
+  /// \param sink_pred If the given OBDD is sink-only, then secondly the sink is
+  ///                  checked with the given sink predicate. Default is any
+  ///                  sink.
+  //////////////////////////////////////////////////////////////////////////////
+  bool is_sink(tpie::file_stream<node_t> &nodes, const sink_pred &sink_pred);
+}
 
 #endif // COOM_DATA_H

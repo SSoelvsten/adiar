@@ -1,7 +1,8 @@
 #ifndef COOM_APPLY_CPP
 #define COOM_APPLY_CPP
 
-#include "data.h"
+#include "apply.h"
+
 #include "priority_queue.cpp"
 
 #include "reduce.h"
@@ -9,9 +10,8 @@
 #include "debug.h"
 #include "debug_data.h"
 
+#include <assert.h>
 #include "assert.h"
-
-#include "apply.h"
 
 namespace coom
 {
@@ -129,16 +129,6 @@ namespace coom
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  bool can_right_shortcut(const bool_op &op, const ptr_t sink)
-  {
-    return op(create_sink_ptr(false), sink) == op(create_sink_ptr(true), sink);
-  }
-
-  bool can_left_shortcut(const bool_op &op, const ptr_t sink)
-  {
-    return op(sink, create_sink_ptr(false)) == op(sink, create_sink_ptr(true));
-  }
-
   template<typename LabelExt, typename Comparator, size_t meta_streams>
   inline void apply_resolve_request(priority_queue<tuple, LabelExt, Comparator, meta_streams> &appD,
                                     tpie::file_stream<arc_t> &reduce_sink_arcs,

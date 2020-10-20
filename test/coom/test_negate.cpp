@@ -1,5 +1,3 @@
-#include <tpie/tpie.h>
-
 #include <coom/negate.cpp>
 
 using namespace coom;

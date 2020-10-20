@@ -1,19 +1,16 @@
 #ifndef COOM_REDUCE_CPP
 #define COOM_REDUCE_CPP
 
-#include <tpie/tpie.h>
-#include <tpie/file_stream.h>
+#include "reduce.h"
+
 #include <tpie/sort.h>
 
-#include "data.h"
 #include "priority_queue.cpp"
 
 #include "debug.h"
 #include "debug_data.h"
 
 #include "assert.h"
-
-#include "reduce.h"
 
 namespace coom
 {

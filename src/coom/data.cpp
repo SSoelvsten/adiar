@@ -1,15 +1,15 @@
 #ifndef COOM_DATA_CPP
 #define COOM_DATA_CPP
 
-#include <assert.h>
-#include <stdint.h>
-
 #include "data.h"
 
+#include <assert.h>
+#include "assert.h"
+
 namespace coom {
-  /****************************************************************************/
-  /*  NIL PTR                                                                 */
-  /****************************************************************************/
+  //////////////////////////////////////////////////////////////////////////////
+  ///  NIL PTR
+  //////////////////////////////////////////////////////////////////////////////
   const ptr_t NIL = UINT64_MAX - 1;
 
   inline bool is_nil(ptr_t p)
@@ -18,14 +18,14 @@ namespace coom {
     return p >= NIL;
   }
 
-  /****************************************************************************/
-  /*  COMMON VARIABLES AND GENERAL PTR                                        */
-  /****************************************************************************/
-  const uint8_t  ID_BITS = 42;
-  const uint8_t  LABEL_BITS = 64 - 2 - ID_BITS;
-
-  const uint64_t MAX_ID  = (1ull << ID_BITS) - 1;
+  //////////////////////////////////////////////////////////////////////////////
+  ///  COMMON VARIABLES AND GENERAL PTR
+  //////////////////////////////////////////////////////////////////////////////
+  const uint8_t  LABEL_BITS = 16;
   const uint64_t MAX_LABEL  = (1ull << LABEL_BITS) - 1;
+
+  const uint8_t  ID_BITS = 64 - 2 - LABEL_BITS;
+  const uint64_t MAX_ID  = (1ull << ID_BITS) - 1;
 
   const uint64_t SINK_BIT = 0x8000000000000000ull;
   const uint64_t FLAG_BIT = 0x0000000000000001ull;
@@ -55,9 +55,9 @@ namespace coom {
     return p & (~FLAG_BIT);
   }
 
-  /****************************************************************************/
-  /*  NODE PTR                                                                */
-  /****************************************************************************/
+  //////////////////////////////////////////////////////////////////////////////
+  //// NODE PTR
+  //////////////////////////////////////////////////////////////////////////////
   inline uid_t create_node_uid(label_t label, id_t id)
   {
 #if COOM_ASSERT
@@ -83,9 +83,9 @@ namespace coom {
     return (n >> 1) & MAX_ID;
   }
 
-  /****************************************************************************/
-  /*  SINK ARC                                                                */
-  /****************************************************************************/
+  //////////////////////////////////////////////////////////////////////////////
+  ///  SINK PTR
+  //////////////////////////////////////////////////////////////////////////////
   inline ptr_t create_sink_ptr(bool v)
   {
     return SINK_BIT + (v << 1);
@@ -96,10 +96,92 @@ namespace coom {
     return (n & ~SINK_BIT) >> 1;
   }
 
+  const sink_pred is_any = [] (ptr_t /* sink */) -> bool
+  {
+    return true;
+  };
 
-  /****************************************************************************/
-  /*  NODE                                                                    */
-  /****************************************************************************/
+  const sink_pred is_true = [] (ptr_t sink) -> bool
+  {
+    return value_of(sink);
+  };
+
+  const sink_pred is_false = [] (ptr_t sink) -> bool
+  {
+    return !value_of(sink);
+  };
+
+  const bool_op and_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return unflag(sink1 & sink2);
+  };
+
+  const bool_op nand_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return unflag(sink1 & sink2) ^ 2u;
+  };
+
+  const bool_op or_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return unflag(sink1 | sink2);
+  };
+
+  const bool_op nor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return unflag(sink1 | sink2) ^ 2u;
+  };
+
+  const bool_op xor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return SINK_BIT | unflag(sink1 ^ sink2);
+  };
+
+  const bool_op implies_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return create_sink_ptr(!value_of(sink1) || value_of(sink2));
+  };
+
+  const bool_op impliedby_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return create_sink_ptr(!value_of(sink2) || value_of(sink1));
+  };
+
+  const bool_op equiv_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return create_sink_ptr(sink1 == sink2);
+  };
+
+  const bool_op diff_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return create_sink_ptr(value_of(sink1) && !value_of(sink2));
+  };
+
+  const bool_op less_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  {
+    return create_sink_ptr(!value_of(sink1) && value_of(sink2));
+  };
+
+  bool can_right_shortcut(const bool_op &op, const ptr_t sink)
+  {
+    return op(create_sink_ptr(false), sink) == op(create_sink_ptr(true), sink);
+  }
+
+  bool can_left_shortcut(const bool_op &op, const ptr_t sink)
+  {
+    return op(sink, create_sink_ptr(false)) == op(sink, create_sink_ptr(true));
+  }
+
+  bool is_commutative(const bool_op &op)
+  {
+    ptr_t sink_T = create_sink_ptr(true);
+    ptr_t sink_F = create_sink_ptr(false);
+
+    return op(sink_T, sink_F) == op(sink_T, sink_F);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  ///  NODE
+  //////////////////////////////////////////////////////////////////////////////
   inline node create_node(uid_t uid, ptr_t low, ptr_t high)
   {
     return { uid, low, high };
@@ -164,9 +246,9 @@ namespace coom {
     return !(a==b);
   }
 
-  /****************************************************************************/
-  /*  ARC                                                                     */
-  /****************************************************************************/
+  //////////////////////////////////////////////////////////////////////////////
+  ///  ARC
+  //////////////////////////////////////////////////////////////////////////////
   inline bool is_high(arc& a)
   {
     return is_flagged(a.source);
@@ -182,9 +264,9 @@ namespace coom {
     return !(a==b);
   }
 
-  /****************************************************************************/
-  /*  CONVERTERS                                                              */
-  /****************************************************************************/
+  //////////////////////////////////////////////////////////////////////////////
+  ///  CONVERTERS
+  //////////////////////////////////////////////////////////////////////////////
   inline arc low_arc_of(const node& n)
   {
     return { n.uid, n.low };
@@ -205,9 +287,9 @@ namespace coom {
     return { low.source, low.target, high.target };
   }
 
-  /****************************************************************************/
-  /*  META                                                                    */
-  /****************************************************************************/
+  //////////////////////////////////////////////////////////////////////////////
+  ///  META
+  //////////////////////////////////////////////////////////////////////////////
   bool operator== (const meta& a, const meta& b)
   {
     return a.label == b.label;
@@ -216,6 +298,20 @@ namespace coom {
   bool operator!= (const meta& a, const meta& b)
   {
     return !(a==b);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  ///  OBDD
+  //////////////////////////////////////////////////////////////////////////////
+  bool is_sink(tpie::file_stream<node_t>& nodes,
+               const sink_pred &sink_pred = is_any)
+  {
+    assert::is_valid_input_stream(nodes);
+    if (nodes.size() != 1) {
+      return false;
+    }
+    node_t n = nodes.can_read() ? nodes.read() : nodes.read_back();
+    return is_sink(n) && sink_pred(n.uid);
   }
 }
 

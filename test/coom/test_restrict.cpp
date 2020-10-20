@@ -1,7 +1,3 @@
-#include <tpie/tpie.h>
-
-#include <coom/reduce.cpp>
-#include <coom/pred.cpp>
 #include <coom/restrict.cpp>
 
 using namespace coom;

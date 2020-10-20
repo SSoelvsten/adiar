@@ -1,7 +1,8 @@
 #ifndef COOM_QUANTIFICATION_CPP
 #define COOM_QUANTIFICATION_CPP
 
-#include "data.h"
+#include "quantify.h"
+
 #include "priority_queue.cpp"
 #include "util.cpp"
 
@@ -104,7 +105,7 @@ namespace coom
   void quantify(label_t label,
                 tpie::file_stream<node_t> &in_nodes,
                 tpie::file_stream<meta_t> &in_meta,
-                bool_op op,
+                const bool_op &op,
                 tpie::file_stream<arc_t> &reduce_node_arcs,
                 tpie::file_stream<arc_t> &reduce_sink_arcs,
                 tpie::file_stream<meta_t> &reduce_meta)
@@ -270,7 +271,7 @@ namespace coom
   void quantify(label_t label,
                 tpie::file_stream<node_t> &in_nodes,
                 tpie::file_stream<meta_t> &in_meta,
-                bool_op op,
+                const bool_op &op,
                 tpie::file_stream<node_t> &out_nodes,
                 tpie::file_stream<meta_t> &out_meta)
   {
@@ -281,6 +282,10 @@ namespace coom
 
     assert::is_valid_output_stream(out_nodes);
     assert::is_valid_output_stream(out_meta);
+
+#if COOM_ASSERT
+    assert(is_commutative(op));
+#endif
 
     // Check if there is no need to do all the computation
     if (is_sink(in_nodes, is_any) || !quantify_has_label(label, in_meta)) {
@@ -320,7 +325,7 @@ namespace coom
   void quantify(tpie::file_stream<label_t> &labels,
                 tpie::file_stream<node_t> &in_nodes,
                 tpie::file_stream<meta_t> &in_meta,
-                bool_op op,
+                const bool_op &op,
                 tpie::file_stream<node_t> &out_nodes,
                 tpie::file_stream<meta_t> &out_meta)
   {
@@ -346,6 +351,10 @@ namespace coom
 
     debug::println_algorithm_start("EXISTS");
     debug::println_file_stream(in_nodes, "in_nodes");
+
+#if COOM_ASSERT
+    assert(is_commutative(op));
+#endif
 
     // We will quantify the labels in the order they are given.
     labels.seek(0);

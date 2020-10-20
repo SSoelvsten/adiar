@@ -1,16 +1,15 @@
 #ifndef COOM_RESTRICT_CPP
 #define COOM_RESTRICT_CPP
 
-#include <tpie/file_stream.h>
+#include "restrict.h"
+
 #include <tpie/sort.h>
 
 #include "data.h"
-#include "priority_queue.cpp"
 
-#include "assignment.h"
-#include "pred.h"
 #include "reduce.h"
 
+#include "priority_queue.cpp"
 #include "util.cpp"
 
 #include "assert.h"
@@ -18,8 +17,6 @@
 #include "debug.h"
 #include "debug_data.h"
 #include "debug_assignment.h"
-
-#include "restrict.h"
 
 namespace coom
 {

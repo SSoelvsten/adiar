@@ -1,11 +1,9 @@
 #ifndef COOM_ASSIGNMENT_CPP
 #define COOM_ASSIGNMENT_CPP
 
-#include <tpie/file_stream.h>
-#include <tpie/sort.h>
+#include "assignment.h"
 
-#include "data.h"
-#include "pred.h"
+#include <tpie/sort.h>
 
 #include "assert.h"
 

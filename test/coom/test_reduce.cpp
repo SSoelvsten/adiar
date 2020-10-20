@@ -1,6 +1,3 @@
-#include <tpie/tpie.h>
-
-#include <coom/data.cpp>
 #include <coom/reduce.cpp>
 
 using namespace coom;
