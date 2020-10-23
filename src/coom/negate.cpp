@@ -3,9 +3,6 @@
 
 #include "negate.h"
 
-#include "debug.h"
-#include "debug_data.h"
-
 #include "assert.h"
 
 namespace coom
@@ -16,11 +13,7 @@ namespace coom
   void negate(tpie::file_stream<node_t> &in_nodes,
               tpie::file_stream<node_t> &out_nodes)
   {
-    debug::println_algorithm_start("NEGATE");
-
     assert::is_valid_input_stream(in_nodes);
-    debug::println_file_stream(in_nodes, "in_nodes");
-
     assert::is_valid_output_stream(out_nodes);
 
     in_nodes.seek(0);
@@ -43,9 +36,6 @@ namespace coom
 
       out_nodes.write({ n.uid, low_ptr, high_ptr });
     }
-
-    debug::println_file_stream(out_nodes, "out_nodes");
-    debug::println_algorithm_end("NEGATE");
   }
 }
 

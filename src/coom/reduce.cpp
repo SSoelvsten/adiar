@@ -7,87 +7,10 @@
 
 #include "priority_queue.cpp"
 
-#include "debug.h"
-#include "debug_data.h"
-
 #include "assert.h"
 
 namespace coom
 {
-  namespace debug {
-    inline void println_reduce_layer([[maybe_unused]] label_t label)
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << std::endl << "| layer: " << label << std::endl;
-#endif
-    }
-
-    inline void println_reduce_red_1_start()
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "|  reduction 1:" << std::endl;
-#endif
-    }
-
-    inline void println_reduce_red_1([[maybe_unused]] arc e_low,
-                                     [[maybe_unused]] arc e_high,
-                                     [[maybe_unused]] bool is_reduced)
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "|   | ";
-      print_node({ e_low.source, e_low.target, e_high.target });
-      if (is_reduced) {
-        tpie::log_info() << " [X]" << std::endl;
-      } else {
-        tpie::log_info() << " [ ]" << std::endl;
-      }
-#endif
-    }
-
-    inline void println_reduce_red_2_start()
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "|  reduction 2:" << std::endl;
-#endif
-    }
-
-    inline void println_reduce_red_2([[maybe_unused]] node node,
-                                     [[maybe_unused]] bool is_reduced)
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "|   | ";
-      print_node(node);
-      if (is_reduced) {
-        tpie::log_info() << " [X]" << std::endl;
-      } else {
-        tpie::log_info() << " [ ]" << std::endl;
-      }
-#endif
-    }
-
-    inline void println_reduce_forward_start()
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "|  forward:" << std::endl;
-#endif
-    }
-
-    inline void println_reduce_forward([[maybe_unused]] ptr_t target,
-                                       [[maybe_unused]] uid_t old_uid,
-                                       [[maybe_unused]] uid_t new_uid)
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "|   | ";
-      print_child(old_uid);
-      tpie::log_info() << " -> ";
-      print_child(new_uid);
-      tpie::log_info() << " to ";
-      print_child(target);
-      tpie::log_info() << std::endl;
-#endif
-    }
-  }
-
   inline auto bytes_from_size(tpie::file_stream<arc_t> &in_node_arcs,
                               tpie::file_stream<arc_t> &in_sink_arcs) {
     return sizeof(coom::node) * ((in_node_arcs.size() + in_sink_arcs.size()) / 2);
@@ -162,14 +85,8 @@ namespace coom
               tpie::file_stream<node_t> &out_nodes,
               tpie::file_stream<meta_t> &out_meta)
   {
-    debug::println_algorithm_start("REDUCE");
-
     assert::is_valid_input_stream(in_node_arcs);
-    debug::println_file_stream(in_node_arcs, "in_node_arcs");
-
     assert::is_valid_input_stream(in_sink_arcs);
-    debug::println_file_stream(in_sink_arcs, "in_sink_arcs");
-
     assert::is_valid_output_stream(out_nodes);
     assert::is_valid_output_stream(out_meta);
 
@@ -203,9 +120,6 @@ namespace coom
         out_meta.write({ label });
       }
 
-      debug::println_file_stream(out_nodes, "out_nodes");
-      debug::println_algorithm_end("REDUCE");
-
       return;
     }
 
@@ -224,8 +138,6 @@ namespace coom
       assert (label == redD.current_layer());
 #endif
 
-      debug::println_reduce_layer(label);
-
       // Set up for L_j_red1
       tpie::file_stream<mapping> red1_mapping;
 
@@ -233,8 +145,6 @@ namespace coom
       tpie::merge_sorter<node_t, false, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
       child_grouping.set_available_memory(max_sorter_memory);
       child_grouping.begin();
-
-      debug::println_reduce_red_1_start();
 
       // Pull out all nodes from redD and in_sink_arcs for this layer
       while ((has_next_sink && label_of(next_sink_arc.source) == label) || redD.can_pull()) {
@@ -245,20 +155,16 @@ namespace coom
 
         // Apply Reduction rule 1
         if (n.low == n.high) {
-          debug::println_reduce_red_1(e_low, e_high, true);
           if (!red1_mapping.is_open()) {
             red1_mapping.open();
           }
           red1_mapping.write({ n.uid, n.low });
         } else {
-          debug::println_reduce_red_1(e_low, e_high, false);
           child_grouping.push(n);
         }
       }
 
       // Output nodes and apply Reduction rule 2
-      debug::println_reduce_red_2_start();
-
       child_grouping.end();
       child_grouping.calc(pi);
 
@@ -277,18 +183,14 @@ namespace coom
         out_nodes.write(out_node);
         out_id--;
 
-        debug::println_reduce_red_2(current_node, false);
-
         red2_mapping.push({ current_node.uid, out_node.uid });
 
         // Output nodes and remap the ones match the one just output
         while (child_grouping.can_pull()) {
           node_t next_node = child_grouping.pull();
           if (current_node.low == next_node.low && current_node.high == next_node.high) {
-            debug::println_reduce_red_2(next_node, true);
             red2_mapping.push({ next_node.uid, out_node.uid });
           } else {
-            debug::println_reduce_red_2(next_node, false);
             current_node = next_node;
 
             out_node = create_node(label, out_id, current_node.low, current_node.high);
@@ -318,8 +220,6 @@ namespace coom
         next_red2 = red2_mapping.pull();
       }
 
-      debug::println_reduce_forward_start();
-
       // Pass all the mappings to Q
       while (has_next_red1 || has_next_red2) {
         // Find the mapping with largest old_uid
@@ -335,10 +235,6 @@ namespace coom
         while (has_next_node_arc && current_map.old_uid == next_node_arc.target) {
           // The is_high flag is already included in next_node_arc.source
           arc_t new_arc = { next_node_arc.source, current_map.new_uid };
-
-          debug::println_reduce_forward(next_node_arc.source,
-                                        current_map.old_uid,
-                                        current_map.new_uid);
 
           redD.push(new_arc);
           if (in_node_arcs.can_read_back()) {
@@ -380,14 +276,9 @@ namespace coom
 #endif
         out_nodes.write({ next_red1.new_uid, NIL, NIL });
 
-        debug::println_file_stream(out_nodes, "out_nodes");
-        debug::println_algorithm_end("REDUCE");
         return;
       }
     }
-
-    debug::println_file_stream(out_nodes, "out_nodes");
-    debug::println_algorithm_end("REDUCE");
   }
 } // namespace coom
 

@@ -7,79 +7,11 @@
 
 #include "reduce.h"
 
-#include "debug.h"
-#include "debug_data.h"
-
 #include <assert.h>
 #include "assert.h"
 
 namespace coom
 {
-  namespace debug {
-    inline void println_apply_request([[maybe_unused]] ptr_t t1,
-                                      [[maybe_unused]] ptr_t t2)
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << std::endl << "| request: " << std::endl << "|   | ";
-      print_child(t1);
-      tpie::log_info() << std::endl << "|   | ";
-      print_child(t2);
-      tpie::log_info() << std::endl;
-#endif
-    }
-
-    inline void println_apply_position([[maybe_unused]] const node &v1,
-                                       [[maybe_unused]] const node &v2)
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "|  current: " << std::endl << "|     | ";
-      print_node(v1);
-      tpie::log_info() << std::endl << "|     | ";
-      print_node(v2);
-      tpie::log_info() << std::endl;
-#endif
-    }
-
-    inline void println_apply_resolution([[maybe_unused]] ptr_t out_uid,
-                                         [[maybe_unused]] ptr_t low1,
-                                         [[maybe_unused]] ptr_t low2,
-                                         [[maybe_unused]] ptr_t high1,
-                                         [[maybe_unused]] ptr_t high2)
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "|  resolved to: ";
-      print_node_ptr(out_uid);
-      tpie::log_info() << std::endl << "|     | ";
-      debug::print_child(low1);       tpie::log_info() << ",";
-      debug::print_child(low2);       tpie::log_info() << std::endl << "|     | ";
-      debug::print_child(high1);      tpie::log_info() << ",";
-      debug::print_child(high2);      tpie::log_info() << std::endl;
-#endif
-    }
-
-    inline void println_apply_ingoing([[maybe_unused]] arc& out_arc)
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "|  in: ";
-      debug::println_arc(out_arc);
-#endif
-    }
-
-    inline void println_apply_done()
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "| done..." << std::endl;
-#endif
-    }
-
-    inline void println_apply_later()
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << "| later..." << std::endl;
-#endif
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
   struct tuple
@@ -285,8 +217,6 @@ namespace coom
         appD_data.pop();
       }
 
-      debug::println_apply_request(t1,t2);
-
       // Seek request partially in stream
       if (with_data) {
         if (from_1) {
@@ -334,8 +264,6 @@ namespace coom
         }
       }
 
-      debug::println_apply_position(v1,v2);
-
       // Forward information across the layer
       if (!with_data
           && !is_sink_ptr(t1) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)
@@ -349,7 +277,6 @@ namespace coom
           source = appD.pull().source;
           appD_data.push({ source, t1, t2, from_1, v0.low, v0.high });
         }
-        debug::println_apply_later();
         continue;
       }
 
@@ -377,7 +304,6 @@ namespace coom
 
       // Resolve request
       uid_t out_uid = create_node_uid(out_label, out_id);
-      debug::println_apply_resolution(out_uid, low1, low2, high1, high2);
 
       out_id++;
 
@@ -389,13 +315,10 @@ namespace coom
         arc_t out_arc = { source, out_uid };
         reduce_node_arcs.write(out_arc);
 
-        debug::println_apply_ingoing(out_arc);
-
         if (apply_update_source_or_break(appD, appD_data, source, t1, t2)) {
           break;
         }
       }
-      debug::println_apply_done();
     }
   }
 
@@ -407,14 +330,8 @@ namespace coom
              tpie::file_stream<node_t> &out_nodes,
              tpie::file_stream<meta_t> &out_meta)
   {
-    debug::println_algorithm_start("APPLY");
-
     assert::is_valid_input_stream(in_nodes_1);
-    debug::println_file_stream(in_nodes_1, "in_nodes 1");
-
     assert::is_valid_input_stream(in_nodes_2);
-    debug::println_file_stream(in_nodes_2, "in_nodes 2");
-
     assert::is_valid_output_stream(out_nodes);
     assert::is_valid_output_stream(out_meta);
 
@@ -431,7 +348,6 @@ namespace coom
           NIL};
 
       out_nodes.write(res_sink_node);
-      debug::println_file_stream(out_nodes, "out_nodes");
     } else if (is_sink(root_1) && can_left_shortcut(op, root_1.uid)) {
       node_t res_sink_node = {
           op(root_1.uid, create_sink_ptr(false)),
@@ -440,7 +356,6 @@ namespace coom
       };
 
       out_nodes.write(res_sink_node);
-      debug::println_file_stream(out_nodes, "out_nodes");
     } else if (is_sink(root_2) && can_right_shortcut(op, root_2.uid)) {
       node_t res_sink_node = {
           op(create_sink_ptr(false), root_2.uid),
@@ -449,7 +364,6 @@ namespace coom
       };
 
       out_nodes.write(res_sink_node);
-      debug::println_file_stream(out_nodes, "out_nodes");
     } else {
       tpie::file_stream<arc_t> reduce_node_arcs;
       reduce_node_arcs.open();
@@ -463,7 +377,6 @@ namespace coom
       apply(in_nodes_1, in_meta_1, in_nodes_2, in_meta_2, op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
       reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta, out_nodes, out_meta);
     }
-    debug::println_algorithm_end("APPLY");
   }
 } // namespace coom
 

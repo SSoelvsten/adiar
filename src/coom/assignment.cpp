@@ -7,10 +7,6 @@
 
 #include "assert.h"
 
-#include "debug.h"
-#include "debug_data.h"
-#include "debug_assignment.h"
-
 namespace coom
 {
   inline assignment_t create_assignment(label_t label, bool value)
@@ -47,11 +43,7 @@ namespace coom
                       tpie::file_stream<assignment_t> &out_assignment,
                       const pred_t pred)
   {
-    debug::println_algorithm_start("GET ASSIGNMENT");
-
     assert::is_valid_input_stream(in_nodes);
-    debug::println_file_stream(in_nodes, "in_nodes");
-
     assert::is_valid_output_stream(out_assignment);
 
     in_nodes.seek(0);
@@ -94,9 +86,6 @@ namespace coom
 
     tpie::progress_indicator_null pi;
     tpie::sort(out_assignment, pred, pi);
-
-    debug::println_file_stream(out_assignment, "out_assignment");
-    debug::println_algorithm_end("GET ASSIGNMENT");
 
     return true;
   }

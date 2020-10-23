@@ -5,41 +5,10 @@
 
 #include "priority_queue.cpp"
 
-#include "debug.h"
-#include "debug_data.h"
-
 #include "assert.h"
 
 namespace coom
 {
-  namespace debug
-  {
-    inline void println_count_low_sum([[maybe_unused]] const uid_t uid,
-                                      [[maybe_unused]] const uint64_t count)
-    {
-#if COOM_DEBUG >= 2
-      debug::print_node_ptr(uid);
-      tpie::log_info() << " | low : " << count;
-#endif
-    }
-
-    inline void println_count_high_sum([[maybe_unused]] const uid_t uid,
-                                       [[maybe_unused]] const uint64_t count)
-    {
-#if COOM_DEBUG >= 2
-      tpie::log_info() << " | high : " << count << std::endl;
-#endif
-    }
-
-    inline void println_count_result([[maybe_unused]] const uint64_t count)
-    {
-#if COOM_DEBUG
-      tpie::log_info() << std::endl << "total : " << count << std::endl;
-#endif
-    }
-
-  }
-
   struct partial_sum
   {
     uid_t uid;
@@ -67,10 +36,7 @@ namespace coom
                         const sink_pred &sink_pred,
                         const bool count_skipped_layers)
   {
-    debug::println_algorithm_start("COUNT");
-
     assert::is_valid_input_stream(nodes);
-    debug::println_file_stream(nodes, "nodes");
 
     nodes.seek(0);
     if (is_sink(nodes.peek())) {
@@ -106,8 +72,6 @@ namespace coom
       partial_sums.push({root.low, sum});
     }
 
-    debug::println_count_low_sum(root.uid, sum);
-
     sum = 0u;
     if (is_sink_ptr(root.high)) {
       if (sink_pred(root.high)) {
@@ -124,8 +88,6 @@ namespace coom
 
       partial_sums.push({root.high, sum});
     }
-
-    debug::println_count_high_sum(root.uid, sum);
 
     // Take out the rest of the nodes and process them one by one
     while (nodes.can_read_back()) {
@@ -158,7 +120,6 @@ namespace coom
 
         partial_sums.push({current_node.low, sum_low});
       }
-      debug::println_count_low_sum(current_node.uid, sum_low);
 
       uint64_t sum_high = 0u;
       if (is_sink_ptr(current_node.high)) {
@@ -176,11 +137,8 @@ namespace coom
 
         partial_sums.push({current_node.high, sum_high});
       }
-      debug::println_count_high_sum(current_node.uid, sum_high);
     }
 
-    debug::println_count_result(result);
-    debug::println_algorithm_end("COUNT");
     return result;
   }
 
@@ -197,6 +155,6 @@ namespace coom
   {
     return count(nodes, meta, sink_pred, true);
   }
-} // namespace coom
+}
 
 #endif // COOM_COUNT_CPP

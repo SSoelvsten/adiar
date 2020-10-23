@@ -5,9 +5,6 @@ using namespace snowhouse;
 using namespace bandit;
 
 #include <coom/assert.cpp>
-#include <coom/debug.cpp>
-#include <coom/debug_data.cpp>
-#include <coom/debug_assignment.cpp>
 
 // TPIE setup unit tests
 #include "test_tpie.cpp"
