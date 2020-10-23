@@ -164,12 +164,12 @@ namespace coom {
   node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high);
   node_t create_node(uid_t uid_t, ptr_t low, ptr_t high);
 
-  label_t label_of(const node &n);
-  id_t id_of(const node &n);
+  label_t label_of(const node_t &n);
+  id_t id_of(const node_t &n);
 
   node_t create_sink(bool value);
-  bool is_sink(const node &n);
-  bool value_of(const node &n);
+  bool is_sink(const node_t &n);
+  bool value_of(const node_t &n);
 
   bool operator< (const node &a, const node &b);
   bool operator> (const node &a, const node &b);
@@ -195,19 +195,21 @@ namespace coom {
 
   typedef arc arc_t;
 
-  bool is_high(arc &a);
+  bool is_high(arc_t &a);
 
   bool operator== (const arc &a, const arc &b);
   bool operator!= (const arc &a, const arc &b);
+
+  extern const std::function<bool(arc_t,arc_t)> by_source_lt;
 
 
   //////////////////////////////////////////////////////////////////////////////
   /// Finally, we can create some converters back and forth
   //////////////////////////////////////////////////////////////////////////////
-  arc_t low_arc_of(const node& n);
-  arc_t high_arc_of(const node& n);
+  arc_t low_arc_of(const node_t& n);
+  arc_t high_arc_of(const node_t& n);
 
-  node_t node_of(const arc &low, const arc &high);
+  node_t node_of(const arc_t &low, const arc_t &high);
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -223,8 +225,8 @@ namespace coom {
 
   typedef meta meta_t;
 
-  bool operator== (const arc &a, const arc &b);
-  bool operator!= (const arc &a, const arc &b);
+  bool operator== (const meta &a, const meta &b);
+  bool operator!= (const meta &a, const meta &b);
 
   //////////////////////////////////////////////////////////////////////////////
   /// An OBDD is then described as the combined list of nodes and its meta
@@ -246,7 +248,8 @@ namespace coom {
   ///                  checked with the given sink predicate. Default is any
   ///                  sink.
   //////////////////////////////////////////////////////////////////////////////
-  bool is_sink(tpie::file_stream<node_t> &nodes, const sink_pred &sink_pred);
+  bool is_sink(tpie::file_stream<node_t> &nodes,
+               const sink_pred &sink_pred = is_any);
 }
 
 #endif // COOM_DATA_H

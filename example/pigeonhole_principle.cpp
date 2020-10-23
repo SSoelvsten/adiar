@@ -147,22 +147,8 @@ void construct_PHP_cnf(sat_solver &solver, uint64_t N)
 #include <tpie/tpie_log.h>
 
 // COOM Imports
-#include <coom/data.cpp>
-#include <coom/assignment.cpp>
+#include <coom/coom.h>
 
-#include <coom/debug_data.cpp>
-#include <coom/debug_assignment.cpp>
-#include <coom/debug.cpp>
-#include <coom/dot.cpp>
-
-#include <coom/assert.cpp>
-
-#include <coom/build.cpp>
-
-#include <coom/apply.cpp>
-#include <coom/count.cpp>
-#include <coom/quantify.cpp>
-#include <coom/reduce.cpp>
 
 /*******************************************************************************
  * We base our example for the Pigeonhole principle on the formula described in

@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "data.h"
+#include <coom/data.h>
 
 namespace coom
 {

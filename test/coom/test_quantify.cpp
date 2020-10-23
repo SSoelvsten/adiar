@@ -1,7 +1,3 @@
-#include <coom/quantify.cpp>
-
-using namespace coom;
-
 go_bandit([]() {
     describe("COOM: Quantify", [&]() {
         ////////////////////////////////////////////////////////////////////////

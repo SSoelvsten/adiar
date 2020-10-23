@@ -1,7 +1,3 @@
-#include <coom/evaluate.cpp>
-
-using namespace coom;
-
 go_bandit([]() {
     describe("COOM: Evaluate", [&]() {
         // == CREATE OBDD FOR UNIT TESTS ==

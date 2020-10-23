@@ -1,7 +1,3 @@
-#include <coom/count.cpp>
-
-using namespace coom;
-
 go_bandit([]() {
     describe("COOM: Count", [&]() {
         /*

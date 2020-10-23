@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "data.h"
+#include <coom/data.h>
 
 namespace coom
 {
@@ -88,10 +88,7 @@ namespace coom
               tpie::file_stream<node_t> &in_nodes,
               tpie::file_stream<meta_t> &in_meta,
               tpie::file_stream<node_t> &out_nodes,
-              tpie::file_stream<meta_t> &out_meta)
-  {
-    quantify(label, in_nodes, in_meta, or_op, out_nodes, out_meta);
-  }
+              tpie::file_stream<meta_t> &out_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Existentially quantify an OBDD for a variable with a given label.
@@ -103,11 +100,7 @@ namespace coom
               tpie::file_stream<meta_t> &in_meta,
               tpie::file_stream<arc_t> &reduce_node_arcs,
               tpie::file_stream<arc_t> &reduce_sink_arcs,
-              tpie::file_stream<meta_t> &reduce_meta)
-  {
-    quantify(label, in_nodes, in_meta, or_op,
-             reduce_node_arcs, reduce_sink_arcs, reduce_meta);
-  }
+              tpie::file_stream<meta_t> &reduce_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Existentially quantify an OBDD for a variable with a given label.
@@ -118,10 +111,7 @@ namespace coom
               tpie::file_stream<node_t> &in_nodes,
               tpie::file_stream<meta_t> &in_meta,
               tpie::file_stream<node_t> &out_nodes,
-              tpie::file_stream<meta_t> &out_meta)
-  {
-    quantify(labels, in_nodes, in_meta, or_op, out_nodes, out_meta);
-  }
+              tpie::file_stream<meta_t> &out_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Forall quantify an OBDD for a variable with a given label.
@@ -132,10 +122,7 @@ namespace coom
               tpie::file_stream<node_t> &in_nodes,
               tpie::file_stream<meta_t> &in_meta,
               tpie::file_stream<node_t> &out_nodes,
-              tpie::file_stream<meta_t> &out_meta)
-  {
-    quantify(label, in_nodes, in_meta, and_op, out_nodes, out_meta);
-  }
+              tpie::file_stream<meta_t> &out_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Forall quantify an OBDD for a variable with a given label.
@@ -147,11 +134,7 @@ namespace coom
               tpie::file_stream<meta_t> &in_meta,
               tpie::file_stream<arc_t> &reduce_node_arcs,
               tpie::file_stream<arc_t> &reduce_sink_arcs,
-              tpie::file_stream<meta_t> &reduce_meta)
-  {
-    quantify(label, in_nodes, in_meta, and_op,
-             reduce_node_arcs, reduce_sink_arcs, reduce_meta);
-  }
+              tpie::file_stream<meta_t> &reduce_meta);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Forall quantify an OBDD for a variable with a given label.
@@ -162,10 +145,7 @@ namespace coom
               tpie::file_stream<node_t> &in_nodes,
               tpie::file_stream<meta_t> &in_meta,
               tpie::file_stream<node_t> &out_nodes,
-              tpie::file_stream<meta_t> &out_meta)
-  {
-    quantify(labels, in_nodes, in_meta, and_op, out_nodes, out_meta);
-  }
+              tpie::file_stream<meta_t> &out_meta);
 }
 
 #endif // COOM_QUANTIFY_H

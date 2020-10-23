@@ -5,9 +5,8 @@
 
 #include <tpie/sort.h>
 
-#include "priority_queue.cpp"
-
-#include "assert.h"
+#include <coom/priority_queue.h>
+#include <coom/assert.h>
 
 namespace coom
 {
@@ -91,16 +90,21 @@ namespace coom
     assert::is_valid_output_stream(out_meta);
 
     // Set up
-    priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, 1, std::greater<label_t>> redD(tpie::get_memory_manager().available() / 2);
+    priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, 1, std::greater<label_t>>
+      redD(tpie::get_memory_manager().available() / 2);
     redD.hook_meta_stream(in_meta);
 
     in_sink_arcs.seek(0, tpie::file_stream_base::end);
     in_node_arcs.seek(0, tpie::file_stream_base::end);
     tpie::dummy_progress_indicator pi;
 
-    auto max_sorter_memory = std::max(// Take at least enough space to make the merge_sorter not cry
-                                      sizeof(node) * 124 * 1024 + 15 * 1024 * 1024,
-                                      // Take at most a quarter of memory or half of the input size
+    // Minimum size for a bucket
+    size_t min_size = sizeof(node) * 124 * 1024 + 15 * 1024 * 1024;
+#if COOM_ASSERT
+    assert(min_size < tpie::get_memory_manager().available());
+#endif
+    auto max_sorter_memory = std::max(min_size,
+                                      // If possible take at most a quarter of memory or half of the input size
                                       std::min(tpie::get_memory_manager().available() / 4,
                                                bytes_from_size(in_node_arcs, in_sink_arcs) / 2));
 

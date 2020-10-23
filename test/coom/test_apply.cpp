@@ -1,7 +1,3 @@
-#include <coom/apply.cpp>
-
-using namespace coom;
-
 go_bandit([]() {
     describe("COOM: Apply", [&]() {
         // == CREATE SINK-ONLY OBDD FOR UNIT TESTS ==

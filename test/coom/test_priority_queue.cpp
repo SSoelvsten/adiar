@@ -1,4 +1,4 @@
-#include <coom/priority_queue.cpp>
+#include <coom/priority_queue.h>
 
 using namespace coom;
 

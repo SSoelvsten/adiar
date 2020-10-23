@@ -1,19 +1,35 @@
-#ifndef COOM_QUANTIFICATION_CPP
-#define COOM_QUANTIFICATION_CPP
+#ifndef COOM_QUANTIFY_CPP
+#define COOM_QUANTIFY_CPP
 
 #include "quantify.h"
 
-#include "priority_queue.cpp"
-#include "util.cpp"
+#include <coom/priority_queue.h>
+#include <coom/util.h>
 
-#include "apply.cpp" // We reuse internal mechanisms used for Apply
-#include "reduce.h"
-#include "restrict.cpp" // And reuse internal mechanisms used for Restrict
+#include <coom/reduce.h>
 
-#include "assert.h"
+#include <coom/assert.h>
 
 namespace coom
 {
+  //////////////////////////////////////////////////////////////////////////////
+  // Data structures
+  struct tuple
+  {
+    ptr_t source;
+    ptr_t t1;
+    ptr_t t2;
+  };
+
+  struct tuple_data
+  {
+    ptr_t source;
+    ptr_t t1;
+    ptr_t t2;
+    ptr_t data_low;
+    ptr_t data_high;
+  };
+
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
   //
@@ -59,9 +75,30 @@ namespace coom
       } else {
         quantD.push({ source, r1, r2 });
       }
+    } else if (is_sink_ptr(r1) && can_left_shortcut(op, r1)) {
+      arc_t out_arc = { source, op(r1, create_sink_ptr(true)) };
+      reduce_sink_arcs.write(out_arc);
+    } else if (is_sink_ptr(r2) && can_right_shortcut(op, r2)) {
+      arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
+      reduce_sink_arcs.write(out_arc);
     } else {
-      apply_resolve_request(quantD, reduce_sink_arcs, op, source, r1, r2);
+      quantD.push({ source, r1, r2 });
     }
+  }
+
+  inline bool quantify_update_source_or_break(priority_queue<tuple, quantify_queue_label, quantify_queue_lt, 1> &quantD,
+                                              tpie::priority_queue<tuple_data, quantify_queue_data_lt> &quantD_data,
+                                              ptr_t &source, ptr_t t1, ptr_t t2)
+  {
+    if (quantD.can_pull() && quantD.top().t1 == t1 && quantD.top().t2 == t2) {
+      source = quantD.pull().source;
+    } else if (!quantD_data.empty() && quantD_data.top().t1 == t1 && quantD_data.top().t2 == t2) {
+      source = quantD_data.top().source;
+      quantD_data.pop();
+    } else {
+      return true;
+    }
+    return false;
   }
 
   inline bool quantify_has_label(label_t label, tpie::file_stream<meta_t> &in_meta)
@@ -181,11 +218,11 @@ namespace coom
 
       // Forward information of v.uid == t1 across the layer if needed
       if (!with_data && !is_nil(t2) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)) {
-        quantD_data.push({ source, t1, t2, false, v.low, v.high });
+        quantD_data.push({ source, t1, t2, v.low, v.high });
 
         while (quantD.can_pull() && (quantD.top().t1 == t1 && quantD.top().t2 == t2)) {
           source = quantD.pull().source;
-          quantD_data.push({ source, t1, t2, false, v.low, v.high });
+          quantD_data.push({ source, t1, t2, v.low, v.high });
         }
         continue;
       }
@@ -218,7 +255,7 @@ namespace coom
                                    std::min(low1, high1),
                                    std::max(low1, high1));
 
-          if (apply_update_source_or_break(quantD, quantD_data, source, t1, t2)) {
+          if (quantify_update_source_or_break(quantD, quantD_data, source, t1, t2)) {
             break;
           }
         }
@@ -243,7 +280,7 @@ namespace coom
             arc_t out_arc = { source, out_uid };
             reduce_node_arcs.write(out_arc);
 
-            if (apply_update_source_or_break(quantD, quantD_data, source, t1, t2)) {
+            if (quantify_update_source_or_break(quantD, quantD_data, source, t1, t2)) {
               break;
             }
           }
@@ -252,7 +289,7 @@ namespace coom
     }
 
     tpie::progress_indicator_null pi;
-    tpie::sort(reduce_sink_arcs, restrict_sink_lt, pi);
+    tpie::sort(reduce_sink_arcs, by_source_lt, pi);
   }
 
   void quantify(label_t label,
@@ -272,8 +309,8 @@ namespace coom
 
     // Check if there is no need to do all the computation
     if (is_sink(in_nodes, is_any) || !quantify_has_label(label, in_meta)) {
-      copy(in_nodes, out_nodes);
-      copy(in_meta, out_meta);
+      internal::copy(in_nodes, out_nodes);
+      internal::copy(in_meta, out_meta);
 
       return;
     }
@@ -313,8 +350,8 @@ namespace coom
     assert::is_valid_output_stream(out_meta);
 
     if (labels.size() == 0) {
-      copy(in_nodes, out_nodes);
-      copy(in_meta, out_meta);
+      internal::copy(in_nodes, out_nodes);
+      internal::copy(in_meta, out_meta);
 
       return;
     } else if (labels.size() == 1) {
@@ -343,8 +380,8 @@ namespace coom
 
       // Did we collapse early to a sink-only OBDD?
       if (is_sink(first ? in_nodes : temp_nodes, is_any)) {
-        copy(first ? in_nodes : temp_nodes, out_nodes);
-        copy(first ? in_meta : temp_meta, out_meta);
+        internal::copy(first ? in_nodes : temp_nodes, out_nodes);
+        internal::copy(first ? in_meta : temp_meta, out_meta);
         break;
       }
 
@@ -386,6 +423,65 @@ namespace coom
       reduce_meta.close();
     } while(!last);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  void exists(label_t label,
+              tpie::file_stream<node_t> &in_nodes,
+              tpie::file_stream<meta_t> &in_meta,
+              tpie::file_stream<node_t> &out_nodes,
+              tpie::file_stream<meta_t> &out_meta)
+  {
+    quantify(label, in_nodes, in_meta, or_op, out_nodes, out_meta);
+  }
+
+  void exists(label_t label,
+              tpie::file_stream<node_t> &in_nodes,
+              tpie::file_stream<meta_t> &in_meta,
+              tpie::file_stream<arc_t> &reduce_node_arcs,
+              tpie::file_stream<arc_t> &reduce_sink_arcs,
+              tpie::file_stream<meta_t> &reduce_meta)
+  {
+    quantify(label, in_nodes, in_meta, or_op,
+             reduce_node_arcs, reduce_sink_arcs, reduce_meta);
+  }
+
+  void exists(tpie::file_stream<label_t> &labels,
+              tpie::file_stream<node_t> &in_nodes,
+              tpie::file_stream<meta_t> &in_meta,
+              tpie::file_stream<node_t> &out_nodes,
+              tpie::file_stream<meta_t> &out_meta)
+  {
+    quantify(labels, in_nodes, in_meta, or_op, out_nodes, out_meta);
+  }
+
+  void forall(label_t label,
+              tpie::file_stream<node_t> &in_nodes,
+              tpie::file_stream<meta_t> &in_meta,
+              tpie::file_stream<node_t> &out_nodes,
+              tpie::file_stream<meta_t> &out_meta)
+  {
+    quantify(label, in_nodes, in_meta, and_op, out_nodes, out_meta);
+  }
+
+  void forall(label_t label,
+              tpie::file_stream<node_t> &in_nodes,
+              tpie::file_stream<meta_t> &in_meta,
+              tpie::file_stream<arc_t> &reduce_node_arcs,
+              tpie::file_stream<arc_t> &reduce_sink_arcs,
+              tpie::file_stream<meta_t> &reduce_meta)
+  {
+    quantify(label, in_nodes, in_meta, and_op,
+             reduce_node_arcs, reduce_sink_arcs, reduce_meta);
+  }
+
+  void forall(tpie::file_stream<label_t> &labels,
+              tpie::file_stream<node_t> &in_nodes,
+              tpie::file_stream<meta_t> &in_meta,
+              tpie::file_stream<node_t> &out_nodes,
+              tpie::file_stream<meta_t> &out_meta)
+  {
+    quantify(labels, in_nodes, in_meta, and_op, out_nodes, out_meta);
+  }
 }
 
-#endif // COOM_QUANTIFICATION_CPP
+#endif // COOM_QUANTIFY_CPP

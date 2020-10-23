@@ -1,7 +1,3 @@
-#include <coom/negate.cpp>
-
-using namespace coom;
-
 go_bandit([]() {
     describe("COOM: Negate", [&]() {
         it("should negate a T sink-only OBDD into an F sink-only OBDD", [&]() {

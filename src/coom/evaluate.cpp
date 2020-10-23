@@ -3,7 +3,7 @@
 
 #include "evaluate.h"
 
-#include "assert.h"
+#include <coom/assert.h>
 
 namespace coom
 {

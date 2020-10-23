@@ -6,23 +6,8 @@
 #include <tpie/tpie_log.h>
 
 // COOM Imports
-#include <coom/data.cpp>
-#include <coom/assignment.cpp>
+#include <coom/coom.h>
 
-#include <coom/debug_data.cpp>
-#include <coom/debug_assignment.cpp>
-#include <coom/debug.cpp>
-#include <coom/dot.cpp>
-
-#include <coom/assert.cpp>
-
-#include <coom/build.cpp>
-
-#include <coom/apply.cpp>
-#include <coom/count.cpp>
-#include <coom/reduce.cpp>
-#include <coom/restrict.cpp>
-#include <coom/negate.cpp>
 
 /*******************************************************************************
  * We base our example for N-Queens on the procedure as described in the paper

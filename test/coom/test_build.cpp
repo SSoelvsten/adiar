@@ -1,7 +1,3 @@
-#include <coom/build.cpp>
-
-using namespace coom;
-
 go_bandit([]() {
     describe("COOM: Build", [&]() {
         ptr_t sink_T = create_sink_ptr(true);

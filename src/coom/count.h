@@ -3,7 +3,7 @@
 
 #include <tpie/file_stream.h>
 
-#include "data.h"
+#include <coom/data.h>
 
 namespace coom
 {
@@ -29,9 +29,9 @@ namespace coom
   ///
   /// \return The number of unique assignments.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t count_assignment(tpie::file_stream<node_t> &nodes,
-                            tpie::file_stream<meta_t> &meta,
-                            const sink_pred &sink_pred = is_true);
+  uint64_t count_assignments(tpie::file_stream<node_t> &nodes,
+                             tpie::file_stream<meta_t> &meta,
+                             const sink_pred &sink_pred = is_true);
 }
 
 #endif // COOM_COUNT_PATHS_H
