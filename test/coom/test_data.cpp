@@ -1,7 +1,3 @@
-#include <coom/data.cpp>
-
-using namespace coom;
-
 go_bandit([]() {
     describe("COOM: Data", []() {
 

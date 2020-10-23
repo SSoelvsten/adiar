@@ -1,7 +1,3 @@
-#include <coom/reduce.cpp>
-
-using namespace coom;
-
 go_bandit([]() {
     describe("COOM: Reduce", [&]() {
         it("can apply reduction rule 1 on sink arcs", [&]() {

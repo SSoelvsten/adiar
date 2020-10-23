@@ -3,8 +3,8 @@
 
 #include <tpie/file_stream.h>
 
-#include "data.h"
-#include "assignment.h"
+#include <coom/data.h>
+#include <coom/assignment.h>
 
 namespace coom
 {

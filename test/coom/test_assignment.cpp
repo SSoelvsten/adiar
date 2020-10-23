@@ -1,7 +1,3 @@
-#include <coom/assignment.cpp>
-
-using namespace coom;
-
 go_bandit([]() {
     describe("COOM: Assignment", []() {
         /* We can definitely improve the output at the cost of performance, but

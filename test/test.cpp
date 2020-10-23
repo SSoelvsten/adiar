@@ -4,7 +4,9 @@
 using namespace snowhouse;
 using namespace bandit;
 
-#include <coom/assert.cpp>
+#include <coom/coom.h>
+
+using namespace coom;
 
 // TPIE setup unit tests
 #include "test_tpie.cpp"
@@ -30,7 +32,7 @@ int main(int argc, char* argv[]) {
   // Initialize TPIE
   tpie::tpie_init();
 
-  size_t available_memory_mb = 512;
+  size_t available_memory_mb = 1024;
   tpie::get_memory_manager().set_limit(available_memory_mb*1024*1024);
 
   // Run tests

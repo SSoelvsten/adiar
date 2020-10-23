@@ -3,12 +3,11 @@
 
 #include "apply.h"
 
-#include "priority_queue.cpp"
-
-#include "reduce.h"
+#include <coom/priority_queue.h>
+#include <coom/reduce.h>
 
 #include <assert.h>
-#include "assert.h"
+#include <coom/assert.h>
 
 namespace coom
 {
@@ -61,8 +60,7 @@ namespace coom
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  template<typename LabelExt, typename Comparator, size_t meta_streams>
-  inline void apply_resolve_request(priority_queue<tuple, LabelExt, Comparator, meta_streams> &appD,
+  inline void apply_resolve_request(priority_queue<tuple, apply_queue_label, apply_queue_lt, 2> &appD,
                                     tpie::file_stream<arc_t> &reduce_sink_arcs,
                                     const bool_op &op,
                                     ptr_t source, ptr_t r1, ptr_t r2)
@@ -79,22 +77,6 @@ namespace coom
     } else {
       appD.push({ source, r1, r2 });
     }
-  }
-
-  template<typename LabelExt, typename Comparator, typename Comparator_data, size_t meta_streams>
-  inline bool apply_update_source_or_break(priority_queue<tuple, LabelExt, Comparator, meta_streams> &appD,
-                                           tpie::priority_queue<tuple_data, Comparator_data> &appD_data,
-                                           ptr_t &source, ptr_t t1, ptr_t t2)
-  {
-    if (appD.can_pull() && appD.top().t1 == t1 && appD.top().t2 == t2) {
-      source = appD.pull().source;
-    } else if (!appD_data.empty() && appD_data.top().t1 == t1 && appD_data.top().t2 == t2) {
-      source = appD_data.top().source;
-      appD_data.pop();
-    } else {
-      return true;
-    }
-    return false;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -315,7 +297,12 @@ namespace coom
         arc_t out_arc = { source, out_uid };
         reduce_node_arcs.write(out_arc);
 
-        if (apply_update_source_or_break(appD, appD_data, source, t1, t2)) {
+        if (appD.can_pull() && appD.top().t1 == t1 && appD.top().t2 == t2) {
+          source = appD.pull().source;
+        } else if (!appD_data.empty() && appD_data.top().t1 == t1 && appD_data.top().t2 == t2) {
+          source = appD_data.top().source;
+          appD_data.pop();
+        } else {
           break;
         }
       }

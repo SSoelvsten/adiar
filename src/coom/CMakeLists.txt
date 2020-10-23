@@ -13,9 +13,11 @@ set(HEADERS
   data.h
   evaluate.h
   negate.h
+  priority_queue.h
   quantify.h
   reduce.h
   restrict.h
+  util.h
 )
 
 set(SOURCES
@@ -31,7 +33,6 @@ set(SOURCES
   quantify.cpp
   reduce.cpp
   restrict.cpp
-  util.cpp
 )
 
 if (COOM_SHARED)

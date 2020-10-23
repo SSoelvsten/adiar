@@ -2,7 +2,7 @@
 #define COOM_REDUCE_H
 
 #include <tpie/file_stream.h>
-#include "data.h"
+#include <coom/data.h>
 
 namespace coom
 {

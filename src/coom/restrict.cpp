@@ -5,14 +5,11 @@
 
 #include <tpie/sort.h>
 
-#include "data.h"
+#include <coom/reduce.h>
+#include <coom/priority_queue.h>
+#include <coom/util.h>
 
-#include "reduce.h"
-
-#include "priority_queue.cpp"
-#include "util.cpp"
-
-#include "assert.h"
+#include <coom/assert.h>
 
 namespace coom
 {
@@ -26,10 +23,6 @@ namespace coom
     label_t label_of(const arc_t& a) {
       return coom::label_of(a.target);
     }
-  };
-
-  const auto restrict_sink_lt = [](const arc_t& a, const arc_t& b) -> bool {
-    return a.source < b.source;
   };
 
   void restrict(tpie::file_stream<node_t> &in_nodes,
@@ -55,6 +48,7 @@ namespace coom
     }
 
     arc_t latest_good_sink_arc = { NIL, NIL };
+    bool sort_sinks = false;
 
     // process the root and create initial recursion requests
     if(a.label == label_of(n)) {
@@ -120,7 +114,8 @@ namespace coom
               // we have restricted ourselves to a sink
               out_nodes.write(create_sink(value_of(rec_child)));
               return;
-            } else if (reduce_sink_arcs.size() > 0 && restrict_sink_lt(request, latest_good_sink_arc)) {
+            } else if (reduce_sink_arcs.size() > 0 && by_source_lt(request, latest_good_sink_arc)) {
+              sort_sinks = true;
               reduce_sink_arcs.write(request);
             } else {
               reduce_sink_arcs.write(request);
@@ -160,8 +155,10 @@ namespace coom
       }
     }
 
-    tpie::progress_indicator_null pi;
-    tpie::sort(reduce_sink_arcs, restrict_sink_lt, pi);
+    if (sort_sinks) {
+      tpie::progress_indicator_null pi;
+      tpie::sort(reduce_sink_arcs, by_source_lt, pi);
+    }
   }
 
   void restrict(tpie::file_stream<node_t> &in_nodes,
@@ -175,8 +172,8 @@ namespace coom
     assert::is_valid_output_stream(out_meta);
 
     if (in_assignment.size() == 0) {
-      copy(in_nodes, out_nodes);
-      copy(in_meta, out_meta);
+      internal::copy(in_nodes, out_nodes);
+      internal::copy(in_meta, out_meta);
       return;
     }
 

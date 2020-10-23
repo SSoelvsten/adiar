@@ -4,7 +4,7 @@
 #include "data.h"
 
 #include <assert.h>
-#include "assert.h"
+#include <coom/assert.h>
 
 namespace coom {
   //////////////////////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   const ptr_t NIL = UINT64_MAX - 1;
 
-  inline bool is_nil(ptr_t p)
+  bool is_nil(ptr_t p)
   {
     // Check for flagged and unflagged NIL
     return p >= NIL;
@@ -30,27 +30,27 @@ namespace coom {
   const uint64_t SINK_BIT = 0x8000000000000000ull;
   const uint64_t FLAG_BIT = 0x0000000000000001ull;
 
-  inline bool is_sink_ptr(ptr_t p)
+  bool is_sink_ptr(ptr_t p)
   {
     return !is_nil(p) && p >= SINK_BIT;
   }
 
-  inline bool is_node_ptr(ptr_t p)
+  bool is_node_ptr(ptr_t p)
   {
     return p <= ~SINK_BIT;
   }
 
-  inline bool is_flagged(ptr_t p)
+  bool is_flagged(ptr_t p)
   {
     return p & FLAG_BIT;
   }
 
-  inline ptr_t flag(ptr_t p)
+  ptr_t flag(ptr_t p)
   {
     return p | FLAG_BIT;
   }
 
-  inline ptr_t unflag(ptr_t p)
+  ptr_t unflag(ptr_t p)
   {
     return p & (~FLAG_BIT);
   }
@@ -58,7 +58,7 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   //// NODE PTR
   //////////////////////////////////////////////////////////////////////////////
-  inline uid_t create_node_uid(label_t label, id_t id)
+  uid_t create_node_uid(label_t label, id_t id)
   {
 #if COOM_ASSERT
     assert (label <= MAX_LABEL);
@@ -68,17 +68,17 @@ namespace coom {
     return (label << (ID_BITS + 1)) + (id << 1);
   }
 
-  inline ptr_t create_node_ptr(label_t label, id_t id)
+  ptr_t create_node_ptr(label_t label, id_t id)
   {
     return create_node_uid(label, id);
   }
 
-  inline label_t label_of(uint64_t n)
+  label_t label_of(uint64_t n)
   {
     return n >> (ID_BITS + 1);
   }
 
-  inline id_t id_of(uint64_t n)
+  id_t id_of(uint64_t n)
   {
     return (n >> 1) & MAX_ID;
   }
@@ -86,12 +86,12 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   ///  SINK PTR
   //////////////////////////////////////////////////////////////////////////////
-  inline ptr_t create_sink_ptr(bool v)
+  ptr_t create_sink_ptr(bool v)
   {
     return SINK_BIT + (v << 1);
   }
 
-  inline bool value_of(uint64_t n)
+  bool value_of(uint64_t n)
   {
     return (n & ~SINK_BIT) >> 1;
   }
@@ -182,27 +182,27 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   ///  NODE
   //////////////////////////////////////////////////////////////////////////////
-  inline node create_node(uid_t uid, ptr_t low, ptr_t high)
+  node create_node(uid_t uid, ptr_t low, ptr_t high)
   {
     return { uid, low, high };
   }
 
-  inline node create_node(label_t label, id_t id, ptr_t low, ptr_t high)
+  node create_node(label_t label, id_t id, ptr_t low, ptr_t high)
   {
     return create_node(create_node_uid(label, id), low, high);
   }
 
-  inline node create_sink(bool value)
+  node create_sink(bool value)
   {
     return { create_sink_ptr(value) , NIL, NIL };
   }
 
-  inline bool is_sink(const node& n)
+  bool is_sink(const node& n)
   {
     return n.uid >= SINK_BIT;
   }
 
-  inline bool value_of(const node& n)
+  bool value_of(const node& n)
   {
 #if COOM_ASSERT
     assert (is_sink(n));
@@ -210,7 +210,7 @@ namespace coom {
     return value_of(n.uid);
   }
 
-  inline id_t id_of(const node& n)
+  id_t id_of(const node& n)
   {
 #if COOM_ASSERT
     assert (!is_sink(n));
@@ -218,7 +218,7 @@ namespace coom {
     return id_of(n.uid);
   }
 
-  inline label_t label_of(const node& n)
+  label_t label_of(const node& n)
   {
 #if COOM_ASSERT
     assert (!is_sink(n));
@@ -249,7 +249,7 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   ///  ARC
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_high(arc& a)
+  bool is_high(arc& a)
   {
     return is_flagged(a.source);
   }
@@ -264,20 +264,25 @@ namespace coom {
     return !(a==b);
   }
 
+  const std::function<bool(arc_t,arc_t)> by_source_lt =
+    [](const arc_t& a, const arc_t& b) -> bool {
+      return a.source < b.source;
+    };
+
   //////////////////////////////////////////////////////////////////////////////
   ///  CONVERTERS
   //////////////////////////////////////////////////////////////////////////////
-  inline arc low_arc_of(const node& n)
+  arc low_arc_of(const node& n)
   {
     return { n.uid, n.low };
   }
 
-  inline arc high_arc_of(const node& n)
+  arc high_arc_of(const node& n)
   {
     return { flag(n.uid), n.high };
   }
 
-  inline node node_of(const arc& low, const arc& high)
+  node node_of(const arc& low, const arc& high)
   {
 #if COOM_ASSERT
     assert (unflag(low.source) == unflag(high.source));
@@ -304,7 +309,7 @@ namespace coom {
   ///  OBDD
   //////////////////////////////////////////////////////////////////////////////
   bool is_sink(tpie::file_stream<node_t>& nodes,
-               const sink_pred &sink_pred = is_any)
+               const sink_pred &sink_pred)
   {
     assert::is_valid_input_stream(nodes);
     if (nodes.size() != 1) {

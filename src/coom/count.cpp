@@ -3,9 +3,8 @@
 
 #include "count.h"
 
-#include "priority_queue.cpp"
-
-#include "assert.h"
+#include <coom/priority_queue.h>
+#include <coom/assert.h>
 
 namespace coom
 {

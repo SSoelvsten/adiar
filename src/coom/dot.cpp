@@ -1,20 +1,10 @@
 #ifndef COOM_DOT_CPP
 #define COOM_DOT_CPP
 
-#include <stdint.h>
-#include <string.h>
+#include "dot.h"
 
 #include <fstream>
-
-// TPIE Imports
-#include <tpie/tpie.h>
-#include <tpie/file_stream.h>
 #include <tpie/tpie_log.h>
-
-// COOM Imports
-#include "data.h"
-
-#include "dot.h"
 
 namespace coom {
   void output_dot(tpie::file_stream<node_t>& nodes, std::string filename)
