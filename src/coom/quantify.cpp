@@ -10,9 +10,6 @@
 #include "reduce.h"
 #include "restrict.cpp" // And reuse internal mechanisms used for Restrict
 
-#include "debug.h"
-#include "debug_data.h"
-
 #include "assert.h"
 
 namespace coom
@@ -177,8 +174,6 @@ namespace coom
         quantD_data.pop();
       }
 
-      debug::println_apply_request(t1,t2);
-
       // Seek element from request in stream
       while ((!with_data && v.uid < t1) || (with_data && v.uid < t2)) {
         v = in_nodes.read_back();
@@ -192,7 +187,6 @@ namespace coom
           source = quantD.pull().source;
           quantD_data.push({ source, t1, t2, false, v.low, v.high });
         }
-        debug::println_apply_later();
         continue;
       }
 
@@ -211,8 +205,6 @@ namespace coom
       }
 
       if (label_of(std::min(t1, t2)) == label) {
-        debug::println_apply_resolution(source, low1, low2, high1, high2);
-
         // The variable should be quantified: proceed as in Restrict by
         // forwarding the request of source further to the children, though here
         // we keep track of both possibilities.
@@ -236,8 +228,6 @@ namespace coom
         uid_t out_uid = create_node_uid(out_label, out_id);
         out_id++;
 
-        debug::println_apply_resolution(out_uid, low1, low2, high1, high2);
-
         quantify_resolve_request(quantD, reduce_sink_arcs, op,
                                  out_uid,
                                  std::min(low1, low2),
@@ -253,15 +243,12 @@ namespace coom
             arc_t out_arc = { source, out_uid };
             reduce_node_arcs.write(out_arc);
 
-            debug::println_apply_ingoing(out_arc);
-
             if (apply_update_source_or_break(quantD, quantD_data, source, t1, t2)) {
               break;
             }
           }
         }
       }
-      debug::println_apply_done();
     }
 
     tpie::progress_indicator_null pi;
@@ -275,11 +262,7 @@ namespace coom
                 tpie::file_stream<node_t> &out_nodes,
                 tpie::file_stream<meta_t> &out_meta)
   {
-    debug::println_algorithm_start("EXISTS");
-
     assert::is_valid_input_stream(in_nodes);
-    debug::println_file_stream(in_nodes, "in_nodes");
-
     assert::is_valid_output_stream(out_nodes);
     assert::is_valid_output_stream(out_meta);
 
@@ -292,8 +275,6 @@ namespace coom
       copy(in_nodes, out_nodes);
       copy(in_meta, out_meta);
 
-      debug::println_file_stream(out_nodes, "out_nodes");
-      debug::println_algorithm_end("EXISTS");
       return;
     }
 
@@ -318,8 +299,6 @@ namespace coom
 
     reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta,
            out_nodes, out_meta);
-
-    debug::println_algorithm_end("EXISTS");
   }
 
   void quantify(tpie::file_stream<label_t> &labels,
@@ -334,23 +313,15 @@ namespace coom
     assert::is_valid_output_stream(out_meta);
 
     if (labels.size() == 0) {
-      debug::println_algorithm_start("EXISTS");
-      debug::println_file_stream(in_nodes, "in_nodes");
-
       copy(in_nodes, out_nodes);
       copy(in_meta, out_meta);
 
-      debug::println_file_stream(out_nodes, "out_nodes");
-      debug::println_algorithm_end("EXISTS");
       return;
     } else if (labels.size() == 1) {
       label_t label = labels.can_read() ? labels.read() : labels.read_back();
       quantify(label, in_nodes, in_meta, op, out_nodes, out_meta);
       return;
     }
-
-    debug::println_algorithm_start("EXISTS");
-    debug::println_file_stream(in_nodes, "in_nodes");
 
 #if COOM_ASSERT
     assert(is_commutative(op));
@@ -374,10 +345,6 @@ namespace coom
       if (is_sink(first ? in_nodes : temp_nodes, is_any)) {
         copy(first ? in_nodes : temp_nodes, out_nodes);
         copy(first ? in_meta : temp_meta, out_meta);
-
-        if (first) {
-          debug::println_file_stream(out_nodes, "out_nodes");
-        }
         break;
       }
 
@@ -418,8 +385,6 @@ namespace coom
       reduce_sink_arcs.close();
       reduce_meta.close();
     } while(!last);
-
-    debug::println_algorithm_end("EXISTS");
   }
 }
 

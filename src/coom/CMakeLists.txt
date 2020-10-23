@@ -11,9 +11,6 @@ set(HEADERS
   coom.h
   count.h
   data.h
-  debug.h
-  debug_assignment.h
-  debug_data.h
   evaluate.h
   negate.h
   quantify.h
@@ -28,9 +25,6 @@ set(SOURCES
   build.cpp
   count.cpp
   data.cpp
-  debug.cpp
-  debug_assignment.cpp
-  debug_data.cpp
   evaluate.cpp
   negate.cpp
   priority_queue.cpp
@@ -44,10 +38,6 @@ if (COOM_SHARED)
   add_library(coom SHARED ${HEADERS} ${SOURCES})
 else()
   add_library(coom STATIC ${HEADERS} ${SOURCES})
-endif()
-
-if (COOM_DEBUG)
-  target_compile_definitions(coom PRIVATE COOM_DEBUG=1)
 endif()
 
 if (COOM_ASSERT)

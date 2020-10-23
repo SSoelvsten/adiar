@@ -26,7 +26,6 @@ add_subdirectory (external/tpie tpie)
 # Core project
 # ============================================================================ #
 option(COOM_SHARED "Build coom as a shared library" OFF)
-option(COOM_DEBUG "Build coom with debug information" OFF)
 option(COOM_ASSERT "Build coom with assertions" OFF)
 
 add_subdirectory (src)
