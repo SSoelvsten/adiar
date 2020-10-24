@@ -284,13 +284,10 @@ int main(int argc, char** argv)
   }
 
 
-  // ===== TPIE =====
+  // ===== COOM =====
   // Initialize
-  tpie::tpie_init();
-
-  tpie::get_memory_manager().set_limit(M * 1024 * 1024);
-
-  tpie::log_info() << "| Initialized TPIE with " << M << " MB of memory"  << std::endl;
+  coom::coom_init(M);
+  tpie::log_info() << "| Initialized COOM with " << M << " MB of memory"  << std::endl;
 
 
   // =========================================================================
@@ -472,9 +469,9 @@ int main(int argc, char** argv)
   tpie::log_info() << "|  |  | OBDD solving: " << duration_of(t3, t4) << std::endl;
 
 
-  // ===== TPIE =====
-  // Close all of TPIE down again
-  tpie::tpie_finish();
+  // ===== COOM =====
+  // Close all of COOM down again
+  coom::coom_deinit();
 
   // Return 'all good'
   exit(satisfiable ? -1 : 0);

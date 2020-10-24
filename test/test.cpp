@@ -29,17 +29,14 @@ using namespace coom;
 #include "coom/test_build.cpp"
 
 int main(int argc, char* argv[]) {
-  // Initialize TPIE
-  tpie::tpie_init();
-
-  size_t available_memory_mb = 1024;
-  tpie::get_memory_manager().set_limit(available_memory_mb*1024*1024);
+  // Initialize COOM and TPIE
+  coom_init(1024);
 
   // Run tests
   auto bandit_ret = bandit::run(argc, argv);
 
   // Close all of TPIE down again
-  tpie::tpie_finish();
+  coom_deinit();
 
   if (bandit_ret != 0) exit(bandit_ret);
   exit(0);
