@@ -93,21 +93,43 @@ namespace coom {
 
   bool value_of(uint64_t n)
   {
+#if COOM_ASSERT
+    assert(is_sink_ptr(n));
+#endif
+
     return (n & ~SINK_BIT) >> 1;
   }
 
-  const sink_pred is_any = [] (ptr_t /* sink */) -> bool
+  ptr_t negate(ptr_t n)
   {
+#if COOM_ASSERT
+    assert(is_sink_ptr(n));
+#endif
+
+    return 2u ^ n;
+  }
+
+  const sink_pred is_any = [] ([[maybe_unused]]ptr_t sink) -> bool
+  {
+#if COOM_ASSERT
+    assert(is_sink_ptr(sink));
+#endif
     return true;
   };
 
   const sink_pred is_true = [] (ptr_t sink) -> bool
   {
+#if COOM_ASSERT
+    assert(is_sink_ptr(sink));
+#endif
     return value_of(sink);
   };
 
   const sink_pred is_false = [] (ptr_t sink) -> bool
   {
+#if COOM_ASSERT
+    assert(is_sink_ptr(sink));
+#endif
     return !value_of(sink);
   };
 
@@ -118,7 +140,7 @@ namespace coom {
 
   const bool_op nand_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return unflag(sink1 & sink2) ^ 2u;
+    return negate(unflag(sink1 & sink2));
   };
 
   const bool_op or_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
@@ -128,7 +150,7 @@ namespace coom {
 
   const bool_op nor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return unflag(sink1 | sink2) ^ 2u;
+    return negate(unflag(sink1 | sink2));
   };
 
   const bool_op xor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
@@ -187,22 +209,30 @@ namespace coom {
     return { uid, low, high };
   }
 
-  node create_node(label_t label, id_t id, ptr_t low, ptr_t high)
+  node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high)
   {
+#if COOM_ASSERT
+    assert(!is_nil(low));
+    assert(is_sink_ptr(low) || label < label_of(low));
+
+    assert(!is_nil(high));
+    assert(is_sink_ptr(high) || label < label_of(high));
+#endif
+
     return create_node(create_node_uid(label, id), low, high);
   }
 
-  node create_sink(bool value)
+  node_t create_sink(bool value)
   {
     return { create_sink_ptr(value) , NIL, NIL };
   }
 
-  bool is_sink(const node& n)
+  bool is_sink(const node_t& n)
   {
     return n.uid >= SINK_BIT;
   }
 
-  bool value_of(const node& n)
+  bool value_of(const node_t& n)
   {
 #if COOM_ASSERT
     assert (is_sink(n));
@@ -224,6 +254,22 @@ namespace coom {
     assert (!is_sink(n));
 #endif
     return label_of(n.uid);
+  }
+
+  node_t negate(const node_t &n)
+  {
+    if (is_sink(n)) {
+      return { negate(n.uid), NIL, NIL };
+    }
+
+    uint64_t low =  is_sink_ptr(n.low)  ? negate(n.low)  : n.low;
+    uint64_t high = is_sink_ptr(n.high) ? negate(n.high) : n.high;
+    return { n.uid, low, high };
+  }
+
+  node operator! (const node& n)
+  {
+    return negate(n);
   }
 
   bool operator< (const node& a, const node& b)
@@ -254,6 +300,17 @@ namespace coom {
     return is_flagged(a.source);
   }
 
+  arc_t negate(const arc_t &a)
+  {
+    uint64_t target = is_sink_ptr(a.target) ? negate(a.target) : a.target;
+    return { a.source, target };
+  }
+
+  arc_t operator! (const arc& a)
+  {
+    return negate(a);
+  }
+
   bool operator== (const arc& a, const arc& b)
   {
     return a.source == b.source && a.target == b.target;
@@ -263,11 +320,6 @@ namespace coom {
   {
     return !(a==b);
   }
-
-  const std::function<bool(arc_t,arc_t)> by_source_lt =
-    [](const arc_t& a, const arc_t& b) -> bool {
-      return a.source < b.source;
-    };
 
   //////////////////////////////////////////////////////////////////////////////
   ///  CONVERTERS
@@ -293,8 +345,49 @@ namespace coom {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  ///  ASSIGNMENT
+  //////////////////////////////////////////////////////////////////////////////
+  assignment_t create_assignment(label_t label, bool value)
+  {
+#if COOM_ASSERT
+    assert (label <= MAX_LABEL);
+#endif
+    return { label, value };
+  }
+
+  assignment operator! (const assignment& a)
+  {
+    return { a.label, !a.value };
+  }
+
+  bool operator< (const assignment& a, const assignment& b)
+  {
+    return a.label < b.label || (a.label == b.label && a.value < b.value);
+  }
+
+  bool operator> (const assignment& a, const assignment& b)
+  {
+    return a.label > b.label || (a.label == b.label && a.value > b.value);
+  }
+
+  bool operator== (const assignment& a, const assignment& b)
+  {
+    return a.label == b.label && a.value == b.value;
+  }
+
+  bool operator!= (const assignment& a, const assignment& b)
+  {
+    return !(a==b);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   ///  META
   //////////////////////////////////////////////////////////////////////////////
+  meta operator! (const meta& m)
+  {
+    return m;
+  }
+
   bool operator== (const meta& a, const meta& b)
   {
     return a.label == b.label;
@@ -303,20 +396,6 @@ namespace coom {
   bool operator!= (const meta& a, const meta& b)
   {
     return !(a==b);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  ///  OBDD
-  //////////////////////////////////////////////////////////////////////////////
-  bool is_sink(tpie::file_stream<node_t>& nodes,
-               const sink_pred &sink_pred)
-  {
-    assert::is_valid_input_stream(nodes);
-    if (nodes.size() != 1) {
-      return false;
-    }
-    node_t n = nodes.can_read() ? nodes.read() : nodes.read_back();
-    return is_sink(n) && sink_pred(n.uid);
   }
 }
 

@@ -3,18 +3,14 @@
 
 #include <tpie/file_stream.h>
 #include <coom/data.h>
+#include <coom/file.h>
 
 namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Negate a given node-based OBDD.
-  ///
-  /// \param in_nodes  Input nodes sorted by target in reverse-topological order.
-  /// \param out_nodes Output nodes sorted by target similar to the input, but
-  ///                  where all sinks are negated.
   //////////////////////////////////////////////////////////////////////////////
-  void negate(tpie::file_stream<node_t> &in_nodes,
-              tpie::file_stream<node_t> &out_nodes);
+  node_file bdd_not(const node_file &f);
 }
 
 #endif // COOM_NEGATE_H

@@ -2,45 +2,30 @@
 #include <tpie/tpie.h>
 
 // COOM Imports
-#include <coom/data.cpp>
-#include <coom/assignment.cpp>
-#include <coom/pred.cpp>
-
-#include <coom/debug_data.cpp>
-#include <coom/debug_assignment.cpp>
-#include <coom/debug.cpp>
-
-#include <coom/assert.cpp>
-
-#include <coom/apply.cpp>
-#include <coom/count.cpp>
-#include <coom/evaluate.cpp>
-#include <coom/exists.h>
-#include <coom/forall.h>
-#include <coom/reduce.cpp>
-#include <coom/restrict.cpp>
-
-using namespace coom;
-
+#include <coom/coom.h>
 
 int main(int argc, char* argv[]) {
-  // ===== TPIE =====
-  // Initialize
-  tpie::tpie_init();
+  // ========== COOM =============
+  size_t M = 1024;
 
-  size_t available_memory_mb = 1024;
-  tpie::get_memory_manager().set_limit(available_memory_mb*1024*1024);
+  try {
+    if (argc > 1) {
+      M = std::stoi(argv[1]);
+    }
+  } catch (std::invalid_argument const &ex) {
+    tpie::log_info() << "Invalid number: " << argv[1] << std::endl;
+  } catch (std::out_of_range const &ex) {
+    tpie::log_info() << "Number out of range: " << argv[1] << std::endl;
+  }
 
-  // ===== COOM =====
-  // Your code here...
+  coom::coom_init(M);
+
+  // ===== Your code here... =====
 
 
 
-  // ===== TPIE =====
-  // Close all of TPIE down again
-  tpie::tpie_finish();
-
-  // Return 'all good'
+  // ========== COOM =============
+  coom::coom_deinit();
   exit(0);
 }
 

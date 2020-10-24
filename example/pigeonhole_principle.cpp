@@ -149,6 +149,15 @@ void construct_PHP_cnf(sat_solver &solver, uint64_t N)
 // COOM Imports
 #include <coom/coom.h>
 
+/* A few chrono wrappers to improve readability of the code below */
+inline auto get_timestamp() {
+  return std::chrono::high_resolution_clock::now();
+}
+
+inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
+                        std::chrono::high_resolution_clock::time_point &after) {
+  return std::chrono::duration_cast<std::chrono::seconds>(after - before).count();
+}
 
 /*******************************************************************************
  * We base our example for the Pigeonhole principle on the formula described in
@@ -165,84 +174,8 @@ void construct_PHP_cnf(sat_solver &solver, uint64_t N)
  * and worst ratio between sink and node arcs in the unreduced OBDDs
  */
 size_t number_of_exists = 0;
-size_t largest_unreduced = 0;
-
-float best_apply_sink_ratio = 0.0;
-float acc_apply_sink_ratio = 0.0;
-float worst_apply_sink_ratio = 1.0;
-
-inline void stats_apply_unreduced(size_t node_arcs, size_t sink_arcs)
-{
-  size_t total_arcs = node_arcs + sink_arcs;
-  largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
-
-  float sink_ratio = float(sink_arcs) / float(total_arcs);
-  best_apply_sink_ratio = std::max(best_apply_sink_ratio, sink_ratio);
-  acc_apply_sink_ratio += sink_ratio;
-  worst_apply_sink_ratio = std::min(worst_apply_sink_ratio, sink_ratio);
-}
-
-float best_exists_sink_ratio = 0.0;
-float acc_exists_sink_ratio = 0.0;
-float worst_exists_sink_ratio = 1.0;
-
-inline void stats_exists_unreduced(size_t node_arcs, size_t sink_arcs)
-{
-  number_of_exists++;
-
-  size_t total_arcs = node_arcs + sink_arcs;
-  largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
-
-  float sink_ratio = float(sink_arcs) / float(total_arcs);
-  best_exists_sink_ratio = std::max(best_exists_sink_ratio, sink_ratio);
-  acc_exists_sink_ratio += sink_ratio;
-  worst_exists_sink_ratio = std::min(worst_exists_sink_ratio, sink_ratio);
-}
-
-size_t largest_reduced = 0;
-
-float best_apply_reduction_ratio = 1.0;
-float acc_apply_reduction_ratio = 0.0;
-float worst_apply_reduction_ratio = 0.0;
-
-inline void stats_apply_reduced(size_t unreduced_size, size_t reduced_size)
-{
-  largest_reduced = std::max(largest_reduced, reduced_size);
-
-  float reduction_ratio = float(reduced_size) / float(unreduced_size);
-  best_apply_reduction_ratio = std::min(best_apply_reduction_ratio, reduction_ratio);
-  acc_apply_reduction_ratio += reduction_ratio;
-  worst_apply_reduction_ratio = std::max(worst_apply_reduction_ratio, reduction_ratio);
-}
-
-float best_exists_reduction_ratio = 1.0;
-float acc_exists_reduction_ratio = 0.0;
-float worst_exists_reduction_ratio = 0.0;
-
-inline void stats_exists_reduced(size_t unreduced_size, size_t reduced_size)
-{
-  largest_reduced = std::max(largest_reduced, reduced_size);
-
-  float reduction_ratio = float(reduced_size) / float(unreduced_size);
-  best_exists_reduction_ratio = std::min(best_exists_reduction_ratio, reduction_ratio);
-  acc_exists_reduction_ratio += reduction_ratio;
-  worst_exists_reduction_ratio = std::max(worst_exists_reduction_ratio, reduction_ratio);
-}
-
-/* A few chrono wrappers to improve readability of the code below */
-inline auto get_timestamp() {
-  return std::chrono::high_resolution_clock::now();
-}
-
-inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
-                        std::chrono::high_resolution_clock::time_point &after) {
-  return std::chrono::duration_cast<std::chrono::seconds>(after - before).count();
-}
-
-/* TODO: File size calculations should be available from COOM. */
-inline auto MB_of_size(tpie::stream_size_type size) {
-  return size * sizeof(coom::node) /* bytes */ / (1024 * 1024) /* in MB */;
-}
+size_t largest_nodes = 0;
+size_t largest_filesize = 0;
 
 /*******************************************************************************
  *                             Variable ordering
@@ -291,21 +224,12 @@ int main(int argc, char** argv)
 
 
   // =========================================================================
-  tpie::file_stream<coom::node_t> sat_acc;
-  sat_acc.open();
-
-  tpie::file_stream<coom::meta_t> sat_acc_meta;
-  sat_acc_meta.open();
-
-  coom::build_sink(true, sat_acc, sat_acc_meta);
+  coom::node_file sat_acc = coom::bdd_true();
 
   const auto sat_and_clause = [&](clause_t &clause) -> void
   {
-    tpie::file_stream<coom::node_t> clause_nodes;
-    clause_nodes.open();
-
-    tpie::file_stream<coom::meta_t> clause_meta;
-    clause_meta.open();
+    coom::node_file clause_bdd;
+    coom::node_writer clause_writer(clause_bdd);
 
     coom::ptr_t next = coom::create_sink_ptr(false);
 
@@ -319,71 +243,20 @@ int main(int argc, char** argv)
 
       next = n.uid;
 
-      clause_nodes.write(n);
-      clause_meta.write({ v.first });
+      clause_writer << n;
     }
 
-    tpie::file_stream<coom::arc_t> reduce_node_arcs;
-    tpie::file_stream<coom::arc_t> reduce_sink_arcs;
-    tpie::file_stream<coom::meta_t> reduce_meta;
+    sat_acc = coom::bdd_apply(sat_acc, clause_bdd, coom::and_op);
 
-    reduce_node_arcs.open();
-    reduce_sink_arcs.open();
-    reduce_meta.open();
-
-    coom::apply(sat_acc, sat_acc_meta,
-                clause_nodes, clause_meta,
-                coom::and_op,
-                reduce_node_arcs, reduce_sink_arcs, reduce_meta);
-
-    sat_acc.close();
-    sat_acc_meta.close();
-    clause_nodes.close();
-    clause_meta.close();
-
-    stats_apply_unreduced(reduce_node_arcs.size(), reduce_sink_arcs.size());
-
-    sat_acc.open();
-    sat_acc_meta.open();
-
-    coom::reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta, sat_acc, sat_acc_meta);
-
-    stats_apply_reduced((reduce_node_arcs.size() + reduce_sink_arcs.size()) / 2, sat_acc.size());
-
-    reduce_node_arcs.close();
-    reduce_sink_arcs.close();
-    reduce_meta.close();
+    largest_nodes = std::max(largest_nodes, bdd_nodecount(sat_acc));
   };
 
   const auto sat_quantify_variable = [&](uint64_t var) -> void
   {
-    tpie::file_stream<coom::arc_t> reduce_node_arcs;
-    tpie::file_stream<coom::arc_t> reduce_sink_arcs;
-    tpie::file_stream<coom::meta_t> reduce_meta;
+    sat_acc = coom::bdd_exists(sat_acc, var);
 
-    reduce_node_arcs.open();
-    reduce_sink_arcs.open();
-    reduce_meta.open();
-
-    coom::exists(var,
-                 sat_acc, sat_acc_meta,
-                 reduce_node_arcs, reduce_sink_arcs, reduce_meta);
-
-    sat_acc.close();
-    sat_acc_meta.close();
-
-    stats_exists_unreduced(reduce_node_arcs.size(), reduce_sink_arcs.size());
-
-    sat_acc.open();
-    sat_acc_meta.open();
-
-    coom::reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta, sat_acc, sat_acc_meta);
-
-    stats_exists_reduced((reduce_node_arcs.size() + reduce_sink_arcs.size()) / 2, sat_acc.size());
-
-    reduce_node_arcs.close();
-    reduce_sink_arcs.close();
-    reduce_meta.close();
+    number_of_exists++;
+    largest_nodes = std::max(largest_nodes, bdd_nodecount(sat_acc));
   };
 
   const auto sat_is_false = [&]() -> bool
@@ -421,46 +294,10 @@ int main(int argc, char** argv)
 
   tpie::log_info() << "|  |" << std::endl;
 
-  auto largest_unreduced_MB = (MB_of_size(largest_unreduced) * 3) / 2;
-  tpie::log_info() << "|  | largest OBDD (unreduced): " << largest_unreduced << " nodes" << std::endl;
-  tpie::log_info() << "|  |                           " << (largest_unreduced_MB > 0 ? std::to_string(largest_unreduced_MB) : "< 1")
-                                                        << " MB"<< std::endl;
+  tpie::log_info() << "|  | largest OBDD : " << largest_nodes << " nodes" << std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
-  tpie::log_info() << "|  | sink ratio (apply): " << std::endl;
-  tpie::log_info() << "|  |  | best:  " << best_apply_sink_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_apply_sink_ratio / solver.cnf_size() << std::endl;
-  tpie::log_info() << "|  |  | worst: " << worst_apply_sink_ratio << std::endl;
-  tpie::log_info() << "|  |" << std::endl;
-
-  tpie::log_info() << "|  | sink ratio (exists): " << std::endl;
-  tpie::log_info() << "|  |  | best:  " << best_exists_sink_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_exists_sink_ratio / number_of_exists << std::endl;
-  tpie::log_info() << "|  |  | worst: " << worst_exists_sink_ratio << std::endl;
-
-  tpie::log_info() << "|  |" << std::endl;
-
-  auto largest_reduced_MB = MB_of_size(largest_reduced);
-  tpie::log_info() << "|  | largest OBDD (reduced)  : " << largest_reduced << " nodes" << std::endl;
-  tpie::log_info() << "|  |                           " << (largest_reduced_MB > 0 ? std::to_string(largest_reduced_MB) : "< 1")
-                                                        << " MB"<< std::endl;
-  tpie::log_info() << "|  |" << std::endl;
-
-  tpie::log_info() << "|  | reduction ratio (apply): " << std::endl;
-  tpie::log_info() << "|  |  | best:  " << best_apply_reduction_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_apply_reduction_ratio / solver.cnf_size() << std::endl;
-  tpie::log_info() << "|  |  | worst: " << worst_apply_reduction_ratio << std::endl;
-
-  tpie::log_info() << "|  | reduction ratio (exists): " << std::endl;
-  tpie::log_info() << "|  |  | best:  " << best_exists_reduction_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_exists_reduction_ratio / number_of_exists << std::endl;
-  tpie::log_info() << "|  |  | worst: " << worst_exists_reduction_ratio << std::endl;
-
-  tpie::log_info() << "|  |" << std::endl;
-
-  auto final_MB = MB_of_size(sat_acc.size());
-  tpie::log_info() << "|  | final size: " << sat_acc.size() << " nodes"<< std::endl;
-  tpie::log_info() << "|  |             " << (final_MB > 0 ? std::to_string(final_MB) : "< 1") << " MB"<< std::endl;
+  tpie::log_info() << "|  | final size: " << reduce(sat_acc).size() << " nodes"<< std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
 

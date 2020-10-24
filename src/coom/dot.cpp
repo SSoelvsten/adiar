@@ -4,28 +4,33 @@
 #include "dot.h"
 
 #include <fstream>
-#include <tpie/tpie_log.h>
 
 namespace coom {
-  void output_dot(tpie::file_stream<node_t>& nodes, std::string filename)
+  void output_dot(const node_file& nodes, const char* &filename)
+  {
+    std::string filename_str(filename);
+    output_dot(nodes, filename_str);
+  }
+
+  void output_dot(const node_file& nodes, const std::string &filename)
   {
     std::ofstream out;
     out.open(filename + ".dot");
 
     out << "digraph OBDD {" << std::endl;
 
-    nodes.seek(0);
+    node_stream ns(nodes);
 
-    if (nodes.size() == 1 && is_sink(nodes.peek())) {
-      out << "\t" << value_of(nodes.read()) << " [shape=box];" << std::endl;
-    } else if (nodes.size() > 0) {
+    if (is_sink(nodes)) {
+      out << "\t"
+          << value_of(ns.pull())
+          << " [shape=box];" << std::endl;
+    } else {
       out << "\t// Nodes" << std::endl;
-
-      nodes.seek(0, tpie::file_stream_base::end);
       out << "\tnode [shape=box];" << std::endl;
 
-      while (nodes.can_read_back()) {
-        auto node = nodes.read_back();
+      while (ns.can_pull()) {
+        node_t node = ns.pull();
 
         out << "\tn"
             << node.uid
@@ -41,9 +46,9 @@ namespace coom {
 
       out <<  std::endl << "\t// Arcs" << std::endl;
 
-      nodes.seek(0, tpie::file_stream_base::end);
-      while (nodes.can_read_back()) {
-        auto node = nodes.read_back();
+      ns.reset();
+      while (ns.can_pull()) {
+        node_t node = ns.pull();
 
         out << "\tn" << node.uid
             << " -> "
@@ -56,58 +61,44 @@ namespace coom {
       }
 
       out <<  std::endl << "\t// Ranks" << std::endl;
-      nodes.seek(0, tpie::file_stream_base::end);
 
-      node_t prev_node = nodes.read_back();
-      out << "\t{ rank=same; " << "n" << prev_node.uid << " }" << std::endl;
+      ns.reset();
+      out << "\t{ rank=same; " << "n" << ns.pull().uid << " }" << std::endl;
 
-      bool has_next_node = nodes.can_read_back();
-      node_t next_node;
-      if (has_next_node) {
-        next_node = nodes.read_back();
-      }
+      while (ns.can_pull()) {
+        node_t current_node = ns.pull();
 
-      while (has_next_node) {
-        out << "\t{ rank=same; " << "n" << next_node.uid << " ";
-        prev_node = next_node;
+        out << "\t{ rank=same; " << "n" << current_node.uid << " ";
 
-        if (nodes.can_read_back()) {
-          next_node = nodes.read_back();
-        } else {
-          has_next_node = false;
-        }
-
-        while(has_next_node && label_of(next_node) == label_of(prev_node)) {
-          out << "n" << next_node.uid << " ";
-
-          if (nodes.can_read_back()) {
-            next_node = nodes.read_back();
-          } else {
-            has_next_node = false;
-          }
+        while(ns.can_pull() && label_of(current_node) == label_of(ns.peek())) {
+          out << "n" << ns.pull().uid << " ";
         }
         out << "}" << std::endl;
-      } while (has_next_node);
+      }
     }
     out << "}" << std::endl;
     out.close();
   }
 
-  void output_dot(tpie::file_stream<arc_t>& node_arcs,
-                  tpie::file_stream<arc_t>& sink_arcs,
-                  std::string filename)
+  void output_dot(const arc_file& arcs, const char* &filename)
+  {
+    std::string filename_str(filename);
+    output_dot(arcs, filename_str);
+  }
+
+  void output_dot(const arc_file& arcs, const std::string &filename)
   {
     std::ofstream out;
     out.open(filename + ".dot");
 
     out << "digraph OBDD {" << std::endl;
 
-    node_arcs.seek(0);
     out << "\t// Node Arcs" << std::endl;
 
-    while (node_arcs.can_read())
+    node_arc_stream nas(arcs);
+    while (nas.can_pull())
       {
-        arc_t a = node_arcs.read();
+        arc_t a = nas.pull();
         out << "\t"
             << "n" << label_of(a.target) << "_" << id_of(a.target)
             << " -> "
@@ -116,15 +107,15 @@ namespace coom {
             << std::endl;
       }
 
-    sink_arcs.seek(0);
     out << std::endl << "\t// Sink Arcs" << std::endl;
 
     out << "\ts0 [shape=box, label=\"0\"];" << std::endl;
     out << "\ts1 [shape=box, label=\"1\"];" << std::endl;
 
-    while (sink_arcs.can_read())
+    sink_arc_stream sas(arcs);
+    while (sas.can_pull())
       {
-        arc_t a = sink_arcs.read();
+        arc_t a = sas.pull();
         out << "\t"
             << "n" << label_of(a.source) << "_" << id_of(a.source)
             << " -> "

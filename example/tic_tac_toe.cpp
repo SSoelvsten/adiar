@@ -22,39 +22,9 @@
  * the following global variables. Also it would be of interest to see the best
  * and worst ratio between sink and node arcs in the unreduced OBDDs
  */
-size_t largest_unreduced = 0;
+size_t largest_nodes = 0;
 
-float best_sink_ratio = 0.0;
-float acc_sink_ratio = 0.0;
-float worst_sink_ratio = 1.0;
-
-inline void stats_unreduced(size_t node_arcs, size_t sink_arcs)
-{
-  size_t total_arcs = node_arcs + sink_arcs;
-  largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
-
-  float sink_ratio = float(sink_arcs) / float(total_arcs);
-  best_sink_ratio = std::max(best_sink_ratio, sink_ratio);
-  acc_sink_ratio += sink_ratio;
-  worst_sink_ratio = std::min(worst_sink_ratio, sink_ratio);
-}
-
-size_t largest_reduced = 0;
-
-float best_reduction_ratio = 1.0;
-float acc_reduction_ratio = 0.0;
-float worst_reduction_ratio = 0.0;
-
-inline void stats_reduced(size_t unreduced_size, size_t reduced_size)
-{
-  largest_reduced = std::max(largest_reduced, reduced_size);
-
-  float reduction_ratio = float(reduced_size) / float(unreduced_size);
-  best_reduction_ratio = std::min(best_reduction_ratio, reduction_ratio);
-  acc_reduction_ratio += reduction_ratio;
-  worst_reduction_ratio = std::max(worst_reduction_ratio, reduction_ratio);
-}
-
+size_t init_nodes = 0;
 
 /*******************************************************************************
  *                             Variable ordering
@@ -80,18 +50,17 @@ inline coom::label_t label_of_position(uint64_t i, uint64_t j, uint64_t k)
  *
  * This again is very well structured and can be easily constructed explicitly.
  */
-void construct_is_not_winning(std::array<coom::label_t, 4>& line,
-                              tpie::file_stream<coom::node_t>& out_nodes,
-                              tpie::file_stream<coom::meta_t>& out_meta)
+coom::node_file construct_is_not_winning(std::array<coom::label_t, 4>& line)
 {
-  out_nodes.open();
-  out_meta.open();
   uint64_t idx = 4 - 1;
 
   coom::ptr_t no_Xs_false = coom::create_sink_ptr(false);
   coom::ptr_t no_Xs_true = coom::create_sink_ptr(true);
 
   coom::ptr_t some_Xs_true = coom::create_sink_ptr(false);
+
+  coom::node_file out;
+  coom::node_writer out_writer(out);
 
   do {
     coom::node_t no_Xs = coom::create_node(line[idx], 0,
@@ -105,10 +74,9 @@ void construct_is_not_winning(std::array<coom::label_t, 4>& line,
     /* Notice, we have to write bottom-up. That is actually more precisely in
      * reverse topological order which also includes the id's. */
     if (idx != 0) {
-      out_nodes.write(some_Xs);
+      out_writer << some_Xs;
     }
-    out_nodes.write(no_Xs);
-    out_meta.write({line[idx]});
+    out_writer << no_Xs;
 
     no_Xs_false = no_Xs.uid;
     if (idx == 1) { // The next is the root?
@@ -117,6 +85,8 @@ void construct_is_not_winning(std::array<coom::label_t, 4>& line,
 
     some_Xs_true = some_Xs.uid;
   } while (idx-- > 0);
+
+  return out;
 }
 
 /*******************************************************************************
@@ -135,9 +105,7 @@ void construct_is_not_winning(std::array<coom::label_t, 4>& line,
  * difference between the label-value for the first cell and the fourth cell is
  * as small as possible.
  */
-size_t construct_is_tie(uint64_t N,
-                        tpie::file_stream<coom::node_t>& out_nodes,
-                        tpie::file_stream<coom::meta_t>& out_meta)
+coom::node_file construct_is_tie(uint64_t N)
 {
   // Compute all rows, columns, and diagonals. Most likely the optimiser already
   // precomputes this one.
@@ -200,57 +168,22 @@ size_t construct_is_tie(uint64_t N,
   // The 4 diagonals of the entire cube (dist: 64)
   lines.push_back({ label_of_position(0,0,0), label_of_position(1,1,1), label_of_position(2,2,2), label_of_position(3,3,3) });
 
-  tpie::file_stream<coom::arc_t> reduce_node_arcs;
-  tpie::file_stream<coom::arc_t> reduce_sink_arcs;
-  tpie::file_stream<coom::meta_t> reduce_meta;
+  coom::node_file out = coom::bdd_counter(0, 63, N);
 
-  tpie::file_stream<coom::node_t> next_not_winning;
-  tpie::file_stream<coom::meta_t> next_not_winning_meta;
-
-  out_nodes.open();
-  out_meta.open();
-  coom::build_counter(0, 63, N, out_nodes, out_meta);
+  init_nodes = bdd_nodecount(out);
 
   unsigned int idx = 0;
   for (auto &line : lines) {
-    next_not_winning.open();
-    next_not_winning_meta.open();
+    coom::node_file next_not_winning = construct_is_not_winning(line);
 
-    construct_is_not_winning(line, next_not_winning, next_not_winning_meta);
+    out = coom::bdd_apply(out, next_not_winning, coom::and_op);
 
-    reduce_node_arcs.open();
-    reduce_sink_arcs.open();
-    reduce_meta.open();
-
-    coom::apply(out_nodes, out_meta,
-                next_not_winning, next_not_winning_meta,
-                coom::and_op,
-                reduce_node_arcs, reduce_sink_arcs, reduce_meta);
-
-    // close (and clean up) prior result
-    out_nodes.close();
-    out_meta.close();
-    next_not_winning.close();
-    next_not_winning_meta.close();
-
-    stats_unreduced(reduce_node_arcs.size(), reduce_sink_arcs.size());
-
-    // open for next result
-    out_nodes.open();
-    out_meta.open();
-
-    coom::reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta, out_nodes, out_meta);
-
-    stats_reduced((reduce_node_arcs.size() + reduce_sink_arcs.size()) / 2, out_nodes.size());
-
-    reduce_node_arcs.close();
-    reduce_sink_arcs.close();
-    reduce_meta.close();
+    largest_nodes = std::max(largest_nodes, reduce(out).size());
 
     idx++;
   }
 
-  return lines.size();
+  return out;
 }
 
 /* A few chrono wrappers to improve readability of the code below */
@@ -294,10 +227,6 @@ uint64_t expected[25] = {
   5000129244,
 };
 
-/* TODO: File size calculations should be available from COOM. */
-inline auto MB_of_size(tpie::stream_size_type size) {
-  return size * sizeof(coom::node) /* bytes */ / (1024 * 1024) /* in MB */;
-}
 int main(int argc, char* argv[])
 {
   // ===== Parse argument =====
@@ -338,54 +267,27 @@ int main(int argc, char* argv[])
   // ===== Tic-Tac-Toe =====
 
   tpie::log_info() << "| Tic-Tac-Toe (" << N << ") : Is-tie construction"  << std::endl;
-  tpie::file_stream<coom::node_t> is_tie;
-  tpie::file_stream<coom::meta_t> is_tie_meta;
 
   auto before_tie = get_timestamp();
-  size_t constraints = construct_is_tie(N, is_tie, is_tie_meta);
+  coom::node_file is_tie = construct_is_tie(N);
   auto after_tie = get_timestamp();
 
-  tpie::log_info() << "|  | constraints: " << constraints << " lines" << std::endl;
+  tpie::log_info() << "|  | constraints: 76 lines" << std::endl;
   tpie::log_info() << "|  | time: " << duration_of(before_tie, after_tie) << " s" << std::endl;
 
-  auto init_size = (N+1)*64-(N*N); // See coom::build_counter implementation
-  auto init_MB = MB_of_size(init_size);
-  tpie::log_info() << "|  | initial size: " << init_size << " nodes" << std::endl;
-  tpie::log_info() << "|  |               " << (init_MB > 0 ? std::to_string(init_MB) : "< 1") << " MB"<< std::endl;
+  tpie::log_info() << "|  | initial size: " << init_nodes << " nodes" << std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
-  auto largest_unreduced_MB = (MB_of_size(largest_unreduced) * 3) / 2;
-  tpie::log_info() << "|  | largest OBDD (unreduced): " << largest_unreduced << " nodes" << std::endl;
-  tpie::log_info() << "|  |                           " << (largest_unreduced_MB > 0 ? std::to_string(largest_unreduced_MB) : "< 1")
-                                                        << " MB"<< std::endl;
+  tpie::log_info() << "|  | largest OBDD  : " << largest_nodes << " nodes" << std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
-  tpie::log_info() << "|  | sink ratio: " << std::endl;
-  tpie::log_info() << "|  |  | best:  " << best_sink_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_sink_ratio / constraints << std::endl;
-  tpie::log_info() << "|  |  | worst: " << worst_sink_ratio << std::endl;
-  tpie::log_info() << "|  |" << std::endl;
-
-  auto largest_reduced_MB = MB_of_size(largest_reduced);
-  tpie::log_info() << "|  | largest OBDD (reduced)  : " << largest_reduced << " nodes" << std::endl;
-  tpie::log_info() << "|  |                           " << (largest_reduced_MB > 0 ? std::to_string(largest_reduced_MB) : "< 1")
-                                                        << " MB"<< std::endl;
-  tpie::log_info() << "|  |" << std::endl;
-
-  tpie::log_info() << "|  | reduction ratio: " << std::endl;
-  tpie::log_info() << "|  |  | best:  " << best_reduction_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_reduction_ratio / constraints << std::endl;
-  tpie::log_info() << "|  |  | worst: " << worst_reduction_ratio << std::endl;
-  tpie::log_info() << "|  |" << std::endl;
-
-  auto final_MB = MB_of_size(is_tie.size());
   tpie::log_info() << "|  | final size: " << is_tie.size() << " nodes"<< std::endl;
-  tpie::log_info() << "|  |             " << (final_MB > 0 ? std::to_string(final_MB) : "< 1") << " MB"<< std::endl;
+  tpie::log_info() << "|  |             " << is_tie.file_size() / 1024 / 1024 << " MB"<< std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
   tpie::log_info() << "| Tic-Tac-Toe (" << N << ") : Counting ties"  << std::endl;
   auto before_count = get_timestamp();
-  uint64_t solutions = coom::count_assignments(is_tie, is_tie_meta, coom::is_true);
+  uint64_t solutions = coom::bdd_satcount(is_tie);
   auto after_count = get_timestamp();
 
   tpie::log_info() << "|  | number of ties: " << solutions << std::endl;

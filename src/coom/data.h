@@ -101,6 +101,9 @@ namespace coom {
   bool value_of(ptr_t p);
   bool value_of(uid_t u);
 
+  ptr_t negate(ptr_t p);
+  uid_t negate(uid_t u);
+
   typedef std::function<bool(ptr_t)> sink_pred;
 
   extern const sink_pred is_any;
@@ -171,6 +174,9 @@ namespace coom {
   bool is_sink(const node_t &n);
   bool value_of(const node_t &n);
 
+  node_t negate(const node_t& n);
+  node operator! (const node& a);
+
   bool operator< (const node &a, const node &b);
   bool operator> (const node &a, const node &b);
   bool operator== (const node &a, const node &b);
@@ -195,13 +201,21 @@ namespace coom {
 
   typedef arc arc_t;
 
+  // TODO: Create constructor for COOM_ASSERT checks on being sorted?
+
   bool is_high(arc_t &a);
+
+  arc_t negate(const arc_t& a);
+  arc operator! (const arc& a);
 
   bool operator== (const arc &a, const arc &b);
   bool operator!= (const arc &a, const arc &b);
 
-  extern const std::function<bool(arc_t,arc_t)> by_source_lt;
-
+  struct by_source_lt : public std::binary_function<arc_t, arc_t, bool>
+  {
+    bool operator()(const arc_t& a, const arc_t& b) const
+    { return a.source < b.source; }
+  };
 
   //////////////////////////////////////////////////////////////////////////////
   /// Finally, we can create some converters back and forth
@@ -210,6 +224,26 @@ namespace coom {
   arc_t high_arc_of(const node_t& n);
 
   node_t node_of(const arc_t &low, const arc_t &high);
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Finally, we can create some converters back and forth
+  //////////////////////////////////////////////////////////////////////////////
+  struct assignment {
+    label_t label;
+    bool value;
+  };
+
+  typedef assignment assignment_t;
+
+  assignment_t create_assignment(label_t label, bool value);
+
+  assignment operator! (const assignment& a);
+
+  bool operator< (const assignment& a, const assignment& b);
+  bool operator> (const assignment& a, const assignment& b);
+  bool operator== (const assignment& a, const assignment& b);
+  bool operator!= (const assignment& a, const assignment& b);
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -225,31 +259,10 @@ namespace coom {
 
   typedef meta meta_t;
 
+  meta operator! (const meta& m);
+
   bool operator== (const meta &a, const meta &b);
   bool operator!= (const meta &a, const meta &b);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// An OBDD is then described as the combined list of nodes and its meta
-  /// information.
-  ///
-  ///        ( tpie::file_stream<node_t> , tpie::file_stream<meta_t>)
-  ///
-  //////////////////////////////////////////////////////////////////////////////
-
-  // TODO: Create a wrapper for the two streams...
-  //       Switch from tpie::file_stream to tpie::file to be able to reuse the
-  //       same file multiple times.
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// Check whether a given OBDD is sink-only and satisfies the given sink_pred.
-  ///
-  /// \param nodes     The given OBDD of nodes in reverse topological order
-  /// \param sink_pred If the given OBDD is sink-only, then secondly the sink is
-  ///                  checked with the given sink predicate. Default is any
-  ///                  sink.
-  //////////////////////////////////////////////////////////////////////////////
-  bool is_sink(tpie::file_stream<node_t> &nodes,
-               const sink_pred &sink_pred = is_any);
 }
 
 #endif // COOM_DATA_H

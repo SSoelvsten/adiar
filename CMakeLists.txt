@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.8)
 project (coom
   VERSION 0.1
   DESCRIPTION "Cache-Oblivious OBDD Manipulation"
+  LANGUAGES CXX
 )
 
 # ============================================================================ #

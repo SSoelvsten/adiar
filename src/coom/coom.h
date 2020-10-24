@@ -1,21 +1,27 @@
 #ifndef COOM_H
 #define COOM_H
 
-// Data structures
+////////////////////////////////////////////////////////////////////////////////
+/// COOM Core
 #include <coom/data.h>
-#include <coom/assignment.h>
+#include <coom/file.h>
+
+#include <coom/reduce.h>
+
+////////////////////////////////////////////////////////////////////////////////
+/// COOM BDD
 
 // Simple constructors
-#include <coom/build.h>
+#include <coom/bdd/build.h>
 
 // Algorithms
-#include <coom/apply.h>
-#include <coom/count.h>
-#include <coom/evaluate.h>
-#include <coom/negate.h>
-#include <coom/reduce.h>
-#include <coom/restrict.h>
-#include <coom/quantify.h>
+#include <coom/bdd/apply.h>
+#include <coom/bdd/assignment.h>
+#include <coom/bdd/count.h>
+#include <coom/bdd/evaluate.h>
+#include <coom/bdd/negate.h>
+#include <coom/bdd/restrict.h>
+#include <coom/bdd/quantify.h>
 
 // Debugging
 #include <coom/dot.h>
