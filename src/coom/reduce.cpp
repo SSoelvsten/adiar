@@ -185,6 +185,9 @@ namespace coom
 
         node_t out_node = create_node(label, out_id, current_node.low, current_node.high);
         out_nodes.write(out_node);
+#if COOM_ASSERT
+        assert(out_id > 0);
+#endif
         out_id--;
 
         red2_mapping.push({ current_node.uid, out_node.uid });

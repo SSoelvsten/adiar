@@ -263,6 +263,9 @@ namespace coom
         // The variable should stay: proceed as in Apply by simulating both
         // possibilities in parallel.
         uid_t out_uid = create_node_uid(out_label, out_id);
+#if COOM_ASSERT
+        assert(out_id < MAX_ID);
+#endif
         out_id++;
 
         quantify_resolve_request(quantD, reduce_sink_arcs, op,

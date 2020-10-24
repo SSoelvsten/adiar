@@ -107,6 +107,9 @@ namespace coom {
                      tpie::file_stream<node_t> &out_nodes,
                      tpie::file_stream<meta_t> &out_meta)
   {
+#if COOM_ASSERT
+    assert(threshold < MAX_ID);
+#endif
     assert::is_valid_output_stream(out_nodes);
     assert::is_valid_output_stream(out_meta);
     assert::is_build_counter_valid_labels(min_label, max_label, threshold);
