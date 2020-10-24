@@ -25,6 +25,7 @@ set(SOURCES
   assert.cpp
   assignment.cpp
   build.cpp
+  coom.cpp
   count.cpp
   data.cpp
   evaluate.cpp
