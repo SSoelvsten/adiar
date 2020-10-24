@@ -3,34 +3,17 @@
 
 #include "assert.h"
 
-namespace coom { namespace assert {
-    template<>
-    void is_valid_input_stream<node_t>([[maybe_unused]] tpie::file_stream<node_t>& in)
-    {
-#if COOM_ASSERT
-      assert(in.is_open());
-      assert(in.is_readable());
-      assert(in.size() > 0);
-#endif
-    }
-
-    template<>
-    void is_valid_input_stream<arc_t>([[maybe_unused]] tpie::file_stream<arc_t>& in)
-    {
-#if COOM_ASSERT
-      assert(in.is_open());
-      assert(in.is_readable());
-#endif
-    }
-
-    template<>
-    void is_valid_input_stream<meta_t>([[maybe_unused]] tpie::file_stream<meta_t>& in)
-    {
-#if COOM_ASSERT
-      assert(in.is_open());
-      assert(in.is_readable());
-#endif
-    }
+namespace coom
+{
+  void __coom_assert(const char* expr_str, bool expr, const char* file, int line, const char* msg)
+  {
+    if (!expr)
+      {
+        std::cerr << "Assert failed:\t" << msg << "\n"
+                  << "Expected:\t" << expr_str << "\n"
+                  << "Source:\t\t" << file << ", line " << line << "\n";
+        abort();
+      }
   }
 }
 

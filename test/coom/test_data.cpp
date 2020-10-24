@@ -85,90 +85,51 @@ go_bandit([]() {
                 AssertThat(is_sink_ptr(flag(NIL)), Is().False());
               });
 
+            it("should negate sink (unflagged)", [&]() {
+                ptr_t p1 = create_sink_ptr(false);
+                AssertThat(negate(p1), Is().EqualTo(create_sink_ptr(true)));
+
+                ptr_t p2 = create_sink_ptr(true);
+                AssertThat(negate(p2), Is().EqualTo(create_sink_ptr(false)));
+              });
+
+            it("should negate sink into sink (flagged)", [&]() {
+                 ptr_t p1 = flag(create_sink_ptr(false));
+                 AssertThat(negate(p1), Is().EqualTo(flag(create_sink_ptr(true))));
+
+                 ptr_t p2 = flag(create_sink_ptr(true));
+                 AssertThat(negate(p2), Is().EqualTo(flag(create_sink_ptr(false))));
+              });
+
             it("should take up 8 bytes of memory", [&]() {
                 ptr_t sink = create_sink_ptr(false);
                 AssertThat(sizeof(sink), Is().EqualTo(8u));
               });
 
-            describe("is_sink predicate", []() {
-                it("should accept the correct sink-only OBDD [1]", [&]() {
-                    tpie::file_stream<node_t> sink_T;
-                    sink_T.open();
-                    sink_T.write(create_sink(true));
+            describe("predicates", []() {
+                ptr_t sink_T = create_sink_ptr(true);
+                ptr_t sink_F = create_sink_ptr(false);
 
-                    AssertThat(is_sink(sink_T, is_true), Is().True());
+                it("should accept T sink with is_true and is_any", [&]() {
+                    AssertThat(is_true(sink_T), Is().True());
+                    AssertThat(is_any(sink_T), Is().True());
                   });
 
-                it("should accept the correct sink-only OBDD [2]", [&]() {
-                    tpie::file_stream<node_t> sink_F;
-                    sink_F.open();
-                    sink_F.write(create_sink(false));
-
-                    AssertThat(is_sink(sink_F, is_false), Is().True());
+                it("should reject T sink with is_false", [&]() {
+                    AssertThat(is_false(sink_T), Is().False());
                   });
 
-
-                it("should reject the incorrect sink-only OBDD [1]", [&]() {
-                    tpie::file_stream<node_t> sink_T;
-                    sink_T.open();
-                    sink_T.write(create_sink(true));
-
-                    AssertThat(is_sink(sink_T, is_false), Is().False());
+                it("should accept F sink with is_false and is_any", [&]() {
+                    AssertThat(is_false(sink_F), Is().True());
+                    AssertThat(is_any(sink_F), Is().True());
                   });
 
-                it("should reject the incorrect sink-only OBDD [2]", [&]() {
-                    tpie::file_stream<node_t> sink_F;
-                    sink_F.open();
-                    sink_F.write(create_sink(false));
-
-                    AssertThat(is_sink(sink_F, is_true), Is().False());
-                  });
-
-                it("should have any sink as default", [&]() {
-                    tpie::file_stream<node_t> sink_T;
-                    sink_T.open();
-                    sink_T.write(create_sink(true));
-
-                    AssertThat(is_sink(sink_T), Is().True());
-
-                    tpie::file_stream<node_t> sink_F;
-                    sink_F.open();
-                    sink_F.write(create_sink(false));
-
-                    AssertThat(is_sink(sink_F), Is().True());
-                  });
-
-                it("should reject the non-sink OBDD [1]", [&]() {
-                    tpie::file_stream<node_t> x0;
-                    x0.open();
-                    x0.write(create_node(0,MAX_ID,
-                                         create_sink_ptr(false),
-                                         create_sink_ptr(true)));
-
-                    AssertThat(is_sink(x0, is_true), Is().False());
-                    AssertThat(is_sink(x0, is_false), Is().False());
-                    AssertThat(is_sink(x0, is_any), Is().False());
-                  });
-
-                it("should reject the non-sink OBDD [2]", [&]() {
-                    tpie::file_stream<node_t> x0_and_x1;
-                    x0_and_x1.open();
-
-                    x0_and_x1.write(create_node(1, MAX_ID,
-                                         create_sink_ptr(false),
-                                         create_sink_ptr(true)));
-
-                    x0_and_x1.write(create_node(0, MAX_ID,
-                                         create_sink_ptr(false),
-                                         create_node_ptr(1, MAX_ID)));
-
-                    AssertThat(is_sink(x0_and_x1, is_true), Is().False());
-                    AssertThat(is_sink(x0_and_x1, is_false), Is().False());
-                    AssertThat(is_sink(x0_and_x1, is_any), Is().False());
+                it("should reject F sink with is_true", [&]() {
+                    AssertThat(is_true(sink_F), Is().False());
                   });
               });
 
-            describe("Operators", [&]() {
+            describe("operators", [&]() {
                 it("AND", [&]() {
                     AssertThat(and_op(create_sink_ptr(true), create_sink_ptr(true)),
                                Is().EqualTo(create_sink_ptr(true)));
@@ -498,6 +459,39 @@ go_bandit([]() {
                 AssertThat(node_1 != node_4, Is().True());
               });
 
+            it("should leave node_ptr children unchanged", [&]() {
+                auto node = create_node(2,2,
+                                        create_node_ptr(42,3),
+                                        create_node_ptr(8,2));
+
+                AssertThat(!node, Is().EqualTo(node));
+              });
+
+            it("should negate sink_ptr child", [&]() {
+                auto node = create_node(2,2,
+                                        create_sink_ptr(false),
+                                        create_node_ptr(8,2));
+
+                AssertThat(!node, Is().EqualTo(create_node(2,2,
+                                                           create_sink_ptr(true),
+                                                           create_node_ptr(8,2))));
+             });
+
+            it("should negate sink_ptr children", [&]() {
+                auto node = create_node(2,2,
+                                        create_sink_ptr(false),
+                                        flag(create_sink_ptr(true)));
+
+                AssertThat(!node, Is().EqualTo(create_node(2,2,
+                                                           create_sink_ptr(true),
+                                                           flag(create_sink_ptr(false)))));
+              });
+
+            it("should negate sink_ptr children", [&]() {
+                AssertThat(!create_sink(true), Is().EqualTo(create_sink(false)));
+                AssertThat(!create_sink(false), Is().EqualTo(create_sink(true)));
+              });
+
             it("should be a POD", [&]() {
                 AssertThat(std::is_pod<node>::value, Is().True());
               });
@@ -512,35 +506,35 @@ go_bandit([]() {
 
                 AssertThat(sizeof(node), Is().EqualTo(3u * 8u));
               });
-          });
 
-        describe("Sink nodes", [&]() {
-            it("should recognise sink nodes as such", [&]() {
-                node_t sink_node_T = create_sink(true);
-                AssertThat(is_sink(sink_node_T), Is().True());
+            describe("Sink nodes", [&]() {
+                it("should recognise sink nodes as such", [&]() {
+                    node_t sink_node_T = create_sink(true);
+                    AssertThat(is_sink(sink_node_T), Is().True());
 
-                node_t sink_node_F = create_sink(false);
-                AssertThat(is_sink(sink_node_F), Is().True());
-              });
+                    node_t sink_node_F = create_sink(false);
+                    AssertThat(is_sink(sink_node_F), Is().True());
+                  });
 
-            it("should recognise normal nodes not as sink nodes", [&]() {
-                node_t node_1 = create_node(42,2,
-                                            create_sink_ptr(false),
-                                            create_sink_ptr(true));
-                AssertThat(is_sink(node_1), Is().False());
+                it("should recognise normal nodes not as sink nodes", [&]() {
+                    node_t node_1 = create_node(42,2,
+                                                create_sink_ptr(false),
+                                                create_sink_ptr(true));
+                    AssertThat(is_sink(node_1), Is().False());
 
-                node_t node_2 = create_node(0,0,
-                                            create_sink_ptr(true),
-                                            node_1.uid);
-                AssertThat(is_sink(node_2), Is().False());
-              });
+                    node_t node_2 = create_node(0,0,
+                                                create_sink_ptr(true),
+                                                node_1.uid);
+                    AssertThat(is_sink(node_2), Is().False());
+                  });
 
-            it("should retrive value of a sink node", [&]() {
-                node_t sink_node_T = create_sink(true);
-                AssertThat(value_of(sink_node_T), Is().True());
+                it("should retrive value of a sink node", [&]() {
+                    node_t sink_node_T = create_sink(true);
+                    AssertThat(value_of(sink_node_T), Is().True());
 
-                node_t sink_node_F = create_sink(false);
-                AssertThat(value_of(sink_node_F), Is().False());
+                    node_t sink_node_F = create_sink(false);
+                    AssertThat(value_of(sink_node_F), Is().False());
+                  });
               });
           });
 
@@ -596,6 +590,21 @@ go_bandit([]() {
                 AssertThat(is_high(arc_high), Is().True());
               });
 
+            it("should leave node_ptr target unchanged", [&]() {
+                arc_t a = { create_node_ptr(1,0), create_node_ptr(2,0) };
+                AssertThat(!a, Is().EqualTo(a));
+              });
+
+            it("should negate unflagged sink_ptr target", [&]() {
+                arc_t a = { create_node_ptr(1,0), create_sink_ptr(true) };
+                AssertThat(!a, Is().EqualTo(arc { create_node_ptr(1,0), create_sink_ptr(false) }));
+             });
+
+            it("should negate flagged sink_ptr target", [&]() {
+                arc_t a = { create_node_ptr(1,0), flag(create_sink_ptr(false)) };
+                AssertThat(!a, Is().EqualTo(arc { create_node_ptr(1,0), flag(create_sink_ptr(true)) }));
+              });
+
             it("should be a POD", [&]() {
                 AssertThat(std::is_pod<arc_t>::value, Is().True());
               });
@@ -624,13 +633,13 @@ go_bandit([]() {
               });
 
             it("should extract high arc from node", [&]() {
-                node_t node = create_node(11,13,
+                node_t node = create_node(6,13,
                                           create_node_ptr(8,21),
                                           create_node_ptr(9,8));
 
                 arc_t arc = high_arc_of(node);
 
-                AssertThat(label_of(arc.source), Is().EqualTo(11u));
+                AssertThat(label_of(arc.source), Is().EqualTo(6u));
                 AssertThat(id_of(arc.source), Is().EqualTo(13u));
                 AssertThat(label_of(arc.target), Is().EqualTo(9u));
                 AssertThat(id_of(arc.target), Is().EqualTo(8u));
@@ -650,6 +659,52 @@ go_bandit([]() {
 
                 AssertThat(label_of(node.high), Is().EqualTo(label_of(high_arc.target)));
                 AssertThat(id_of(node.high), Is().EqualTo(id_of(high_arc.target)));
+              });
+          });
+
+        describe("Assignment", [&]() {
+            assignment_t a1 = create_assignment(2, false);
+            assignment_t a2 = create_assignment(2, true);
+            assignment_t a3 = create_assignment(3, false);
+
+            it("is sorted first by label, then by value", [&]() {
+                // Less than
+                AssertThat(a1 < a2, Is().True());
+                AssertThat(a1 < a3, Is().True());
+                AssertThat(a2 < a3, Is().True());
+                AssertThat(a2 < a1, Is().False());
+                AssertThat(a3 < a1, Is().False());
+                AssertThat(a3 < a2, Is().False());
+
+                // Greater than
+                AssertThat(a2 > a1, Is().True());
+                AssertThat(a3 > a1, Is().True());
+                AssertThat(a3 > a2, Is().True());
+                AssertThat(a1 > a2, Is().False());
+                AssertThat(a1 > a3, Is().False());
+                AssertThat(a2 > a3, Is().False());
+            });
+
+            assignment_t b1 = create_assignment(2, false);
+            assignment_t b2 = create_assignment(2, true);
+            assignment_t b3 = create_assignment(3, false);
+
+            it("should be equal by content", [&]() {
+                AssertThat(a1 == b1, Is().True());
+                AssertThat(a2 == b2, Is().True());
+                AssertThat(a3 == b3, Is().True());
+                AssertThat(a2 == b1, Is().False());
+                AssertThat(a3 == b1, Is().False());
+                AssertThat(a3 == b2, Is().False());
+              });
+
+            it("should be equal by content", [&]() {
+                AssertThat(a2 != b1, Is().True());
+                AssertThat(a3 != b1, Is().True());
+                AssertThat(a3 != b2, Is().True());
+                AssertThat(a1 != b1, Is().False());
+                AssertThat(a2 != b2, Is().False());
+                AssertThat(a3 != b3, Is().False());
               });
           });
       });

@@ -10,18 +10,15 @@
 
 namespace coom
 {
-  inline auto bytes_from_size(tpie::file_stream<arc_t> &in_node_arcs,
-                              tpie::file_stream<arc_t> &in_sink_arcs) {
-    return sizeof(coom::node) * ((in_node_arcs.size() + in_sink_arcs.size()) / 2);
-  }
-
+  //////////////////////////////////////////////////////////////////////////////
+  // Data structures
   struct mapping
   {
     uid_t old_uid;
     uid_t new_uid;
   };
 
-
+  //////////////////////////////////////////////////////////////////////////////
   // For priority queue
   struct reduce_queue_lt
   {
@@ -42,60 +39,55 @@ namespace coom
   };
 
 
-  // For sorting for common children
+  //////////////////////////////////////////////////////////////////////////////
+  // For sorting for Reduction Rule 2 (and back again)
   const auto reduce_node_children_lt = [](const node_t &a, const node_t &b) -> bool {
     return a.high > b.high ||
            (a.high == b.high && a.low > b.low) ||
            (a.high == b.high && a.low == b.low && a.uid > b.uid);
   };
 
-
-  // For sorting back to original order
   const auto reduce_uid_lt = [](const mapping &a, const mapping &b) -> bool {
     return a.old_uid > b.old_uid;
   };
 
+  typedef arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, std::greater<label_t>> reduce_priority_queue_t;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Helper functions
 
   // Merging priority queue with sink_arc stream
-  inline arc_t reduce_get_next(priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, 1, std::greater<label_t>> &redD,
-                               tpie::file_stream<arc_t> &in_sink_arcs,
-                               arc_t &next_sink_arc,
-                               bool &has_next_sink)
+  inline arc_t reduce_get_next(reduce_priority_queue_t &redD,
+                               sink_arc_stream &sink_arcs)
   {
-    if (!redD.can_pull() || (has_next_sink && next_sink_arc.source > redD.top().source)) {
-      arc_t ret_value = next_sink_arc;
-
-      if (in_sink_arcs.can_read_back()) {
-        next_sink_arc = in_sink_arcs.read_back();
-      } else {
-        has_next_sink = false;
-      }
-
-      return ret_value;
+    if (!redD.can_pull() || (sink_arcs.can_pull() && sink_arcs.peek().source > redD.top().source)) {
+      return sink_arcs.pull();
     } else {
       return redD.pull();
     }
   }
 
-
-  void reduce(tpie::file_stream<arc_t> &in_node_arcs,
-              tpie::file_stream<arc_t> &in_sink_arcs,
-              tpie::file_stream<meta_t> &in_meta,
-              tpie::file_stream<node_t> &out_nodes,
-              tpie::file_stream<meta_t> &out_meta)
+  //////////////////////////////////////////////////////////////////////////////
+  node_file reduce(const node_or_arc_file &maybe_reduced_file)
   {
-    assert::is_valid_input_stream(in_node_arcs);
-    assert::is_valid_input_stream(in_sink_arcs);
-    assert::is_valid_output_stream(out_nodes);
-    assert::is_valid_output_stream(out_meta);
+    if (!maybe_reduced_file.has<node_file>()) {
+      return reduce(maybe_reduced_file.get<arc_file>());
+    }
+    return maybe_reduced_file.get<node_file>();
+  }
+
+  node_file reduce(const arc_file &in_file)
+  {
+    node_file out_file;
+    node_writer out_writer(out_file);
 
     // Set up
-    priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, 1, std::greater<label_t>>
-      redD(tpie::get_memory_manager().available() / 2);
-    redD.hook_meta_stream(in_meta);
+    reduce_priority_queue_t redD(tpie::get_memory_manager().available() / 2);
+    redD.hook_meta_stream(in_file);
 
-    in_sink_arcs.seek(0, tpie::file_stream_base::end);
-    in_node_arcs.seek(0, tpie::file_stream_base::end);
+    node_arc_stream node_arcs(in_file);
+    sink_arc_stream sink_arcs(in_file);
+
     tpie::dummy_progress_indicator pi;
 
     // Minimum size for a bucket
@@ -104,56 +96,51 @@ namespace coom
     assert(min_size < tpie::get_memory_manager().available());
 #endif
     auto max_sorter_memory = std::max(min_size,
-                                      // If possible take at most a quarter of memory or half of the input size
+                                      // If possible take at most a quarter of memory or a third of the input size
                                       std::min(tpie::get_memory_manager().available() / 4,
-                                               bytes_from_size(in_node_arcs, in_sink_arcs) / 2));
+                                               sizeof(node_t) * (in_file.size() / 2)));
 
-    // Check to see if in_node_arcs is empty
-    if (!in_node_arcs.can_read_back()) {
-      arc_t e_high = in_sink_arcs.read_back();
-      arc_t e_low = in_sink_arcs.read_back();
+    // Check to see if node_arcs is empty
+    if (!node_arcs.can_pull()) {
+      arc_t e_high = sink_arcs.pull();
+      arc_t e_low = sink_arcs.pull();
 
       // Apply reduction rule 1 if applicable
       if (e_high.target == e_low.target) {
-        out_nodes.write(create_sink(value_of(e_low.target)));
+        out_writer.unsafe_push(create_sink(value_of(e_low.target)));
       } else {
         label_t label = label_of(e_low.source);
-        out_nodes.write(create_node(label, MAX_ID,
-                                    e_low.target,
-                                    e_high.target));
-        out_meta.write({ label });
+        out_writer.unsafe_push(create_node(label, MAX_ID,
+                                            e_low.target,
+                                            e_high.target));
+
+        out_writer.unsafe_push(meta_t { label });
       }
 
-      return;
+      return out_file;
     }
 
-    // Find the first edge and its label
-    arc_t next_node_arc = in_node_arcs.read_back();
-    bool has_next_node_arc = true;
-
-    arc_t next_sink_arc = in_sink_arcs.read_back();
-    bool has_next_sink = true;
-
-    label_t label = label_of(next_sink_arc.source);
+    // Find the first label
+    label_t label = label_of(sink_arcs.peek().source);
 
     // Process bottom-up each layer
-    while (has_next_sink || redD.can_pull()) {
+    while (sink_arcs.can_pull() || redD.can_pull()) {
 #if COOM_ASSERT
       assert (label == redD.current_layer());
 #endif
 
-      // Set up for L_j_red1
+      // Temporary file for Reduction Rule 1 mappings (opened later if need be)
       tpie::file_stream<mapping> red1_mapping;
 
-      // Set-up for L_j
+      // Sorter to find Reduction Rule 2 mappings
       tpie::merge_sorter<node_t, false, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
       child_grouping.set_available_memory(max_sorter_memory);
       child_grouping.begin();
 
-      // Pull out all nodes from redD and in_sink_arcs for this layer
-      while ((has_next_sink && label_of(next_sink_arc.source) == label) || redD.can_pull()) {
-        arc_t e_high = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
-        arc_t e_low = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
+      // Pull out all nodes from redD and sink_arcs for this layer
+      while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label) || redD.can_pull()) {
+        arc_t e_high = reduce_get_next(redD, sink_arcs);
+        arc_t e_low = reduce_get_next(redD, sink_arcs);
 
         node_t n = node_of(e_low, e_high);
 
@@ -168,7 +155,7 @@ namespace coom
         }
       }
 
-      // Output nodes and apply Reduction rule 2
+      // Sort and apply Reduction rule 2
       child_grouping.end();
       child_grouping.calc(pi);
 
@@ -177,14 +164,14 @@ namespace coom
       red2_mapping.begin();
 
       if (child_grouping.can_pull()) {
-        // Output the first
+        // Set up for remapping, keeping the very first node seen
         id_t out_id = MAX_ID;
         node_t current_node = child_grouping.pull();
 
-        out_meta.write({ label });
+        out_writer.unsafe_push(meta_t { label });
 
         node_t out_node = create_node(label, out_id, current_node.low, current_node.high);
-        out_nodes.write(out_node);
+        out_writer.unsafe_push(out_node);
 #if COOM_ASSERT
         assert(out_id > 0);
 #endif
@@ -192,7 +179,8 @@ namespace coom
 
         red2_mapping.push({ current_node.uid, out_node.uid });
 
-        // Output nodes and remap the ones match the one just output
+        // Keep the first node with different children than prior, and remap all
+        // the later that match its children.
         while (child_grouping.can_pull()) {
           node_t next_node = child_grouping.pull();
           if (current_node.low == next_node.low && current_node.high == next_node.high) {
@@ -201,7 +189,7 @@ namespace coom
             current_node = next_node;
 
             out_node = create_node(label, out_id, current_node.low, current_node.high);
-            out_nodes.write(out_node);
+            out_writer.unsafe_push(out_node);
             out_id--;
 
             red2_mapping.push({current_node.uid, out_node.uid});
@@ -209,7 +197,7 @@ namespace coom
         }
       }
 
-      // Sort mappings for Reduction rule 2 back in order of input
+      // Sort mappings for Reduction rule 2 back in order of node_arcs
       red2_mapping.end();
       red2_mapping.calc(pi);
 
@@ -235,34 +223,26 @@ namespace coom
         mapping current_map = is_red1_current ? next_red1 : next_red2;
 
 #if COOM_ASSERT
-        assert(!has_next_node_arc || current_map.old_uid == next_node_arc.target);
+        assert(!node_arcs.can_pull() || current_map.old_uid == node_arcs.peek().target);
 #endif
 
         // Find all arcs that have sources that match the current mapping's old_uid
-        while (has_next_node_arc && current_map.old_uid == next_node_arc.target) {
-          // The is_high flag is already included in next_node_arc.source
-          arc_t new_arc = { next_node_arc.source, current_map.new_uid };
-
+        while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target) {
+          // The is_high flag is included in arc_t..source
+          arc_t new_arc = { node_arcs.pull().source, current_map.new_uid };
           redD.push(new_arc);
-          if (in_node_arcs.can_read_back()) {
-            next_node_arc = in_node_arcs.read_back();
-          } else {
-            has_next_node_arc = false;
-          }
         }
 
         // Update the mapping that was used
         if (is_red1_current) {
-          if (red1_mapping.can_read()) {
+          has_next_red1 = red1_mapping.can_read();
+          if (has_next_red1) {
             next_red1 = red1_mapping.read();
-          } else {
-            has_next_red1 = false;
           }
         } else {
-          if (red2_mapping.can_pull()) {
+          has_next_red2 = red2_mapping.can_pull();
+          if (has_next_red2) {
             next_red2 = red2_mapping.pull();
-          } else {
-            has_next_red2 = false;
           }
         }
       }
@@ -271,21 +251,22 @@ namespace coom
       red1_mapping.close();
 
       if (redD.has_next_layer()) {
-        if (has_next_sink) {
-          redD.setup_next_layer(label_of(next_sink_arc.source));
+        if (sink_arcs.can_pull()) {
+          redD.setup_next_layer(label_of(sink_arcs.peek().source));
         } else {
           redD.setup_next_layer();
         }
         label = redD.current_layer();
-      } else if (out_nodes.size() == 0) {
+      } else if (out_file.size() == 0) {
 #if COOM_ASSERT
-        assert (!has_next_node_arc && !has_next_sink);
+        assert (!node_arcs.can_pull() && !sink_arcs.can_pull());
 #endif
-        out_nodes.write({ next_red1.new_uid, NIL, NIL });
+        out_writer.unsafe_push({ next_red1.new_uid, NIL, NIL });
 
-        return;
+        return out_file;
       }
     }
+    return out_file;
   }
 } // namespace coom
 

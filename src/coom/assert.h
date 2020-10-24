@@ -6,20 +6,19 @@
 
 #include <coom/data.h>
 
-namespace coom { namespace assert {
-    template <typename T>
-    void is_valid_input_stream([[maybe_unused]] tpie::file_stream<T>& in);
+#include <iostream>
 
-    template <typename T>
-    void is_valid_output_stream([[maybe_unused]] tpie::file_stream<T>& out)
-    {
-#if COOM_ASSERT
-      assert(out.is_open());
-      assert(out.is_writable());
-      assert(out.size() == 0);
+namespace coom
+{
+  // Taken from: https://stackoverflow.com/a/37264642
+#ifndef NDEBUG
+#   define coom_assert(Expr, Msg)                     \
+  __coom_assert(#Expr, Expr, __FILE__, __LINE__, Msg)
+#else
+#   define coom_assert(Expr, Msg) ;
 #endif
-    }
-  }
+
+  void __coom_assert(const char* expr_str, bool expr, const char* file, int line, const char* msg);
 }
 
 #endif // COOM_ASSERT_H

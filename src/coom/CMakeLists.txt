@@ -4,36 +4,50 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 # Link up files for the library
 
 set(HEADERS
-  apply.h
+  # core files
   assert.h
-  assignment.h
-  build.h
   coom.h
-  count.h
   data.h
-  evaluate.h
-  negate.h
+  file.h
   priority_queue.h
-  quantify.h
   reduce.h
-  restrict.h
+  union.h
   util.h
+
+  # bdd files
+  bdd/apply.h
+  bdd/assignment.h
+  bdd/build.h
+  bdd/count.h
+  bdd/evaluate.h
+  bdd/negate.h
+  bdd/quantify.h
+  bdd/restrict.h
+
+  # debug files
+  dot.h
 )
 
 set(SOURCES
-  apply.cpp
+  # core files
   assert.cpp
-  assignment.cpp
-  build.cpp
   coom.cpp
-  count.cpp
   data.cpp
-  evaluate.cpp
-  negate.cpp
+  file.cpp
   priority_queue.cpp
-  quantify.cpp
   reduce.cpp
-  restrict.cpp
+
+  # bdd files
+  bdd/apply.cpp
+  bdd/build.cpp
+  bdd/count.cpp
+  bdd/evaluate.cpp
+  bdd/negate.cpp
+  bdd/quantify.cpp
+  bdd/restrict.cpp
+
+  # debug files
+  dot.cpp
 )
 
 if (COOM_SHARED)
@@ -51,7 +65,7 @@ generate_export_header(coom)
 
 # ============================================================================ #
 # Link dependencies
-target_link_libraries(coom PRIVATE tpie)
+target_link_libraries(coom tpie)
 
 # ============================================================================ #
 # Setup as library

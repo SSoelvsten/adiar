@@ -19,29 +19,38 @@ struct pq_test_label_ext {
   }
 };
 
-struct pq_test_comp {
+struct pq_test_lt {
   bool operator()(const pq_test_data &a, const pq_test_data &b)
   {
     return a.label < b.label || (a.label == b.label && a.nonce < b.nonce);
   }
 };
 
+typedef file<pq_test_data, 1u> pq_test_file;
+typedef file_writer<pq_test_data, 1u> pq_test_writer;
+
+template <size_t MetaStreams, size_t Buckets>
+using test_priority_queue = priority_queue<pq_test_data, 1u,
+                                           pq_test_data, pq_test_label_ext,
+                                           pq_test_lt, std::less<label_t>,
+                                           MetaStreams, Buckets>;
+
 go_bandit([]() {
   describe("COOM: Priority Queue", []() {
 
     describe("Label Manager", [&]() {
       it("can pull from one meta stream", [&]() {
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq_label_mgr<std::less<>, 1> mgr;
+        pq_label_mgr<std::less<>, 1u> mgr;
 
-        AssertThat(mgr.hook_meta_stream(meta_stream), Is().True());
+        AssertThat(mgr.hook_meta_stream(f._meta_file), Is().True());
 
         AssertThat(mgr.can_pull(), Is().True());
         AssertThat(mgr.pull(), Is().EqualTo(1u));
@@ -59,17 +68,17 @@ go_bandit([]() {
       });
 
       it("can peek from one meta streams", [&]() {
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
         pq_label_mgr<std::less<>, 1> mgr;
 
-        AssertThat(mgr.hook_meta_stream(meta_stream), Is().True());
+        AssertThat(mgr.hook_meta_stream(f._meta_file), Is().True());
 
         AssertThat(mgr.pull(), Is().EqualTo(1u));
 
@@ -82,20 +91,42 @@ go_bandit([]() {
         AssertThat(mgr.pull(), Is().EqualTo(4u));
       });
 
+      it("can pull from merge of two meta streams, where one is empty [1]", [&]() {
+         pq_test_file f1;
+         pq_test_writer fw1(f1);
 
-      it("can pull from merge of two meta streams, where one is empty", [&]() {
-         tpie::file_stream<meta_t> meta_stream_1;
-         meta_stream_1.open();
+         fw1.unsafe_push(meta_t {1});
 
-         meta_stream_1.write(meta_t {1});
-
-         tpie::file_stream<meta_t> meta_stream_2;
-         meta_stream_2.open();
+         pq_test_file f2;
 
          pq_label_mgr<std::less<>, 2> mgr;
 
-         AssertThat(mgr.hook_meta_stream(meta_stream_1), Is().False());
-         AssertThat(mgr.hook_meta_stream(meta_stream_2), Is().True());
+         AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
+         AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
+
+         AssertThat(mgr.can_pull(), Is().True());
+         AssertThat(mgr.pull(), Is().EqualTo(1u));
+
+         AssertThat(mgr.can_pull(), Is().False());
+      });
+
+
+      it("can pull from merge of two meta streams, where one is empty [2]", [&]() {
+         pq_test_file f1;
+         pq_test_writer fw1(f1);
+
+         fw1.unsafe_push(meta_t {1});
+         fw1.unsafe_push(meta_t {2});
+
+         pq_test_file f2;
+
+         pq_label_mgr<std::greater<>, 2> mgr;
+
+         AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
+         AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
+
+         AssertThat(mgr.can_pull(), Is().True());
+         AssertThat(mgr.pull(), Is().EqualTo(2u));
 
          AssertThat(mgr.can_pull(), Is().True());
          AssertThat(mgr.pull(), Is().EqualTo(1u));
@@ -104,23 +135,23 @@ go_bandit([]() {
       });
 
       it("can pull from merge of two meta streams [1]", [&]() {
-        tpie::file_stream<meta_t> meta_stream_1;
-        meta_stream_1.open();
+        pq_test_file f1;
+        pq_test_writer fw1(f1);
 
-        meta_stream_1.write(meta_t {4});
-        meta_stream_1.write(meta_t {2});
-        meta_stream_1.write(meta_t {1});
+        fw1.unsafe_push(meta_t {4});
+        fw1.unsafe_push(meta_t {2});
+        fw1.unsafe_push(meta_t {1});
 
-        tpie::file_stream<meta_t> meta_stream_2;
-        meta_stream_2.open();
+        pq_test_file f2;
+        pq_test_writer fw2(f2);
 
-        meta_stream_2.write(meta_t {4});
-        meta_stream_2.write(meta_t {3});
+        fw2.unsafe_push(meta_t {4});
+        fw2.unsafe_push(meta_t {3});
 
         pq_label_mgr<std::less<>, 2> mgr;
 
-        AssertThat(mgr.hook_meta_stream(meta_stream_1), Is().False());
-        AssertThat(mgr.hook_meta_stream(meta_stream_2), Is().True());
+        AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
+        AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
 
         AssertThat(mgr.can_pull(), Is().True());
         AssertThat(mgr.pull(), Is().EqualTo(1u));
@@ -138,20 +169,20 @@ go_bandit([]() {
       });
 
       it("can pull from merge of two meta streams [2] (std::less)", [&]() {
-        tpie::file_stream<meta_t> meta_stream_1;
-        meta_stream_1.open();
+        pq_test_file f1;
+        pq_test_writer fw1(f1);
 
-        meta_stream_1.write(meta_t {2});
+        fw1.unsafe_push(meta_t {2});
 
-        tpie::file_stream<meta_t> meta_stream_2;
-        meta_stream_2.open();
+        pq_test_file f2;
+        pq_test_writer fw2(f2);
 
-        meta_stream_2.write(meta_t {1});
+        fw2.unsafe_push(meta_t {1});
 
         pq_label_mgr<std::less<>, 2> mgr;
 
-        AssertThat(mgr.hook_meta_stream(meta_stream_1), Is().False());
-        AssertThat(mgr.hook_meta_stream(meta_stream_2), Is().True());
+        AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
+        AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
 
         AssertThat(mgr.can_pull(), Is().True());
         AssertThat(mgr.pull(), Is().EqualTo(1u));
@@ -163,44 +194,20 @@ go_bandit([]() {
       });
 
       it("can pull from merge of two meta streams [2] (std::greater)", [&]() {
-         tpie::file_stream<meta_t> meta_stream_1;
-         meta_stream_1.open();
+         pq_test_file f1;
+         pq_test_writer fw1(f1);
 
-         meta_stream_1.write(meta_t {2});
+         fw1.unsafe_push(meta_t {2});
 
-         tpie::file_stream<meta_t> meta_stream_2;
-         meta_stream_2.open();
+         pq_test_file f2;
+         pq_test_writer fw2(f2);
 
-         meta_stream_2.write(meta_t {1});
+         fw2.unsafe_push(meta_t {1});
 
-         pq_label_mgr<std::greater<label_t>, 2> mgr;
+         pq_label_mgr<std::greater<>, 2> mgr;
 
-         AssertThat(mgr.hook_meta_stream(meta_stream_1), Is().False());
-         AssertThat(mgr.hook_meta_stream(meta_stream_2), Is().True());
-
-         AssertThat(mgr.can_pull(), Is().True());
-         AssertThat(mgr.pull(), Is().EqualTo(2u));
-
-         AssertThat(mgr.can_pull(), Is().True());
-         AssertThat(mgr.pull(), Is().EqualTo(1u));
-
-         AssertThat(mgr.can_pull(), Is().False());
-      });
-
-      it("can pull from merge of two meta streams, where one is empty", [&]() {
-         tpie::file_stream<meta_t> meta_stream_1;
-         meta_stream_1.open();
-
-         meta_stream_1.write(meta_t {1});
-         meta_stream_1.write(meta_t {2});
-
-         tpie::file_stream<meta_t> meta_stream_2;
-         meta_stream_2.open();
-
-         pq_label_mgr<std::greater<label_t>, 2> mgr;
-
-         AssertThat(mgr.hook_meta_stream(meta_stream_1), Is().False());
-         AssertThat(mgr.hook_meta_stream(meta_stream_2), Is().True());
+         AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
+         AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
 
          AssertThat(mgr.can_pull(), Is().True());
          AssertThat(mgr.pull(), Is().EqualTo(2u));
@@ -212,23 +219,23 @@ go_bandit([]() {
       });
 
       it("can peek merge of two meta stream", [&]() {
-        tpie::file_stream<meta_t> meta_stream_1;
-        meta_stream_1.open();
+        pq_test_file f1;
+        pq_test_writer fw1(f1);
 
-        meta_stream_1.write(meta_t {4});
-        meta_stream_1.write(meta_t {2});
+        fw1.unsafe_push(meta_t {4});
+        fw1.unsafe_push(meta_t {2});
 
-        tpie::file_stream<meta_t> meta_stream_2;
-        meta_stream_2.open();
+        pq_test_file f2;
+        pq_test_writer fw2(f2);
 
-        meta_stream_2.write(meta_t {4});
-        meta_stream_2.write(meta_t {3});
-        meta_stream_2.write(meta_t {1});
+        fw2.unsafe_push(meta_t {4});
+        fw2.unsafe_push(meta_t {3});
+        fw2.unsafe_push(meta_t {1});
 
         pq_label_mgr<std::less<>, 2> mgr;
 
-        AssertThat(mgr.hook_meta_stream(meta_stream_1), Is().False());
-        AssertThat(mgr.hook_meta_stream(meta_stream_2), Is().True());
+        AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
+        AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
 
         AssertThat(mgr.peek(), Is().EqualTo(1u));
         AssertThat(mgr.pull(), Is().EqualTo(1u));
@@ -243,42 +250,44 @@ go_bandit([]() {
 
     describe("with 0 Buckets", [&]() {
       it("can set up priority queue", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 0> pq;
+        test_priority_queue<1,0> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
+
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue with empty meta stream", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 0> pq;
+         test_priority_queue<1,0> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          AssertThat(pq.can_pull(), Is().False());
          AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can push to and pull from immediate next layer", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 0> pq;
+        test_priority_queue<1,0> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -345,17 +354,17 @@ go_bandit([]() {
       });
 
       it("can skip unpushed layers", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 0> pq;
+        test_priority_queue<1,0> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -379,17 +388,17 @@ go_bandit([]() {
       });
 
       it("can skip unpushed layers up until the given stop_label", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 0> pq;
+        test_priority_queue<1,0> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -416,17 +425,17 @@ go_bandit([]() {
       });
 
       it("can sort elements given out of layer order", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 0> pq;
+        test_priority_queue<1,0> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -496,16 +505,16 @@ go_bandit([]() {
       });
 
       it("can pull after a peek", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 0> pq;
+         test_priority_queue<1,0> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {3});
-         meta_stream.write(meta_t {2});
-         meta_stream.write(meta_t {1});
+         fw.unsafe_push(meta_t {3});
+         fw.unsafe_push(meta_t {2});
+         fw.unsafe_push(meta_t {1});
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          AssertThat(pq.current_layer(), Is().EqualTo(1u));
          AssertThat(pq.has_next_layer(), Is().False());
@@ -533,90 +542,94 @@ go_bandit([]() {
 
     describe("with 1 Bucket", [&]() {
       it("can set up priority queue with more layers than buckets", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+         test_priority_queue<1,1> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {5});
-         meta_stream.write(meta_t {4});
-         meta_stream.write(meta_t {3});
-         meta_stream.write(meta_t {1});
+         fw.unsafe_push(meta_t {5});
+         fw.unsafe_push(meta_t {4});
+         fw.unsafe_push(meta_t {3});
+         fw.unsafe_push(meta_t {1});
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
+
+         AssertThat(pq.can_pull(), Is().False());
+         AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue with fewer layers than buckets", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+        test_priority_queue<1,1> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
+
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue with empty meta stream", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+         test_priority_queue<1,1> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          AssertThat(pq.can_pull(), Is().False());
          AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue for two meta streams, where one is empty", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 2, std::less<>, 1> pq;
+         test_priority_queue<2,1> pq;
 
-         tpie::file_stream<meta_t> meta_stream_1;
-         meta_stream_1.open();
+         pq_test_file f1;
+         pq_test_writer fw1(f1);
 
-         meta_stream_1.write({1});
+         fw1.unsafe_push(meta_t {1});
 
-         tpie::file_stream<meta_t> meta_stream_2;
-         meta_stream_2.open();
+         pq_test_file f2;
 
-         pq.hook_meta_stream(meta_stream_1);
-         pq.hook_meta_stream(meta_stream_2);
+         pq.hook_meta_stream(f1);
+         pq.hook_meta_stream(f2);
 
          AssertThat(pq.can_pull(), Is().False());
       });
 
       it("can set up priority queue for two meta streams", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 2, std::less<>, 1> pq;
+         test_priority_queue<2,1> pq;
 
-         tpie::file_stream<meta_t> meta_stream_1;
-         meta_stream_1.open();
+         pq_test_file f1;
+         pq_test_writer fw1(f1);
 
-         meta_stream_1.write({1});
+         fw1.unsafe_push(meta_t {1});
 
-         tpie::file_stream<meta_t> meta_stream_2;
-         meta_stream_2.open();
+         pq_test_file f2;
+         pq_test_writer fw2(f2);
 
-         meta_stream_2.write({2});
+         fw2.unsafe_push(meta_t {2});
 
-         pq.hook_meta_stream(meta_stream_1);
-         pq.hook_meta_stream(meta_stream_2);
+         pq.hook_meta_stream(f1);
+         pq.hook_meta_stream(f2);
 
          AssertThat(pq.can_pull(), Is().False());
       });
 
       it("can push into and pull from bucket", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+        test_priority_queue<1,1> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -683,17 +696,17 @@ go_bandit([]() {
       });
 
       it("can push into overflow queue [1]", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+        test_priority_queue<1,1> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -729,17 +742,17 @@ go_bandit([]() {
       });
 
       it("can push into overflow queue [2]", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+        test_priority_queue<1,1> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -761,17 +774,17 @@ go_bandit([]() {
       });
 
       it("can skip unpushed layers up to stop_label [1]", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+        test_priority_queue<1,1> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -799,18 +812,18 @@ go_bandit([]() {
       });
 
       it("can skip unpushed layers up to stop_label [2]", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+        test_priority_queue<1,1> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {5});
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {5});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -839,17 +852,17 @@ go_bandit([]() {
       });
 
       it("can merge content of bucket with overflow queue", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+        test_priority_queue<1,1> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -916,19 +929,19 @@ go_bandit([]() {
       });
 
       it("can pull after a peek in bucket", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+         test_priority_queue<1,1> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {6});
-         meta_stream.write(meta_t {5});
-         meta_stream.write(meta_t {4});
-         meta_stream.write(meta_t {3});
-         meta_stream.write(meta_t {2});
-         meta_stream.write(meta_t {1});
+         fw.unsafe_push(meta_t {6});
+         fw.unsafe_push(meta_t {5});
+         fw.unsafe_push(meta_t {4});
+         fw.unsafe_push(meta_t {3});
+         fw.unsafe_push(meta_t {2});
+         fw.unsafe_push(meta_t {1});
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -953,19 +966,19 @@ go_bandit([]() {
       });
 
       it("can pull after a peek in overflow", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 1> pq;
+         test_priority_queue<1,1> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {6});
-         meta_stream.write(meta_t {5});
-         meta_stream.write(meta_t {4});
-         meta_stream.write(meta_t {3});
-         meta_stream.write(meta_t {2});
-         meta_stream.write(meta_t {1});
+         fw.unsafe_push(meta_t {6});
+         fw.unsafe_push(meta_t {5});
+         fw.unsafe_push(meta_t {4});
+         fw.unsafe_push(meta_t {3});
+         fw.unsafe_push(meta_t {2});
+         fw.unsafe_push(meta_t {1});
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          pq.push(pq_test_data {5, 3});  // overflow
          AssertThat(pq.size(), Is().EqualTo(1u));
@@ -990,54 +1003,54 @@ go_bandit([]() {
 
     describe("with 4 Bucket", [&]() {
       it("can set up priority queue with more layers than buckets", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+        test_priority_queue<1,4> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {8});
-        meta_stream.write(meta_t {7});
-        meta_stream.write(meta_t {6});
-        meta_stream.write(meta_t {4});
-        meta_stream.write(meta_t {3});
-        meta_stream.write(meta_t {2});
-        meta_stream.write(meta_t {1});
+        fw.unsafe_push(meta_t {8});
+        fw.unsafe_push(meta_t {7});
+        fw.unsafe_push(meta_t {6});
+        fw.unsafe_push(meta_t {5});
+        fw.unsafe_push(meta_t {4});
+        fw.unsafe_push(meta_t {3});
+        fw.unsafe_push(meta_t {2});
+        fw.unsafe_push(meta_t {1});
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
       });
 
       it("can set up priority queue with fewer layers than buckets [1]", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+         test_priority_queue<1,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {4});
-         meta_stream.write(meta_t {3});
-         meta_stream.write(meta_t {1});
+         fw.unsafe_push(meta_t {4});
+         fw.unsafe_push(meta_t {3});
+         fw.unsafe_push(meta_t {1});
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
        });
 
       it("can set up priority queue with fewer layers than buckets [2]", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+         test_priority_queue<1,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {2});
-         meta_stream.write(meta_t {1});
+         fw.unsafe_push(meta_t {2});
+         fw.unsafe_push(meta_t {1});
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
        });
 
       it("can set up priority queue with empty meta stream", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+         test_priority_queue<1,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          AssertThat(pq.can_pull(), Is().False());
          AssertThat(pq.has_next_layer(), Is().False());
@@ -1045,74 +1058,75 @@ go_bandit([]() {
 
 
       it("can set up priority queue for two meta streams, where one is empty [1]", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 2, std::less<>, 4> pq;
+         test_priority_queue<2,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream_1;
-         meta_stream_1.open();
+         pq_test_file f1;
+         pq_test_writer fw1(f1);
 
-         meta_stream_1.write({1});
+         fw1.unsafe_push(meta_t {1});
 
-         tpie::file_stream<meta_t> meta_stream_2;
-         meta_stream_2.open();
+         pq_test_file f2;
 
-         pq.hook_meta_stream(meta_stream_1);
-         pq.hook_meta_stream(meta_stream_2);
+         pq.hook_meta_stream(f1);
+         pq.hook_meta_stream(f2);
 
          AssertThat(pq.can_pull(), Is().False());
+         AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue for two meta streams, where one is empty [2]", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 2, std::less<>, 4> pq;
+         test_priority_queue<2,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream_1;
-         meta_stream_1.open();
+         pq_test_file f1;
+         pq_test_writer fw1(f1);
 
-         meta_stream_1.write({2});
-         meta_stream_1.write({1});
+         fw1.unsafe_push(meta_t {2});
+         fw1.unsafe_push(meta_t {1});
 
-         tpie::file_stream<meta_t> meta_stream_2;
-         meta_stream_2.open();
+         pq_test_file f2;
 
-         pq.hook_meta_stream(meta_stream_1);
-         pq.hook_meta_stream(meta_stream_2);
+         pq.hook_meta_stream(f1);
+         pq.hook_meta_stream(f2);
 
          AssertThat(pq.can_pull(), Is().False());
+         AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue for two meta streams", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 2, std::less<>, 4> pq;
+         test_priority_queue<2,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream_1;
-         meta_stream_1.open();
+         pq_test_file f1;
+         pq_test_writer fw1(f1);
 
-         meta_stream_1.write({1});
+         fw1.unsafe_push(meta_t {1});
 
-         tpie::file_stream<meta_t> meta_stream_2;
-         meta_stream_2.open();
+         pq_test_file f2;
+         pq_test_writer fw2(f2);
 
-         meta_stream_2.write({2});
+         fw2.unsafe_push(meta_t {12});
 
-         pq.hook_meta_stream(meta_stream_1);
-         pq.hook_meta_stream(meta_stream_2);
+         pq.hook_meta_stream(f1);
+         pq.hook_meta_stream(f2);
 
          AssertThat(pq.can_pull(), Is().False());
+         AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can push into and pull from buckets", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+        test_priority_queue<1,4> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {7}); // overflow
-        meta_stream.write(meta_t {6}); // overflow
-        meta_stream.write(meta_t {5}); // write bucket
-        meta_stream.write(meta_t {4}); // write bucket
-        meta_stream.write(meta_t {3}); // write bucket
-        meta_stream.write(meta_t {2}); // write bucket
-        meta_stream.write(meta_t {1}); // read bucket
+        fw.unsafe_push(meta_t {7}); // overflow
+        fw.unsafe_push(meta_t {6}); // overflow
+        fw.unsafe_push(meta_t {5}); // write bucket
+        fw.unsafe_push(meta_t {4}); // write bucket
+        fw.unsafe_push(meta_t {3}); // write bucket
+        fw.unsafe_push(meta_t {2}); // write bucket
+        fw.unsafe_push(meta_t {1}); // read bucket
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -1306,21 +1320,21 @@ go_bandit([]() {
       });
 
       it("can push into overflow queue [1]", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+        test_priority_queue<1,4> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {8}); // overflow
-        meta_stream.write(meta_t {7}); // overflow
-        meta_stream.write(meta_t {6}); // overflow
-        meta_stream.write(meta_t {5}); // write bucket
-        meta_stream.write(meta_t {4}); // write bucket
-        meta_stream.write(meta_t {3}); // write bucket
-        meta_stream.write(meta_t {2}); // write bucket
-        meta_stream.write(meta_t {1}); // read bucket
+        fw.unsafe_push(meta_t {8}); // overflow
+        fw.unsafe_push(meta_t {7}); // overflow
+        fw.unsafe_push(meta_t {6}); // overflow
+        fw.unsafe_push(meta_t {5}); // write bucket
+        fw.unsafe_push(meta_t {4}); // write bucket
+        fw.unsafe_push(meta_t {3}); // write bucket
+        fw.unsafe_push(meta_t {2}); // write bucket
+        fw.unsafe_push(meta_t {1}); // read bucket
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1359,21 +1373,21 @@ go_bandit([]() {
       });
 
       it("can push into overflow queue [2]", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+        test_priority_queue<1,4> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {8}); // overflow
-        meta_stream.write(meta_t {7}); // overflow
-        meta_stream.write(meta_t {6}); // overflow
-        meta_stream.write(meta_t {5}); // write bucket
-        meta_stream.write(meta_t {4}); // write bucket
-        meta_stream.write(meta_t {3}); // write bucket
-        meta_stream.write(meta_t {2}); // write bucket
-        meta_stream.write(meta_t {1}); // read bucket
+        fw.unsafe_push(meta_t {8}); // overflow
+        fw.unsafe_push(meta_t {7}); // overflow
+        fw.unsafe_push(meta_t {6}); // overflow
+        fw.unsafe_push(meta_t {5}); // write bucket
+        fw.unsafe_push(meta_t {4}); // write bucket
+        fw.unsafe_push(meta_t {3}); // write bucket
+        fw.unsafe_push(meta_t {2}); // write bucket
+        fw.unsafe_push(meta_t {1}); // read bucket
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1398,21 +1412,21 @@ go_bandit([]() {
       });
 
       it("can skip unpushed layers until stop_label [1]", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+        test_priority_queue<1,4> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {8}); // overflow
-        meta_stream.write(meta_t {7}); // overflow
-        meta_stream.write(meta_t {6}); // overflow
-        meta_stream.write(meta_t {5}); // write bucket
-        meta_stream.write(meta_t {4}); // write bucket
-        meta_stream.write(meta_t {3}); // write bucket
-        meta_stream.write(meta_t {2}); // write bucket
-        meta_stream.write(meta_t {1}); // read bucket
+        fw.unsafe_push(meta_t {8}); // overflow
+        fw.unsafe_push(meta_t {7}); // overflow
+        fw.unsafe_push(meta_t {6}); // overflow
+        fw.unsafe_push(meta_t {5}); // write bucket
+        fw.unsafe_push(meta_t {4}); // write bucket
+        fw.unsafe_push(meta_t {3}); // write bucket
+        fw.unsafe_push(meta_t {2}); // write bucket
+        fw.unsafe_push(meta_t {1}); // read bucket
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1443,21 +1457,21 @@ go_bandit([]() {
       });
 
       it("can skip nonempty layers until stop_label [2]", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+        test_priority_queue<1,4> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {8}); // overflow
-        meta_stream.write(meta_t {7}); // overflow
-        meta_stream.write(meta_t {6}); // overflow
-        meta_stream.write(meta_t {5}); // write bucket
-        meta_stream.write(meta_t {4}); // write bucket
-        meta_stream.write(meta_t {3}); // write bucket
-        meta_stream.write(meta_t {2}); // write bucket
-        meta_stream.write(meta_t {1}); // read bucket
+        fw.unsafe_push(meta_t {8}); // overflow
+        fw.unsafe_push(meta_t {7}); // overflow
+        fw.unsafe_push(meta_t {6}); // overflow
+        fw.unsafe_push(meta_t {5}); // write bucket
+        fw.unsafe_push(meta_t {4}); // write bucket
+        fw.unsafe_push(meta_t {3}); // write bucket
+        fw.unsafe_push(meta_t {2}); // write bucket
+        fw.unsafe_push(meta_t {1}); // read bucket
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1488,21 +1502,21 @@ go_bandit([]() {
       });
 
       it("can merge content of bucket with overflow queue", [&]() {
-        priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+        test_priority_queue<1,4> pq;
 
-        tpie::file_stream<meta_t> meta_stream;
-        meta_stream.open();
+        pq_test_file f;
+        pq_test_writer fw(f);
 
-        meta_stream.write(meta_t {8}); // overflow
-        meta_stream.write(meta_t {7}); // overflow
-        meta_stream.write(meta_t {6}); // overflow
-        meta_stream.write(meta_t {5}); // write bucket
-        meta_stream.write(meta_t {4}); // write bucket
-        meta_stream.write(meta_t {3}); // write bucket
-        meta_stream.write(meta_t {2}); // write bucket
-        meta_stream.write(meta_t {1}); // read bucket
+        fw.unsafe_push(meta_t {8}); // overflow
+        fw.unsafe_push(meta_t {7}); // overflow
+        fw.unsafe_push(meta_t {6}); // overflow
+        fw.unsafe_push(meta_t {5}); // write bucket
+        fw.unsafe_push(meta_t {4}); // write bucket
+        fw.unsafe_push(meta_t {3}); // write bucket
+        fw.unsafe_push(meta_t {2}); // write bucket
+        fw.unsafe_push(meta_t {1}); // read bucket
 
-        pq.hook_meta_stream(meta_stream);
+        pq.hook_meta_stream(f);
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1722,19 +1736,19 @@ go_bandit([]() {
       });
 
       it("can pull after a peek in bucket", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+         test_priority_queue<1,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {6});
-         meta_stream.write(meta_t {5});
-         meta_stream.write(meta_t {4});
-         meta_stream.write(meta_t {3});
-         meta_stream.write(meta_t {2});
-         meta_stream.write(meta_t {1});
+         fw.unsafe_push(meta_t {6}); // overflow
+         fw.unsafe_push(meta_t {5}); // write bucket
+         fw.unsafe_push(meta_t {4}); // write bucket
+         fw.unsafe_push(meta_t {3}); // write bucket
+         fw.unsafe_push(meta_t {2}); // write bucket
+         fw.unsafe_push(meta_t {1}); // read bucket
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          pq.push(pq_test_data {3, 42}); // bucket
 
@@ -1752,21 +1766,21 @@ go_bandit([]() {
       });
 
       it("can pull after a peek in overflow", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+         test_priority_queue<1,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {8});
-         meta_stream.write(meta_t {7});
-         meta_stream.write(meta_t {6});
-         meta_stream.write(meta_t {5});
-         meta_stream.write(meta_t {4});
-         meta_stream.write(meta_t {3});
-         meta_stream.write(meta_t {2});
-         meta_stream.write(meta_t {1});
+         fw.unsafe_push(meta_t {8}); // overflow
+         fw.unsafe_push(meta_t {7}); // overflow
+         fw.unsafe_push(meta_t {6}); // overflow
+         fw.unsafe_push(meta_t {5}); // write bucket
+         fw.unsafe_push(meta_t {4}); // write bucket
+         fw.unsafe_push(meta_t {3}); // write bucket
+         fw.unsafe_push(meta_t {2}); // write bucket
+         fw.unsafe_push(meta_t {1}); // read bucket
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          pq.push(pq_test_data {7, 3});  // overflow
 
@@ -1784,18 +1798,18 @@ go_bandit([]() {
       });
 
       it("can deal with exactly as many layers as buckets", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+         test_priority_queue<1,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {4});
-         meta_stream.write(meta_t {3});
-         meta_stream.write(meta_t {2});
-         meta_stream.write(meta_t {1});
-         meta_stream.write(meta_t {0});
+         fw.unsafe_push(meta_t {4}); // write bucket
+         fw.unsafe_push(meta_t {3}); // write bucket
+         fw.unsafe_push(meta_t {2}); // write bucket
+         fw.unsafe_push(meta_t {1}); // write bucket
+         fw.unsafe_push(meta_t {0}); // read bucket
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          pq.push(pq_test_data {4, 3});
          pq.push(pq_test_data {2, 1});
@@ -1849,16 +1863,16 @@ go_bandit([]() {
       });
 
       it("can deal with fewer layers as buckets", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+         test_priority_queue<1,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {2});
-         meta_stream.write(meta_t {1});
-         meta_stream.write(meta_t {0});
+         fw.unsafe_push(meta_t {2}); // write bucket
+         fw.unsafe_push(meta_t {1}); // write bucket
+         fw.unsafe_push(meta_t {0}); // read bucket
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          pq.push(pq_test_data {2, 1});
          pq.push(pq_test_data {1, 1});
@@ -1892,20 +1906,21 @@ go_bandit([]() {
       });
 
       it("can forward to stop_label with an empty overflow queue", [&]() {
-         priority_queue<pq_test_data, pq_test_label_ext, pq_test_comp, 1, std::less<>, 4> pq;
+         test_priority_queue<1,4> pq;
 
-         tpie::file_stream<meta_t> meta_stream;
-         meta_stream.open();
+         pq_test_file f;
+         pq_test_writer fw(f);
 
-         meta_stream.write(meta_t {6}); // Overflow
-         meta_stream.write(meta_t {5}); // Overflow
-         meta_stream.write(meta_t {4}); // Bucket
-         meta_stream.write(meta_t {3}); // Bucket
-         meta_stream.write(meta_t {2}); // Bucket
-         meta_stream.write(meta_t {1}); // Bucket
-         meta_stream.write(meta_t {0});
+         fw.unsafe_push(meta_t {8}); // overflow
+         fw.unsafe_push(meta_t {7}); // overflow
+         fw.unsafe_push(meta_t {6}); // overflow
+         fw.unsafe_push(meta_t {5}); // write bucket
+         fw.unsafe_push(meta_t {4}); // write bucket
+         fw.unsafe_push(meta_t {3}); // write bucket
+         fw.unsafe_push(meta_t {2}); // write bucket
+         fw.unsafe_push(meta_t {0}); // read bucket
 
-         pq.hook_meta_stream(meta_stream);
+         pq.hook_meta_stream(f);
 
          AssertThat(pq.size(), Is().EqualTo(0u));
 

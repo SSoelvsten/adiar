@@ -8,25 +8,27 @@ MAKE_FLAGS=-j $$(nproc)
 build:
 	@mkdir -p build/ && cd build/ && cmake ..
 
-build-test:
-	@mkdir -p build/
-	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=ON ..
-	@cd build/ && make $(MAKE_FLAGS) test_unit
-
-
 # ============================================================================ #
-#  CLEAN
+#  clean
 # ============================================================================ #
 clean:
 	@rm -r -f build/
 
+clean-files:
+	@rm -rf *.tpie
+	@rm -rf *.coom*
+
 # ============================================================================ #
 #  TEST
 # ============================================================================ #
-test: | build-test
-	@rm -rf *.tpie
+test:
+	@mkdir -p build/
+	@cd build/ && cmake -DCOOM_DEBUG=OFF -DCOOM_ASSERT=ON ..
+	@cd build/ && make $(MAKE_FLAGS) test_unit
+
+	$(MAKE) clean-files
 	@./build/test/test_unit --reporter=info --colorizer=light
-	@rm -rf *.tpie
+	$(MAKE) clean-files
 
 # ============================================================================ #
 #  DOT FILE output for visual debugging
@@ -42,19 +44,19 @@ dot:
 # ============================================================================ #
 #  MAIN for console debugging
 # ============================================================================ #
+M = 1024
+
 main:
 	@mkdir -p build/
 	@cd build/ && cmake -DCOOM_DEBUG=ON -DCOOM_ASSERT=ON ..
 	@cd build/ && make $(MAKE_FLAGS) coom_main
-	@rm -rf *.tpie
 	@echo "" && echo ""
-	@./build/src/coom_main
-	@rm -rf *.tpie
+	@./build/src/coom_main ${M}
+
 
 # ============================================================================ #
 #  EXAMPLES
 # ============================================================================ #
-M = 256
 
 example-n-queens: N := 8
 example-n-queens:
@@ -83,7 +85,6 @@ example-pigeonhole-principle:
 	@echo ""
 
 example-tic-tac-toe: N := 20
-example-tic-tac-toe: M:= 1024
 example-tic-tac-toe:
   # Build
 	@mkdir -p build/

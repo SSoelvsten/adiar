@@ -1,26 +1,30 @@
 #ifndef COOM_REDUCE_H
 #define COOM_REDUCE_H
 
-#include <tpie/file_stream.h>
 #include <coom/data.h>
+#include <coom/file.h>
 
 namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Reduce a given edge-based OBDD.
   ///
-  /// \param in_node_arcs Edges (source, target) sorted by target in topological
-  ///                     order. Flag on `source` is set, if it is the high arc.
-  /// \param in_sink_arcs Edges (source,sink) sorted by source in topological
-  ///                     order. Flag on `source` is set, if it is the high arc.
+  /// \param arc_file The unreduced obdd in its arc-based representation
   ///
-  /// \param out_nodes The reduced node-based OBDD in reverse topological order
+  /// \return The reduced obdd in a node-based representation
   //////////////////////////////////////////////////////////////////////////////
-  void reduce(tpie::file_stream<arc_t> &in_node_arcs,
-              tpie::file_stream<arc_t> &in_sink_arcs,
-              tpie::file_stream<meta_t> &in_meta,
-              tpie::file_stream<node_t> &out_nodes,
-              tpie::file_stream<meta_t> &out_meta);
+  node_file reduce(const arc_file &arc_file);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Reduce a possibly yet to be reduced file.
+  ///
+  /// If the given maybe-reduced set of files is unreduced, then it will be
+  /// reduced and the given file_union will also be pointing to the content of
+  /// the output node_file returned.
+  ///
+  /// \return The reduced obdd in a node-based representation.
+  //////////////////////////////////////////////////////////////////////////////
+  node_file reduce(const node_or_arc_file &maybe_reduced_file);
 }
 
 #endif // COOM_REDUCE_H

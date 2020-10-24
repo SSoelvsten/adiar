@@ -14,38 +14,10 @@
  * "Parallel Disk-Based Computation for Large, Monolithic Binary Decision
  * Diagrams" by Daniel Kunkle, Vlad Slavici, and Gene Cooperman.
  *
- * We'd find it interesting to output the size of the largest OBDD, so we create
- * the following global variables. Also it would be of interest to see the best
- * and worst ratio between sink and node arcs in the unreduced OBDDs
+ * We'd find it interesting to output the size of the largest OBDD and the final
+ * OBDD.
  */
-size_t largest_unreduced = 0;
-
-float best_sink_ratio = 0.0;
-float worst_sink_ratio = 1.0;
-
-inline void stats_unreduced(size_t node_arcs, size_t sink_arcs)
-{
-  size_t total_arcs = node_arcs + sink_arcs;
-  largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
-
-  float sink_ratio = float(sink_arcs) / float(total_arcs);
-  best_sink_ratio = std::max(best_sink_ratio, sink_ratio);
-  worst_sink_ratio = std::min(worst_sink_ratio, sink_ratio);
-}
-
-size_t largest_reduced = 0;
-
-float best_reduction_ratio = 1.0;
-float worst_reduction_ratio = 0.0;
-
-inline void stats_reduced(size_t unreduced_size, size_t reduced_size)
-{
-  largest_reduced = std::max(largest_reduced, reduced_size);
-
-  float reduction_ratio = float(reduced_size) / float(unreduced_size);
-  best_reduction_ratio = std::min(best_reduction_ratio, reduction_ratio);
-  worst_reduction_ratio = std::max(worst_reduction_ratio, reduction_ratio);
-}
+size_t largest_nodes = 0;
 
 /*******************************************************************************
  *                             Variable ordering
@@ -107,13 +79,10 @@ inline coom::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
  * down to only O(N) time and O(N/B) I/Os rather than O(sort(N)) in both time
  * and I/Os. One pretty much cannot do this base case faster.
  */
-void n_queens_S(uint64_t N,
-                uint64_t i, uint64_t j,
-                tpie::file_stream<coom::node_t> &out_nodes,
-                tpie::file_stream<coom::meta_t> &out_meta)
+coom::node_file n_queens_S(uint64_t N, uint64_t i, uint64_t j)
 {
-  out_nodes.open();
-  out_meta.open();
+  coom::node_file out;
+  coom::node_writer out_writer(out);
 
   uint64_t row = N - 1;
   coom::ptr_t next = coom::create_sink_ptr(true);
@@ -134,16 +103,14 @@ void n_queens_S(uint64_t N,
           coom::label_t label = label_of_position(N, i, j);
           coom::node_t queen = coom::create_node(label, 0, coom::create_sink_ptr(false), next);
 
-          out_nodes.write(queen);
-          out_meta.write({label});
+          out_writer << queen;
           next = queen.uid;
           continue;
         }
 
         coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
-        out_nodes.write(out_node);
-        out_meta.write({label});
+        out_writer << out_node;
         next = out_node.uid;
       } while (column-- > 0);
     } else {
@@ -153,8 +120,7 @@ void n_queens_S(uint64_t N,
         coom::label_t label = label_of_position(N, row, j + row_diff);
         coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
-        out_nodes.write(out_node);
-        out_meta.write({label});
+        out_writer << out_node;
         next = out_node.uid;
       }
 
@@ -162,8 +128,7 @@ void n_queens_S(uint64_t N,
       coom::label_t label = label_of_position(N, row, j);
       coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
-      out_nodes.write(out_node);
-      out_meta.write({label});
+      out_writer << out_node;
       next = out_node.uid;
 
       if (row_diff <= j) {
@@ -171,14 +136,14 @@ void n_queens_S(uint64_t N,
         coom::label_t label = label_of_position(N, row, j - row_diff);
         coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
-        out_nodes.write(out_node);
-        out_meta.write({label});
+        out_writer << out_node;
         next = out_node.uid;
       }
     }
   } while (row-- > 0);
 
-  largest_reduced = std::max(largest_reduced, out_nodes.size());
+  largest_nodes = std::max(largest_nodes, out.size());
+  return out;
 }
 
 /*******************************************************************************
@@ -204,69 +169,18 @@ void n_queens_S(uint64_t N,
  * is saved, if there is a major overlap. So, we will choose to do it
  * iteratively.
  */
-void n_queens_R(uint64_t N,
-                uint64_t row,
-                tpie::file_stream<coom::node_t> &out_nodes,
-                tpie::file_stream<coom::meta_t> &out_meta)
+coom::node_file n_queens_R(uint64_t N, uint64_t row)
 {
-  /* The main interface for the functions of COOM are of the form of one or more
-   * input streams converted into one output node stream. Most of these
-   * algorithms create in one sweep through the OBDD an intermediate result,
-   * which is then reduced afterwards in another sweep back again. The important
-   * thing to notice is, that the reduction is only dependent on the
-   * intermediate result and not the given input streams.
-   *
-   * When calling coom::apply(in1, in2, op, out) then even though in1 and in2
-   * may not be needed after the first sweep, the C++ compiler first sees it
-   * being a dead variable after the entire procedure has finished. That means,
-   * that both the input, the intermediate result and the output may have to
-   * exist in memory or on disk at the same time.
-   *
-   * If we explicitly call the reduce, we can make sure both inputs are cleaned
-   * up before we reduce us to the output. This will minimise the amount of
-   * space we concurrently occupy.
-   */
-  tpie::file_stream<coom::arc_t> reduce_node_arcs;
-  tpie::file_stream<coom::arc_t> reduce_sink_arcs;
-  tpie::file_stream<coom::meta_t> reduce_meta;
-
-  tpie::file_stream<coom::node_t> next_S;
-  tpie::file_stream<coom::meta_t> next_S_meta;
-
-  out_nodes.open();
-  out_meta.open();
-  n_queens_S(N, row, 0, out_nodes, out_meta);
+  coom::node_file out = n_queens_S(N, row, 0);
 
   for (uint64_t j = 1; j < N; j++) {
-    next_S.open();
-    next_S_meta.open();
-    n_queens_S(N, row, j, next_S, next_S_meta);
+    coom::node_file next_S = n_queens_S(N, row, j);
 
-    reduce_node_arcs.open();
-    reduce_sink_arcs.open();
-    reduce_meta.open();
+    out = coom::bdd_apply(out, next_S, coom::or_op);
 
-    coom::apply(out_nodes, out_meta, next_S, next_S_meta, coom::or_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
-
-    // close (and clean up) prior result
-    next_S.close();
-    out_nodes.close();
-    out_meta.close();
-
-    stats_unreduced(reduce_node_arcs.size(), reduce_sink_arcs.size());
-
-    // open for next result
-    out_nodes.open();
-    out_meta.open();
-
-    coom::reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta, out_nodes, out_meta);
-
-    stats_reduced((reduce_node_arcs.size() + reduce_sink_arcs.size()) / 2, out_nodes.size());
-
-    reduce_node_arcs.close();
-    reduce_sink_arcs.close();
-    reduce_meta.close();
+    largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
   }
+  return out;
 }
 
 /*******************************************************************************
@@ -274,52 +188,22 @@ void n_queens_R(uint64_t N,
  * again iterate over all rows to combine them one-by-one. One can probably
  * remove the code duplication that we now introduce.
  */
-void n_queens_B(uint64_t N,
-                tpie::file_stream<coom::node_t>& out_nodes,
-                tpie::file_stream<coom::meta_t> &out_meta)
+coom::node_file n_queens_B(uint64_t N)
 {
   if (N == 1) {
-    n_queens_S(N, 0, 0, out_nodes, out_meta);
-    return;
+    return n_queens_S(N, 0, 0);
   }
 
-  tpie::file_stream<coom::arc_t> reduce_node_arcs;
-  tpie::file_stream<coom::arc_t> reduce_sink_arcs;
-  tpie::file_stream<coom::meta_t> reduce_meta;
-
-  tpie::file_stream<coom::node_t> next_R;
-  tpie::file_stream<coom::meta_t> next_R_meta;
-
-  out_nodes.open();
-  out_meta.open();
-  n_queens_R(N, 0, out_nodes, out_meta);
+  coom::node_file out = n_queens_R(N, 0);
 
   for (uint64_t i = 1; i < N; i++) {
-    n_queens_R(N, i, next_R, next_R_meta);
+    coom::node_file next_R = n_queens_R(N, i);
 
-    reduce_node_arcs.open();
-    reduce_sink_arcs.open();
-    reduce_meta.open();
+    out = coom::bdd_apply(out, next_R, coom::and_op);
 
-    coom::apply(out_nodes, out_meta, next_R, next_R_meta, coom::and_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
-
-    next_R.close();
-    out_nodes.close();
-    out_meta.close();
-
-    stats_unreduced(reduce_node_arcs.size(), reduce_sink_arcs.size());
-
-    out_nodes.open();
-    out_meta.open();
-
-    coom::reduce(reduce_node_arcs, reduce_sink_arcs, reduce_meta, out_nodes, out_meta);
-
-    stats_reduced((reduce_node_arcs.size() + reduce_sink_arcs.size()) / 2, out_nodes.size());
-
-    reduce_node_arcs.close();
-    reduce_sink_arcs.close();
-    reduce_meta.close();
+    largest_nodes = std::max(largest_nodes, out.size());
   }
+  return out;
 }
 
 /*******************************************************************************
@@ -328,10 +212,9 @@ void n_queens_B(uint64_t N,
  * is a solution to the N-Queens problem. So, now we can merely count the number
  * of assignments that reach a true sink.
  */
-uint64_t n_queens_count(tpie::file_stream<coom::node_t>& board,
-                        tpie::file_stream<coom::meta_t>& board_meta)
+uint64_t n_queens_count(const coom::node_file &board)
 {
-  return coom::count_assignments(board, board_meta, coom::is_true);
+  return coom::bdd_satcount(board);
 }
 
 /*******************************************************************************
@@ -391,8 +274,7 @@ inline uint64_t j_of_label(uint64_t N, coom::label_t label)
  * of solutions we list. */
 uint64_t n_queens_list(uint64_t N, uint64_t column,
                        std::vector<uint64_t>& partial_assignment,
-                       tpie::file_stream<coom::node_t>& constraints,
-                       tpie::file_stream<coom::meta_t>& constraints_meta)
+                       const coom::node_file& constraints)
 {
   if (coom::is_sink(constraints, coom::is_false)) {
     return 0;
@@ -401,46 +283,45 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
   uint64_t solutions = 0;
 
-  tpie::file_stream<coom::assignment_t> column_assignment;
-  tpie::file_stream<coom::node_t> restricted_constraints;
-  tpie::file_stream<coom::meta_t> restricted_constraints_meta;
-
   for (uint64_t row_q = 0; row_q < N; row_q++) {
     partial_assignment.push_back(row_q);
 
     // Construct the assignment for this entire column
-    column_assignment.open();
+    coom::assignment_file column_assignment;
+    coom::assignment_writer aw(column_assignment);
 
     for (uint64_t row = 0; row < N; row++) {
-      coom::assignment assignment = { label_of_position(N, row, column), row == row_q };
-      column_assignment.write(assignment);
+      aw << coom::create_assignment(label_of_position(N, row, column), row == row_q);
     }
 
-    restricted_constraints.open();
-    restricted_constraints_meta.open();
+    coom::node_file restricted_constraints = coom::bdd_restrict(constraints, column_assignment);
 
-    coom::restrict(constraints, constraints_meta, column_assignment, restricted_constraints, restricted_constraints_meta);
-
-    if (coom::count_paths(restricted_constraints, restricted_constraints_meta, coom::is_true) == 1) {
+    if (coom::bdd_pathcount(restricted_constraints) == 1) {
       solutions += 1;
-
-      tpie::file_stream<coom::assignment> forced_assignment;
-      forced_assignment.open();
 
       // Request a true assignment (well, only one exists), and have it ordered
       // by the columns, such that we can use the output for our purposes.
-      auto sort_by_column = [&N](const coom::assignment &a, const coom::assignment &b) -> bool {
+      struct sort_by_column
+      {
+      private:
+        uint64_t N;
+
+      public:
+        explicit sort_by_column(const uint64_t N) : N(N) { }
+
+        bool operator()(const coom::assignment &a, const coom::assignment &b)
+        {
           return j_of_label(N, a.label) < j_of_label(N, b.label);
-        };
+        }
+      };
 
-      coom::get_assignment<decltype(sort_by_column)>(restricted_constraints,
-                                                     coom::is_true,
-                                                     forced_assignment,
-                                                     sort_by_column);
+      auto forced_assignment = coom::bdd_get_assignment(restricted_constraints,
+                                                        coom::is_true,
+                                                        sort_by_column(N));
 
-      forced_assignment.seek(0);
-      while (forced_assignment.can_read()) {
-        coom::assignment a = forced_assignment.read();
+      coom::assignment_stream fas(forced_assignment.value());
+      while (fas.can_pull()) {
+        coom::assignment a = fas.pull();
         if (a.value) {
           partial_assignment.push_back(i_of_label(N, a.label));
         }
@@ -455,19 +336,15 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       n_queens_print_solution(partial_assignment);
       solutions += 1;
     } else {
-      solutions += n_queens_list(N, column+1, partial_assignment, restricted_constraints, restricted_constraints_meta);
+      solutions += n_queens_list(N, column+1, partial_assignment, restricted_constraints);
     }
-    column_assignment.close();
-    restricted_constraints.close();
     partial_assignment.pop_back();
   }
 
   return solutions;
 }
 
-uint64_t n_queens_list(uint64_t N,
-                       tpie::file_stream<coom::node_t>& board,
-                       tpie::file_stream<coom::meta_t>& board_meta)
+uint64_t n_queens_list(uint64_t N, const coom::node_file& board)
 {
   tpie::log_info() << "|  | solutions:" << std::endl;
 
@@ -485,7 +362,9 @@ uint64_t n_queens_list(uint64_t N,
   std::vector<uint64_t> partial_assignment { };
   partial_assignment.reserve(N);
 
-  return n_queens_list(N, 0, partial_assignment, board, board_meta);
+  coom::node_or_arc_file board_copy(board);
+
+  return n_queens_list(N, 0, partial_assignment, board_copy);
 }
 
 // expected number taken from:
@@ -532,12 +411,6 @@ inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
   return std::chrono::duration_cast<std::chrono::seconds>(after - before).count();
 }
 
-
-/* TODO: File size calculations should be available from COOM. */
-inline auto MB_of_size(tpie::stream_size_type size) {
-  return size * sizeof(coom::node) /* bytes */ / (1024 * 1024) /* in MB */;
-}
-
 /* Finally, to run the above we need to initialize the underlying TPIE library
  * first, from which point all the file_streams, priority queues and sorters
  * used are at our disposal.
@@ -581,42 +454,18 @@ int main(int argc, char* argv[])
 
   // ===== N Queens =====
 
-  tpie::file_stream<coom::node_t> board;
-  tpie::file_stream<coom::meta_t> board_meta;
-
   tpie::log_info() << "| " << N << "-Queens : Board construction"  << std::endl;
   auto before_board = get_timestamp();
-  n_queens_B(N, board, board_meta);
+  coom::node_file board = n_queens_B(N);
   auto after_board = get_timestamp();
 
   tpie::log_info() << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
-
-  auto largest_unreduced_MB = (MB_of_size(largest_unreduced) * 3) / 2;
-  tpie::log_info() << "|  | largest OBDD (unreduced): " << largest_unreduced << " nodes" << std::endl;
-  tpie::log_info() << "|  |                           " << (largest_unreduced_MB > 0 ? std::to_string(largest_unreduced_MB) : "< 1")
-                                                        << " MB"<< std::endl;
-
-  tpie::log_info() << "|  | sink ratio: " << std::endl;
-  tpie::log_info() << "|  |  | best:  " << best_sink_ratio << std::endl;
-  tpie::log_info() << "|  |  | worst: " << worst_sink_ratio << std::endl;
-
-  auto largest_reduced_MB = MB_of_size(largest_reduced);
-  tpie::log_info() << "|  | largest OBDD (reduced)  : " << largest_reduced << " nodes" << std::endl;
-  tpie::log_info() << "|  |                           " << (largest_reduced_MB > 0 ? std::to_string(largest_reduced_MB) : "< 1")
-                                                        << " MB"<< std::endl;
-
-  tpie::log_info() << "|  | reduction ratio: " << std::endl;
-  tpie::log_info() << "|  |  | best:  " << best_reduction_ratio << std::endl;
-  tpie::log_info() << "|  |  | worst: " << worst_reduction_ratio << std::endl;
-
-
-  auto final_MB = MB_of_size(board.size());
-  tpie::log_info() << "|  | final size: " << board.size() << " nodes"<< std::endl;
-  tpie::log_info() << "|  |             " << (final_MB > 0 ? std::to_string(final_MB) : "< 1") << " MB"<< std::endl;
+  tpie::log_info() << "|  | largest BDD  : " << largest_nodes << " nodes" << std::endl;
+  tpie::log_info() << "|  | final size: " << bdd_nodecount(board) << " nodes"<< std::endl;
 
   // Run counting example
   auto before_count = get_timestamp();
-  uint64_t solutions = n_queens_count(board, board_meta);
+  uint64_t solutions = n_queens_count(board);
   auto after_count = get_timestamp();
 
   tpie::log_info() << "| " << N << "-Queens : Counting assignments"  << std::endl;
@@ -629,16 +478,13 @@ int main(int argc, char* argv[])
   if (N <= 8) {
     tpie::log_info() << "| " << N << "-Queens (Pruning search)"  << std::endl;
     auto before_list = get_timestamp();
-    uint64_t listed_solutions = n_queens_list(N, board, board_meta);
+    uint64_t listed_solutions = n_queens_list(N, board);
     auto after_list = get_timestamp();
 
     correct_result = correct_result && listed_solutions == expected_result[N];
 
     tpie::log_info() << "|  | number of solutions: " << listed_solutions << std::endl;
     tpie::log_info() << "|  | deepest recursion: " << deepest_column << " columns" << std::endl;
-
-    auto estimated_MB = MB_of_size(deepest_column * 2 * board.size());
-    tpie::log_info() << "|  | estimated maximal memory usage: " << (estimated_MB > 0 ? std::to_string(estimated_MB) : "< 1") << " MB" << std::endl;
     tpie::log_info() << "|  | time: " << duration_of(before_list, after_list) << " s" << std::endl;
   }
 

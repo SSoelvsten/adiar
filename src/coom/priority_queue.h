@@ -7,6 +7,7 @@
 #include <tpie/priority_queue.h>
 
 #include <coom/data.h>
+#include <coom/file.h>
 
 namespace coom {
   extern tpie::dummy_progress_indicator pq_tpie_progress_indicator;
@@ -22,54 +23,37 @@ namespace coom {
   /// Currently these always are to be read in reverse, so let us merely
   /// implement a manager for just that.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename Comparator = std::less<label_t>, size_t MetaStreams = 1>
+  template <typename Comparator = std::less<label_t>, size_t MetaStreams = 1u>
   class pq_label_mgr
   {
   private:
     Comparator _comparator = Comparator();
 
-    std::vector<std::reference_wrapper<tpie::file_stream<meta_t>>> _meta_streams;
-    label_t _nexts [MetaStreams];
-    bool _has_nexts [MetaStreams];
+    size_t _files_given = 0;
+    std::unique_ptr<file_stream<meta_t, true>> _meta_streams [MetaStreams];
 
   public:
-    bool hook_meta_stream(tpie::file_stream<meta_t>& s)
+    bool hook_meta_stream(const shared_file<meta_t> &s)
     {
 #if COOM_ASSERT
-      assert (_meta_streams.size() < MetaStreams);
+      assert (_files_given < MetaStreams);
 #endif
 
-      size_t idx = _meta_streams.size();
-      bool all_hooked = false;
+      _meta_streams[_files_given] = std::make_unique<file_stream<meta_t, true>>(s);
 
-      _meta_streams.push_back(std::ref(s));
-      if (idx + 1 == MetaStreams)
-      {
-        _meta_streams.shrink_to_fit();
-        all_hooked = true;
-      }
-
-      s.seek(0, tpie::file_stream_base::end);
-
-      bool can_read = s.can_read_back();
-      _has_nexts[idx] = can_read;
-      if (can_read)
-      {
-        _nexts[idx] = s.read_back().label;
-      }
-
-      return all_hooked;
+      _files_given++;
+      return _files_given == MetaStreams;
     }
 
     bool can_pull()
     {
 #if COOM_ASSERT
-      assert (_meta_streams.size() == MetaStreams);
+      assert (_files_given == MetaStreams);
 #endif
 
-      for (bool _has_next : _has_nexts)
+      for (size_t idx = 0u; idx < MetaStreams; idx++)
       {
-        if (_has_next)
+        if (_meta_streams[idx] -> can_pull())
         {
           return true;
         }
@@ -80,17 +64,18 @@ namespace coom {
     label_t peek()
     {
 #if COOM_ASSERT
-      assert (_meta_streams.size() == MetaStreams);
+      assert (_files_given == MetaStreams);
       assert (can_pull());
 #endif
       bool has_min_label = false;
       label_t min_label = 0u;
       for (size_t idx = 0u; idx < MetaStreams; idx++)
       {
-        if (_has_nexts[idx] && (!has_min_label || _comparator(_nexts[idx], min_label)))
+        if (_meta_streams[idx] -> can_pull()
+            && (!has_min_label || _comparator(_meta_streams[idx] -> peek().label, min_label)))
         {
           has_min_label = true;
-          min_label = _nexts[idx];
+          min_label = _meta_streams[idx] -> peek().label;
         }
       }
 
@@ -100,20 +85,17 @@ namespace coom {
     label_t pull()
     {
 #if COOM_ASSERT
-      assert (_meta_streams.size() == MetaStreams);
+      assert (_files_given == MetaStreams);
       assert (can_pull());
 #endif
 
       label_t min_label = peek();
 
       // pull from all with min_label
-      for (size_t idx = 0; idx < MetaStreams; idx++) {
-        if (_has_nexts[idx] && _nexts[idx] == min_label) {
-          if (_meta_streams[idx].get().can_read_back()) {
-            _nexts[idx] = _meta_streams[idx].get().read_back().label;
-          } else {
-            _has_nexts[idx] = false;
-          }
+      for (size_t idx = 0u; idx < MetaStreams; idx++) {
+        if (_meta_streams[idx] -> can_pull()
+            && _meta_streams[idx] -> peek().label == min_label) {
+          _meta_streams[idx] -> pull();
         }
       }
 
@@ -133,6 +115,7 @@ namespace coom {
   /// then be merged with the current bucket.
   ///
   /// \param T          The type of items to store.
+  /// \param Files      The number of files used in the coom::file for T
   ///
   /// \param LabelExt   Struct, that provides a .label_of(T& t) function to
   ///                   determine in which bucket to place it.
@@ -154,10 +137,12 @@ namespace coom {
   /// buckets.
   ///
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, typename LabelExt, typename TComparator = std::less<T>,
-            size_t MetaStreams = 1, typename LabelComparator = std::less<label_t>,
-            size_t Buckets = COOM_PQ_BUCKETS>
-  class priority_queue : private LabelExt, private pq_label_mgr<LabelComparator,MetaStreams>
+  template <typename File_T, size_t Files,
+            typename T,
+            typename LabelExt,
+            typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
+            size_t MetaStreams = 1u, size_t Buckets = COOM_PQ_BUCKETS>
+  class priority_queue : private LabelExt, private pq_label_mgr<LabelComparator, MetaStreams>
   {
     static_assert(0 <= Buckets && Buckets <= 4, "The number of buckets may only be in [0;4]");
     static_assert(0 < MetaStreams, "At least one meta stream should be provided");
@@ -189,10 +174,7 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
   public:
-    priority_queue()
-    {
-      _buckets_memory = (tpie::get_memory_manager().available() * 3) / 4;
-    }
+    priority_queue() : priority_queue((tpie::get_memory_manager().available() * 3) / 4) { }
 
     priority_queue(tpie::memory_size_type buckets_memory)
     {
@@ -201,7 +183,6 @@ namespace coom {
 
     ////////////////////////////////////////////////////////////////////////////
     // Public methods
-  public:
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Hook onto a meta stream
@@ -210,7 +191,7 @@ namespace coom {
     /// to which requests may be made. This hook_meta_stream function has to be
     /// called MetaStreams number of times before any elements are pushed.
     ////////////////////////////////////////////////////////////////////////////
-    void hook_meta_stream(tpie::file_stream<meta_t>& s)
+    void hook_meta_stream(const shared_file<meta_t> &s)
     {
 #if COOM_ASSERT
       assert (_front_bucket_idx == 0);
@@ -238,7 +219,12 @@ namespace coom {
 
         calc_front_bucket();
       }
-   }
+    }
+
+    void hook_meta_stream(const file<File_T, Files> &f)
+    {
+      hook_meta_stream(f._meta_file);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Push an element into the stream
@@ -271,8 +257,7 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     label_t current_layer() const
     {
-      if constexpr (Buckets == 0)
-      {
+      if constexpr (Buckets == 0) {
         return _buckets_label[0];
       }
 
@@ -318,8 +303,7 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     bool can_pull()
     {
-      if constexpr (Buckets == 0)
-      {
+      if constexpr (Buckets == 0) {
         return
           !_overflow_queue.empty()
           && _buckets_label[0] == LabelExt::label_of(_overflow_queue.top());
@@ -527,8 +511,9 @@ namespace coom {
        * footprint on Phase 1 (sending sorted blocks to disk) and Phase 3
        * (merging sorted partial results). This allows us to place a lot of
        * memory on Phase 2 (the primary sorting step), which will allow us to
-       * have multiple concurrent merger_sorters, since all will mostly only use
-       * the Phase 1 memory limit.
+       * have multiple concurrent merger_sorters, since only one of them will
+       * every be running Phase 2, while all the others are active at Phase 1 or
+       * Phase 3 at the same time.
        */
 
       // 128 Kb * sizeof(T) + 5 MB. This is the minimum to make TPIE not cry.
@@ -599,6 +584,16 @@ namespace coom {
       return _buckets_label[_back_bucket_idx];
     }
   };
+
+  template <typename T, typename LabelExt,
+            typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
+            size_t MetaStreams = 1u, size_t Buckets = COOM_PQ_BUCKETS>
+  using node_priority_queue = priority_queue<node_t, 1u, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
+
+  template <typename T, typename LabelExt,
+            typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
+            size_t MetaStreams = 1u, size_t Buckets = COOM_PQ_BUCKETS>
+  using arc_priority_queue = priority_queue<arc_t, 2u, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
 }
 
 #endif // COOM_PRIORITY_QUEUE_H
