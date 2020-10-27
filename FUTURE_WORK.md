@@ -44,6 +44,22 @@ able to reproduce the ideas in _Apply_ to do a simultaneous sweep over all three
 OBDDs simultaneously in one go and gain a major performance gain over
 constructing the above formula with `coom::apply` and `coom:negate`.
 
+Yet, there are multiple edge-cases, in which one can do much, much better than
+the above.
+
+- If _f_ is a sink, it is trivial
+
+- If _g_ and _h_ are sinks, it's also either _f_, _~f_, or a collapse to a sink.
+
+- The labels of _f_ are 'above' _g_ and _h_. At this point, one can change the
+  pointers of _f_ to point to the root of _g_ and _h_, where the ids of _h_ are
+  decreased to not conflict with _g_.
+  
+  - If _g_ or _h_ also is separate from the other, then one can do it all
+    without reduction by merely copying the nodes of _g_ and _h_.
+
+There may be many more interesting and common cases, that may run much faster.
+
 One can also encode many other interesting operators within the ITE operator,
 where it might be worth investigating the performance difference between the use
 of _ITE_ rather than the other implementation of the algorithm
