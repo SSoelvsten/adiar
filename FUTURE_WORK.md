@@ -13,7 +13,9 @@ may constitute interesting undergraduate research projects.
         - [Complement Edges](#complement-edges)
     - [Extensions](#extensions)
         - [Non-boolean Decision Diagrams](#non-boolean-decision-diagrams)
+        - [Zero-suppressed Diagrams](#zero-suppressed-diagrams)
         - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
+        - [From _recursive_ algorithm to _time-forward processing_ and back again](#from-recursive-algorithm-to-time-forward-processing-and-back-again)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
         - [Parallelisation](#parallelisation)
@@ -77,7 +79,7 @@ of _ITE_ rather than the other implementation of the algorithm
 Currently, we do not support complement edges, though one can expect about a 7%
 factor decrease in the size of the OBDD from using said technique. In the
 recursive algorithms, one can even expect a factor two decrease in the
-algorithms execution time [[Brace90](#references)].
+algorithms execution time [[Brace90](README.md#references)].
 
 
 ## Extensions
@@ -86,17 +88,51 @@ algorithms execution time [[Brace90](#references)].
 One can easily extend the proposed representation of sink nodes to encompass
 non-boolean values, such as integers or floats. Thereby, the algorithms
 immediately yield a Cache-oblivious implementation of the _Multi-Terminal Binary
-Decision Diagrams_ (MTBDD) of [[Fujita97](#references)]. By solely using an
-edge-based representation of the data-structure one can also implement a
-_Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)]. The latter may
-result in major rewrites of the algorithms.
+Decision Diagrams_ (MTBDD) of [[Fujita97](README.md#references)]. By solely
+using an edge-based representation of the data-structure one can also implement
+a _Multi-valued Decision Diagram_ (MDD) of [[Kam98](README.md#references)].
+The latter may result in major rewrites of the algorithms.
+
+
+### Zero-suppressed Diagrams
+A Zero-suppressed Decision Diagram
+([ZDD](https://en.wikipedia.org/wiki/Zero-suppressed_decision_diagram)) is a
+binary decision diagram, which is very compresed when representing sparse sets
+of bit vectors. They make use of different reduction rules 
+
+- Generalize the _Reduce_ algorithm
+- Implement (Time-forward processing) algorithms for all the set operations.
+
 
 ### Free Boolean Decision Diagrams
 One can remove the restriction of ordering the decision diagram to then
 potentially compress the data structure even more. These Free Binary Decision
-Diagrams (FBDD) of [[Meinel94](#references)] may also be possible to implement
+Diagrams (FBDD) of [[Meinel94](README.md#references)] may also be possible to implement
 in the setting of Time-forward processing used here.
 
+
+### From _recursive_ algorithm to _time-forward processing_ and back again
+Most implementations, such as the ones in [[Brace90,
+Dijk16](README.md#references)], make use of a _unique node table_, which is a
+hash-table in which all BDDs exist. This has the benefit of allowing one to
+reuse common subtrees across BDDs (which saves space linear in the number of
+concurrent BDDs in use) and the recursive algorithms run _2_ or even _4_ times
+faster than the current algorithms (when they don't outgrow the main memory).
+
+_TPIE_ provides a _Cache-oblivious_ hash table, so one can look into one of the
+following two
+
+1. When a BDD outgrows the main memory, we may be able to convert to the current
+   time-forward processing algorithms instead of crashing (which the other BDD
+   libraries do). When a stream-based BDD grows small enough again, then we may
+   be able to place it back in the _unique node table_.
+
+2. If one can keep using the same node identifiers in the table, then one may
+   also use both data structures at the same time. Some parts of the BDD is in
+   main memory, while others are in the stream.
+
+Based on the memory usage I've witnessed during benchmarking, I think the first
+option is the most promising.
 
 ## Optimising the current algorithms
 There are quite a few avenues of trying to shave off a few significant constants
@@ -115,12 +151,12 @@ The idea of Time-Forward-Processing is inherently sequential, but can we
 parallelise parts of the algorithm? One may want to look into what possibilities
 we have in parallel access to the underlying data structures and algorithms:
 
-- Parallel traversal of the same file stream
+- [X] Parallel traversal of the same file stream
 
-- Parallelisable sorting algorithms (Sorting in TPIE is parallelised).
+- [X] Parallelisable sorting algorithms (Sorting in TPIE is parallelised).
   
-- Parallelisable Cache-oblivious priority queue, such as the one in
-  [[Sitchinava12](#references)].
+- [ ] Parallelisable Cache-oblivious priority queue, such as the one in
+      [[Sitchinava12](README.md#references)].
 
 
 #### Parallel Layer-aware priority queue
