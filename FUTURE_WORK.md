@@ -88,10 +88,14 @@ algorithms execution time [[Brace90](README.md#references)].
 One can easily extend the proposed representation of sink nodes to encompass
 non-boolean values, such as integers or floats. Thereby, the algorithms
 immediately yield a Cache-oblivious implementation of the _Multi-Terminal Binary
-Decision Diagrams_ (MTBDD) of [[Fujita97](README.md#references)]. By solely
-using an edge-based representation of the data-structure one can also implement
-a _Multi-valued Decision Diagram_ (MDD) of [[Kam98](README.md#references)].
-The latter may result in major rewrites of the algorithms.
+Decision Diagrams_ (MTBDD) of [[Fujita97](README.md#references)].
+
+By solely using an edge-based representation of the data-structure one can also
+implement a _Multi-valued Decision Diagram_ (MDD) of
+[[Kam98](README.md#references)]. This allows one to succinctly encode a function
+from a non-boolean domain. Switching to the edge-based representation will lead
+to rewriting almost all algorithms, but we may look into recreating the _List
+Decision Diagrams_ of [[Dijk16](README.md#references)] to circumvent this.
 
 
 ### Zero-suppressed Decision Diagrams
@@ -107,8 +111,8 @@ of bit vectors. They make use of different reduction rules
 ### Free Boolean Decision Diagrams
 One can remove the restriction of ordering the decision diagram to then
 potentially compress the data structure even more. These Free Binary Decision
-Diagrams (FBDD) of [[Meinel94](README.md#references)] may also be possible to implement
-in the setting of Time-forward processing used here.
+Diagrams (FBDD) of [[Meinel94](README.md#references)] may also be possible to
+implement in the setting of Time-forward processing used here.
 
 
 ### From _recursive_ algorithm to _time-forward processing_ and back again
