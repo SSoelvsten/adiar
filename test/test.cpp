@@ -8,8 +8,6 @@ using namespace bandit;
 
 using namespace coom;
 
-#include "test_tpie.cpp"
-
 ////////////////////////////////////////////////////////////////////////////////
 // To improve the relationship between the tests and the algorithms, we will not
 // reverse the order in which we reverse the output.
