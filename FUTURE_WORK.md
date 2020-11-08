@@ -72,6 +72,11 @@ of _ITE_ rather than the other implementation of the algorithm
 | Existence   | ∃y : f(x, y, z)    | ITE(f(x, 1, z), 1, f(x, 0, z))   |
 | Forall      | ∀y : f(x, y, z)    | ITE(f(x, 1, z), f(x, 0, z), 0)   |
 
+### Algorithms by Olivier Coudert and Jean Christophe Madre
+The current _Restrict_ algorithm is the basic algorithm of Bryant, but one has
+been proposed in [[Coudert90](README.md#references)] that is very different and
+may be used in Verification. They also proposed algorithms with the name
+_Constrain_ and _Expand_.
 
 ## Optimising the OBDD
 
