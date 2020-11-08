@@ -210,6 +210,11 @@ The software and documentation files in this repository are provided under the
   Randal E. Bryant. “_Graph-Based Algorithms for Boolean Function Manipulation_”.
   In: _IEEE Transactions on Computers_. (1986)
 
+- [[Coudert90](http://www.ocoudert.com/papers/pdf/iccad90.pdf)]
+  Olivier Coudert and Jean Christophe Madre. “_A Unified Framework for the
+  Formal verification of sequential circuits_”. In: _Computer-Aided Design /
+  IEEE International Conference_. (1990)
+
 - [[Dijk16](https://link.springer.com/content/pdf/10.1007/s10009-016-0433-2.pdf)]
   Tom van Dijk, Jaco van de Pol. “_Sylvan: multi-core framework for decision
   diagrams_”. In: _International Journal on Software Tools for Technology
@@ -227,7 +232,7 @@ The software and documentation files in this repository are provided under the
 
 - [[Kunkle10](https://dl.acm.org/doi/abs/10.1145/1837210.1837222)] Daniel
   Kunkle, Vlad Slavici, Gene Cooperman. “_Parallel Disk-Based Computation for
-  Large, Monolithic Binary Decision Diagrams_”. In: _ PASCO '10: Proceedings of
+  Large, Monolithic Binary Decision Diagrams_”. In: _PASCO '10: Proceedings of
   the 4th International Workshop on Parallel and Symbolic Computation_. 2010
 
 - [Meinel94]
