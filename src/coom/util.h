@@ -36,18 +36,6 @@ namespace coom
     f2_stream.detach();
   }
 
-  template<typename T>
-  void copy(const tpie::file<T> &f1, const shared_file<T> &f2)
-  {
-    copy(f1, *f2);
-  }
-
-  template<typename T>
-  void copy(const shared_file<T> &f1, const shared_file<T> &f2)
-  {
-    copy(*f1, *f2);
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   /// Copy the content of a merge_sorter into an output file.
   ///
@@ -57,7 +45,7 @@ namespace coom
   /// \param file The tpie::file to write to.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T, bool UseProgress, typename pred_t = std::less<T>>
-  void sort_into_file(tpie::merge_sorter<T, false, pred_t> &sorter,
+  void sort_into_file(tpie::merge_sorter<T, UseProgress, pred_t> &sorter,
                       tpie::file<T> &file,
                       bool run_sorter = true)
   {
@@ -84,14 +72,6 @@ namespace coom
     }
 
     out_stream.detach();
-  }
-
-  template<typename T, bool UseProgress, typename pred_t = std::less<T>>
-  void sort_into_file(tpie::merge_sorter<T, UseProgress, pred_t> &sorter,
-                      const shared_file<T> &file,
-                      bool run_sorter = true)
-  {
-    sort_into_file<T, UseProgress, pred_t>(sorter, *file, run_sorter);
   }
 
   //////////////////////////////////////////////////////////////////////////////

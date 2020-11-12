@@ -88,7 +88,7 @@ namespace coom
                         label_t max_label,
                         const sink_pred &sink_pred)
   {
-    node_stream ns(nodes);
+    node_stream<> ns(nodes);
 
     count_priority_queue_t partial_sums;
     partial_sums.hook_meta_stream(nodes);

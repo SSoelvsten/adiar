@@ -10,14 +10,18 @@ namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
   /// node_file
-  node_file::node_file(const node_or_arc_file &other) : file(reduce(other)) { }
+  node_file::node_file(const node_or_arc_file &other) : node_file(reduce(other)) { }
 
   node_file& node_file::operator= (const node_or_arc_file &other)
   {
-    node_file reduced = reduce(other);
-    this -> _meta_file = reduced._meta_file;
-    this -> _files[0] = reduced._files[0];
+    // Clean up current node_file before reduce
+    this -> _file_ptr.reset();
 
+    // Reduce and copy over pointer to result
+    node_file reduced = reduce(other);
+    this -> _file_ptr = reduced._file_ptr;
+
+    // Return this object
     return *this;
   }
 
@@ -26,7 +30,7 @@ namespace coom
     if (file.size() != 1) {
       return false;
     }
-    node_stream ns(file);
+    node_stream<> ns(file);
     node_t n = ns.pull();
 
     return is_sink(n) && pred(n.uid);
@@ -34,16 +38,16 @@ namespace coom
 
   node_t root_of(const node_file &file)
   {
-    node_stream ns(file);
+    node_stream<> ns(file);
     return ns.pull();
   }
 
-  template<bool from_start>
+  template<bool reverse>
   label_t extract_label(const node_file &file)
   {
     coom_assert(file.size() > 0, "Cannot extract label from an empty file");
 
-    file_stream<node_t, from_start> ns(file._files[0]);
+    node_stream<reverse> ns(file);
     node_t n = ns.pull();
 
     coom_assert(!is_sink(n), "Cannot extract label from sink-only file");
@@ -53,12 +57,12 @@ namespace coom
 
   label_t min_label(const node_file &file)
   {
-    return extract_label<true>(file);
+    return extract_label<false>(file);
   }
 
   label_t max_label(const node_file &file)
   {
-    return extract_label<false>(file);
+    return extract_label<true>(file);
   }
 
   //////////////////////////////////////////////////////////////////////////////

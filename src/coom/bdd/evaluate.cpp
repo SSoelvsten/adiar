@@ -9,7 +9,7 @@ namespace coom
 {
   bool bdd_eval(const node_file &nodes, const assignment_file &assignments)
   {
-    node_stream ns(nodes);
+    node_stream<> ns(nodes);
     node_t current_node = ns.pull();
 
     if(is_sink(current_node)) {

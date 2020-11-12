@@ -2,9 +2,11 @@
 #define COOM_PRIORITY_QUEUE_H
 
 #include <tpie/tpie.h>
-#include <tpie/sort.h>
+
+#include <tpie/file.h>
 #include <tpie/file_stream.h>
 #include <tpie/priority_queue.h>
+#include <tpie/sort.h>
 
 #include <coom/data.h>
 #include <coom/file.h>
@@ -23,23 +25,27 @@ namespace coom {
   /// Currently these always are to be read in reverse, so let us merely
   /// implement a manager for just that.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename Comparator = std::less<label_t>, size_t MetaStreams = 1u>
+  template <typename File_T, size_t Files,
+            typename Comparator = std::less<label_t>, size_t MetaStreams = 1u>
   class pq_label_mgr
   {
   private:
     Comparator _comparator = Comparator();
 
     size_t _files_given = 0;
-    std::unique_ptr<file_stream<meta_t, true>> _meta_streams [MetaStreams];
+
+    // Notice, that this will break, if the original file is garbage collected
+    // before the priority queue.
+    std::unique_ptr<meta_stream<File_T, Files>> _meta_streams [MetaStreams];
 
   public:
-    bool hook_meta_stream(const shared_file<meta_t> &s)
+    bool hook_meta_stream(const meta_file<File_T, Files> &f)
     {
 #if COOM_ASSERT
       assert (_files_given < MetaStreams);
 #endif
 
-      _meta_streams[_files_given] = std::make_unique<file_stream<meta_t, true>>(s);
+      _meta_streams[_files_given] = std::make_unique<meta_stream<File_T, Files>>(f);
 
       _files_given++;
       return _files_given == MetaStreams;
@@ -142,10 +148,12 @@ namespace coom {
             typename LabelExt,
             typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
             size_t MetaStreams = 1u, size_t Buckets = COOM_PQ_BUCKETS>
-  class priority_queue : private LabelExt, private pq_label_mgr<LabelComparator, MetaStreams>
+  class priority_queue : private LabelExt, private pq_label_mgr<File_T, Files, LabelComparator, MetaStreams>
   {
     static_assert(0 <= Buckets && Buckets <= 4, "The number of buckets may only be in [0;4]");
     static_assert(0 < MetaStreams, "At least one meta stream should be provided");
+
+    typedef pq_label_mgr<File_T, Files, LabelComparator, MetaStreams> label_mgr;
 
     ////////////////////////////////////////////////////////////////////////////
     // Internal state
@@ -191,20 +199,20 @@ namespace coom {
     /// to which requests may be made. This hook_meta_stream function has to be
     /// called MetaStreams number of times before any elements are pushed.
     ////////////////////////////////////////////////////////////////////////////
-    void hook_meta_stream(const shared_file<meta_t> &s)
+    void hook_meta_stream(const meta_file<File_T, Files> &f)
     {
 #if COOM_ASSERT
       assert (_front_bucket_idx == 0);
       assert (_back_bucket_idx == 0);
 #endif
 
-      bool all_hooked = pq_label_mgr<LabelComparator, MetaStreams>::hook_meta_stream(s);
-      if (all_hooked && pq_label_mgr<LabelComparator, MetaStreams>::can_pull()) {
-        label_t label = pq_label_mgr<LabelComparator, MetaStreams>::pull();
+      bool all_hooked = label_mgr::hook_meta_stream(f);
+      if (all_hooked && label_mgr::can_pull()) {
+        label_t label = label_mgr::pull();
         setup_bucket(_front_bucket_idx, label);
 
-        while(_back_bucket_idx < Buckets && pq_label_mgr<LabelComparator, MetaStreams>::can_pull()) {
-          label_t label = pq_label_mgr<LabelComparator, MetaStreams>::pull();
+        while(_back_bucket_idx < Buckets && label_mgr::can_pull()) {
+          label_t label = label_mgr::pull();
 #if COOM_ASSERT
           assert (_label_comparator(_buckets_label[_back_bucket_idx], label));
 #endif
@@ -219,11 +227,6 @@ namespace coom {
 
         calc_front_bucket();
       }
-    }
-
-    void hook_meta_stream(const file<File_T, Files> &f)
-    {
-      hook_meta_stream(f._meta_file);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -432,7 +435,7 @@ namespace coom {
       if constexpr (Buckets == 0) {
         while (LabelExt::label_of(_overflow_queue.top()) != _buckets_label[0]
                && (!has_stop_label || _label_comparator(_buckets_label[0], stop_label))) {
-          _buckets_label[0] = pq_label_mgr<LabelComparator, MetaStreams>::pull();
+          _buckets_label[0] = label_mgr::pull();
         }
         return;
       }
@@ -471,8 +474,8 @@ namespace coom {
 
           setup_next_bucket();
           while (has_next_bucket() && _label_comparator(front_bucket_label(), stop_label)) {
-            if (pq_label_mgr<LabelComparator, MetaStreams>::can_pull()) {
-              _buckets_label[_front_bucket_idx] = pq_label_mgr<LabelComparator, MetaStreams>::pull();
+            if (label_mgr::can_pull()) {
+              _buckets_label[_front_bucket_idx] = label_mgr::pull();
               _back_bucket_idx = _front_bucket_idx;
             }
             _front_bucket_idx = (_front_bucket_idx + 1) % (Buckets + 1);
@@ -539,8 +542,8 @@ namespace coom {
       assert (has_next_bucket() && _label_comparator(front_bucket_label(), back_bucket_label()));
 #endif
 
-      if (pq_label_mgr<LabelComparator, MetaStreams>::can_pull()) {
-        label_t next_label = pq_label_mgr<LabelComparator, MetaStreams>::pull();
+      if (label_mgr::can_pull()) {
+        label_t next_label = label_mgr::pull();
         setup_bucket(_front_bucket_idx, next_label);
         _back_bucket_idx = _front_bucket_idx;
       }

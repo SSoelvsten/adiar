@@ -12,12 +12,12 @@ namespace coom
     node_file out;
     node_writer out_writer(out);
 
-    file_stream<meta_t, false> meta_stream(in._meta_file);
+    meta_stream<node_t, 1, true> meta_stream(in);
     while (meta_stream.can_pull()) {
       out_writer.unsafe_push(meta_stream.pull());
     }
 
-    file_stream<node_t, false> node_stream(in._files[0]);
+    node_stream<true> node_stream(in);
     while (node_stream.can_pull()) {
       out_writer.unsafe_push(!node_stream.pull());
     }

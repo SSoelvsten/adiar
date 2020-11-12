@@ -58,7 +58,7 @@ namespace coom
 
   // Merging priority queue with sink_arc stream
   inline arc_t reduce_get_next(reduce_priority_queue_t &redD,
-                               sink_arc_stream &sink_arcs)
+                               sink_arc_stream<false> &sink_arcs)
   {
     if (!redD.can_pull() || (sink_arcs.can_pull() && sink_arcs.peek().source > redD.top().source)) {
       return sink_arcs.pull();
@@ -85,8 +85,8 @@ namespace coom
     reduce_priority_queue_t redD(tpie::get_memory_manager().available() / 2);
     redD.hook_meta_stream(in_file);
 
-    node_arc_stream node_arcs(in_file);
-    sink_arc_stream sink_arcs(in_file);
+    node_arc_stream<> node_arcs(in_file);
+    sink_arc_stream<> sink_arcs(in_file);
 
     tpie::dummy_progress_indicator pi;
 
