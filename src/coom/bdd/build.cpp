@@ -56,7 +56,7 @@ namespace coom {
     node_file nf;
     node_writer nw(nf);
 
-    file_stream<label_t, true> ls(labels);
+    simple_file_stream<label_t, true> ls(labels);
     while(ls.can_pull()) {
       label_t next_label = ls.pull();
       node_t next_node = create_node(next_label, 0, low, high);
@@ -82,7 +82,7 @@ namespace coom {
     node_file nf;
     node_writer nw(nf);
 
-    file_stream<label_t, true> ls(labels);
+    simple_file_stream<label_t, true> ls(labels);
     while(ls.can_pull()) {
       label_t next_label = ls.pull();
       node_t next_node = create_node(next_label, 0, low, high);

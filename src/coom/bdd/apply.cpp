@@ -89,8 +89,8 @@ namespace coom
                              const node_file &in_2,
                              const bool_op &op)
   {
-    node_stream in_nodes_1(in_1);
-    node_stream in_nodes_2(in_2);
+    node_stream<> in_nodes_1(in_1);
+    node_stream<> in_nodes_2(in_2);
 
     node_t v1 = in_nodes_1.pull();
     node_t v2 = in_nodes_2.pull();

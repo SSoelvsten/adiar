@@ -15,9 +15,6 @@
 
 namespace coom
 {
-  template <typename T>
-  using shared_file = typename std::shared_ptr<tpie::file<T>>;
-
   // TODO: we may want to add friends for the 'internal use only' functions and
   // variables!
 
@@ -25,34 +22,26 @@ namespace coom
   /// Object containing a pointer to a single TPIE file
   //////////////////////////////////////////////////////////////////////////////
   template <typename T>
-  class simple_file
+  class __simple_file
   {
-  private:
     static_assert(std::is_pod<T>::value, "File content must be a POD");
 
-    void init_file()
-    {
-      _file = std::make_shared<tpie::file<T>>();
-    }
-
   public:
-    shared_file<T> _file;
+    tpie::file<T> _file;
 
-    simple_file()
+    __simple_file()
     {
-      init_file();
-      _file -> open();
+      _file.open();
     }
 
-    simple_file(const std::string &filename)
+    __simple_file(const std::string &filename)
     {
-      init_file();
-      _file -> open(filename);
+      _file.open(filename);
     }
 
-    simple_file(const simple_file<T> &other)
+    ~__simple_file()
     {
-      _file = other._file;
+      _file.close();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -60,7 +49,7 @@ namespace coom
     ////////////////////////////////////////////////////////////////////////////
     size_t size() const
     {
-      return _file -> size();
+      return _file.size();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -72,103 +61,61 @@ namespace coom
     }
   };
 
-  typedef simple_file<assignment_t> assignment_file;
-  typedef simple_file<label_t> label_file;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// Object containing a pointer to multiple TPIE files, that combined
-  /// constitute a single entity of COOM.
-  //////////////////////////////////////////////////////////////////////////////
   template <typename T, size_t Files>
-  class file
+  class __meta_file
   {
-  private:
     static_assert(0 < Files, "The number of files must be positive");
     static_assert(std::is_pod<T>::value, "File content must be a POD");
 
-    void init_files()
-    {
-      _meta_file = std::make_shared<tpie::file<meta_t>>();
-      for (size_t idx = 0; idx < Files; idx++) {
-        _files[idx] = std::make_shared<tpie::file<T>>();
-      }
-    }
-
   public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// FOR INTERNAL USE ONLY. DO NOT USE!
-    ///
-    /// The TPIE sub files from which the entire COOM is created.
-    ////////////////////////////////////////////////////////////////////////////
-    shared_file<meta_t> _meta_file;
-    shared_file<T> _files [Files];
+    tpie::file<meta> _meta_file;
+    tpie::file<T> _files [Files];
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Instantiate a temporary COOM file
-    ////////////////////////////////////////////////////////////////////////////
-    file()
+    __meta_file()
     {
-      init_files();
-      _meta_file -> open();
-
+      _meta_file.open();
       for (size_t idx = 0; idx < Files; idx++) {
-        _files[idx] -> open();
+        _files[idx].open();
       }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Instantiate a COOM file given a filename
-    ////////////////////////////////////////////////////////////////////////////
-    file(const std::string &filename)
+    __meta_file(const std::string& filename)
     {
-      init_files();
-      _meta_file -> open(filename + ".meta", tpie::access_read_write);
-
+      _meta_file.open(filename + ".meta", tpie::access_read_write);
       if constexpr (Files == 1) {
-        _files[0] -> open(filename, tpie::access_read_write);
+        _files[0].open(filename, tpie::access_read_write);
       } else {
         for (size_t idx = 0; idx < Files; idx++) {
-          std::string ith_filename = filename + "_" + std::to_string(idx);
-          _files[idx] -> open(ith_filename, tpie::access_read_write);
+          _files[idx].open(filename + "_" + std::to_string(idx), tpie::access_read_write);
         }
       }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Copy-constructor to instantiate a COOM file, pointing to the same as
-    /// another COOM file.
-    ////////////////////////////////////////////////////////////////////////////
-    file(const file<T, Files> &f)
+    ~__meta_file()
     {
-      _meta_file = f._meta_file;
-
-      for (size_t idx = 0; idx < Files; idx++) {
-        _files[idx] = f._files[idx];
-      }
+      _meta_file.close();
+      for (size_t idx = 0; idx < Files; idx++) { _files[idx].close(); }
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// The number of elements in the main files (excluding the meta_file)
+    /// The number of elements in the file
     ////////////////////////////////////////////////////////////////////////////
     size_t size() const
     {
       size_t sum_size = 0;
       for(size_t idx = 0; idx < Files; idx++) {
-        sum_size += _files[idx] -> size();
+        sum_size += _files[idx].size();
       }
       return sum_size;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// The number of elements in the meta file
-    ////////////////////////////////////////////////////////////////////////////
     size_t meta_size() const
     {
-      return _meta_file -> size();
+      return _meta_file.size();
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// The total size of the files (including the meta_file) in bytes
+    /// The size of the file in bytes
     ////////////////////////////////////////////////////////////////////////////
     size_t file_size() const
     {
@@ -176,38 +123,93 @@ namespace coom
     }
   };
 
-  template<typename T, size_t Files>
-  bool operator==(const file<T, Files> &f1, const file<T, Files> &f2)
+
+  template <typename T>
+  class __shared_file
   {
-    // TPIE does not allow one to open the same file with multiple objects, so
-    // we only need to check equivalence of the underlying file object.
+  public:
+    // Use of a std::shared_ptr has the following benefits
     //
-    // We don't need to check on all objects, since we aim to have the bundle of
-    // files to be disjunctly associated with eachother
-    return f1._meta_file == f2._meta_file;
+    // - The TPIE files are placed on the heap, which means we can return a
+    //   __shared_file constructed from within a function without the TPIE files
+    //   being garbage collected with the stack frame.
+    //
+    // - Provides reference counting, so the TPIE files are garbage collected as
+    //   early as possible.
+    //
+    // - Is thread-safe in the reference counting, so we allow COOM to be
+    //   thread-safe.
+    std::shared_ptr<T> _file_ptr;
+
+    __shared_file()
+    {
+      _file_ptr = std::make_shared<T>();
+    }
+
+    __shared_file(const std::string &filename)
+    {
+      _file_ptr = std::make_shared<T>(filename);
+    }
+
+    __shared_file(const __shared_file<T> &other)
+    {
+      _file_ptr = other._file_ptr;
+    }
+
+    size_t size() const
+    {
+      return _file_ptr -> size();
+    }
+
+    size_t file_size() const
+    {
+      return _file_ptr -> file_size();
+    }
+  };
+
+  template<typename T>
+  bool operator==(const __shared_file<T> &f1, const __shared_file<T> &f2)
+  {
+    return f1._file_ptr == f2._file_ptr;
   }
 
   template<typename T, size_t Files>
-  bool operator!=(const file<T, Files> &f1, const file<T, Files> &f2)
+  bool operator!=(const __shared_file<T> &f1, const __shared_file<T> &f2)
   {
     return !(f1 == f2);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// An unreduced OBDD is given by its node-to-node arcs and its node-to-sink
-  /// arcs.
-  //////////////////////////////////////////////////////////////////////////////
-  typedef file<arc_t, 2> arc_file;
+  template<typename T>
+  using simple_file = __shared_file<__simple_file<T>>;
+
+  typedef simple_file<assignment_t> assignment_file;
+  typedef simple_file<label_t> label_file;
+
+  template<typename T, size_t Files>
+  using meta_file = __shared_file<__meta_file<T,Files>>;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// A reduced OBDD is given by a single sorted file by nodes.
+  /// An unreduced BDD is given by a two files of arcs; one of node-to-node arcs
+  /// (in reverse topological order) and one of node-to-sink arcs (in
+  /// topological order).
   //////////////////////////////////////////////////////////////////////////////
-  class node_file : public file<node_t, 1>
+  typedef meta_file<arc_t, 2> arc_file;
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// A reduced BDD is given by a single sorted file by nodes.
+  //////////////////////////////////////////////////////////////////////////////
+  class node_file : public meta_file<node_t, 1>
   {
   public:
-    node_file() : file() { }
-    node_file(const std::string &filename) : file(filename) { }
-    node_file(const node_file &other) : file(other) { }
+    node_file() : __shared_file() { }
+    node_file(const std::string &filename) : __shared_file(filename) { }
+    node_file(const node_file &other) : __shared_file(other) { }
+
+    size_t meta_size() const
+    {
+      return _file_ptr -> meta_size();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// Should one have a 'maybe' reduced file with the union of a node_file and
@@ -235,23 +237,17 @@ namespace coom
   label_t min_label(const node_file &file);
   label_t max_label(const node_file &file);
 
+
   //////////////////////////////////////////////////////////////////////////////
-  /// An algorithm may return a sink-only OBDD in a node_file or a yet to-be
-  /// reduced OBDD in an arc_file. So, the union_t will keep be a wrapper for
-  /// the type.
+  /// An algorithm may return a node-based BDD in a node_file or a yet to-be
+  /// reduced BDD in an arc_file. So, the union_t will keep be a wrapper for the
+  /// combined type.
+  ///
+  /// The union_t class (see union.h) uses the std::optional to ensure we don't
+  /// call any expensive constructors.
   //////////////////////////////////////////////////////////////////////////////
   typedef union_t<node_file, arc_file> node_or_arc_file;
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Check whether a given node_file is sink-only and satisfies the
-  /// given sink_pred.
-  ///
-  /// \param file   The node_file to check its content
-  /// \param pred   If the given OBDD is sink-only, then secondly the sink is
-  ///               checked with the given sink predicate. Default is any type
-  ///               sink.
-  //////////////////////////////////////////////////////////////////////////////
-  bool is_sink(const node_or_arc_file &file, const sink_pred &pred = is_any);
 
   //////////////////////////////////////////////////////////////////////////////
   /// Provides write-only access to a simple file including a consistency check
@@ -269,7 +265,9 @@ namespace coom
   class simple_file_writer
   {
   protected:
-    shared_file<T> _file;
+    // Keep a local shared_ptr to be in on the reference counting
+    std::shared_ptr<__simple_file<T>> _file_ptr;
+
     typename tpie::file<T>::stream _stream;
 
     Check _check = Check();
@@ -278,9 +276,9 @@ namespace coom
     T _latest;
 
   public:
-    simple_file_writer(const simple_file<T> &f) : _file(f._file)
+    simple_file_writer(const simple_file<T> &f) : _file_ptr(f._file_ptr)
     {
-      _stream.attach(*f._file);
+      _stream.attach(f._file_ptr -> _file);
       _stream.seek(0, tpie::file_base::stream::end);
 
       // Set up tracker of latest element added
@@ -334,31 +332,28 @@ namespace coom
   /// of the node_writer below and its safe `write` method.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, size_t Files>
-  class file_writer
+  class meta_file_writer
   {
-  private:
-    file<T, Files> _file;
-
   protected:
-    shared_file<meta_t> _meta_file;
-    shared_file<T> _files [Files];
+    // Keep a local shared_ptr to be in on the reference counting
+    std::shared_ptr<__meta_file<T, Files>> _file_ptr;
 
     tpie::file<meta_t>::stream _meta_stream;
     typename tpie::file<T>::stream _streams [Files];
 
   public:
-    file_writer(const file<T, Files> &f) : _file(f)
+    meta_file_writer(const meta_file<T, Files> &f) : _file_ptr(f._file_ptr)
     {
-      _meta_stream.attach(*f._meta_file);
+      _meta_stream.attach(f._file_ptr -> _meta_file);
       _meta_stream.seek(0, tpie::file_base::stream::end);
 
       for (size_t idx = 0; idx < Files; idx++) {
-        _streams[idx].attach(*f._files[idx]);
+        _streams[idx].attach(f._file_ptr -> _files[idx]);
         _streams[idx].seek(0, tpie::file_base::stream::end);
       }
     }
 
-    ~file_writer()
+    ~meta_file_writer()
     {
       _meta_stream.detach();
       for (size_t idx = 0; idx < Files; idx++) {
@@ -387,15 +382,14 @@ namespace coom
   /// Provides write-only access to a file, hiding all details about the meta
   /// file.
   //////////////////////////////////////////////////////////////////////////////
-  class node_writer: public file_writer<node_t, 1>
+  class node_writer: public meta_file_writer<node_t, 1>
   {
   private:
     bool _has_latest = false;
     uid_t _latest = NIL;
 
   public:
-    node_writer(const node_file &nf) : file_writer(nf) { }
-    // TODO: Copy constructor
+    node_writer(const node_file &nf) : meta_file_writer(nf) { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write the next node to the file.
@@ -426,7 +420,7 @@ namespace coom
       // Check if meta file has to be updated
       if ((!_has_latest && !is_sink(n)) ||
           ( _has_latest && label_of(n) != label_of(_latest))) {
-        file_writer::unsafe_push(meta_t { label_of(n) });
+        meta_file_writer::unsafe_push(meta_t { label_of(n) });
       }
 
       // Write node to file
@@ -440,12 +434,12 @@ namespace coom
     ////////////////////////////////////////////////////////////////////////////
     inline void unsafe_push(const meta_t &m)
     {
-      file_writer::unsafe_push(m);
+      meta_file_writer::unsafe_push(m);
     }
 
     inline void unsafe_push(const node_t &n)
     {
-      file_writer::unsafe_push(n, 0);
+      meta_file_writer::unsafe_push(n, 0);
     }
   };
 
@@ -454,21 +448,20 @@ namespace coom
   //////////////////////////////////////////////////////////////////////////////
   /// FOR INTERNAL USE ONLY.
   //////////////////////////////////////////////////////////////////////////////
-  class arc_writer: public file_writer<arc_t, 2>
+  class arc_writer: public meta_file_writer<arc_t, 2>
   {
   public:
-    arc_writer(const arc_file &af) : file_writer(af)
+    arc_writer(const arc_file &af) : meta_file_writer(af)
     {
 #if COOM_ASSERT
-      assert(af.size() == 0);
-      assert(af.meta_size() == 0);
+      assert(af.file_size() == 0);
 #endif
     }
     // TODO: Copy constructor
 
     inline void unsafe_push(const meta_t &m)
     {
-      file_writer::unsafe_push(m);
+      meta_file_writer::unsafe_push(m);
     }
 
     inline void unsafe_push_node(const arc_t &a)
@@ -476,7 +469,7 @@ namespace coom
 #if COOM_ASSERT
       assert(is_node_ptr(a.target));
 #endif
-    file_writer::unsafe_push(a, 0);
+      meta_file_writer::unsafe_push(a, 0);
     }
 
     inline void unsafe_push_sink(const arc_t &a)
@@ -484,14 +477,17 @@ namespace coom
 #if COOM_ASSERT
       assert(is_sink_ptr(a.target));
 #endif
-      file_writer::unsafe_push(a, 1);
+      meta_file_writer::unsafe_push(a, 1);
     }
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Provides a read-only access to a single sub_file of a file_stream.
+  /// Provides a read-only access to a single tpie::file<T>. This base class
+  /// does not 'claim' ownership of the original file in any way. That is, TPIE
+  /// errors may occur, if the original file is garbage collected, before this
+  /// file_stream is.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, bool REVERSE = false>
+  template <typename T, typename SharedPtr_T, bool REVERSE = false>
   class file_stream
   {
   private:
@@ -499,34 +495,36 @@ namespace coom
     T _peeked;
     bool _negate = false;
 
-    shared_file<T> _file;
     typename tpie::file<T>::stream _stream;
 
+    // Keep a local shared_ptr to be in on the reference counting
+    std::shared_ptr<SharedPtr_T> _file_ptr;
+
+  protected:
+    file_stream(tpie::file<T> &f,
+                const std::shared_ptr<SharedPtr_T> &shared_ptr,
+                bool negate = false)
+      : _negate(negate), _file_ptr(shared_ptr)
+    {
+      _stream.attach(f);
+      reset();
+    }
+
   public:
-    file_stream(const shared_file<T> &f, bool negate = false) : _negate(negate), _file(f)
-    {
-      _stream.attach(*f);
-      reset();
-    }
-
-    file_stream(const simple_file<T> &f, bool negate = false) : _negate(negate), _file(f._file)
-    {
-      _stream.attach(*_file);
-      reset();
-    }
-
     ~file_stream()
     {
-      if (_stream.attached()) {
-        _stream.detach();
-      }
+#if COOM_ASSERT
+      assert(_stream.attached());
+#endif
+      _stream.detach();
     }
 
+  public:
     inline void reset()
     {
       if constexpr (REVERSE) {
-          _stream.seek(0, tpie::file_base::stream::end);
-        } else {
+        _stream.seek(0, tpie::file_base::stream::end);
+      } else {
         _stream.seek(0);
       }
     }
@@ -557,38 +555,66 @@ namespace coom
     }
   };
 
-  typedef file_stream<assignment_t, false> assignment_stream;
-  typedef file_stream<label_t, false> label_stream;
-
-  template <typename T, size_t Files>
-  class meta_stream : public file_stream<meta_t, true>
+  //////////////////////////////////////////////////////////////////////////////
+  /// File streams for simple files.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename T, bool REVERSE = false>
+  class simple_file_stream : public file_stream<T, __simple_file<T>, REVERSE>
   {
   public:
-    meta_stream(const file<T,Files> &f) : file_stream(f._meta_file, false) { }
+    simple_file_stream(const simple_file<T> &f, bool negate = false)
+      : file_stream<T, __simple_file<T>, REVERSE>(f._file_ptr -> _file, f._file_ptr, negate)
+    { }
   };
 
-  class node_stream: public file_stream<node_t, true>
+  typedef simple_file_stream<assignment_t, false> assignment_stream;
+  typedef simple_file_stream<label_t, false> label_stream;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// File streams for files with meta information
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename File_T, size_t Files, size_t File, typename Elem_T, bool REVERSE = false>
+  class meta_file_stream : public file_stream<Elem_T, __meta_file<File_T, Files>, REVERSE>
   {
+    static_assert(File < Files, "The file to pick must be a valid index");
+
+  protected:
+    meta_file_stream(const std::shared_ptr<__meta_file<File_T, Files>> &shared_ptr,
+                     tpie::file<Elem_T> &file,
+                     bool negate = false)
+      : file_stream<Elem_T, __meta_file<File_T, Files>, REVERSE>(file, shared_ptr, negate)
+    { }
+
   public:
-    node_stream(const node_file &f, bool negate = false) : file_stream(f._files[0], negate)
-    {
-#if COOM_ASSERT
-      assert(f.size() > 0);
-#endif
-    }
+    meta_file_stream(const meta_file<File_T, Files> &file, bool negate = false)
+      : meta_file_stream(file._file_ptr, file._file_ptr -> _files[File], negate)
+    { }
   };
 
-  class node_arc_stream: public file_stream<arc_t, true>
+  //////////////////////////////////////////////////////////////////////////////
+  /// Since all files with meta information are written to in reverse, then
+  /// 'reversing' the stream (from the point of sorting) is equivalent to not
+  /// reversing the underlying stream.
+  ///
+  /// Default will be to read in-order of the elements. We may change the hidden
+  /// flip of the REVERSE value, but you can always rely on the default value
+  /// will result in the same behaviour.
+  template <typename T, size_t Files, bool REVERSE = false>
+  class meta_stream : public meta_file_stream<T, Files, 0, meta_t, !REVERSE>
   {
   public:
-    node_arc_stream(const arc_file &f, bool negate = false) : file_stream(f._files[0], negate) { }
+    meta_stream(const meta_file<T,Files> &f)
+      : meta_file_stream<T, Files, 0, meta_t, !REVERSE>(f._file_ptr, f._file_ptr -> _meta_file, false) { }
   };
 
-  class sink_arc_stream: public file_stream<arc_t, true>
-  {
-  public:
-    sink_arc_stream(const arc_file &f, bool negate = false) : file_stream(f._files[1], negate) { }
-  };
+  template<bool REVERSE = false>
+  using node_stream = meta_file_stream<node_t, 1, 0, node_t, !REVERSE>;
+
+  template<bool REVERSE = false>
+  using node_arc_stream = meta_file_stream<arc_t, 2, 0, arc_t, !REVERSE>;
+
+  template<bool REVERSE = false>
+  using sink_arc_stream = meta_file_stream<arc_t, 2, 1, arc_t, !REVERSE>;
 }
 
 #endif // COOM_FILE_H

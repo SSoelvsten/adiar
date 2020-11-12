@@ -56,7 +56,7 @@ namespace coom
     restrict_priority_queue_t resD;
     resD.hook_meta_stream(bdd);
 
-    node_stream ns(bdd);
+    node_stream<> ns(bdd);
     node_t n = ns.pull();
 
     arc_file out_arcs;
@@ -152,7 +152,7 @@ namespace coom
       }
     }
 
-    sort_into_file(sink_sorter, out_arcs._files[1]);
+    sort_into_file(sink_sorter, out_arcs._file_ptr -> _files[1]);
     return out_union << out_arcs;
   }
 }

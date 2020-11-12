@@ -137,7 +137,7 @@ namespace coom
     }
 
     // Check for trivial sink-only return on shortcutting the root
-    node_stream in_nodes(bdd);
+    node_stream<> in_nodes(bdd);
     node_t v = in_nodes.pull();
 
     if (label_of(v) == label && (is_sink_ptr(v.low) || (is_sink_ptr(v.high)))) {
@@ -307,7 +307,7 @@ namespace coom
       }
     }
 
-    sort_into_file(sink_sorter, out_arcs._files[1]);
+    sort_into_file(sink_sorter, out_arcs._file_ptr -> _files[1]);
     return out_union << out_arcs;
   }
 

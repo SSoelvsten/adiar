@@ -10,43 +10,43 @@ using namespace coom;
 
 ////////////////////////////////////////////////////////////////////////////////
 // To improve the relationship between the tests and the algorithms, we will not
-// reverse the order in which we reverse the output.
+// reverse the order in which we read the output.
 //
 // We also do a few little hacks, to read unreduced output from the file_union
 // class.
 template <typename T, size_t Files>
-class meta_test_stream: public file_stream<meta_t, false>
+class meta_test_stream: public meta_stream<T, Files, true>
 {
 public:
-  meta_test_stream(file<T,Files> &f): file_stream(f._meta_file) { }
-  meta_test_stream(node_or_arc_file &f);
+  meta_test_stream(const __shared_file<__meta_file<T,Files>> &f): meta_stream<T, Files, true>(f) { }
+  meta_test_stream(const node_or_arc_file &f);
 };
 
 template<>
-meta_test_stream<node_t, 1>::meta_test_stream(node_or_arc_file &f): file_stream(f.get<node_file>()._meta_file) { }
+meta_test_stream<node_t, 1>::meta_test_stream(const node_or_arc_file &f): meta_stream<node_t, 1, true>(f.get<node_file>()) { }
 
 template<>
-meta_test_stream<arc_t, 2>::meta_test_stream(node_or_arc_file &f): file_stream(f.get<arc_file>()._meta_file) { }
+meta_test_stream<arc_t, 2>::meta_test_stream(const node_or_arc_file &f): meta_stream<arc_t, 2, true>(f.get<arc_file>()) { }
 
-class node_test_stream: public file_stream<node_t, false>
+class node_test_stream: public node_stream<true>
 {
 public:
-  node_test_stream(node_file &f): file_stream(f._files[0]) { }
-  node_test_stream(node_or_arc_file &f): file_stream(f.get<node_file>()._files[0]) { }
+  node_test_stream(node_file &f): node_stream<true>(f) { }
+  node_test_stream(node_or_arc_file &f): node_stream<true>(f.get<node_file>()) { }
 };
 
-class node_arc_test_stream: public file_stream<arc_t, false>
+class node_arc_test_stream: public node_arc_stream<true>
 {
 public:
-  node_arc_test_stream(arc_file &f): file_stream(f._files[0]) { }
-  node_arc_test_stream(node_or_arc_file &f): file_stream(f.get<arc_file>()._files[0]) { }
+  node_arc_test_stream(arc_file &f): node_arc_stream<true>(f) { }
+  node_arc_test_stream(node_or_arc_file &f): node_arc_stream<true>(f.get<arc_file>()) { }
 };
 
-class sink_arc_test_stream: public file_stream<arc_t, false>
+class sink_arc_test_stream: public sink_arc_stream<true>
 {
 public:
-  sink_arc_test_stream(arc_file &f): file_stream(f._files[1]) { }
-  sink_arc_test_stream(node_or_arc_file &f): file_stream(f.get<arc_file>()._files[1]) { }
+  sink_arc_test_stream(arc_file &f): sink_arc_stream<true>(f) { }
+  sink_arc_test_stream(node_or_arc_file &f): sink_arc_stream<true>(f.get<arc_file>()) { }
 };
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -59,9 +59,10 @@ public:
 
 #include "coom/test_priority_queue.cpp"
 
+#include "coom/test_reduce.cpp"
+
 ////////////////////////////////////////////////////////////////////////////////
 // COOM BDD unit tests
-#include "coom/test_reduce.cpp"
 
 #include "coom/bdd/test_apply.cpp"
 #include "coom/bdd/test_assignment.cpp"

@@ -19,7 +19,7 @@ namespace coom {
 
     out << "digraph OBDD {" << std::endl;
 
-    node_stream ns(nodes);
+    node_stream<> ns(nodes);
 
     if (is_sink(nodes)) {
       out << "\t"
@@ -95,7 +95,7 @@ namespace coom {
 
     out << "\t// Node Arcs" << std::endl;
 
-    node_arc_stream nas(arcs);
+    node_arc_stream<> nas(arcs);
     while (nas.can_pull())
       {
         arc_t a = nas.pull();
@@ -112,7 +112,7 @@ namespace coom {
     out << "\ts0 [shape=box, label=\"0\"];" << std::endl;
     out << "\ts1 [shape=box, label=\"1\"];" << std::endl;
 
-    sink_arc_stream sas(arcs);
+    sink_arc_stream<> sas(arcs);
     while (sas.can_pull())
       {
         arc_t a = sas.pull();

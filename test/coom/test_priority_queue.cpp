@@ -26,8 +26,8 @@ struct pq_test_lt {
   }
 };
 
-typedef file<pq_test_data, 1u> pq_test_file;
-typedef file_writer<pq_test_data, 1u> pq_test_writer;
+typedef meta_file<pq_test_data, 1u> pq_test_file;
+typedef meta_file_writer<pq_test_data, 1u> pq_test_writer;
 
 template <size_t MetaStreams, size_t Buckets>
 using test_priority_queue = priority_queue<pq_test_data, 1u,
@@ -48,9 +48,9 @@ go_bandit([]() {
         fw.unsafe_push(meta_t {2});
         fw.unsafe_push(meta_t {1});
 
-        pq_label_mgr<std::less<>, 1u> mgr;
+        pq_label_mgr<pq_test_data, 1u, std::less<>, 1u> mgr;
 
-        AssertThat(mgr.hook_meta_stream(f._meta_file), Is().True());
+        AssertThat(mgr.hook_meta_stream(f), Is().True());
 
         AssertThat(mgr.can_pull(), Is().True());
         AssertThat(mgr.pull(), Is().EqualTo(1u));
@@ -76,9 +76,9 @@ go_bandit([]() {
         fw.unsafe_push(meta_t {2});
         fw.unsafe_push(meta_t {1});
 
-        pq_label_mgr<std::less<>, 1> mgr;
+        pq_label_mgr<pq_test_data, 1u, std::less<>, 1> mgr;
 
-        AssertThat(mgr.hook_meta_stream(f._meta_file), Is().True());
+        AssertThat(mgr.hook_meta_stream(f), Is().True());
 
         AssertThat(mgr.pull(), Is().EqualTo(1u));
 
@@ -99,10 +99,10 @@ go_bandit([]() {
 
          pq_test_file f2;
 
-         pq_label_mgr<std::less<>, 2> mgr;
+         pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
 
-         AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
-         AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
+         AssertThat(mgr.hook_meta_stream(f1), Is().False());
+         AssertThat(mgr.hook_meta_stream(f2), Is().True());
 
          AssertThat(mgr.can_pull(), Is().True());
          AssertThat(mgr.pull(), Is().EqualTo(1u));
@@ -120,10 +120,10 @@ go_bandit([]() {
 
          pq_test_file f2;
 
-         pq_label_mgr<std::greater<>, 2> mgr;
+         pq_label_mgr<pq_test_data, 1u, std::greater<>, 2> mgr;
 
-         AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
-         AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
+         AssertThat(mgr.hook_meta_stream(f1), Is().False());
+         AssertThat(mgr.hook_meta_stream(f2), Is().True());
 
          AssertThat(mgr.can_pull(), Is().True());
          AssertThat(mgr.pull(), Is().EqualTo(2u));
@@ -148,10 +148,10 @@ go_bandit([]() {
         fw2.unsafe_push(meta_t {4});
         fw2.unsafe_push(meta_t {3});
 
-        pq_label_mgr<std::less<>, 2> mgr;
+        pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
 
-        AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
-        AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
+        AssertThat(mgr.hook_meta_stream(f1), Is().False());
+        AssertThat(mgr.hook_meta_stream(f2), Is().True());
 
         AssertThat(mgr.can_pull(), Is().True());
         AssertThat(mgr.pull(), Is().EqualTo(1u));
@@ -179,10 +179,10 @@ go_bandit([]() {
 
         fw2.unsafe_push(meta_t {1});
 
-        pq_label_mgr<std::less<>, 2> mgr;
+        pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
 
-        AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
-        AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
+        AssertThat(mgr.hook_meta_stream(f1), Is().False());
+        AssertThat(mgr.hook_meta_stream(f2), Is().True());
 
         AssertThat(mgr.can_pull(), Is().True());
         AssertThat(mgr.pull(), Is().EqualTo(1u));
@@ -204,10 +204,10 @@ go_bandit([]() {
 
          fw2.unsafe_push(meta_t {1});
 
-         pq_label_mgr<std::greater<>, 2> mgr;
+         pq_label_mgr<pq_test_data, 1u, std::greater<>, 2> mgr;
 
-         AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
-         AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
+         AssertThat(mgr.hook_meta_stream(f1), Is().False());
+         AssertThat(mgr.hook_meta_stream(f2), Is().True());
 
          AssertThat(mgr.can_pull(), Is().True());
          AssertThat(mgr.pull(), Is().EqualTo(2u));
@@ -232,10 +232,10 @@ go_bandit([]() {
         fw2.unsafe_push(meta_t {3});
         fw2.unsafe_push(meta_t {1});
 
-        pq_label_mgr<std::less<>, 2> mgr;
+        pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
 
-        AssertThat(mgr.hook_meta_stream(f1._meta_file), Is().False());
-        AssertThat(mgr.hook_meta_stream(f2._meta_file), Is().True());
+        AssertThat(mgr.hook_meta_stream(f1), Is().False());
+        AssertThat(mgr.hook_meta_stream(f2), Is().True());
 
         AssertThat(mgr.peek(), Is().EqualTo(1u));
         AssertThat(mgr.pull(), Is().EqualTo(1u));
@@ -244,6 +244,37 @@ go_bandit([]() {
         AssertThat(mgr.peek(), Is().EqualTo(3u));
         AssertThat(mgr.pull(), Is().EqualTo(3u));
         AssertThat(mgr.peek(), Is().EqualTo(4u));
+        AssertThat(mgr.pull(), Is().EqualTo(4u));
+      });
+
+      it("can pull, even after the original files have been deleted", [&]() {
+        pq_test_file* f1 = new pq_test_file();
+        pq_test_file* f2 = new pq_test_file();
+
+        {
+          pq_test_writer fw1(*f1);
+
+          fw1.unsafe_push(meta_t {4});
+          fw1.unsafe_push(meta_t {2});
+
+          pq_test_writer fw2(*f2);
+
+          fw2.unsafe_push(meta_t {4});
+          fw2.unsafe_push(meta_t {3});
+          fw2.unsafe_push(meta_t {1});
+        }
+
+        pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
+
+        AssertThat(mgr.hook_meta_stream(*f1), Is().False());
+        AssertThat(mgr.hook_meta_stream(*f2), Is().True());
+
+        delete f1;
+        delete f2;
+
+        AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(mgr.pull(), Is().EqualTo(2u));
+        AssertThat(mgr.pull(), Is().EqualTo(3u));
         AssertThat(mgr.pull(), Is().EqualTo(4u));
       });
     });

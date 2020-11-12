@@ -31,7 +31,8 @@ namespace coom
                                                     const sink_pred &sink_pred = is_true,
                                                     const sorting_pred_t &sorting_pred = sorting_pred_t())
   {
-    file_stream<node_t, false> in_nodes(nodes._files[0]);
+    // Read the nodes bottom-up (i.e. in reverse)
+    node_stream<true> in_nodes(nodes);
 
     if (is_sink(in_nodes.peek())) {
       return std::make_optional<assignment_file>();
@@ -71,7 +72,7 @@ namespace coom
     }
 
     assignment_file out;
-    sort_into_file(assignment_sorter, out._file);
+    sort_into_file(assignment_sorter, out._file_ptr -> _file);
 
     return std::make_optional<assignment_file>(out);
   }
