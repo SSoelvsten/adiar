@@ -29,7 +29,7 @@ namespace coom
   template<typename sorting_pred_t = std::less<assignment_t>>
   std::optional<assignment_file> bdd_get_assignment(const node_file &nodes,
                                                     const sink_pred &sink_pred = is_true,
-                                                    const sorting_pred_t &sorting_pred = sorting_pred_t())
+                                                    const sorting_pred_t &pred = sorting_pred_t())
   {
     // Read the nodes bottom-up (i.e. in reverse)
     node_stream<true> in_nodes(nodes);
@@ -48,14 +48,13 @@ namespace coom
       return std::nullopt;
     }
 
-    tpie::merge_sorter<assignment_t, false, sorting_pred_t> assignment_sorter(sorting_pred);
-    assignment_sorter.set_available_memory(tpie::get_memory_manager().available());
-    assignment_sorter.begin();
+    assignment_file out;
+    simple_file_writer<assignment_t, no_ordering<assignment_t>> ow(out);
 
     label_t label = label_of(prior_node);
     bool value = is_sink_ptr(prior_node.high) && sink_pred(prior_node.high);
 
-    assignment_sorter.push(create_assignment(label, value));
+    ow.unsafe_push(create_assignment(label, value));
 
     // Output first-seen nodes that can lead to this node
     while (in_nodes.can_pull()) {
@@ -67,12 +66,11 @@ namespace coom
       label_t label = label_of(parent_node);
       bool value = parent_node.high == prior_node.uid;
 
-      assignment_sorter.push(create_assignment(label, value));
+      ow.unsafe_push(create_assignment(label, value));
       prior_node = parent_node;
     }
 
-    assignment_file out;
-    sort_into_file(assignment_sorter, out._file_ptr -> _file);
+    ow.sort(pred);
 
     return std::make_optional<assignment_file>(out);
   }

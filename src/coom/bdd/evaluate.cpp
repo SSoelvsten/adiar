@@ -16,7 +16,7 @@ namespace coom
       return value_of(current_node);
     }
 
-    assignment_stream as(assignments);
+    assignment_stream<> as(assignments);
     assignment_t a = as.pull();
 
     while (true) {

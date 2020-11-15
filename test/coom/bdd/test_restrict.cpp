@@ -25,9 +25,11 @@ go_bandit([]() {
         node_t n1 = create_node(0,0, n3.uid, n2.uid);
 
         node_file obdd;
-        node_writer obdd_w(obdd);
 
-        obdd_w << n5 << n4 << n3 << n2 << n1;
+        { // Garbage collect writer to free write-lock
+          node_writer obdd_w(obdd);
+          obdd_w << n5 << n4 << n3 << n2 << n1;
+        }
 
         //                END
         // == CREATE OBDD FOR UNIT TESTS ==
@@ -46,8 +48,11 @@ go_bandit([]() {
             */
 
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(2, true);
+
+            { // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(2, true);
+            }
 
             node_or_arc_file output = bdd_restrict(obdd, assignment);
 
@@ -101,9 +106,11 @@ go_bandit([]() {
             */
 
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(1, false);
 
+            { // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(1, false);
+            }
 
             node_or_arc_file output = bdd_restrict(obdd, assignment);
 
@@ -150,8 +157,11 @@ go_bandit([]() {
             */
 
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(1, true);
+
+            { // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(1, true);
+            }
 
             node_or_arc_file output = bdd_restrict(obdd, assignment);
 
@@ -210,9 +220,12 @@ go_bandit([]() {
             */
 
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(0, true)
-               << create_assignment(3, false);
+
+            { // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(0, true)
+                 << create_assignment(3, false);
+            }
 
             node_or_arc_file output = bdd_restrict(obdd, assignment);
 
@@ -259,10 +272,13 @@ go_bandit([]() {
             */
 
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(0, false)
-               << create_assignment(1, true)
-               << create_assignment(3, false);
+
+            { // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(0, false)
+                 << create_assignment(1, true)
+                 << create_assignment(3, false);
+            }
 
             node_or_arc_file output = bdd_restrict(obdd, assignment);
 
@@ -288,9 +304,12 @@ go_bandit([]() {
 
         it("should return F sink. Assignment: (F,_,F,_)", [&]() {
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(0, false)
-               << create_assignment(2, false);
+
+            { // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(0, false)
+                 << create_assignment(2, false);
+            }
 
             node_or_arc_file output = bdd_restrict(obdd, assignment);
 
@@ -303,10 +322,13 @@ go_bandit([]() {
 
         it("should return T sink. Assignment: (T,T,F,_)", [&]() {
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(0, true)
-               << create_assignment(1, true)
-               << create_assignment(2, false);
+
+            {  // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(0, true)
+                 << create_assignment(1, true)
+                 << create_assignment(2, false);
+            }
 
             node_or_arc_file output = bdd_restrict(obdd, assignment);
 
@@ -319,14 +341,20 @@ go_bandit([]() {
 
         it("should return T sink given a T sink", [&]() {
             node_file T_file;
-            node_writer Tw(T_file);
-            Tw << create_sink(true);
+
+            { // Garbage collect writer to free write-lock
+              node_writer Tw(T_file);
+              Tw << create_sink(true);
+            }
 
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(0, true)
-               << create_assignment(2, true)
-               << create_assignment(42, false);
+
+            { // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(0, true)
+                 << create_assignment(2, true)
+                 << create_assignment(42, false);
+            }
 
             node_or_arc_file output = bdd_restrict(T_file, assignment);
 
@@ -339,14 +367,20 @@ go_bandit([]() {
 
         it("should return F sink given a F sink", [&]() {
             node_file F_file;
-            node_writer Fw(F_file);
-            Fw << create_sink(false);
+
+            { // Garbage collect writer to free write-lock
+              node_writer Fw(F_file);
+              Fw << create_sink(false);
+            }
 
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(2, true)
-               << create_assignment(21, true)
-               << create_assignment(28, false);
+
+            { // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(2, true)
+                 << create_assignment(21, true)
+                 << create_assignment(28, false);
+            }
 
             node_or_arc_file output = bdd_restrict(F_file, assignment);
 
@@ -412,18 +446,23 @@ go_bandit([]() {
             ptr_t sink_F = create_sink_ptr(false);
 
             node_file node_input;
-            node_writer inw(node_input);
 
             node_t n4 = create_node(2,0, sink_T, sink_F);
             node_t n3 = create_node(1,1, sink_T, sink_F);
             node_t n2 = create_node(1,0, n4.uid, sink_F);
             node_t n1 = create_node(0,0, n2.uid, n3.uid);
 
-            inw << n4 << n3 << n2 << n1;
+            { // Garbage collect writer to free write-lock
+              node_writer inw(node_input);
+              inw << n4 << n3 << n2 << n1;
+            }
 
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(2, true);
+
+            {  // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(2, true);
+            }
 
             node_or_arc_file output = bdd_restrict(node_input, assignment);
 
@@ -478,7 +517,6 @@ go_bandit([]() {
             ptr_t sink_F = create_sink_ptr(false);
 
             node_file node_input;
-            node_writer inw(node_input);
 
             node_t n5 = create_node(2,1, sink_F, sink_T);
             node_t n4 = create_node(2,0, sink_T, sink_F);
@@ -486,11 +524,17 @@ go_bandit([]() {
             node_t n2 = create_node(1,0, n4.uid, sink_F);
             node_t n1 = create_node(0,0, n2.uid, n3.uid);
 
-            inw << n5 << n4 << n3 << n2 << n1;
+            { // Garbage collect writer to free write-lock
+              node_writer inw(node_input);
+              inw << n5 << n4 << n3 << n2 << n1;
+            }
 
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(2, true);
+
+            {  // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(2, true);
+            }
 
             node_or_arc_file output = bdd_restrict(node_input, assignment);
 
@@ -547,7 +591,6 @@ go_bandit([]() {
              */
 
             node_file dead_obdd;
-            node_writer dead_w(dead_obdd);
 
             node_t n9 = create_node(3,1, sink_T, sink_F);
             node_t n8 = create_node(3,0, sink_F, sink_T);
@@ -559,11 +602,17 @@ go_bandit([]() {
             node_t n2 = create_node(1,0, n4.uid, n5.uid);
             node_t n1 = create_node(0,0, n2.uid, n3.uid);
 
-            dead_w << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+            { // Garbage collect writer to free write-lock
+              node_writer dead_w(dead_obdd);
+              dead_w << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
+            }
 
             assignment_file assignment;
-            assignment_writer aw(assignment);
-            aw << create_assignment(1, true);
+
+            {  // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(1, true);
+            }
 
             node_or_arc_file output = bdd_restrict(dead_obdd, assignment);
 

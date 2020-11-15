@@ -3,12 +3,18 @@ go_bandit([]() {
         ////////////////////////////////////////////////////////////////////////
         // Sink only OBDDs
         node_file sink_F;
-        node_writer nw_F(sink_F);
-        nw_F << create_sink(false);
+
+        { // Garbage collect writer to free write-lock}
+          node_writer nw_F(sink_F);
+          nw_F << create_sink(false);
+        }
 
         node_file sink_T;
-        node_writer nw_T(sink_T);
-        nw_T << create_sink(true);
+
+        { // Garbage collect writer to free write-lock
+          node_writer nw_T(sink_T);
+          nw_T << create_sink(true);
+        }
 
         ////////////////////////////////////////////////////////////////////////
         // OBDD 1
@@ -24,8 +30,10 @@ go_bandit([]() {
         node_t n1_2 = create_node(1,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
         node_t n1_1 = create_node(0,MAX_ID, create_sink_ptr(true), n1_2.uid);
 
-        node_writer nw_1(obdd_1);
-        nw_1 << n1_2 << n1_1;
+        { // Garbage collect writer to free write-lock
+          node_writer nw_1(obdd_1);
+          nw_1 << n1_2 << n1_1;
+        }
 
         ////////////////////////////////////////////////////////////////////////
         // OBDD 2
@@ -46,8 +54,10 @@ go_bandit([]() {
         node_t n2_2 = create_node(1,MAX_ID-1, n2_4.uid, n2_5.uid);
         node_t n2_1 = create_node(0,MAX_ID, n2_2.uid, n2_3.uid);
 
-        node_writer nw_2(obdd_2);
-        nw_2 << n2_5 << n2_4 << n2_3 <<n2_2 << n2_1;
+        { // Garbage collect writer to free write-lock
+          node_writer nw_2(obdd_2);
+          nw_2 << n2_5 << n2_4 << n2_3 <<n2_2 << n2_1;
+        }
 
         ////////////////////////////////////////////////////////////////////////
         // OBDD 3
@@ -67,8 +77,10 @@ go_bandit([]() {
         node_t n3_2 = create_node(1,MAX_ID, n3_3.uid, n3_4.uid);
         node_t n3_1 = create_node(0,MAX_ID, n3_3.uid, n3_2.uid);
 
-        node_writer nw_3(obdd_3);
-        nw_3 << n3_4 << n3_3 << n3_2 << n3_1;
+        { // Garbage collect writer to free write-lock
+          node_writer nw_3(obdd_3);
+          nw_3 << n3_4 << n3_3 << n3_2 << n3_1;
+        }
 
         ////////////////////////////////////////////////////////////////////////
         // OBDD 4
@@ -91,15 +103,19 @@ go_bandit([]() {
         node_t n4_2 = create_node(1,MAX_ID, n4_3.uid, n4_4.uid);
         node_t n4_1 = create_node(0,MAX_ID, n4_3.uid, n4_2.uid);
 
-        node_writer nw_4(obdd_4);
-        nw_4 << n4_5 << n4_4 << n4_3 << n4_2 << n4_1;
+        { // Garbage collect writer to free write-lock
+          node_writer nw_4(obdd_4);
+          nw_4 << n4_5 << n4_4 << n4_3 << n4_2 << n4_1;
+        }
 
         ////////////////////////////////////////////////////////////////////////////
         // x2 variable OBDD
         node_file obdd_x2;
 
-        node_writer nw_x2(obdd_x2);
-        nw_x2 << create_node(2,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
+        { // Garbage collect writer to free write-lock
+          node_writer nw_x2(obdd_x2);
+          nw_x2 << create_node(2,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
+        }
 
         ////////////////////////////////////////////////////////////////////////////
         describe("COOM: Exists", [&]() {
@@ -437,8 +453,10 @@ go_bandit([]() {
                 node_t n2 = create_node(1,MAX_ID, n3.uid, create_sink_ptr(true));
                 node_t n1 = create_node(0,MAX_ID, n2.uid, create_sink_ptr(true));
 
-                node_writer obdd_chain_w(obdd_chain);
-                obdd_chain_w << n4 << n3 << n2 << n1;
+                { // Garbage collect writer to free write-lock
+                  node_writer obdd_chain_w(obdd_chain);
+                  obdd_chain_w << n4 << n3 << n2 << n1;
+                }
 
                 node_or_arc_file out = bdd_exists(obdd_chain, 2);
 
@@ -478,9 +496,11 @@ go_bandit([]() {
 
             it("can quantify list [x1, x2] in sink-only OBDD", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 1 << 2;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 1 << 2;
+                }
 
                 node_or_arc_file out = bdd_exists(sink_T, labels);
 
@@ -495,9 +515,11 @@ go_bandit([]() {
 
             it("can quantify list [x1, x2] [OBDD 4]", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 1 << 2;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 1 << 2;
+                }
 
                 node_file out = bdd_exists(obdd_4, labels);
 
@@ -528,9 +550,11 @@ go_bandit([]() {
 
             it("can quantify list [x2, x1] [OBDD 4]", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 2 << 1;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 2 << 1;
+                }
 
                 node_file out = bdd_exists(obdd_4, labels);
 
@@ -561,9 +585,11 @@ go_bandit([]() {
 
             it("should quantify singleton list [x2] [OBDD 4]", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 2;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 2;
+                }
 
                 node_file out = bdd_exists(obdd_4, labels);
 
@@ -602,9 +628,11 @@ go_bandit([]() {
 
             it("should quantify list [x1, x3] [OBDD 4]", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 1 << 3;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 1 << 3;
+                }
 
                 node_file out = bdd_exists(obdd_4, labels);
 
@@ -635,9 +663,11 @@ go_bandit([]() {
 
             it("should quantify list [x0, x2] [OBDD 4]", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 0 << 2;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 0 << 2;
+                }
 
                 node_file out = bdd_exists(obdd_4, labels);
 
@@ -668,9 +698,11 @@ go_bandit([]() {
 
             it("should quantify list [x3, x1, x0, x2] where it is sink-only already before x2 [OBDD 4]", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 3 << 1 << 0 << 2;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 3 << 1 << 0 << 2;
+                }
 
                 node_file out = bdd_exists(obdd_4, labels);
 
@@ -685,9 +717,11 @@ go_bandit([]() {
 
             it("should quantify list [x2, x1] into T sink [x2]", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 2 << 1;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 2 << 1;
+                }
 
                 node_file out = bdd_exists(obdd_x2, labels);
 
@@ -854,9 +888,11 @@ go_bandit([]() {
 
             it("should quantify list [x0, x2, x1] [OBDD 4]", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 0 << 2 << 1;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 0 << 2 << 1;
+                }
 
                 node_file out = bdd_forall(obdd_4, labels);
 

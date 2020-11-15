@@ -229,21 +229,24 @@ int main(int argc, char** argv)
   const auto sat_and_clause = [&](clause_t &clause) -> void
   {
     coom::node_file clause_bdd;
-    coom::node_writer clause_writer(clause_bdd);
 
-    coom::ptr_t next = coom::create_sink_ptr(false);
+    { // All bdd functions require that no writer is attached to a file. So, we
+      // garbage collect the writer before the bdd_apply call.
+      coom::node_writer clause_writer(clause_bdd);
 
-    for (auto it = clause.rbegin(); it != clause.rend(); it++)
-    {
-      literal_t v = *it;
+      coom::ptr_t next = coom::create_sink_ptr(false);
 
-      coom::node n = coom::create_node(v.first, 0,
-                                       v.second ? coom::create_sink_ptr(true) : next,
-                                       v.second ? next : coom::create_sink_ptr(true));
+      for (auto it = clause.rbegin(); it != clause.rend(); it++) {
+        literal_t v = *it;
 
-      next = n.uid;
+        coom::node n = coom::create_node(v.first, 0,
+                                         v.second ? coom::create_sink_ptr(true) : next,
+                                         v.second ? next : coom::create_sink_ptr(true));
 
-      clause_writer << n;
+        next = n.uid;
+
+        clause_writer << n;
+      }
     }
 
     sat_acc = coom::bdd_apply(sat_acc, clause_bdd, coom::and_op);

@@ -82,65 +82,70 @@ inline coom::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 coom::node_file n_queens_S(uint64_t N, uint64_t i, uint64_t j)
 {
   coom::node_file out;
-  coom::node_writer out_writer(out);
 
-  uint64_t row = N - 1;
-  coom::ptr_t next = coom::create_sink_ptr(true);
+  { // When calling `out.size()` below, we have to make it read-only. So, we
+    // have to detach the node_writer before we do. This is automatically done
+    // on garbage collection, which is why we add an inner scope.
+    coom::node_writer out_writer(out);
 
-  do {
-    uint64_t row_diff = std::max(row,i) - std::min(row,i);
+    uint64_t row = N - 1;
+    coom::ptr_t next = coom::create_sink_ptr(true);
 
-    if (row_diff == 0) {
-      // On row of the queen in question
-      uint64_t column = N - 1;
-      do {
-        coom::label_t label = label_of_position(N, row, column);
+    do {
+      uint64_t row_diff = std::max(row,i) - std::min(row,i);
 
-        // If (row, column) == (i,j), then the chain goes through high.
-        if (column == j) {
-          // Node to check whether the queen actually is placed, and if so
-          // whether all remaining possible conflicts have to be checked.
-          coom::label_t label = label_of_position(N, i, j);
-          coom::node_t queen = coom::create_node(label, 0, coom::create_sink_ptr(false), next);
+      if (row_diff == 0) {
+        // On row of the queen in question
+        uint64_t column = N - 1;
+        do {
+          coom::label_t label = label_of_position(N, row, column);
 
-          out_writer << queen;
-          next = queen.uid;
-          continue;
+          // If (row, column) == (i,j), then the chain goes through high.
+          if (column == j) {
+            // Node to check whether the queen actually is placed, and if so
+            // whether all remaining possible conflicts have to be checked.
+            coom::label_t label = label_of_position(N, i, j);
+            coom::node_t queen = coom::create_node(label, 0, coom::create_sink_ptr(false), next);
+
+            out_writer << queen;
+            next = queen.uid;
+            continue;
+          }
+
+          coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
+
+          out_writer << out_node;
+          next = out_node.uid;
+        } while (column-- > 0);
+      } else {
+        // On another row
+        if (j + row_diff < N) {
+          // Diagonal to the right is within bounds
+          coom::label_t label = label_of_position(N, row, j + row_diff);
+          coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
+
+          out_writer << out_node;
+          next = out_node.uid;
         }
 
+        // Column
+        coom::label_t label = label_of_position(N, row, j);
         coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
         out_writer << out_node;
         next = out_node.uid;
-      } while (column-- > 0);
-    } else {
-      // On another row
-      if (j + row_diff < N) {
-        // Diagonal to the right is within bounds
-        coom::label_t label = label_of_position(N, row, j + row_diff);
-        coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
 
-        out_writer << out_node;
-        next = out_node.uid;
+        if (row_diff <= j) {
+          // Diagonal to the left is within bounds
+          coom::label_t label = label_of_position(N, row, j - row_diff);
+          coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
+
+          out_writer << out_node;
+          next = out_node.uid;
+        }
       }
-
-      // Column
-      coom::label_t label = label_of_position(N, row, j);
-      coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
-
-      out_writer << out_node;
-      next = out_node.uid;
-
-      if (row_diff <= j) {
-        // Diagonal to the left is within bounds
-        coom::label_t label = label_of_position(N, row, j - row_diff);
-        coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
-
-        out_writer << out_node;
-        next = out_node.uid;
-      }
-    }
-  } while (row-- > 0);
+    } while (row-- > 0);
+  }
 
   largest_nodes = std::max(largest_nodes, out.size());
   return out;
@@ -288,10 +293,15 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
     // Construct the assignment for this entire column
     coom::assignment_file column_assignment;
-    coom::assignment_writer aw(column_assignment);
 
-    for (uint64_t row = 0; row < N; row++) {
-      aw << coom::create_assignment(label_of_position(N, row, column), row == row_q);
+    { // The assignment_writer has to be detached, before we call any bdd
+      // functions. It is automatically detached upon destruction, hence we have
+      // it in this little scope.
+      coom::assignment_writer aw(column_assignment);
+
+      for (uint64_t row = 0; row < N; row++) {
+        aw << coom::create_assignment(label_of_position(N, row, column), row == row_q);
+      }
     }
 
     coom::node_file restricted_constraints = coom::bdd_restrict(constraints, column_assignment);
@@ -315,11 +325,9 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
         }
       };
 
-      auto forced_assignment = coom::bdd_get_assignment(restricted_constraints,
-                                                        coom::is_true,
-                                                        sort_by_column(N));
+      auto forced_assignment = coom::bdd_get_assignment(restricted_constraints, coom::is_true, sort_by_column(N));
 
-      coom::assignment_stream fas(forced_assignment.value());
+      coom::assignment_stream<> fas(forced_assignment.value());
       while (fas.can_pull()) {
         coom::assignment a = fas.pull();
         if (a.value) {

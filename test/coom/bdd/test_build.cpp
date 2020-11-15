@@ -96,9 +96,11 @@ go_bandit([]() {
         describe("bdd_and", [&]() {
             it("can create {x1, x2, x5}", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 1 << 2 << 5;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 1 << 2 << 5;
+                }
 
                 node_file res = bdd_and(labels);
                 node_test_stream ns(res);
@@ -151,9 +153,11 @@ go_bandit([]() {
         describe("bdd_or", [&]() {
             it("can create {x1, x2, x5}", [&]() {
                 label_file labels;
-                label_writer lw(labels);
 
-                lw << 1 << 2 << 5;
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 1 << 2 << 5;
+                }
 
                 node_file res = bdd_or(labels);
                 node_test_stream ns(res);
