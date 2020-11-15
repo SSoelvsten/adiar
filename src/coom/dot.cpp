@@ -5,6 +5,9 @@
 
 #include <fstream>
 
+#include <coom/file_stream.h>
+#include <coom/file_writer.h>
+
 namespace coom {
   void output_dot(const node_file& nodes, const char* &filename)
   {

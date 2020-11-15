@@ -5,6 +5,8 @@
 /// COOM Core
 #include <coom/data.h>
 #include <coom/file.h>
+#include <coom/file_stream.h>
+#include <coom/file_writer.h>
 
 #include <coom/reduce.h>
 

@@ -3,6 +3,8 @@
 
 #include "quantify.h"
 
+#include <coom/file_stream.h>
+#include <coom/file_writer.h>
 #include <coom/priority_queue.h>
 #include <coom/util.h>
 

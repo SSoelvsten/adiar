@@ -6,6 +6,8 @@
 #include <coom/assert.h>
 #include <coom/reduce.h>
 
+#include <coom/file_stream.h>
+
 namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
@@ -27,7 +29,7 @@ namespace coom
 
   bool is_sink(const node_file &file, const sink_pred &pred)
   {
-    coom_assert(file.size() > 0, "Invalid node_file: empty");
+    coom_assert(!file.empty(), "Invalid node_file: empty");
 
     if (file.size() != 1) {
       return false;
@@ -65,14 +67,6 @@ namespace coom
   label_t max_label(const node_file &file)
   {
     return extract_label<true>(file);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// node_writer
-  node_writer& operator<< (node_writer &nw, const node_t &n)
-  {
-    nw.push(n);
-    return nw;
   }
 }
 

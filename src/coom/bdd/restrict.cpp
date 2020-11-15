@@ -3,10 +3,13 @@
 
 #include "restrict.h"
 
+#include <tpie/file_stream.h>
 #include <tpie/sort.h>
 
-#include <coom/reduce.h>
+#include <coom/file_stream.h>
+#include <coom/file_writer.h>
 #include <coom/priority_queue.h>
+#include <coom/reduce.h>
 
 #include <coom/util.h>
 #include <coom/assert.h>

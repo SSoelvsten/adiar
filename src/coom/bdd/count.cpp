@@ -3,6 +3,7 @@
 
 #include "count.h"
 
+#include <coom/file_stream.h>
 #include <coom/priority_queue.h>
 #include <coom/reduce.h>
 
