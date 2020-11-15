@@ -81,11 +81,13 @@ namespace coom
 
   node_file reduce(const arc_file &in_file)
   {
+    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+
     node_file out_file;
     node_writer out_writer(out_file);
 
     // Set up
-    reduce_priority_queue_t redD(tpie::get_memory_manager().available() / 2);
+    reduce_priority_queue_t redD(available_memory / 2);
     redD.hook_meta_stream(in_file);
 
     node_arc_stream<> node_arcs(in_file);
@@ -93,15 +95,26 @@ namespace coom
 
     tpie::dummy_progress_indicator pi;
 
-    // Minimum size for a bucket
-    size_t min_size = sizeof(node) * 124 * 1024 + 15 * 1024 * 1024;
+    // Phase 1 and 3 of the sorters; pushing and popping data.
+    size_t sorter_phase_1 = std::max((sizeof(node) * 128 * 1024 + 5 * 1024 * 1024),
+                                     available_memory / 20); // ~8MB
 #if COOM_ASSERT
-    assert(min_size < tpie::get_memory_manager().available());
+    assert(2 * sorter_phase_1 < available_memory / 2);
 #endif
-    auto max_sorter_memory = std::max(min_size,
-                                      // If possible take at most a quarter of memory or a third of the input size
-                                      std::min(tpie::get_memory_manager().available() / 4,
-                                               sizeof(node_t) * (in_file.size() / 2)));
+
+    // Phase 2 of the sorter; merge_sort on the data. Take...
+    size_t sorter_phase_2 = std::max(sorter_phase_1 * 2, // at least 2x the first and third phase (~16 MB), or...
+                                     std::min(// ...the rest of the memory
+                                              available_memory / 2,
+                                              // ...half of the input, plus then some
+                                              sizeof(node_t) * (in_file.size() / 2))
+                                     // Yet, minus the amount of space we have reserved for the other sorter
+                                     - sorter_phase_1);
+
+#if COOM_ASSERT
+  assert(sorter_phase_1 < sorter_phase_2);
+  assert(sorter_phase_1 * 2 + sorter_phase_2 <= available_memory / 2);
+#endif
 
     // Check to see if node_arcs is empty
     if (!node_arcs.can_pull()) {
@@ -137,7 +150,7 @@ namespace coom
 
       // Sorter to find Reduction Rule 2 mappings
       tpie::merge_sorter<node_t, false, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
-      child_grouping.set_available_memory(max_sorter_memory);
+      child_grouping.set_available_memory(sorter_phase_1, sorter_phase_2, sorter_phase_1);
       child_grouping.begin();
 
       // Pull out all nodes from redD and sink_arcs for this layer
@@ -163,7 +176,7 @@ namespace coom
       child_grouping.calc(pi);
 
       tpie::merge_sorter<mapping, false, decltype(reduce_uid_lt)> red2_mapping(reduce_uid_lt);
-      red2_mapping.set_available_memory(max_sorter_memory);
+      red2_mapping.set_available_memory(sorter_phase_1, sorter_phase_2, sorter_phase_1);
       red2_mapping.begin();
 
       if (child_grouping.can_pull()) {
