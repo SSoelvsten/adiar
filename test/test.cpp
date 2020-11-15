@@ -70,8 +70,8 @@ public:
 #include "coom/bdd/test_count.cpp"
 #include "coom/bdd/test_evaluate.cpp"
 #include "coom/bdd/test_negate.cpp"
-#include "coom/bdd/test_restrict.cpp"
 #include "coom/bdd/test_quantify.cpp"
+#include "coom/bdd/test_restrict.cpp"
 
 int main(int argc, char* argv[]) {
   // Initialize COOM and TPIE

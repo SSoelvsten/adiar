@@ -27,14 +27,16 @@ go_bandit([]() {
             node_t n2 = create_node(1,0, n3.uid, n4.uid);
             node_t n1 = create_node(0,0, n2.uid, n4.uid);
 
-            node_writer nw(obdd);
-            nw << n5 << n4 << n3 << n2 << n1;
+            { // Garbage collect writer to free write-lock
+              node_writer nw(obdd);
+              nw << n5 << n4 << n3 << n2 << n1;
+            }
 
             auto result = bdd_get_assignment(obdd, is_true);
 
             AssertThat(result.has_value(), Is().True());
 
-            assignment_stream out_assignment(result.value());
+            assignment_stream<> out_assignment(result.value());
 
             AssertThat(out_assignment.can_pull(), Is().True());
             AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
@@ -74,14 +76,16 @@ go_bandit([]() {
             node_t n2 = create_node(1,0, n3.uid, n4.uid);
             node_t n1 = create_node(0,0, n2.uid, n4.uid);
 
-            node_writer nw(obdd);
-            nw << n5 << n4 << n3 << n2 << n1;
+            { // Garbage collect writer to free write-lock
+              node_writer nw(obdd);
+              nw << n5 << n4 << n3 << n2 << n1;
+            }
 
             auto result = bdd_get_assignment<std::greater<assignment_t>>(obdd, is_true);
 
             AssertThat(result.has_value(), Is().True());
 
-            assignment_stream out_assignment(result.value());
+            assignment_stream<> out_assignment(result.value());
 
             AssertThat(out_assignment.can_pull(), Is().True());
             AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
@@ -124,14 +128,16 @@ go_bandit([]() {
             node_t n2 = create_node(1,0, n3.uid, n4.uid);
             node_t n1 = create_node(0,0, n2.uid, n5.uid);
 
-            node_writer nw(obdd);
-            nw << n6 << n5 << n4 << n3 << n2 << n1;
+            { // Garbage collect writer to free write-lock
+              node_writer nw(obdd);
+              nw << n6 << n5 << n4 << n3 << n2 << n1;
+            }
 
             auto result = bdd_get_assignment(obdd, is_false);
 
             AssertThat(result.has_value(), Is().True());
 
-            assignment_stream out_assignment(result.value());
+            assignment_stream<> out_assignment(result.value());
 
             AssertThat(out_assignment.can_pull(), Is().True());
             AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
@@ -161,14 +167,16 @@ go_bandit([]() {
             node_t n2 = create_node(1,0, sink_T, sink_T);
             node_t n1 = create_node(0,0, n2.uid, sink_F);
 
-            node_writer nw(obdd);
-            nw << n2 << n1;
+            { // Garbage collect writer to free write-lock
+              node_writer nw(obdd);
+              nw << n2 << n1;
+            }
 
             auto result = bdd_get_assignment(obdd, is_false);
 
             AssertThat(result.has_value(), Is().True());
 
-            assignment_stream out_assignment(result.value());
+            assignment_stream<> out_assignment(result.value());
 
             AssertThat(out_assignment.can_pull(), Is().True());
             AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
@@ -199,14 +207,16 @@ go_bandit([]() {
             node_t n2 = create_node(1,0, sink_T, n3.uid);
             node_t n1 = create_node(0,0, n2.uid, sink_F);
 
-            node_writer nw(obdd);
-            nw << n5 << n4 << n3 << n2 << n1;
+            { // Garbage collect writer to free write-lock
+              node_writer nw(obdd);
+              nw << n5 << n4 << n3 << n2 << n1;
+            }
 
             auto result = bdd_get_assignment(obdd, is_true);
 
             AssertThat(result.has_value(), Is().True());
 
-            assignment_stream out_assignment(result.value());
+            assignment_stream<> out_assignment(result.value());
 
             AssertThat(out_assignment.can_pull(), Is().True());
             AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
@@ -217,8 +227,11 @@ go_bandit([]() {
 
         it("should retrieve an empty assignment for sink-only OBDDs", [&]() {
             node_file obdd;
-            node_writer nw(obdd);
-            nw << create_sink(true);
+
+            { // Garbage collect writer to free write-lock
+              node_writer nw(obdd);
+              nw << create_sink(true);
+            }
 
             auto result = bdd_get_assignment(obdd, is_true);
 
@@ -242,8 +255,10 @@ go_bandit([]() {
             node_t n2 = create_node(1,0,sink_F, sink_T);
             node_t n1 = create_node(0,0,n2.uid, sink_T);
 
-            node_writer nw(obdd);
-            nw << n2 << n1;
+            { // Garbage collect writer to free write-lock
+              node_writer nw(obdd);
+              nw << n2 << n1;
+            }
 
             auto result = bdd_get_assignment(obdd, [](uint64_t) -> bool { return false; });
 

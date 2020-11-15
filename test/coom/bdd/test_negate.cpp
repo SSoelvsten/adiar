@@ -2,9 +2,11 @@ go_bandit([]() {
     describe("COOM: Negate", [&]() {
         it("should negate a T sink-only OBDD into an F sink-only OBDD", [&]() {
             node_file in_nodes;
-            node_writer nw(in_nodes);
 
-            nw << create_sink(true);
+            { // Garbage collect writer to free write-lock
+              node_writer nw(in_nodes);
+              nw << create_sink(true);
+            }
 
             // Negate it
             node_file out_nodes = bdd_not(in_nodes);
@@ -19,9 +21,11 @@ go_bandit([]() {
 
         it("should negate a F sink-only OBDD into an T sink-only OBDD", [&]() {
             node_file in_nodes;
-            node_writer nw(in_nodes);
 
-            nw << create_sink(false);
+            { // Garbage collect writer to free write-lock
+              node_writer nw(in_nodes);
+              nw << create_sink(false);
+            }
 
             // Negate it
             node_file out_nodes = bdd_not(in_nodes);
@@ -50,11 +54,13 @@ go_bandit([]() {
             ptr_t sink_T = create_sink_ptr(true);
             ptr_t sink_F = create_sink_ptr(false);
 
+            { // Garbage collect writer to free write-lock
             node_writer nw(in_nodes);
 
             nw << create_node(2, MAX_ID, sink_F, sink_T)
                << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), sink_T)
                << create_node(0, MAX_ID, create_node_ptr(2, MAX_ID), create_node_ptr(1, MAX_ID));
+            }
 
             node_file out_nodes = bdd_not(in_nodes);
 
@@ -96,12 +102,14 @@ go_bandit([]() {
             ptr_t sink_T = create_sink_ptr(true);
             ptr_t sink_F = create_sink_ptr(false);
 
-            node_writer nw(in_nodes);
+            { // Garbage collect writer to free write-lock
+              node_writer nw(in_nodes);
 
-            nw << create_node(2, MAX_ID, sink_F, sink_T)
-               << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), sink_T)
-               << create_node(1, MAX_ID-1, sink_T, create_node_ptr(2, MAX_ID))
-               << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID-1), create_node_ptr(1, MAX_ID));
+              nw << create_node(2, MAX_ID, sink_F, sink_T)
+                 << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), sink_T)
+                 << create_node(1, MAX_ID-1, sink_T, create_node_ptr(2, MAX_ID))
+                 << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID-1), create_node_ptr(1, MAX_ID));
+            }
 
             node_file out_nodes = bdd_not(in_nodes);
 

@@ -20,21 +20,25 @@ go_bandit([]() {
             ptr_t n4 = create_node_ptr(2,1);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ flag(n1),n2 });
-            aw.unsafe_push_node({ n1,n3 });
-            aw.unsafe_push_node({ n2,n3 });
-            aw.unsafe_push_node({ flag(n2),n4 });
+            { // Garbage collect writer early
+              // TODO: What happens here...?
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n3,sink_F });
-            aw.unsafe_push_sink({ flag(n3),sink_T });
-            aw.unsafe_push_sink({ n4,sink_T });
-            aw.unsafe_push_sink({ flag(n4),sink_T });
+              aw.unsafe_push_node({ flag(n1),n2 });
+              aw.unsafe_push_node({ n1,n3 });
+              aw.unsafe_push_node({ n2,n3 });
+              aw.unsafe_push_node({ flag(n2),n4 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
-            aw.unsafe_push(meta_t {2});
+              aw.unsafe_push_sink({ n3,sink_F });
+              aw.unsafe_push_sink({ flag(n3),sink_T });
+              aw.unsafe_push_sink({ n4,sink_T });
+              aw.unsafe_push_sink({ flag(n4),sink_T });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(meta_t {2});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -97,24 +101,27 @@ go_bandit([]() {
             ptr_t n5 = create_node_ptr(3,0);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ flag(n1),n2 });
-            aw.unsafe_push_node({ n1,n3 });
-            aw.unsafe_push_node({ n2,n3 });
-            aw.unsafe_push_node({ flag(n2),n4 });
-            aw.unsafe_push_node({ n4,n5 });
-            aw.unsafe_push_node({ flag(n4),n5 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n3,sink_F });
-            aw.unsafe_push_sink({ flag(n3),sink_T });
-            aw.unsafe_push_sink({ n5,sink_F });
-            aw.unsafe_push_sink({ flag(n5),sink_T });
+              aw.unsafe_push_node({ flag(n1),n2 });
+              aw.unsafe_push_node({ n1,n3 });
+              aw.unsafe_push_node({ n2,n3 });
+              aw.unsafe_push_node({ flag(n2),n4 });
+              aw.unsafe_push_node({ n4,n5 });
+              aw.unsafe_push_node({ flag(n4),n5 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
-            aw.unsafe_push(meta_t {2});
-            aw.unsafe_push(meta_t {3});
+              aw.unsafe_push_sink({ n3,sink_F });
+              aw.unsafe_push_sink({ flag(n3),sink_T });
+              aw.unsafe_push_sink({ n5,sink_F });
+              aw.unsafe_push_sink({ flag(n5),sink_T });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(meta_t {3});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -179,21 +186,24 @@ go_bandit([]() {
             ptr_t n4 = create_node_ptr(2,1);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ flag(n1),n2 });
-            aw.unsafe_push_node({ n1,n3 });
-            aw.unsafe_push_node({ n2,n4 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ flag(n2),sink_T });
-            aw.unsafe_push_sink({ n3,sink_F });
-            aw.unsafe_push_sink({ flag(n3),sink_T });
-            aw.unsafe_push_sink({ n4,sink_F });
-            aw.unsafe_push_sink({ flag(n4),sink_T });
+              aw.unsafe_push_node({ flag(n1),n2 });
+              aw.unsafe_push_node({ n1,n3 });
+              aw.unsafe_push_node({ n2,n4 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
-            aw.unsafe_push(meta_t {2});
+              aw.unsafe_push_sink({ flag(n2),sink_T });
+              aw.unsafe_push_sink({ n3,sink_F });
+              aw.unsafe_push_sink({ flag(n3),sink_T });
+              aw.unsafe_push_sink({ n4,sink_F });
+              aw.unsafe_push_sink({ flag(n4),sink_T });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(meta_t {2});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -255,23 +265,26 @@ go_bandit([]() {
             ptr_t n5 = create_node_ptr(3,1);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ n1, n2 });
-            aw.unsafe_push_node({ flag(n1), n3 });
-            aw.unsafe_push_node({ n3, n4 });
-            aw.unsafe_push_node({ flag(n2), n5 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n2, sink_F });
-            aw.unsafe_push_sink({ flag(n3), sink_T });
-            aw.unsafe_push_sink({ n4, sink_F });
-            aw.unsafe_push_sink({ flag(n4), sink_T });
-            aw.unsafe_push_sink({ n5, sink_F });
-            aw.unsafe_push_sink({ flag(n5), sink_T });
+              aw.unsafe_push_node({ n1, n2 });
+              aw.unsafe_push_node({ flag(n1), n3 });
+              aw.unsafe_push_node({ n3, n4 });
+              aw.unsafe_push_node({ flag(n2), n5 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {2});
-            aw.unsafe_push(meta_t {3});
+              aw.unsafe_push_sink({ n2, sink_F });
+              aw.unsafe_push_sink({ flag(n3), sink_T });
+              aw.unsafe_push_sink({ n4, sink_F });
+              aw.unsafe_push_sink({ flag(n4), sink_T });
+              aw.unsafe_push_sink({ n5, sink_F });
+              aw.unsafe_push_sink({ flag(n5), sink_T });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(meta_t {3});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -335,26 +348,29 @@ go_bandit([]() {
             ptr_t n6 = create_node_ptr(3,1);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ flag(n1),n2 });
-            aw.unsafe_push_node({ n1,n3 });
-            aw.unsafe_push_node({ n2,n4 });
-            aw.unsafe_push_node({ n3,n5 });
-            aw.unsafe_push_node({ n4,n5 });
-            aw.unsafe_push_node({ flag(n3),n6 });
-            aw.unsafe_push_node({ flag(n4),n6 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ flag(n2),sink_T });
-            aw.unsafe_push_sink({ n5,sink_F });
-            aw.unsafe_push_sink({ flag(n5),sink_T });
-            aw.unsafe_push_sink({ n6,sink_T });
-            aw.unsafe_push_sink({ flag(n6),sink_F });
+              aw.unsafe_push_node({ flag(n1),n2 });
+              aw.unsafe_push_node({ n1,n3 });
+              aw.unsafe_push_node({ n2,n4 });
+              aw.unsafe_push_node({ n3,n5 });
+              aw.unsafe_push_node({ n4,n5 });
+              aw.unsafe_push_node({ flag(n3),n6 });
+              aw.unsafe_push_node({ flag(n4),n6 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
-            aw.unsafe_push(meta_t {2});
-            aw.unsafe_push(meta_t {3});
+              aw.unsafe_push_sink({ flag(n2),sink_T });
+              aw.unsafe_push_sink({ n5,sink_F });
+              aw.unsafe_push_sink({ flag(n5),sink_T });
+              aw.unsafe_push_sink({ n6,sink_T });
+              aw.unsafe_push_sink({ flag(n6),sink_F });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(meta_t {3});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -428,24 +444,27 @@ go_bandit([]() {
             ptr_t n5 = create_node_ptr(3,0);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ flag(n1),n2 });
-            aw.unsafe_push_node({ n1,n3 });
-            aw.unsafe_push_node({ n2,n4 });
-            aw.unsafe_push_node({ n3,n5 });
-            aw.unsafe_push_node({ n4,n5 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ flag(n2),sink_T });
-            aw.unsafe_push_sink({ flag(n3),sink_T });
-            aw.unsafe_push_sink({ flag(n4),sink_T });
-            aw.unsafe_push_sink({ n5,sink_F });
-            aw.unsafe_push_sink({ flag(n5),sink_T });
+              aw.unsafe_push_node({ flag(n1),n2 });
+              aw.unsafe_push_node({ n1,n3 });
+              aw.unsafe_push_node({ n2,n4 });
+              aw.unsafe_push_node({ n3,n5 });
+              aw.unsafe_push_node({ n4,n5 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
-            aw.unsafe_push(meta_t {2});
-            aw.unsafe_push(meta_t {3});
+              aw.unsafe_push_sink({ flag(n2),sink_T });
+              aw.unsafe_push_sink({ flag(n3),sink_T });
+              aw.unsafe_push_sink({ flag(n4),sink_T });
+              aw.unsafe_push_sink({ n5,sink_F });
+              aw.unsafe_push_sink({ flag(n5),sink_T });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(meta_t {3});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -512,21 +531,24 @@ go_bandit([]() {
             ptr_t n4 = create_node_ptr(2,1);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ n1,n2 });
-            aw.unsafe_push_node({ n2,n3 });
-            aw.unsafe_push_node({ flag(n2),n4 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ flag(n1),sink_T });
-            aw.unsafe_push_sink({ n3,sink_F });
-            aw.unsafe_push_sink({ flag(n3),sink_T });
-            aw.unsafe_push_sink({ n4,sink_F });
-            aw.unsafe_push_sink({ flag(n4),sink_T });
+              aw.unsafe_push_node({ n1,n2 });
+              aw.unsafe_push_node({ n2,n3 });
+              aw.unsafe_push_node({ flag(n2),n4 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
-            aw.unsafe_push(meta_t {2});
+              aw.unsafe_push_sink({ flag(n1),sink_T });
+              aw.unsafe_push_sink({ n3,sink_F });
+              aw.unsafe_push_sink({ flag(n3),sink_T });
+              aw.unsafe_push_sink({ n4,sink_F });
+              aw.unsafe_push_sink({ flag(n4),sink_T });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(meta_t {2});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -581,28 +603,31 @@ go_bandit([]() {
             ptr_t n7 = create_node_ptr(3,0);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ n1,n2 });
-            aw.unsafe_push_node({ flag(n1),n3 });
-            aw.unsafe_push_node({ n2,n4 });
-            aw.unsafe_push_node({ flag(n2),n5 });
-            aw.unsafe_push_node({ n3,n5 });
-            aw.unsafe_push_node({ flag(n3),n6 });
-            aw.unsafe_push_node({ n5,n7 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n4,sink_F });
-            aw.unsafe_push_sink({ flag(n4),sink_T });
-            aw.unsafe_push_sink({ flag(n5),sink_T });
-            aw.unsafe_push_sink({ n6,sink_F });
-            aw.unsafe_push_sink({ flag(n6),sink_T });
-            aw.unsafe_push_sink({ n7,sink_T });
-            aw.unsafe_push_sink({ flag(n7),sink_T });
+              aw.unsafe_push_node({ n1,n2 });
+              aw.unsafe_push_node({ flag(n1),n3 });
+              aw.unsafe_push_node({ n2,n4 });
+              aw.unsafe_push_node({ flag(n2),n5 });
+              aw.unsafe_push_node({ n3,n5 });
+              aw.unsafe_push_node({ flag(n3),n6 });
+              aw.unsafe_push_node({ n5,n7 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
-            aw.unsafe_push(meta_t {2});
-            aw.unsafe_push(meta_t {3});
+              aw.unsafe_push_sink({ n4,sink_F });
+              aw.unsafe_push_sink({ flag(n4),sink_T });
+              aw.unsafe_push_sink({ flag(n5),sink_T });
+              aw.unsafe_push_sink({ n6,sink_F });
+              aw.unsafe_push_sink({ flag(n6),sink_T });
+              aw.unsafe_push_sink({ n7,sink_T });
+              aw.unsafe_push_sink({ flag(n7),sink_T });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(meta_t {3});
+            }
 
 
             // Reduce it
@@ -669,21 +694,24 @@ go_bandit([]() {
             ptr_t n4 = create_node_ptr(2,1);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ flag(n1),n2 });
-            aw.unsafe_push_node({ n1,n3 });
-            aw.unsafe_push_node({ n2,n3 });
-            aw.unsafe_push_node({ flag(n2),n4 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n3,sink_F });
-            aw.unsafe_push_sink({ flag(n3),sink_T });
-            aw.unsafe_push_sink({ n4,sink_F });
-            aw.unsafe_push_sink({ flag(n4),sink_T });
+              aw.unsafe_push_node({ flag(n1),n2 });
+              aw.unsafe_push_node({ n1,n3 });
+              aw.unsafe_push_node({ n2,n3 });
+              aw.unsafe_push_node({ flag(n2),n4 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
-            aw.unsafe_push(meta_t {2});
+              aw.unsafe_push_sink({ n3,sink_F });
+              aw.unsafe_push_sink({ flag(n3),sink_T });
+              aw.unsafe_push_sink({ n4,sink_F });
+              aw.unsafe_push_sink({ flag(n4),sink_T });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(meta_t {2});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -713,12 +741,15 @@ go_bandit([]() {
             ptr_t n1 = create_node_ptr(0,0);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n1,sink_F });
-            aw.unsafe_push_sink({ flag(n1),sink_F });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push(meta_t {0});
+              aw.unsafe_push_sink({ n1,sink_F });
+              aw.unsafe_push_sink({ flag(n1),sink_F });
+
+              aw.unsafe_push(meta_t {0});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -748,16 +779,19 @@ go_bandit([]() {
             ptr_t n2 = create_node_ptr(1,0);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ flag(n1),n2 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n1,sink_T });
-            aw.unsafe_push_sink({ n2,sink_T });
-            aw.unsafe_push_sink({ flag(n2),sink_T });
+              aw.unsafe_push_node({ flag(n1),n2 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
+              aw.unsafe_push_sink({ n1,sink_T });
+              aw.unsafe_push_sink({ n2,sink_T });
+              aw.unsafe_push_sink({ flag(n2),sink_T });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -791,25 +825,28 @@ go_bandit([]() {
             ptr_t n6 = create_node_ptr(2,2);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ n1,n2 });
-            aw.unsafe_push_node({ flag(n1),n3 });
-            aw.unsafe_push_node({ n2,n4 });
-            aw.unsafe_push_node({ flag(n2),n5 });
-            aw.unsafe_push_node({ n3,n5 });
-            aw.unsafe_push_node({ flag(n3),n6 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n4,sink_F });
-            aw.unsafe_push_sink({ flag(n4),sink_T });
-            aw.unsafe_push_sink({ n5,sink_F });
-            aw.unsafe_push_sink({ flag(n5),sink_T });
-            aw.unsafe_push_sink({ n6,sink_T });
-            aw.unsafe_push_sink({ flag(n6),sink_F });
+              aw.unsafe_push_node({ n1,n2 });
+              aw.unsafe_push_node({ flag(n1),n3 });
+              aw.unsafe_push_node({ n2,n4 });
+              aw.unsafe_push_node({ flag(n2),n5 });
+              aw.unsafe_push_node({ n3,n5 });
+              aw.unsafe_push_node({ flag(n3),n6 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
-            aw.unsafe_push(meta_t {2});
+              aw.unsafe_push_sink({ n4,sink_F });
+              aw.unsafe_push_sink({ flag(n4),sink_T });
+              aw.unsafe_push_sink({ n5,sink_F });
+              aw.unsafe_push_sink({ flag(n5),sink_T });
+              aw.unsafe_push_sink({ n6,sink_T });
+              aw.unsafe_push_sink({ flag(n6),sink_F });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(meta_t {2});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -872,25 +909,28 @@ go_bandit([]() {
             ptr_t n6 = create_node_ptr(2,2);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_node({ n1,n2 });
-            aw.unsafe_push_node({ flag(n1),n3 });
-            aw.unsafe_push_node({ n2,n4 });
-            aw.unsafe_push_node({ flag(n2),n5 });
-            aw.unsafe_push_node({ n3,n5 });
-            aw.unsafe_push_node({ flag(n3),n6 });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n4,sink_T });
-            aw.unsafe_push_sink({ flag(n4),sink_F });
-            aw.unsafe_push_sink({ n5,sink_T });
-            aw.unsafe_push_sink({ flag(n5),sink_F });
-            aw.unsafe_push_sink({ n6,sink_F });
-            aw.unsafe_push_sink({ flag(n6),sink_T });
+              aw.unsafe_push_node({ n1,n2 });
+              aw.unsafe_push_node({ flag(n1),n3 });
+              aw.unsafe_push_node({ n2,n4 });
+              aw.unsafe_push_node({ flag(n2),n5 });
+              aw.unsafe_push_node({ n3,n5 });
+              aw.unsafe_push_node({ flag(n3),n6 });
 
-            aw.unsafe_push(meta_t {0});
-            aw.unsafe_push(meta_t {1});
-            aw.unsafe_push(meta_t {2});
+              aw.unsafe_push_sink({ n4,sink_T });
+              aw.unsafe_push_sink({ flag(n4),sink_F });
+              aw.unsafe_push_sink({ n5,sink_T });
+              aw.unsafe_push_sink({ flag(n5),sink_F });
+              aw.unsafe_push_sink({ n6,sink_F });
+              aw.unsafe_push_sink({ flag(n6),sink_T });
+
+              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(meta_t {2});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -944,12 +984,15 @@ go_bandit([]() {
             ptr_t n1 = create_node_ptr(0,0);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n1,sink_F });
-            aw.unsafe_push_sink({ flag(n1),sink_T });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push(meta_t {0});
+              aw.unsafe_push_sink({ n1,sink_F });
+              aw.unsafe_push_sink({ flag(n1),sink_T });
+
+              aw.unsafe_push(meta_t {0});
+            }
 
             // Reduce it
             node_file out = reduce(in);
@@ -978,12 +1021,15 @@ go_bandit([]() {
             ptr_t n1 = create_node_ptr(42,0);
 
             arc_file in;
-            arc_writer aw(in);
 
-            aw.unsafe_push_sink({ n1,sink_F });
-            aw.unsafe_push_sink({ flag(n1),sink_T });
+            { // Garbage collect writer to free write-lock
+              arc_writer aw(in);
 
-            aw.unsafe_push(meta_t {42});
+              aw.unsafe_push_sink({ n1,sink_F });
+              aw.unsafe_push_sink({ flag(n1),sink_T });
+
+              aw.unsafe_push(meta_t {42});
+            }
 
             // Reduce it
             node_file out = reduce(in);

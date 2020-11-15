@@ -65,7 +65,7 @@ go_bandit([]() {
           AssertThat(fu.has<bool>(), Is().False());
         });
 
-        it("can replace element of type T1 with  element of type T2", [&]() {
+        it("can replace element of type T1 with element of type T2", [&]() {
           union_t<int, bool> fu(42);
 
           AssertThat(fu.has<int>(), Is().True());

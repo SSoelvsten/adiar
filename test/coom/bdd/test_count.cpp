@@ -22,8 +22,10 @@ go_bandit([]() {
         node_t n2 = create_node(1,0, n3.uid, n4.uid);
         node_t n1 = create_node(0,0, n3.uid, n2.uid);
 
-        node_writer nw_1(obdd_1);
-        nw_1 << n4 << n3 << n2 << n1;
+        { // Garbage collect writer to free write-lock
+          node_writer nw_1(obdd_1);
+          nw_1 << n4 << n3 << n2 << n1;
+        }
 
         /*
                      ---- x0
@@ -40,24 +42,30 @@ go_bandit([]() {
         node_t n2_2 = create_node(2,0, sink_F, sink_T);
         node_t n2_1 = create_node(1,0, n2_2.uid, sink_T);
 
-        node_writer nw_2(obdd_2);
-        nw_2 << n2_2 << n2_1;
+        { // Garbage collect writer to free write-lock
+          node_writer nw_2(obdd_2);
+          nw_2 << n2_2 << n2_1;
+        }
 
         /*
               T
          */
         node_file obdd_T;
 
-        node_writer nw_T(obdd_T);
-        nw_T << create_sink(true);
+        { // Garbage collect writer to free write-lock
+          node_writer nw_T(obdd_T);
+          nw_T << create_sink(true);
+        }
 
         /*
               F
         */
         node_file obdd_F;
 
-        node_writer nw_F(obdd_F);
-        nw_F << create_sink(true);
+        { // Garbage collect writer to free write-lock
+          node_writer nw_F(obdd_F);
+          nw_F << create_sink(true);
+        }
 
         /*
                  1    ---- x1
@@ -66,8 +74,10 @@ go_bandit([]() {
          */
         node_file obdd_root_1;
 
-        node_writer nw_root_1(obdd_root_1);
-        nw_root_1 << create_node(1,0, sink_F, sink_T);
+        { // Garbage collect writer to free write-lock
+          node_writer nw_root_1(obdd_root_1);
+          nw_root_1 << create_node(1,0, sink_F, sink_T);
+        }
 
         /*
                  1    ---- x1
@@ -78,8 +88,10 @@ go_bandit([]() {
         */
         node_file obdd_root_2;
 
-        node_writer nw_root_2(obdd_root_2);
-        nw_root_2 << create_node(1,0, sink_T, sink_T);
+        { // Garbage collect writer to free write-lock
+          node_writer nw_root_2(obdd_root_2);
+          nw_root_2 << create_node(1,0, sink_T, sink_T);
+        }
 
         describe("Paths", [&]() {
             it("can count number of non-disjunct paths", [&]() {

@@ -41,12 +41,14 @@ go_bandit([]() {
     describe("Label Manager", [&]() {
       it("can pull from one meta stream", [&]() {
         pq_test_file f;
-        pq_test_writer fw(f);
+        { // Garbage collect the writer
+          pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq_label_mgr<pq_test_data, 1u, std::less<>, 1u> mgr;
 
@@ -69,12 +71,15 @@ go_bandit([]() {
 
       it("can peek from one meta streams", [&]() {
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq_label_mgr<pq_test_data, 1u, std::less<>, 1> mgr;
 
@@ -93,11 +98,13 @@ go_bandit([]() {
 
       it("can pull from merge of two meta streams, where one is empty [1]", [&]() {
          pq_test_file f1;
-         pq_test_writer fw1(f1);
-
-         fw1.unsafe_push(meta_t {1});
-
          pq_test_file f2;
+
+         { // Garbage collect the writer
+           pq_test_writer fw1(f1);
+
+           fw1.unsafe_push(meta_t {1});
+         }
 
          pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
 
@@ -113,12 +120,14 @@ go_bandit([]() {
 
       it("can pull from merge of two meta streams, where one is empty [2]", [&]() {
          pq_test_file f1;
-         pq_test_writer fw1(f1);
-
-         fw1.unsafe_push(meta_t {1});
-         fw1.unsafe_push(meta_t {2});
-
          pq_test_file f2;
+
+         { // Garbage collect the writer
+           pq_test_writer fw1(f1);
+
+           fw1.unsafe_push(meta_t {1});
+           fw1.unsafe_push(meta_t {2});
+         }
 
          pq_label_mgr<pq_test_data, 1u, std::greater<>, 2> mgr;
 
@@ -136,17 +145,20 @@ go_bandit([]() {
 
       it("can pull from merge of two meta streams [1]", [&]() {
         pq_test_file f1;
-        pq_test_writer fw1(f1);
-
-        fw1.unsafe_push(meta_t {4});
-        fw1.unsafe_push(meta_t {2});
-        fw1.unsafe_push(meta_t {1});
-
         pq_test_file f2;
-        pq_test_writer fw2(f2);
 
-        fw2.unsafe_push(meta_t {4});
-        fw2.unsafe_push(meta_t {3});
+        { // Garbage collect the writers
+          pq_test_writer fw1(f1);
+
+          fw1.unsafe_push(meta_t {4});
+          fw1.unsafe_push(meta_t {2});
+          fw1.unsafe_push(meta_t {1});
+
+          pq_test_writer fw2(f2);
+
+          fw2.unsafe_push(meta_t {4});
+          fw2.unsafe_push(meta_t {3});
+        }
 
         pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
 
@@ -170,14 +182,17 @@ go_bandit([]() {
 
       it("can pull from merge of two meta streams [2] (std::less)", [&]() {
         pq_test_file f1;
-        pq_test_writer fw1(f1);
-
-        fw1.unsafe_push(meta_t {2});
-
         pq_test_file f2;
-        pq_test_writer fw2(f2);
 
-        fw2.unsafe_push(meta_t {1});
+        { // Garbage collect the writers
+          pq_test_writer fw1(f1);
+
+          fw1.unsafe_push(meta_t {2});
+
+          pq_test_writer fw2(f2);
+
+          fw2.unsafe_push(meta_t {1});
+        }
 
         pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
 
@@ -195,14 +210,16 @@ go_bandit([]() {
 
       it("can pull from merge of two meta streams [2] (std::greater)", [&]() {
          pq_test_file f1;
-         pq_test_writer fw1(f1);
-
-         fw1.unsafe_push(meta_t {2});
-
          pq_test_file f2;
-         pq_test_writer fw2(f2);
 
-         fw2.unsafe_push(meta_t {1});
+         { // Garbage collect the writers
+           pq_test_writer fw1(f1);
+
+           fw1.unsafe_push(meta_t {2});
+           pq_test_writer fw2(f2);
+
+           fw2.unsafe_push(meta_t {1});
+         }
 
          pq_label_mgr<pq_test_data, 1u, std::greater<>, 2> mgr;
 
@@ -220,17 +237,20 @@ go_bandit([]() {
 
       it("can peek merge of two meta stream", [&]() {
         pq_test_file f1;
-        pq_test_writer fw1(f1);
-
-        fw1.unsafe_push(meta_t {4});
-        fw1.unsafe_push(meta_t {2});
-
         pq_test_file f2;
-        pq_test_writer fw2(f2);
 
-        fw2.unsafe_push(meta_t {4});
-        fw2.unsafe_push(meta_t {3});
-        fw2.unsafe_push(meta_t {1});
+        { // Garbage collect the writers
+          pq_test_writer fw1(f1);
+
+          fw1.unsafe_push(meta_t {4});
+          fw1.unsafe_push(meta_t {2});
+
+          pq_test_writer fw2(f2);
+
+          fw2.unsafe_push(meta_t {4});
+          fw2.unsafe_push(meta_t {3});
+          fw2.unsafe_push(meta_t {1});
+        }
 
         pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
 
@@ -251,7 +271,7 @@ go_bandit([]() {
         pq_test_file* f1 = new pq_test_file();
         pq_test_file* f2 = new pq_test_file();
 
-        {
+        { // Garbage collect the writers
           pq_test_writer fw1(*f1);
 
           fw1.unsafe_push(meta_t {4});
@@ -284,11 +304,14 @@ go_bandit([]() {
         test_priority_queue<1,0> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {1});
+        {
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -311,12 +334,15 @@ go_bandit([]() {
         test_priority_queue<1,0> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        {
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -388,12 +414,15 @@ go_bandit([]() {
         test_priority_queue<1,0> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -422,12 +451,15 @@ go_bandit([]() {
         test_priority_queue<1,0> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -459,12 +491,15 @@ go_bandit([]() {
         test_priority_queue<1,0> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -539,11 +574,14 @@ go_bandit([]() {
          test_priority_queue<1,0> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {3});
-         fw.unsafe_push(meta_t {2});
-         fw.unsafe_push(meta_t {1});
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {3});
+           fw.unsafe_push(meta_t {2});
+           fw.unsafe_push(meta_t {1});
+         }
 
          pq.hook_meta_stream(f);
 
@@ -576,12 +614,15 @@ go_bandit([]() {
          test_priority_queue<1,1> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {5});
-         fw.unsafe_push(meta_t {4});
-         fw.unsafe_push(meta_t {3});
-         fw.unsafe_push(meta_t {1});
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {5});
+           fw.unsafe_push(meta_t {4});
+           fw.unsafe_push(meta_t {3});
+           fw.unsafe_push(meta_t {1});
+         }
 
          pq.hook_meta_stream(f);
 
@@ -593,9 +634,12 @@ go_bandit([]() {
         test_priority_queue<1,1> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -618,9 +662,12 @@ go_bandit([]() {
          test_priority_queue<2,1> pq;
 
          pq_test_file f1;
-         pq_test_writer fw1(f1);
 
-         fw1.unsafe_push(meta_t {1});
+         {
+           pq_test_writer fw1(f1);
+
+           fw1.unsafe_push(meta_t {1});
+         }
 
          pq_test_file f2;
 
@@ -634,14 +681,17 @@ go_bandit([]() {
          test_priority_queue<2,1> pq;
 
          pq_test_file f1;
-         pq_test_writer fw1(f1);
-
-         fw1.unsafe_push(meta_t {1});
-
          pq_test_file f2;
-         pq_test_writer fw2(f2);
 
-         fw2.unsafe_push(meta_t {2});
+         { // Garbage collect the writers early
+           pq_test_writer fw1(f1);
+
+           fw1.unsafe_push(meta_t {1});
+
+           pq_test_writer fw2(f2);
+
+           fw2.unsafe_push(meta_t {2});
+         }
 
          pq.hook_meta_stream(f1);
          pq.hook_meta_stream(f2);
@@ -653,12 +703,15 @@ go_bandit([]() {
         test_priority_queue<1,1> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -730,12 +783,15 @@ go_bandit([]() {
         test_priority_queue<1,1> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -776,12 +832,15 @@ go_bandit([]() {
         test_priority_queue<1,1> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -808,12 +867,15 @@ go_bandit([]() {
         test_priority_queue<1,1> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -846,13 +908,16 @@ go_bandit([]() {
         test_priority_queue<1,1> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {5});
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {5});
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -886,12 +951,15 @@ go_bandit([]() {
         test_priority_queue<1,1> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
 
@@ -963,14 +1031,17 @@ go_bandit([]() {
          test_priority_queue<1,1> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {6});
-         fw.unsafe_push(meta_t {5});
-         fw.unsafe_push(meta_t {4});
-         fw.unsafe_push(meta_t {3});
-         fw.unsafe_push(meta_t {2});
-         fw.unsafe_push(meta_t {1});
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {6});
+           fw.unsafe_push(meta_t {5});
+           fw.unsafe_push(meta_t {4});
+           fw.unsafe_push(meta_t {3});
+           fw.unsafe_push(meta_t {2});
+           fw.unsafe_push(meta_t {1});
+         }
 
          pq.hook_meta_stream(f);
 
@@ -1000,14 +1071,17 @@ go_bandit([]() {
          test_priority_queue<1,1> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {6});
-         fw.unsafe_push(meta_t {5});
-         fw.unsafe_push(meta_t {4});
-         fw.unsafe_push(meta_t {3});
-         fw.unsafe_push(meta_t {2});
-         fw.unsafe_push(meta_t {1});
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {6});
+           fw.unsafe_push(meta_t {5});
+           fw.unsafe_push(meta_t {4});
+           fw.unsafe_push(meta_t {3});
+           fw.unsafe_push(meta_t {2});
+           fw.unsafe_push(meta_t {1});
+         }
 
          pq.hook_meta_stream(f);
 
@@ -1037,16 +1111,19 @@ go_bandit([]() {
         test_priority_queue<1,4> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {8});
-        fw.unsafe_push(meta_t {7});
-        fw.unsafe_push(meta_t {6});
-        fw.unsafe_push(meta_t {5});
-        fw.unsafe_push(meta_t {4});
-        fw.unsafe_push(meta_t {3});
-        fw.unsafe_push(meta_t {2});
-        fw.unsafe_push(meta_t {1});
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {8});
+          fw.unsafe_push(meta_t {7});
+          fw.unsafe_push(meta_t {6});
+          fw.unsafe_push(meta_t {5});
+          fw.unsafe_push(meta_t {4});
+          fw.unsafe_push(meta_t {3});
+          fw.unsafe_push(meta_t {2});
+          fw.unsafe_push(meta_t {1});
+        }
 
         pq.hook_meta_stream(f);
       });
@@ -1055,11 +1132,14 @@ go_bandit([]() {
          test_priority_queue<1,4> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {4});
-         fw.unsafe_push(meta_t {3});
-         fw.unsafe_push(meta_t {1});
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {4});
+           fw.unsafe_push(meta_t {3});
+           fw.unsafe_push(meta_t {1});
+         }
 
          pq.hook_meta_stream(f);
        });
@@ -1068,10 +1148,13 @@ go_bandit([]() {
          test_priority_queue<1,4> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {2});
-         fw.unsafe_push(meta_t {1});
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {2});
+           fw.unsafe_push(meta_t {1});
+         }
 
          pq.hook_meta_stream(f);
        });
@@ -1092,11 +1175,13 @@ go_bandit([]() {
          test_priority_queue<2,4> pq;
 
          pq_test_file f1;
-         pq_test_writer fw1(f1);
-
-         fw1.unsafe_push(meta_t {1});
-
          pq_test_file f2;
+
+         { // Garbage collect the writer early
+           pq_test_writer fw1(f1);
+
+           fw1.unsafe_push(meta_t {1});
+         }
 
          pq.hook_meta_stream(f1);
          pq.hook_meta_stream(f2);
@@ -1109,12 +1194,14 @@ go_bandit([]() {
          test_priority_queue<2,4> pq;
 
          pq_test_file f1;
-         pq_test_writer fw1(f1);
-
-         fw1.unsafe_push(meta_t {2});
-         fw1.unsafe_push(meta_t {1});
-
          pq_test_file f2;
+
+         { // Garbage collect the writer early
+           pq_test_writer fw1(f1);
+
+           fw1.unsafe_push(meta_t {2});
+           fw1.unsafe_push(meta_t {1});
+         }
 
          pq.hook_meta_stream(f1);
          pq.hook_meta_stream(f2);
@@ -1127,14 +1214,17 @@ go_bandit([]() {
          test_priority_queue<2,4> pq;
 
          pq_test_file f1;
-         pq_test_writer fw1(f1);
-
-         fw1.unsafe_push(meta_t {1});
-
          pq_test_file f2;
-         pq_test_writer fw2(f2);
 
-         fw2.unsafe_push(meta_t {12});
+         { // Garbage collect the writers early
+           pq_test_writer fw1(f1);
+
+           fw1.unsafe_push(meta_t {1});
+
+           pq_test_writer fw2(f2);
+
+           fw2.unsafe_push(meta_t {12});
+         }
 
          pq.hook_meta_stream(f1);
          pq.hook_meta_stream(f2);
@@ -1147,15 +1237,18 @@ go_bandit([]() {
         test_priority_queue<1,4> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {7}); // overflow
-        fw.unsafe_push(meta_t {6}); // overflow
-        fw.unsafe_push(meta_t {5}); // write bucket
-        fw.unsafe_push(meta_t {4}); // write bucket
-        fw.unsafe_push(meta_t {3}); // write bucket
-        fw.unsafe_push(meta_t {2}); // write bucket
-        fw.unsafe_push(meta_t {1}); // read bucket
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {7}); // overflow
+          fw.unsafe_push(meta_t {6}); // overflow
+          fw.unsafe_push(meta_t {5}); // write bucket
+          fw.unsafe_push(meta_t {4}); // write bucket
+          fw.unsafe_push(meta_t {3}); // write bucket
+          fw.unsafe_push(meta_t {2}); // write bucket
+          fw.unsafe_push(meta_t {1}); // read bucket
+        }
 
         pq.hook_meta_stream(f);
 
@@ -1354,16 +1447,19 @@ go_bandit([]() {
         test_priority_queue<1,4> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {8}); // overflow
-        fw.unsafe_push(meta_t {7}); // overflow
-        fw.unsafe_push(meta_t {6}); // overflow
-        fw.unsafe_push(meta_t {5}); // write bucket
-        fw.unsafe_push(meta_t {4}); // write bucket
-        fw.unsafe_push(meta_t {3}); // write bucket
-        fw.unsafe_push(meta_t {2}); // write bucket
-        fw.unsafe_push(meta_t {1}); // read bucket
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {8}); // overflow
+          fw.unsafe_push(meta_t {7}); // overflow
+          fw.unsafe_push(meta_t {6}); // overflow
+          fw.unsafe_push(meta_t {5}); // write bucket
+          fw.unsafe_push(meta_t {4}); // write bucket
+          fw.unsafe_push(meta_t {3}); // write bucket
+          fw.unsafe_push(meta_t {2}); // write bucket
+          fw.unsafe_push(meta_t {1}); // read bucket
+        }
 
         pq.hook_meta_stream(f);
 
@@ -1407,16 +1503,19 @@ go_bandit([]() {
         test_priority_queue<1,4> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {8}); // overflow
-        fw.unsafe_push(meta_t {7}); // overflow
-        fw.unsafe_push(meta_t {6}); // overflow
-        fw.unsafe_push(meta_t {5}); // write bucket
-        fw.unsafe_push(meta_t {4}); // write bucket
-        fw.unsafe_push(meta_t {3}); // write bucket
-        fw.unsafe_push(meta_t {2}); // write bucket
-        fw.unsafe_push(meta_t {1}); // read bucket
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {8}); // overflow
+          fw.unsafe_push(meta_t {7}); // overflow
+          fw.unsafe_push(meta_t {6}); // overflow
+          fw.unsafe_push(meta_t {5}); // write bucket
+          fw.unsafe_push(meta_t {4}); // write bucket
+          fw.unsafe_push(meta_t {3}); // write bucket
+          fw.unsafe_push(meta_t {2}); // write bucket
+          fw.unsafe_push(meta_t {1}); // read bucket
+        }
 
         pq.hook_meta_stream(f);
 
@@ -1446,16 +1545,19 @@ go_bandit([]() {
         test_priority_queue<1,4> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {8}); // overflow
-        fw.unsafe_push(meta_t {7}); // overflow
-        fw.unsafe_push(meta_t {6}); // overflow
-        fw.unsafe_push(meta_t {5}); // write bucket
-        fw.unsafe_push(meta_t {4}); // write bucket
-        fw.unsafe_push(meta_t {3}); // write bucket
-        fw.unsafe_push(meta_t {2}); // write bucket
-        fw.unsafe_push(meta_t {1}); // read bucket
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {8}); // overflow
+          fw.unsafe_push(meta_t {7}); // overflow
+          fw.unsafe_push(meta_t {6}); // overflow
+          fw.unsafe_push(meta_t {5}); // write bucket
+          fw.unsafe_push(meta_t {4}); // write bucket
+          fw.unsafe_push(meta_t {3}); // write bucket
+          fw.unsafe_push(meta_t {2}); // write bucket
+          fw.unsafe_push(meta_t {1}); // read bucket
+        }
 
         pq.hook_meta_stream(f);
 
@@ -1491,16 +1593,19 @@ go_bandit([]() {
         test_priority_queue<1,4> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {8}); // overflow
-        fw.unsafe_push(meta_t {7}); // overflow
-        fw.unsafe_push(meta_t {6}); // overflow
-        fw.unsafe_push(meta_t {5}); // write bucket
-        fw.unsafe_push(meta_t {4}); // write bucket
-        fw.unsafe_push(meta_t {3}); // write bucket
-        fw.unsafe_push(meta_t {2}); // write bucket
-        fw.unsafe_push(meta_t {1}); // read bucket
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {8}); // overflow
+          fw.unsafe_push(meta_t {7}); // overflow
+          fw.unsafe_push(meta_t {6}); // overflow
+          fw.unsafe_push(meta_t {5}); // write bucket
+          fw.unsafe_push(meta_t {4}); // write bucket
+          fw.unsafe_push(meta_t {3}); // write bucket
+          fw.unsafe_push(meta_t {2}); // write bucket
+          fw.unsafe_push(meta_t {1}); // read bucket
+        }
 
         pq.hook_meta_stream(f);
 
@@ -1536,16 +1641,19 @@ go_bandit([]() {
         test_priority_queue<1,4> pq;
 
         pq_test_file f;
-        pq_test_writer fw(f);
 
-        fw.unsafe_push(meta_t {8}); // overflow
-        fw.unsafe_push(meta_t {7}); // overflow
-        fw.unsafe_push(meta_t {6}); // overflow
-        fw.unsafe_push(meta_t {5}); // write bucket
-        fw.unsafe_push(meta_t {4}); // write bucket
-        fw.unsafe_push(meta_t {3}); // write bucket
-        fw.unsafe_push(meta_t {2}); // write bucket
-        fw.unsafe_push(meta_t {1}); // read bucket
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
+
+          fw.unsafe_push(meta_t {8}); // overflow
+          fw.unsafe_push(meta_t {7}); // overflow
+          fw.unsafe_push(meta_t {6}); // overflow
+          fw.unsafe_push(meta_t {5}); // write bucket
+          fw.unsafe_push(meta_t {4}); // write bucket
+          fw.unsafe_push(meta_t {3}); // write bucket
+          fw.unsafe_push(meta_t {2}); // write bucket
+          fw.unsafe_push(meta_t {1}); // read bucket
+        }
 
         pq.hook_meta_stream(f);
 
@@ -1770,14 +1878,17 @@ go_bandit([]() {
          test_priority_queue<1,4> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {6}); // overflow
-         fw.unsafe_push(meta_t {5}); // write bucket
-         fw.unsafe_push(meta_t {4}); // write bucket
-         fw.unsafe_push(meta_t {3}); // write bucket
-         fw.unsafe_push(meta_t {2}); // write bucket
-         fw.unsafe_push(meta_t {1}); // read bucket
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {6}); // overflow
+           fw.unsafe_push(meta_t {5}); // write bucket
+           fw.unsafe_push(meta_t {4}); // write bucket
+           fw.unsafe_push(meta_t {3}); // write bucket
+           fw.unsafe_push(meta_t {2}); // write bucket
+           fw.unsafe_push(meta_t {1}); // read bucket
+         }
 
          pq.hook_meta_stream(f);
 
@@ -1800,16 +1911,19 @@ go_bandit([]() {
          test_priority_queue<1,4> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {8}); // overflow
-         fw.unsafe_push(meta_t {7}); // overflow
-         fw.unsafe_push(meta_t {6}); // overflow
-         fw.unsafe_push(meta_t {5}); // write bucket
-         fw.unsafe_push(meta_t {4}); // write bucket
-         fw.unsafe_push(meta_t {3}); // write bucket
-         fw.unsafe_push(meta_t {2}); // write bucket
-         fw.unsafe_push(meta_t {1}); // read bucket
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {8}); // overflow
+           fw.unsafe_push(meta_t {7}); // overflow
+           fw.unsafe_push(meta_t {6}); // overflow
+           fw.unsafe_push(meta_t {5}); // write bucket
+           fw.unsafe_push(meta_t {4}); // write bucket
+           fw.unsafe_push(meta_t {3}); // write bucket
+           fw.unsafe_push(meta_t {2}); // write bucket
+           fw.unsafe_push(meta_t {1}); // read bucket
+         }
 
          pq.hook_meta_stream(f);
 
@@ -1832,13 +1946,16 @@ go_bandit([]() {
          test_priority_queue<1,4> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {4}); // write bucket
-         fw.unsafe_push(meta_t {3}); // write bucket
-         fw.unsafe_push(meta_t {2}); // write bucket
-         fw.unsafe_push(meta_t {1}); // write bucket
-         fw.unsafe_push(meta_t {0}); // read bucket
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {4}); // write bucket
+           fw.unsafe_push(meta_t {3}); // write bucket
+           fw.unsafe_push(meta_t {2}); // write bucket
+           fw.unsafe_push(meta_t {1}); // write bucket
+           fw.unsafe_push(meta_t {0}); // read bucket
+         }
 
          pq.hook_meta_stream(f);
 
@@ -1897,11 +2014,14 @@ go_bandit([]() {
          test_priority_queue<1,4> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {2}); // write bucket
-         fw.unsafe_push(meta_t {1}); // write bucket
-         fw.unsafe_push(meta_t {0}); // read bucket
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {2}); // write bucket
+           fw.unsafe_push(meta_t {1}); // write bucket
+           fw.unsafe_push(meta_t {0}); // read bucket
+         }
 
          pq.hook_meta_stream(f);
 
@@ -1940,16 +2060,19 @@ go_bandit([]() {
          test_priority_queue<1,4> pq;
 
          pq_test_file f;
-         pq_test_writer fw(f);
 
-         fw.unsafe_push(meta_t {8}); // overflow
-         fw.unsafe_push(meta_t {7}); // overflow
-         fw.unsafe_push(meta_t {6}); // overflow
-         fw.unsafe_push(meta_t {5}); // write bucket
-         fw.unsafe_push(meta_t {4}); // write bucket
-         fw.unsafe_push(meta_t {3}); // write bucket
-         fw.unsafe_push(meta_t {2}); // write bucket
-         fw.unsafe_push(meta_t {0}); // read bucket
+         { // Garbage collect the writer early
+           pq_test_writer fw(f);
+
+           fw.unsafe_push(meta_t {8}); // overflow
+           fw.unsafe_push(meta_t {7}); // overflow
+           fw.unsafe_push(meta_t {6}); // overflow
+           fw.unsafe_push(meta_t {5}); // write bucket
+           fw.unsafe_push(meta_t {4}); // write bucket
+           fw.unsafe_push(meta_t {3}); // write bucket
+           fw.unsafe_push(meta_t {2}); // write bucket
+           fw.unsafe_push(meta_t {0}); // read bucket
+         }
 
          pq.hook_meta_stream(f);
 

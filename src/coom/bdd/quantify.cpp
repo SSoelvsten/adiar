@@ -63,27 +63,25 @@ namespace coom
   typedef node_priority_queue<tuple, quantify_queue_label, quantify_queue_lt> quantify_priority_queue_t;
   typedef tpie::priority_queue<tuple_data, quantify_queue_data_lt> quantify_data_priority_queue_t;
 
-  typedef tpie::merge_sorter<arc_t, false, by_source_lt> quantify_sink_sorter_t;
-
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   inline void quantify_resolve_request(quantify_priority_queue_t &quantD,
-                                       quantify_sink_sorter_t &ss,
+                                       arc_writer &aw,
                                        const bool_op &op,
                                        const ptr_t source, const ptr_t r1, const ptr_t r2)
   {
     if (is_nil(r2)) {
       if (is_sink_ptr(r1)) {
-        ss.push({ source, r1 });
+        aw.unsafe_push_sink({ source, r1 });
       } else {
         quantD.push({ source, r1, r2 });
       }
     } else if (is_sink_ptr(r1) && can_left_shortcut(op, r1)) {
       arc_t out_arc = { source, op(r1, create_sink_ptr(true)) };
-      ss.push(out_arc);
+      aw.unsafe_push_sink(out_arc);
     } else if (is_sink_ptr(r2) && can_right_shortcut(op, r2)) {
       arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
-      ss.push(out_arc);
+      aw.unsafe_push_sink(out_arc);
     } else {
       quantD.push({ source, r1, r2 });
     }
@@ -169,10 +167,6 @@ namespace coom
     quantify_priority_queue_t quantD;
     quantD.hook_meta_stream(bdd);
 
-    quantify_sink_sorter_t sink_sorter;
-    sink_sorter.set_available_memory(tpie::get_memory_manager().available());
-    sink_sorter.begin();
-
     label_t out_label = label_of(v.uid);
     id_t out_id = 0;
 
@@ -185,12 +179,12 @@ namespace coom
       uid_t out_uid = create_node_uid(out_label, out_id);
 
       if (is_sink_ptr(v.low)) {
-        sink_sorter.push({ out_uid, v.low });
+        aw.unsafe_push_sink({ out_uid, v.low });
       } else {
         quantD.push({ out_uid, v.low, NIL });
       }
       if (is_sink_ptr(v.high)) {
-        sink_sorter.push({ flag(out_uid), v.high });
+        aw.unsafe_push_sink({ flag(out_uid), v.high });
       } else {
         quantD.push({ flag(out_uid), v.high, NIL });
       }
@@ -270,7 +264,7 @@ namespace coom
           assert(is_nil(low2));
           assert(is_nil(high2));
 #endif
-          quantify_resolve_request(quantD, sink_sorter, op,
+          quantify_resolve_request(quantD, aw, op,
                                    source,
                                    std::min(low1, high1),
                                    std::max(low1, high1));
@@ -288,12 +282,12 @@ namespace coom
 #endif
         out_id++;
 
-        quantify_resolve_request(quantD, sink_sorter, op,
+        quantify_resolve_request(quantD, aw, op,
                                  out_uid,
                                  std::min(low1, low2),
                                  std::max(low1, low2));
 
-        quantify_resolve_request(quantD, sink_sorter, op,
+        quantify_resolve_request(quantD, aw, op,
                                  flag(out_uid),
                                  std::min(high1, high2),
                                  std::max(high1, high2));
@@ -307,7 +301,9 @@ namespace coom
       }
     }
 
-    sort_into_file(sink_sorter, out_arcs._file_ptr -> _files[1]);
+    // TODO: Add bool variable to check whether we really do need to sort.
+    aw.sort_sinks();
+
     return out_union << out_arcs;
   }
 
@@ -326,7 +322,7 @@ namespace coom
     node_file out = nodes;
 
     // We will quantify the labels in the order they are given.
-    label_stream ls(labels);
+    label_stream<> ls(labels);
     while(ls.can_pull()) {
       // Did we collapse early to a sink-only OBDD?
       if (is_sink(out, is_any)) {

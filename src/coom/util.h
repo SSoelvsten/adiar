@@ -42,16 +42,13 @@ namespace coom
   /// \param sorter The tpie::merge_sorter to copy from. It is assumed, that the
   ///               merge sorter already is in Phase 3, where one may pull.
   ///
-  /// \param file The tpie::file to write to.
+  /// \param file_stream The tpie::file_stream to write to.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T, bool UseProgress, typename pred_t = std::less<T>>
-  void sort_into_file(tpie::merge_sorter<T, UseProgress, pred_t> &sorter,
-                      tpie::file<T> &file,
-                      bool run_sorter = true)
+  void sort_with_callback(tpie::merge_sorter<T, UseProgress, pred_t> &sorter,
+                          std::function<void(const T&)> callback,
+                          bool run_sorter = true)
   {
-#if COOM_ASSERT
-    assert (file.size() == 0);
-#endif
     if (run_sorter) {
       sorter.end();
       if constexpr (UseProgress) {
@@ -65,13 +62,10 @@ namespace coom
 
     if (!sorter.can_pull()) { return; }
 
-    typename tpie::file<T>::stream out_stream(file);
-
     while (sorter.can_pull()) {
-      out_stream.write(sorter.pull());
+      T t = sorter.pull();
+      callback(t);
     }
-
-    out_stream.detach();
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -3,20 +3,23 @@ go_bandit([]() {
         // == CREATE SINK-ONLY OBDD FOR UNIT TESTS ==
         //                  START
         node_file obdd_F_1;
-        node_writer nw_F_1(obdd_F_1);
-        nw_F_1 << create_sink(false);
-
         node_file obdd_F_2;
-        node_writer nw_F_2(obdd_F_2);
-        nw_F_2 << create_sink(false);
-
         node_file obdd_T_1;
-        node_writer nw_T_1(obdd_T_1);
-        nw_T_1 << create_sink(true);
-
         node_file obdd_T_2;
-        node_writer nw_T_2(obdd_T_2);
-        nw_T_2 << create_sink(true);
+
+        { // Garbage collect writers to free write-lock
+          node_writer nw_F_1(obdd_F_1);
+          nw_F_1 << create_sink(false);
+
+          node_writer nw_F_2(obdd_F_2);
+          nw_F_2 << create_sink(false);
+
+          node_writer nw_T_1(obdd_T_1);
+          nw_T_1 << create_sink(true);
+
+          node_writer nw_T_2(obdd_T_2);
+          nw_T_2 << create_sink(true);
+        }
 
         //                   END
         // == CREATE SINK-ONLY OBDD FOR UNIT TESTS ==
@@ -135,20 +138,23 @@ go_bandit([]() {
         // == CREATE SINGLE VARIABLE OBDDs FOR UNIT TESTS ==
         //                    START
         node_file obdd_x0;
-        node_writer nw_x0(obdd_x0);
-        nw_x0 << create_node(0,MAX_ID, sink_F, sink_T);
-
         node_file obdd_not_x0;
-        node_writer nw_not_x0(obdd_not_x0);
-        nw_not_x0 << create_node(0,MAX_ID, sink_T, sink_F);
-
         node_file obdd_x1;
-        node_writer nw_x1(obdd_x1);
-        nw_x1 << create_node(1,MAX_ID, sink_F, sink_T);
-
         node_file obdd_x2;
-        node_writer nw_x2(obdd_x2);
-        nw_x2 << create_node(2,MAX_ID, sink_F, sink_T);
+
+        { // Garbage collect writers early
+          node_writer nw_x0(obdd_x0);
+          nw_x0 << create_node(0,MAX_ID, sink_F, sink_T);
+
+          node_writer nw_not_x0(obdd_not_x0);
+          nw_not_x0 << create_node(0,MAX_ID, sink_T, sink_F);
+
+          node_writer nw_x1(obdd_x1);
+          nw_x1 << create_node(1,MAX_ID, sink_F, sink_T);
+
+          node_writer nw_x2(obdd_x2);
+          nw_x2 << create_node(2,MAX_ID, sink_F, sink_T);
+        }
 
         //                     END
         // == CREATE SINGLE VARIABLE FOR UNIT TESTS ==
@@ -381,8 +387,10 @@ go_bandit([]() {
         node_t n1_2 = create_node(1,MAX_ID, n1_3.uid, n1_4.uid);
         node_t n1_1 = create_node(0,MAX_ID, n1_3.uid, n1_2.uid);
 
-        node_writer nw_1(obdd_1);
-        nw_1 << n1_5 << n1_4 << n1_3 << n1_2 << n1_1;
+        { // Garbage collect early and free write-lock
+          node_writer nw_1(obdd_1);
+          nw_1 << n1_5 << n1_4 << n1_3 << n1_2 << n1_1;
+        }
 
         /*      OBBD 2
 
@@ -401,8 +409,10 @@ go_bandit([]() {
         node_t n2_2 = create_node(3,MAX_ID, sink_T, sink_F);
         node_t n2_1 = create_node(1,MAX_ID, n2_2.uid, sink_T);
 
-        node_writer nw_2(obdd_2);
-        nw_2 << n2_2 << n2_1;
+        { // Garbage collect early and free write-lock
+          node_writer nw_2(obdd_2);
+          nw_2 << n2_2 << n2_1;
+        }
 
 
         /*     OBDD 3
@@ -432,8 +442,10 @@ go_bandit([]() {
         node_t n3_2 = create_node(1,MAX_ID - 1, n3_5.uid, n3_7.uid);
         node_t n3_1 = create_node(0,MAX_ID, n3_2.uid, n3_3.uid);
 
-        node_writer nw_3(obdd_3);
-        nw_3 << n3_8 << n3_7 << n3_6 << n3_5 << n3_4 << n3_3 << n3_2 << n3_1;
+        { // Garbage collect early and free write-lock
+          node_writer nw_3(obdd_3);
+          nw_3 << n3_8 << n3_7 << n3_6 << n3_5 << n3_4 << n3_3 << n3_2 << n3_1;
+        }
 
         //                 END
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
@@ -940,8 +952,11 @@ go_bandit([]() {
             node_t q1_1_0 = create_node(1,0, sink_T, q1_2.uid);
             node_t q1_0 = create_node(0,0, q1_1_0.uid, q1_1_1.uid);
 
-            node_writer queen_0_1_w(queen_0_1);
-            queen_0_1_w << q1_7 << q1_5 << q1_4 << q1_3 << q1_2 << q1_1_1 << q1_1_0 << q1_0;
+            { // Garbage collection of writer
+              node_writer queen_0_1_w(queen_0_1);
+              queen_0_1_w << q1_7 << q1_5 << q1_4 << q1_3 << q1_2
+                          << q1_1_1 << q1_1_0 << q1_0;
+            }
 
 
             // 3-Queens placement at (1,1)
@@ -958,9 +973,11 @@ go_bandit([]() {
             node_t q2_1 = create_node(1,0, q2_2.uid, q2_4_1.uid);
             node_t q2_0 = create_node(0,0, q2_1.uid, q2_4_1.uid);
 
-            node_writer queen_1_1_w(queen_1_1);
-            queen_1_1_w << q2_8 << q2_7 << q2_6 << q2_5 << q2_4_1
-                        << q2_4_0 << q2_3 << q2_2 << q2_1 << q2_0;
+            { // Garbage collection of writer
+              node_writer queen_1_1_w(queen_1_1);
+              queen_1_1_w << q2_8 << q2_7 << q2_6 << q2_5 << q2_4_1
+                          << q2_4_0 << q2_3 << q2_2 << q2_1 << q2_0;
+            }
 
 
             // Apply it
@@ -1120,8 +1137,10 @@ go_bandit([]() {
             node_t q1_2 = create_node(2,0, q1_3.uid, q1_6_1.uid);
             node_t q1_0 = create_node(0,0, q1_2.uid, q1_6_1.uid);
 
-            node_writer queen_2_0_w(queen_2_0);
-            queen_2_0_w << q1_8 << q1_7 << q1_6_1 << q1_6_0 << q1_4 << q1_3 << q1_2 << q1_0;
+            { // Garbage collection of writer
+              node_writer queen_2_0_w(queen_2_0);
+              queen_2_0_w << q1_8 << q1_7 << q1_6_1 << q1_6_0 << q1_4 << q1_3 << q1_2 << q1_0;
+            }
 
             // Queen placed at 2,1
             node_file queen_2_1;
@@ -1135,8 +1154,10 @@ go_bandit([]() {
             node_t q2_3 = create_node(3,0, q2_4.uid, q2_7_1.uid);
             node_t q2_1 = create_node(1,0, q2_3.uid, q2_7_1.uid);
 
-            node_writer queen_2_1_w(queen_2_1);
-            queen_2_1_w << q2_8 << q2_7_1 << q2_7_0 << q2_6 << q2_5 << q2_4 << q2_3 << q2_1;
+            { // Garbage collection of writer
+              node_writer queen_2_1_w(queen_2_1);
+              queen_2_1_w << q2_8 << q2_7_1 << q2_7_0 << q2_6 << q2_5 << q2_4 << q2_3 << q2_1;
+            }
 
             // Apply it
             node_or_arc_file out = bdd_apply(queen_2_0, queen_2_1, and_op);

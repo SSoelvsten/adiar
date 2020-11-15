@@ -28,16 +28,15 @@ namespace coom
   };
 
   typedef node_priority_queue<arc_t, restrict_queue_label, restrict_queue_lt> restrict_priority_queue_t;
-  typedef tpie::merge_sorter<arc_t, false, by_source_lt> restrict_sink_sorter_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   inline void restrict_resolve_request(const arc_t &request,
                                        restrict_priority_queue_t &pq,
-                                       restrict_sink_sorter_t &ss)
+                                       arc_writer &aw)
   {
     if(is_sink_ptr(request.target)) {
-      ss.push(request);
+      aw.unsafe_push_sink(request);
     } else {
       pq.push(request);
     }
@@ -63,11 +62,7 @@ namespace coom
 
     arc_writer aw(out_arcs);
 
-    restrict_sink_sorter_t sink_sorter;
-    sink_sorter.set_available_memory(tpie::get_memory_manager().available());
-    sink_sorter.begin();
-
-    assignment_stream as(assignment);
+    assignment_stream<> as(assignment);
     assignment_t a = as.pull();
 
     // find the next assignment
@@ -91,8 +86,8 @@ namespace coom
     } else {
       aw.unsafe_push(meta_t {label_of(n)});
 
-      restrict_resolve_request(low_arc_of(n), resD, sink_sorter);
-      restrict_resolve_request(high_arc_of(n), resD, sink_sorter);
+      restrict_resolve_request(low_arc_of(n), resD, aw);
+      restrict_resolve_request(high_arc_of(n), resD, aw);
     }
 
     // process all to-be-visited nodes in topological order
@@ -133,13 +128,13 @@ namespace coom
             return out_union << out_nodes;
           }
 
-          restrict_resolve_request(request, resD, sink_sorter);
+          restrict_resolve_request(request, resD, aw);
 
         }
       } else {
         // outgoing arcs
-        restrict_resolve_request(low_arc_of(n), resD, sink_sorter);
-        restrict_resolve_request(high_arc_of(n), resD, sink_sorter);
+        restrict_resolve_request(low_arc_of(n), resD, aw);
+        restrict_resolve_request(high_arc_of(n), resD, aw);
 
         // Ingoing arcs
         while(resD.can_pull() && resD.top().target == n.uid) {
@@ -152,7 +147,9 @@ namespace coom
       }
     }
 
-    sort_into_file(sink_sorter, out_arcs._file_ptr -> _files[1]);
+    // TODO: Add bool variable to check whether we really do need to sort.
+    aw.sort_sinks();
+
     return out_union << out_arcs;
   }
 }

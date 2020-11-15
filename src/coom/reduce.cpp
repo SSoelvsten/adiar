@@ -257,7 +257,7 @@ namespace coom
           redD.setup_next_layer();
         }
         label = redD.current_layer();
-      } else if (out_file.size() == 0) {
+      } else if (!out_writer.has_pushed()) {
 #if COOM_ASSERT
         assert (!node_arcs.can_pull() && !sink_arcs.can_pull());
 #endif
