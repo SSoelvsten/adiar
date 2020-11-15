@@ -3,6 +3,9 @@
 
 #include "negate.h"
 
+#include <coom/file_stream.h>
+#include <coom/file_writer.h>
+
 #include <coom/assert.h>
 
 namespace coom

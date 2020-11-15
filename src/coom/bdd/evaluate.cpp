@@ -3,6 +3,8 @@
 
 #include "evaluate.h"
 
+#include <coom/file_stream.h>
+
 #include <coom/assert.h>
 
 namespace coom

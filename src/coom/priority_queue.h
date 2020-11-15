@@ -10,6 +10,7 @@
 
 #include <coom/data.h>
 #include <coom/file.h>
+#include <coom/file_stream.h>
 
 namespace coom {
   extern tpie::dummy_progress_indicator pq_tpie_progress_indicator;

@@ -500,7 +500,7 @@ go_bandit([]() {
                 });
             });
 
-            describe("simple_file", [&]() {
+            describe("meta_file", [&]() {
                 it("can return a written to meta_file, that then can be read", [&]() {
                   auto t = []() {
                     meta_file<int, 1> f;
@@ -593,7 +593,7 @@ go_bandit([]() {
                       nw_F << create_sink(false);
                     }
 
-                    describe("is_sink predicate", [&]() {
+                    describe("size computation", [&]() {
                         it("can compute size of node_test_file", [&]() {
                           AssertThat(node_test_file.size(), Is().EqualTo(3u));
                           AssertThat(node_test_file.meta_size(), Is().EqualTo(2u));

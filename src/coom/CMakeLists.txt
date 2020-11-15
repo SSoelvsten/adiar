@@ -9,6 +9,8 @@ set(HEADERS
   coom.h
   data.h
   file.h
+  file_stream.h
+  file_writer.h
   priority_queue.h
   reduce.h
   union.h
@@ -34,6 +36,7 @@ set(SOURCES
   coom.cpp
   data.cpp
   file.cpp
+  file_writer.cpp
   priority_queue.cpp
   reduce.cpp
 

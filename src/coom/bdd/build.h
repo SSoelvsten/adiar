@@ -1,8 +1,6 @@
 #ifndef COOM_BUILD_H
 #define COOM_BUILD_H
 
-#include <tpie/file_stream.h>
-
 #include <coom/data.h>
 #include <coom/file.h>
 
