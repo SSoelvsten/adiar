@@ -55,18 +55,17 @@ namespace coom
       return out_union;
     }
 
-    restrict_priority_queue_t resD;
-    resD.hook_meta_stream(bdd);
-
     node_stream<> ns(bdd);
     node_t n = ns.pull();
 
     arc_file out_arcs;
-
     arc_writer aw(out_arcs);
 
     assignment_stream<> as(assignment);
     assignment_t a = as.pull();
+
+    restrict_priority_queue_t resD;
+    resD.hook_meta_stream(bdd);
 
     // find the next assignment
     while(as.can_pull() && label_of(n) > a.label) {

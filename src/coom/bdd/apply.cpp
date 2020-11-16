@@ -115,10 +115,13 @@ namespace coom
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    apply_data_priority_queue_t appD_data;
-    apply_priority_queue_t appD;
+    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+
+    apply_priority_queue_t appD(available_memory / 2);
     appD.hook_meta_stream(in_1);
     appD.hook_meta_stream(in_2);
+
+    apply_data_priority_queue_t appD_data;
 
     label_t out_label = label_of(std::min(v1.uid, v2.uid));
     id_t out_id = 0;

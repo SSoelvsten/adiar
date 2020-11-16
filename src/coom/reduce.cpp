@@ -81,17 +81,14 @@ namespace coom
 
   node_file reduce(const arc_file &in_file)
   {
-    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-
     node_file out_file;
     node_writer out_writer(out_file);
 
     // Set up
-    reduce_priority_queue_t redD(available_memory / 2);
-    redD.hook_meta_stream(in_file);
-
     node_arc_stream<> node_arcs(in_file);
     sink_arc_stream<> sink_arcs(in_file);
+
+    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
     tpie::dummy_progress_indicator pi;
 
@@ -115,6 +112,11 @@ namespace coom
   assert(sorter_phase_1 < sorter_phase_2);
   assert(sorter_phase_1 * 2 + sorter_phase_2 <= available_memory / 2);
 #endif
+
+  // The memory given to the priority queue may overlap on the sorter_phase_2,
+  // but should not overlap with the two sorter_phase_1
+  reduce_priority_queue_t redD(available_memory - (2 * sorter_phase_1));
+  redD.hook_meta_stream(in_file);
 
     // Check to see if node_arcs is empty
     if (!node_arcs.can_pull()) {
