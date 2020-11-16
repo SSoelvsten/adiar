@@ -15,6 +15,42 @@
 namespace coom {
   extern tpie::dummy_progress_indicator pq_tpie_progress_indicator;
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Conversion from intended memory to give a `tpie::priority_queue<>`
+  /// to the float `factor` it takes as an argument.
+  ///
+  /// Example of usage:
+  ///
+  /// `tpie::priority_queue<...> pq(calc_tpie_pq_factor(intended_bytes)`
+  float calc_tpie_pq_factor(tpie::memory_size_type memory_given);
+
+
+  ////////////////////////////////////////////////////////////////////////////
+  // COOM Priority Queue memory size computations
+  //
+  // We set up the merge_sorters such that they have a very low memory footprint
+  // on Phase 1 (sending sorted blocks to disk) and Phase 3 (merging sorted
+  // partial results). This allows us to place a lot of memory on Phase 2 (the
+  // primary sorting step), which will allow us to have multiple concurrent
+  // merger_sorters, since only one of them will every be running Phase 2, while
+  // all the others are active at Phase 1 or Phase 3 at the same time.
+
+  // TODO: Move into a coom/memory.h file? This is similar computations as in
+  //       reduce.cpp
+  template<typename T>
+  tpie::memory_size_type m_single_block()
+  {
+    // 128 Kb * sizeof(T) + 5 MB. This is the minimum to make TPIE not cry.
+    return sizeof(T) * 128 * 1024 + 5 * 1024 * 1024;
+  }
+
+  template<typename T, size_t Sorters>
+  tpie::memory_size_type m_sort(tpie::memory_size_type memory_given)
+  {
+    // Total amount of memory minus the blocks set aside for all buckets
+    return memory_given - m_single_block<T>() * Sorters;
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   /// We will use a stream of labels to retrieve the values from. Since this may
   /// be one or more streams (Apply, Equality, and Relational Product, and
@@ -183,12 +219,36 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
   public:
-    priority_queue() : priority_queue((tpie::get_memory_manager().available() * 3) / 4) { }
-
-    priority_queue(tpie::memory_size_type buckets_memory)
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Instantiate the priority_queue with the given amount of memory.
+    ///
+    /// \param memory_given    Total amount of memory the priority queue should
+    ///                        take.
+    ///
+    /// \param overflow_factor The fraction of the `memory_given`, that should
+    ///                        be used on the _overflow_queue. That is, the
+    ///                        buckets are given memory_given - overflow_factor.
+    ///
+    /// TODO: Some practical evaluation of a good default overflow_factor value?
+    ///       The more buckets we have, the less likely we need to use the
+    ///       _overflow_queue.
+    ///
+    ///       Maybe some kind of 0.1 * (1 / Buckets)?
+    ////////////////////////////////////////////////////////////////////////////
+    priority_queue(tpie::memory_size_type memory_given)
+      : _overflow_queue(calc_tpie_pq_factor(m_sort<T, Buckets>(memory_given)))
     {
-      _buckets_memory = buckets_memory;
+      _buckets_memory = memory_given;
+#if COOM_ASSERT
+      assert(m_single_block<T>() * Buckets < _buckets_memory);
+#endif
     }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Instantiate the priority_queue with as much memory, as is
+    /// available.
+    ////////////////////////////////////////////////////////////////////////////
+    priority_queue() : priority_queue(tpie::get_memory_manager().available()) { }
 
     ////////////////////////////////////////////////////////////////////////////
     // Public methods
@@ -511,29 +571,11 @@ namespace coom {
     {
       _buckets_label[idx] = label;
 
-      /* We set up the merge_sorters such that they have a very low memory
-       * footprint on Phase 1 (sending sorted blocks to disk) and Phase 3
-       * (merging sorted partial results). This allows us to place a lot of
-       * memory on Phase 2 (the primary sorting step), which will allow us to
-       * have multiple concurrent merger_sorters, since only one of them will
-       * every be running Phase 2, while all the others are active at Phase 1 or
-       * Phase 3 at the same time.
-       */
-
-      // 128 Kb * sizeof(T) + 5 MB. This is the minimum to make TPIE not cry.
-      tpie::memory_size_type m_single_block = sizeof(T) * 128 * 1024 + 5 * 1024 * 1024;
-
-      // Total amount of memory minus the blocks set aside for all buckets
-      tpie::memory_size_type m_sort = _buckets_memory - m_single_block * Buckets;
-
-#if COOM_ASSERT
-      // Would we have some overflow?
-      assert (m_single_block * Buckets < _buckets_memory);
-#endif
-
       _buckets_sorter[idx] = std::make_unique<tpie::merge_sorter<T, false, TComparator>>(_t_comparator);
 
-      _buckets_sorter[idx] -> set_available_memory(m_single_block, m_sort, m_single_block);
+      _buckets_sorter[idx] -> set_available_memory(m_single_block<T>(),
+                                                   m_sort<T, Buckets>(_buckets_memory),
+                                                   m_single_block<T>());
       _buckets_sorter[idx] -> begin();
     }
 

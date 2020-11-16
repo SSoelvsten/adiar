@@ -164,10 +164,11 @@ namespace coom
 
     arc_writer aw(out_arcs);
 
-    quantify_data_priority_queue_t quantD_data;
-
-    quantify_priority_queue_t quantD;
+    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    quantify_priority_queue_t quantD(available_memory / 2);
     quantD.hook_meta_stream(bdd);
+
+    quantify_data_priority_queue_t quantD_data;
 
     label_t out_label = label_of(v.uid);
     id_t out_id = 0;
