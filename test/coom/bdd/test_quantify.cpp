@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: Quantify", [&]() {
+    describe("BDD: Quantify", [&]() {
         ////////////////////////////////////////////////////////////////////////
         // Sink only OBDDs
         node_file sink_F;
@@ -118,7 +118,7 @@ go_bandit([]() {
         }
 
         ////////////////////////////////////////////////////////////////////////////
-        describe("COOM: Exists", [&]() {
+        describe("Exists", [&]() {
             it("should quantify T sink-only OBDD as itself", [&]() {
                 node_or_arc_file out = bdd_exists(sink_T, 42);
 
@@ -738,7 +738,7 @@ go_bandit([]() {
         ////////////////////////////////////////////////////////////////////////////
         // We will not test the Forall operator as much, since it is the same
         // underlying algorithm, but just with the AND operator.
-        describe("COOM: Forall", [&]() {
+        describe("Forall", [&]() {
             it("should quantify T sink-only OBDD as itself", [&]() {
                 node_or_arc_file out = bdd_forall(sink_T, 42);
 

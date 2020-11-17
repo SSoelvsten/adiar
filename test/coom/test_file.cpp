@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: Files, writers, and streams", [&]() {
+    describe("CORE: Files, writers, and streams", [&]() {
         describe("file", [&]() {
             it("can construct fresh file<T> and make it read-only", [&]() {
               file<int> f;
@@ -462,7 +462,7 @@ go_bandit([]() {
                   fw.push(3);
                 });
 
-                it("two temporary simple_files point to two different files", [&]() {
+                it("should have two temporary simple_files be two different files", [&]() {
                   simple_file<int> file1;
                   simple_file<int> file2;
 
@@ -522,7 +522,7 @@ go_bandit([]() {
                   AssertThat(fs.can_pull(), Is().False());
                 });
 
-                it("two temporary simple_files point to two different files", [&]() {
+                it("should have two temporary meta_files be two different files", [&]() {
                   meta_file<int, 1> file1;
                   meta_file<int, 1> file2;
 

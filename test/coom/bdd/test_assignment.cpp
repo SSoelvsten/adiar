@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: Assignment", []() {
+    describe("BDD: Assignment", []() {
         /* We can definitely improve the output at the cost of performance, but
          * we only need 'some' assignment, not one with the fewest variables set
          * to true etc. */

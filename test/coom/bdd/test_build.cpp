@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: Build", [&]() {
+    describe("BDD: Build", [&]() {
         ptr_t sink_T = create_sink_ptr(true);
         ptr_t sink_F = create_sink_ptr(false);
 

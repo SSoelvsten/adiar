@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: Count", [&]() {
+    describe("BDD: Count", [&]() {
         /*
              1       ---- x0
             / \

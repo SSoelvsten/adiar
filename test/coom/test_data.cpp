@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: Data", []() {
+    describe("CORE: Data types", []() {
 
         describe("Nil", [&](){
             it("should recognise Nil (unflagged)", [&]() {

@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: Apply", [&]() {
+    describe("BDD: Apply", [&]() {
         // == CREATE SINK-ONLY OBDD FOR UNIT TESTS ==
         //                  START
         node_file obdd_F_1;
