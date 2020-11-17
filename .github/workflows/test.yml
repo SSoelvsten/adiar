@@ -15,10 +15,8 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-    - name: Apt | install boost
-      run: sudo apt install libboost-all-dev
-    - name: Apt | install aptitude
-      run: sudo apt install aptitude
+    - name: Apt | install boost aptitude graphviz
+      run: sudo apt install libboost-all-dev aptitude graphviz
     - name: CMake | mkdir build
       run: cmake -E make_directory ${{runner.workspace}}/build
     - name: CMake | configure

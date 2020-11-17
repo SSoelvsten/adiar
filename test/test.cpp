@@ -56,6 +56,7 @@ public:
 #include "coom/test_union.cpp"
 
 #include "coom/test_file.cpp"
+#include "coom/test_dot.cpp"
 
 #include "coom/test_priority_queue.cpp"
 
