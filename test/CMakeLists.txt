@@ -12,4 +12,3 @@ PRIVATE
 
 # Link up with coom source
 target_link_libraries(test_unit coom)
-target_compile_definitions(test_unit PRIVATE COOM_ASSERT=1 COOM_PQ_BUCKETS=1)

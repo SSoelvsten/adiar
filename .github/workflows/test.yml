@@ -23,7 +23,7 @@ jobs:
       run: cmake -E make_directory ${{runner.workspace}}/build
     - name: CMake | configure
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE
+      run: cmake $GITHUB_WORKSPACE -D COOM_ASSERT=ON
     - name: CMake | build unit tests
       working-directory: ${{runner.workspace}}/build
       run: cmake --build . --target test_unit
