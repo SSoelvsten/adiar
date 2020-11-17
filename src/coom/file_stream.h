@@ -42,9 +42,6 @@ namespace coom {
                 const std::shared_ptr<SharedPtr_T> &shared_ptr,
                 bool negate = false)
     {
-#if COOM_ASSERT
-      coom_assert(!f.write_locked, "Cannot attach a stream to a file on which still a writer is attached");
-#endif
       if (attached()) { detach(); }
 
       _file_ptr = shared_ptr;

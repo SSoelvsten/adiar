@@ -50,13 +50,6 @@ namespace coom
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// Very simple write lock. This only is used to provide some better error
-    /// messages for developers.
-#if COOM_ASSERT
-    bool write_locked = false;
-#endif
-
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief For (simultaneous) read-only access to a file.
     ///
     /// This cannot be used, when 'is_read_only' is false.
@@ -96,9 +89,6 @@ namespace coom
     ////////////////////////////////////////////////////////////////////////////
     void make_read_only()
     {
-#if COOM_ASSERT
-      coom_assert(!write_locked, "Cannot become read-only while a writer still is attached");
-#endif
       if (!is_read_only()) {
         shared_access_file.open(base_file);
       }
