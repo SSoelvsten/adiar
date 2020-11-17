@@ -56,7 +56,6 @@ namespace coom {
 
 #if COOM_ASSERT
       coom_assert(!(_file_ptr -> is_read_only()), "Cannot attach a writer onto a read-only file");
-      _file_ptr -> write_locked = true;
 #endif
 
       _stream.open(f._file_ptr -> base_file);
@@ -85,9 +84,6 @@ namespace coom {
     void detach()
     {
       _stream.close();
-#if COOM_ASSERT
-      _file_ptr -> write_locked = false;
-#endif
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -193,7 +189,6 @@ namespace coom {
 
 #if COOM_ASSERT
       coom_assert(!(_file_ptr -> _meta_file.is_read_only()), "Cannot attach a writer onto a read-only meta file");
-      _file_ptr -> _meta_file.write_locked = true;
 #endif
       _meta_stream.open(f._file_ptr -> _meta_file.base_file);
       _meta_stream.seek(0, tpie::file_stream_base::end);
@@ -201,7 +196,6 @@ namespace coom {
       for (size_t idx = 0; idx < Files; idx++) {
 #if COOM_ASSERT
         coom_assert(!(_file_ptr -> _files[idx].is_read_only()), "Cannot attach a writer onto a read-only content file");
-        _file_ptr -> _files[idx].write_locked = true;
 #endif
         _streams[idx].open(f._file_ptr -> _files[idx].base_file);
         _streams[idx].seek(0, tpie::file_stream_base::end);
@@ -223,14 +217,8 @@ namespace coom {
     void detach()
     {
       _meta_stream.close();
-#if COOM_ASSERT
-      _file_ptr -> _meta_file.write_locked = false;
-#endif
       for (size_t idx = 0; idx < Files; idx++) {
         _streams[idx].close();
-#if COOM_ASSERT
-        _file_ptr -> _files[idx].write_locked = false;
-#endif
       }
     }
 
