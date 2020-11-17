@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: union_t", [&]() {
+    describe("CORE: union_t", [&]() {
         it("can construct without any elements", [&]() {
           union_t<int, bool> fu;
 

@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: Negate", [&]() {
+    describe("BDD: Negate", [&]() {
         it("should negate a T sink-only OBDD into an F sink-only OBDD", [&]() {
             node_file in_nodes;
 

@@ -36,7 +36,7 @@ using test_priority_queue = priority_queue<pq_test_data, 1u,
                                            MetaStreams, Buckets>;
 
 go_bandit([]() {
-  describe("COOM: Priority Queue", []() {
+  describe("CORE: Priority Queue", []() {
 
     describe("Label Manager", [&]() {
       it("can pull from one meta stream", [&]() {

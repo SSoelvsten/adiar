@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: DOT Files", [&]() {
+    describe("DEBUG: DOT Files", [&]() {
         it("can output .dot for a sink-only BDD", [&]() {
           node_file sink_T = bdd_sink(true);
           output_dot(sink_T, "dot_test_sink");

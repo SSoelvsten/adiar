@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("COOM: Restrict", [&]() {
+    describe("BDD: Restrict", [&]() {
         // == CREATE OBDD FOR UNIT TESTS ==
         //               START
 
