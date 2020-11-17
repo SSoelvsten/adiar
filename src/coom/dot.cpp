@@ -9,12 +9,6 @@
 #include <coom/file_writer.h>
 
 namespace coom {
-  void output_dot(const node_file& nodes, const char* &filename)
-  {
-    std::string filename_str(filename);
-    output_dot(nodes, filename_str);
-  }
-
   void output_dot(const node_file& nodes, const std::string &filename)
   {
     std::ofstream out;
@@ -83,12 +77,6 @@ namespace coom {
     out.close();
   }
 
-  void output_dot(const arc_file& arcs, const char* &filename)
-  {
-    std::string filename_str(filename);
-    output_dot(arcs, filename_str);
-  }
-
   void output_dot(const arc_file& arcs, const std::string &filename)
   {
     std::ofstream out;
@@ -99,16 +87,15 @@ namespace coom {
     out << "\t// Node Arcs" << std::endl;
 
     node_arc_stream<> nas(arcs);
-    while (nas.can_pull())
-      {
-        arc_t a = nas.pull();
-        out << "\t"
-            << "n" << label_of(a.target) << "_" << id_of(a.target)
-            << " -> "
-            << "n" << label_of(a.source) << "_" << id_of(a.source)
-            << " [style=" << (is_flagged(a.source) ? "solid" : "dashed") << ", color=blue];"
-            << std::endl;
-      }
+    while (nas.can_pull()) {
+      arc_t a = nas.pull();
+      out << "\t"
+          << "n" << label_of(a.target) << "_" << id_of(a.target)
+          << " -> "
+          << "n" << label_of(a.source) << "_" << id_of(a.source)
+          << " [style=" << (is_flagged(a.source) ? "solid" : "dashed") << ", color=blue];"
+          << std::endl;
+    }
 
     out << std::endl << "\t// Sink Arcs" << std::endl;
 
@@ -116,19 +103,27 @@ namespace coom {
     out << "\ts1 [shape=box, label=\"1\"];" << std::endl;
 
     sink_arc_stream<> sas(arcs);
-    while (sas.can_pull())
-      {
-        arc_t a = sas.pull();
-        out << "\t"
-            << "n" << label_of(a.source) << "_" << id_of(a.source)
-            << " -> "
-            << "s" << value_of(a.target)
-            << " [style=" << (is_flagged(a.source) ? "solid" : "dashed") << ", color=red];"
-            << std::endl;
-          }
+    while (sas.can_pull()) {
+      arc_t a = sas.pull();
+      out << "\t"
+          << "n" << label_of(a.source) << "_" << id_of(a.source)
+          << " -> "
+          << "s" << value_of(a.target)
+          << " [style=" << (is_flagged(a.source) ? "solid" : "dashed") << ", color=red];"
+          << std::endl;
+    }
 
     out << "\t{ rank=min; s0 s1 }" << std::endl << "}" << std::endl;
     out.close();
+  }
+
+  void output_dot(const node_or_arc_file& file, const std::string &filename)
+  {
+    if (file.has<node_file>()) {
+      output_dot(file.get<node_file>(), filename);
+    } else if(file.has<arc_file>()) {
+      output_dot(file.get<arc_file>(), filename);
+    }
   }
 }
 
