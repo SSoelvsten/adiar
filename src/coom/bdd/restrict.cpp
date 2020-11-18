@@ -46,9 +46,9 @@ namespace coom
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  node_or_arc_file bdd_restrict(const node_file &bdd, const assignment_file &assignment)
+  __bdd bdd_restrict(const bdd &bdd, const assignment_file &assignment)
   {
-    node_or_arc_file out_union;
+    __bdd out_union;
 
     if (assignment.size() == 0 || is_sink(bdd, is_any)) {
       out_union << bdd;

@@ -6,12 +6,14 @@
 #include <coom/file_stream.h>
 #include <coom/file_writer.h>
 
+#include <coom/bdd/negate.h>
+
 #include <coom/assert.h>
 
 namespace coom {
   // TODO: Memoization table for the sink, ithvar, and nithvar builders
 
-  node_file bdd_sink(bool value)
+  bdd bdd_sink(bool value)
   {
     node_file nf;
     node_writer nw(nf);
@@ -19,17 +21,17 @@ namespace coom {
     return nf;
   }
 
-  node_file bdd_true()
+  bdd bdd_true()
   {
     return bdd_sink(true);
   }
 
-  node_file bdd_false()
+  bdd bdd_false()
   {
     return bdd_sink(false);
   }
 
-  node_file bdd_ithvar(label_t label)
+  bdd bdd_ithvar(label_t label)
   {
     node_file nf;
     node_writer nw(nf);
@@ -38,16 +40,12 @@ namespace coom {
     return nf;
   }
 
-  node_file bdd_nithvar(label_t label)
+  bdd bdd_nithvar(label_t label)
   {
-    node_file nf;
-    node_writer nw(nf);
-    nw.unsafe_push(create_node(label, 0, create_sink_ptr(true), create_sink_ptr(false)));
-    nw.unsafe_push(meta_t {label});
-    return nf;
+    return bdd_not(bdd_ithvar(label));
   }
 
-  node_file bdd_and(const label_file &labels)
+  bdd bdd_and(const label_file &labels)
   {
     if (labels.size() == 0) {
       return bdd_sink(true);
@@ -73,7 +71,7 @@ namespace coom {
     return nf;
   }
 
-  node_file bdd_or(const label_file &labels)
+  bdd bdd_or(const label_file &labels)
   {
     if (labels.size() == 0) {
       return bdd_sink(false);
@@ -106,7 +104,7 @@ namespace coom {
       : 0;
   }
 
-  node_file bdd_counter(label_t min_label, label_t max_label, uint64_t threshold)
+  bdd bdd_counter(label_t min_label, label_t max_label, uint64_t threshold)
   {
 #if COOM_ASSERT
     assert(threshold < MAX_ID);

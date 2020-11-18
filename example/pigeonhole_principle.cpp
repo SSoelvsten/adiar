@@ -224,7 +224,7 @@ int main(int argc, char** argv)
 
 
   // =========================================================================
-  coom::node_file sat_acc = coom::bdd_true();
+  coom::bdd sat_acc = coom::bdd_true();
 
   const auto sat_and_clause = [&](clause_t &clause) -> void
   {
@@ -300,7 +300,7 @@ int main(int argc, char** argv)
   tpie::log_info() << "|  | largest OBDD : " << largest_nodes << " nodes" << std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
-  tpie::log_info() << "|  | final size: " << reduce(sat_acc).size() << " nodes"<< std::endl;
+  tpie::log_info() << "|  | final size: " << bdd_nodecount(sat_acc) << " nodes"<< std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
 

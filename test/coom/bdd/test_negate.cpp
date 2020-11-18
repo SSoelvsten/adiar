@@ -9,7 +9,7 @@ go_bandit([]() {
             }
 
             // Negate it
-            node_file out_nodes = bdd_not(in_nodes);
+            bdd out_nodes = bdd_not(in_nodes);
 
             // Check if it is correct
             node_test_stream ns(out_nodes);
@@ -28,7 +28,7 @@ go_bandit([]() {
             }
 
             // Negate it
-            node_file out_nodes = bdd_not(in_nodes);
+            bdd out_nodes = bdd_not(in_nodes);
 
             // Check if it is correct
             node_test_stream ns(out_nodes);
@@ -62,7 +62,7 @@ go_bandit([]() {
                << create_node(0, MAX_ID, create_node_ptr(2, MAX_ID), create_node_ptr(1, MAX_ID));
             }
 
-            node_file out_nodes = bdd_not(in_nodes);
+            bdd out_nodes = bdd_not(in_nodes);
 
             // Check if it is correct
             node_test_stream ns(out_nodes);
@@ -111,7 +111,7 @@ go_bandit([]() {
                  << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID-1), create_node_ptr(1, MAX_ID));
             }
 
-            node_file out_nodes = bdd_not(in_nodes);
+            bdd out_nodes = bdd_not(in_nodes);
 
             node_test_stream ns(out_nodes);
 

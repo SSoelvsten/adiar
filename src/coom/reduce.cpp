@@ -71,14 +71,6 @@ namespace coom
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  node_file reduce(const node_or_arc_file &maybe_reduced_file)
-  {
-    if (!maybe_reduced_file.has<node_file>()) {
-      return reduce(maybe_reduced_file.get<arc_file>());
-    }
-    return maybe_reduced_file.get<node_file>();
-  }
-
   node_file reduce(const arc_file &in_file)
   {
     node_file out_file;

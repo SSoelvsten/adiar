@@ -4,6 +4,8 @@
 #include <coom/data.h>
 #include <coom/file.h>
 
+#include <coom/bdd/bdd.h>
+
 namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
@@ -17,7 +19,7 @@ namespace coom
   /// \return           A node_file if the OBDD is restricted to a sink, and
   ///                   otherwise an arc_file of the restricted OBDD.
   //////////////////////////////////////////////////////////////////////////////
-  node_or_arc_file bdd_restrict(const node_file &bdd, const assignment_file &assignment);
+  __bdd bdd_restrict(const bdd &bdd, const assignment_file &assignment);
 }
 
 #endif // COOM_RESTRICT_H

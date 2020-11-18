@@ -10,7 +10,7 @@
 
 namespace coom
 {
-  node_file bdd_not(const node_file &in)
+  bdd bdd_not(const bdd &in)
   {
     node_file out;
     node_writer out_writer(out);

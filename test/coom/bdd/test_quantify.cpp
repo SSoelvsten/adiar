@@ -120,7 +120,7 @@ go_bandit([]() {
         ////////////////////////////////////////////////////////////////////////////
         describe("Exists", [&]() {
             it("should quantify T sink-only OBDD as itself", [&]() {
-                node_or_arc_file out = bdd_exists(sink_T, 42);
+                __bdd out = bdd_exists(sink_T, 42);
 
                 node_test_stream out_nodes(out);
 
@@ -132,7 +132,7 @@ go_bandit([]() {
               });
 
             it("should quantify F sink-only OBDD as itself", [&]() {
-                node_or_arc_file out = bdd_exists(sink_F, 21);
+                __bdd out = bdd_exists(sink_F, 21);
 
                 node_test_stream out_nodes(out);
 
@@ -144,7 +144,7 @@ go_bandit([]() {
               });
 
             it("should shortcut quantification of root into T sink [OBDD 1]", [&]() {
-                node_or_arc_file out = bdd_exists(obdd_1, 0);
+                __bdd out = bdd_exists(obdd_1, 0);
 
                 node_test_stream out_nodes(out);
 
@@ -156,7 +156,7 @@ go_bandit([]() {
               });
 
             it("should shortcut quantification of root into T sink [x2]", [&]() {
-                node_or_arc_file out = bdd_exists(obdd_x2, 2);
+                __bdd out = bdd_exists(obdd_x2, 2);
 
                 node_test_stream out_nodes(out);
 
@@ -168,7 +168,7 @@ go_bandit([]() {
               });
 
             it("should shortcut quantification on non-existent label in input [OBDD 1]", [&]() {
-                node_or_arc_file out = bdd_exists(obdd_1, 42);
+                __bdd out = bdd_exists(obdd_1, 42);
 
                 node_test_stream out_nodes(out);
 
@@ -193,7 +193,7 @@ go_bandit([]() {
 
             it("should quantify bottom-most nodes [OBDD 1]", [&]() {
                 tpie::file_stream<arc_t> reduce_node_arcs;
-                node_or_arc_file out = bdd_exists(obdd_1, 1);
+                __bdd out = bdd_exists(obdd_1, 1);
 
                 node_arc_test_stream node_arcs(out);
                 AssertThat(node_arcs.can_pull(), Is().False());
@@ -219,7 +219,7 @@ go_bandit([]() {
               });
 
             it("should quantify root without sink arcs [OBDD 2]", [&]() {
-                node_or_arc_file out = bdd_exists(obdd_2, 0);
+                __bdd out = bdd_exists(obdd_2, 0);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -265,7 +265,7 @@ go_bandit([]() {
               });
 
             it("should quantify nodes with sink or nodes as children [OBDD 2]", [&]() {
-                node_or_arc_file out = bdd_exists(obdd_2, 1);
+                __bdd out = bdd_exists(obdd_2, 1);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -311,7 +311,7 @@ go_bandit([]() {
               });
 
             it("should output sink arcs in order, despite the order of resolvement [OBDD 2]", [&]() {
-                node_or_arc_file out = bdd_exists(obdd_2, 2);
+                __bdd out = bdd_exists(obdd_2, 2);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -357,7 +357,7 @@ go_bandit([]() {
               });
 
             it("should keep nodes as is when skipping quantified layer [OBDD 3]", [&]() {
-                node_or_arc_file out = bdd_exists(obdd_3, 1);
+                __bdd out = bdd_exists(obdd_3, 1);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -406,7 +406,7 @@ go_bandit([]() {
               });
 
             it("should output sink arcs in order, despite the order of resolvement [OBDD 3]", [&]() {
-                node_or_arc_file out = bdd_exists(obdd_3, 2);
+                __bdd out = bdd_exists(obdd_3, 2);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -458,7 +458,7 @@ go_bandit([]() {
                   obdd_chain_w << n4 << n3 << n2 << n1;
                 }
 
-                node_or_arc_file out = bdd_exists(obdd_chain, 2);
+                __bdd out = bdd_exists(obdd_chain, 2);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -502,7 +502,7 @@ go_bandit([]() {
                   lw << 1 << 2;
                 }
 
-                node_or_arc_file out = bdd_exists(sink_T, labels);
+                __bdd out = bdd_exists(sink_T, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -510,7 +510,8 @@ go_bandit([]() {
                 AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> ms(out);
+                AssertThat(ms.can_pull(), Is().False());
               });
 
             it("can quantify list [x1, x2] [OBDD 4]", [&]() {
@@ -521,7 +522,7 @@ go_bandit([]() {
                   lw << 1 << 2;
                 }
 
-                node_file out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(obdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -537,7 +538,7 @@ go_bandit([]() {
 
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                meta_test_stream out_meta(out);
+                meta_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
                 AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 3 }));
@@ -556,7 +557,7 @@ go_bandit([]() {
                   lw << 2 << 1;
                 }
 
-                node_file out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(obdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -572,7 +573,7 @@ go_bandit([]() {
 
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                meta_test_stream out_meta(out);
+                meta_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
                 AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 3 }));
@@ -591,7 +592,7 @@ go_bandit([]() {
                   lw << 2;
                 }
 
-                node_file out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(obdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -612,7 +613,7 @@ go_bandit([]() {
 
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                meta_test_stream out_meta(out);
+                meta_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
                 AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 3u }));
@@ -634,7 +635,7 @@ go_bandit([]() {
                   lw << 1 << 3;
                 }
 
-                node_file out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(obdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -650,7 +651,7 @@ go_bandit([]() {
 
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                meta_test_stream out_meta(out);
+                meta_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
                 AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 2u }));
@@ -669,7 +670,7 @@ go_bandit([]() {
                   lw << 0 << 2;
                 }
 
-                node_file out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(obdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -685,7 +686,7 @@ go_bandit([]() {
 
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                meta_test_stream out_meta(out);
+                meta_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
                 AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 3u }));
@@ -704,7 +705,7 @@ go_bandit([]() {
                   lw << 3 << 1 << 0 << 2;
                 }
 
-                node_file out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(obdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -712,7 +713,8 @@ go_bandit([]() {
                 AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                AssertThat(out.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> ms(out);
+                AssertThat(ms.can_pull(), Is().False());
               });
 
             it("should quantify list [x2, x1] into T sink [x2]", [&]() {
@@ -723,7 +725,7 @@ go_bandit([]() {
                   lw << 2 << 1;
                 }
 
-                node_file out = bdd_exists(obdd_x2, labels);
+                bdd out = bdd_exists(obdd_x2, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -731,7 +733,8 @@ go_bandit([]() {
                 AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                AssertThat(out.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> ms(out);
+                AssertThat(ms.can_pull(), Is().False());
               });
           });
 
@@ -740,7 +743,7 @@ go_bandit([]() {
         // underlying algorithm, but just with the AND operator.
         describe("Forall", [&]() {
             it("should quantify T sink-only OBDD as itself", [&]() {
-                node_or_arc_file out = bdd_forall(sink_T, 42);
+                __bdd out = bdd_forall(sink_T, 42);
 
                 node_test_stream out_nodes(out);
 
@@ -748,11 +751,12 @@ go_bandit([]() {
                 AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> ms(out);
+                AssertThat(ms.can_pull(), Is().False());
               });
 
             it("should quantify F sink-only OBDD as itself", [&]() {
-                node_or_arc_file out = bdd_forall(sink_F, 21);
+                __bdd out = bdd_forall(sink_F, 21);
 
                 node_test_stream out_nodes(out);
 
@@ -760,11 +764,12 @@ go_bandit([]() {
                 AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> ms(out);
+                AssertThat(ms.can_pull(), Is().False());
               });
 
             it("should quantify root with non-shortcutting sink [OBDD 1]", [&]() {
-                node_or_arc_file out = bdd_forall(obdd_1, 0);
+                __bdd out = bdd_forall(obdd_1, 0);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -792,7 +797,7 @@ go_bandit([]() {
               });
 
             it("should quantify root of [OBDD 3]", [&]() {
-                node_or_arc_file out = bdd_forall(obdd_3, 0);
+                __bdd out = bdd_forall(obdd_3, 0);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -838,7 +843,7 @@ go_bandit([]() {
               });
 
             it("should prune shortcuttable requests [OBDD 4]", [&]() {
-                node_or_arc_file out = bdd_forall(obdd_4, 2);
+                __bdd out = bdd_forall(obdd_4, 2);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -894,7 +899,7 @@ go_bandit([]() {
                   lw << 0 << 2 << 1;
                 }
 
-                node_file out = bdd_forall(obdd_4, labels);
+                bdd out = bdd_forall(obdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -902,7 +907,8 @@ go_bandit([]() {
                 AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                AssertThat(out.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> ms(out);
+                AssertThat(ms.can_pull(), Is().False());
               });
           });
       });

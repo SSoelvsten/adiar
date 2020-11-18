@@ -6,6 +6,8 @@
 #include <coom/data.h>
 #include <coom/file.h>
 
+#include <coom/bdd/bdd.h>
+
 #include <coom/assert.h>
 
 namespace coom {
@@ -161,7 +163,17 @@ namespace coom {
   };
 
   template<bool REVERSE = false>
-  using node_stream = meta_file_stream<node_t, 1, 0, !REVERSE>;
+  class node_stream : public meta_file_stream<node_t, 1, 0, !REVERSE>
+  {
+  public:
+    node_stream(const node_file &file, bool negate = false)
+      : meta_file_stream<node_t, 1, 0, !REVERSE>(file, negate)
+    { }
+
+    node_stream(const bdd &bdd)
+      : meta_file_stream<node_t, 1, 0, !REVERSE>(bdd.file, bdd.negate)
+    { }
+  };
 
   template<bool REVERSE = false>
   using node_arc_stream = meta_file_stream<arc_t, 2, 0, !REVERSE>;
@@ -180,6 +192,11 @@ namespace coom {
     meta_stream(const meta_file<T,Files> &f)
       : file_stream<meta_t, !REVERSE, __meta_file<T, Files>>(f._file_ptr -> _meta_file, f._file_ptr)
     { }
+
+    meta_stream(const bdd &bdd) : meta_stream(bdd.file) { }
+
+    // Primarily used for testing...
+    meta_stream(const __bdd &bdd);
 
     // TODO: 'attach', 'attached', and 'detach'
   };

@@ -15,38 +15,28 @@ using namespace coom;
 // We also do a few little hacks, to read unreduced output from the file_union
 // class.
 template <typename T, size_t Files>
-class meta_test_stream: public meta_stream<T, Files, true>
-{
-public:
-  meta_test_stream(const __shared_file<__meta_file<T,Files>> &f): meta_stream<T, Files, true>(f) { }
-  meta_test_stream(const node_or_arc_file &f);
-};
-
-template<>
-meta_test_stream<node_t, 1>::meta_test_stream(const node_or_arc_file &f): meta_stream<node_t, 1, true>(f.get<node_file>()) { }
-
-template<>
-meta_test_stream<arc_t, 2>::meta_test_stream(const node_or_arc_file &f): meta_stream<arc_t, 2, true>(f.get<arc_file>()) { }
+using meta_test_stream = meta_stream<T, Files, true>;
 
 class node_test_stream: public node_stream<true>
 {
 public:
   node_test_stream(node_file &f): node_stream<true>(f) { }
-  node_test_stream(node_or_arc_file &f): node_stream<true>(f.get<node_file>()) { }
+  node_test_stream(bdd &f): node_stream<true>(f) { }
+  node_test_stream(__bdd &f): node_stream<true>(f.get<node_file>()) { }
 };
 
 class node_arc_test_stream: public node_arc_stream<true>
 {
 public:
   node_arc_test_stream(arc_file &f): node_arc_stream<true>(f) { }
-  node_arc_test_stream(node_or_arc_file &f): node_arc_stream<true>(f.get<arc_file>()) { }
+  node_arc_test_stream(__bdd &bdd): node_arc_stream<true>(bdd.get<arc_file>()) { }
 };
 
 class sink_arc_test_stream: public sink_arc_stream<true>
 {
 public:
   sink_arc_test_stream(arc_file &f): sink_arc_stream<true>(f) { }
-  sink_arc_test_stream(node_or_arc_file &f): sink_arc_stream<true>(f.get<arc_file>()) { }
+  sink_arc_test_stream(__bdd &bdd): sink_arc_stream<true>(bdd.get<arc_file>()) { }
 };
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -64,6 +54,7 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 // COOM BDD unit tests
+#include "coom/bdd/test_bdd.cpp"
 
 #include "coom/bdd/test_apply.cpp"
 #include "coom/bdd/test_assignment.cpp"

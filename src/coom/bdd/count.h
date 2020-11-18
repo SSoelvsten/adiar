@@ -1,10 +1,9 @@
 #ifndef COOM_COUNT_PATHS_H
 #define COOM_COUNT_PATHS_H
 
-#include <tpie/file_stream.h>
-
 #include <coom/data.h>
-#include <coom/file.h>
+
+#include <coom/bdd/bdd.h>
 
 namespace coom
 {
@@ -17,8 +16,7 @@ namespace coom
   ///
   /// \return The number of unique paths.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_nodecount(const node_file &nodes);
-  uint64_t bdd_nodecount(const node_or_arc_file &file);
+  uint64_t bdd_nodecount(const bdd &bdd);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Count all unique (but not necessarily disjoint) paths that satisfy
@@ -29,7 +27,7 @@ namespace coom
   ///
   /// \return The number of unique paths.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_pathcount(const node_file &nodes, const sink_pred &sink_pred = is_true);
+  uint64_t bdd_pathcount(const bdd &bdd, const sink_pred &sink_pred = is_true);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Count all assignments to variables in the given interval that
@@ -50,7 +48,7 @@ namespace coom
   ///
   /// \return The number of unique assignments.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const node_file &nodes,
+  uint64_t bdd_satcount(const bdd &bdd,
                         label_t min_label,
                         label_t max_label,
                         const sink_pred &sink_pred = is_true);
@@ -64,7 +62,7 @@ namespace coom
   ///
   /// \return The number of unique assignments.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const node_file &nodes,
+  uint64_t bdd_satcount(const bdd &bdd,
                         const sink_pred &sink_pred = is_true);
 
   // TODO: bdd_satcount with a size_t varcount

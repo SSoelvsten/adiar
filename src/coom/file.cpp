@@ -10,23 +10,10 @@
 
 namespace coom
 {
+  // TODO: Remove?
+
   //////////////////////////////////////////////////////////////////////////////
   /// node_file
-  node_file::node_file(const node_or_arc_file &other) : node_file(reduce(other)) { }
-
-  node_file& node_file::operator= (const node_or_arc_file &other)
-  {
-    // Clean up current node_file before reduce
-    this -> _file_ptr.reset();
-
-    // Reduce and copy over pointer to result
-    node_file reduced = reduce(other);
-    this -> _file_ptr = reduced._file_ptr;
-
-    // Return this object
-    return *this;
-  }
-
   bool is_sink(const node_file &file, const sink_pred &pred)
   {
     coom_assert(!file.empty(), "Invalid node_file: empty");
@@ -38,12 +25,6 @@ namespace coom
     node_t n = ns.pull();
 
     return is_sink(n) && pred(n.uid);
-  }
-
-  node_t root_of(const node_file &file)
-  {
-    node_stream<> ns(file);
-    return ns.pull();
   }
 
   template<bool reverse>
@@ -67,6 +48,17 @@ namespace coom
   label_t max_label(const node_file &file)
   {
     return extract_label<true>(file);
+  }
+
+  uint64_t nodecount(const node_file &nodes)
+  {
+    return nodes.size();
+  }
+
+  uint64_t nodecount(const arc_file &arcs)
+  {
+    // Every node is represented by two arcs
+    return arcs.size() / 2;
   }
 }
 

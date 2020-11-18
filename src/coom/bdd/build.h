@@ -3,6 +3,7 @@
 
 #include <coom/data.h>
 #include <coom/file.h>
+#include <coom/bdd/bdd.h>
 
 namespace coom
 {
@@ -11,24 +12,24 @@ namespace coom
   ///
   /// \param value     The value for the sink
   //////////////////////////////////////////////////////////////////////////////
-  node_file bdd_sink(bool value);
+  bdd bdd_sink(bool value);
 
-  node_file bdd_false();
-  node_file bdd_true();
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an OBDD for the variable with the given label.
-  ///
-  /// \param label     The label of the variable
-  //////////////////////////////////////////////////////////////////////////////
-  node_file bdd_ithvar(label_t label);
+  bdd bdd_false();
+  bdd bdd_true();
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an OBDD for the variable with the given label.
   ///
   /// \param label     The label of the variable
   //////////////////////////////////////////////////////////////////////////////
-  node_file bdd_nithvar(label_t label);
+  bdd bdd_ithvar(label_t label);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create an OBDD for the variable with the given label.
+  ///
+  /// \param label     The label of the variable
+  //////////////////////////////////////////////////////////////////////////////
+  bdd bdd_nithvar(label_t label);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an OBDD that is true only when all given labels are set to
@@ -36,7 +37,9 @@ namespace coom
   ///
   /// \param in_labels The labels sorted from smallest to highest.
   //////////////////////////////////////////////////////////////////////////////
-  node_file bdd_and(const label_file &in_labels);
+  bdd bdd_and(const label_file &in_labels);
+
+  // TODO: std::vector variant?
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an OBDD that is true only when at least one of the given
@@ -44,7 +47,9 @@ namespace coom
   ///
   /// \param in_labels The labels sorted from smallest to highest.
   //////////////////////////////////////////////////////////////////////////////
-  node_file bdd_or(const label_file &in_labels);
+  bdd bdd_or(const label_file &in_labels);
+
+  // TODO: std::vector variant?
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an OBDD that is true when the number of variables set to
@@ -58,11 +63,11 @@ namespace coom
   ///                   to the threshold should be accepted or not.
   ///
   /// TODO: Currently the comparator is disabled, since the form of the a reduced
-  ///       OBDD changes with the comparator. So, currently it only supports
+  ///       BDD changes with the comparator. So, currently it only supports
   ///       equality with the threshold.
   //////////////////////////////////////////////////////////////////////////////
   //template <typename comparator = std::equal_to<uint64_t>()>
-  node_file bdd_counter(label_t min_label, label_t max_label, uint64_t threshold);
+  bdd bdd_counter(label_t min_label, label_t max_label, uint64_t threshold);
 }
 
 #endif // COOM_BUILD_H

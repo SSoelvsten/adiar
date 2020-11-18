@@ -2,7 +2,7 @@
 #define COOM_APPLY_H
 
 #include <coom/data.h>
-#include <coom/file.h>
+#include <coom/bdd/bdd.h>
 
 namespace coom
 {
@@ -11,7 +11,7 @@ namespace coom
   ///
   /// Creates the product construction of the two given OBDDs.
   ///
-  /// \param in_file_i File containing an OBDD in question.
+  /// \param bdd_i     BDD to apply with the other.
   ///
   /// \param op        Binary boolean operator to be applied.
   ///
@@ -19,9 +19,9 @@ namespace coom
   ///         otherwise an arc_file of the OBDD representing the operator
   ///         applied on both inputs.
   //////////////////////////////////////////////////////////////////////////////
-  node_or_arc_file bdd_apply(const node_file &file_1,
-                             const node_file &file_2,
-                             const bool_op &op);
+  __bdd bdd_apply(const bdd &bdd_1,
+                  const bdd &bdd_2,
+                  const bool_op &op);
 }
 
 #endif // COOM_APPLY_H

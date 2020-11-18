@@ -25,7 +25,7 @@ go_bandit([]() {
         // == CREATE SINK-ONLY OBDD FOR UNIT TESTS ==
 
         it("should XOR F and T sink-only OBDDs", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_F_1, obdd_T_2, xor_op);
+            __bdd out = bdd_apply(obdd_F_1, obdd_T_2, xor_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -37,7 +37,7 @@ go_bandit([]() {
           });
 
         it("should XOR T and T sink-only OBDDs", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_T_1, obdd_T_2, xor_op);
+            __bdd out = bdd_apply(obdd_T_1, obdd_T_2, xor_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -49,7 +49,7 @@ go_bandit([]() {
           });
 
         it("should AND F and T sink-only OBDDs", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_F_1, obdd_T_2, and_op);
+            __bdd out = bdd_apply(obdd_F_1, obdd_T_2, and_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -61,7 +61,7 @@ go_bandit([]() {
           });
 
         it("should AND T and T sink-only OBDDs", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_T_1, obdd_T_2, and_op);
+            __bdd out = bdd_apply(obdd_T_1, obdd_T_2, and_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -73,7 +73,7 @@ go_bandit([]() {
           });
 
         it("should OR T and F sink-only OBDDs", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_T_1, obdd_F_2, or_op);
+            __bdd out = bdd_apply(obdd_T_1, obdd_F_2, or_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -85,7 +85,7 @@ go_bandit([]() {
           });
 
         it("should OR T and F sink-only OBDDs", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_F_1, obdd_F_2, or_op);
+            __bdd out = bdd_apply(obdd_F_1, obdd_F_2, or_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -97,7 +97,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES F and T sink-only OBDDs", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_F_1, obdd_T_2, implies_op);
+            __bdd out = bdd_apply(obdd_F_1, obdd_T_2, implies_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -109,7 +109,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES T and F sink-only OBDDs", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_T_1, obdd_F_2, implies_op);
+            __bdd out = bdd_apply(obdd_T_1, obdd_F_2, implies_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -121,7 +121,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES T and T sink-only OBDDs", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_T_1, obdd_T_2, implies_op);
+            __bdd out = bdd_apply(obdd_T_1, obdd_T_2, implies_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -160,7 +160,7 @@ go_bandit([]() {
         // == CREATE SINGLE VARIABLE FOR UNIT TESTS ==
 
         it("should AND x0 and T", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_x0, obdd_T_2, and_op);
+            __bdd out = bdd_apply(obdd_x0, obdd_T_2, and_op);
             node_arc_test_stream node_arcs(out);
             AssertThat(node_arcs.can_pull(), Is().False());
 
@@ -193,7 +193,7 @@ go_bandit([]() {
                 F T T F
              */
 
-            node_or_arc_file out = bdd_apply(obdd_x0, obdd_x1, xor_op);
+            __bdd out = bdd_apply(obdd_x0, obdd_x1, xor_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -243,7 +243,7 @@ go_bandit([]() {
                    F T
              */
 
-            node_or_arc_file out = bdd_apply(obdd_x0, obdd_x1, implies_op);
+            __bdd out = bdd_apply(obdd_x0, obdd_x1, implies_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -287,7 +287,7 @@ go_bandit([]() {
                  F T
              */
 
-            node_or_arc_file out = bdd_apply(obdd_x0, obdd_x2, or_op);
+            __bdd out = bdd_apply(obdd_x0, obdd_x2, or_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -327,7 +327,7 @@ go_bandit([]() {
                   F F
              */
 
-            node_or_arc_file out = bdd_apply(obdd_x0, obdd_not_x0, and_op);
+            __bdd out = bdd_apply(obdd_x0, obdd_not_x0, and_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -352,7 +352,7 @@ go_bandit([]() {
           });
 
         it("should AND (and shortcut) F and x0", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_F_1, obdd_x0, and_op);
+            __bdd out = bdd_apply(obdd_F_1, obdd_x0, and_op);
 
             node_test_stream out_nodes(out);
 
@@ -451,7 +451,7 @@ go_bandit([]() {
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
 
         it("should IMPLY (and shortcut) F and OBBD1", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_F_1, obdd_1, implies_op);
+            __bdd out = bdd_apply(obdd_F_1, obdd_1, implies_op);
 
             node_test_stream out_nodes(out);
 
@@ -464,7 +464,7 @@ go_bandit([]() {
           });
 
         it("should OR (and shortcut) OBBD 1 and T", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_1, obdd_T_2, or_op);
+            __bdd out = bdd_apply(obdd_1, obdd_T_2, or_op);
 
             node_test_stream out_nodes(out);
 
@@ -477,7 +477,7 @@ go_bandit([]() {
           });
 
         it("should OR (and shortcut) OBBD 2 and T", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_2, obdd_T_2, or_op);
+            __bdd out = bdd_apply(obdd_2, obdd_T_2, or_op);
 
             node_test_stream out_nodes(out);
 
@@ -490,7 +490,7 @@ go_bandit([]() {
           });
 
         it("should AND (and shortcut) F and OBBD 2", [&]() {
-            node_or_arc_file out = bdd_apply(obdd_F_1, obdd_2, and_op);
+            __bdd out = bdd_apply(obdd_F_1, obdd_2, and_op);
 
             node_test_stream out_nodes(out);
 
@@ -516,7 +516,7 @@ go_bandit([]() {
                 /   \     /   \
                 T   F     F   T
              */
-            node_or_arc_file out = bdd_apply(obdd_2, obdd_x2, xor_op);
+            __bdd out = bdd_apply(obdd_2, obdd_x2, xor_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -603,7 +603,7 @@ go_bandit([]() {
                         T F
              */
 
-            node_or_arc_file out = bdd_apply(obdd_1, obdd_2, or_op);
+            __bdd out = bdd_apply(obdd_1, obdd_2, or_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -678,7 +678,7 @@ go_bandit([]() {
 
              */
 
-            node_or_arc_file out = bdd_apply(obdd_1, obdd_2, and_op);
+            __bdd out = bdd_apply(obdd_1, obdd_2, and_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -750,7 +750,7 @@ go_bandit([]() {
             /* There is no shortcutting possible on an XOR, so see the product
                construction above. */
 
-            node_or_arc_file out = bdd_apply(obdd_1, obdd_2, xor_op);
+            __bdd out = bdd_apply(obdd_1, obdd_2, xor_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -858,7 +858,7 @@ go_bandit([]() {
                               (F,T) (T,T) (T,F) (T,T)
             */
 
-            node_or_arc_file out = bdd_apply(obdd_3, obdd_1, xor_op);
+            __bdd out = bdd_apply(obdd_3, obdd_1, xor_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -981,7 +981,7 @@ go_bandit([]() {
 
 
             // Apply it
-            node_or_arc_file out = bdd_apply(queen_0_1, queen_1_1, and_op);
+            __bdd out = bdd_apply(queen_0_1, queen_1_1, and_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -1160,7 +1160,7 @@ go_bandit([]() {
             }
 
             // Apply it
-            node_or_arc_file out = bdd_apply(queen_2_0, queen_2_1, and_op);
+            __bdd out = bdd_apply(queen_2_0, queen_2_1, and_op);
 
             // Check it
             node_arc_test_stream node_arcs(out);
