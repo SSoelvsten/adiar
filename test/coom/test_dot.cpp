@@ -1,7 +1,7 @@
 go_bandit([]() {
     describe("DEBUG: DOT Files", [&]() {
         it("can output .dot for a sink-only BDD", [&]() {
-          node_file sink_T = bdd_sink(true);
+          bdd sink_T = bdd_sink(true);
           output_dot(sink_T, "dot_test_sink");
           int exit_value = system("dot -O -Tpng dot_test_sink.dot");
           AssertThat(exit_value, Is().EqualTo(0));

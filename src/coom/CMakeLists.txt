@@ -19,6 +19,7 @@ set(HEADERS
   # bdd files
   bdd/apply.h
   bdd/assignment.h
+  bdd/bdd.h
   bdd/build.h
   bdd/count.h
   bdd/evaluate.h
@@ -36,12 +37,14 @@ set(SOURCES
   coom.cpp
   data.cpp
   file.cpp
+  file_stream.cpp
   file_writer.cpp
   priority_queue.cpp
   reduce.cpp
 
   # bdd files
   bdd/apply.cpp
+  bdd/bdd.cpp
   bdd/build.cpp
   bdd/count.cpp
   bdd/evaluate.cpp

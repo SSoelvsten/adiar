@@ -5,40 +5,40 @@ go_bandit([]() {
 
         describe("bdd_sink", [&]() {
             it("can create true sink only", [&]() {
-                node_file res = bdd_sink(true);
+                bdd res = bdd_sink(true);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
                 AssertThat(ns.pull(), Is().EqualTo(create_sink(true)));
                 AssertThat(ns.can_pull(), Is().False());
 
-                AssertThat(res.size(), Is().EqualTo(1u));
-                AssertThat(res.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> ms(res);
+                AssertThat(ms.can_pull(), Is().False());
               });
 
             it("can create false sink only", [&]() {
-                node_file res = bdd_sink(false);
+                bdd res = bdd_sink(false);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
                 AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
                 AssertThat(ns.can_pull(), Is().False());
 
-                AssertThat(res.size(), Is().EqualTo(1u));
-                AssertThat(res.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> ms(res);
+                AssertThat(ms.can_pull(), Is().False());
               });
           });
 
         describe("bdd_ithvar", [&]() {
             it("can create x0", [&]() {
-                node_file res = bdd_ithvar(0);
+                bdd res = bdd_ithvar(0);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
                 AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0, sink_F, sink_T)));
                 AssertThat(ns.can_pull(), Is().False());
 
-                meta_test_stream ms(res);
+                meta_test_stream<node_t, 1> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
                 AssertThat(ms.pull(), Is().EqualTo(meta_t { 0 }));
@@ -46,14 +46,14 @@ go_bandit([]() {
               });
 
             it("can create x42", [&]() {
-                node_file res = bdd_ithvar(42);
+                bdd res = bdd_ithvar(42);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
                 AssertThat(ns.pull(), Is().EqualTo(create_node(42, 0, sink_F, sink_T)));
                 AssertThat(ns.can_pull(), Is().False());
 
-                meta_test_stream ms(res);
+                meta_test_stream<node_t, 1> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
                 AssertThat(ms.pull(), Is().EqualTo(meta_t { 42 }));
@@ -63,14 +63,14 @@ go_bandit([]() {
 
         describe("bdd_nithvar", [&]() {
             it("can create !x1", [&]() {
-                node_file res = bdd_nithvar(1);
+                bdd res = bdd_nithvar(1);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
                 AssertThat(ns.pull(), Is().EqualTo(create_node(1, 0, sink_T, sink_F)));
                 AssertThat(ns.can_pull(), Is().False());
 
-                meta_test_stream ms(res);
+                meta_test_stream<node_t, 1> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
                 AssertThat(ms.pull(), Is().EqualTo(meta_t { 1 }));
@@ -78,14 +78,14 @@ go_bandit([]() {
               });
 
             it("can create !x3", [&]() {
-                node_file res = bdd_nithvar(3);
+                bdd res = bdd_nithvar(3);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
                 AssertThat(ns.pull(), Is().EqualTo(create_node(3, 0, sink_T, sink_F)));
                 AssertThat(ns.can_pull(), Is().False());
 
-                meta_test_stream ms(res);
+                meta_test_stream<node_t, 1> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
                 AssertThat(ms.pull(), Is().EqualTo(meta_t { 3 }));
@@ -102,7 +102,7 @@ go_bandit([]() {
                   lw << 1 << 2 << 5;
                 }
 
-                node_file res = bdd_and(labels);
+                bdd res = bdd_and(labels);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
@@ -122,7 +122,7 @@ go_bandit([]() {
 
                 AssertThat(ns.can_pull(), Is().False());
 
-                meta_test_stream ms(res);
+                meta_test_stream<node_t, 1> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
                 AssertThat(ms.pull(), Is().EqualTo(meta_t { 5 }));
@@ -139,14 +139,15 @@ go_bandit([]() {
             it("can create {} as trivially true", [&]() {
                 label_file labels;
 
-                node_file res = bdd_and(labels);
+                bdd res = bdd_and(labels);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
                 AssertThat(ns.pull(), Is().EqualTo(create_sink(true)));
                 AssertThat(ns.can_pull(), Is().False());
 
-                AssertThat(res.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> ms(res);
+                AssertThat(ms.can_pull(), Is().False());
               });
           });
 
@@ -159,7 +160,7 @@ go_bandit([]() {
                   lw << 1 << 2 << 5;
                 }
 
-                node_file res = bdd_or(labels);
+                bdd res = bdd_or(labels);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
@@ -179,7 +180,7 @@ go_bandit([]() {
 
                 AssertThat(ns.can_pull(), Is().False());
 
-                meta_test_stream ms(res);
+                meta_test_stream<node_t, 1> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
                 AssertThat(ms.pull(), Is().EqualTo(meta_t { 5 }));
@@ -196,20 +197,21 @@ go_bandit([]() {
             it("can create {} as trivially false", [&]() {
                 label_file labels;
 
-                node_file res = bdd_or(labels);
+                bdd res = bdd_or(labels);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
                 AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
                 AssertThat(ns.can_pull(), Is().False());
 
-                AssertThat(res.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> ms(res);
+                AssertThat(ms.can_pull(), Is().False());
               });
           });
 
         describe("bdd_counter", [&]() {
             it("creates counting to 3 in [0,8]", [&]() {
-                node_file res = bdd_counter(0, 8, 3);
+                bdd res = bdd_counter(0, 8, 3);
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
@@ -349,7 +351,7 @@ go_bandit([]() {
 
                 AssertThat(ns.can_pull(), Is().False());
 
-                meta_test_stream ms(res);
+                meta_test_stream<node_t, 1> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
                 AssertThat(ms.pull(), Is().EqualTo(meta_t { 8 }));

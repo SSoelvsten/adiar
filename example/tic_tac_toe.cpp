@@ -50,7 +50,7 @@ inline coom::label_t label_of_position(uint64_t i, uint64_t j, uint64_t k)
  *
  * This again is very well structured and can be easily constructed explicitly.
  */
-coom::node_file construct_is_not_winning(std::array<coom::label_t, 4>& line)
+coom::bdd construct_is_not_winning(std::array<coom::label_t, 4>& line)
 {
   uint64_t idx = 4 - 1;
 
@@ -105,7 +105,7 @@ coom::node_file construct_is_not_winning(std::array<coom::label_t, 4>& line)
  * difference between the label-value for the first cell and the fourth cell is
  * as small as possible.
  */
-coom::node_file construct_is_tie(uint64_t N)
+coom::bdd construct_is_tie(uint64_t N)
 {
   // Compute all rows, columns, and diagonals. Most likely the optimiser already
   // precomputes this one.
@@ -168,17 +168,17 @@ coom::node_file construct_is_tie(uint64_t N)
   // The 4 diagonals of the entire cube (dist: 64)
   lines.push_back({ label_of_position(0,0,0), label_of_position(1,1,1), label_of_position(2,2,2), label_of_position(3,3,3) });
 
-  coom::node_file out = coom::bdd_counter(0, 63, N);
+  coom::bdd out = coom::bdd_counter(0, 63, N);
 
   init_nodes = bdd_nodecount(out);
 
   unsigned int idx = 0;
   for (auto &line : lines) {
-    coom::node_file next_not_winning = construct_is_not_winning(line);
+    coom::bdd next_not_winning = construct_is_not_winning(line);
 
     out = coom::bdd_apply(out, next_not_winning, coom::and_op);
 
-    largest_nodes = std::max(largest_nodes, reduce(out).size());
+    largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
 
     idx++;
   }
@@ -269,7 +269,7 @@ int main(int argc, char* argv[])
   tpie::log_info() << "| Tic-Tac-Toe (" << N << ") : Is-tie construction"  << std::endl;
 
   auto before_tie = get_timestamp();
-  coom::node_file is_tie = construct_is_tie(N);
+  coom::bdd is_tie = construct_is_tie(N);
   auto after_tie = get_timestamp();
 
   tpie::log_info() << "|  | constraints: 76 lines" << std::endl;
@@ -281,8 +281,7 @@ int main(int argc, char* argv[])
   tpie::log_info() << "|  | largest OBDD  : " << largest_nodes << " nodes" << std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
-  tpie::log_info() << "|  | final size: " << is_tie.size() << " nodes"<< std::endl;
-  tpie::log_info() << "|  |             " << is_tie.file_size() / 1024 / 1024 << " MB"<< std::endl;
+  tpie::log_info() << "|  | final size: " << bdd_nodecount(is_tie) << " nodes"<< std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
   tpie::log_info() << "| Tic-Tac-Toe (" << N << ") : Counting ties"  << std::endl;
@@ -300,4 +299,3 @@ int main(int argc, char* argv[])
   // Return 'all good'
   exit(N >= 25 || solutions == expected[N] ? 0 : 1);
 }
-

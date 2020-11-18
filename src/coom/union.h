@@ -1,6 +1,11 @@
 #ifndef COOM_UNION_H
 #define COOM_UNION_H
 
+#include <type_traits>
+#include <optional>
+
+#include <assert.h>
+
 namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
@@ -95,22 +100,6 @@ namespace coom
       }
     }
   };
-
-  template<typename T1, typename T2>
-  union_t<T1,T2>&
-  operator<< (union_t<T1,T2> &fu, const T1 &t1)
-  {
-    fu.set(t1);
-    return fu;
-  }
-
-  template<typename T1, typename T2>
-  union_t<T1,T2>&
-  operator<< (union_t<T1,T2> &fu, const T2 &t2)
-  {
-    fu.set(t2);
-    return fu;
-  }
 }
 
 #endif

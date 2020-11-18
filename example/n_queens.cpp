@@ -79,7 +79,7 @@ inline coom::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
  * down to only O(N) time and O(N/B) I/Os rather than O(sort(N)) in both time
  * and I/Os. One pretty much cannot do this base case faster.
  */
-coom::node_file n_queens_S(uint64_t N, uint64_t i, uint64_t j)
+coom::bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
 {
   coom::node_file out;
 
@@ -174,12 +174,12 @@ coom::node_file n_queens_S(uint64_t N, uint64_t i, uint64_t j)
  * is saved, if there is a major overlap. So, we will choose to do it
  * iteratively.
  */
-coom::node_file n_queens_R(uint64_t N, uint64_t row)
+coom::bdd n_queens_R(uint64_t N, uint64_t row)
 {
-  coom::node_file out = n_queens_S(N, row, 0);
+  coom::bdd out = n_queens_S(N, row, 0);
 
   for (uint64_t j = 1; j < N; j++) {
-    coom::node_file next_S = n_queens_S(N, row, j);
+    coom::bdd next_S = n_queens_S(N, row, j);
 
     out = coom::bdd_apply(out, next_S, coom::or_op);
 
@@ -193,20 +193,20 @@ coom::node_file n_queens_R(uint64_t N, uint64_t row)
  * again iterate over all rows to combine them one-by-one. One can probably
  * remove the code duplication that we now introduce.
  */
-coom::node_file n_queens_B(uint64_t N)
+coom::bdd n_queens_B(uint64_t N)
 {
   if (N == 1) {
     return n_queens_S(N, 0, 0);
   }
 
-  coom::node_file out = n_queens_R(N, 0);
+  coom::bdd out = n_queens_R(N, 0);
 
   for (uint64_t i = 1; i < N; i++) {
-    coom::node_file next_R = n_queens_R(N, i);
+    coom::bdd next_R = n_queens_R(N, i);
 
     out = coom::bdd_apply(out, next_R, coom::and_op);
 
-    largest_nodes = std::max(largest_nodes, out.size());
+    largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
   }
   return out;
 }
@@ -217,7 +217,7 @@ coom::node_file n_queens_B(uint64_t N)
  * is a solution to the N-Queens problem. So, now we can merely count the number
  * of assignments that reach a true sink.
  */
-uint64_t n_queens_count(const coom::node_file &board)
+uint64_t n_queens_count(const coom::bdd &board)
 {
   return coom::bdd_satcount(board);
 }
@@ -279,7 +279,7 @@ inline uint64_t j_of_label(uint64_t N, coom::label_t label)
  * of solutions we list. */
 uint64_t n_queens_list(uint64_t N, uint64_t column,
                        std::vector<uint64_t>& partial_assignment,
-                       const coom::node_file& constraints)
+                       const coom::bdd& constraints)
 {
   if (coom::is_sink(constraints, coom::is_false)) {
     return 0;
@@ -304,7 +304,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       }
     }
 
-    coom::node_file restricted_constraints = coom::bdd_restrict(constraints, column_assignment);
+    coom::bdd restricted_constraints = coom::bdd_restrict(constraints, column_assignment);
 
     if (coom::bdd_pathcount(restricted_constraints) == 1) {
       solutions += 1;
@@ -352,7 +352,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
   return solutions;
 }
 
-uint64_t n_queens_list(uint64_t N, const coom::node_file& board)
+uint64_t n_queens_list(uint64_t N, const coom::bdd& board)
 {
   tpie::log_info() << "|  | solutions:" << std::endl;
 
@@ -370,9 +370,7 @@ uint64_t n_queens_list(uint64_t N, const coom::node_file& board)
   std::vector<uint64_t> partial_assignment { };
   partial_assignment.reserve(N);
 
-  coom::node_or_arc_file board_copy(board);
-
-  return n_queens_list(N, 0, partial_assignment, board_copy);
+  return n_queens_list(N, 0, partial_assignment, board);
 }
 
 // expected number taken from:
@@ -464,7 +462,7 @@ int main(int argc, char* argv[])
 
   tpie::log_info() << "| " << N << "-Queens : Board construction"  << std::endl;
   auto before_board = get_timestamp();
-  coom::node_file board = n_queens_B(N);
+  coom::bdd board = n_queens_B(N);
   auto after_board = get_timestamp();
 
   tpie::log_info() << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;

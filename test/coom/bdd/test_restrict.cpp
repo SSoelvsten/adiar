@@ -54,7 +54,7 @@ go_bandit([]() {
               aw << create_assignment(2, true);
             }
 
-            node_or_arc_file output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(obdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -112,7 +112,7 @@ go_bandit([]() {
               aw << create_assignment(1, false);
             }
 
-            node_or_arc_file output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(obdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -163,7 +163,7 @@ go_bandit([]() {
               aw << create_assignment(1, true);
             }
 
-            node_or_arc_file output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(obdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -227,7 +227,7 @@ go_bandit([]() {
                  << create_assignment(3, false);
             }
 
-            node_or_arc_file output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(obdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -280,7 +280,7 @@ go_bandit([]() {
                  << create_assignment(3, false);
             }
 
-            node_or_arc_file output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(obdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -311,7 +311,7 @@ go_bandit([]() {
                  << create_assignment(2, false);
             }
 
-            node_or_arc_file output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(obdd, assignment);
 
             node_test_stream out_nodes(output);
 
@@ -330,7 +330,7 @@ go_bandit([]() {
                  << create_assignment(2, false);
             }
 
-            node_or_arc_file output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(obdd, assignment);
 
             node_test_stream out_nodes(output);
 
@@ -356,7 +356,7 @@ go_bandit([]() {
                  << create_assignment(42, false);
             }
 
-            node_or_arc_file output = bdd_restrict(T_file, assignment);
+            __bdd output = bdd_restrict(T_file, assignment);
 
             node_test_stream out_nodes(output);
 
@@ -382,7 +382,7 @@ go_bandit([]() {
                  << create_assignment(28, false);
             }
 
-            node_or_arc_file output = bdd_restrict(F_file, assignment);
+            __bdd output = bdd_restrict(F_file, assignment);
 
             node_test_stream out_nodes(output);
 
@@ -394,7 +394,7 @@ go_bandit([]() {
         it("should return input unchanged when given an empty assignment", [&]() {
             assignment_file assignment;
 
-            node_or_arc_file output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(obdd, assignment);
 
             node_test_stream out_nodes(output);
 
@@ -464,7 +464,7 @@ go_bandit([]() {
               aw << create_assignment(2, true);
             }
 
-            node_or_arc_file output = bdd_restrict(node_input, assignment);
+            __bdd output = bdd_restrict(node_input, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -536,7 +536,7 @@ go_bandit([]() {
               aw << create_assignment(2, true);
             }
 
-            node_or_arc_file output = bdd_restrict(node_input, assignment);
+            __bdd output = bdd_restrict(node_input, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -614,7 +614,7 @@ go_bandit([]() {
               aw << create_assignment(1, true);
             }
 
-            node_or_arc_file output = bdd_restrict(dead_obdd, assignment);
+            __bdd output = bdd_restrict(dead_obdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 

@@ -105,7 +105,7 @@ namespace coom
     return false;
   }
 
-  inline bool quantify_has_label(const label_t label, const node_file &bdd)
+  inline bool quantify_has_label(const label_t label, const bdd &bdd)
   {
     meta_stream<node_t, 1> in_meta(bdd);
     while(in_meta.can_pull()) {
@@ -121,15 +121,15 @@ namespace coom
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  node_or_arc_file quantify(const node_file &bdd,
-                            const label_t label,
-                            const bool_op &op)
+  __bdd quantify(const bdd &bdd,
+                 const label_t label,
+                 const bool_op &op)
   {
 #if COOM_ASSERT
     assert(is_commutative(op));
 #endif
 
-    node_or_arc_file out_union;
+    __bdd out_union;
 
     // Check if there is no need to do any computation
     if (is_sink(bdd, is_any) || !quantify_has_label(label, bdd)) {
@@ -310,19 +310,19 @@ namespace coom
     return out_union << out_arcs;
   }
 
-  node_file quantify(const node_file &nodes,
-                     const label_file &labels,
-                     const bool_op &op)
+  bdd quantify(const bdd &in_bdd,
+               const label_file &labels,
+               const bool_op &op)
   {
 #if COOM_ASSERT
     assert(is_commutative(op));
 #endif
 
     if (labels.size() == 0) {
-      return nodes;
+      return in_bdd;
     }
 
-    node_file out = nodes;
+    bdd out = in_bdd;
 
     // We will quantify the labels in the order they are given.
     label_stream<> ls(labels);
@@ -338,32 +338,32 @@ namespace coom
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  node_or_arc_file bdd_exists(const node_file &bdd, const label_t &label)
+  __bdd bdd_exists(const bdd &bdd, const label_t &label)
   {
     return quantify(bdd, label, or_op);
   }
 
-  node_file bdd_exists(const node_file &bdd, const label_file &labels)
+  bdd bdd_exists(const bdd &bdd, const label_file &labels)
   {
     return quantify(bdd, labels, or_op);
   }
 
-  node_or_arc_file bdd_forall(const node_file &bdd, const label_t &label)
+  __bdd bdd_forall(const bdd &bdd, const label_t &label)
   {
     return quantify(bdd, label,  and_op);
   }
 
-  node_file bdd_forall(const node_file &bdd, const label_file &labels)
+  bdd bdd_forall(const bdd &bdd, const label_file &labels)
   {
     return quantify(bdd, labels, and_op);
   }
 
-  node_or_arc_file bdd_unique(const node_file &bdd, const label_t &label)
+  __bdd bdd_unique(const bdd &bdd, const label_t &label)
   {
     return quantify(bdd, label, xor_op);
   }
 
-  node_file bdd_unique(const node_file &bdd, const label_file &labels)
+  bdd bdd_unique(const bdd &bdd, const label_file &labels)
   {
     return quantify(bdd, labels, xor_op);
   }

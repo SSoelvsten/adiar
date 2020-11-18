@@ -87,9 +87,9 @@ namespace coom
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  node_or_arc_file bdd_apply(const node_file &in_1,
-                             const node_file &in_2,
-                             const bool_op &op)
+  __bdd bdd_apply(const bdd &in_1,
+                  const bdd &in_2,
+                  const bool_op &op)
   {
     node_stream<> in_nodes_1(in_1);
     node_stream<> in_nodes_2(in_2);
@@ -97,7 +97,7 @@ namespace coom
     node_t v1 = in_nodes_1.pull();
     node_t v2 = in_nodes_2.pull();
 
-    node_or_arc_file out_union;
+    __bdd out_union;
 
     // Resolve sink shortcutting the result
     if (is_sink(v1) && is_sink(v2)) {

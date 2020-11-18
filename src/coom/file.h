@@ -11,7 +11,6 @@
 
 // COOM imports of the foundational data structure and the union class.
 #include <coom/data.h>
-#include <coom/union.h>
 
 #include <coom/assert.h>
 
@@ -243,22 +242,24 @@ namespace coom
   class __shared_file
   {
   public:
+    // TODO: make the pointer private?
     std::shared_ptr<T> _file_ptr;
 
-    __shared_file()
-    {
-      _file_ptr = std::make_shared<T>();
-    }
+    ////////////////////////////////////////////////////////////////////////////
+    /// Construct a temporary shared file
+    ////////////////////////////////////////////////////////////////////////////
+    __shared_file() : _file_ptr(std::make_shared<T>()) { }
 
-    __shared_file(const std::string &filename)
-    {
-      _file_ptr = std::make_shared<T>(filename);
-    }
+    ////////////////////////////////////////////////////////////////////////////
+    /// Construct a persistent shared file given a specific filename
+    ////////////////////////////////////////////////////////////////////////////
+    __shared_file(const std::string &filename) : _file_ptr(std::make_shared<T>(filename)) { }
 
-    __shared_file(const __shared_file<T> &other)
-    {
-      _file_ptr = other._file_ptr;
-    }
+    // Copy constructor
+    __shared_file(const __shared_file<T> &other) : _file_ptr(other._file_ptr) { }
+
+    // Move constructor
+    __shared_file(__shared_file<T> &&other) : _file_ptr(other._file_ptr) { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// Notice, that while the `make_read_only` and `is_read_only` are maybe not
@@ -288,6 +289,19 @@ namespace coom
     {
       return _file_ptr -> file_size();
     }
+
+    ////////////////////////////////////////////////////////////////////////////
+    __shared_file<T>& operator= (const __shared_file<T> &o)
+    {
+      _file_ptr = o._file_ptr;
+      return *this;
+    }
+
+    __shared_file<T>& operator= (__shared_file<T> &&o)
+    {
+      _file_ptr = o._file_ptr;
+      return *this;
+    }
   };
 
   // All actual files we deal with are then actually a `__shared_file<x_file<T>>`
@@ -302,25 +316,35 @@ namespace coom
 
 
   //////////////////////////////////////////////////////////////////////////////
-  /// An unreduced BDD is given by a two files of arcs; one of node-to-node arcs
-  /// (in reverse topological order) and one of node-to-sink arcs (in
-  /// topological order).
+  /// An unreduced Decision Diagram is given by a two files of arcs; one of
+  /// node-to-node arcs (in reverse topological order) and one of node-to-sink
+  /// arcs (in topological order).
   //////////////////////////////////////////////////////////////////////////////
   typedef meta_file<arc_t, 2> arc_file;
 
 
   //////////////////////////////////////////////////////////////////////////////
-  /// A reduced BDD is given by a single sorted file by nodes.
+  /// A reduced Decision Diagram is given by a single sorted file by nodes.
   //////////////////////////////////////////////////////////////////////////////
+  // TODO: This is only made to add the `meta_size` function. Do we actually
+  // care for that?
+
   class node_file : public meta_file<node_t, 1>
   {
   public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// Construct a temporary node_file
+    ////////////////////////////////////////////////////////////////////////////
     node_file() : __shared_file() { }
 
     // TODO: Files with persistent file names
     // node_file(const std::string &filename) : __shared_file(filename) { }
 
+    // Copy constructor
     node_file(const node_file &other) : __shared_file(other) { }
+
+    // Move constructor
+    node_file(node_file &&other) : __shared_file(other) { }
 
     size_t meta_size() const
     {
@@ -328,14 +352,17 @@ namespace coom
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Should one have a 'maybe' reduced file with the union of a node_file and
-    /// an arc_file, then we can automatically reduce it on assignment or
-    /// argument passing.
-    ////////////////////////////////////////////////////////////////////////////
+    node_file& operator= (const node_file &o)
+    {
+      _file_ptr = o._file_ptr;
+      return *this;
+    }
 
-    // TODO: Move this reduce logic into the BDD object?
-    node_file(const union_t<node_file, arc_file> &node_or_arc_file);
-    node_file& operator= (const union_t<node_file, arc_file> &other);
+    node_file& operator= (node_file &&o)
+    {
+      _file_ptr = o._file_ptr;
+      return *this;
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -349,21 +376,12 @@ namespace coom
   //////////////////////////////////////////////////////////////////////////////
   bool is_sink(const node_file &file, const sink_pred &pred = is_any);
 
-  node_t root_of(const node_file &file);
-
   label_t min_label(const node_file &file);
   label_t max_label(const node_file &file);
 
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// An algorithm may return a node-based BDD in a node_file or a yet to-be
-  /// reduced BDD in an arc_file. So, the union_t will be a wrapper for the
-  /// combined type.
-  ///
-  /// The union_t class (see union.h) uses the std::optional to ensure we don't
-  /// call any expensive yet unnecessary constructors.
-  //////////////////////////////////////////////////////////////////////////////
-  typedef union_t<node_file, arc_file> node_or_arc_file;
+  uint64_t nodecount(const node_file &nodes);
+  uint64_t nodecount(const arc_file &arcs);
 }
 
 #endif // COOM_FILE_H

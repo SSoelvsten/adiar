@@ -12,6 +12,8 @@
 #include <coom/file.h>
 #include <coom/file_stream.h>
 
+#include <coom/bdd/bdd.h>
+
 namespace coom {
   extern tpie::dummy_progress_indicator pq_tpie_progress_indicator;
 
@@ -288,6 +290,11 @@ namespace coom {
 
         calc_front_bucket();
       }
+    }
+
+    void hook_meta_stream(const bdd &bdd)
+    {
+      hook_meta_stream(bdd.file);
     }
 
     ////////////////////////////////////////////////////////////////////////////

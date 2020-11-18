@@ -65,34 +65,21 @@ namespace coom
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_nodecount(const node_file &nodes)
+  uint64_t bdd_nodecount(const bdd &bdd)
   {
-    return nodes.size();
-  }
-
-  uint64_t bdd_nodecount(const arc_file &arcs)
-  {
-    // Every node is represented by two arcs
-    return arcs.size() / 2;
-  }
-
-  uint64_t bdd_nodecount(const node_or_arc_file &file)
-  {
-    return file.has<node_file>()
-      ? bdd_nodecount(file.get<node_file>())
-      : bdd_nodecount(file.get<arc_file>());
+    return nodecount(bdd.file);
   }
 
   template<bool count_skipped_layers>
-  inline uint64_t count(const node_file &nodes,
+  inline uint64_t count(const bdd &bdd,
                         label_t min_label,
                         label_t max_label,
                         const sink_pred &sink_pred)
   {
-    node_stream<> ns(nodes);
+    node_stream<> ns(bdd);
 
     count_priority_queue_t partial_sums;
-    partial_sums.hook_meta_stream(nodes);
+    partial_sums.hook_meta_stream(bdd);
 
     // Take root out and put its children into the priority queue
     // or count them immediately if they are sinks
@@ -131,40 +118,40 @@ namespace coom
     return result;
   }
 
-  uint64_t bdd_pathcount(const node_file &nodes, const sink_pred &sink_pred)
+  uint64_t bdd_pathcount(const bdd &bdd, const sink_pred &sink_pred)
   {
-    if (is_sink(nodes)) {
+    if (is_sink(bdd)) {
       return 0u;
     }
 
-    return count<false>(nodes, 0, MAX_LABEL, sink_pred);
+    return count<false>(bdd, 0, MAX_LABEL, sink_pred);
   }
 
-  uint64_t bdd_satcount(const node_file& nodes, const sink_pred& sink_pred)
+  uint64_t bdd_satcount(const bdd& bdd, const sink_pred& sink_pred)
   {
-    if (is_sink(nodes)) {
+    if (is_sink(bdd)) {
       return 0u;
     }
 
-    return count<true>(nodes, min_label(nodes), max_label(nodes), sink_pred);
+    return count<true>(bdd, min_label(bdd), max_label(bdd), sink_pred);
   }
 
-  uint64_t bdd_pathcount(const node_file &nodes,
+  uint64_t bdd_pathcount(const node_file &bdd,
                          label_t minimum_label,
                          label_t maximum_label,
                          const sink_pred& sink_pred)
   {
-    if (is_sink(nodes)) {
+    if (is_sink(bdd)) {
       return 0u;
     }
 
-    coom_assert(minimum_label <= min_label(nodes),
+    coom_assert(minimum_label <= min_label(bdd),
                 "given minimum_label should be smaller than the present root label");
 
-    coom_assert(max_label(nodes) <= maximum_label,
+    coom_assert(max_label(bdd) <= maximum_label,
                 "given maximum_label should be greater than the largest label in obdd");
 
-    return count<true>(nodes, minimum_label, maximum_label, sink_pred);
+    return count<true>(bdd, minimum_label, maximum_label, sink_pred);
   }
 }
 
