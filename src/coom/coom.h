@@ -8,8 +8,6 @@
 #include <coom/file_stream.h>
 #include <coom/file_writer.h>
 
-#include <coom/reduce.h>
-
 ////////////////////////////////////////////////////////////////////////////////
 /// COOM BDD
 #include <coom/bdd/bdd.h>

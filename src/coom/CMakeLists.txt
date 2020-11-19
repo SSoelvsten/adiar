@@ -11,6 +11,7 @@ set(HEADERS
   file.h
   file_stream.h
   file_writer.h
+  homomorphism.h
   priority_queue.h
   reduce.h
   union.h
@@ -39,6 +40,7 @@ set(SOURCES
   file.cpp
   file_stream.cpp
   file_writer.cpp
+  homomorphism.cpp
   priority_queue.cpp
   reduce.cpp
 

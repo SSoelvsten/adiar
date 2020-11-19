@@ -1,3 +1,5 @@
+#include <coom/reduce.h>
+
 go_bandit([]() {
     describe("CORE: Reduce", [&]() {
         ptr_t sink_T = create_sink_ptr(true);
