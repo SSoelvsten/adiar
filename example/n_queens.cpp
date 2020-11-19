@@ -181,7 +181,7 @@ coom::bdd n_queens_R(uint64_t N, uint64_t row)
   for (uint64_t j = 1; j < N; j++) {
     coom::bdd next_S = n_queens_S(N, row, j);
 
-    out = coom::bdd_apply(out, next_S, coom::or_op);
+    out = coom::bdd_or(out, next_S);
 
     largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
   }
@@ -204,7 +204,7 @@ coom::bdd n_queens_B(uint64_t N)
   for (uint64_t i = 1; i < N; i++) {
     coom::bdd next_R = n_queens_R(N, i);
 
-    out = coom::bdd_apply(out, next_R, coom::and_op);
+    out = coom::bdd_and(out, next_R);
 
     largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
   }
