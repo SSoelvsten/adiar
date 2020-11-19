@@ -50,6 +50,7 @@ public:
 
 #include "coom/test_priority_queue.cpp"
 
+#include "coom/test_homomorphism.cpp"
 #include "coom/test_reduce.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
