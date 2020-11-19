@@ -17,6 +17,11 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   class __bdd : public union_t<node_file, arc_file>
   {
+    ////////////////////////////////////////////////////////////////////////////
+    // Friends
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Propagating the negation, when given a bdd.
   public: // TODO: Make private
     bool negate = false;
 
@@ -58,24 +63,45 @@ namespace coom {
     node_file file;
     bool negate = false;
 
+  private:
+    void free();
+
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
   public:
     bdd(const node_file &f, bool negate = false);
 
     bdd(const bdd &o);
+    bdd(bdd &&o);
 
     bdd(const __bdd &o);
 
     ////////////////////////////////////////////////////////////////////////////
-    // Operator overloading
-    // TODO: ... && variants of the overloads?
+    // Assignment operator overloadings
   public:
     bdd& operator= (const bdd &other);
     bdd& operator= (const __bdd &other);
 
-    // TODO: ...
+    bdd& operator&= (const bdd &other);
+    bdd& operator&= (bdd &&other);
+
+    bdd& operator|= (const bdd &other);
+    bdd& operator|= (bdd &&other);
+
+    bdd& operator^= (const bdd &other);
+    bdd& operator^= (bdd &&other);
   };
+
+  // Other operator overloadings
+  bool operator== (const bdd& lhs, const bdd& rhs);
+  bool operator!= (const bdd& lhs, const bdd& rhs);
+
+  bdd operator~ (const bdd& bdd);
+  bdd operator~ (bdd&& bdd);
+
+  __bdd operator& (const bdd& lhs, const bdd& rhs);
+  __bdd operator| (const bdd& lhs, const bdd& rhs);
+  __bdd operator^ (const bdd& lhs, const bdd& rhs);
 
   //////////////////////////////////////////////////////////////////////////////
 

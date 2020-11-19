@@ -172,15 +172,10 @@ coom::bdd construct_is_tie(uint64_t N)
 
   init_nodes = bdd_nodecount(out);
 
-  unsigned int idx = 0;
   for (auto &line : lines) {
-    coom::bdd next_not_winning = construct_is_not_winning(line);
-
-    out = coom::bdd_and(out, next_not_winning);
+    out &= construct_is_not_winning(line);
 
     largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
-
-    idx++;
   }
 
   return out;
