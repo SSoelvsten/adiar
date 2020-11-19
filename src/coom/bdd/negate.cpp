@@ -12,20 +12,15 @@ namespace coom
 {
   bdd bdd_not(const bdd &in)
   {
-    node_file out;
-    node_writer out_writer(out);
-
-    meta_stream<node_t, 1, true> meta_stream(in);
-    while (meta_stream.can_pull()) {
-      out_writer.unsafe_push(meta_stream.pull());
-    }
-
-    node_stream<true> node_stream(in);
-    while (node_stream.can_pull()) {
-      out_writer.unsafe_push(!node_stream.pull());
-    }
-
+    bdd out = in;
+    out.negate = !in.negate;
     return out;
+  }
+
+  bdd bdd_not(bdd &&b)
+  {
+    b.negate = !b.negate;
+    return b;
   }
 }
 
