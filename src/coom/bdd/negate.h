@@ -11,6 +11,7 @@ namespace coom
   /// \brief Negate a given node-based OBDD.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_not(const bdd &bdd);
+  bdd bdd_not(bdd &&bdd);
 }
 
 #endif // COOM_NEGATE_H
