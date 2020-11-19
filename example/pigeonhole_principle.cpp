@@ -249,7 +249,7 @@ int main(int argc, char** argv)
       }
     }
 
-    sat_acc = coom::bdd_apply(sat_acc, clause_bdd, coom::and_op);
+    sat_acc = coom::bdd_and(sat_acc, clause_bdd);
 
     largest_nodes = std::max(largest_nodes, bdd_nodecount(sat_acc));
   };

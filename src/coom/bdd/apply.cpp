@@ -335,6 +335,57 @@ namespace coom
 
     return out_union << out_arcs;
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_and(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, and_op);
+  }
+
+  __bdd bdd_nand(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, nand_op);
+  }
+
+  __bdd bdd_or(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, or_op);
+  }
+
+  __bdd bdd_nor(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, nor_op);
+  }
+
+  __bdd bdd_xor(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, xor_op);
+  }
+
+  __bdd bdd_imp(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, implies_op);
+  }
+
+  __bdd bdd_invimp(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, impliedby_op);
+  }
+
+  __bdd bdd_equiv(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, equiv_op);
+  }
+
+  __bdd bdd_diff(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, diff_op);
+  }
+
+  __bdd bdd_less(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, less_op);
+  }
 }
 
 #endif // COOM_APPLY_CPP
