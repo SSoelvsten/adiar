@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <coom/file_stream.h>
+#include <coom/homomorphism.h>
 #include <coom/reduce.h>
 
 #include <coom/bdd/apply.h>
@@ -123,8 +124,12 @@ namespace coom {
     return (*this = temp);
   }
 
-  //bool operator== (const bdd& lhs, const bdd& rhs) { // TODO: ... };
-  //bool operator!= (const bdd& lhs, const bdd& rhs) { return !(lhs == rhs); }
+  bool operator== (const bdd& lhs, const bdd& rhs)
+  {
+    return is_homomorphic(lhs.file, rhs.file, lhs.negate, rhs.negate);
+  }
+
+  bool operator!= (const bdd& lhs, const bdd& rhs) { return !(lhs == rhs); }
 
   bdd operator~ (const bdd &bdd) { return bdd_not(bdd); }
   bdd operator~ (bdd &&bdd) { return bdd_not(bdd); }
