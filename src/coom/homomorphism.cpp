@@ -5,57 +5,19 @@
 
 #include <coom/file_stream.h>
 #include <coom/priority_queue.h>
+#include <coom/tuple.h>
 
 namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct tuple
+  struct homomorphism_tuple_data : tuple_data
   {
-    ptr_t t1;
-    ptr_t t2;
-  };
-
-  struct tuple_data
-  {
-    ptr_t t1;
-    ptr_t t2;
     bool from_1;
-    ptr_t data_low;
-    ptr_t data_high;
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Priority queue functions
-  // TODO: This is copy-paste from apply.cpp . . .
-  struct homomorphism_queue_lt
-  {
-    bool operator()(const tuple &a, const tuple &b)
-    {
-      return std::min(a.t1, a.t2) < std::min(b.t1, b.t2) ||
-            (std::min(a.t1, a.t2) == std::min(b.t1, b.t2) && std::max(a.t1, a.t2) < std::max(b.t1, b.t2));
-    }
-  };
-
-  struct homomorphism_queue_label
-  {
-    label_t label_of(const tuple &t)
-    {
-      return coom::label_of(std::min(t.t1, t.t2));
-    }
-  };
-
-  struct homomorphism_queue_data_lt
-  {
-    bool operator()(const tuple_data &a, const tuple_data &b)
-    {
-      return std::max(a.t1, a.t2) < std::max(b.t1, b.t2) ||
-            (std::max(a.t1, a.t2) == std::max(b.t1, b.t2) && std::min(a.t1, a.t2) < std::min(b.t1, b.t2));
-    }
-  };
-
-  typedef node_priority_queue<tuple, homomorphism_queue_label, homomorphism_queue_lt, std::less<>, 2> homomorphism_priority_queue_t;
-  typedef tpie::priority_queue<tuple_data, homomorphism_queue_data_lt> homomorphism_data_priority_queue_t;
+  typedef node_priority_queue<tuple, tuple_queue_label, tuple_queue_lt, std::less<>, 2> homomorphism_priority_queue_t;
+  typedef tpie::priority_queue<homomorphism_tuple_data, tuple_queue_data_lt> homomorphism_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -216,7 +178,7 @@ namespace coom
         bool from_1 = v1.uid == t1;
         node_t v0 = from_1 ? v1 : v2;
 
-        pq_data.push({ t1, t2, from_1, v0.low, v0.high });
+        pq_data.push({ t1, t2, v0.low, v0.high, from_1 });
 
         // Skip all requests to the same node
         while (pq.can_pull() && (pq.top().t1 == t1 && pq.top().t2 == t2)) {
