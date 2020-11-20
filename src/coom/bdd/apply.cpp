@@ -9,6 +9,7 @@
 #include <coom/reduce.h>
 
 #include <coom/bdd/build.h>
+#include <coom/tuple.h>
 
 #include <assert.h>
 #include <coom/assert.h>
@@ -17,53 +18,19 @@ namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct tuple
+  struct apply_tuple : tuple
   {
     ptr_t source;
-    ptr_t t1;
-    ptr_t t2;
   };
 
-  struct tuple_data
+  struct apply_tuple_data : tuple_data
   {
     ptr_t source;
-    ptr_t t1;
-    ptr_t t2;
     bool from_1;
-    ptr_t data_low;
-    ptr_t data_high;
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Priority queue functions
-  struct apply_queue_lt
-  {
-    bool operator()(const tuple &a, const tuple &b)
-    {
-      return std::min(a.t1, a.t2) < std::min(b.t1, b.t2) ||
-            (std::min(a.t1, a.t2) == std::min(b.t1, b.t2) && std::max(a.t1, a.t2) < std::max(b.t1, b.t2));
-    }
-  };
-
-  struct apply_queue_label
-  {
-    label_t label_of(const tuple &t)
-    {
-      return coom::label_of(std::min(t.t1, t.t2));
-    }
-  };
-
-  struct apply_queue_data_lt
-  {
-    bool operator()(const tuple_data &a, const tuple_data &b)
-    {
-      return std::max(a.t1, a.t2) < std::max(b.t1, b.t2) ||
-            (std::max(a.t1, a.t2) == std::max(b.t1, b.t2) && std::min(a.t1, a.t2) < std::min(b.t1, b.t2));
-    }
-  };
-
-  typedef node_priority_queue<tuple, apply_queue_label, apply_queue_lt, std::less<>, 2> apply_priority_queue_t;
-  typedef tpie::priority_queue<tuple_data, apply_queue_data_lt> apply_data_priority_queue_t;
+  typedef node_priority_queue<apply_tuple, tuple_queue_label, tuple_queue_lt, std::less<>, 2> apply_priority_queue_t;
+  typedef tpie::priority_queue<apply_tuple_data, tuple_queue_data_lt> apply_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -82,7 +49,7 @@ namespace coom
       arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
       aw.unsafe_push_sink(out_arc);
     } else {
-      appD.push({ source, r1, r2 });
+      appD.push({ r1, r2, source });
     }
   }
 
@@ -275,11 +242,11 @@ namespace coom
         bool from_1 = v1.uid == t1;
         node_t v0 = from_1 ? v1 : v2;
 
-        appD_data.push({ source, t1, t2, from_1, v0.low, v0.high });
+        appD_data.push({ t1, t2, v0.low, v0.high, source, from_1 });
 
         while (appD.can_pull() && (appD.top().t1 == t1 && appD.top().t2 == t2)) {
           source = appD.pull().source;
-          appD_data.push({ source, t1, t2, from_1, v0.low, v0.high });
+          appD_data.push({ t1, t2, v0.low, v0.high, source, from_1 });
         }
         continue;
       }

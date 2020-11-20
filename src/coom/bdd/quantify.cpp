@@ -6,6 +6,7 @@
 #include <coom/file_stream.h>
 #include <coom/file_writer.h>
 #include <coom/priority_queue.h>
+#include <coom/tuple.h>
 #include <coom/util.h>
 
 #include <coom/assert.h>
@@ -14,33 +15,28 @@ namespace coom
 {
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct tuple
+  struct quantify_tuple : tuple
   {
     ptr_t source;
-    ptr_t t1;
-    ptr_t t2;
   };
 
-  struct tuple_data
+  struct quantify_tuple_data : tuple_data
   {
     ptr_t source;
-    ptr_t t1;
-    ptr_t t2;
-    ptr_t data_low;
-    ptr_t data_high;
   };
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
   //
-  // As such we could just reuse the comparators for Apply, but unlike in Apply
-  // we only maintain request for two nodes in the same OBDD. In fact, we can
-  // due to this optimise everything by having t1 and t2 in the tuple sorted.
+  // As such we could just reuse the comparators in tuple.h, but unlike in Apply
+  // and Homomorphism we only maintain request for two nodes in the same BDD. We
+  // can in fact due to this optimise everything by having t1 and t2 in the
+  // quantify_tuple sorted.
   //
   // This improves the speed of the comparators.
   struct quantify_queue_lt
   {
-    bool operator()(const tuple &a, const tuple &b)
+    bool operator()(const quantify_tuple &a, const quantify_tuple &b)
     {
       return a.t1 < b.t1 || (a.t1 == b.t1 && a.t2 < b.t2);
     }
@@ -48,7 +44,7 @@ namespace coom
 
   struct quantify_queue_label
   {
-    label_t label_of(const tuple &t)
+    label_t label_of(const quantify_tuple &t)
     {
       return coom::label_of(t.t1);
     }
@@ -56,14 +52,14 @@ namespace coom
 
   struct quantify_queue_data_lt
   {
-    bool operator()(const tuple_data &a, const tuple_data &b)
+    bool operator()(const quantify_tuple_data &a, const quantify_tuple_data &b)
     {
       return a.t2 < b.t2 || (a.t2 == b.t2 && a.t1 < b.t1);
     }
   };
 
-  typedef node_priority_queue<tuple, quantify_queue_label, quantify_queue_lt> quantify_priority_queue_t;
-  typedef tpie::priority_queue<tuple_data, quantify_queue_data_lt> quantify_data_priority_queue_t;
+  typedef node_priority_queue<quantify_tuple, quantify_queue_label, quantify_queue_lt> quantify_priority_queue_t;
+  typedef tpie::priority_queue<quantify_tuple_data, quantify_queue_data_lt> quantify_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -76,7 +72,7 @@ namespace coom
       if (is_sink_ptr(r1)) {
         aw.unsafe_push_sink({ source, r1 });
       } else {
-        quantD.push({ source, r1, r2 });
+        quantD.push({ r1, r2, source });
       }
     } else if (is_sink_ptr(r1) && can_left_shortcut(op, r1)) {
       arc_t out_arc = { source, op(r1, create_sink_ptr(true)) };
@@ -85,7 +81,7 @@ namespace coom
       arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
       aw.unsafe_push_sink(out_arc);
     } else {
-      quantD.push({ source, r1, r2 });
+      quantD.push({ r1, r2, source });
     }
   }
 
@@ -175,7 +171,7 @@ namespace coom
 
     if (label_of(v.uid) == label) {
       // Precondition: The input is reduced and will not collapse to a sink-only OBDD
-      quantD.push({ NIL, std::min(v.low, v.high), std::max(v.low, v.high) });
+      quantD.push({ std::min(v.low, v.high), std::max(v.low, v.high), NIL });
     } else {
       aw.unsafe_push(meta_t { out_label });
 
@@ -184,12 +180,12 @@ namespace coom
       if (is_sink_ptr(v.low)) {
         aw.unsafe_push_sink({ out_uid, v.low });
       } else {
-        quantD.push({ out_uid, v.low, NIL });
+        quantD.push({ v.low, NIL, out_uid });
       }
       if (is_sink_ptr(v.high)) {
         aw.unsafe_push_sink({ flag(out_uid), v.high });
       } else {
-        quantD.push({ flag(out_uid), v.high, NIL });
+        quantD.push({ v.high, NIL, flag(out_uid) });
       }
     }
 
@@ -235,11 +231,11 @@ namespace coom
 
       // Forward information of v.uid == t1 across the layer if needed
       if (!with_data && !is_nil(t2) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)) {
-        quantD_data.push({ source, t1, t2, v.low, v.high });
+        quantD_data.push({ t1, t2, v.low, v.high, source });
 
         while (quantD.can_pull() && (quantD.top().t1 == t1 && quantD.top().t2 == t2)) {
           source = quantD.pull().source;
-          quantD_data.push({ source, t1, t2, v.low, v.high });
+          quantD_data.push({ t1, t2, v.low, v.high, source });
         }
         continue;
       }

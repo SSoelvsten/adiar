@@ -14,6 +14,7 @@ set(HEADERS
   homomorphism.h
   priority_queue.h
   reduce.h
+  tuple.h
   union.h
   util.h
 
