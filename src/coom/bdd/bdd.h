@@ -5,6 +5,7 @@
 #include <coom/file.h>
 
 namespace coom {
+  // Class declarations to be able to befriend them
   class bdd;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -19,10 +20,11 @@ namespace coom {
   {
     ////////////////////////////////////////////////////////////////////////////
     // Friends
+    friend bdd;
 
     ////////////////////////////////////////////////////////////////////////////
     // Propagating the negation, when given a bdd.
-  public: // TODO: Make private
+  private: // TODO: Make private
     bool negate = false;
 
   public:
@@ -56,10 +58,45 @@ namespace coom {
   {
     ////////////////////////////////////////////////////////////////////////////
     // Friends
+    // |- classes
+    friend __bdd;
+
+    template <typename T, size_t Files, bool REVERSE>
+    friend class meta_stream;
+
+    template <bool REVERSE>
+    friend class node_stream;
+
+    template <typename File_T, size_t Files,
+              typename T,
+              typename LabelExt,
+              typename TComparator, typename LabelComparator,
+              size_t MetaStreams, size_t Buckets>
+    friend class priority_queue;
+
+    // |- functions
+    friend bdd bdd_not(const bdd&);
+    friend bdd bdd_not(bdd&&);
+    friend uint64_t bdd_nodecount(const bdd&);
+
+    friend bool is_sink(const bdd &bdd, const sink_pred &pred);
+    friend label_t min_label(const bdd &bdd);
+    friend label_t max_label(const bdd &bdd);
+
+    // |- operators
+    friend bool operator== (const bdd& lhs, const bdd& rhs);
+    friend bool operator!= (const bdd& lhs, const bdd& rhs);
+
+    friend bdd operator~ (const bdd& bdd);
+    friend bdd operator~ (bdd&& bdd);
+
+    friend __bdd operator& (const bdd& lhs, const bdd& rhs);
+    friend __bdd operator| (const bdd& lhs, const bdd& rhs);
+    friend __bdd operator^ (const bdd& lhs, const bdd& rhs);
 
     ////////////////////////////////////////////////////////////////////////////
     // Internal state
-  public: // TODO: Make private
+  private: // TODO: Make private
     node_file file;
     bool negate = false;
 
@@ -91,19 +128,6 @@ namespace coom {
     bdd& operator^= (const bdd &other);
     bdd& operator^= (bdd &&other);
   };
-
-  // Other operator overloadings
-  bool operator== (const bdd& lhs, const bdd& rhs);
-  bool operator!= (const bdd& lhs, const bdd& rhs);
-
-  bdd operator~ (const bdd& bdd);
-  bdd operator~ (bdd&& bdd);
-
-  __bdd operator& (const bdd& lhs, const bdd& rhs);
-  __bdd operator| (const bdd& lhs, const bdd& rhs);
-  __bdd operator^ (const bdd& lhs, const bdd& rhs);
-
-  //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Check whether a given node_file is sink-only and satisfies the
