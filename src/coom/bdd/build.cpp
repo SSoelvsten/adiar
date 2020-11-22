@@ -125,7 +125,7 @@ namespace coom {
     do {
       // Start with the maximal number the accumulated value can be at
       // up to this label.
-      id_t curr_id = std::min(curr_label, threshold);
+      id_t curr_id = std::min(curr_label - min_label, threshold);
 
       // How small has the accumulated sum up to this point to be, such
       // that it is still possible to reach threshold before max_label?
