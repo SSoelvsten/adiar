@@ -106,19 +106,21 @@ namespace coom {
 
   bdd bdd_counter(label_t min_label, label_t max_label, uint64_t threshold)
   {
-#if COOM_ASSERT
-    assert(threshold < MAX_ID);
-    assert(min_label <= max_label);
-    assert(threshold <= max_label - min_label + 1);
-#endif
-    node_file nf;
-    node_writer nw(nf);
-
-    label_t curr_label = max_label;
+    coom_assert(min_label <= max_label,
+                "The given min_label should be smaller than the given max_label");
 
     ptr_t gt_sink = create_sink_ptr(false); // create_sink(comparator(threshold + 1, threshold));
     ptr_t eq_sink = create_sink_ptr(true);  // create_sink(comparator(threshold, threshold));
     ptr_t lt_sink = create_sink_ptr(false); // create_sink(comparator(threshold - 1, threshold));
+
+    if (max_label - min_label + 1 < threshold) {
+      return bdd_sink(lt_sink);
+    }
+
+    node_file nf;
+    node_writer nw(nf);
+
+    label_t curr_label = max_label;
 
     do {
       // Start with the maximal number the accumulated value can be at
