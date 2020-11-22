@@ -7,7 +7,7 @@ namespace coom {
   void output_dot(const arc_file& arcs, const std::string &filename)
   {
     std::ofstream out;
-    out.open(filename + ".dot");
+    out.open(filename);
 
     out << "digraph OBDD {" << std::endl;
 
