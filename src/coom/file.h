@@ -382,6 +382,8 @@ namespace coom
 
   uint64_t nodecount(const node_file &nodes);
   uint64_t nodecount(const arc_file &arcs);
+
+  uint64_t varcount(const node_file &nodes);
 }
 
 #endif // COOM_FILE_H

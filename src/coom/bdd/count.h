@@ -7,16 +7,8 @@
 
 namespace coom
 {
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Count all unique (but not necessarily disjoint) paths that satisfy
-  /// given predicates.
-  ///
-  /// \param nodes The node-based OBDD graph in reverse topological order.
-  /// \param sink_pred Predicate whether to count paths going to the given sink.
-  ///
-  /// \return The number of unique paths.
-  //////////////////////////////////////////////////////////////////////////////
   uint64_t bdd_nodecount(const bdd &bdd);
+  uint64_t bdd_varcount(const bdd &bdd);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Count all unique (but not necessarily disjoint) paths that satisfy
