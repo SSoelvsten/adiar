@@ -150,7 +150,7 @@ namespace coom {
 
   label_t min_label(const bdd &bdd)
   {
-    return max_label(bdd.file);
+    return min_label(bdd.file);
   }
 
   label_t max_label(const bdd &bdd)

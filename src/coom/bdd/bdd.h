@@ -146,7 +146,6 @@ namespace coom {
   /// \brief Get the maximal occurring label in the bdd
   //////////////////////////////////////////////////////////////////////////////
   label_t max_label(const bdd &bdd);
-
 }
 
 #endif // COOM_BDD_H
