@@ -30,8 +30,8 @@ namespace coom
     bool from_1;
   };
 
-  typedef node_priority_queue<apply_tuple, tuple_queue_label, tuple_queue_lt, std::less<>, 2> apply_priority_queue_t;
-  typedef tpie::priority_queue<apply_tuple_data, tuple_queue_data_lt> apply_data_priority_queue_t;
+  typedef node_priority_queue<apply_tuple, tuple_queue_label, tuple_queue_1_lt, std::less<>, 2> apply_priority_queue_t;
+  typedef tpie::priority_queue<apply_tuple_data, tuple_queue_2_lt> apply_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions

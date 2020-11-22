@@ -34,7 +34,7 @@ namespace coom
   // quantify_tuple sorted.
   //
   // This improves the speed of the comparators.
-  struct quantify_queue_lt
+  struct quantify_queue_1_lt
   {
     bool operator()(const quantify_tuple &a, const quantify_tuple &b)
     {
@@ -50,7 +50,7 @@ namespace coom
     }
   };
 
-  struct quantify_queue_data_lt
+  struct quantify_queue_2_lt
   {
     bool operator()(const quantify_tuple_data &a, const quantify_tuple_data &b)
     {
@@ -58,8 +58,8 @@ namespace coom
     }
   };
 
-  typedef node_priority_queue<quantify_tuple, quantify_queue_label, quantify_queue_lt> quantify_priority_queue_t;
-  typedef tpie::priority_queue<quantify_tuple_data, quantify_queue_data_lt> quantify_data_priority_queue_t;
+  typedef node_priority_queue<quantify_tuple, quantify_queue_label, quantify_queue_1_lt> quantify_priority_queue_t;
+  typedef tpie::priority_queue<quantify_tuple_data, quantify_queue_2_lt> quantify_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
