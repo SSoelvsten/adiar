@@ -222,6 +222,21 @@ namespace coom {
     return create_node(create_node_uid(label, id), low, high);
   }
 
+  node create_node(label_t label, id_t id, ptr_t low, node_t high)
+  {
+    return create_node(label, id, low, high.uid);
+  }
+
+  node create_node(label_t label, id_t id, node_t low, ptr_t high)
+  {
+    return create_node(label, id, low.uid, high);
+  }
+
+  node create_node(label_t label, id_t id, node_t low, node_t high)
+  {
+    return create_node(label, id, low.uid, high.uid);
+  }
+
   node_t create_sink(bool value)
   {
     return { create_sink_ptr(value) , NIL, NIL };
