@@ -745,23 +745,27 @@ go_bandit([]() {
             assignment_t a2 = create_assignment(2, true);
             assignment_t a3 = create_assignment(3, false);
 
-            it("is sorted first by label, then by value", [&]() {
+            it("is sorted first by label", [&]() {
                 // Less than
-                AssertThat(a1 < a2, Is().True());
                 AssertThat(a1 < a3, Is().True());
                 AssertThat(a2 < a3, Is().True());
-                AssertThat(a2 < a1, Is().False());
                 AssertThat(a3 < a1, Is().False());
                 AssertThat(a3 < a2, Is().False());
 
                 // Greater than
-                AssertThat(a2 > a1, Is().True());
                 AssertThat(a3 > a1, Is().True());
                 AssertThat(a3 > a2, Is().True());
-                AssertThat(a1 > a2, Is().False());
                 AssertThat(a1 > a3, Is().False());
                 AssertThat(a2 > a3, Is().False());
             });
+
+            it("is not sorted by value second", [&]() {
+                // Less than
+                AssertThat(a1 < a2, Is().False());
+
+                // Greater than
+                AssertThat(a2 > a1, Is().False());
+              });
 
             assignment_t b1 = create_assignment(2, false);
             assignment_t b2 = create_assignment(2, true);

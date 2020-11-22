@@ -406,12 +406,12 @@ namespace coom {
 
   bool operator< (const assignment& a, const assignment& b)
   {
-    return a.label < b.label || (a.label == b.label && a.value < b.value);
+    return a.label < b.label;
   }
 
   bool operator> (const assignment& a, const assignment& b)
   {
-    return a.label > b.label || (a.label == b.label && a.value > b.value);
+    return a.label > b.label;
   }
 
   bool operator== (const assignment& a, const assignment& b)
