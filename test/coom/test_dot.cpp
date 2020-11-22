@@ -2,7 +2,7 @@ go_bandit([]() {
     describe("DEBUG: DOT Files", [&]() {
         it("can output .dot for a sink-only BDD", [&]() {
           bdd sink_T = bdd_sink(true);
-          output_dot(sink_T, "dot_test_sink");
+          output_dot(sink_T, "dot_test_sink.dot");
           int exit_value = system("dot -O -Tpng dot_test_sink.dot");
           AssertThat(exit_value, Is().EqualTo(0));
         });
@@ -20,7 +20,7 @@ go_bandit([]() {
               ;
           }
 
-          output_dot(reduced_bdd, "dot_test_reduced");
+          output_dot(reduced_bdd, "dot_test_reduced.dot");
           int exit_value = system("dot -O -Tpng dot_test_reduced.dot");
           AssertThat(exit_value, Is().EqualTo(0));
         });
@@ -42,7 +42,7 @@ go_bandit([]() {
             uw.unsafe_push_node({ flag(create_node_ptr(1,1)), create_node_ptr(2,0) });
           }
 
-          output_dot(unreduced_bdd, "dot_test_unreduced");
+          output_dot(unreduced_bdd, "dot_test_unreduced.dot");
           int exit_value = system("dot -O -Tpng dot_test_unreduced.dot");
           AssertThat(exit_value, Is().EqualTo(0));
         });
