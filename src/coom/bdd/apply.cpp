@@ -7,9 +7,10 @@
 #include <coom/file_writer.h>
 #include <coom/priority_queue.h>
 #include <coom/reduce.h>
+#include <coom/tuple.h>
 
 #include <coom/bdd/build.h>
-#include <coom/tuple.h>
+#include <coom/bdd/negate.h>
 
 #include <assert.h>
 #include <coom/assert.h>
@@ -70,12 +71,28 @@ namespace coom
     if (is_sink(v1) && is_sink(v2)) {
       ptr_t p = op(v1.uid, v2.uid);
       return out_union << bdd_sink(value_of(p));
-    } else if (is_sink(v1) && can_left_shortcut(op, v1.uid)) {
-      ptr_t p =  op(v1.uid, create_sink_ptr(false));
-      return out_union << bdd_sink(value_of(p));
-    } else if (is_sink(v2) && can_right_shortcut(op, v2.uid)) {
-      ptr_t p = op(create_sink_ptr(false), v2.uid);
-      return out_union << bdd_sink(value_of(p));
+    } else if (is_sink(v1)) {
+      if (can_left_shortcut(op, v1.uid)) {
+        ptr_t p =  op(v1.uid, create_sink_ptr(false));
+        return out_union << bdd_sink(value_of(p));
+      }
+      if (is_left_irrelevant(op, v1.uid)) {
+        return out_union << in_2;
+      }
+      if (is_left_negating(op, v1.uid)) {
+        return out_union << bdd_not(in_2);
+      }
+    } else if (is_sink(v2)) {
+      if (can_right_shortcut(op, v2.uid)) {
+        ptr_t p = op(create_sink_ptr(false), v2.uid);
+        return out_union << bdd_sink(value_of(p));
+      }
+      if (is_right_irrelevant(op, v2.uid)) {
+        return out_union << in_1;
+      }
+      if (is_right_negating(op, v2.uid)) {
+        return out_union << bdd_not(in_1);
+      }
     }
 
     // Set-up for Apply Algorithm
