@@ -70,6 +70,11 @@ namespace coom
     return nodecount(bdd.file);
   }
 
+  uint64_t bdd_varcount(const bdd &bdd)
+  {
+    return varcount(bdd.file);
+  }
+
   template<bool count_skipped_layers>
   inline uint64_t count(const bdd &bdd,
                         label_t min_label,
