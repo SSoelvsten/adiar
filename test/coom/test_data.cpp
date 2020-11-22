@@ -240,6 +240,21 @@ go_bandit([]() {
                                Is().EqualTo(create_sink_ptr(false)));
                   });
               });
+
+            describe("operator predicates", []() {
+                it("can check the operators for being commutative", [&]() {
+                    AssertThat(is_commutative(and_op), Is().True());
+                    AssertThat(is_commutative(nand_op), Is().True());
+                    AssertThat(is_commutative(or_op), Is().True());
+                    AssertThat(is_commutative(nor_op), Is().True());
+                    AssertThat(is_commutative(xor_op), Is().True());
+                    AssertThat(is_commutative(implies_op), Is().False());
+                    AssertThat(is_commutative(impliedby_op), Is().False());
+                    AssertThat(is_commutative(equiv_op), Is().True());
+                    AssertThat(is_commutative(diff_op), Is().False());
+                    AssertThat(is_commutative(diff_op), Is().False());
+                  });
+              });
           });
 
         describe("Node Ptr", [&]() {
