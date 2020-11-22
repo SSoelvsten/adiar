@@ -180,6 +180,9 @@ namespace coom {
 
   node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high);
   node_t create_node(uid_t uid_t, ptr_t low, ptr_t high);
+  node_t create_node(uid_t uid_t, ptr_t low, node_t high);
+  node_t create_node(uid_t uid_t, node_t low, ptr_t high);
+  node_t create_node(uid_t uid_t, node_t low, node_t high);
 
   label_t label_of(const node_t &n);
   id_t id_of(const node_t &n);
