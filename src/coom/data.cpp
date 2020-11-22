@@ -198,7 +198,7 @@ namespace coom {
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 
-    return op(sink_T, sink_F) == op(sink_T, sink_F);
+    return op(sink_T, sink_F) == op(sink_F, sink_T);
   }
 
   //////////////////////////////////////////////////////////////////////////////
