@@ -143,10 +143,24 @@ namespace coom {
   ///
   /// - can_left_shortcut:       is op(sink, T) = op(sink, F) ?
   ///
+  /// - is_right_irrelevant:     is op(X, sink) = X ?
+  ///
+  /// - is_left_irrelevant:      is op(sink, X) = X ?
+  ///
+  /// - is_right_negating:       is op(X, sink) = ~X ?
+  ///
+  /// - is_left_negating:        is op(sink, X) = ~X ?
+  ///
   /// - is_commutative:          is op(x,y) = op(y,x) ?
   //////////////////////////////////////////////////////////////////////////////
   bool can_right_shortcut(const bool_op &op, const ptr_t sink);
   bool can_left_shortcut(const bool_op &op, const ptr_t sink);
+
+  bool is_right_irrelevant(const bool_op &op, const ptr_t sink);
+  bool is_left_irrelevant(const bool_op &op, const ptr_t sink);
+
+  bool is_right_negating(const bool_op &op, const ptr_t sink);
+  bool is_left_negating(const bool_op &op, const ptr_t sink);
 
   bool is_commutative(const bool_op &op);
 
