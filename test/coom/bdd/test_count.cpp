@@ -48,6 +48,27 @@ go_bandit([]() {
         }
 
         /*
+          ---- x0
+
+             1      ---- x1
+            / \
+           2  3     ---- x2
+          / \/ \
+          F T  F
+        */
+
+        node_file obdd_3;
+
+        node_t n3_3 = create_node(2,1, sink_T, sink_F);
+        node_t n3_2 = create_node(2,0, sink_F, sink_T);
+        node_t n3_1 = create_node(1,0, n3_2.uid, n3_3.uid);
+
+        { // Garbage collect writer to free write-lock
+          node_writer nw_3(obdd_3);
+          nw_3 << n3_3 << n3_2 << n3_1;
+        }
+
+        /*
               T
          */
         node_file obdd_T;
@@ -92,6 +113,28 @@ go_bandit([]() {
           node_writer nw_root_2(obdd_root_2);
           nw_root_2 << create_node(1,0, sink_T, sink_T);
         }
+
+        describe("Nodes and variables", [&]() {
+            it("can count number of nodes", [&]() {
+                AssertThat(bdd_nodecount(obdd_1), Is().EqualTo(4u));
+                AssertThat(bdd_nodecount(obdd_2), Is().EqualTo(2u));
+                AssertThat(bdd_nodecount(obdd_3), Is().EqualTo(3u));
+                AssertThat(bdd_nodecount(obdd_T), Is().EqualTo(0u));
+                AssertThat(bdd_nodecount(obdd_F), Is().EqualTo(0u));
+                AssertThat(bdd_nodecount(obdd_root_1), Is().EqualTo(1u));
+                AssertThat(bdd_nodecount(obdd_root_2), Is().EqualTo(1u));
+              });
+
+            it("can count number of nodes", [&]() {
+                AssertThat(bdd_varcount(obdd_1), Is().EqualTo(4u));
+                AssertThat(bdd_varcount(obdd_2), Is().EqualTo(2u));
+                AssertThat(bdd_varcount(obdd_3), Is().EqualTo(2u));
+                AssertThat(bdd_varcount(obdd_T), Is().EqualTo(0u));
+                AssertThat(bdd_varcount(obdd_F), Is().EqualTo(0u));
+                AssertThat(bdd_varcount(obdd_root_1), Is().EqualTo(1u));
+                AssertThat(bdd_varcount(obdd_root_2), Is().EqualTo(1u));
+              });
+          });
 
         describe("Paths", [&]() {
             it("can count number of non-disjunct paths", [&]() {

@@ -78,6 +78,7 @@ namespace coom {
     friend bdd bdd_not(const bdd&);
     friend bdd bdd_not(bdd&&);
     friend uint64_t bdd_nodecount(const bdd&);
+    friend uint64_t bdd_varcount(const bdd&);
 
     friend bool is_sink(const bdd &bdd, const sink_pred &pred);
     friend label_t min_label(const bdd &bdd);

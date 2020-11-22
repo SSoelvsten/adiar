@@ -52,6 +52,9 @@ namespace coom
 
   uint64_t nodecount(const node_file &nodes)
   {
+    if (is_sink(nodes)) {
+      return 0u;
+    }
     return nodes.size();
   }
 
@@ -59,6 +62,11 @@ namespace coom
   {
     // Every node is represented by two arcs
     return arcs.size() / 2;
+  }
+
+  uint64_t varcount(const node_file &nodes)
+  {
+    return nodes.meta_size();
   }
 }
 
