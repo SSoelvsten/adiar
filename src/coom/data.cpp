@@ -193,6 +193,30 @@ namespace coom {
     return op(sink, create_sink_ptr(false)) == op(sink, create_sink_ptr(true));
   }
 
+  bool is_right_irrelevant(const bool_op &op, const ptr_t sink)
+  {
+    return op(create_sink_ptr(false), sink) == create_sink_ptr(false)
+      && op(create_sink_ptr(true), sink) == create_sink_ptr(true);
+  }
+
+  bool is_left_irrelevant(const bool_op &op, const ptr_t sink)
+  {
+    return op(sink, create_sink_ptr(false)) == create_sink_ptr(false)
+      && op(sink, create_sink_ptr(true)) == create_sink_ptr(true);
+  }
+
+  bool is_right_negating(const bool_op &op, const ptr_t sink)
+  {
+    return op(sink, create_sink_ptr(false)) == create_sink_ptr(true)
+      && op(sink, create_sink_ptr(true)) == create_sink_ptr(false);
+  }
+
+  bool is_left_negating(const bool_op &op, const ptr_t sink)
+  {
+    return op(sink, create_sink_ptr(false)) == create_sink_ptr(true)
+      && op(sink, create_sink_ptr(true)) == create_sink_ptr(false);
+  }
+
   bool is_commutative(const bool_op &op)
   {
     ptr_t sink_T = create_sink_ptr(true);

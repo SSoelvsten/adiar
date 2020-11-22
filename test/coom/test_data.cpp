@@ -272,6 +272,39 @@ go_bandit([]() {
                       });
                   });
 
+                describe("is_irrelevant", []() {
+                    it("can check on T sink on the left", [&]() {
+                        AssertThat(is_left_irrelevant(and_op, create_sink_ptr(true)), Is().True());
+                        AssertThat(is_left_irrelevant(or_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(is_left_irrelevant(xor_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(is_left_irrelevant(implies_op, create_sink_ptr(true)), Is().True());
+                      });
+
+                    it("can check on F sink on the left", [&]() {
+                        AssertThat(is_left_irrelevant(and_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(is_left_irrelevant(or_op, create_sink_ptr(false)), Is().True());
+                        AssertThat(is_left_irrelevant(xor_op, create_sink_ptr(false)), Is().True());
+                        AssertThat(is_left_irrelevant(implies_op, create_sink_ptr(false)), Is().False());
+                      });
+
+                    it("can check on T sink on the right", [&]() {
+                        AssertThat(is_right_irrelevant(and_op, create_sink_ptr(true)), Is().True());
+                        AssertThat(is_right_irrelevant(or_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(is_right_irrelevant(xor_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(is_right_irrelevant(implies_op, create_sink_ptr(true)), Is().False());
+                      });
+
+                    it("can check on F sink on the right", [&]() {
+                        AssertThat(is_right_irrelevant(and_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(is_right_irrelevant(or_op, create_sink_ptr(false)), Is().True());
+                        AssertThat(is_right_irrelevant(xor_op, create_sink_ptr(false)), Is().True());
+                        AssertThat(is_right_irrelevant(implies_op, create_sink_ptr(false)), Is().False());
+                      });
+                  });
+
+                describe("is_negating", []() {
+                  });
+
                 it("can check the operators for being commutative", [&]() {
                     AssertThat(is_commutative(and_op), Is().True());
                     AssertThat(is_commutative(nand_op), Is().True());
