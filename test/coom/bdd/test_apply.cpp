@@ -2,30 +2,22 @@ go_bandit([]() {
     describe("BDD: Apply", [&]() {
         // == CREATE SINK-ONLY OBDD FOR UNIT TESTS ==
         //                  START
-        node_file obdd_F_1;
-        node_file obdd_F_2;
-        node_file obdd_T_1;
-        node_file obdd_T_2;
+        node_file obdd_F;
+        node_file obdd_T;
 
         { // Garbage collect writers to free write-lock
-          node_writer nw_F_1(obdd_F_1);
-          nw_F_1 << create_sink(false);
+          node_writer nw_F(obdd_F);
+          nw_F << create_sink(false);
 
-          node_writer nw_F_2(obdd_F_2);
-          nw_F_2 << create_sink(false);
-
-          node_writer nw_T_1(obdd_T_1);
-          nw_T_1 << create_sink(true);
-
-          node_writer nw_T_2(obdd_T_2);
-          nw_T_2 << create_sink(true);
+          node_writer nw_T(obdd_T);
+          nw_T << create_sink(true);
         }
 
         //                   END
         // == CREATE SINK-ONLY OBDD FOR UNIT TESTS ==
 
         it("should XOR F and T sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_F_1, obdd_T_2, xor_op);
+            __bdd out = bdd_apply(obdd_F, obdd_T, xor_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -37,10 +29,10 @@ go_bandit([]() {
           });
 
         it("should XOR T and T sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_T_1, obdd_T_2, xor_op);
+            __bdd out = bdd_apply(obdd_T, obdd_T, xor_op);
             node_test_stream out_nodes(out);
 
-            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.can_pull(), Is().True()) ;
             AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
 
             AssertThat(out_nodes.can_pull(), Is().False());
@@ -49,7 +41,7 @@ go_bandit([]() {
           });
 
         it("should AND F and T sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_F_1, obdd_T_2, and_op);
+            __bdd out = bdd_apply(obdd_F, obdd_T, and_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -61,7 +53,7 @@ go_bandit([]() {
           });
 
         it("should AND T and T sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_T_1, obdd_T_2, and_op);
+            __bdd out = bdd_apply(obdd_T, obdd_T, and_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -73,7 +65,7 @@ go_bandit([]() {
           });
 
         it("should OR T and F sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_T_1, obdd_F_2, or_op);
+            __bdd out = bdd_apply(obdd_T, obdd_F, or_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -85,7 +77,7 @@ go_bandit([]() {
           });
 
         it("should OR T and F sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_F_1, obdd_F_2, or_op);
+            __bdd out = bdd_apply(obdd_F, obdd_F, or_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -97,7 +89,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES F and T sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_F_1, obdd_T_2, implies_op);
+            __bdd out = bdd_apply(obdd_F, obdd_T, implies_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -109,7 +101,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES T and F sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_T_1, obdd_F_2, implies_op);
+            __bdd out = bdd_apply(obdd_T, obdd_F, implies_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -121,7 +113,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES T and T sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_T_1, obdd_T_2, implies_op);
+            __bdd out = bdd_apply(obdd_T, obdd_T, implies_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -160,42 +152,42 @@ go_bandit([]() {
         // == CREATE SINGLE VARIABLE FOR UNIT TESTS ==
 
         it("should AND (and shortcut on irrelevance) x0 and T", [&]() {
-            __bdd out = bdd_apply(obdd_x0, obdd_T_2, and_op);
+            __bdd out = bdd_apply(obdd_x0, obdd_T, and_op);
 
             AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
             AssertThat(out.negate, Is().False());
           });
 
         it("should OR (and shortcut on irrelevance) x0 and F", [&]() {
-            __bdd out = bdd_apply(obdd_x0, obdd_F_2, or_op);
+            __bdd out = bdd_apply(obdd_x0, obdd_F, or_op);
 
             AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
             AssertThat(out.negate, Is().False());
           });
 
         it("should IMPLIES (and shortcut on irrelevance) T and x0", [&]() {
-            __bdd out = bdd_apply(obdd_T_1, obdd_x0, implies_op);
+            __bdd out = bdd_apply(obdd_T, obdd_x0, implies_op);
 
             AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
             AssertThat(out.negate, Is().False());
           });
 
         it("should OR (and shortcut on irrelevance) F and x0", [&]() {
-            __bdd out = bdd_apply(obdd_F_1, obdd_x0, or_op);
+            __bdd out = bdd_apply(obdd_F, obdd_x0, or_op);
 
             AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
             AssertThat(out.negate, Is().False());
           });
 
         it("should XOR (and shortcut on negating) x0 and T", [&]() {
-            __bdd out = bdd_apply(obdd_x0, obdd_T_2, xor_op);
+            __bdd out = bdd_apply(obdd_x0, obdd_T, xor_op);
 
             AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
             AssertThat(out.negate, Is().True());
           });
 
         it("should NAND (and shortcut on negating) T and x0", [&]() {
-            __bdd out = bdd_apply(obdd_x0, obdd_T_2, nand_op);
+            __bdd out = bdd_apply(obdd_x0, obdd_T, nand_op);
 
             AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
             AssertThat(out.negate, Is().True());
@@ -371,7 +363,7 @@ go_bandit([]() {
           });
 
         it("should AND (and shortcut) F and x0", [&]() {
-            __bdd out = bdd_apply(obdd_F_1, obdd_x0, and_op);
+            __bdd out = bdd_apply(obdd_F, obdd_x0, and_op);
 
             node_test_stream out_nodes(out);
 
@@ -470,7 +462,7 @@ go_bandit([]() {
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
 
         it("should IMPLY (and shortcut) F and OBBD1", [&]() {
-            __bdd out = bdd_apply(obdd_F_1, obdd_1, implies_op);
+            __bdd out = bdd_apply(obdd_F, obdd_1, implies_op);
 
             node_test_stream out_nodes(out);
 
@@ -483,7 +475,7 @@ go_bandit([]() {
           });
 
         it("should OR (and shortcut) OBBD 1 and T", [&]() {
-            __bdd out = bdd_apply(obdd_1, obdd_T_2, or_op);
+            __bdd out = bdd_apply(obdd_1, obdd_T, or_op);
 
             node_test_stream out_nodes(out);
 
@@ -496,7 +488,7 @@ go_bandit([]() {
           });
 
         it("should OR (and shortcut) OBBD 2 and T", [&]() {
-            __bdd out = bdd_apply(obdd_2, obdd_T_2, or_op);
+            __bdd out = bdd_apply(obdd_2, obdd_T, or_op);
 
             node_test_stream out_nodes(out);
 
@@ -509,7 +501,7 @@ go_bandit([]() {
           });
 
         it("should AND (and shortcut) F and OBBD 2", [&]() {
-            __bdd out = bdd_apply(obdd_F_1, obdd_2, and_op);
+            __bdd out = bdd_apply(obdd_F, obdd_2, and_op);
 
             node_test_stream out_nodes(out);
 
