@@ -65,12 +65,12 @@ namespace coom
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_nodecount(const bdd &bdd)
+  size_t bdd_nodecount(const bdd &bdd)
   {
     return nodecount(bdd.file);
   }
 
-  uint64_t bdd_varcount(const bdd &bdd)
+  size_t bdd_varcount(const bdd &bdd)
   {
     return varcount(bdd.file);
   }
@@ -90,14 +90,18 @@ namespace coom
     // or count them immediately if they are sinks
     node_t root = ns.pull();
 
-    uint64_t result = count_skipped_layers && min_label < label_of(root)
+    uint64_t skipped_layers_before_root = count_skipped_layers && min_label < label_of(root)
       ? 1u << (label_of(root) - min_label)
-      : 0u;
+      : 1u;
+
+    uint64_t result = 0u;
 
     count_resolve_request<count_skipped_layers>(partial_sums, result, sink_pred,
-                                                root.low, label_of(root), max_label);
+                                                root.low, label_of(root), max_label,
+                                                skipped_layers_before_root);
     count_resolve_request<count_skipped_layers>(partial_sums, result, sink_pred,
-                                                root.high, label_of(root), max_label);
+                                                root.high, label_of(root), max_label,
+                                                skipped_layers_before_root);
 
     // Take out the rest of the nodes and process them one by one
     while (ns.can_pull()) {
@@ -132,19 +136,10 @@ namespace coom
     return count<false>(bdd, 0, MAX_LABEL, sink_pred);
   }
 
-  uint64_t bdd_satcount(const bdd& bdd, const sink_pred& sink_pred)
-  {
-    if (is_sink(bdd)) {
-      return 0u;
-    }
-
-    return count<true>(bdd, min_label(bdd), max_label(bdd), sink_pred);
-  }
-
-  uint64_t bdd_pathcount(const node_file &bdd,
-                         label_t minimum_label,
-                         label_t maximum_label,
-                         const sink_pred& sink_pred)
+  uint64_t bdd_satcount(const bdd &bdd,
+                        label_t minimum_label,
+                        label_t maximum_label,
+                        const sink_pred& sink_pred)
   {
     if (is_sink(bdd)) {
       return 0u;
@@ -157,6 +152,30 @@ namespace coom
                 "given maximum_label should be greater than the largest label in obdd");
 
     return count<true>(bdd, minimum_label, maximum_label, sink_pred);
+  }
+
+  uint64_t bdd_satcount(const bdd& bdd, size_t varcount, const sink_pred& sink_pred)
+  {
+    if (is_sink(bdd)) {
+      return 0u;
+    }
+
+    label_t minimum_label = min_label(bdd);
+    label_t maximum_label = (minimum_label + varcount) - 1u;
+
+    coom_assert(max_label(bdd) <= maximum_label,
+                "the bdd spans more labels than the provided varcount suggests");
+
+    return count<true>(bdd, minimum_label, maximum_label, sink_pred);
+  }
+
+  uint64_t bdd_satcount(const bdd& bdd, const sink_pred& sink_pred)
+  {
+    if (is_sink(bdd)) {
+      return 0u;
+    }
+
+    return count<true>(bdd, min_label(bdd), max_label(bdd), sink_pred);
   }
 }
 
