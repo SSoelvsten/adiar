@@ -242,6 +242,36 @@ go_bandit([]() {
               });
 
             describe("operator predicates", []() {
+                describe("can_shortcut", []() {
+                    it("can check on T sink on the left", [&]() {
+                        AssertThat(can_left_shortcut(and_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(can_left_shortcut(or_op, create_sink_ptr(true)), Is().True());
+                        AssertThat(can_left_shortcut(xor_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(can_left_shortcut(implies_op, create_sink_ptr(true)), Is().False());
+                      });
+
+                    it("can check on F sink on the left", [&]() {
+                        AssertThat(can_left_shortcut(and_op, create_sink_ptr(false)), Is().True());
+                        AssertThat(can_left_shortcut(or_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(can_left_shortcut(xor_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(can_left_shortcut(implies_op, create_sink_ptr(false)), Is().True());
+                      });
+
+                    it("can check on T sink on the right", [&]() {
+                        AssertThat(can_right_shortcut(and_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(can_right_shortcut(or_op, create_sink_ptr(true)), Is().True());
+                        AssertThat(can_right_shortcut(xor_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(can_right_shortcut(implies_op, create_sink_ptr(true)), Is().True());
+                      });
+
+                    it("can check on F sink on the right", [&]() {
+                        AssertThat(can_right_shortcut(and_op, create_sink_ptr(false)), Is().True());
+                        AssertThat(can_right_shortcut(or_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(can_right_shortcut(xor_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(can_right_shortcut(implies_op, create_sink_ptr(false)), Is().False());
+                      });
+                  });
+
                 it("can check the operators for being commutative", [&]() {
                     AssertThat(is_commutative(and_op), Is().True());
                     AssertThat(is_commutative(nand_op), Is().True());
