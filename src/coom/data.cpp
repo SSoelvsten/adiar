@@ -86,9 +86,14 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   ///  SINK PTR
   //////////////////////////////////////////////////////////////////////////////
-  ptr_t create_sink_ptr(bool v)
+  uid_t create_sink_uid(bool v)
   {
     return SINK_BIT + (v << 1);
+  }
+
+  ptr_t create_sink_ptr(bool v)
+  {
+    return create_sink_uid(v);
   }
 
   bool value_of(uint64_t n)

@@ -96,6 +96,7 @@ namespace coom {
   /// its value. That is, the only time a sink has to be explicitly represented
   /// as a node is when the OBDD only consists of said sink.
   //////////////////////////////////////////////////////////////////////////////
+  uid_t create_sink_uid(bool v);
   ptr_t create_sink_ptr(bool v);
 
   bool value_of(ptr_t p);
@@ -178,11 +179,12 @@ namespace coom {
 
   typedef node node_t;
 
-  node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high);
   node_t create_node(uid_t uid_t, ptr_t low, ptr_t high);
-  node_t create_node(uid_t uid_t, ptr_t low, node_t high);
-  node_t create_node(uid_t uid_t, node_t low, ptr_t high);
-  node_t create_node(uid_t uid_t, node_t low, node_t high);
+
+  node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high);
+  node_t create_node(label_t label, id_t id, ptr_t low, node_t high);
+  node_t create_node(label_t label, id_t id, node_t low, ptr_t high);
+  node_t create_node(label_t label, id_t id, node_t low, node_t high);
 
   label_t label_of(const node_t &n);
   id_t id_of(const node_t &n);
@@ -244,7 +246,11 @@ namespace coom {
 
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Finally, we can create some converters back and forth
+  /// An assignment to a variable consists of its label and the value of its
+  /// assignment.
+  ///
+  /// TODO: We know that the label is only 16 bits, so we could place the
+  /// boolean value inside of the label.
   //////////////////////////////////////////////////////////////////////////////
   struct assignment {
     label_t label;
