@@ -1,26 +1,29 @@
-COOM is a library for manipulating _Ordered Boolean Decision Diagrams_ even when
-these grow bigger than the memory one has available. To achieve this, all
-operations are not implemented recursively with a global memoization table, but
-instead they are done as streaming algorithms that exploit the sorting of the
-graph on disk to delay recursion with _Time-Forward Processing_.
+_COOM_ is a library for manipulating Boolean Decision Diagrams even when these
+grow bigger than the memory one has available. To achieve this, all operations
+are not implemented recursively with a global memoization table, but instead
+they are created as streaming algorithms that exploit the sorting of the graph
+on disk to delay recursion with Time-Forward Processing.
 
 **Maintainer:** [Steffan Sølvsten](mailto:soelvsten@cs.au.dk)
 
 # Table of Content
 
-- [**Installation**](/install.md)
-- **Data types**
-  - [**Nodes and Arcs**](/data.md)
-  - [**Streams**](/streams.md)
-- **Functions**
-  - [**Core**](/core.md)
-  - [**Operators**](/operators.md)
-    - [**Apply**](/operators.md#apply)
-    - [**Counting**](/operators.md#count)
-    - [**Evaluate**](/operators.md#evaluate)
-    - [**Negation**](/operators.md#negate)
-    - [**Restrict**](/operators.md#restrict)
-  - [**Builders**](/builders.md)
+- [**Getting Started**](/getting_started.md)
+  - [**Dependencies**](/getting_started.md#dependencies)
+  - [**Building with CMake**](/getting_started.md#building-with-cmake)
+  - [**Usage**](/getting_started.md#usage)
+
+- [**Core**](/core.md)
+  - [**Nodes and Pointers**](/core.md#nodes-and-pointers)
+  - [**Assignment**](/core.md#assignment)
+  - [**Files**](/core.md#files)
+
+- [**BDD**](/bdd.md)
+  - [**Basic Constructurs**](/bdd.md#basic-constructors)
+  - [**Basic Manipulation**](/bdd.md#basic-manipulation)
+  - [**Other Functions**](/bdd.md#other-functions)
+  - [**DOT Output**](/bdd.md#dot-output)
+
 - [**N-Queens Example**](/example.md)
 
 # License
