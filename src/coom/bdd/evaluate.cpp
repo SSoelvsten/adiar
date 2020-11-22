@@ -23,6 +23,8 @@ namespace coom
 
     while (true) {
       while(label_of(current_node) > a.label) {
+        coom_assert(as.can_pull(),
+                    "Given assignment insufficient to traverse BDD");
         a = as.pull();
       }
       coom_assert(label_of(current_node) == a.label,
