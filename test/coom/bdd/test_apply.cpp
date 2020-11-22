@@ -159,27 +159,46 @@ go_bandit([]() {
         //                     END
         // == CREATE SINGLE VARIABLE FOR UNIT TESTS ==
 
-        it("should AND x0 and T", [&]() {
+        it("should AND (and shortcut on irrelevance) x0 and T", [&]() {
             __bdd out = bdd_apply(obdd_x0, obdd_T_2, and_op);
-            node_arc_test_stream node_arcs(out);
-            AssertThat(node_arcs.can_pull(), Is().False());
 
-            sink_arc_test_stream sink_arcs(out);
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
+            AssertThat(out.negate, Is().False());
+          });
 
-            AssertThat(sink_arcs.can_pull(), Is().True());
-            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), sink_F }));
+        it("should OR (and shortcut on irrelevance) x0 and F", [&]() {
+            __bdd out = bdd_apply(obdd_x0, obdd_F_2, or_op);
 
-            AssertThat(sink_arcs.can_pull(), Is().True());
-            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), sink_T }));
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
+            AssertThat(out.negate, Is().False());
+          });
 
-            AssertThat(sink_arcs.can_pull(), Is().False());
+        it("should IMPLIES (and shortcut on irrelevance) T and x0", [&]() {
+            __bdd out = bdd_apply(obdd_T_1, obdd_x0, implies_op);
 
-            meta_test_stream<arc_t, 2> meta(out);
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
+            AssertThat(out.negate, Is().False());
+          });
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+        it("should OR (and shortcut on irrelevance) F and x0", [&]() {
+            __bdd out = bdd_apply(obdd_F_1, obdd_x0, or_op);
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
+            AssertThat(out.negate, Is().False());
+          });
+
+        it("should XOR (and shortcut on negating) x0 and T", [&]() {
+            __bdd out = bdd_apply(obdd_x0, obdd_T_2, xor_op);
+
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
+            AssertThat(out.negate, Is().True());
+          });
+
+        it("should NAND (and shortcut on negating) T and x0", [&]() {
+            __bdd out = bdd_apply(obdd_x0, obdd_T_2, nand_op);
+
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
+            AssertThat(out.negate, Is().True());
           });
 
         it("should XOR x0 and x1", [&]() {

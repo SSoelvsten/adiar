@@ -19,12 +19,8 @@ namespace coom {
   class __bdd : public union_t<node_file, arc_file>
   {
     ////////////////////////////////////////////////////////////////////////////
-    // Friends
-    friend bdd;
-
-    ////////////////////////////////////////////////////////////////////////////
     // Propagating the negation, when given a bdd.
-  private: // TODO: Make private
+  public:
     bool negate = false;
 
   public:
@@ -96,7 +92,7 @@ namespace coom {
 
     ////////////////////////////////////////////////////////////////////////////
     // Internal state
-  private: // TODO: Make private
+  private:
     node_file file;
     bool negate = false;
 
