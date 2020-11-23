@@ -9,10 +9,12 @@ may constitute interesting undergraduate research projects.
     - [Implementation of missing algorithms](#implementation-of-missing-algorithms)
         - [Function composition](#function-composition)
         - [If-Then-Else](#if-then-else)
+        - [Coudert's and Madre's Restrict](#couderts-and-madres-restrict)
     - [Optimising the OBDD](#optimising-the-obdd)
         - [Complement Edges](#complement-edges)
     - [Extensions](#extensions)
-        - [Non-boolean Decision Diagrams](#non-boolean-decision-diagrams)
+        - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
+        - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
         - [Zero-suppressed Decision Diagrams](#zero-suppressed-decision-diagrams)
         - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
         - [From _recursive_ algorithm to _time-forward processing_ and back again](#from-recursive-algorithm-to-time-forward-processing-and-back-again)
@@ -72,7 +74,7 @@ of _ITE_ rather than the other implementation of the algorithm
 | Existence   | ∃y : f(x, y, z)    | ITE(f(x, 1, z), 1, f(x, 0, z))   |
 | Forall      | ∀y : f(x, y, z)    | ITE(f(x, 1, z), f(x, 0, z), 0)   |
 
-### Algorithms by Olivier Coudert and Jean Christophe Madre
+### Coudert's and Madre's Restrict
 The current _Restrict_ algorithm is the basic algorithm of Bryant, but one has
 been proposed in [[Coudert90](README.md#references)] that is very different and
 may be used in Verification. They also proposed algorithms with the name
@@ -89,12 +91,13 @@ algorithms execution time [[Brace90](README.md#references)].
 
 ## Extensions
 
-### Non-boolean Decision Diagrams
+### Multi-Terminal Binary Decision Diagrams
 One can easily extend the proposed representation of sink nodes to encompass
 non-boolean values, such as integers or floats. Thereby, the algorithms
 immediately yield a Cache-oblivious implementation of the _Multi-Terminal Binary
 Decision Diagrams_ (MTBDD) of [[Fujita97](README.md#references)].
 
+### Multi-valued Decision Diagrams
 By solely using an edge-based representation of the data-structure one can also
 implement a _Multi-valued Decision Diagram_ (MDD) of
 [[Kam98](README.md#references)]. This allows one to succinctly encode a function
