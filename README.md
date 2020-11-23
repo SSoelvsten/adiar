@@ -4,21 +4,21 @@
 [![test](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/test/badge.svg?branch=master)](/actions?query=workflow%3Atest)
 [![examples](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/examples/badge.svg?branch=master)](/actions?query=workflow%3Aexamples)
 
-Following up on the work of [[Arge96](#references)], this project investigates
-the use of _Time-Forward Processing_ to improve the I/O complexity and
-performance of OBDD Manipulation.
+Following up on the work of [[Arge96](#references)], this implementation of
+a BDD library makes use of _Time-Forward Processing_ to improve the I/O
+complexity of BDD Manipulation to achieve efficient manipulation of BDDs, that
+far outgrow the memory limit of the given machine.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
 - [COOM: Cache-Oblivious OBDD Manipulation](#coom-cache-oblivious-obdd-manipulation)
-    - [Introduction](#introduction)
     - [Installation](#installation)
         - [Dependencies](#dependencies)
-    - [Usage](#usage)
-        - [Examples and benchmarks](#examples-and-benchmarks)
         - [In your own project](#in-your-own-project)
     - [Documentation](#documentation)
+    - [Usage](#usage)
+        - [Examples and benchmarks](#examples-and-benchmarks)
     - [Future Work](#future-work)
     - [Credits](#credits)
     - [License](#license)
@@ -26,32 +26,9 @@ performance of OBDD Manipulation.
 
 <!-- markdown-toc end -->
 
-
-## Introduction
-In [[Arge96](/bib/%5Barge%5D%20IO%20Complexity%20of%20OBDD%20Manipulation.pdf)],
-Lars Arge concludes that the I/O complexity of the DFS, BFS and other algorithms
-are _O(N)_, while he proves that the _Reduce_ has an _Ω(sort(N))_ I/O lower
-bound. An _Apply_ that will have to output a minimal OBDD has by extension the
-same bound.
-
-He then provides a description of an I/O optimal external-memory algorithm for
-both _Reduce_ and _Apply_. They makes use of _Time-Forward Processing_ to delay
-recursion until the needed data is in memory. These algorithms are designed,
-such that the output of _Reduce_ is already in sorted order for the following
-_Apply_ algorithm, and vica versa. When further looking into these algorithms,
-we notice, that they do not explicitly make use of _M_ or _B_ but only an I/O
-efficient sorting algorithm and priority queue. Both of these can be substituted
-for a _Cache-oblivious_, such as [[Sanders01](#references)], or _Cache-aware_
-instance to immediately yield an optimal algorithm of both types!
-
-Following up on Arge's work, we extend this approach to other core OBDD
-algorithms and implement it in C++ to benchmark the performance in practice
-compared to conventional recursive procedures.
-
-
 ## Installation
-The algorithms are implemented in _C++_ creating a fully fledged OBDD library.
-They make use of the following external dependencies
+The algorithms are implemented in _C++_ creating a fully fledged BDD library,
+dependant on the the following external libraries
 
 - [TPIE](https://github.com/thomasmoelhave/tpie):
   Framework for implementation of I/O efficient algorithms. It directly provides
@@ -89,10 +66,34 @@ number of tools, such as _graphviz_.
 apt install graphviz
 ```
 
+### In your own project
+The _COOM_ library is built with _CMake_. First you'll have to include the
+project as a _subdirectory_
+```cmake
+add_subdirectory (<path/to/coom> coom)
+```
+Then you link up your executable.
+```cmake
+add_executable(<target> <source>)
+target_link_libraries(<target> coom)
+set_target_properties(<target> PROPERTIES CXX_STANDARD 17)
+```
+
+
+## Documentation
+We provide the documentation in two ways:
+
+- A [Github Pages](https://ssoelvsten.github.io/coom/) website that provides an
+  API and reference for developers.
+
+- A [Technical Report](https://github.com/SSoelvsten/coom-report) providing
+  an “_academic_” documentation.
+
+
 ## Usage
 The project is build with _CMake_, though for convenience I have simplified the
 _CMake_ interactions to a single _Makefile_ which works on a local machine. This
-has only been tested on `Ubuntu 18.04 LTS`.
+has only been tested on _Ubuntu 18.04 LTS_.
 
 The primary targets are as follows
 
@@ -117,8 +118,8 @@ dot -O -Tpng filename.dot
 
 ### Examples and benchmarks
 The _/examples_ folder contains examples for using the data structure to solve
-various verification and satisfaction problems. The `main` function also also
-includes timing how long it takes to solve and computing other interesting
+various verification and satisfaction problems. The `main` function also
+includes timing how long it takes to solve and provides other interesting
 statistics.
 
 | target                               | Example                                                             |
@@ -126,23 +127,6 @@ statistics.
 | `example-n-queens N=<?>`             | N-Queens board creation, counting and enumerating solutions         |
 | `example-pigeonhole-principle N=<?>` | Proves the isomorphism of the _Pigeonhole Principle_ does not exist |
 | `example-tic-tac-toe N=<?>`          | Counting the number of ties on a 3D 4✕4✕4 with _N_ crosses placed  |
-
-
-### In your own project
-To use this OBDD implementation in your own project, then _CMake_ still needs to
-be properly configured (e.g. see issue
-[#4](https://github.com/SSoelvsten/cache-oblivious-obdd/issues/4)).
-Contributions and help to this end would be very much appreciated.
-
-
-## Documentation
-We provide the documentation in two ways:
-
-- A [Github Pages](https://ssoelvsten.github.io/coom/) website that provides an
-  API and reference for developers.
-
-- A [Technical Report](https://github.com/SSoelvsten/coom-report) providing
-  a “_academic_” documentation.
 
 
 ## Future Work
@@ -160,15 +144,19 @@ project.
 
 Thank you, to the following wonderful people:
 
+- **[Asger Hautop Drewsen](https://github.com/Tyilo)**: Maintainer of _TPIE_,
+  who helped debug a few issues and gave general feedback on the codebase.
+
 - **[Anna Blume Jakobsen](https://github.com/bluekeladry)**: Bachelor student,
   who implemented _Apply_, _Evaluate_, _Count Assignments_, _Count Paths_,
   _Reduce_, and _Restrict_ as part of a summer project.
 
-- **[Jaco van de Pol](https://github.com/jacopol)**:
+- **[Jaco van de Pol](https://github.com/jacopol)**: [jaco@cs.au.dk](mailto:jaco@cs.au.dk)
   Supervisor and extremely supportive sparring partner.
 
 - **[Mathias Rav](https://github.com/Mortal)**:
-  Developer of TPIE and always helpful oracle about everything _TPIE_ and _C++_.
+  Developer of TPIE and always helpful oracle about everything _TPIE_,
+  _I/O_ algorithms and _C++_.
 
 - **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
   Bachelor student, who implemented _Apply_, _Evaluate_, _Count Assignments_,
