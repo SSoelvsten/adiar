@@ -59,8 +59,6 @@ namespace coom
                   const bdd &bdd_2,
                   const bool_op &op)
   {
-    __bdd out_union;
-
     // Resolve being given the same underlying input
     if (bdd_1.file._file_ptr == bdd_2.file._file_ptr) {
       ptr_t sink_1_F = create_sink_ptr(bdd_1.negate);
@@ -72,10 +70,10 @@ namespace coom
 
       // Does it collapse to a sink?
       if (op_F == op_T) {
-        return out_union << bdd_sink(value_of(op_F));
+        return bdd_sink(value_of(op_F));
       }
 
-      return out_union << (op_F == sink_1_F ? bdd_1 : ~bdd_1);
+      return op_F == sink_1_F ? bdd_1 : ~bdd_1;
     }
 
     node_stream<> in_nodes_1(bdd_1);
@@ -87,28 +85,28 @@ namespace coom
     // Resolve sink shortcutting the result
     if (is_sink(v1) && is_sink(v2)) {
       ptr_t p = op(v1.uid, v2.uid);
-      return out_union << bdd_sink(value_of(p));
+      return bdd_sink(value_of(p));
     } else if (is_sink(v1)) {
       if (can_left_shortcut(op, v1.uid)) {
         ptr_t p =  op(v1.uid, create_sink_ptr(false));
-        return out_union << bdd_sink(value_of(p));
+        return bdd_sink(value_of(p));
       }
       if (is_left_irrelevant(op, v1.uid)) {
-        return out_union << bdd_2;
+        return bdd_2;
       }
       if (is_left_negating(op, v1.uid)) {
-        return out_union << bdd_not(bdd_2);
+        return bdd_not(bdd_2);
       }
     } else if (is_sink(v2)) {
       if (can_right_shortcut(op, v2.uid)) {
         ptr_t p = op(create_sink_ptr(false), v2.uid);
-        return out_union << bdd_sink(value_of(p));
+        return bdd_sink(value_of(p));
       }
       if (is_right_irrelevant(op, v2.uid)) {
-        return out_union << bdd_1;
+        return bdd_1;
       }
       if (is_right_negating(op, v2.uid)) {
-        return out_union << bdd_not(bdd_1);
+        return bdd_not(bdd_1);
       }
     }
 
@@ -334,7 +332,7 @@ namespace coom
       }
     }
 
-    return out_union << out_arcs;
+    return out_arcs;
   }
 
   //////////////////////////////////////////////////////////////////////////////

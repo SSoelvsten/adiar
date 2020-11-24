@@ -13,38 +13,12 @@
 #include <coom/bdd/negate.h>
 
 namespace coom {
-  __bdd::__bdd() : union_t() { }
-
   __bdd::__bdd(const node_file &f) : union_t(f) { }
   __bdd::__bdd(const arc_file &f) : union_t(f) { }
 
   __bdd::__bdd(const __bdd &o) : union_t(o), negate(o.negate) { }
 
   __bdd::__bdd(const bdd &bdd) : union_t(bdd.file), negate(bdd.negate) { }
-
-  void __bdd::set(const bdd &bdd)
-  {
-    this -> union_t::set(bdd.file);
-    this -> negate = bdd.negate;
-  }
-
-  __bdd& __bdd::operator<< (const bdd &bdd)
-  {
-    this -> set(bdd);
-    return *this;
-  }
-
-  __bdd& __bdd::operator<< (const arc_file &af)
-  {
-    this -> union_t::set(af);
-    return *this;
-  }
-
-  __bdd& __bdd::operator<< (const node_file &nf)
-  {
-    this -> union_t::set(nf);
-    return *this;
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   node_file reduce(const __bdd &maybe_reduced)

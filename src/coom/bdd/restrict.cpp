@@ -10,8 +10,10 @@
 #include <coom/file_writer.h>
 #include <coom/priority_queue.h>
 #include <coom/reduce.h>
-
 #include <coom/util.h>
+
+#include <coom/bdd/build.h>
+
 #include <coom/assert.h>
 
 namespace coom
@@ -48,11 +50,8 @@ namespace coom
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_restrict(const bdd &bdd, const assignment_file &assignment)
   {
-    __bdd out_union;
-
     if (assignment.size() == 0 || is_sink(bdd, is_any)) {
-      out_union << bdd;
-      return out_union;
+      return bdd;
     }
 
     node_stream<> ns(bdd);
@@ -77,11 +76,7 @@ namespace coom
       ptr_t rec_child = a.value ? n.high : n.low;
 
       if(is_sink_ptr(rec_child)) {
-        node_file out_nodes;
-        node_writer nw(out_nodes);
-        nw.unsafe_push(create_sink(value_of(rec_child)));
-
-        return out_union << out_nodes;
+        return bdd_sink(value_of(rec_child));
       }
 
       resD.push({ NIL, rec_child });
@@ -123,11 +118,7 @@ namespace coom
 
           if(is_sink_ptr(rec_child) && is_nil(parent_arc.source)) {
             // we have restricted ourselves to a sink
-            node_file out_nodes;
-            node_writer nw(out_nodes);
-            nw.unsafe_push(create_sink(value_of(rec_child)));
-
-            return out_union << out_nodes;
+            return bdd_sink(value_of(rec_child));
           }
 
           restrict_resolve_request(request, resD, aw);
@@ -152,7 +143,7 @@ namespace coom
     // TODO: Add bool variable to check whether we really do need to sort.
     aw.sort_sinks();
 
-    return out_union << out_arcs;
+    return out_arcs;
   }
 }
 

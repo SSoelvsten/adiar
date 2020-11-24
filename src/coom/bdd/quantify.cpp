@@ -9,6 +9,8 @@
 #include <coom/tuple.h>
 #include <coom/util.h>
 
+#include <coom/bdd/build.h>
+
 #include <coom/assert.h>
 
 namespace coom
@@ -125,11 +127,9 @@ namespace coom
     assert(is_commutative(op));
 #endif
 
-    __bdd out_union;
-
     // Check if there is no need to do any computation
     if (is_sink(bdd, is_any) || !quantify_has_label(label, bdd)) {
-      return out_union << bdd;
+      return bdd;
     }
 
     // Check for trivial sink-only return on shortcutting the root
@@ -151,7 +151,7 @@ namespace coom
         node_file out_nodes;
         node_writer nw(out_nodes);
         nw.unsafe_push(node_t { res_sink, NIL, NIL });
-        return out_union << out_nodes;
+        return out_nodes;
       }
     }
 
@@ -303,7 +303,7 @@ namespace coom
     // TODO: Add bool variable to check whether we really do need to sort.
     aw.sort_sinks();
 
-    return out_union << out_arcs;
+    return out_arcs;
   }
 
   bdd quantify(const bdd &in_bdd,
