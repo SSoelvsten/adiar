@@ -142,17 +142,17 @@ project.
 - **[Steffan Sølvsten](https://github.com/SSoelvsten)**:
   [soelvsten@cs.au.dk](mailto:soelvsten@cs.au.dk)
 
-Thank you, to the following wonderful people:
+- **[Jaco van de Pol](https://github.com/jacopol)**:
+  [jaco@cs.au.dk](mailto:jaco@cs.au.dk)
 
-- **[Asger Hautop Drewsen](https://github.com/Tyilo)**: Maintainer of _TPIE_,
-  who helped debug a few issues and gave general feedback on the codebase.
+Thank you, to the following wonderful people:
 
 - **[Anna Blume Jakobsen](https://github.com/bluekeladry)**: Bachelor student,
   who implemented _Apply_, _Evaluate_, _Count Assignments_, _Count Paths_,
   _Reduce_, and _Restrict_ as part of a summer project.
 
-- **[Jaco van de Pol](https://github.com/jacopol)**: [jaco@cs.au.dk](mailto:jaco@cs.au.dk)
-  Supervisor and extremely supportive sparring partner.
+- **[Asger Hautop Drewsen](https://github.com/Tyilo)**: Maintainer of _TPIE_,
+  who helped debug a few issues and gave general feedback on the codebase.
 
 - **[Mathias Rav](https://github.com/Mortal)**:
   Developer of TPIE and always helpful oracle about everything _TPIE_,
