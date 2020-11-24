@@ -21,13 +21,11 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     // Propagating the negation, when given a bdd.
   public:
-    bool negate = false;
+    const bool negate = false;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
-    __bdd();
-
     __bdd(const node_file &f);
     __bdd(const arc_file &f);
 
@@ -35,14 +33,8 @@ namespace coom {
 
     __bdd(const bdd &bdd);
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Methods and operators
-  public:
-    void set(const bdd &bdd);
-
-    __bdd& operator << (const bdd &other);
-    __bdd& operator << (const arc_file &af);
-    __bdd& operator << (const node_file &nf);
+    void set(const node_file &f) = delete;
+    void set(const arc_file &f) = delete;
   };
 
 
