@@ -87,6 +87,7 @@ namespace coom {
     friend bdd operator~ (const bdd& bdd);
     friend bdd operator~ (bdd&& bdd);
 
+    friend __bdd bdd_apply(const bdd &in_1, const bdd &in_2, const bool_op &op);
     friend __bdd operator& (const bdd& lhs, const bdd& rhs);
     friend __bdd operator| (const bdd& lhs, const bdd& rhs);
     friend __bdd operator^ (const bdd& lhs, const bdd& rhs);
