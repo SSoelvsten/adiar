@@ -1345,5 +1345,78 @@ go_bandit([]() {
 
             AssertThat(meta.can_pull(), Is().False());
           });
+
+        it("should collapse an XOR on the same BDD twice", [&]() {
+            __bdd out = bdd_apply(obdd_1, obdd_1, xor_op);
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+          });
+
+        it("should collapse a NAND on the same BDD twice, where one is negated [1]", [&]() {
+            __bdd out = bdd_apply(obdd_2, bdd_not(obdd_2), nand_op);
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+          });
+
+        it("should collapse a NOR on the same BDD twice to a sink, where one is negated [2]", [&]() {
+            __bdd out = bdd_apply(bdd_not(obdd_3), obdd_3, nor_op);
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+          });
+
+        it("should collapse an XOR on the same BDD twice to a sink, when both are negated", [&]() {
+            __bdd out = bdd_apply(bdd_not(obdd_1), bdd_not(obdd_1), xor_op);
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+          });
+
+        it("should do an AND on being given the same BDD twice", [&]() {
+            __bdd out = bdd_apply(obdd_1, obdd_1, and_op);
+
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_1._file_ptr));
+            AssertThat(out.negate, Is().False());
+          });
+
+        it("should do an IMPLIES on being given the same BDD twice, where one is negated [1]", [&]() {
+            __bdd out = bdd_apply(bdd_not(obdd_2), obdd_2, implies_op);
+
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_2._file_ptr));
+            AssertThat(out.negate, Is().False()); // negated the already negated input doubly-negating
+          });
+
+        it("should do an IMPLIES on being given the same BDD twice, where one is negated [2]", [&]() {
+            __bdd out = bdd_apply(obdd_2, bdd_not(obdd_2), implies_op);
+
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_2._file_ptr));
+            AssertThat(out.negate, Is().True()); // negated the first of the two
+          });
       });
   });

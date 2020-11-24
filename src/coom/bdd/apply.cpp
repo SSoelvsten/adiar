@@ -55,17 +55,34 @@ namespace coom
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_apply(const bdd &in_1,
-                  const bdd &in_2,
+  __bdd bdd_apply(const bdd &bdd_1,
+                  const bdd &bdd_2,
                   const bool_op &op)
   {
-    node_stream<> in_nodes_1(in_1);
-    node_stream<> in_nodes_2(in_2);
+    __bdd out_union;
+
+    // Resolve being given the same underlying input
+    if (bdd_1.file._file_ptr == bdd_2.file._file_ptr) {
+      ptr_t sink_1_F = create_sink_ptr(bdd_1.negate);
+      ptr_t sink_2_F = create_sink_ptr(bdd_2.negate);
+
+      // Compute the results on all children.
+      ptr_t op_F = op(sink_1_F, sink_2_F);
+      ptr_t op_T = op(negate(sink_1_F), negate(sink_2_F));
+
+      // Does it collapse to a sink?
+      if (op_F == op_T) {
+        return out_union << bdd_sink(value_of(op_F));
+      }
+
+      return out_union << (op_F == sink_1_F ? bdd_1 : ~bdd_1);
+    }
+
+    node_stream<> in_nodes_1(bdd_1);
+    node_stream<> in_nodes_2(bdd_2);
 
     node_t v1 = in_nodes_1.pull();
     node_t v2 = in_nodes_2.pull();
-
-    __bdd out_union;
 
     // Resolve sink shortcutting the result
     if (is_sink(v1) && is_sink(v2)) {
@@ -77,10 +94,10 @@ namespace coom
         return out_union << bdd_sink(value_of(p));
       }
       if (is_left_irrelevant(op, v1.uid)) {
-        return out_union << in_2;
+        return out_union << bdd_2;
       }
       if (is_left_negating(op, v1.uid)) {
-        return out_union << bdd_not(in_2);
+        return out_union << bdd_not(bdd_2);
       }
     } else if (is_sink(v2)) {
       if (can_right_shortcut(op, v2.uid)) {
@@ -88,10 +105,10 @@ namespace coom
         return out_union << bdd_sink(value_of(p));
       }
       if (is_right_irrelevant(op, v2.uid)) {
-        return out_union << in_1;
+        return out_union << bdd_1;
       }
       if (is_right_negating(op, v2.uid)) {
-        return out_union << bdd_not(in_1);
+        return out_union << bdd_not(bdd_1);
       }
     }
 
@@ -102,8 +119,8 @@ namespace coom
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
     apply_priority_queue_t appD(available_memory / 2);
-    appD.hook_meta_stream(in_1);
-    appD.hook_meta_stream(in_2);
+    appD.hook_meta_stream(bdd_1);
+    appD.hook_meta_stream(bdd_2);
 
     apply_data_priority_queue_t appD_data;
 
