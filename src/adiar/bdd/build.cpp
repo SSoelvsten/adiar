@@ -11,14 +11,18 @@
 #include <adiar/assert.h>
 
 namespace adiar {
-  // TODO: Memoization table for the sink, ithvar, and nithvar builders
+  std::unique_ptr<node_file> sink_false;
 
   bdd bdd_sink(bool value)
   {
-    node_file nf;
-    node_writer nw(nf);
-    nw.unsafe_push(create_sink(value));
-    return nf;
+    if (!sink_false) {
+      sink_false = std::make_unique<node_file>();
+      node_writer nw(*sink_false);
+      nw << create_sink(false);
+    }
+
+    bdd out(*sink_false, value);
+    return out;
   }
 
   bdd bdd_true()
@@ -30,6 +34,8 @@ namespace adiar {
   {
     return bdd_sink(false);
   }
+
+  // TODO: Memoization table for the ithvar, and nithvar builders ?
 
   bdd bdd_ithvar(label_t label)
   {
