@@ -68,13 +68,13 @@ namespace coom
     if (is_sink_ptr(r1) && is_sink_ptr(r2)) {
       arc_t out_arc = { source, op(r1, r2) };
       reduce_sink_arcs.write(out_arc);
-    } else if (is_sink_ptr(r1) && can_left_shortcut(op, r1)) {
+    } /*else if (is_sink_ptr(r1) && can_left_shortcut(op, r1)) {
       arc_t out_arc = { source, op(r1, create_sink_ptr(true)) };
       reduce_sink_arcs.write(out_arc);
     } else if (is_sink_ptr(r2) && can_right_shortcut(op, r2)) {
       arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
       reduce_sink_arcs.write(out_arc);
-    } else {
+    } */else {
       appD.push({ source, r1, r2 });
     }
   }
