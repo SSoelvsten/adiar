@@ -635,23 +635,6 @@ int main(int argc, char* argv[])
 
   bool correct_result = solutions == expected_result[N];
 
-  // Run enumeration example (for reasonably small N)
-  if (N <= 8) {
-    tpie::log_info() << "| " << N << "-Queens (Pruning search)"  << std::endl;
-    auto before_list = get_timestamp();
-    uint64_t listed_solutions = n_queens_list(N, board, board_meta);
-    auto after_list = get_timestamp();
-
-    correct_result = correct_result && listed_solutions == expected_result[N];
-
-    tpie::log_info() << "|  | number of solutions: " << listed_solutions << std::endl;
-    tpie::log_info() << "|  | deepest recursion: " << deepest_column << " columns" << std::endl;
-
-    auto estimated_MB = MB_of_size(deepest_column * 2 * board.size());
-    tpie::log_info() << "|  | estimated maximal memory usage: " << (estimated_MB > 0 ? std::to_string(estimated_MB) : "< 1") << " MB" << std::endl;
-    tpie::log_info() << "|  | time: " << duration_of(before_list, after_list) << " s" << std::endl;
-  }
-
   // ===== COOM =====
   // Close all of COOM down again
   coom::coom_deinit();
