@@ -23,6 +23,7 @@
  * and worst ratio between sink and node arcs in the unreduced OBDDs
  */
 size_t largest_unreduced = 0;
+float acc_unreduced = 0.0;
 
 float best_sink_ratio = 0.0;
 float acc_sink_ratio = 0.0;
@@ -32,6 +33,8 @@ inline void stats_unreduced(size_t node_arcs, size_t sink_arcs)
 {
   size_t total_arcs = node_arcs + sink_arcs;
   largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
+
+  acc_unreduced += float(total_arcs) / 2.0;
 
   float sink_ratio = float(sink_arcs) / float(total_arcs);
   best_sink_ratio = std::max(best_sink_ratio, sink_ratio);
@@ -358,6 +361,11 @@ int main(int argc, char* argv[])
   tpie::log_info() << "|  | largest OBDD (unreduced): " << largest_unreduced << " nodes" << std::endl;
   tpie::log_info() << "|  |                           " << (largest_unreduced_MB > 0 ? std::to_string(largest_unreduced_MB) : "< 1")
                                                         << " MB"<< std::endl;
+
+  tpie::log_info() << "|  |" << std::endl;
+
+  tpie::log_info() << "|  | avg OBDD (unreduced):     " << acc_unreduced / 76.0 << " nodes" << std::endl;
+
   tpie::log_info() << "|  |" << std::endl;
 
   tpie::log_info() << "|  | sink ratio: " << std::endl;

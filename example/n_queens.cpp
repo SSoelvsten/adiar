@@ -19,6 +19,7 @@
  * and worst ratio between sink and node arcs in the unreduced OBDDs
  */
 size_t largest_unreduced = 0;
+float_t acc_unreduced = 0.0;
 
 float operations = 0.0;
 
@@ -31,12 +32,14 @@ inline void stats_unreduced(size_t node_arcs, size_t sink_arcs)
   size_t total_arcs = node_arcs + sink_arcs;
   largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
 
+  acc_unreduced += float(total_arcs) / 2.0;
+
   float sink_ratio = float(sink_arcs) / float(total_arcs);
   best_sink_ratio = std::max(best_sink_ratio, sink_ratio);
   acc_sink_ratio += sink_ratio;
   worst_sink_ratio = std::min(worst_sink_ratio, sink_ratio);
 
-  operations += 1;
+  operations += 1.0;
 }
 
 size_t largest_reduced = 0;
@@ -604,21 +607,32 @@ int main(int argc, char* argv[])
   tpie::log_info() << "|  |                           " << (largest_unreduced_MB > 0 ? std::to_string(largest_unreduced_MB) : "< 1")
                                                         << " MB"<< std::endl;
 
+  tpie::log_info() << "|  |" << std::endl;
+
+  tpie::log_info() << "|  | avg OBDD (unreduced):     " << (acc_unreduced) / operations << " nodes" << std::endl;
+
+  tpie::log_info() << "|  |" << std::endl;
+
   tpie::log_info() << "|  | sink ratio: " << std::endl;
   tpie::log_info() << "|  |  | best:  " << best_sink_ratio << std::endl;
   tpie::log_info() << "|  |  | avg:   " << acc_sink_ratio / operations << std::endl;
   tpie::log_info() << "|  |  | worst: " << worst_sink_ratio << std::endl;
+
+  tpie::log_info() << "|  |" << std::endl;
 
   auto largest_reduced_MB = MB_of_size(largest_reduced);
   tpie::log_info() << "|  | largest OBDD (reduced)  : " << largest_reduced << " nodes" << std::endl;
   tpie::log_info() << "|  |                           " << (largest_reduced_MB > 0 ? std::to_string(largest_reduced_MB) : "< 1")
                                                         << " MB"<< std::endl;
 
+  tpie::log_info() << "|  |" << std::endl;
+
   tpie::log_info() << "|  | reduction ratio: " << std::endl;
   tpie::log_info() << "|  |  | best:  " << best_reduction_ratio << std::endl;
   tpie::log_info() << "|  |  | avg:   " << acc_reduction_ratio / operations << std::endl;
   tpie::log_info() << "|  |  | worst: " << worst_reduction_ratio << std::endl;
 
+  tpie::log_info() << "|  |" << std::endl;
 
   auto final_MB = MB_of_size(board.size());
   tpie::log_info() << "|  | final size: " << board.size() << " nodes"<< std::endl;

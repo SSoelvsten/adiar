@@ -166,6 +166,7 @@ void construct_PHP_cnf(sat_solver &solver, uint64_t N)
  */
 size_t number_of_exists = 0;
 size_t largest_unreduced = 0;
+float acc_unreduced = 0.0;
 
 float best_apply_sink_ratio = 0.0;
 float acc_apply_sink_ratio = 0.0;
@@ -175,6 +176,8 @@ inline void stats_apply_unreduced(size_t node_arcs, size_t sink_arcs)
 {
   size_t total_arcs = node_arcs + sink_arcs;
   largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
+
+  acc_unreduced += float(total_arcs) / 2.0;
 
   float sink_ratio = float(sink_arcs) / float(total_arcs);
   best_apply_sink_ratio = std::max(best_apply_sink_ratio, sink_ratio);
@@ -425,6 +428,10 @@ int main(int argc, char** argv)
   tpie::log_info() << "|  | largest OBDD (unreduced): " << largest_unreduced << " nodes" << std::endl;
   tpie::log_info() << "|  |                           " << (largest_unreduced_MB > 0 ? std::to_string(largest_unreduced_MB) : "< 1")
                                                         << " MB"<< std::endl;
+  tpie::log_info() << "|  |" << std::endl;
+
+  tpie::log_info() << "|  | avg OBDD (unreduced):     " << acc_unreduced / float(solver.cnf_size()) << " nodes" << std::endl;
+
   tpie::log_info() << "|  |" << std::endl;
 
   tpie::log_info() << "|  | sink ratio (apply): " << std::endl;
