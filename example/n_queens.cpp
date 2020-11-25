@@ -20,7 +20,10 @@
  */
 size_t largest_unreduced = 0;
 
+float operations = 0.0;
+
 float best_sink_ratio = 0.0;
+float acc_sink_ratio = 0.0;
 float worst_sink_ratio = 1.0;
 
 inline void stats_unreduced(size_t node_arcs, size_t sink_arcs)
@@ -30,12 +33,16 @@ inline void stats_unreduced(size_t node_arcs, size_t sink_arcs)
 
   float sink_ratio = float(sink_arcs) / float(total_arcs);
   best_sink_ratio = std::max(best_sink_ratio, sink_ratio);
+  acc_sink_ratio += sink_ratio;
   worst_sink_ratio = std::min(worst_sink_ratio, sink_ratio);
+
+  operations += 1;
 }
 
 size_t largest_reduced = 0;
 
 float best_reduction_ratio = 1.0;
+float acc_reduction_ratio = 0.0;
 float worst_reduction_ratio = 0.0;
 
 inline void stats_reduced(size_t unreduced_size, size_t reduced_size)
@@ -44,6 +51,7 @@ inline void stats_reduced(size_t unreduced_size, size_t reduced_size)
 
   float reduction_ratio = float(reduced_size) / float(unreduced_size);
   best_reduction_ratio = std::min(best_reduction_ratio, reduction_ratio);
+  acc_reduction_ratio += reduction_ratio;
   worst_reduction_ratio = std::max(worst_reduction_ratio, reduction_ratio);
 }
 
@@ -598,6 +606,7 @@ int main(int argc, char* argv[])
 
   tpie::log_info() << "|  | sink ratio: " << std::endl;
   tpie::log_info() << "|  |  | best:  " << best_sink_ratio << std::endl;
+  tpie::log_info() << "|  |  | avg:   " << acc_sink_ratio / operations << std::endl;
   tpie::log_info() << "|  |  | worst: " << worst_sink_ratio << std::endl;
 
   auto largest_reduced_MB = MB_of_size(largest_reduced);
@@ -607,6 +616,7 @@ int main(int argc, char* argv[])
 
   tpie::log_info() << "|  | reduction ratio: " << std::endl;
   tpie::log_info() << "|  |  | best:  " << best_reduction_ratio << std::endl;
+  tpie::log_info() << "|  |  | avg:   " << acc_reduction_ratio / operations << std::endl;
   tpie::log_info() << "|  |  | worst: " << worst_reduction_ratio << std::endl;
 
 
