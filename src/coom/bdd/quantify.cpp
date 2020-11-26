@@ -76,6 +76,9 @@ namespace coom
       } else {
         quantD.push({ r1, r2, source });
       }
+    } else if (is_sink_ptr(r1) && is_sink_ptr(r2)) {
+      arc_t out_arc = { source, op(r1, r2) };
+      aw.unsafe_push_sink(out_arc);
     } else if (is_sink_ptr(r1) && can_left_shortcut(op, r1)) {
       arc_t out_arc = { source, op(r1, create_sink_ptr(true)) };
       aw.unsafe_push_sink(out_arc);

@@ -108,6 +108,29 @@ go_bandit([]() {
           nw_4 << n4_5 << n4_4 << n4_3 << n4_2 << n4_1;
         }
 
+        ////////////////////////////////////////////////////////////////////////
+        // OBDD 5
+        /*
+        //    1      ---- x0
+        //   / \
+        //   F 2     ---- x1
+        //    / \
+        //   3   4   ---- x2
+        //  / \ / \
+        //  F T T F
+        */
+        node_file obdd_5;
+
+        node_t n5_4 = create_node(2,MAX_ID, create_sink_ptr(true), create_sink_ptr(false));
+        node_t n5_3 = create_node(2,MAX_ID-1, create_sink_ptr(false), create_sink_ptr(true));
+        node_t n5_2 = create_node(1,MAX_ID, n5_3.uid, n5_4.uid);
+        node_t n5_1 = create_node(0,MAX_ID, create_sink_ptr(false), n5_2.uid);
+
+        { // Garbage collect writer to free write-lock
+          node_writer nw_5(obdd_5);
+          nw_5 << n5_4 << n5_3 << n5_2 << n5_1;
+        }
+
         ////////////////////////////////////////////////////////////////////////////
         // x2 variable OBDD
         node_file obdd_x2;
@@ -441,6 +464,46 @@ go_bandit([]() {
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(meta_t { 1u }));
+
+                AssertThat(meta.can_pull(), Is().False());
+              });
+
+            it("should resolve sink-sink requests in [OBDD 5]", [&]() {
+                __bdd out = bdd_exists(obdd_5, 1);
+
+                node_arc_test_stream node_arcs(out);
+
+                // Note, that node (2,0) reflects (3,NIL) while n4 < NIL since we process this
+                // request without forwarding n3 through the secondary priority queue
+                AssertThat(node_arcs.can_pull(), Is().True());
+                AssertThat(node_arcs.pull(),
+                           Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,0) }));
+
+                AssertThat(node_arcs.can_pull(), Is().False());
+
+                sink_arc_test_stream sink_arcs(out);
+
+                AssertThat(sink_arcs.can_pull(), Is().True());
+                AssertThat(sink_arcs.pull(),
+                           Is().EqualTo(arc_t { create_node_ptr(0,0), create_sink_ptr(false) }));
+
+                AssertThat(sink_arcs.can_pull(), Is().True());
+                AssertThat(sink_arcs.pull(), // true due to 4.low
+                           Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+
+                AssertThat(sink_arcs.can_pull(), Is().True());
+                AssertThat(sink_arcs.pull(), // true due to 3.high
+                           Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+
+                AssertThat(sink_arcs.can_pull(), Is().False());
+
+                meta_test_stream<arc_t, 2> meta(out);
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 0u }));
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 2u }));
 
                 AssertThat(meta.can_pull(), Is().False());
               });
