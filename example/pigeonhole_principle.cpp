@@ -165,6 +165,7 @@ void construct_PHP_cnf(sat_solver &solver, uint64_t N)
  * and worst ratio between sink and node arcs in the unreduced OBDDs
  */
 size_t number_of_exists = 0;
+size_t number_of_applies = 0;
 size_t largest_unreduced = 0;
 float acc_unreduced = 0.0;
 
@@ -174,6 +175,8 @@ float worst_apply_sink_ratio = 1.0;
 
 inline void stats_apply_unreduced(size_t node_arcs, size_t sink_arcs)
 {
+  number_of_applies++;
+
   size_t total_arcs = node_arcs + sink_arcs;
   largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
 
@@ -430,19 +433,19 @@ int main(int argc, char** argv)
                                                         << " MB"<< std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
-  tpie::log_info() << "|  | avg OBDD (unreduced):     " << acc_unreduced / float(solver.cnf_size()) << " nodes" << std::endl;
+  tpie::log_info() << "|  | avg OBDD (unreduced):     " << acc_unreduced / float(number_of_applies) << " nodes" << std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
 
   tpie::log_info() << "|  | sink ratio (apply): " << std::endl;
   tpie::log_info() << "|  |  | best:  " << best_apply_sink_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_apply_sink_ratio / solver.cnf_size() << std::endl;
+  tpie::log_info() << "|  |  | avg:   " << acc_apply_sink_ratio / float(number_of_applies) << std::endl;
   tpie::log_info() << "|  |  | worst: " << worst_apply_sink_ratio << std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
   tpie::log_info() << "|  | sink ratio (exists): " << std::endl;
   tpie::log_info() << "|  |  | best:  " << best_exists_sink_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_exists_sink_ratio / number_of_exists << std::endl;
+  tpie::log_info() << "|  |  | avg:   " << acc_exists_sink_ratio / float(number_of_exists) << std::endl;
   tpie::log_info() << "|  |  | worst: " << worst_exists_sink_ratio << std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
@@ -455,12 +458,12 @@ int main(int argc, char** argv)
 
   tpie::log_info() << "|  | reduction ratio (apply): " << std::endl;
   tpie::log_info() << "|  |  | best:  " << best_apply_reduction_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_apply_reduction_ratio / solver.cnf_size() << std::endl;
+  tpie::log_info() << "|  |  | avg:   " << acc_apply_reduction_ratio / float(number_of_applies) << std::endl;
   tpie::log_info() << "|  |  | worst: " << worst_apply_reduction_ratio << std::endl;
 
   tpie::log_info() << "|  | reduction ratio (exists): " << std::endl;
   tpie::log_info() << "|  |  | best:  " << best_exists_reduction_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_exists_reduction_ratio / number_of_exists << std::endl;
+  tpie::log_info() << "|  |  | avg:   " << acc_exists_reduction_ratio / float(number_of_exists) << std::endl;
   tpie::log_info() << "|  |  | worst: " << worst_exists_reduction_ratio << std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
