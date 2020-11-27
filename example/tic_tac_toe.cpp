@@ -214,7 +214,7 @@ size_t construct_is_tie(uint64_t N,
   out_meta.open();
   coom::build_counter(0, 63, N, out_nodes, out_meta);
 
-  unsigned int idx = 0;
+  size_t operations = 0;
   for (auto &line : lines) {
     next_not_winning.open();
     next_not_winning_meta.open();
@@ -250,10 +250,13 @@ size_t construct_is_tie(uint64_t N,
     reduce_sink_arcs.close();
     reduce_meta.close();
 
-    idx++;
+    operations++;
+    if (coom::is_sink(out_nodes)) {
+      break;
+    }
   }
 
-  return lines.size();
+  return operations;
 }
 
 /* A few chrono wrappers to improve readability of the code below */
@@ -345,10 +348,12 @@ int main(int argc, char* argv[])
   tpie::file_stream<coom::meta_t> is_tie_meta;
 
   auto before_tie = get_timestamp();
-  size_t constraints = construct_is_tie(N, is_tie, is_tie_meta);
+  size_t operations = construct_is_tie(N, is_tie, is_tie_meta);
   auto after_tie = get_timestamp();
 
-  tpie::log_info() << "|  | constraints: " << constraints << " lines" << std::endl;
+  tpie::log_info() << "|  | constraints:" << std::endl;
+  tpie::log_info() << "|  |   | total:   76 lines" << std::endl;
+  tpie::log_info() << "|  |   | done:    " << operations << " lines" << std::endl;
   tpie::log_info() << "|  | time: " << duration_of(before_tie, after_tie) << " s" << std::endl;
 
   auto init_size = (N+1)*64-(N*N); // See coom::build_counter implementation
@@ -364,13 +369,13 @@ int main(int argc, char* argv[])
 
   tpie::log_info() << "|  |" << std::endl;
 
-  tpie::log_info() << "|  | avg OBDD (unreduced):     " << acc_unreduced / 76.0 << " nodes" << std::endl;
+  tpie::log_info() << "|  | avg OBDD (unreduced):     " << acc_unreduced / float(operations) << " nodes" << std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
 
   tpie::log_info() << "|  | sink ratio: " << std::endl;
   tpie::log_info() << "|  |  | best:  " << best_sink_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_sink_ratio / constraints << std::endl;
+  tpie::log_info() << "|  |  | avg:   " << acc_sink_ratio / float(operations) << std::endl;
   tpie::log_info() << "|  |  | worst: " << worst_sink_ratio << std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
@@ -382,7 +387,7 @@ int main(int argc, char* argv[])
 
   tpie::log_info() << "|  | reduction ratio: " << std::endl;
   tpie::log_info() << "|  |  | best:  " << best_reduction_ratio << std::endl;
-  tpie::log_info() << "|  |  | avg:   " << acc_reduction_ratio / constraints << std::endl;
+  tpie::log_info() << "|  |  | avg:   " << acc_reduction_ratio / float(operations) << std::endl;
   tpie::log_info() << "|  |  | worst: " << worst_reduction_ratio << std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
