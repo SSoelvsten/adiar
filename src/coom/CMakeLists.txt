@@ -11,6 +11,7 @@ set(HEADERS
   coom.h
   count.h
   data.h
+  dot.h
   evaluate.h
   negate.h
   priority_queue.h
@@ -28,6 +29,7 @@ set(SOURCES
   coom.cpp
   count.cpp
   data.cpp
+  dot.cpp
   evaluate.cpp
   negate.cpp
   priority_queue.cpp

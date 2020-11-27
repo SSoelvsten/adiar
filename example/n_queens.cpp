@@ -18,10 +18,9 @@
  * the following global variables. Also it would be of interest to see the best
  * and worst ratio between sink and node arcs in the unreduced OBDDs
  */
-size_t largest_unreduced = 0;
-float_t acc_unreduced = 0.0;
+std::vector<size_t> unreduced_sizes;
 
-float operations = 0.0;
+size_t operations = 0.0;
 
 float best_sink_ratio = 0.0;
 float acc_sink_ratio = 0.0;
@@ -30,16 +29,15 @@ float worst_sink_ratio = 1.0;
 inline void stats_unreduced(size_t node_arcs, size_t sink_arcs)
 {
   size_t total_arcs = node_arcs + sink_arcs;
-  largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
 
-  acc_unreduced += float(total_arcs) / 2.0;
+  unreduced_sizes.push_back(float(total_arcs) / 2.0);
 
   float sink_ratio = float(sink_arcs) / float(total_arcs);
   best_sink_ratio = std::max(best_sink_ratio, sink_ratio);
   acc_sink_ratio += sink_ratio;
   worst_sink_ratio = std::min(worst_sink_ratio, sink_ratio);
 
-  operations += 1.0;
+  operations += 1;
 }
 
 size_t largest_reduced = 0;
@@ -602,14 +600,28 @@ int main(int argc, char* argv[])
 
   tpie::log_info() << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
 
-  auto largest_unreduced_MB = (MB_of_size(largest_unreduced) * 3) / 2;
-  tpie::log_info() << "|  | largest OBDD (unreduced): " << largest_unreduced << " nodes" << std::endl;
+  std::sort(unreduced_sizes.begin(), unreduced_sizes.end(), std::less<>());
+
+  size_t acc_unreduced = 0;
+  for (const size_t s : unreduced_sizes) {
+    acc_unreduced += s;
+  }
+  assert(unreduced_sizes.size() == operations);
+
+  auto largest_unreduced_MB = (MB_of_size(unreduced_sizes[operations-1]) * 3) / 2;
+  tpie::log_info() << "|  | largest OBDD (unreduced): " << unreduced_sizes[operations-1] << " nodes" << std::endl;
   tpie::log_info() << "|  |                           " << (largest_unreduced_MB > 0 ? std::to_string(largest_unreduced_MB) : "< 1")
                                                         << " MB"<< std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
 
-  tpie::log_info() << "|  | avg OBDD (unreduced):     " << (acc_unreduced) / operations << " nodes" << std::endl;
+  tpie::log_info() << "|  | avg OBDD (unreduced):     " << float(acc_unreduced) / float(operations) << " nodes" << std::endl;
+
+  tpie::log_info() << "|  | 1/4 OBDD (unreduced):     " << unreduced_sizes[operations / 4] << " nodes" << std::endl;
+
+  tpie::log_info() << "|  | 1/2 OBDD (unreduced):     " << unreduced_sizes[operations / 2] << " nodes" << std::endl;
+
+  tpie::log_info() << "|  | 3/4 OBDD (unreduced):     " << unreduced_sizes[(operations * 3) / 4] << " nodes" << std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
 

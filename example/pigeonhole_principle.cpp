@@ -167,7 +167,8 @@ void construct_PHP_cnf(sat_solver &solver, uint64_t N)
 size_t number_of_exists = 0;
 size_t number_of_applies = 0;
 size_t largest_unreduced = 0;
-float acc_unreduced = 0.0;
+
+std::vector<size_t> apply_unreduced_sizes;
 
 float best_apply_sink_ratio = 0.0;
 float acc_apply_sink_ratio = 0.0;
@@ -180,13 +181,15 @@ inline void stats_apply_unreduced(size_t node_arcs, size_t sink_arcs)
   size_t total_arcs = node_arcs + sink_arcs;
   largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
 
-  acc_unreduced += float(total_arcs) / 2.0;
+  apply_unreduced_sizes.push_back(total_arcs / 2);
 
   float sink_ratio = float(sink_arcs) / float(total_arcs);
   best_apply_sink_ratio = std::max(best_apply_sink_ratio, sink_ratio);
   acc_apply_sink_ratio += sink_ratio;
   worst_apply_sink_ratio = std::min(worst_apply_sink_ratio, sink_ratio);
 }
+
+std::vector<size_t> exists_unreduced_sizes;
 
 float best_exists_sink_ratio = 0.0;
 float acc_exists_sink_ratio = 0.0;
@@ -198,6 +201,8 @@ inline void stats_exists_unreduced(size_t node_arcs, size_t sink_arcs)
 
   size_t total_arcs = node_arcs + sink_arcs;
   largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
+
+  exists_unreduced_sizes.push_back(total_arcs / 2);
 
   float sink_ratio = float(sink_arcs) / float(total_arcs);
   best_exists_sink_ratio = std::max(best_exists_sink_ratio, sink_ratio);
@@ -433,7 +438,43 @@ int main(int argc, char** argv)
                                                         << " MB"<< std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
-  tpie::log_info() << "|  | avg OBDD (unreduced):     " << acc_unreduced / float(number_of_applies) << " nodes" << std::endl;
+  std::sort(apply_unreduced_sizes.begin(), apply_unreduced_sizes.end(), std::less<>());
+  size_t acc_unreduced = 0;
+  for (const size_t s : apply_unreduced_sizes) {
+    acc_unreduced += s;
+  }
+  assert(apply_unreduced_sizes.size() == number_of_applies);
+
+  tpie::log_info() << "|  | apply:" << std::endl;
+
+  tpie::log_info() << "|  |  | avg OBDD (unreduced):     " << float(acc_unreduced) / float(number_of_applies) << " nodes" << std::endl;
+
+  tpie::log_info() << "|  |  | 1/8 OBDD (unreduced):     " << apply_unreduced_sizes[number_of_applies / 8] << " nodes" << std::endl;
+
+  tpie::log_info() << "|  |  | 1/4 OBDD (unreduced):     " << apply_unreduced_sizes[number_of_applies / 4] << " nodes" << std::endl;
+
+  tpie::log_info() << "|  |  | 1/2 OBDD (unreduced):     " << apply_unreduced_sizes[number_of_applies / 2] << " nodes" << std::endl;
+
+  tpie::log_info() << "|  |  | 3/4 OBDD (unreduced):     " << apply_unreduced_sizes[(number_of_applies * 3) / 4] << " nodes" << std::endl;
+
+  std::sort(exists_unreduced_sizes.begin(), exists_unreduced_sizes.end(), std::less<>());
+  acc_unreduced = 0;
+  for (const size_t s : exists_unreduced_sizes) {
+    acc_unreduced += s;
+  }
+  assert(exists_unreduced_sizes.size() == number_of_exists);
+
+  tpie::log_info() << "|  | exists:" << std::endl;
+
+  tpie::log_info() << "|  |  | avg OBDD (unreduced):     " << float(acc_unreduced) / float(number_of_exists) << " nodes" << std::endl;
+
+  tpie::log_info() << "|  |  | 1/8 OBDD (unreduced):     " << exists_unreduced_sizes[number_of_exists / 8] << " nodes" << std::endl;
+
+  tpie::log_info() << "|  |  | 1/4 OBDD (unreduced):     " << exists_unreduced_sizes[number_of_exists / 4] << " nodes" << std::endl;
+
+  tpie::log_info() << "|  |  | 1/2 OBDD (unreduced):     " << exists_unreduced_sizes[number_of_exists / 2] << " nodes" << std::endl;
+
+  tpie::log_info() << "|  |  | 3/4 OBDD (unreduced):     " << exists_unreduced_sizes[(number_of_exists * 3) / 4] << " nodes" << std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
 
