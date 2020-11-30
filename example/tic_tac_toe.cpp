@@ -264,7 +264,7 @@ inline auto get_timestamp() {
 
 inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
                         std::chrono::high_resolution_clock::time_point &after) {
-  return std::chrono::duration_cast<std::chrono::seconds>(after - before).count();
+  return std::chrono::duration_cast<std::chrono::milliseconds>(after - before).count();
 }
 
 /* Expected numbers taken from "Parallel Disk-Based Computation for Large,
@@ -352,7 +352,7 @@ int main(int argc, char* argv[])
   tpie::log_info() << "|  | constraints:" << std::endl;
   tpie::log_info() << "|  |   | total:   76 lines" << std::endl;
   tpie::log_info() << "|  |   | done:    " << operations << " lines" << std::endl;
-  tpie::log_info() << "|  | time: " << duration_of(before_tie, after_tie) << " s" << std::endl;
+  tpie::log_info() << "|  | time: " << duration_of(before_tie, after_tie) << " ms" << std::endl;
 
   auto init_size = (N+1)*64-(N*N); // See coom::build_counter implementation
   auto init_MB = MB_of_size(init_size);
@@ -416,7 +416,7 @@ int main(int argc, char* argv[])
   auto after_count = get_timestamp();
 
   tpie::log_info() << "|  | number of ties: " << solutions << std::endl;
-  tpie::log_info() << "|  | time: " << duration_of(before_count, after_count) << " s" << std::endl;
+  tpie::log_info() << "|  | time: " << duration_of(before_count, after_count) << " ms" << std::endl;
 
   // ===== COOM =====
   // Close all of COOM down again

@@ -247,7 +247,7 @@ inline auto get_timestamp() {
 
 inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
                         std::chrono::high_resolution_clock::time_point &after) {
-  return std::chrono::duration_cast<std::chrono::seconds>(after - before).count();
+  return std::chrono::duration_cast<std::chrono::milliseconds>(after - before).count();
 }
 
 /* TODO: File size calculations should be available from COOM. */
@@ -516,8 +516,8 @@ int main(int argc, char** argv)
   tpie::log_info() << "|  |" << std::endl;
 
   tpie::log_info() << "|  | time: " << std::endl;
-  tpie::log_info() << "|  |  | CNF construction: " << duration_of(t1, t2) << std::endl;
-  tpie::log_info() << "|  |  | OBDD solving: " << duration_of(t3, t4) << std::endl;
+  tpie::log_info() << "|  |  | CNF construction: " << duration_of(t1, t2) << " ms" << std::endl;
+  tpie::log_info() << "|  |  | OBDD solving: " << duration_of(t3, t4) << << " ms" std::endl;
 
 
   // ===== COOM =====

@@ -538,7 +538,7 @@ inline auto get_timestamp() {
 
 inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
                         std::chrono::high_resolution_clock::time_point &after) {
-  return std::chrono::duration_cast<std::chrono::seconds>(after - before).count();
+  return std::chrono::duration_cast<std::chrono::milliseconds>(after - before).count();
 }
 
 
@@ -598,7 +598,7 @@ int main(int argc, char* argv[])
   n_queens_B(N, board, board_meta);
   auto after_board = get_timestamp();
 
-  tpie::log_info() << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
+  tpie::log_info() << "|  | time: " << duration_of(before_board, after_board) << " ms" << std::endl;
 
   std::sort(unreduced_sizes.begin(), unreduced_sizes.end(), std::less<>());
 
@@ -657,7 +657,7 @@ int main(int argc, char* argv[])
 
   tpie::log_info() << "| " << N << "-Queens : Counting assignments"  << std::endl;
   tpie::log_info() << "|  | number of solutions: " << solutions << std::endl;
-  tpie::log_info() << "|  | time: " << duration_of(before_count, after_count) << " s" << std::endl;
+  tpie::log_info() << "|  | time: " << duration_of(before_count, after_count) << " ms" << std::endl;
 
   bool correct_result = solutions == expected_result[N];
 
