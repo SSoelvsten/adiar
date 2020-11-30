@@ -142,6 +142,9 @@ namespace coom
                         const sink_pred& sink_pred)
   {
     if (is_sink(bdd)) {
+      if (is_sink(bdd, sink_pred)) {
+        return 1u << (maximum_label - minimum_label);
+      }
       return 0u;
     }
 
@@ -157,6 +160,9 @@ namespace coom
   uint64_t bdd_satcount(const bdd& bdd, size_t varcount, const sink_pred& sink_pred)
   {
     if (is_sink(bdd)) {
+      if (is_sink(bdd, sink_pred)) {
+        return 1u << varcount;
+      }
       return 0u;
     }
 

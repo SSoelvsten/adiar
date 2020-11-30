@@ -85,7 +85,7 @@ go_bandit([]() {
 
         { // Garbage collect writer to free write-lock
           node_writer nw_F(obdd_F);
-          nw_F << create_sink(true);
+          nw_F << create_sink(false);
         }
 
         /*
@@ -222,6 +222,21 @@ go_bandit([]() {
                     AssertThat(bdd_satcount(obdd_2, 0, 2, is_false), Is().EqualTo(2 * 1u));
                     AssertThat(bdd_satcount(obdd_2, 0, 3, is_false), Is().EqualTo(2 * 2 * 1u));
                   });
+
+
+                it("should count no assignments to the wrong sink-only OBDD", [&]() {
+                    AssertThat(bdd_satcount(obdd_T, 0, 4, is_false), Is().EqualTo(0u));
+                    AssertThat(bdd_satcount(obdd_T, 1, 3, is_false), Is().EqualTo(0u));
+                    AssertThat(bdd_satcount(obdd_F, 0, 2, is_true), Is().EqualTo(0u));
+                    AssertThat(bdd_satcount(obdd_F, 2, 4, is_true), Is().EqualTo(0u));
+                  });
+
+                it("should count all assignments to the desired sink-only OBDD", [&]() {
+                    AssertThat(bdd_satcount(obdd_T, 0, 4, is_true), Is().EqualTo(16u));
+                    AssertThat(bdd_satcount(obdd_T, 1, 3, is_true), Is().EqualTo(4u));
+                    AssertThat(bdd_satcount(obdd_F, 0, 2, is_false), Is().EqualTo(4u));
+                    AssertThat(bdd_satcount(obdd_F, 2, 4, is_false), Is().EqualTo(4u));
+                  });
               });
 
             describe("given varcount", [&]() {
@@ -247,6 +262,20 @@ go_bandit([]() {
                     AssertThat(bdd_satcount(obdd_2, 2, is_false), Is().EqualTo(1u));
                     AssertThat(bdd_satcount(obdd_2, 3, is_false), Is().EqualTo(2 * 1u));
                     AssertThat(bdd_satcount(obdd_2, 5, is_false), Is().EqualTo(2 * 2 * 2 * 1u));
+                  });
+
+                it("should count no assignments to the wrong sink-only OBDD", [&]() {
+                    AssertThat(bdd_satcount(obdd_T, 5, is_false), Is().EqualTo(0u));
+                    AssertThat(bdd_satcount(obdd_T, 4, is_false), Is().EqualTo(0u));
+                    AssertThat(bdd_satcount(obdd_F, 3, is_true), Is().EqualTo(0u));
+                    AssertThat(bdd_satcount(obdd_F, 2, is_true), Is().EqualTo(0u));
+                  });
+
+                it("should count all assignments to the desired sink-only OBDD", [&]() {
+                    AssertThat(bdd_satcount(obdd_T, 5, is_true), Is().EqualTo(32u));
+                    AssertThat(bdd_satcount(obdd_T, 4, is_true), Is().EqualTo(16u));
+                    AssertThat(bdd_satcount(obdd_F, 3, is_false), Is().EqualTo(8u));
+                    AssertThat(bdd_satcount(obdd_F, 2, is_false), Is().EqualTo(4u));
                   });
               });
 
@@ -275,7 +304,7 @@ go_bandit([]() {
                     AssertThat(bdd_satcount(obdd_2, is_any), Is().EqualTo(4u));
                   });
 
-                it("should count no assignments in a true sink-only OBDD", [&]() {
+                it("should count no assignments to the true sink-only OBDD", [&]() {
                     AssertThat(bdd_satcount(obdd_T, is_false), Is().EqualTo(0u));
                     AssertThat(bdd_satcount(obdd_T, is_true), Is().EqualTo(0u));
                   });
