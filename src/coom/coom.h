@@ -24,7 +24,8 @@
 #include <coom/bdd/restrict.h>
 #include <coom/bdd/quantify.h>
 
-// Debugging
+////////////////////////////////////////////////////////////////////////////////
+/// Debugging
 #include <coom/dot.h>
 
 namespace coom

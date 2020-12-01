@@ -63,15 +63,12 @@ namespace coom
     tpie::temp_file base_file;
 
     file() : base_file() {
-#if COOM_ASSERT
-      assert(!is_read_only());
-#endif
+      coom_debug(!is_read_only(), "Created read-only");
     }
 
     file(const std::string &filename, bool persist = true) : base_file(filename, persist) {
-#if COOM_ASSERT
-      assert(!is_read_only());
-#endif
+      coom_debug(!is_read_only(), "Created read-only");
+      // TODO: Make read only, if non-empty?
     }
 
     ~file()
@@ -149,9 +146,7 @@ namespace coom
     file<T> _files [Files];
 
     __meta_file() {
-#if COOM_ASSERT
-      assert(!is_read_only());
-#endif
+      coom_debug(!is_read_only(), "Created read-only");
     }
 
     // TODO: Opening a persistent file with meta information given a path.

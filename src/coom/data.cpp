@@ -60,10 +60,8 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   uid_t create_node_uid(label_t label, id_t id)
   {
-#if COOM_ASSERT
-    assert (label <= MAX_LABEL);
-    assert (id <= MAX_ID);
-#endif
+    coom_debug(label <= MAX_LABEL, "Cannot represent given label");
+    coom_debug(id <= MAX_ID, "Cannot represent given id");
 
     return (label << (ID_BITS + 1)) + (id << 1);
   }
@@ -98,43 +96,36 @@ namespace coom {
 
   bool value_of(uint64_t n)
   {
-#if COOM_ASSERT
-    assert(is_sink_ptr(n));
-#endif
+    coom_debug(is_sink_ptr(n), "Cannot extract value of non-sink");
 
     return (n & ~SINK_BIT) >> 1;
   }
 
   ptr_t negate(ptr_t n)
   {
-#if COOM_ASSERT
-    assert(is_sink_ptr(n));
-#endif
+    coom_debug(is_sink_ptr(n), "Cannot negate non-sink");
 
     return 2u ^ n;
   }
 
   const sink_pred is_any = [] ([[maybe_unused]]ptr_t sink) -> bool
   {
-#if COOM_ASSERT
-    assert(is_sink_ptr(sink));
-#endif
+    coom_debug(is_sink_ptr(sink), "Cannot examine non-sink");
+
     return true;
   };
 
   const sink_pred is_true = [] (ptr_t sink) -> bool
   {
-#if COOM_ASSERT
-    assert(is_sink_ptr(sink));
-#endif
+    coom_debug(is_sink_ptr(sink), "Cannot examine non-sink");
+
     return value_of(sink);
   };
 
   const sink_pred is_false = [] (ptr_t sink) -> bool
   {
-#if COOM_ASSERT
-    assert(is_sink_ptr(sink));
-#endif
+    coom_debug(is_sink_ptr(sink), "Cannot examine non-sink");
+
     return !value_of(sink);
   };
 
@@ -240,13 +231,12 @@ namespace coom {
 
   node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high)
   {
-#if COOM_ASSERT
-    assert(!is_nil(low));
-    assert(is_sink_ptr(low) || label < label_of(low));
+    // TODO: Should these be coom_assert instead to check validity of user input?
+    coom_debug(!is_nil(low), "Cannot create a node with NIL child");
+    coom_debug(is_sink_ptr(low) || label < label_of(low), "Node is not prior to given low child");
 
-    assert(!is_nil(high));
-    assert(is_sink_ptr(high) || label < label_of(high));
-#endif
+    coom_debug(!is_nil(high), "Cannot create a node with NIL child");
+    coom_debug(is_sink_ptr(high) || label < label_of(high), "Node is not prior to given high child");
 
     return create_node(create_node_uid(label, id), low, high);
   }
@@ -278,25 +268,22 @@ namespace coom {
 
   bool value_of(const node_t& n)
   {
-#if COOM_ASSERT
-    assert (is_sink(n));
-#endif
+    coom_debug(is_sink(n), "Cannot extract value from non-sink");
+
     return value_of(n.uid);
   }
 
   id_t id_of(const node& n)
   {
-#if COOM_ASSERT
-    assert (!is_sink(n));
-#endif
+    coom_debug(!is_sink(n), "Cannot extract id of a sink");
+
     return id_of(n.uid);
   }
 
   label_t label_of(const node& n)
   {
-#if COOM_ASSERT
-    assert (!is_sink(n));
-#endif
+    coom_debug(!is_sink(n), "Cannot extract label of a sink");
+
     return label_of(n.uid);
   }
 
@@ -339,7 +326,7 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   ///  ARC
   //////////////////////////////////////////////////////////////////////////////
-  bool is_high(arc& a)
+  bool is_high(const arc& a)
   {
     return is_flagged(a.source);
   }
@@ -380,11 +367,10 @@ namespace coom {
 
   node node_of(const arc& low, const arc& high)
   {
-#if COOM_ASSERT
-    assert (unflag(low.source) == unflag(high.source));
-    assert (!is_flagged(low.source));
-    assert (is_flagged(high.source));
-#endif
+    coom_debug(unflag(low.source) == unflag(high.source), "Arcs are not of the same node");
+    coom_debug(!is_high(low), "High-flag set on low child");
+    coom_debug(is_high(high), "High flag not set on high child");
+
     return { low.source, low.target, high.target };
   }
 
@@ -393,9 +379,8 @@ namespace coom {
   //////////////////////////////////////////////////////////////////////////////
   assignment_t create_assignment(label_t label, bool value)
   {
-#if COOM_ASSERT
-    assert (label <= MAX_LABEL);
-#endif
+    coom_debug(label <= MAX_LABEL, "Cannot represent that large a label");
+
     return { label, value };
   }
 

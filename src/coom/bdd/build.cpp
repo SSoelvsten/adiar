@@ -33,6 +33,8 @@ namespace coom {
 
   bdd bdd_ithvar(label_t label)
   {
+    coom_assert(label <= MAX_LABEL, "Cannot represent that large a label");
+
     node_file nf;
     node_writer nw(nf);
     nw.unsafe_push(create_node(label, 0, create_sink_ptr(false), create_sink_ptr(true)));
@@ -42,6 +44,8 @@ namespace coom {
 
   bdd bdd_nithvar(label_t label)
   {
+    coom_assert(label <= MAX_LABEL, "Cannot represent that large a label");
+
     return bdd_not(bdd_ithvar(label));
   }
 
@@ -61,6 +65,10 @@ namespace coom {
     while(ls.can_pull()) {
       label_t next_label = ls.pull();
       node_t next_node = create_node(next_label, 0, low, high);
+
+      coom_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
+      coom_assert(is_sink_ptr(high) || next_label < label_of(high),
+                  "Labels not given in increasing order");
 
       high = next_node.uid;
 
@@ -87,6 +95,10 @@ namespace coom {
     while(ls.can_pull()) {
       label_t next_label = ls.pull();
       node_t next_node = create_node(next_label, 0, low, high);
+
+      coom_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
+      coom_assert(is_sink_ptr(low) || next_label < label_of(low),
+                  "Labels not given in increasing order");
 
       low = next_node.uid;
 

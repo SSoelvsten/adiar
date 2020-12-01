@@ -220,9 +220,9 @@ namespace coom {
 
   typedef arc arc_t;
 
-  // TODO: Create constructor for COOM_ASSERT checks on being sorted?
+  // TODO: Create constructor for assert checks on being sorted?
 
-  bool is_high(arc_t &a);
+  bool is_high(const arc_t &a);
 
   arc_t negate(const arc_t& a);
   arc operator! (const arc& a);

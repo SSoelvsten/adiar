@@ -33,10 +33,6 @@ namespace coom
         : true;
     }
 
-#if COOM_ASSERT
-    assert(is_node_ptr(r1) && is_node_ptr(r2));
-#endif
-
     // Do they NOT point to a node with the same label?
     if (label_of(r1) != label_of(r2)) {
       return true;
@@ -70,15 +66,12 @@ namespace coom
     node_t v1 = in_nodes_1.pull();
     node_t v2 = in_nodes_2.pull();
 
-    // We already have from the meta file, if only one of them is a non-sink
     if (is_sink(v1) && is_sink(v2)) {
       return value_of(v1) == value_of(v2);
     }
 
-#if COOM_ASSERT
-    assert(!is_sink(v1));
-    assert(!is_sink(v2));
-#endif
+    // We already have from the meta file, if only one of them is a non-sink
+    coom_debug(!is_sink(v1) && !is_sink(v2), "sink cases handled");
 
     // Does the root label differ?
     if (label_of(v1) != label_of(v2)) {
@@ -102,9 +95,7 @@ namespace coom
     }
 
     if (in_nodes_1.can_pull()) {
-#if COOM_ASSERT
-      assert(in_nodes_2.can_pull());
-#endif
+      coom_debug(in_nodes_2.can_pull(), "input are the same size");
       v1 = in_nodes_1.pull();
       v2 = in_nodes_2.pull();
     }

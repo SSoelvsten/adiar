@@ -37,9 +37,7 @@ namespace coom
       }
 
       while(current_node.uid < next_ptr) {
-#if COOM_ASSERT
-        assert(ns.can_pull());
-#endif
+        coom_debug(ns.can_pull(), "Invalid uid chasing; fell out of BDD");
         current_node = ns.pull();
       }
     }

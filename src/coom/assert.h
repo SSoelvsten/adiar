@@ -10,15 +10,47 @@
 
 namespace coom
 {
-  // Taken from: https://stackoverflow.com/a/37264642
-#ifndef NDEBUG
+  // Based on the assert with messages as described here:
+  // https://stackoverflow.com/a/37264642
+
 #   define coom_assert(Expr, Msg)                     \
   __coom_assert(#Expr, Expr, __FILE__, __LINE__, Msg)
+
+#ifndef NDEBUG
+#   define coom_debug(Expr, Msg)                      \
+  __coom_assert(#Expr, Expr, __FILE__, __LINE__, Msg)
 #else
-#   define coom_assert(Expr, Msg) ;
+#   define coom_debug(Expr, Msg) ;
 #endif
 
-  void __coom_assert(const char* expr_str, bool expr, const char* file, int line, const char* msg);
+  inline void __coom_assert(const char* expr_str, bool expr, const char* file, int line, const char* msg)
+  {
+    if (!expr)
+      {
+        std::cerr << "Assert failed:\t" << msg << "\n"
+                  << "Expected:\t" << expr_str << "\n"
+                  << "Source:\t\t" << file << ", line " << line << "\n";
+        abort();
+      }
+  }
+
+#ifndef NDEBUG
+#   define coom_invariant(Expr, Name)                  \
+  __coom_invariant(#Expr, Expr, __FILE__, __LINE__, Name)
+#else
+#   define coom_invariant(Expr, Name) ;
+#endif
+
+  inline void __coom_invariant(const char* expr_str, bool expr, const char* file, int line, const char* name)
+  {
+    if (!expr)
+      {
+        std::cerr << "Invariant '" << name << "' failed\n"
+                  << "Expected:\t" << expr_str << "\n"
+                  << "Source:\t\t" << file << ", line " << line << "\n";
+        abort();
+      }
+  }
 }
 
 #endif // COOM_ASSERT_H

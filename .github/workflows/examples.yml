@@ -22,7 +22,7 @@ jobs:
       run: |
         cmake -E make_directory ${{runner.workspace}}/build
         cd ${{runner.workspace}}/build
-        cmake $GITHUB_WORKSPACE && cmake --build . --target n_queens
+        cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target n_queens
     - name: Makefile | 1-Queens
       working-directory: ${{runner.workspace}}/build
       run: ./example/n_queens 1 1024
@@ -62,7 +62,7 @@ jobs:
       run: |
         cmake -E make_directory ${{runner.workspace}}/build
         cd ${{runner.workspace}}/build
-        cmake $GITHUB_WORKSPACE && cmake --build . --target pigeonhole_principle
+        cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target pigeonhole_principle
     - name: Makefile | 2 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 1 1024
@@ -108,7 +108,7 @@ jobs:
       run: |
         cmake -E make_directory ${{runner.workspace}}/build
         cd ${{runner.workspace}}/build
-        cmake $GITHUB_WORKSPACE && cmake --build . --target tic_tac_toe
+        cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target tic_tac_toe
     - name: Makefile | Tic-Tac-Toe (18)
       working-directory: ${{runner.workspace}}/build
       run: ./example/tic_tac_toe 18 1024

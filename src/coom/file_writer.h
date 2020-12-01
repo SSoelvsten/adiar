@@ -54,9 +54,7 @@ namespace coom {
       if (attached()) { detach(); }
       _file_ptr = f._file_ptr;
 
-#if COOM_ASSERT
-      coom_assert(!(_file_ptr -> is_read_only()), "Cannot attach a writer onto a read-only file");
-#endif
+      coom_debug(!(_file_ptr -> is_read_only()), "Cannot attach a writer onto a read-only file");
 
       _stream.open(f._file_ptr -> base_file);
       _stream.seek(0, tpie::file_stream_base::end);
@@ -105,9 +103,8 @@ namespace coom {
     template<typename sorting_pred_t>
     void sort(sorting_pred_t pred = sorting_pred_t())
     {
-#if COOM_ASSERT
-      assert(attached());
-#endif
+      coom_debug(attached(), "Cannot sort no content");
+
       tpie::progress_indicator_null pi;
       tpie::sort(_stream, pred, pi);
 
@@ -187,16 +184,16 @@ namespace coom {
       if (attached()) { detach(); }
       _file_ptr = f._file_ptr;
 
-#if COOM_ASSERT
-      coom_assert(!(_file_ptr -> _meta_file.is_read_only()), "Cannot attach a writer onto a read-only meta file");
-#endif
+      coom_debug(!(_file_ptr -> _meta_file.is_read_only()),
+                  "Cannot attach a writer onto a read-only meta file");
+
       _meta_stream.open(f._file_ptr -> _meta_file.base_file);
       _meta_stream.seek(0, tpie::file_stream_base::end);
 
       for (size_t idx = 0; idx < Files; idx++) {
-#if COOM_ASSERT
-        coom_assert(!(_file_ptr -> _files[idx].is_read_only()), "Cannot attach a writer onto a read-only content file");
-#endif
+        coom_debug(!(_file_ptr -> _files[idx].is_read_only()),
+                    "Cannot attach a writer onto a read-only content file");
+
         _streams[idx].open(f._file_ptr -> _files[idx].base_file);
         _streams[idx].seek(0, tpie::file_stream_base::end);
       }
@@ -235,9 +232,7 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const T &t, size_t idx = 0)
     {
-#if COOM_ASSERT
-      assert(idx < Files);
-#endif
+      coom_debug(idx < Files, "Invalid index");
       _streams[idx].write(t);
     }
 
@@ -260,9 +255,7 @@ namespace coom {
   protected:
     bool has_pushed(const size_t idx)
     {
-#if COOM_ASSERT
-      assert(idx < Files);
-#endif
+      coom_debug(idx < Files, "Invalid index");
       return _streams[idx].size() > 0;
     }
   };
@@ -363,17 +356,13 @@ namespace coom {
 
     void unsafe_push_node(const arc_t &a)
     {
-#if COOM_ASSERT
-      assert(is_node_ptr(a.target));
-#endif
+      coom_debug(is_node_ptr(a.target), "pushing non-node arc into node file");
       meta_file_writer::unsafe_push(a, 0);
     }
 
     void unsafe_push_sink(const arc_t &a)
     {
-#if COOM_ASSERT
-      assert(is_sink_ptr(a.target));
-#endif
+      coom_debug(is_sink_ptr(a.target), "pushing non-sink into sink file");
       meta_file_writer::unsafe_push(a, 1);
     }
 
@@ -394,9 +383,7 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     void sort_sinks()
     {
-#if COOM_ASSERT
-      assert(attached());
-#endif
+      coom_debug(attached(), "Missing arc_file attached");
       tpie::progress_indicator_null pi;
       tpie::sort(_streams[1], by_source_lt(), pi);
     }
@@ -404,9 +391,7 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     void attach(const arc_file &af) {
       meta_file_writer::attach(af);
-#if COOM_ASSERT
-      assert(meta_file_writer::empty());
-#endif
+      coom_debug(meta_file_writer::empty(), "Attached to non-empty arc_file");
     }
 
     bool attached() const { return meta_file_writer::attached(); }
