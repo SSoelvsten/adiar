@@ -13,7 +13,7 @@ namespace coom
 
   void set_limit(size_t memory_limit_mb)
   {
-    coom_assert(memory_limit_mb > 512, "COOM requires at least 512 MB of memory");
+    coom_assert(memory_limit_mb >= 128, "COOM requires at least 128 MB of memory");
     tpie::get_memory_manager().set_limit(memory_limit_mb * 1024 * 1024);
   }
 

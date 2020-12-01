@@ -16,7 +16,7 @@ namespace coom
   /// node_file
   bool is_sink(const node_file &file, const sink_pred &pred)
   {
-    coom_assert(!file.empty(), "Invalid node_file: empty");
+    coom_debug(!file.empty(), "Invalid node_file: empty");
 
     if (file.size() != 1) {
       return false;
@@ -30,12 +30,12 @@ namespace coom
   template<bool reverse>
   label_t extract_label(const node_file &file)
   {
-    coom_assert(file.size() > 0, "Invalid node_file: empty");
+    coom_debug(file.size() > 0, "Invalid node_file: empty");
 
     node_stream<reverse> ns(file);
     node_t n = ns.pull();
 
-    coom_assert(!is_sink(n), "Cannot extract label from sink-only file");
+    coom_debug(!is_sink(n), "Cannot extract label from sink-only file");
 
     return label_of(n);
   }

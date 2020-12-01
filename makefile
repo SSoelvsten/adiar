@@ -6,7 +6,7 @@ MAKE_FLAGS=-j $$(nproc)
 #  BUILD
 # ============================================================================ #
 build:
-	@mkdir -p build/ && cd build/ && cmake ..
+	@mkdir -p build/ && cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
 
 # ============================================================================ #
 #  clean
@@ -24,7 +24,7 @@ clean: | clean-files
 # ============================================================================ #
 test:
 	@mkdir -p build/
-	@cd build/ && cmake -D COOM_ASSERT=ON ..
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug ..
 	@cd build/ && make $(MAKE_FLAGS) test_unit
 
 	$(MAKE) clean-files
@@ -38,7 +38,7 @@ F =
 
 dot:
 	@mkdir -p build/
-	@cd build/ && cmake ..
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug ..
 	@cd build/ && make $(MAKE_FLAGS) coom_dot
 	@./build/src/coom_dot ${F}
 
@@ -49,7 +49,7 @@ M = 1024
 
 main:
 	@mkdir -p build/
-	@cd build/ && cmake -D COOM_ASSERT=ON ..
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug ..
 	@cd build/ && make $(MAKE_FLAGS) coom_main
 	@echo "" && echo ""
 	@./build/src/coom_main ${M}
@@ -62,7 +62,7 @@ example-n-queens: N := 8
 example-n-queens:
   # Build
 	@mkdir -p build/
-	@cd build/ && cmake ..
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
 
 	@cd build/ && make $(MAKE_FLAGS) n_queens
 
@@ -75,7 +75,7 @@ example-pigeonhole-principle: N := 10
 example-pigeonhole-principle:
   # Build
 	@mkdir -p build/
-	@cd build/ && cmake ..
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
 
 	@cd build/ && make $(MAKE_FLAGS) pigeonhole_principle
 
@@ -88,7 +88,7 @@ example-tic-tac-toe: N := 20
 example-tic-tac-toe:
   # Build
 	@mkdir -p build/
-	@cd build/ && cmake ..
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
 
 	@cd build/ && make $(MAKE_FLAGS) tic_tac_toe
 

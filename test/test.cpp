@@ -67,6 +67,10 @@ public:
 #include "coom/bdd/test_restrict.cpp"
 
 int main(int argc, char* argv[]) {
+#ifdef NDEBUG
+  std::cerr << "Warning: Internal assertions are not enabled!\n\n";
+#endif
+
   // Initialize COOM and TPIE
   coom_init(1024);
 

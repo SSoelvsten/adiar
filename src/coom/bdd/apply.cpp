@@ -12,7 +12,6 @@
 #include <coom/bdd/build.h>
 #include <coom/bdd/negate.h>
 
-#include <assert.h>
 #include <coom/assert.h>
 
 namespace coom
@@ -308,9 +307,7 @@ namespace coom
       // Resolve request
       uid_t out_uid = create_node_uid(out_label, out_id);
 
-#if COOM_ASSERT
-      assert(out_id < MAX_ID);
-#endif
+      coom_debug(out_id < MAX_ID, "Has run out of ids");
       out_id++;
 
       apply_resolve_request(appD, aw, op, out_uid, low1, low2);

@@ -46,9 +46,7 @@ namespace coom
                                     ptr_t child_to_resolve, label_t current_label, label_t max_label,
                                     uint64_t ingoing_sum = 1u)
   {
-#if COOM_ASSERT
-    assert(ingoing_sum != 0);
-#endif
+    if (ingoing_sum == 0) { return; }
 
     if (is_sink_ptr(child_to_resolve)) {
       if (sink_pred(child_to_resolve)) {
@@ -148,11 +146,11 @@ namespace coom
       return 0u;
     }
 
-    coom_assert(minimum_label <= min_label(bdd),
-                "given minimum_label should be smaller than the present root label");
+    coom_debug(minimum_label <= min_label(bdd),
+               "given minimum_label should be smaller than the present root label");
 
-    coom_assert(max_label(bdd) <= maximum_label,
-                "given maximum_label should be greater than the largest label in obdd");
+    coom_debug(max_label(bdd) <= maximum_label,
+               "given maximum_label should be greater than the largest label in obdd");
 
     return count<true>(bdd, minimum_label, maximum_label, sink_pred);
   }
@@ -169,8 +167,8 @@ namespace coom
     label_t minimum_label = min_label(bdd);
     label_t maximum_label = (minimum_label + varcount) - 1u;
 
-    coom_assert(max_label(bdd) <= maximum_label,
-                "the bdd spans more labels than the provided varcount suggests");
+    coom_debug(max_label(bdd) <= maximum_label,
+               "the bdd spans more labels than the provided varcount suggests");
 
     return count<true>(bdd, minimum_label, maximum_label, sink_pred);
   }

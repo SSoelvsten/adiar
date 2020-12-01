@@ -80,9 +80,7 @@ namespace coom {
   public:
     bool hook_meta_stream(const meta_file<File_T, Files> &f)
     {
-#if COOM_ASSERT
-      assert (_files_given < MetaStreams);
-#endif
+      coom_debug(_files_given < MetaStreams, "Given more files than was expected");
 
       _meta_streams[_files_given] = std::make_unique<meta_stream<File_T, Files>>(f);
 
@@ -92,9 +90,8 @@ namespace coom {
 
     bool can_pull()
     {
-#if COOM_ASSERT
-      assert (_files_given == MetaStreams);
-#endif
+      coom_debug(_files_given == MetaStreams,
+                 "Cannot check existence of next element before being attached to all meta streams");
 
       for (size_t idx = 0u; idx < MetaStreams; idx++)
       {
@@ -108,10 +105,11 @@ namespace coom {
 
     label_t peek()
     {
-#if COOM_ASSERT
-      assert (_files_given == MetaStreams);
-      assert (can_pull());
-#endif
+      coom_debug(_files_given == MetaStreams,
+                 "Peeking element before being attached to all expected meta streams");
+      coom_debug(can_pull(),
+                 "Cannot peek past end of all streams");
+
       bool has_min_label = false;
       label_t min_label = 0u;
       for (size_t idx = 0u; idx < MetaStreams; idx++)
@@ -129,10 +127,10 @@ namespace coom {
 
     label_t pull()
     {
-#if COOM_ASSERT
-      assert (_files_given == MetaStreams);
-      assert (can_pull());
-#endif
+      coom_debug(_files_given == MetaStreams,
+                 "Pulling element before being attached to all expected meta streams");
+      coom_debug(can_pull(),
+                 "Cannot pull past end of all streams");
 
       label_t min_label = peek();
 
@@ -241,9 +239,9 @@ namespace coom {
       : _overflow_queue(calc_tpie_pq_factor(m_sort<T, Buckets>(memory_given)))
     {
       _buckets_memory = memory_given;
-#if COOM_ASSERT
-      assert(m_single_block<T>() * Buckets < _buckets_memory);
-#endif
+
+      coom_debug(m_single_block<T>() * Buckets < _buckets_memory,
+                 "Not enough memory to instantiate all buckets concurrently");
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -264,10 +262,8 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     void hook_meta_stream(const meta_file<File_T, Files> &f)
     {
-#if COOM_ASSERT
-      assert (_front_bucket_idx == 0);
-      assert (_back_bucket_idx == 0);
-#endif
+      coom_debug(_front_bucket_idx == 0, "Given too many meta_streams to hook into");
+      coom_debug(_back_bucket_idx == 0, "Given too many meta_streams to hook into");
 
       bool all_hooked = label_mgr::hook_meta_stream(f);
       if (all_hooked && label_mgr::can_pull()) {
@@ -276,17 +272,15 @@ namespace coom {
 
         while(_back_bucket_idx < Buckets && label_mgr::can_pull()) {
           label_t label = label_mgr::pull();
-#if COOM_ASSERT
-          assert (_label_comparator(_buckets_label[_back_bucket_idx], label));
-#endif
+
+          coom_invariant(_label_comparator(_buckets_label[_back_bucket_idx], label),
+                         "");
+          coom_invariant(_front_bucket_idx == 0, "Front bucket not moved");
+          coom_invariant(_back_bucket_idx <= Buckets, "Buckets only created up to given limit");
+
           _back_bucket_idx++;
           setup_bucket(_back_bucket_idx, label);
         }
-
-#if COOM_ASSERT
-        assert (_front_bucket_idx == 0);
-        assert (_back_bucket_idx <= Buckets);
-#endif
 
         calc_front_bucket();
       }
@@ -309,9 +303,8 @@ namespace coom {
 
       label_t label = LabelExt::label_of(t);
 
-#if COOM_ASSERT
-      assert(_label_comparator(front_bucket_label(), label));
-#endif
+      coom_debug(_label_comparator(front_bucket_label(), label),
+                 "Element pushed prior to currently active bucket");
 
       for (size_t bucket = 1; bucket <= Buckets && bucket <= active_buckets(); bucket++) {
         size_t bucket_idx = (_front_bucket_idx + bucket) % (Buckets + 1);
@@ -341,9 +334,8 @@ namespace coom {
     bool has_next_layer()
     {
       if constexpr (Buckets == 0) {
-#if COOM_ASSERT
-        assert (!can_pull());
-#endif
+        coom_debug (!can_pull(), "Cannot check on next layer on empty queue");
+
         return !_overflow_queue.empty();
       }
 
@@ -402,9 +394,7 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     T peek()
     {
-#if COOM_ASSERT
-      assert (can_pull());
-#endif
+      coom_debug (can_pull(), "Cannot peek on empty layer/queue");
 
       if constexpr (Buckets == 0) {
         return _overflow_queue.top();
@@ -435,9 +425,7 @@ namespace coom {
     ////////////////////////////////////////////////////////////////////////////
     T pull()
     {
-#if COOM_ASSERT
-      assert (can_pull());
-#endif
+      coom_debug (can_pull(), "Cannot pull on empty layer/queue");
 
       _size--;
       if constexpr (Buckets == 0) {
@@ -494,11 +482,14 @@ namespace coom {
     template<bool has_stop_label>
     void setup_next_layer(label_t stop_label)
     {
-#if COOM_ASSERT
-      assert (!has_stop_label || _label_comparator(front_bucket_label(), stop_label));
-      assert (!can_pull());
-      assert (has_next_layer());
-#endif
+      coom_debug(!has_stop_label || _label_comparator(front_bucket_label(), stop_label),
+                 "Stop label is prior to the current front bucket");
+
+      coom_debug(!can_pull(),
+                 "Layer is non-empty");
+
+      coom_debug(has_next_layer(),
+                 "Has no next layer to go to");
 
       if constexpr (Buckets == 0) {
         while (LabelExt::label_of(_overflow_queue.top()) != _buckets_label[0]
@@ -508,9 +499,8 @@ namespace coom {
         return;
       }
 
-#if COOM_ASSERT
-      assert (_label_comparator(front_bucket_label(), back_bucket_label()));
-#endif
+      coom_debug(_label_comparator(front_bucket_label(), back_bucket_label()),
+                 "Front bucket run ahead of back bucket");
 
       // Sort active buckets until we find one with some content
       for (size_t b = 0;
@@ -536,9 +526,7 @@ namespace coom {
         }
 
         if (_label_comparator(front_bucket_label(), stop_label)) {
-#if COOM_ASSERT
-          assert(!_overflow_queue.empty());
-#endif
+          coom_debug(!_overflow_queue.empty(), "Will plough through all remaining buckets");
 
           setup_next_bucket();
           while (has_next_bucket() && _label_comparator(front_bucket_label(), stop_label)) {
@@ -553,10 +541,11 @@ namespace coom {
         }
       }
 
-#if COOM_ASSERT
-      assert (!has_next_bucket() || _label_comparator(front_bucket_label(), back_bucket_label()));
-      assert (has_next_bucket() || front_bucket_label() == back_bucket_label());
-#endif
+
+      coom_debug(!has_next_bucket() || _label_comparator(front_bucket_label(), back_bucket_label()),
+                 "Inconsistency in has_next_bucket predicate");
+      coom_debug(has_next_bucket() || front_bucket_label() == back_bucket_label(),
+                 "Inconsistency in has_next_bucket predicate");
     }
 
     bool has_next_bucket()
@@ -566,9 +555,8 @@ namespace coom {
 
     label_t next_bucket_label()
     {
-#if COOM_ASSERT
-      assert (has_next_bucket());
-#endif
+      coom_debug(has_next_bucket(), "Cannot obtain label of non-existing next bucket");
+
       size_t next_idx = (_front_bucket_idx + 1) % (Buckets + 1);
       label_t next_label = _buckets_label[next_idx];
       return next_label;
@@ -588,9 +576,8 @@ namespace coom {
 
     void setup_next_bucket()
     {
-#if COOM_ASSERT
-      assert (has_next_bucket() && _label_comparator(front_bucket_label(), back_bucket_label()));
-#endif
+      coom_debug(has_next_bucket() && _label_comparator(front_bucket_label(), back_bucket_label()),
+                 "Inconsistency in has_next_bucket predicate");
 
       if (label_mgr::can_pull()) {
         label_t next_label = label_mgr::pull();
@@ -599,10 +586,10 @@ namespace coom {
       }
       _front_bucket_idx = (_front_bucket_idx + 1) % (Buckets + 1);
 
-#if COOM_ASSERT
-      assert (!has_next_bucket() || _label_comparator(front_bucket_label(), back_bucket_label()));
-      assert (has_next_bucket() || front_bucket_label() == back_bucket_label());
-#endif
+      coom_debug(!has_next_bucket() || _label_comparator(front_bucket_label(), back_bucket_label()),
+                 "Inconsistency in has_next_bucket predicate");
+      coom_debug(has_next_bucket() || front_bucket_label() == back_bucket_label(),
+                 "Inconsistency in has_next_bucket predicate");
     }
 
     void calc_front_bucket()

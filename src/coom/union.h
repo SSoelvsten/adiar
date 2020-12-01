@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <optional>
 
-#include <assert.h>
+#include <coom/assert.h>
 
 namespace coom
 {
@@ -89,9 +89,7 @@ namespace coom
     {
       static_assert(std::is_same<T1, T>::value || std::is_same<T2, T>::value);
 
-#if COOM_ASSERT
-      assert(has<T>());
-#endif
+      coom_debug(has<T>(), "Does not hold an element of the requested type");
 
       if constexpr (std::is_same<T1, T>::value) {
         return _t1.value();

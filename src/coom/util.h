@@ -20,9 +20,7 @@ namespace coom
   template<typename T>
   void copy(const tpie::file<T> &f1, const tpie::file<T> &f2)
   {
-#if COOM_ASSERT
-    assert (f2.size() == 0);
-#endif
+    coom_debug(f2.size() == 0, "Non-empty output file");
     if (f1.size() == 0) { return; }
 
     typename tpie::file<T>::stream f1_stream(f1);
@@ -108,9 +106,8 @@ namespace coom
 
     T dequeue()
     {
-#if COOM_ASSERT
-      assert(!empty());
-#endif
+      coom_debug(!empty(), "Dequeue on empty queue");
+
       --enqueued;
       return front.read();
     }

@@ -66,10 +66,9 @@ namespace coom {
 
     ~file_stream()
     {
-#if COOM_ASSERT
-      assert(_stream.attached());
-#endif
-      _stream.detach();
+      if (attached()) {
+        _stream.detach();
+      }
     }
 
     ////////////////////////////////////////////////////////////////////////////

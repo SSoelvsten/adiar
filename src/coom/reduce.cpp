@@ -87,9 +87,9 @@ namespace coom
     // Phase 1 and 3 of the sorters; pushing and popping data.
     size_t sorter_phase_1 = std::max((sizeof(node) * 128 * 1024 + 5 * 1024 * 1024),
                                      available_memory / 20); // ~8MB
-#if COOM_ASSERT
-    assert(2 * sorter_phase_1 < available_memory / 2);
-#endif
+
+    coom_debug(2 * sorter_phase_1 < available_memory / 2,
+               "Taking too much memory for the sorter blocks");
 
     // Phase 2 of the sorter; merge_sort on the data. Take...
     size_t sorter_phase_2 = std::max(sorter_phase_1 * 2, // at least 2x the first and third phase (~16 MB), or...
@@ -100,15 +100,13 @@ namespace coom
                                      // Yet, minus the amount of space we have reserved for the other sorter
                                      - sorter_phase_1);
 
-#if COOM_ASSERT
-  assert(sorter_phase_1 < sorter_phase_2);
-  assert(sorter_phase_1 * 2 + sorter_phase_2 <= available_memory / 2);
-#endif
+    coom_debug(sorter_phase_1 < sorter_phase_2,
+               "Not enough space for sorting phase");
 
-  // The memory given to the priority queue may overlap on the sorter_phase_2,
-  // but should not overlap with the two sorter_phase_1
-  reduce_priority_queue_t redD(available_memory - (2 * sorter_phase_1));
-  redD.hook_meta_stream(in_file);
+    // The memory given to the priority queue may overlap on the sorter_phase_2,
+    // but should not overlap with the two sorter_phase_1
+    reduce_priority_queue_t redD(available_memory - (2 * sorter_phase_1));
+    redD.hook_meta_stream(in_file);
 
     // Check to see if node_arcs is empty
     if (!node_arcs.can_pull()) {
@@ -135,9 +133,7 @@ namespace coom
 
     // Process bottom-up each layer
     while (sink_arcs.can_pull() || redD.can_pull()) {
-#if COOM_ASSERT
-      assert (label == redD.current_layer());
-#endif
+      coom_invariant(label == redD.current_layer(), "label and priority queue are in sync");
 
       // Temporary file for Reduction Rule 1 mappings (opened later if need be)
       tpie::file_stream<mapping> red1_mapping;
@@ -182,9 +178,8 @@ namespace coom
 
         node_t out_node = create_node(label, out_id, current_node.low, current_node.high);
         out_writer.unsafe_push(out_node);
-#if COOM_ASSERT
-        assert(out_id > 0);
-#endif
+
+        coom_debug(out_id > 0, "Has run out of ids");
         out_id--;
 
         red2_mapping.push({ current_node.uid, out_node.uid });
@@ -232,9 +227,8 @@ namespace coom
                                (has_next_red1 && next_red1.old_uid > next_red2.old_uid);
         mapping current_map = is_red1_current ? next_red1 : next_red2;
 
-#if COOM_ASSERT
-        assert(!node_arcs.can_pull() || current_map.old_uid == node_arcs.peek().target);
-#endif
+        coom_invariant(!node_arcs.can_pull() || current_map.old_uid == node_arcs.peek().target,
+                       "Mapping forwarded in sync with node_arcs");
 
         // Find all arcs that have sources that match the current mapping's old_uid
         while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target) {
@@ -268,9 +262,8 @@ namespace coom
         }
         label = redD.current_layer();
       } else if (!out_writer.has_pushed()) {
-#if COOM_ASSERT
-        assert (!node_arcs.can_pull() && !sink_arcs.can_pull());
-#endif
+        coom_debug(!node_arcs.can_pull() && !sink_arcs.can_pull(),
+                   "Nodes are still left to be processed");
         out_writer.unsafe_push({ next_red1.new_uid, NIL, NIL });
 
         return out_file;

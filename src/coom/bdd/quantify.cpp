@@ -126,9 +126,7 @@ namespace coom
                  const label_t label,
                  const bool_op &op)
   {
-#if COOM_ASSERT
-    assert(is_commutative(op));
-#endif
+    coom_debug(is_commutative(op), "Noncommutative operator used");
 
     // Check if there is no need to do any computation
     if (is_sink(bdd, is_any) || !quantify_has_label(label, bdd)) {
@@ -261,11 +259,10 @@ namespace coom
         // The variable should be quantified: proceed as in Restrict by
         // forwarding the request of source further to the children, though here
         // we keep track of both possibilities.
+        coom_debug(is_nil(low2), "Ended in pairing case on request of that already is a pair");
+        coom_debug(is_nil(high2), "Ended in pairing case on request of that already is a pair");
+
         while (true) {
-#if COOM_ASSERT
-          assert(is_nil(low2));
-          assert(is_nil(high2));
-#endif
           quantify_resolve_request(quantD, aw, op,
                                    source,
                                    std::min(low1, high1),
@@ -279,9 +276,8 @@ namespace coom
         // The variable should stay: proceed as in Apply by simulating both
         // possibilities in parallel.
         uid_t out_uid = create_node_uid(out_label, out_id);
-#if COOM_ASSERT
-        assert(out_id < MAX_ID);
-#endif
+
+        coom_debug(out_id < MAX_ID, "Has run out of ids");
         out_id++;
 
         quantify_resolve_request(quantD, aw, op,
@@ -313,9 +309,7 @@ namespace coom
                const label_file &labels,
                const bool_op &op)
   {
-#if COOM_ASSERT
-    assert(is_commutative(op));
-#endif
+    coom_debug(is_commutative(op), "Noncommutative operator used");
 
     if (labels.size() == 0) {
       return in_bdd;

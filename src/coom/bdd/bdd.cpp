@@ -37,7 +37,10 @@ namespace coom {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bdd::bdd(const node_file &f, bool negate) : file(f), negate(negate) { }
+  bdd::bdd(const node_file &f, bool negate) : file(f), negate(negate)
+  {
+    // TODO: Add coom_assert on size?
+  }
 
   bdd::bdd(const bdd &o) : file(o.file), negate(o.negate) { }
   bdd::bdd(bdd &&o) : file(o.file), negate(o.negate) { }
