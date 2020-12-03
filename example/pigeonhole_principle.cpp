@@ -23,13 +23,11 @@ class sat_solver
 {
 private:
   cnf_t clauses;
-  bool should_sort = false;
 
 public:
   void add_clause(clause_t clause)
   {
     clauses.push_back(clause);
-    should_sort = true;
   }
 
   size_t cnf_size()
@@ -37,65 +35,48 @@ public:
     return clauses.size();
   }
 
-  bool is_unsatisfiable(const std::function<void(clause_t&)> &on_and_clause,
-                        const std::function<void(uint64_t)> &on_quantify_variable,
-                        const std::function<bool()> &on_is_false)
+  bool is_satisfiable(const std::function<void(clause_t&)> &on_and_clause,
+                      const std::function<void(uint64_t)> &on_quantify_variable,
+                      const std::function<bool()> &on_is_false)
   {
-    if (should_sort)
-    {
-      // TODO: Based on the footnote in pigeonhole formulas, we may just want to
-      // construct it in the same order they used?
-      std::sort(clauses.begin(), clauses.end(),
-                [](clause_t &a, clause_t &b) {
-                  return a.back().first > b.back().first;
-                });
-    }
+    // TODO: Based on the footnote in pigeonhole formulas, we may just want to
+    // construct it in the same order they used?
+    std::sort(clauses.begin(), clauses.end(),
+              [](clause_t &a, clause_t &b) {
+                return a.back().first > b.back().first;
+              });
 
-    std::set<uint64_t> unique_labels;
-    std::priority_queue<uint64_t> priority_labels;
+    std::set<uint64_t> seen_labels;
 
     for (clause_t &clause : clauses)
     {
-      while (!priority_labels.empty() && clause.back().first < priority_labels.top())
+      while (!seen_labels.empty() && clause.back().first < *seen_labels.rbegin())
       {
-        on_quantify_variable(priority_labels.top());
-
-        unique_labels.erase(priority_labels.top());
-        priority_labels.pop();
+        on_quantify_variable(*seen_labels.rbegin());
+        seen_labels.erase(*seen_labels.rbegin());
       }
 
       for (literal_t &x : clause)
       {
-        if (unique_labels.insert(x.first).second)
-        {
-          priority_labels.push(x.first);
-        }
+        seen_labels.insert(x.first);
       }
 
       on_and_clause(clause);
 
       if (on_is_false())
       {
-        return true;
+        return false;
       }
-    }
-
-    while (!priority_labels.empty())
-    {
-      on_quantify_variable(priority_labels.top());
-
-      unique_labels.erase(priority_labels.top());
-      priority_labels.pop();
     }
 
     return on_is_false();
   }
 
-  bool is_satisfiable(const std::function<void(clause_t&)> &on_and_clause,
-                      const std::function<void(uint64_t)> &on_quantify_variable,
-                      const std::function<bool()> &on_is_false)
+  bool is_unsatisfiable(const std::function<void(clause_t&)> &on_and_clause,
+                        const std::function<void(uint64_t)> &on_quantify_variable,
+                        const std::function<bool()> &on_is_false)
   {
-    return !is_unsatisfiable(on_and_clause, on_quantify_variable, on_is_false);
+    return !is_satisfiable(on_and_clause, on_quantify_variable, on_is_false);
   }
 };
 
@@ -170,6 +151,9 @@ size_t largest_unreduced = 0;
 
 std::vector<size_t> apply_unreduced_sizes;
 
+size_t acc_apply_node_arcs = 0;
+size_t acc_apply_sink_arcs = 0;
+
 float best_apply_sink_ratio = 0.0;
 float acc_apply_sink_ratio = 0.0;
 float worst_apply_sink_ratio = 1.0;
@@ -183,6 +167,9 @@ inline void stats_apply_unreduced(size_t node_arcs, size_t sink_arcs)
 
   apply_unreduced_sizes.push_back(total_arcs / 2);
 
+  acc_apply_node_arcs += node_arcs;
+  acc_apply_sink_arcs += sink_arcs;
+
   float sink_ratio = float(sink_arcs) / float(total_arcs);
   best_apply_sink_ratio = std::max(best_apply_sink_ratio, sink_ratio);
   acc_apply_sink_ratio += sink_ratio;
@@ -190,6 +177,9 @@ inline void stats_apply_unreduced(size_t node_arcs, size_t sink_arcs)
 }
 
 std::vector<size_t> exists_unreduced_sizes;
+
+size_t acc_exists_node_arcs = 0;
+size_t acc_exists_sink_arcs = 0;
 
 float best_exists_sink_ratio = 0.0;
 float acc_exists_sink_ratio = 0.0;
@@ -203,6 +193,9 @@ inline void stats_exists_unreduced(size_t node_arcs, size_t sink_arcs)
   largest_unreduced = std::max(largest_unreduced, total_arcs / 2);
 
   exists_unreduced_sizes.push_back(total_arcs / 2);
+
+  acc_exists_node_arcs += node_arcs;
+  acc_exists_sink_arcs += sink_arcs;
 
   float sink_ratio = float(sink_arcs) / float(total_arcs);
   best_exists_sink_ratio = std::max(best_exists_sink_ratio, sink_ratio);
@@ -241,17 +234,20 @@ inline void stats_exists_reduced(size_t unreduced_size, size_t reduced_size)
 }
 
 /* A few chrono wrappers to improve readability of the code below */
-inline auto get_timestamp() {
+inline auto get_timestamp()
+{
   return std::chrono::high_resolution_clock::now();
 }
 
 inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
-                        std::chrono::high_resolution_clock::time_point &after) {
+                        std::chrono::high_resolution_clock::time_point &after)
+{
   return std::chrono::duration_cast<std::chrono::milliseconds>(after - before).count();
 }
 
 /* TODO: File size calculations should be available from COOM. */
-inline auto MB_of_size(tpie::stream_size_type size) {
+inline auto MB_of_size(tpie::stream_size_type size)
+{
   return size * sizeof(coom::node) /* bytes */ / (1024 * 1024) /* in MB */;
 }
 
@@ -322,16 +318,17 @@ int main(int argc, char** argv)
 
     for (auto it = clause.rbegin(); it != clause.rend(); it++)
     {
-      literal_t v = *it;
+      coom::label_t label = (*it).first;
+      bool negated = (*it).second;
 
-      coom::node n = coom::create_node(v.first, 0,
-                                       v.second ? coom::create_sink_ptr(true) : next,
-                                       v.second ? next : coom::create_sink_ptr(true));
+      coom::node n = coom::create_node(label, 0,
+                                       negated ? coom::create_sink_ptr(true) : next,
+                                       negated ? next : coom::create_sink_ptr(true));
 
       next = n.uid;
 
       clause_nodes.write(n);
-      clause_meta.write({ v.first });
+      clause_meta.write({ label });
     }
 
     tpie::file_stream<coom::arc_t> reduce_node_arcs;
@@ -426,9 +423,10 @@ int main(int argc, char** argv)
   tpie::log_info() << "|  |" << std::endl;
 
   tpie::log_info() << "|  | CNF: " << std::endl;
-  tpie::log_info() << "|  |  | variables:        " << label_of_Pij(N+1, N, N) << std::endl;
-  tpie::log_info() << "|  |  | clauses:          " << solver.cnf_size() << std::endl;
-  tpie::log_info() << "|  |  | number of exists: " << number_of_exists << std::endl;
+  tpie::log_info() << "|  |  | variables:         " << label_of_Pij(N+1, N, N) << std::endl;
+  tpie::log_info() << "|  |  | clauses:           " << solver.cnf_size() << std::endl;
+  tpie::log_info() << "|  |  | number of applies: " << number_of_applies << std::endl;
+  tpie::log_info() << "|  |  | number of exists:  " << number_of_exists << std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
 
@@ -517,7 +515,7 @@ int main(int argc, char** argv)
 
   tpie::log_info() << "|  | time: " << std::endl;
   tpie::log_info() << "|  |  | CNF construction: " << duration_of(t1, t2) << " ms" << std::endl;
-  tpie::log_info() << "|  |  | OBDD solving: " << duration_of(t3, t4) << << " ms" std::endl;
+  tpie::log_info() << "|  |  | OBDD solving: " << duration_of(t3, t4) << " ms" << std::endl;
 
 
   // ===== COOM =====
