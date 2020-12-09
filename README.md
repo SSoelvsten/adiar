@@ -49,12 +49,12 @@ git submodule update --init --recursive
 
 One also needs a _C++_ compiler of ones choice. All development has currently
 been with the _g++_ compiler, so we cannot guarantee other compilers will work
-out-of-the-box. The project also has dependencies on _CMake_, the _Boost
-Library_, and _Aptitude_. On Ubuntu 18+ you can obtain all these dependencies
+out-of-the-box. The project also has dependencies on _CMake_ and the _Boost
+Library_. On Ubuntu 18+ you can obtain all these dependencies
 with the following commands.
 
 ```bash
-apt install g++ cmake libboost-all-dev aptitude
+apt install g++ cmake libboost-all-dev
 ```
 
 As a visual aid, the internal representation of the Decision Diagrams can be
