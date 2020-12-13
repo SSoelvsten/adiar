@@ -7,7 +7,7 @@
 
 namespace coom
 {
-  void coom_init(size_t memory_limit_mb)
+  void coom_init(size_t memory_limit_mb, std::string temp_dir)
   {
     tpie::tpie_init();
 
@@ -17,12 +17,10 @@ namespace coom
     // Temporary files
     tpie::tempname::set_default_base_name("COOM");
     tpie::tempname::set_default_extension("coom"); // does this do anything?
-  }
 
-  void coom_init(size_t memory_limit_mb, std::string temp_dir)
-  {
-    coom_init(memory_limit_mb);
-    tpie::tempname::set_default_path(temp_dir);
+    if (temp_dir != "") {
+      tpie::tempname::set_default_path(temp_dir);
+    }
   }
 
   void set_limit(size_t memory_limit_mb)

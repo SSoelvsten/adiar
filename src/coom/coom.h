@@ -39,8 +39,7 @@ namespace coom
   ///       What about opening files by others? Should we store that somehow in
   ///       the first element of the meta stream?
   //////////////////////////////////////////////////////////////////////////////
-  void coom_init(size_t memory_limit_mb);
-  void coom_init(size_t memory_limit_mb, std::string temp_dir);
+  void coom_init(size_t memory_limit_mb, std::string temp_dir = "");
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Changes the memory limit used by COOM
