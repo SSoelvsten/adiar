@@ -151,8 +151,9 @@ Thank you, to the following wonderful people:
   who implemented _Apply_, _Evaluate_, _Count Assignments_, _Count Paths_,
   _Reduce_, and _Restrict_ as part of a summer project.
 
-- **[Asger Hautop Drewsen](https://github.com/Tyilo)**: Maintainer of _TPIE_,
-  who helped debug a few issues and gave general feedback on the codebase.
+- **[Asger Hautop Drewsen](https://github.com/Tyilo)**: Previous maintainer of
+  _TPIE_, who helped debug a few issues and gave general feedback on the
+  codebase.
 
 - **[Mathias Rav](https://github.com/Mortal)**:
   Developer of TPIE and always helpful oracle about everything _TPIE_,
