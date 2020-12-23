@@ -94,7 +94,7 @@ algorithms execution time [[Brace90](README.md#references)].
 ### Multi-Terminal Binary Decision Diagrams
 One can easily extend the proposed representation of sink nodes to encompass
 non-boolean values, such as integers or floats. Thereby, the algorithms
-immediately yield a Cache-oblivious implementation of the _Multi-Terminal Binary
+immediately yield an I/O efficient implementation of the _Multi-Terminal Binary
 Decision Diagrams_ (MTBDD) of [[Fujita97](README.md#references)].
 
 ### Multi-valued Decision Diagrams
@@ -131,8 +131,7 @@ reuse common subtrees across BDDs (which saves space linear in the number of
 concurrent BDDs in use) and the recursive algorithms run _2_ or even _4_ times
 faster than the current algorithms (when they don't outgrow the main memory).
 
-_TPIE_ provides a _Cache-oblivious_ hash table, so one can look into one of the
-following two
+_TPIE_ provides a hash table, so one can look into one of the following two
 
 1. When a BDD outgrows the main memory, we may be able to convert to the current
    time-forward processing algorithms instead of crashing (which the other BDD
@@ -145,6 +144,8 @@ following two
 
 Based on the memory usage I've witnessed during benchmarking, I think the first
 option is the most promising.
+
+See also the discussion in issue [#98](https://github.com/SSoelvsten/coom/issues/98)
 
 ## Optimising the current algorithms
 There are quite a few avenues of trying to shave off a few significant constants
@@ -167,7 +168,7 @@ we have in parallel access to the underlying data structures and algorithms:
 
 - [X] Parallelisable sorting algorithms (Sorting in TPIE is parallelised).
   
-- [ ] Parallelisable Cache-oblivious priority queue, such as the one in
+- [ ] Parallelisable I/O efficient priority queue, such as the one in
       [[Sitchinava12](README.md#references)].
 
 
