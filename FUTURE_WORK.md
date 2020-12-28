@@ -6,10 +6,11 @@ may constitute interesting undergraduate research projects.
 **Table of Contents**
 
 - [Future Work](#future-work)
-    - [Implementation of missing algorithms](#implementation-of-missing-algorithms)
-        - [Function composition](#function-composition)
+    - [Implementation of missing BDD algorithms](#implementation-of-missing-bdd-algorithms)
         - [If-Then-Else](#if-then-else)
+        - [Function composition](#function-composition)
         - [Coudert's and Madre's Restrict](#couderts-and-madres-restrict)
+        - [Variable reordering](#variable-reordering)
     - [Optimising the OBDD](#optimising-the-obdd)
         - [Complement Edges](#complement-edges)
     - [Extensions](#extensions)
@@ -28,17 +29,14 @@ may constitute interesting undergraduate research projects.
 <!-- markdown-toc end -->
 
 
-## Implementation of missing algorithms
-There are a few valuable additions to the current project by adding a few
-non-vital but still very valuable operators/algorithms. All of these of course
-should be made in the style of _Time-Forward Processing_ like the rest.
+## Implementation of missing BDD algorithms
+There are still many features for BDDs not yet addressed in the _COOM_ library,
+and valuable additions to the current project can be made in implementing these.
+All of these of course should be made in the style of _Time-Forward Processing_
+like the rest.
 
-
-### Function composition
-The _Composition_ of two OBDDs _f_ and _g_ for some label _i ∊ [n]_ is
-_f ∘<sub>i</sub> g (x)_ and is to be interpreted as _f(x<sub>1</sub>, ...,
-x<sub>i-1</sub>, g(x<sub>1</sub>, ..., x<sub>n</sub>), x<sub>i+1</sub>, ...,
-x<sub>n</sub>)_.
+The features are sorted based on the difficulty deriving their design and their
+implementation.
 
 ### If-Then-Else
 The _ITE_ operator takes three OBDDs _f_, _g_, and _h_ and constructs an OBDD
@@ -74,11 +72,28 @@ of _ITE_ rather than the other implementation of the algorithm
 | Existence   | ∃y : f(x, y, z)    | ITE(f(x, 1, z), 1, f(x, 0, z))   |
 | Forall      | ∀y : f(x, y, z)    | ITE(f(x, 1, z), f(x, 0, z), 0)   |
 
+### Function composition
+The _Composition_ of two OBDDs _f_ and _g_ for some label _i ∊ [n]_ is
+_f ∘<sub>i</sub> g (x)_ and is to be interpreted as _f(x<sub>1</sub>, ...,
+x<sub>i-1</sub>, g(x<sub>1</sub>, ..., x<sub>n</sub>), x<sub>i+1</sub>, ...,
+x<sub>n</sub>)_.
+
 ### Coudert's and Madre's Restrict
 The current _Restrict_ algorithm is the basic algorithm of Bryant, but one has
 been proposed in [[Coudert90](README.md#references)] that is very different and
 may be used in Verification. They also proposed algorithms with the name
 _Constrain_ and _Expand_.
+
+### Variable reordering
+Currently, _COOM_ only uses a static ordering of the variables, but since the
+size of the BDD is heavily influenced by the order chosen then many BDD
+libraries provide variable reordering algorithms, or do these themselves
+behdind the scenes.
+
+How one can rephrase these algorithms within the design of _COOM_ will probably
+require quite a bit of creativity, understanding of the I/O model and also of
+the original variable reordering algorithms.
+
 
 ## Optimising the OBDD
 
