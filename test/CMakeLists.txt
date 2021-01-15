@@ -10,5 +10,5 @@ PRIVATE
   ${PROJECT_SOURCE_DIR}/external
 )
 
-# Link up with coom source
-target_link_libraries(test_unit coom)
+# Link up with adiar source
+target_link_libraries(test_unit adiar)

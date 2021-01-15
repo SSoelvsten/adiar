@@ -5,8 +5,8 @@
 #include <tpie/tpie.h>
 #include <tpie/tpie_log.h>
 
-// COOM Imports
-#include <coom/coom.h>
+// Adiar Imports
+#include <adiar/adiar.h>
 
 
 /*******************************************************************************
@@ -29,7 +29,7 @@ size_t largest_nodes = 0;
  *
  *                                 N*i + j.
  */
-inline coom::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
+inline adiar::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 {
   return (N * i) + j;
 }
@@ -51,7 +51,7 @@ inline coom::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
  * This essentially is the formula x_ij /\ !conflicts(i,j), where conflicts(i,j)
  * is true if one or more queens are placed on conflicting positions.
  *
- * We could construct this with the builders of COOM, but we can do even better
+ * We could construct this with the builders of Adiar, but we can do even better
  * than that! Since the resulting (reduced) OBDD is very well structured, we can
  * explicitly construct it. All OBDDs are stored on disk bottom-up, so we'll
  * have to start at the bottom rightmost and work ourselves backwards. We can
@@ -79,17 +79,17 @@ inline coom::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
  * down to only O(N) time and O(N/B) I/Os rather than O(sort(N)) in both time
  * and I/Os. One pretty much cannot do this base case faster.
  */
-coom::bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
+adiar::bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
 {
-  coom::node_file out;
+  adiar::node_file out;
 
   { // When calling `out.size()` below, we have to make it read-only. So, we
     // have to detach the node_writer before we do. This is automatically done
     // on garbage collection, which is why we add an inner scope.
-    coom::node_writer out_writer(out);
+    adiar::node_writer out_writer(out);
 
     uint64_t row = N - 1;
-    coom::ptr_t next = coom::create_sink_ptr(true);
+    adiar::ptr_t next = adiar::create_sink_ptr(true);
 
     do {
       uint64_t row_diff = std::max(row,i) - std::min(row,i);
@@ -98,21 +98,21 @@ coom::bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
         // On row of the queen in question
         uint64_t column = N - 1;
         do {
-          coom::label_t label = label_of_position(N, row, column);
+          adiar::label_t label = label_of_position(N, row, column);
 
           // If (row, column) == (i,j), then the chain goes through high.
           if (column == j) {
             // Node to check whether the queen actually is placed, and if so
             // whether all remaining possible conflicts have to be checked.
-            coom::label_t label = label_of_position(N, i, j);
-            coom::node_t queen = coom::create_node(label, 0, coom::create_sink_ptr(false), next);
+            adiar::label_t label = label_of_position(N, i, j);
+            adiar::node_t queen = adiar::create_node(label, 0, adiar::create_sink_ptr(false), next);
 
             out_writer << queen;
             next = queen.uid;
             continue;
           }
 
-          coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
+          adiar::node_t out_node = adiar::create_node(label, 0, next, adiar::create_sink_ptr(false));
 
           out_writer << out_node;
           next = out_node.uid;
@@ -121,24 +121,24 @@ coom::bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
         // On another row
         if (j + row_diff < N) {
           // Diagonal to the right is within bounds
-          coom::label_t label = label_of_position(N, row, j + row_diff);
-          coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
+          adiar::label_t label = label_of_position(N, row, j + row_diff);
+          adiar::node_t out_node = adiar::create_node(label, 0, next, adiar::create_sink_ptr(false));
 
           out_writer << out_node;
           next = out_node.uid;
         }
 
         // Column
-        coom::label_t label = label_of_position(N, row, j);
-        coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
+        adiar::label_t label = label_of_position(N, row, j);
+        adiar::node_t out_node = adiar::create_node(label, 0, next, adiar::create_sink_ptr(false));
 
         out_writer << out_node;
         next = out_node.uid;
 
         if (row_diff <= j) {
           // Diagonal to the left is within bounds
-          coom::label_t label = label_of_position(N, row, j - row_diff);
-          coom::node_t out_node = coom::create_node(label, 0, next, coom::create_sink_ptr(false));
+          adiar::label_t label = label_of_position(N, row, j - row_diff);
+          adiar::node_t out_node = adiar::create_node(label, 0, next, adiar::create_sink_ptr(false));
 
           out_writer << out_node;
           next = out_node.uid;
@@ -168,15 +168,15 @@ coom::bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
  *   given time, since we only need to persist the input and output of each
  *   iteration.
  *
- * For COOM to be able to achieve optimality on disk, it sacrifices the
+ * For Adiar to be able to achieve optimality on disk, it sacrifices the
  * possibility of a hash-table to instantiate the entire forest of all currently
  * active OBDDs. In other words, each OBDD is completely separate and no memory
  * is saved, if there is a major overlap. So, we will choose to do it
  * iteratively.
  */
-coom::bdd n_queens_R(uint64_t N, uint64_t row)
+adiar::bdd n_queens_R(uint64_t N, uint64_t row)
 {
-  coom::bdd out = n_queens_S(N, row, 0);
+  adiar::bdd out = n_queens_S(N, row, 0);
 
   for (uint64_t j = 1; j < N; j++) {
     out |= n_queens_S(N, row, j);
@@ -190,13 +190,13 @@ coom::bdd n_queens_R(uint64_t N, uint64_t row)
  * again iterate over all rows to combine them one-by-one. One can probably
  * remove the code duplication that we now introduce.
  */
-coom::bdd n_queens_B(uint64_t N)
+adiar::bdd n_queens_B(uint64_t N)
 {
   if (N == 1) {
     return n_queens_S(N, 0, 0);
   }
 
-  coom::bdd out = n_queens_R(N, 0);
+  adiar::bdd out = n_queens_R(N, 0);
 
   for (uint64_t i = 1; i < N; i++) {
     out &= n_queens_R(N, i);
@@ -211,9 +211,9 @@ coom::bdd n_queens_B(uint64_t N)
  * is a solution to the N-Queens problem. So, now we can merely count the number
  * of assignments that reach a true sink.
  */
-uint64_t n_queens_count(const coom::bdd &board)
+uint64_t n_queens_count(const adiar::bdd &board)
 {
-  return coom::bdd_satcount(board);
+  return adiar::bdd_satcount(board);
 }
 
 /*******************************************************************************
@@ -258,12 +258,12 @@ void n_queens_print_solution(std::vector<uint64_t>& assignment)
 
 /* At this point, we now also need to convert an assignment back into a position
  * on the board. So, we'll also need the following two small functions. */
-inline uint64_t i_of_label(uint64_t N, coom::label_t label)
+inline uint64_t i_of_label(uint64_t N, adiar::label_t label)
 {
   return label / N;
 }
 
-inline uint64_t j_of_label(uint64_t N, coom::label_t label)
+inline uint64_t j_of_label(uint64_t N, adiar::label_t label)
 {
   return label % N;
 }
@@ -273,9 +273,9 @@ inline uint64_t j_of_label(uint64_t N, coom::label_t label)
  * of solutions we list. */
 uint64_t n_queens_list(uint64_t N, uint64_t column,
                        std::vector<uint64_t>& partial_assignment,
-                       const coom::bdd& constraints)
+                       const adiar::bdd& constraints)
 {
-  if (coom::is_sink(constraints, coom::is_false)) {
+  if (adiar::is_sink(constraints, adiar::is_false)) {
     return 0;
   }
   deepest_column = std::max(deepest_column, column);
@@ -286,21 +286,21 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
     partial_assignment.push_back(row_q);
 
     // Construct the assignment for this entire column
-    coom::assignment_file column_assignment;
+    adiar::assignment_file column_assignment;
 
     { // The assignment_writer has to be detached, before we call any bdd
       // functions. It is automatically detached upon destruction, hence we have
       // it in this little scope.
-      coom::assignment_writer aw(column_assignment);
+      adiar::assignment_writer aw(column_assignment);
 
       for (uint64_t row = 0; row < N; row++) {
-        aw << coom::create_assignment(label_of_position(N, row, column), row == row_q);
+        aw << adiar::create_assignment(label_of_position(N, row, column), row == row_q);
       }
     }
 
-    coom::bdd restricted_constraints = coom::bdd_restrict(constraints, column_assignment);
+    adiar::bdd restricted_constraints = adiar::bdd_restrict(constraints, column_assignment);
 
-    if (coom::bdd_pathcount(restricted_constraints) == 1) {
+    if (adiar::bdd_pathcount(restricted_constraints) == 1) {
       solutions += 1;
 
       // Request a true assignment (well, only one exists), and have it ordered
@@ -313,17 +313,17 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       public:
         explicit sort_by_column(const uint64_t N) : N(N) { }
 
-        bool operator()(const coom::assignment &a, const coom::assignment &b)
+        bool operator()(const adiar::assignment &a, const adiar::assignment &b)
         {
           return j_of_label(N, a.label) < j_of_label(N, b.label);
         }
       };
 
-      auto forced_assignment = coom::bdd_get_assignment(restricted_constraints, coom::is_true, sort_by_column(N));
+      auto forced_assignment = adiar::bdd_get_assignment(restricted_constraints, adiar::is_true, sort_by_column(N));
 
-      coom::assignment_stream<> fas(forced_assignment.value());
+      adiar::assignment_stream<> fas(forced_assignment.value());
       while (fas.can_pull()) {
-        coom::assignment a = fas.pull();
+        adiar::assignment a = fas.pull();
         if (a.value) {
           partial_assignment.push_back(i_of_label(N, a.label));
         }
@@ -334,7 +334,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       for (uint64_t c = N-1; c > column; c--) {
         partial_assignment.pop_back();
       }
-    } else if (coom::is_sink(restricted_constraints, coom::is_true)) {
+    } else if (adiar::is_sink(restricted_constraints, adiar::is_true)) {
       n_queens_print_solution(partial_assignment);
       solutions += 1;
     } else {
@@ -346,13 +346,13 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
   return solutions;
 }
 
-uint64_t n_queens_list(uint64_t N, const coom::bdd& board)
+uint64_t n_queens_list(uint64_t N, const adiar::bdd& board)
 {
   tpie::log_info() << "|  | solutions:" << std::endl;
 
   if (N == 1) {
     /* To make the recursive function work for N = 1 we would have to have the
-     * coom::count_paths check above at the beginning. That would in all other
+     * adiar::count_paths check above at the beginning. That would in all other
      * cases merely result in an unecessary counting of paths at the very
      * start. */
     std::vector<uint64_t> assignment { 0 };
@@ -447,16 +447,16 @@ int main(int argc, char* argv[])
     exit(1);
   }
 
-  // ===== COOM =====
+  // ===== ADIAR =====
   // Initialize
-  coom::coom_init(M);
-  tpie::log_info() << "| Initialized COOM with " << M << " MB of memory"  << std::endl << "|" << std::endl;
+  adiar::adiar_init(M);
+  tpie::log_info() << "| Initialized Adiar with " << M << " MB of memory"  << std::endl << "|" << std::endl;
 
   // ===== N Queens =====
 
   tpie::log_info() << "| " << N << "-Queens : Board construction"  << std::endl;
   auto before_board = get_timestamp();
-  coom::bdd board = n_queens_B(N);
+  adiar::bdd board = n_queens_B(N);
   auto after_board = get_timestamp();
 
   tpie::log_info() << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
@@ -488,9 +488,9 @@ int main(int argc, char* argv[])
     tpie::log_info() << "|  | time: " << duration_of(before_list, after_list) << " s" << std::endl;
   }
 
-  // ===== COOM =====
-  // Close all of COOM down again
-  coom::coom_deinit();
+  // ===== ADIAR =====
+  // Close all of Adiar down again
+  adiar::adiar_deinit();
 
   // Return 'all good'
   exit(correct_result ? 0 : 1);

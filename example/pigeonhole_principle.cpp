@@ -146,8 +146,8 @@ void construct_PHP_cnf(sat_solver &solver, uint64_t N)
 #include <tpie/tpie.h>
 #include <tpie/tpie_log.h>
 
-// COOM Imports
-#include <coom/coom.h>
+// Adiar Imports
+#include <adiar/adiar.h>
 
 /* A few chrono wrappers to improve readability of the code below */
 inline auto get_timestamp() {
@@ -217,31 +217,31 @@ int main(int argc, char** argv)
   }
 
 
-  // ===== COOM =====
+  // ===== ADIAR =====
   // Initialize
-  coom::coom_init(M);
-  tpie::log_info() << "| Initialized COOM with " << M << " MB of memory"  << std::endl;
+  adiar::adiar_init(M);
+  tpie::log_info() << "| Initialized Adiar with " << M << " MB of memory"  << std::endl;
 
 
   // =========================================================================
-  coom::bdd sat_acc = coom::bdd_true();
+  adiar::bdd sat_acc = adiar::bdd_true();
 
   const auto sat_and_clause = [&](clause_t &clause) -> void
   {
-    coom::node_file clause_bdd;
+    adiar::node_file clause_bdd;
 
     { // All bdd functions require that no writer is attached to a file. So, we
       // garbage collect the writer before the bdd_apply call.
-      coom::node_writer clause_writer(clause_bdd);
+      adiar::node_writer clause_writer(clause_bdd);
 
-      coom::ptr_t next = coom::create_sink_ptr(false);
+      adiar::ptr_t next = adiar::create_sink_ptr(false);
 
       for (auto it = clause.rbegin(); it != clause.rend(); it++) {
         literal_t v = *it;
 
-        coom::node n = coom::create_node(v.first, 0,
-                                         v.second ? coom::create_sink_ptr(true) : next,
-                                         v.second ? next : coom::create_sink_ptr(true));
+        adiar::node n = adiar::create_node(v.first, 0,
+                                         v.second ? adiar::create_sink_ptr(true) : next,
+                                         v.second ? next : adiar::create_sink_ptr(true));
 
         next = n.uid;
 
@@ -256,7 +256,7 @@ int main(int argc, char** argv)
 
   const auto sat_quantify_variable = [&](uint64_t var) -> void
   {
-    sat_acc = coom::bdd_exists(sat_acc, var);
+    sat_acc = adiar::bdd_exists(sat_acc, var);
 
     number_of_exists++;
     largest_nodes = std::max(largest_nodes, bdd_nodecount(sat_acc));
@@ -264,7 +264,7 @@ int main(int argc, char** argv)
 
   const auto sat_is_false = [&]() -> bool
   {
-    return coom::is_sink(sat_acc, coom::is_false);
+    return adiar::is_sink(sat_acc, adiar::is_false);
   };
 
   // =========================================================================
@@ -309,9 +309,9 @@ int main(int argc, char** argv)
   tpie::log_info() << "|  |  | OBDD solving: " << duration_of(t3, t4) << std::endl;
 
 
-  // ===== COOM =====
-  // Close all of COOM down again
-  coom::coom_deinit();
+  // ===== ADIAR =====
+  // Close all of Adiar down again
+  adiar::adiar_deinit();
 
   // Return 'all good'
   exit(satisfiable ? -1 : 0);

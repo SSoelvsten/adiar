@@ -5,8 +5,8 @@
 #include <tpie/tpie.h>
 #include <tpie/tpie_log.h>
 
-// COOM Imports
-#include <coom/coom.h>
+// Adiar Imports
+#include <adiar/adiar.h>
 
 
 /*******************************************************************************
@@ -35,7 +35,7 @@ size_t init_nodes = 0;
  *
  * We interpret x_ijk as true, if an X is placed on (i,j,k).
  */
-inline coom::label_t label_of_position(uint64_t i, uint64_t j, uint64_t k)
+inline adiar::label_t label_of_position(uint64_t i, uint64_t j, uint64_t k)
 {
   return (4 * 4 * i) + (4 * j) + k;
 }
@@ -50,25 +50,25 @@ inline coom::label_t label_of_position(uint64_t i, uint64_t j, uint64_t k)
  *
  * This again is very well structured and can be easily constructed explicitly.
  */
-coom::bdd construct_is_not_winning(std::array<coom::label_t, 4>& line)
+adiar::bdd construct_is_not_winning(std::array<adiar::label_t, 4>& line)
 {
   uint64_t idx = 4 - 1;
 
-  coom::ptr_t no_Xs_false = coom::create_sink_ptr(false);
-  coom::ptr_t no_Xs_true = coom::create_sink_ptr(true);
+  adiar::ptr_t no_Xs_false = adiar::create_sink_ptr(false);
+  adiar::ptr_t no_Xs_true = adiar::create_sink_ptr(true);
 
-  coom::ptr_t some_Xs_true = coom::create_sink_ptr(false);
+  adiar::ptr_t some_Xs_true = adiar::create_sink_ptr(false);
 
-  coom::node_file out;
-  coom::node_writer out_writer(out);
+  adiar::node_file out;
+  adiar::node_writer out_writer(out);
 
   do {
-    coom::node_t no_Xs = coom::create_node(line[idx], 0,
+    adiar::node_t no_Xs = adiar::create_node(line[idx], 0,
                                            no_Xs_false,
                                            no_Xs_true);
 
-    coom::node_t some_Xs = coom::create_node(line[idx], 1,
-                                             coom::create_sink_ptr(true),
+    adiar::node_t some_Xs = adiar::create_node(line[idx], 1,
+                                             adiar::create_sink_ptr(true),
                                              some_Xs_true);
 
     /* Notice, we have to write bottom-up. That is actually more precisely in
@@ -95,7 +95,7 @@ coom::bdd construct_is_not_winning(std::array<coom::label_t, 4>& line)
  *
  * We'll place these constraints one by one onto an OBDD that is only true if
  * exactly N X's are placed. This OBDD is also easy to create. In fact, it is so
- * simple and universal, that COOM already has a builder that creates it in
+ * simple and universal, that Adiar already has a builder that creates it in
  * linear time and linear I/O with regards to the output size.
  *
  * The order in which one picks applies something together is very important. An
@@ -105,11 +105,11 @@ coom::bdd construct_is_not_winning(std::array<coom::label_t, 4>& line)
  * difference between the label-value for the first cell and the fourth cell is
  * as small as possible.
  */
-coom::bdd construct_is_tie(uint64_t N)
+adiar::bdd construct_is_tie(uint64_t N)
 {
   // Compute all rows, columns, and diagonals. Most likely the optimiser already
   // precomputes this one.
-  std::vector<std::array<coom::label_t,4>> lines { };
+  std::vector<std::array<adiar::label_t,4>> lines { };
 
   // 4 planes and the rows in these
   for (uint64_t i = 0; i < 4; i++) { // (dist: 4)
@@ -168,7 +168,7 @@ coom::bdd construct_is_tie(uint64_t N)
   // The 4 diagonals of the entire cube (dist: 64)
   lines.push_back({ label_of_position(0,0,0), label_of_position(1,1,1), label_of_position(2,2,2), label_of_position(3,3,3) });
 
-  coom::bdd out = coom::bdd_counter(0, 63, N);
+  adiar::bdd out = adiar::bdd_counter(0, 63, N);
 
   init_nodes = bdd_nodecount(out);
 
@@ -254,17 +254,17 @@ int main(int argc, char* argv[])
     exit(1);
   }
 
-  // ===== COOM =====
+  // ===== ADIAR =====
   // Initialize
-  coom::coom_init(M);
-  tpie::log_info() << "| Initialized COOM with " << M << " MB of memory"  << std::endl;
+  adiar::adiar_init(M);
+  tpie::log_info() << "| Initialized Adiar with " << M << " MB of memory"  << std::endl;
 
   // ===== Tic-Tac-Toe =====
 
   tpie::log_info() << "| Tic-Tac-Toe (" << N << ") : Is-tie construction"  << std::endl;
 
   auto before_tie = get_timestamp();
-  coom::bdd is_tie = construct_is_tie(N);
+  adiar::bdd is_tie = construct_is_tie(N);
   auto after_tie = get_timestamp();
 
   tpie::log_info() << "|  | constraints: 76 lines" << std::endl;
@@ -281,15 +281,15 @@ int main(int argc, char* argv[])
 
   tpie::log_info() << "| Tic-Tac-Toe (" << N << ") : Counting ties"  << std::endl;
   auto before_count = get_timestamp();
-  uint64_t solutions = coom::bdd_satcount(is_tie);
+  uint64_t solutions = adiar::bdd_satcount(is_tie);
   auto after_count = get_timestamp();
 
   tpie::log_info() << "|  | number of ties: " << solutions << std::endl;
   tpie::log_info() << "|  | time: " << duration_of(before_count, after_count) << " s" << std::endl;
 
-  // ===== COOM =====
-  // Close all of COOM down again
-  coom::coom_deinit();
+  // ===== ADIAR =====
+  // Close all of Adiar down again
+  adiar::adiar_deinit();
 
   // Return 'all good'
   exit(N >= 25 || solutions == expected[N] ? 0 : 1);

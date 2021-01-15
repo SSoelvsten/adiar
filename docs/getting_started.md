@@ -23,26 +23,26 @@ The project is built with _CMake_.
 apt install cmake
 ```
 
-To get started with using _COOM_, you need to place the repository somewhere
+To get started with using _Adiar_, you need to place the repository somewhere
 within your project. This can neatly be done by adding it as a git submodule.
 
 ```
-git submodule add https://github.com/SSoelvsten/coom external/coom
+git submodule add https://github.com/SSoelvsten/adiar external/adiar
 git submodule update --init --recursive
 ```
 
 The in the projects _CMakeLists.txt_ one can include library as follows.
 
 ```cmake
-add_subdirectory (external/coom coom)
+add_subdirectory (external/adiar adiar)
 ```
 
-A single executable target can then be linked _COOM_ in a _CMakeLists.txt_ as
+A single executable target can then be linked _Adiar_ in a _CMakeLists.txt_ as
 follows.
 
 ```cmake
 add_executable(<target> <source>)
-target_link_libraries(<target> coom)
+target_link_libraries(<target> adiar)
 set_target_properties(<target> PROPERTIES CXX_STANDARD 17)
 ```
 
@@ -50,21 +50,21 @@ The last line is only necessary, if the `CXX_STANDARD` hasn't been set to 17 or
 higher project-wide.
 
 ## Usage
-After having linked up the C++ source file with _COOM_ as described above, then
-one needs to include the `<coom/coom.h>` header, initialise the library before
+After having linked up the C++ source file with _Adiar_ as described above, then
+one needs to include the `<adiar/adiar.h>` header, initialise the library before
 use, and remember to deinitialise the library again before the program
 terminates.
 
 ```c++
-#include <coom/coom.h>
+#include <adiar/adiar.h>
 
 int main()
 {
-  coom::coom_init();
+  adiar::adiar_init();
   
   // do your stuff here...
   
-  coom::coom_deinit();
+  adiar::adiar_deinit();
 }
 ```
 

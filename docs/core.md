@@ -46,7 +46,7 @@ sink-identifiers by using the following functions.
 
 - `uid_t negate(ptr_t u)`
 
-At this point a node in _COOM_ is the following combination 3 unsigned 64-bit
+At this point a node in _Adiar_ is the following combination 3 unsigned 64-bit
 numbers
 
 ```c++
@@ -98,13 +98,13 @@ struct assignment { label_t label; bool value; };
 ```
 
 ## Files
-All algorithms of _COOM_ rely on having the BDDs stored on disk with the
+All algorithms of _Adiar_ rely on having the BDDs stored on disk with the
 specific exploitable ordering mentioned above (c.f. [Nodes and
 Pointers](#nodes-and-pointers)). To construct a BDD by hand, one has to
 explicitly follow this ordering; otherwise the algorithms will have _undefined
 behaviour_.
 
-In _COOM_ a set of nodes are stored in a `node_file`, in which all these nodes
+In _Adiar_ a set of nodes are stored in a `node_file`, in which all these nodes
 are stored with respect to the reverse of the ordering above. That is, one has
 to write nodes bottom-up in reverse for each layer with respect to the _id_. One
 can write nodes to the file by use of the `node_writer` object. One can either
@@ -133,6 +133,6 @@ One can use the `node_writer` using its following member functions
 One cannot have multiple `node_writers` attached to the same `node_file`, but it
 is more important to point out, that one also has to detach the `node_writer`
 before anything can be read from the `node_file` or any streams canbe attached
-to it from within the _COOM_ algorithms. So, remember to either detach it
+to it from within the _Adiar_ algorithms. So, remember to either detach it
 explicitly or have the `node_writer` destructed before calling any such
 functions.

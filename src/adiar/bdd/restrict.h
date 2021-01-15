@@ -1,0 +1,25 @@
+#ifndef ADIAR_RESTRICT_H
+#define ADIAR_RESTRICT_H
+
+#include <adiar/data.h>
+#include <adiar/file.h>
+
+#include <adiar/bdd/bdd.h>
+
+namespace adiar
+{
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Restrict an OBDD based on a partial assignment.
+  ///
+  /// \param nodes_in   Input file of nodes
+  ///
+  /// \param assignment Assignment sorted in order of label (and expected
+  ///                   unique)
+  ///
+  /// \return           A node_file if the OBDD is restricted to a sink, and
+  ///                   otherwise an arc_file of the restricted OBDD.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_restrict(const bdd &bdd, const assignment_file &assignment);
+}
+
+#endif // ADIAR_RESTRICT_H

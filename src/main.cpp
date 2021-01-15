@@ -1,11 +1,11 @@
 // TPIE Imports
 #include <tpie/tpie.h>
 
-// COOM Imports
-#include <coom/coom.h>
+// ADIAR Imports
+#include <adiar/adiar.h>
 
 int main(int argc, char* argv[]) {
-  // ========== COOM =============
+  // ========== ADIAR =============
   size_t M = 1024;
 
   try {
@@ -18,14 +18,14 @@ int main(int argc, char* argv[]) {
     tpie::log_info() << "Number out of range: " << argv[1] << std::endl;
   }
 
-  coom::coom_init(M);
+  adiar::adiar_init(M);
 
   // ===== Your code here... =====
 
 
 
-  // ========== COOM =============
-  coom::coom_deinit();
+  // ========== ADIAR =============
+  adiar::adiar_deinit();
   exit(0);
 }
 
