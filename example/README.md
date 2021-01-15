@@ -2,7 +2,7 @@
 ![examples](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/examples/badge.svg?branch=master)
 
 To benchmark the implementation and also to provide examples of how to use
-_COOM_ in your project, we provide multiple examples.
+_Adiar_ in your project, we provide multiple examples.
 
 All examples have an _M_ variable to be set for the GB of memory to dedicate to
 TPIE managing all the files underneath.

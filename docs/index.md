@@ -1,4 +1,4 @@
-_COOM_ is a library for manipulating Boolean Decision Diagrams even when these
+_Adiar_ is a library for manipulating Boolean Decision Diagrams even when these
 grow bigger than the memory one has available. To achieve this, all operations
 are not implemented recursively with a global memoization table, but instead
 they are created as streaming algorithms that exploit the sorting of the graph
@@ -28,4 +28,4 @@ on disk to delay recursion with Time-Forward Processing.
 
 # License
 The software and documentation files in this repository are provided under the
-[MIT License](https://github.com/SSoelvsten/coom/blob/master/LICENSE.md).
+[MIT License](https://github.com/SSoelvsten/adiar/blob/master/LICENSE.md).

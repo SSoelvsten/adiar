@@ -30,7 +30,7 @@ may constitute interesting undergraduate research projects.
 
 
 ## Implementation of missing BDD algorithms
-There are still many features for BDDs not yet addressed in the _COOM_ library,
+There are still many features for BDDs not yet addressed in the _Adiar_ library,
 and valuable additions to the current project can be made in implementing these.
 All of these of course should be made in the style of _Time-Forward Processing_
 like the rest.
@@ -44,7 +44,7 @@ which resembles the _(f ∧ g) ∨ (¬f ∧ h)_ formula. That is, if _f_ is true
 then output the value of _g_; otherwise output the value of _h_. one should be
 able to reproduce the ideas in _Apply_ to do a simultaneous sweep over all three
 OBDDs simultaneously in one go and gain a major performance gain over
-constructing the above formula with `coom::apply` and `coom:negate`.
+constructing the above formula with `adiar::apply` and `adiar:negate`.
 
 Yet, there are multiple edge-cases, in which one can do much, much better than
 the above.
@@ -85,12 +85,12 @@ may be used in Verification. They also proposed algorithms with the name
 _Constrain_ and _Expand_.
 
 ### Variable reordering
-Currently, _COOM_ only uses a static ordering of the variables, but since the
+Currently, _Adiar_ only uses a static ordering of the variables, but since the
 size of the BDD is heavily influenced by the order chosen then many BDD
 libraries provide variable reordering algorithms, or do these themselves
 behdind the scenes.
 
-How one can rephrase these algorithms within the design of _COOM_ will probably
+How one can rephrase these algorithms within the design of _Adiar_ will probably
 require quite a bit of creativity, understanding of the I/O model and also of
 the original variable reordering algorithms.
 
@@ -160,7 +160,7 @@ _TPIE_ provides a hash table, so one can look into one of the following two
 Based on the memory usage I've witnessed during benchmarking, I think the first
 option is the most promising.
 
-See also the discussion in issue [#98](https://github.com/SSoelvsten/coom/issues/98)
+See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issues/98)
 
 ## Optimising the current algorithms
 There are quite a few avenues of trying to shave off a few significant constants

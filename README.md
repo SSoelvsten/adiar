@@ -1,8 +1,8 @@
-# COOM: Cache-Oblivious OBDD Manipulation
+# Adiar
 [![MIT License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](LICENSE.md)
 [![Built with TPIE](https://img.shields.io/badge/built%20with-TPIE-blue)](https://users-cs.au.dk/~rav/tpie/)
-[![test](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/test/badge.svg?branch=master)](/actions?query=workflow%3Atest)
-[![examples](https://github.com/SSoelvsten/cache-oblivious-obdd/workflows/examples/badge.svg?branch=master)](/actions?query=workflow%3Aexamples)
+[![test](https://github.com/SSoelvsten/adiar/workflows/test/badge.svg?branch=master)](/actions?query=workflow%3Atest)
+[![examples](https://github.com/SSoelvsten/adiar/workflows/examples/badge.svg?branch=master)](/actions?query=workflow%3Aexamples)
 
 Following up on the work of [[Arge96](#references)], this implementation of
 a BDD library makes use of _Time-Forward Processing_ to improve the I/O
@@ -12,7 +12,7 @@ far outgrow the memory limit of the given machine.
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [COOM: Cache-Oblivious OBDD Manipulation](#coom-cache-oblivious-obdd-manipulation)
+- [Adiar: Cache-Oblivious OBDD Manipulation](#adiar-cache-oblivious-obdd-manipulation)
     - [Installation](#installation)
         - [Dependencies](#dependencies)
         - [In your own project](#in-your-own-project)
@@ -48,7 +48,7 @@ git submodule update --init --recursive
 ```
 
 One also needs a _C++_ compiler of ones choice. All development has currently
-been with the _g++_ compiler, so we cannot guarantee other compilers will work
+been with the _gcc_ compiler, so we cannot guarantee other compilers will work
 out-of-the-box. The project also has dependencies on _CMake_ and the _Boost
 Library_. On Ubuntu 18+ you can obtain all these dependencies
 with the following commands.
@@ -67,15 +67,15 @@ apt install graphviz
 ```
 
 ### In your own project
-The _COOM_ library is built with _CMake_. First you'll have to include the
+The _Adiar_ library is built with _CMake_. First you'll have to include the
 project as a _subdirectory_
 ```cmake
-add_subdirectory (<path/to/coom> coom)
+add_subdirectory (<path/to/adiar> adiar)
 ```
 Then you link up your executable.
 ```cmake
 add_executable(<target> <source>)
-target_link_libraries(<target> coom)
+target_link_libraries(<target> adiar)
 set_target_properties(<target> PROPERTIES CXX_STANDARD 17)
 ```
 
@@ -83,17 +83,18 @@ set_target_properties(<target> PROPERTIES CXX_STANDARD 17)
 ## Documentation
 We provide the documentation in two ways:
 
-- A [Github Pages](https://ssoelvsten.github.io/coom/) website that provides an
-  API and reference for developers.
+- A [Github Pages](https://ssoelvsten.github.io/adiar/) website focuses on the
+  usage of the _C++_ library.
 
-- A [Technical Report](https://github.com/SSoelvsten/coom-report) providing
-  an “_academic_” documentation.
+- A [Technical Report](https://github.com/SSoelvsten/adiar-report) provides an
+  “_academic_” documentation that focuses on the theory and the algorithmic
+  technique behind this libary.
 
 
 ## Usage
 The project is build with _CMake_, though for convenience I have simplified the
 _CMake_ interactions to a single _Makefile_ which works on a local machine. This
-has only been tested on _Ubuntu 18.04 LTS_.
+has only been tested on _Ubuntu 18.04 LTS_ and _20.04 LTS_.
 
 The primary targets are as follows
 
@@ -105,10 +106,10 @@ The primary targets are as follows
 
 For development and more we also provide the following targets
 
-| target          | effect                                                       |
-|-----------------|--------------------------------------------------------------|
-| `dot F=<files>` | Convert TPIE persisted file streams `<files>` into DOT files |
-| `main`          | Run the _main_ function in `main.cpp` with console debugging |
+| target          | effect                                                          |
+|-----------------|-----------------------------------------------------------------|
+| `dot F=<files>` | Convert TPIE persisted file streams `<files>` into DOT files    |
+| `main M=<mem>`  | Run the _main_ function in `main.cpp` with `<mem>` MB of memory |
 
 To further convert a _.dot_ file into a picture run the following command
 

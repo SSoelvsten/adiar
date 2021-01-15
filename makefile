@@ -13,7 +13,7 @@ build:
 # ============================================================================ #
 clean-files:
 	@rm -rf *.tpie
-	@rm -rf *.coom*
+	@rm -rf *.adiar*
 	@rm -rf *.dot
 
 clean: | clean-files
@@ -39,8 +39,8 @@ F =
 dot:
 	@mkdir -p build/
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug ..
-	@cd build/ && make $(MAKE_FLAGS) coom_dot
-	@./build/src/coom_dot ${F}
+	@cd build/ && make $(MAKE_FLAGS) adiar_dot
+	@./build/src/adiar_dot ${F}
 
 # ============================================================================ #
 #  MAIN for console debugging
@@ -50,9 +50,9 @@ M = 1024
 main:
 	@mkdir -p build/
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug ..
-	@cd build/ && make $(MAKE_FLAGS) coom_main
+	@cd build/ && make $(MAKE_FLAGS) adiar_main
 	@echo "" && echo ""
-	@./build/src/coom_main ${M}
+	@./build/src/adiar_main ${M}
 
 # ============================================================================ #
 #  EXAMPLES
