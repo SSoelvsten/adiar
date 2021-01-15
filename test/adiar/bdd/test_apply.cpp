@@ -89,7 +89,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES F and T sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_F, obdd_T, implies_op);
+            __bdd out = bdd_apply(obdd_F, obdd_T, imp_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -101,7 +101,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES T and F sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_T, obdd_F, implies_op);
+            __bdd out = bdd_apply(obdd_T, obdd_F, imp_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -113,7 +113,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES T and T sink-only OBDDs", [&]() {
-            __bdd out = bdd_apply(obdd_T, obdd_T, implies_op);
+            __bdd out = bdd_apply(obdd_T, obdd_T, imp_op);
             node_test_stream out_nodes(out);
 
             AssertThat(out_nodes.can_pull(), Is().True());
@@ -166,7 +166,7 @@ go_bandit([]() {
           });
 
         it("should IMPLIES (and shortcut on irrelevance) T and x0", [&]() {
-            __bdd out = bdd_apply(obdd_T, obdd_x0, implies_op);
+            __bdd out = bdd_apply(obdd_T, obdd_x0, imp_op);
 
             AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_x0._file_ptr));
             AssertThat(out.negate, Is().False());
@@ -254,7 +254,7 @@ go_bandit([]() {
                    F T
              */
 
-            __bdd out = bdd_apply(obdd_x0, obdd_x1, implies_op);
+            __bdd out = bdd_apply(obdd_x0, obdd_x1, imp_op);
 
             node_arc_test_stream node_arcs(out);
 
@@ -462,7 +462,7 @@ go_bandit([]() {
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
 
         it("should IMPLY (and shortcut) F and OBBD1", [&]() {
-            __bdd out = bdd_apply(obdd_F, obdd_1, implies_op);
+            __bdd out = bdd_apply(obdd_F, obdd_1, imp_op);
 
             node_test_stream out_nodes(out);
 
@@ -1406,14 +1406,14 @@ go_bandit([]() {
           });
 
         it("should do an IMPLIES on being given the same BDD twice, where one is negated [1]", [&]() {
-            __bdd out = bdd_apply(bdd_not(obdd_2), obdd_2, implies_op);
+            __bdd out = bdd_apply(bdd_not(obdd_2), obdd_2, imp_op);
 
             AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_2._file_ptr));
             AssertThat(out.negate, Is().False()); // negated the already negated input doubly-negating
           });
 
         it("should do an IMPLIES on being given the same BDD twice, where one is negated [2]", [&]() {
-            __bdd out = bdd_apply(obdd_2, bdd_not(obdd_2), implies_op);
+            __bdd out = bdd_apply(obdd_2, bdd_not(obdd_2), imp_op);
 
             AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(obdd_2._file_ptr));
             AssertThat(out.negate, Is().True()); // negated the first of the two

@@ -154,12 +154,12 @@ namespace adiar {
     return SINK_BIT | unflag(sink1 ^ sink2);
   };
 
-  const bool_op implies_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op imp_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
     return create_sink_ptr(!value_of(sink1) || value_of(sink2));
   };
 
-  const bool_op impliedby_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op invimp_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
     return create_sink_ptr(!value_of(sink2) || value_of(sink1));
   };

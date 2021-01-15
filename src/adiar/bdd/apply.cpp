@@ -360,12 +360,12 @@ namespace adiar
 
   __bdd bdd_imp(const bdd &bdd_1, const bdd &bdd_2)
   {
-    return bdd_apply(bdd_1, bdd_2, implies_op);
+    return bdd_apply(bdd_1, bdd_2, imp_op);
   }
 
   __bdd bdd_invimp(const bdd &bdd_1, const bdd &bdd_2)
   {
-    return bdd_apply(bdd_1, bdd_2, impliedby_op);
+    return bdd_apply(bdd_1, bdd_2, invimp_op);
   }
 
   __bdd bdd_equiv(const bdd &bdd_1, const bdd &bdd_2)
