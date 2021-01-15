@@ -3,7 +3,7 @@
 **Table of Contents**
 
 - [Nodes and Pointers](#nodes-and-pointers)
-- [Assignment](#nodes-and-pointers)
+- [Assignment](#assignment)
 - [Files](#files)
 
 
@@ -14,24 +14,25 @@ specific to the numbers _label_. Together they create a unique identifier _uid_
 of a node, that is supposed to reflect the following total ordering of nodes.
 
 <p style="text-align: center;">
-  _n_ < _m_ := _n_._label_ < _m_._label_ || (_n_._label_ = _m_._label_ && _n_._id_ < _m_.id)
+  n < m := n.label < m.label || (n.label = m.label && n.id < m.id)
 </p>
 
-These _uid_s can be stored within a single unsigned 64-bit integer, which then
+These uids can be stored within a single unsigned 64-bit integer, which then
 acts as a "pointer" to the node and can be constructed as follows.
 
 - `uid_t create_node_uid(label_t label, id_t id)`
 
 - `ptr_t create_node_uid(label_t label, id_t id)`
 
-T retrieve values of a _uid_ one may use one of the following functions
+To retrieve the label or id of a uid one then one can use one of the following
+functions.
 
 - `label_t label_of(uid_t u)`
 - `id_t id_of(uid_t u)`
 
 Here `label_t`, `id_t`, `uid_t`, and `ptr_t` are aliases for an unsigned 64-bit
-integer. The _uid_ constructed (and the algorithms by extension) only works as
-intended, if the _label_, resp. _id_, is less or equal to `MAX_LABEL`, resp.
+integer. The uid constructed (and the algorithms by extension) only works as
+intended, if the label, resp. id, is less or equal to `MAX_LABEL`, resp.
 `MAX_ID`.
 
 A unique identifier for a sink is recognised by a single bit-flag within the
@@ -46,29 +47,29 @@ sink-identifiers by using the following functions.
 
 - `uid_t negate(ptr_t u)`
 
-At this point a node in _Adiar_ is the following combination 3 unsigned 64-bit
-numbers
+At this point a node in _Adiar_ is the following combination of 3 unsigned
+64-bit numbers
 
 ```c++
 struct node { uint64_t uid; uint64_t low; uint64_t high; };
 ```
 
 For which the operators `<` , `>`, `==`, and `!=` have been defined to reflect
-the ordering based on the _uid_ discussed above.
+the ordering based on the uid discussed above.
 
 - `node_t create_node(label_t label, id_t id, uid_t low, uid_t high)`
 
-  Creates a node, given a _label_ and an _id_ for the specific node, together
+  Creates a node, given a label and an id for the specific node, together
   with the identifier for its low and high child. We also provide variants of
   this function, where `low` and `high` provided are themselves nodes.
 
 - `label_t label_of(node_t n)`
 
-  Extract the _label_ from within the _uid_ of a non-sink node.
+  Extract the label from within the uid of a non-sink node.
 
 - `id_t id_of(node_t n)`
 
-  Extract the _id_ from within the _uid_ of a non-sink node.
+  Extract the id from within the uid of a non-sink node.
 
 - `node_t create_sink(bool value)`
 
@@ -84,8 +85,9 @@ the ordering based on the _uid_ discussed above.
 
 - `node_t negate(node_t n)` (operator `!`)
 
-  Negates the content node. If the node is a sink, then its value is negated,
-  otherwise if it has a pointer to a sink, then that pointer is negated.
+  Negates the content of a node. If the node is a sink, then its value is
+  negated, otherwise if it has a pointer to a sink, then that pointer is
+  negated.
 
 
 ## Assignment
@@ -96,6 +98,14 @@ the boolean _value_ it is assigned to.
 ```c++
 struct assignment { label_t label; bool value; };
 ```
+
+For which the operators `<` , `>`, `==`, and `!=` have been defined to reflect
+an increasiing ordering on the label. The `!` operator also is provided to
+negate the value in the assignment.
+
+- `assignment_t create_assignment(label_t label, bool value)`
+
+  Creates an assignment given a label and value.
 
 ## Files
 All algorithms of _Adiar_ rely on having the BDDs stored on disk with the
@@ -132,7 +142,7 @@ One can use the `node_writer` using its following member functions
 
 One cannot have multiple `node_writers` attached to the same `node_file`, but it
 is more important to point out, that one also has to detach the `node_writer`
-before anything can be read from the `node_file` or any streams canbe attached
+before anything can be read from the `node_file` or any streams can be attached
 to it from within the _Adiar_ algorithms. So, remember to either detach it
 explicitly or have the `node_writer` destructed before calling any such
 functions.

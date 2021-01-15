@@ -9,7 +9,8 @@ possible and/or minimise the number of lvalues with said type.
 
 - [Basic Constructors](#basic-constructors)
 - [Basic Manipulation](#basic-manipulation)
-- [Other functiosn](#other-functiosn)
+- [Other functions](#other-functions)
+- [DOT Output](#dot-output)
 
 ## Basic Constructors
 
@@ -41,9 +42,9 @@ possible and/or minimise the number of lvalues with said type.
 
 ## Basic Manipulation
 
-- `bdd bdd_apply(bdd, bdd, bool_op )`
+- `bdd bdd_apply(bdd, bdd, bool_op)`
 
-  Constructs a bdd representing the `bool_op` applied onto the two given _BDD_s.
+  Constructs a bdd representing the `bool_op` applied onto the two given BDDs.
   For each operator, we provide a function as a shortcut.
   
   - `bdd bdd_and(bdd f, bdd g)` (operator `&`)
@@ -93,9 +94,9 @@ possible and/or minimise the number of lvalues with said type.
 
 - `bdd bdd_restrict(bdd, assignment_file)`
 
-  Computes the BDD representing `bdd` with the nodes with a _label_ within
-  `assignment_file` restricted to be the associated _value_ in the same file.
-  The `assignment_file` must be in sorted order by the label.
+  Computes the BDD of `bdd` with the its nodes with a label within the
+  `assignment_file` restricted to be the associated value in the same file. The
+  `assignment_file` must be in sorted order by the label.
 
 - Variable quantification
 
@@ -110,7 +111,7 @@ possible and/or minimise the number of lvalues with said type.
 
   - `bdd bdd_forall(bdd, label_t)`
 
-     Forall quantification (and) of the variable with the given lable.
+     Forall quantification (and) of the variable with the given label.
      
   - `bdd bdd_forall(bdd, label_file)`
   
@@ -119,7 +120,7 @@ possible and/or minimise the number of lvalues with said type.
      
   - `bdd bdd_unique(bdd, label_t)`
 
-     Unique quantification (xor) of the variable with the given lable.
+     Unique quantification (xor) of the variable with the given label.
      
   - `bdd bdd_unique(bdd, label_file)`
   
@@ -130,7 +131,7 @@ possible and/or minimise the number of lvalues with said type.
 
 - `is_sink(bdd)`
 
-  Whether the sink only consists of a sink.
+  Whether `bdd` only consists of a sink.
 
 - `min_label(bdd)`
 
