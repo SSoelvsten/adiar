@@ -185,25 +185,25 @@ go_bandit([]() {
                                Is().EqualTo(create_sink_ptr(false)));
                   });
 
-                it("IMPLIES", [&]() {
-                    AssertThat(implies_op(create_sink_ptr(true), create_sink_ptr(true)),
+                it("IMP", [&]() {
+                    AssertThat(imp_op(create_sink_ptr(true), create_sink_ptr(true)),
                                Is().EqualTo(create_sink_ptr(true)));
-                    AssertThat(implies_op(create_sink_ptr(true), create_sink_ptr(false)),
+                    AssertThat(imp_op(create_sink_ptr(true), create_sink_ptr(false)),
                                Is().EqualTo(create_sink_ptr(false)));
-                    AssertThat(implies_op(create_sink_ptr(false), create_sink_ptr(true)),
+                    AssertThat(imp_op(create_sink_ptr(false), create_sink_ptr(true)),
                                Is().EqualTo(create_sink_ptr(true)));
-                    AssertThat(implies_op(create_sink_ptr(false), create_sink_ptr(false)),
+                    AssertThat(imp_op(create_sink_ptr(false), create_sink_ptr(false)),
                                Is().EqualTo(create_sink_ptr(true)));
                   });
 
-                it("IMPLIED BY", [&]() {
-                    AssertThat(impliedby_op(create_sink_ptr(true), create_sink_ptr(true)),
+                it("INVIMP", [&]() {
+                    AssertThat(invimp_op(create_sink_ptr(true), create_sink_ptr(true)),
                                Is().EqualTo(create_sink_ptr(true)));
-                    AssertThat(impliedby_op(create_sink_ptr(true), create_sink_ptr(false)),
+                    AssertThat(invimp_op(create_sink_ptr(true), create_sink_ptr(false)),
                                Is().EqualTo(create_sink_ptr(true)));
-                    AssertThat(impliedby_op(create_sink_ptr(false), create_sink_ptr(true)),
+                    AssertThat(invimp_op(create_sink_ptr(false), create_sink_ptr(true)),
                                Is().EqualTo(create_sink_ptr(false)));
-                    AssertThat(impliedby_op(create_sink_ptr(false), create_sink_ptr(false)),
+                    AssertThat(invimp_op(create_sink_ptr(false), create_sink_ptr(false)),
                                Is().EqualTo(create_sink_ptr(true)));
                   });
 
@@ -247,28 +247,28 @@ go_bandit([]() {
                         AssertThat(can_left_shortcut(and_op, create_sink_ptr(true)), Is().False());
                         AssertThat(can_left_shortcut(or_op, create_sink_ptr(true)), Is().True());
                         AssertThat(can_left_shortcut(xor_op, create_sink_ptr(true)), Is().False());
-                        AssertThat(can_left_shortcut(implies_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(can_left_shortcut(imp_op, create_sink_ptr(true)), Is().False());
                       });
 
                     it("can check on F sink on the left", [&]() {
                         AssertThat(can_left_shortcut(and_op, create_sink_ptr(false)), Is().True());
                         AssertThat(can_left_shortcut(or_op, create_sink_ptr(false)), Is().False());
                         AssertThat(can_left_shortcut(xor_op, create_sink_ptr(false)), Is().False());
-                        AssertThat(can_left_shortcut(implies_op, create_sink_ptr(false)), Is().True());
+                        AssertThat(can_left_shortcut(imp_op, create_sink_ptr(false)), Is().True());
                       });
 
                     it("can check on T sink on the right", [&]() {
                         AssertThat(can_right_shortcut(and_op, create_sink_ptr(true)), Is().False());
                         AssertThat(can_right_shortcut(or_op, create_sink_ptr(true)), Is().True());
                         AssertThat(can_right_shortcut(xor_op, create_sink_ptr(true)), Is().False());
-                        AssertThat(can_right_shortcut(implies_op, create_sink_ptr(true)), Is().True());
+                        AssertThat(can_right_shortcut(imp_op, create_sink_ptr(true)), Is().True());
                       });
 
                     it("can check on F sink on the right", [&]() {
                         AssertThat(can_right_shortcut(and_op, create_sink_ptr(false)), Is().True());
                         AssertThat(can_right_shortcut(or_op, create_sink_ptr(false)), Is().False());
                         AssertThat(can_right_shortcut(xor_op, create_sink_ptr(false)), Is().False());
-                        AssertThat(can_right_shortcut(implies_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(can_right_shortcut(imp_op, create_sink_ptr(false)), Is().False());
                       });
                   });
 
@@ -277,28 +277,28 @@ go_bandit([]() {
                         AssertThat(is_left_irrelevant(and_op, create_sink_ptr(true)), Is().True());
                         AssertThat(is_left_irrelevant(or_op, create_sink_ptr(true)), Is().False());
                         AssertThat(is_left_irrelevant(xor_op, create_sink_ptr(true)), Is().False());
-                        AssertThat(is_left_irrelevant(implies_op, create_sink_ptr(true)), Is().True());
+                        AssertThat(is_left_irrelevant(imp_op, create_sink_ptr(true)), Is().True());
                       });
 
                     it("can check on F sink on the left", [&]() {
                         AssertThat(is_left_irrelevant(and_op, create_sink_ptr(false)), Is().False());
                         AssertThat(is_left_irrelevant(or_op, create_sink_ptr(false)), Is().True());
                         AssertThat(is_left_irrelevant(xor_op, create_sink_ptr(false)), Is().True());
-                        AssertThat(is_left_irrelevant(implies_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(is_left_irrelevant(imp_op, create_sink_ptr(false)), Is().False());
                       });
 
                     it("can check on T sink on the right", [&]() {
                         AssertThat(is_right_irrelevant(and_op, create_sink_ptr(true)), Is().True());
                         AssertThat(is_right_irrelevant(or_op, create_sink_ptr(true)), Is().False());
                         AssertThat(is_right_irrelevant(xor_op, create_sink_ptr(true)), Is().False());
-                        AssertThat(is_right_irrelevant(implies_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(is_right_irrelevant(imp_op, create_sink_ptr(true)), Is().False());
                       });
 
                     it("can check on F sink on the right", [&]() {
                         AssertThat(is_right_irrelevant(and_op, create_sink_ptr(false)), Is().False());
                         AssertThat(is_right_irrelevant(or_op, create_sink_ptr(false)), Is().True());
                         AssertThat(is_right_irrelevant(xor_op, create_sink_ptr(false)), Is().True());
-                        AssertThat(is_right_irrelevant(implies_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(is_right_irrelevant(imp_op, create_sink_ptr(false)), Is().False());
                       });
                   });
 
@@ -311,8 +311,8 @@ go_bandit([]() {
                     AssertThat(is_commutative(or_op), Is().True());
                     AssertThat(is_commutative(nor_op), Is().True());
                     AssertThat(is_commutative(xor_op), Is().True());
-                    AssertThat(is_commutative(implies_op), Is().False());
-                    AssertThat(is_commutative(impliedby_op), Is().False());
+                    AssertThat(is_commutative(imp_op), Is().False());
+                    AssertThat(is_commutative(invimp_op), Is().False());
                     AssertThat(is_commutative(equiv_op), Is().True());
                     AssertThat(is_commutative(diff_op), Is().False());
                     AssertThat(is_commutative(diff_op), Is().False());
