@@ -9,22 +9,18 @@ a BDD library makes use of _Time-Forward Processing_ to improve the I/O
 complexity of BDD Manipulation to achieve efficient manipulation of BDDs, that
 far outgrow the memory limit of the given machine.
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [Adiar: Cache-Oblivious OBDD Manipulation](#adiar-cache-oblivious-obdd-manipulation)
-    - [Installation](#installation)
-        - [Dependencies](#dependencies)
-        - [In your own project](#in-your-own-project)
-    - [Documentation](#documentation)
-    - [Usage](#usage)
-        - [Examples and benchmarks](#examples-and-benchmarks)
-    - [Future Work](#future-work)
-    - [Credits](#credits)
-    - [License](#license)
-    - [References](#references)
-
-<!-- markdown-toc end -->
+- [Installation](#installation)
+- [Dependencies](#dependencies)
+    - [In your own project](#in-your-own-project)
+- [Documentation](#documentation)
+- [Usage](#usage)
+    - [Examples and benchmarks](#examples-and-benchmarks)
+- [Future Work](#future-work)
+- [Credits](#credits)
+- [License](#license)
+- [References](#references)
 
 ## Installation
 The algorithms are implemented in _C++_ creating a fully fledged BDD library,
