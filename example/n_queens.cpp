@@ -33,7 +33,7 @@ inline void stats_unreduced(size_t node_arcs, size_t sink_arcs)
 {
   size_t total_arcs = node_arcs + sink_arcs;
 
-  unreduced_sizes.push_back(float(total_arcs) / 2.0);
+  unreduced_sizes.push_back(total_arcs / 2);
 
   acc_sink_arcs += sink_arcs;
   acc_node_arcs += node_arcs;
@@ -47,6 +47,8 @@ inline void stats_unreduced(size_t node_arcs, size_t sink_arcs)
 }
 
 size_t largest_reduced = 0;
+size_t acc_reduced_out = 0;
+size_t acc_reduced_in = 0;
 
 float best_reduction_ratio = 1.0;
 float acc_reduction_ratio = 0.0;
@@ -55,6 +57,7 @@ float worst_reduction_ratio = 0.0;
 inline void stats_reduced(size_t unreduced_size, size_t reduced_size)
 {
   largest_reduced = std::max(largest_reduced, reduced_size);
+  acc_reduced_out += reduced_size;
 
   float reduction_ratio = float(reduced_size) / float(unreduced_size);
   best_reduction_ratio = std::min(best_reduction_ratio, reduction_ratio);
@@ -261,6 +264,9 @@ void n_queens_R(uint64_t N,
     reduce_sink_arcs.open();
     reduce_meta.open();
 
+    acc_reduced_in += next_S.size();
+    acc_reduced_in += out_nodes.size();
+
     coom::apply(out_nodes, out_meta, next_S, next_S_meta, coom::or_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
     // close (and clean up) prior result
@@ -315,6 +321,9 @@ void n_queens_B(uint64_t N,
     reduce_node_arcs.open();
     reduce_sink_arcs.open();
     reduce_meta.open();
+
+    acc_reduced_in += next_R.size();
+    acc_reduced_in += out_nodes.size();
 
     coom::apply(out_nodes, out_meta, next_R, next_R_meta, coom::and_op, reduce_node_arcs, reduce_sink_arcs, reduce_meta);
 
@@ -614,6 +623,10 @@ int main(int argc, char* argv[])
   }
   assert(unreduced_sizes.size() == operations);
 
+  tpie::log_info() << "|  |" << std::endl;
+  tpie::log_info() << "|  | Apply nodes input:        " << acc_reduced_in << " nodes" << std::endl;
+  tpie::log_info() << "|  | Apply nodes output:       " << acc_unreduced << " nodes" << std::endl;
+
   auto largest_unreduced_MB = (MB_of_size(unreduced_sizes[operations-1]) * 3) / 2;
   tpie::log_info() << "|  | largest OBDD (unreduced): " << unreduced_sizes[operations-1] << " nodes" << std::endl;
   tpie::log_info() << "|  |                           " << (largest_unreduced_MB > 0 ? std::to_string(largest_unreduced_MB) : "< 1")
@@ -638,6 +651,8 @@ int main(int argc, char* argv[])
   tpie::log_info() << "|  |  | worst:          " << worst_sink_ratio << std::endl;
 
   tpie::log_info() << "|  |" << std::endl;
+
+  tpie::log_info() << "|  | Reduce nodes output:      " << acc_reduced_out << " nodes" << std::endl;
 
   auto largest_reduced_MB = MB_of_size(largest_reduced);
   tpie::log_info() << "|  | largest OBDD (reduced)  : " << largest_reduced << " nodes" << std::endl;
