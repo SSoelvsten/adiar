@@ -124,26 +124,11 @@ namespace coom
     return a.old_uid > b.old_uid;
   };
 
-  inline arc_t reduce_get_next(tpie::priority_queue<arc_t, reduce_queue_lt> &redD,
-                               tpie::file_stream<arc_t> &in_sink_arcs,
-                               arc_t &next_sink_arc,
-                               bool &has_next_sink)
+  inline arc_t reduce_get_next(tpie::priority_queue<arc_t, reduce_queue_lt> &redD)
   {
-    if (redD.empty() || (has_next_sink && next_sink_arc.source > redD.top().source)) {
-      arc_t ret_value = next_sink_arc;
-
-      if (in_sink_arcs.can_read_back()) {
-        next_sink_arc = in_sink_arcs.read_back();
-      } else {
-        has_next_sink = false;
-      }
-
-      return ret_value;
-    } else {
-      arc_t ret_value = redD.top();
-      redD.pop();
-      return ret_value;
-    }
+    arc_t ret_value = redD.top();
+    redD.pop();
+    return ret_value;
   }
 
   void reduce(tpie::file_stream<arc_t> &in_node_arcs,
@@ -190,17 +175,23 @@ namespace coom
       return;
     }
 
+    // ========================================================================
+    // Deactivate in_sink_arcs optimisation by moving it all into redD
+
+    while (in_sink_arcs.can_read_back()) {
+      redD.push(in_sink_arcs.read_back());
+    }
+
+    // ========================================================================
+
     // Find the first edge and its label
     arc_t next_node_arc = in_node_arcs.read_back();
     bool has_next_node_arc = true;
 
     label_t label = label_of(next_node_arc.target);
 
-    arc_t next_sink_arc = in_sink_arcs.read_back();
-    bool has_next_sink = true;
-
     // Process bottom-up each layer
-    while (has_next_sink || !redD.empty()) {
+    while (!redD.empty()) {
       debug::println_reduce_layer(label);
 
       // Set up for L_j_red1
@@ -214,10 +205,9 @@ namespace coom
       debug::println_reduce_red_1_start();
 
       // Pull out all nodes from redD and in_sink_arcs for this layer
-      while ((has_next_sink && label_of(next_sink_arc.source) == label)
-             || (!redD.empty() && label_of(redD.top().source) == label)) {
-        arc_t e_high = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
-        arc_t e_low = reduce_get_next(redD, in_sink_arcs, next_sink_arc, has_next_sink);
+      while (!redD.empty() && label_of(redD.top().source) == label) {
+        arc_t e_high = reduce_get_next(redD);
+        arc_t e_low = reduce_get_next(redD);
 
         node_t n = node_of(e_low, e_high);
 
@@ -343,17 +333,12 @@ namespace coom
       // Move on to the next layer
       red1_mapping.close();
 
-      if (!redD.empty() || has_next_sink) {
-        if (redD.empty() || (has_next_sink && next_sink_arc.source > redD.top().source)) {
-          label = label_of(next_sink_arc.source);
-        } else {
-          label = label_of(redD.top().source);
-        }
+      if (!redD.empty()) {
+        label = label_of(redD.top().source);
       }
 
       // Check if everything has been reduced down to one sink
       if (!in_node_arcs.can_read_back() &&
-          !has_next_sink &&
           out_nodes.size() == 0) {
         out_nodes.write({ next_red1.new_uid, NIL, NIL });
 
