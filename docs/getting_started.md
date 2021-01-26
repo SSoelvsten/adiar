@@ -1,19 +1,25 @@
 # Getting Started
 
+**Table of Contents**
+
+- [Dependencies](#dependencies)
+- [Building with CMake](#building-with-cmake)
+- [Usage](#usage)
+
 ## Dependencies
 One needs a C++ compiler of ones choice. All development has been done with the
 gcc compiler, so we recommend one to use the same.
 
 ```bash
-sudo apt install g++
+apt install g++
 ```
 
 The project also has dependencies on the TPIE library, which itself has
-dependencies on the Boost Library and Aptitude. You can on Ubuntu 18+ obtain
-these dependencies with the following commands.
+dependencies on the Boost Library. You can on Ubuntu 18+ obtain these
+dependencies with the following commands.
 
 ```bash
-apt install libboost-all-dev aptitude
+apt install libboost-all-dev
 ```
 
 ## Building with CMake
@@ -61,14 +67,28 @@ terminates.
 
 int main()
 {
-  adiar::adiar_init();
-  
-  // do your stuff here...
+  adiar::adiar_init(128);
+
+  {
+    // do your stuff here...
+  }
   
   adiar::adiar_deinit();
 }
 ```
 
-If you create any [bdd](/bdd.md) object, then remember to have them garbage
-collected (for example, let a variable go out of scope) before calling
-`adiar::adiar_deinit()`.
+The `adiar_init` function initialises the BDD library given the following arguments
+
+- `memory_limit_mb`
+
+  The amount of internal memory in MiB that the _Adiar_ BDD library is allowed
+  to use.
+
+- `temp_dir` (optional)
+
+  The directory in which to place all temporary files of _Adiar_. Default on
+  Linux is the `/tmp` library.
+
+If you create any [bdd](/bdd.md) objects then remember to have them garbage
+collected (for example, by letting a local variable go out of scope as shown
+above) before calling `adiar::adiar_deinit()`.

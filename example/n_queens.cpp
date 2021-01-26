@@ -14,8 +14,8 @@
  * "Parallel Disk-Based Computation for Large, Monolithic Binary Decision
  * Diagrams" by Daniel Kunkle, Vlad Slavici, and Gene Cooperman.
  *
- * We'd find it interesting to output the size of the largest OBDD and the final
- * OBDD.
+ * We'd find it interesting to output the size of the largest BDD and the final
+ * BDD.
  */
 size_t largest_nodes = 0;
 
@@ -23,9 +23,9 @@ size_t largest_nodes = 0;
  *                             Variable ordering
  *
  * To solve the N-Queens problem, we have to first choose some encoding of the
- * problem. Well stay with the simple row-by-row ordering of variables for now
- * (see issue #42 for other suggestions). That is, we represent the position
- * (i,j) on the N x N board board as the variable with label:
+ * problem. Well stay with the simple row-by-row ordering of variables for now.
+ * That is, we represent the position (i,j) on the N x N board board as the
+ * variable with label:
  *
  *                                 N*i + j.
  */
@@ -36,11 +36,10 @@ inline adiar::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 
 /*******************************************************************************
  *
- * Let us first restrict our attention to the base case of expressing a single
- * field (i,j). We need to express that a single queen is placed here, and that
- * it is in no conflict with any other queens on the board; queens on the same
- * row, column or diagonals. A single queen placed on (i,j) creates one single
- * set of other
+ * Let us first restrict our attention to the base case of expressing the state
+ * of a single field (i,j). We need to express that a single queen is placed
+ * here, and that it is in no conflict with any other queens on the board;
+ * queens on the same row, column or diagonals.
  *        __________
  *       | \ | /    |
  *       |  \|/     |
@@ -48,16 +47,16 @@ inline adiar::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
  *       |  /|\     |
  *       |_/_|_\____|
  *
- * This essentially is the formula x_ij /\ !conflicts(i,j), where conflicts(i,j)
- * is true if one or more queens are placed on conflicting positions.
+ * This essentially is the formula x_ij /\ !is_threatened(i,j), where
+ * is_threatened(i,j) is true if one or more queens are placed on conflicting
+ * positions.
  *
  * We could construct this with the builders of Adiar, but we can do even better
- * than that! Since the resulting (reduced) OBDD is very well structured, we can
- * explicitly construct it. All OBDDs are stored on disk bottom-up, so we'll
- * have to start at the bottom rightmost and work ourselves backwards. We can
- * skip all labels for positions that are not in conflict or are not (i,j). All
- * the others, we have to check that they are not true, and for (i,j) that it
- * is.
+ * than that! Since the resulting (reduced) BDD is very well structured, we can
+ * explicitly construct it. All BDDs are stored on disk bottom-up, so we'll have
+ * to start at the bottom rightmost and work ourselves backwards. We can skip
+ * all labels for positions that are not in conflict or are not (i,j). All the
+ * others, we have to check that they are not true, and for (i,j) that it is.
  *
  *            (k1,l1)
  *             /   \
@@ -164,15 +163,14 @@ adiar::bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
  *   n_queens_S. This will minimise the number of Apply's that we will make.
  *
  * - Iteratively combine them similar to a list.fold in functional programming
- *   languages. This will minimise the number of OBDDs that are "active" at any
+ *   languages. This will minimise the number of BDDs that are "active" at any
  *   given time, since we only need to persist the input and output of each
  *   iteration.
  *
  * For Adiar to be able to achieve optimality on disk, it sacrifices the
  * possibility of a hash-table to instantiate the entire forest of all currently
- * active OBDDs. In other words, each OBDD is completely separate and no memory
- * is saved, if there is a major overlap. So, we will choose to do it
- * iteratively.
+ * active BDDs. In other words, each BDD is completely separate and no memory is
+ * saved, if there is a major overlap. So, we will choose to do it iteratively.
  */
 adiar::bdd n_queens_R(uint64_t N, uint64_t row)
 {
@@ -206,7 +204,7 @@ adiar::bdd n_queens_B(uint64_t N)
 }
 
 /*******************************************************************************
- * So now that we have a single OBDD that is only true, when we have placed a
+ * So now that we have a single BDD that is only true, when we have placed a
  * queen on each row and none in conflict, it is only true, when the assignment
  * is a solution to the N-Queens problem. So, now we can merely count the number
  * of assignments that reach a true sink.
@@ -222,24 +220,24 @@ uint64_t n_queens_count(const adiar::bdd &board)
  *
  * If we want to list all the assignments, we have to do something more than
  * merely count the number of satisfying assignments, as we did above. We could
- * then iterate over all possible assignments and use the OBDD to prune our
+ * then iterate over all possible assignments and use the BDD to prune our
  * search tree.
  *
- * We again construct the combined OBDD of the at-most-one restrictions with the
+ * We again construct the combined BDD of the at-most-one restrictions with the
  * at-least-one restriction for the rows. Then, starting at the left-most column
  * we may attempt an assignment in each spot, and recurse. Recursion can be
  * stopped early in two cases:
  *
- *   - If the given OBDD already is trivially false. We have placed a queen,
- *     such that it conflicts with another.
+ *   - If the given BDD already is trivially false. We have placed a queen, such
+ *     that it conflicts with another.
  *
- *   - If the number of unique paths in the restricted OBDD is exactly one. Then
+ *   - If the number of unique paths in the restricted BDD is exactly one. Then
  *     we are forced to place the remaining queens.
  *
- * Since we want to back track in our choices, we may keep OBDDs for each
- * column. This is easily achieved by writing it as a recursive procedure. One
- * should notice though, that this will result in multiple OBDDs concurrently
- * being instantiated in memory or on disk at the same time.
+ * Since we want to back track in our choices, we may keep BDDs for each column.
+ * This is easily achieved by writing it as a recursive procedure. One should
+ * notice though, that this will result in multiple BDDs concurrently being
+ * instantiated in memory or on disk at the same time.
  *
  * In fact, let us keep track of that!
  */

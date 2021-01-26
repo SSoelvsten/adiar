@@ -1,20 +1,32 @@
 # Core
 
+Most of the features of _Adiar_ can be used without knowing anything about how
+the underlying algorithms work. Yet, few BDD functions involve a `label_file` or
+`assignment_file` (c.f. [Assignment and Labels](#assignments-and-labels)), and
+especially an efficient manual construction of a well structured BDDs will
+require direct interaction with the underlying data types and files.
+
 **Table of Contents**
 
-- [Nodes and Pointers](#nodes-and-pointers)
-- [Assignment](#assignment)
+- [Data types](#data-types)
+    - [Nodes and Pointers](#nodes-and-pointers)
+    - [Assignments](#assignments)
 - [Files](#files)
+    - [Nodes](#nodes)
+        - [Node Writer](#node-writer)
+        - [Node Stream](#node-stream)
+    - [Assignments and Labels](#assignments-and-labels)
 
+## Data types
 
-## Nodes and Pointers
+### Nodes and Pointers
 A non-sink node is uniquely identified by two values: its _label_ and its _id_.
 The prior is the variable it represents, whereas _id_ is a unique number
-specific to the numbers _label_. Together they create a unique identifier _uid_
+specific to the number's _label_. Together they create a unique identifier _uid_
 of a node, that is supposed to reflect the following total ordering of nodes.
 
 <p style="text-align: center;">
-  n < m := n.label < m.label || (n.label = m.label && n.id < m.id)
+  n < m ≡ n.label < m.label || (n.label = m.label && n.id < m.id)
 </p>
 
 These uids can be stored within a single unsigned 64-bit integer, which then
@@ -40,14 +52,15 @@ A unique identifier for a sink is recognised by a single bit-flag within the
 sink-identifiers by using the following functions.
 
 - `ptr_t create_sink_ptr(bool v)`
-  Creates the identifier/pointer to a sink with a given value
+  Creates the identifier to a sink with a given boolean value
 
 - `bool value_of(ptr_t u)`
-  Extracts the value of the sink from the 
+  Extracts the boolean value of the given sink identifier.
 
 - `uid_t negate(ptr_t u)`
+  Negates the value of the sink
 
-At this point a node in _Adiar_ is the following combination of 3 unsigned
+With the above a node in _Adiar_ is the following combination of 3 unsigned
 64-bit numbers
 
 ```c++
@@ -59,9 +72,9 @@ the ordering based on the uid discussed above.
 
 - `node_t create_node(label_t label, id_t id, uid_t low, uid_t high)`
 
-  Creates a node, given a label and an id for the specific node, together
-  with the identifier for its low and high child. We also provide variants of
-  this function, where `low` and `high` provided are themselves nodes.
+  Creates a node, given a label and an id for the specific node, together with
+  the identifier for its low and high child. We also provide variants of this
+  function, where `low` and `high` are themselves nodes.
 
 - `label_t label_of(node_t n)`
 
@@ -90,7 +103,7 @@ the ordering based on the uid discussed above.
   negated.
 
 
-## Assignment
+### Assignments
 
 An assignment to a variable depends on the _label_ of the variable together with
 the boolean _value_ it is assigned to.
@@ -105,32 +118,46 @@ negate the value in the assignment.
 
 - `assignment_t create_assignment(label_t label, bool value)`
 
-  Creates an assignment given a label and value.
+  Create an assignment given a label and value.
 
 ## Files
-All algorithms of _Adiar_ rely on having the BDDs stored on disk with the
-specific exploitable ordering mentioned above (c.f. [Nodes and
-Pointers](#nodes-and-pointers)). To construct a BDD by hand, one has to
-explicitly follow this ordering; otherwise the algorithms will have _undefined
-behaviour_.
 
-In _Adiar_ a set of nodes are stored in a `node_file`, in which all these nodes
-are stored with respect to the reverse of the ordering above. That is, one has
-to write nodes bottom-up in reverse for each layer with respect to the _id_. One
-can write nodes to the file by use of the `node_writer` object. One can either
-construct a `node_writer` by itself and then attach it to a file or construct it
-attached to a specific `node_file`.
+All algorithms of _Adiar_ rely on working on the explicit ordering of elements
+on disk.
 
-One can use the `node_writer` using its following member functions
+### Nodes
+
+BDDs are stored on disk with the specific exploitable ordering mentioned above
+(c.f. [Nodes and Pointers](#nodes-and-pointers)). If you want to construct a BDD
+by hand then you have to explicitly follow this ordering; otherwise the
+algorithms will have _undefined behaviour_. More precisely, in _Adiar_ a set of
+nodes are stored in a `node_file` in which all these nodes are stored in
+_reverse_ of the ordering above.
+
+#### Node Writer
+
+To follow the ordering in a `node_file` one has to write nodes bottom-up and in
+reverse for each layer with respect to the _id_. One can write nodes to the file
+by use of the `node_writer` object, that can be constructed in two ways.
+
+- `node_writer()`
+
+  Construct a `node_writer` attached to nothing.
+
+- `node_writer(const node_file)`
+
+  Construct a `node_writer` attached to the given `node_file`.
+
+The `node_writer` class provides the following member functions
 
 - `void push(node_t n)` (operator `<<`)
 
   Push a single node to the `node_file`. This also applies a few sanity checks
-  on the provided input, based on the ordering.
+  on the provided input, such as checks on the ordering.
 
 - `void attach(node_file f)`
 
-  Attaches the `node_writer` to a given `node_file`.
+  Attach the `node_writer` to a given `node_file`.
 
 - `bool attached() const`
 
@@ -138,11 +165,49 @@ One can use the `node_writer` using its following member functions
 
 - `void detach()`
 
-  Detaches the `node_writer` from its current `node_file`, if any.
+  Detach the `node_writer` from its current `node_file`, if any.
 
-One cannot have multiple `node_writers` attached to the same `node_file`, but it
-is more important to point out, that one also has to detach the `node_writer`
-before anything can be read from the `node_file` or any streams can be attached
-to it from within the _Adiar_ algorithms. So, remember to either detach it
-explicitly or have the `node_writer` destructed before calling any such
-functions.
+#### Node Stream
+
+One can then read from a `node_file` by use of the `node_stream<bool>` class,
+where the boolean template argument specifies whether the content should be
+reversed (default is an in-order traversal of the nodes
+[above](#nodes-and-pointers)). This class attaches to the `node_file` (and the
+[BDD](/bdd.md) wrapping class) on construction and detaches again on
+deconstruction. The class provides the following member functions
+
+- `void reset()`
+
+  Reset the node_stream back to its beginning.
+  
+- `bool can_pull()`
+
+  Return whether there is a next element to pull.
+
+- `const node pull()`
+
+  Get the next node from the stream and move to the next.
+
+- `const node peek()`
+
+  Get the next node from the stream without moving to the next.
+
+It is important to note, that one cannot have multiple `node_writers` attached
+to the same `node_file`. Furthermore, one also has to detach the `node_writer`
+before anything can be read from the `node_file` or that the algorithms of
+_Adiar_ can process on them. So, remember to either detach it explicitly or have
+the `node_writer` destructed before calling any such functions.
+
+### Assignments and Labels
+
+Some functions take a list of [assignments](#assignment) as input or return them
+as an output. To create such input, resp. traverse such output, one can use the
+`assignment_writer`, resp. `assignment_stream`. Other functions work on lists of
+[labels](#nodes-and-pointers) for which we provide the `label_writer` and
+`label_stream`.
+
+These writers provide the same interface and the `node_writer` together with
+sanity checks on the ordering. The streams also provide the same member
+functions as above with the addition of an `attach(x_file)`, `attached()`, and
+`detach()` member function.
+

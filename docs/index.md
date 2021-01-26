@@ -13,18 +13,23 @@ disk to delay recursion with Time-Forward Processing.
   - [**Building with CMake**](/getting_started.md#building-with-cmake)
   - [**Usage**](/getting_started.md#usage)
 
-- [**Core**](/core.md)
-  - [**Nodes and Pointers**](/core.md#nodes-and-pointers)
-  - [**Assignment**](/core.md#assignment)
-  - [**Files**](/core.md#files)
-
 - [**BDD**](/bdd.md)
   - [**Basic Constructurs**](/bdd.md#basic-constructors)
   - [**Basic Manipulation**](/bdd.md#basic-manipulation)
   - [**Other Functions**](/bdd.md#other-functions)
   - [**DOT Output**](/bdd.md#dot-output)
 
+- [**Core**](/core.md)
+    - [**Data types**](/core.md#data-types)
+        - [**Nodes and Pointers**](/core.md#nodes-and-pointers)
+        - [**Assignments**](/core.md#assignments)
+    - [**Files**](/core.md#files)
+        - [**Nodes**](/core.md#nodes)
+        - [**Assignments and Labels**](/core.md#assignments-and-labels)
+
 - [**N-Queens Example**](/example.md)
+  - [**Computing the set of all solutions**](/example.md#computing-the-set-of-all-solutions)
+  - [**Printing each solution**](/example.md#printing-each-solution)
 
 # License
 The software and documentation files in this repository are provided under the

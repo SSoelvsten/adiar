@@ -1,9 +1,15 @@
 # BDD
 
+A Binary Decision Diagram (BDD) represents a boolean function
+
+<p style="text-align: center;">
+  {0,1}ⁿ → {0,1}
+</p>
+
 The `bdd` class takes care of reference counting and optimal garbage collection
 of the underlying files (c.f. [Files](/core.md#files)). To ensure the most
 disk-space is available, try to garbage collect the `bdd` objects as quickly as
-possible and/or minimise the number of lvalues with said type.
+possible and/or minimise the number of lvalues of said type.
 
 **Table of Contents**
 
@@ -14,38 +20,45 @@ possible and/or minimise the number of lvalues with said type.
 
 ## Basic Constructors
 
+To construct a more complex but well-structured `bdd` than what follows below,
+create a `node_file` and write the nodes bottom-up with a `node_writer` as
+described in Section [Files](/core.md#files). The `bdd` object can then be
+copy-constructed from the `node_file`.
+
 - `bdd bdd_sink(bool)`
 
   Create a sink-only BDD with the provided boolean value. Alternatives are
   `bdd_true()` and `bdd_false()`.
   
-- `bdd_ithvar(label_t)`
+- `bdd bdd_ithvar(label_t)`
 
   Create a BDD representing the literal with the given _label_
   
-- `bdd_nithvar(label_t)`
+- `bdd bdd_nithvar(label_t)`
 
-  Creates a BDD representing the negation of the literal with the given _label_
+  Create a BDD representing the negation of the literal with the given _label_
   
-- `bdd_and(const label_file)`
+- `bdd bdd_and(const label_file)`
 
   Construct a BDD representing the _and_ of all the literals with the provided
   labels. The given `label_file` must be sorted in increasing order.
 
-- `bdd_or(const label_file)`
+- `bdd bdd_or(const label_file)`
 
   Construct a BDD representing the _or_ of all the literals with the provided
   labels. The given `label_file` must be sorted in increasing order.
 
-- `bdd_counter(label_t min_label, label_t max_label, uint64_t threshold)`
-  Construct a 
+- `bdd bdd_counter(label_t min_label, label_t max_label, uint64_t threshold)`
+
+  Construct a BDD that is true if exactly `threshold` many of the variables in
+  the interval [`min_label`; `max_label`] are true.
 
 ## Basic Manipulation
 
 - `bdd bdd_apply(bdd, bdd, bool_op)`
 
-  Constructs a bdd representing the `bool_op` applied onto the two given BDDs.
-  For each operator, we provide a function as a shortcut.
+  Construct a bdd representing the `bool_op` applied onto the two given BDDs.
+  For each operator, we provide a the following alias functions.
   
   - `bdd bdd_and(bdd f, bdd g)` (operator `&`)
   
@@ -90,13 +103,13 @@ possible and/or minimise the number of lvalues with said type.
 
 - `bdd bdd_not(bdd f)` (operator: `~`)
 
-  Returns the BDD representing `~f`.
+  Return the BDD representing `~f`.
 
 - `bdd bdd_restrict(bdd, assignment_file)`
 
-  Computes the BDD of `bdd` with the its nodes with a label within the
+  Compute the BDD of `bdd` with the its nodes with a label within the
   `assignment_file` restricted to be the associated value in the same file. The
-  `assignment_file` must be in sorted order by the label.
+  `assignment_file` must be in increasing order wrt. the label.
 
 - Variable quantification
 
@@ -127,20 +140,20 @@ possible and/or minimise the number of lvalues with said type.
      Unique quantification (xor) all variables in `label_file` in the very order
      these variables are provided.
 
-## Other functiosn
+## Other functions
 
-- `is_sink(bdd)`
+- `bool is_sink(bdd)`
 
   Whether `bdd` only consists of a sink.
 
-- `min_label(bdd)`
+- `label_t min_label(bdd)`
 
-- `max_label(bdd)`
+- `label_t max_label(bdd)`
 
-- `bool bdd_eval(bdd, assignment_file)`
+- `bool bdd_eval(bdd f, assignment_file x)`
 
-  Evaluate the BDD corresponding to the assignment provided. Returns the value
-  of the sink reached.
+  Evaluate the given BDD `f` according to the assignment `x` and return the
+  value f(x).
 
 - `uint64_t bdd_nodecount(bdd)`
 
@@ -155,9 +168,9 @@ possible and/or minimise the number of lvalues with said type.
   Count all unique (but not necessarily disjoint) paths that satisfies the given
   sink predicate (default is only to count _true_ sinks).
 
-- `uint64_t bdd_satcount(bdd, label_t min_label, label_t max_label, sink_pred)`
+- `uint64_t bdd_satcount(bdd, min_label, max_label, sink_pred)`
 
-  Count all assignments to variables in the interval `[min_label, max_label]`
+  Count all assignments to variables in the interval [`min_label`; `max_label`]
   that satisfies the given sink predicate (default is only to count _true_
   sinks)
 
