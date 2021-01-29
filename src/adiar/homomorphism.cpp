@@ -81,9 +81,7 @@ namespace adiar
     // Set up priority queue for recursion
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
-    homomorphism_priority_queue_t pq((available_memory * 3) / 4);
-    pq.hook_meta_stream(f1);
-    pq.hook_meta_stream(f2);
+    homomorphism_priority_queue_t pq({f1,f2},(available_memory * 3) / 4);
 
     // Check for violation on root children, or 'recurse' otherwise
     if (homomorphism_resolve_request(pq, v1.low, v2.low)) {

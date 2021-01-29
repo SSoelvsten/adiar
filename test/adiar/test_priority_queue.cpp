@@ -301,8 +301,6 @@ go_bandit([]() {
 
     describe("with 0 Buckets", [&]() {
       it("can set up priority queue", [&]() {
-        test_priority_queue<1,0> pq;
-
         pq_test_file f;
 
         {
@@ -313,26 +311,22 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,0> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue with empty meta stream", [&]() {
-         test_priority_queue<1,0> pq;
-
          pq_test_file f;
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,0> pq({f});
 
          AssertThat(pq.can_pull(), Is().False());
          AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can push to and pull from immediate next layer", [&]() {
-        test_priority_queue<1,0> pq;
-
         pq_test_file f;
 
         {
@@ -344,7 +338,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,0> pq({f});
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -411,8 +405,6 @@ go_bandit([]() {
       });
 
       it("can skip unpushed layers", [&]() {
-        test_priority_queue<1,0> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -424,7 +416,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,0> pq({f});
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -448,8 +440,6 @@ go_bandit([]() {
       });
 
       it("can skip unpushed layers up until the given stop_label", [&]() {
-        test_priority_queue<1,0> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -461,7 +451,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,0> pq({f});
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -488,8 +478,6 @@ go_bandit([]() {
       });
 
       it("can sort elements given out of layer order", [&]() {
-        test_priority_queue<1,0> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -501,7 +489,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,0> pq({f});
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -571,8 +559,6 @@ go_bandit([]() {
       });
 
       it("can pull after a peek", [&]() {
-         test_priority_queue<1,0> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -583,7 +569,7 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {1});
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,0> pq({f});
 
          AssertThat(pq.current_layer(), Is().EqualTo(1u));
          AssertThat(pq.has_next_layer(), Is().False());
@@ -611,8 +597,6 @@ go_bandit([]() {
 
     describe("with 1 Bucket", [&]() {
       it("can set up priority queue with more layers than buckets", [&]() {
-         test_priority_queue<1,1> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -624,15 +608,13 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {1});
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,1> pq({f});
 
          AssertThat(pq.can_pull(), Is().False());
          AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue with fewer layers than buckets", [&]() {
-        test_priority_queue<1,1> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -641,26 +623,22 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,1> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue with empty meta stream", [&]() {
-         test_priority_queue<1,1> pq;
-
          pq_test_file f;
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,1> pq({f});
 
          AssertThat(pq.can_pull(), Is().False());
          AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue for two meta streams, where one is empty", [&]() {
-         test_priority_queue<2,1> pq;
-
          pq_test_file f1;
 
          {
@@ -671,15 +649,12 @@ go_bandit([]() {
 
          pq_test_file f2;
 
-         pq.hook_meta_stream(f1);
-         pq.hook_meta_stream(f2);
+         test_priority_queue<2,1> pq({f1,f2});
 
          AssertThat(pq.can_pull(), Is().False());
       });
 
       it("can set up priority queue for two meta streams", [&]() {
-         test_priority_queue<2,1> pq;
-
          pq_test_file f1;
          pq_test_file f2;
 
@@ -693,15 +668,12 @@ go_bandit([]() {
            fw2.unsafe_push(meta_t {2});
          }
 
-         pq.hook_meta_stream(f1);
-         pq.hook_meta_stream(f2);
+         test_priority_queue<2,1> pq({f1,f2});
 
          AssertThat(pq.can_pull(), Is().False());
       });
 
       it("can push into and pull from bucket", [&]() {
-        test_priority_queue<1,1> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -713,7 +685,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,1> pq({f});
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -780,8 +752,6 @@ go_bandit([]() {
       });
 
       it("can push into overflow queue [1]", [&]() {
-        test_priority_queue<1,1> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -793,7 +763,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,1> pq({f});
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -829,8 +799,6 @@ go_bandit([]() {
       });
 
       it("can push into overflow queue [2]", [&]() {
-        test_priority_queue<1,1> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -842,7 +810,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,1> pq({f});
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -864,8 +832,6 @@ go_bandit([]() {
       });
 
       it("can skip unpushed layers up to stop_label [1]", [&]() {
-        test_priority_queue<1,1> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -877,7 +843,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,1> pq({f});
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -905,8 +871,6 @@ go_bandit([]() {
       });
 
       it("can skip unpushed layers up to stop_label [2]", [&]() {
-        test_priority_queue<1,1> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -919,7 +883,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,1> pq({f});
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -948,8 +912,6 @@ go_bandit([]() {
       });
 
       it("can merge content of bucket with overflow queue", [&]() {
-        test_priority_queue<1,1> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -961,7 +923,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,1> pq({f});
 
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1028,8 +990,6 @@ go_bandit([]() {
       });
 
       it("can pull after a peek in bucket", [&]() {
-         test_priority_queue<1,1> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -1043,7 +1003,7 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {1});
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,1> pq({f});
 
          AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -1068,8 +1028,6 @@ go_bandit([]() {
       });
 
       it("can pull after a peek in overflow", [&]() {
-         test_priority_queue<1,1> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -1083,7 +1041,7 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {1});
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,1> pq({f});
 
          pq.push(pq_test_data {5, 3});  // overflow
          AssertThat(pq.size(), Is().EqualTo(1u));
@@ -1108,8 +1066,6 @@ go_bandit([]() {
 
     describe("with 4 Bucket", [&]() {
       it("can set up priority queue with more layers than buckets", [&]() {
-        test_priority_queue<1,4> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -1125,12 +1081,10 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1});
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,4> pq({f});
       });
 
       it("can set up priority queue with fewer layers than buckets [1]", [&]() {
-         test_priority_queue<1,4> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -1141,12 +1095,10 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {1});
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,4> pq({f});
        });
 
       it("can set up priority queue with fewer layers than buckets [2]", [&]() {
-         test_priority_queue<1,4> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -1156,15 +1108,13 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {1});
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,4> pq({f});
        });
 
       it("can set up priority queue with empty meta stream", [&]() {
-         test_priority_queue<1,4> pq;
-
          pq_test_file f;
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,4> pq({f});
 
          AssertThat(pq.can_pull(), Is().False());
          AssertThat(pq.has_next_layer(), Is().False());
@@ -1172,8 +1122,6 @@ go_bandit([]() {
 
 
       it("can set up priority queue for two meta streams, where one is empty [1]", [&]() {
-         test_priority_queue<2,4> pq;
-
          pq_test_file f1;
          pq_test_file f2;
 
@@ -1183,16 +1131,13 @@ go_bandit([]() {
            fw1.unsafe_push(meta_t {1});
          }
 
-         pq.hook_meta_stream(f1);
-         pq.hook_meta_stream(f2);
+         test_priority_queue<2,4> pq({f1,f2});
 
          AssertThat(pq.can_pull(), Is().False());
          AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue for two meta streams, where one is empty [2]", [&]() {
-         test_priority_queue<2,4> pq;
-
          pq_test_file f1;
          pq_test_file f2;
 
@@ -1203,16 +1148,13 @@ go_bandit([]() {
            fw1.unsafe_push(meta_t {1});
          }
 
-         pq.hook_meta_stream(f1);
-         pq.hook_meta_stream(f2);
+         test_priority_queue<2,4> pq({f1,f2});
 
          AssertThat(pq.can_pull(), Is().False());
          AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can set up priority queue for two meta streams", [&]() {
-         test_priority_queue<2,4> pq;
-
          pq_test_file f1;
          pq_test_file f2;
 
@@ -1226,16 +1168,13 @@ go_bandit([]() {
            fw2.unsafe_push(meta_t {12});
          }
 
-         pq.hook_meta_stream(f1);
-         pq.hook_meta_stream(f2);
+         test_priority_queue<2,4> pq({f1,f2});
 
          AssertThat(pq.can_pull(), Is().False());
          AssertThat(pq.has_next_layer(), Is().False());
       });
 
       it("can push into and pull from buckets", [&]() {
-        test_priority_queue<1,4> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -1250,7 +1189,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1}); // read bucket
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -1444,8 +1383,6 @@ go_bandit([]() {
       });
 
       it("can push into overflow queue [1]", [&]() {
-        test_priority_queue<1,4> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -1461,7 +1398,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1}); // read bucket
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1500,8 +1437,6 @@ go_bandit([]() {
       });
 
       it("can push into overflow queue [2]", [&]() {
-        test_priority_queue<1,4> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -1517,7 +1452,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1}); // read bucket
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1542,8 +1477,6 @@ go_bandit([]() {
       });
 
       it("can skip unpushed layers until stop_label [1]", [&]() {
-        test_priority_queue<1,4> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -1559,7 +1492,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1}); // read bucket
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1590,8 +1523,6 @@ go_bandit([]() {
       });
 
       it("can skip nonempty layers until stop_label [2]", [&]() {
-        test_priority_queue<1,4> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -1607,7 +1538,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1}); // read bucket
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1638,8 +1569,6 @@ go_bandit([]() {
       });
 
       it("can merge content of bucket with overflow queue", [&]() {
-        test_priority_queue<1,4> pq;
-
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -1655,7 +1584,7 @@ go_bandit([]() {
           fw.unsafe_push(meta_t {1}); // read bucket
         }
 
-        pq.hook_meta_stream(f);
+        test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.current_layer(), Is().EqualTo(1u));
@@ -1875,8 +1804,6 @@ go_bandit([]() {
       });
 
       it("can pull after a peek in bucket", [&]() {
-         test_priority_queue<1,4> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -1890,7 +1817,7 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {1}); // read bucket
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,4> pq({f});
 
          pq.push(pq_test_data {3, 42}); // bucket
 
@@ -1908,8 +1835,6 @@ go_bandit([]() {
       });
 
       it("can pull after a peek in overflow", [&]() {
-         test_priority_queue<1,4> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -1925,7 +1850,7 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {1}); // read bucket
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,4> pq({f});
 
          pq.push(pq_test_data {7, 3});  // overflow
 
@@ -1943,8 +1868,6 @@ go_bandit([]() {
       });
 
       it("can deal with exactly as many layers as buckets", [&]() {
-         test_priority_queue<1,4> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -1957,7 +1880,7 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {0}); // read bucket
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,4> pq({f});
 
          pq.push(pq_test_data {4, 3});
          pq.push(pq_test_data {2, 1});
@@ -2011,8 +1934,6 @@ go_bandit([]() {
       });
 
       it("can deal with fewer layers as buckets", [&]() {
-         test_priority_queue<1,4> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -2023,7 +1944,7 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {0}); // read bucket
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,4> pq({f});
 
          pq.push(pq_test_data {2, 1});
          pq.push(pq_test_data {1, 1});
@@ -2057,8 +1978,6 @@ go_bandit([]() {
       });
 
       it("can forward to stop_label with an empty overflow queue", [&]() {
-         test_priority_queue<1,4> pq;
-
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -2074,7 +1993,7 @@ go_bandit([]() {
            fw.unsafe_push(meta_t {0}); // read bucket
          }
 
-         pq.hook_meta_stream(f);
+         test_priority_queue<1,4> pq({f});
 
          AssertThat(pq.size(), Is().EqualTo(0u));
 

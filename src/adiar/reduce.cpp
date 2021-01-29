@@ -105,8 +105,7 @@ namespace adiar
 
     // The memory given to the priority queue may overlap on the sorter_phase_2,
     // but should not overlap with the two sorter_phase_1
-    reduce_priority_queue_t redD(available_memory - (2 * sorter_phase_1));
-    redD.hook_meta_stream(in_file);
+    reduce_priority_queue_t redD({in_file}, available_memory - (2 * sorter_phase_1));
 
     // Check to see if node_arcs is empty
     if (!node_arcs.can_pull()) {

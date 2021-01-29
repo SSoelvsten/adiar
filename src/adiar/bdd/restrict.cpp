@@ -61,8 +61,7 @@ namespace adiar
     assignment_stream<> as(assignment);
     assignment_t a = as.pull();
 
-    restrict_priority_queue_t resD;
-    resD.hook_meta_stream(bdd);
+    restrict_priority_queue_t resD({bdd});
 
     // find the next assignment
     while(as.can_pull() && label_of(n) > a.label) {

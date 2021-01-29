@@ -81,8 +81,7 @@ namespace adiar
   {
     node_stream<> ns(bdd);
 
-    count_priority_queue_t partial_sums;
-    partial_sums.hook_meta_stream(bdd);
+    count_priority_queue_t partial_sums({bdd});
 
     // Take root out and put its children into the priority queue
     // or count them immediately if they are sinks

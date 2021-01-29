@@ -162,9 +162,7 @@ namespace adiar
     arc_writer aw(out_arcs);
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-    quantify_priority_queue_t quantD(available_memory / 2);
-    quantD.hook_meta_stream(bdd);
-
+    quantify_priority_queue_t quantD({bdd}, available_memory / 2);
     quantify_data_priority_queue_t quantD_data;
 
     label_t out_label = label_of(v.uid);
