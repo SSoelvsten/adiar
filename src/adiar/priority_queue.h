@@ -53,20 +53,21 @@ namespace adiar {
   template<typename T, size_t Sorters>
   tpie::memory_size_type m_overflow_queue(tpie::memory_size_type memory_given)
   {
-    // At least as much as a single bucket, but otherwise only a fraction of the
-    // memory. The more sorters there are the less the less it will be needed.
-    return std::max(m_single_block<T>(),
-                    memory_given / (/* buckets */ (Sorters+1) +
-                                    /* queue itself */ 1));
+    return std::max(// Take at least the same amount of memory as the buckets
+                    m_single_block<T>(),
+                    // Otherwise take a small fraction of the remaining memory
+                    (memory_given - (m_single_block<T>() * (Sorters + 1))) / 10
+                    );
   }
 
   template<typename T, size_t Sorters>
   tpie::memory_size_type m_sort(tpie::memory_size_type memory_given,
                                 tpie::memory_size_type memory_occupied_by_meta)
   {
-    // Total amount of memory minus the blocks set aside for all buckets
+    // Total amount of memory minus the blocks set aside for all buckets, the
+    // priority queue and memory take by the meta streams
     return memory_given
-      - (m_single_block<T>() * Sorters)
+      - (m_single_block<T>() * (Sorters+1))
       - memory_occupied_by_meta
       - m_overflow_queue<T,Sorters>(memory_given);
   }
@@ -241,8 +242,8 @@ namespace adiar {
       _memory_occupied_by_meta = tpie::get_memory_manager().available();
       _buckets_memory = memory_given;
 
-      adiar_debug(m_single_block<T>() * Buckets < _buckets_memory,
-                  "Not enough memory to instantiate all buckets concurrently");
+      adiar_debug(m_single_block<T>() * (Buckets + 2) < _buckets_memory,
+                  "Not enough memory to instantiate all buckets and overflow queue concurrently");
     }
 
   public:
