@@ -98,7 +98,7 @@ namespace adiar
       v2 = in_nodes_2.pull();
     }
 
-    homomorphism_data_priority_queue_t pq_data;
+    homomorphism_data_priority_queue_t pq_data(calc_tpie_pq_factor(available_memory / 4));
 
     while (pq.can_pull() || pq.has_next_layer() || !pq_data.empty()) {
       if (!pq.can_pull() && pq_data.empty()) {
