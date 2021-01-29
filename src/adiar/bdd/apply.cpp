@@ -116,7 +116,7 @@ namespace adiar
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
     apply_priority_queue_t appD({bdd_1,bdd_2}, available_memory / 2);
-    apply_data_priority_queue_t appD_data;
+    apply_data_priority_queue_t appD_data(calc_tpie_pq_factor(available_memory / 2));
 
     label_t out_label = label_of(std::min(v1.uid, v2.uid));
     id_t out_id = 0;
