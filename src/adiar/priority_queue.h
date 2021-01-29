@@ -26,9 +26,13 @@ namespace adiar {
   /// `tpie::priority_queue<...> pq(calc_tpie_pq_factor(intended_bytes)`
   float calc_tpie_pq_factor(tpie::memory_size_type memory_given);
 
+  ////////////////////////////////////////////////////////////////////////////
+  // TODO: TPIE priority queue wrapper? It can deal with the calc_tpie_pq_factor
+  // function above, and given an estimate of elements within it can choose to
+  // use the tpie::internal_priority_queue.
 
   ////////////////////////////////////////////////////////////////////////////
-  // ADIAR Priority Queue memory size computations
+  // Levelized Priority Queue memory size computations
   //
   // We set up the merge_sorters such that they have a very low memory footprint
   // on Phase 1 (sending sorted blocks to disk) and Phase 3 (merging sorted
@@ -37,7 +41,7 @@ namespace adiar {
   // merger_sorters, since only one of them will every be running Phase 2, while
   // all the others are active at Phase 1 or Phase 3 at the same time.
 
-  // TODO: Move into a adiar/memory.h file? This is similar computations as in
+  // TODO: Move into an adiar/memory.h file? This is similar computations as in
   //       reduce.cpp
   template<typename T>
   tpie::memory_size_type m_single_block()
@@ -47,10 +51,24 @@ namespace adiar {
   }
 
   template<typename T, size_t Sorters>
-  tpie::memory_size_type m_sort(tpie::memory_size_type memory_given)
+  tpie::memory_size_type m_overflow_queue(tpie::memory_size_type memory_given)
+  {
+    // At least as much as a single bucket, but otherwise only a fraction of the
+    // memory. The more sorters there are the less the less it will be needed.
+    return std::max(m_single_block<T>(),
+                    memory_given / (/* buckets */ (Sorters+1) +
+                                    /* queue itself */ 1));
+  }
+
+  template<typename T, size_t Sorters>
+  tpie::memory_size_type m_sort(tpie::memory_size_type memory_given,
+                                tpie::memory_size_type memory_occupied_by_meta)
   {
     // Total amount of memory minus the blocks set aside for all buckets
-    return memory_given - m_single_block<T>() * Sorters;
+    return memory_given
+      - (m_single_block<T>() * Sorters)
+      - memory_occupied_by_meta
+      - m_overflow_queue<T,Sorters>(memory_given);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -74,7 +92,8 @@ namespace adiar {
     size_t _files_given = 0;
 
     // Notice, that this will break, if the original file is garbage collected
-    // before the priority queue.
+    // before the priority queue. But, currently the original file always is an
+    // argument to the function, in which this pq_label_mgr lives within.
     std::unique_ptr<meta_stream<File_T, Files>> _meta_streams [MetaStreams];
 
   public:
@@ -84,8 +103,7 @@ namespace adiar {
 
       _meta_streams[_files_given] = std::make_unique<meta_stream<File_T, Files>>(f);
 
-      _files_given++;
-      return _files_given == MetaStreams;
+      return ++_files_given == MetaStreams;
     }
 
     bool can_pull()
@@ -93,10 +111,8 @@ namespace adiar {
       adiar_debug(_files_given == MetaStreams,
                  "Cannot check existence of next element before being attached to all meta streams");
 
-      for (size_t idx = 0u; idx < MetaStreams; idx++)
-      {
-        if (_meta_streams[idx] -> can_pull())
-        {
+      for (size_t idx = 0u; idx < MetaStreams; idx++) {
+        if (_meta_streams[idx] -> can_pull()) {
           return true;
         }
       }
@@ -112,11 +128,9 @@ namespace adiar {
 
       bool has_min_label = false;
       label_t min_label = 0u;
-      for (size_t idx = 0u; idx < MetaStreams; idx++)
-      {
+      for (size_t idx = 0u; idx < MetaStreams; idx++) {
         if (_meta_streams[idx] -> can_pull()
-            && (!has_min_label || _comparator(_meta_streams[idx] -> peek().label, min_label)))
-        {
+            && (!has_min_label || _comparator(_meta_streams[idx] -> peek().label, min_label))) {
           has_min_label = true;
           min_label = _meta_streams[idx] -> peek().label;
         }
@@ -135,10 +149,9 @@ namespace adiar {
       label_t min_label = peek();
 
       // pull from all with min_label
-      for (size_t idx = 0u; idx < MetaStreams; idx++) {
-        if (_meta_streams[idx] -> can_pull()
-            && _meta_streams[idx] -> peek().label == min_label) {
-          _meta_streams[idx] -> pull();
+      for (const std::unique_ptr<meta_stream<File_T, Files>> &meta_stream : _meta_streams) {
+        if (meta_stream -> can_pull() && meta_stream -> peek().label == min_label) {
+          meta_stream -> pull();
         }
       }
 
@@ -146,12 +159,16 @@ namespace adiar {
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// The preprocessor variable ADIAR_PQ_BUCKETS can be used to change the
+  /// number of buckets used by the levelized priority queue.
+
 #ifndef ADIAR_PQ_BUCKETS
 #define ADIAR_PQ_BUCKETS 1u
 #endif
 
   //////////////////////////////////////////////////////////////////////////////
-  /// A generic priority queue for OBDDs capable of improving performance by
+  /// A levelized priority queue for BDDs capable of improving performance by
   /// placing all pushed queue elements in buckets for the specific layer and
   /// then sorting it when one finally arrives at said layer. If no bucket
   /// exists for said request, then they will be placed in a priority queue to
@@ -178,7 +195,6 @@ namespace adiar {
   ///
   /// This makes use of two policies to manage and place elements in the
   /// buckets.
-  ///
   //////////////////////////////////////////////////////////////////////////////
   template <typename File_T, size_t Files,
             typename T,
@@ -208,6 +224,7 @@ namespace adiar {
 
     label_t _buckets_label [Buckets + 1];
 
+    tpie::memory_size_type _memory_occupied_by_meta;
     tpie::memory_size_type _buckets_memory;
     std::unique_ptr<tpie::merge_sorter<T, false, TComparator>> _buckets_sorter [Buckets + 1];
 
@@ -218,63 +235,64 @@ namespace adiar {
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
+  private:
+    priority_queue(tpie::memory_size_type memory_given)
+      : _overflow_queue(calc_tpie_pq_factor(m_overflow_queue<T, Buckets>(memory_given)))
+    {
+      _memory_occupied_by_meta = tpie::get_memory_manager().available();
+      _buckets_memory = memory_given;
+
+      adiar_debug(m_single_block<T>() * Buckets < _buckets_memory,
+                  "Not enough memory to instantiate all buckets concurrently");
+    }
+
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Instantiate the priority_queue with the given amount of memory.
     ///
     /// \param memory_given    Total amount of memory the priority queue should
     ///                        take.
-    ///
-    /// \param overflow_factor The fraction of the `memory_given`, that should
-    ///                        be used on the _overflow_queue. That is, the
-    ///                        buckets are given memory_given - overflow_factor.
-    ///
-    /// TODO: Some practical evaluation of a good default overflow_factor value?
-    ///       The more buckets we have, the less likely we need to use the
-    ///       _overflow_queue.
-    ///
-    ///       Maybe some kind of 0.1 * (1 / Buckets)?
     ////////////////////////////////////////////////////////////////////////////
-    priority_queue(tpie::memory_size_type memory_given)
-      : _overflow_queue(calc_tpie_pq_factor(m_sort<T, Buckets>(memory_given)))
+    priority_queue(const meta_file<File_T, Files> (& files) [MetaStreams],
+                   tpie::memory_size_type memory_given)
+      : priority_queue(memory_given)
     {
-      _buckets_memory = memory_given;
-
-      adiar_debug(m_single_block<T>() * Buckets < _buckets_memory,
-                 "Not enough memory to instantiate all buckets concurrently");
+      for (const meta_file<File_T, Files> &f : files) {
+        label_mgr::hook_meta_stream(f);
+      }
+      setup_buckets();
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Instantiate the priority_queue with as much memory, as is
-    /// available.
-    ////////////////////////////////////////////////////////////////////////////
-    priority_queue() : priority_queue(tpie::get_memory_manager().available()) { }
+    priority_queue(const bdd (& bdds) [MetaStreams],
+                   tpie::memory_size_type memory_given)
+      : priority_queue(memory_given) {
+      for (const bdd& b : bdds) {
+        label_mgr::hook_meta_stream(b.file);
+      }
+      setup_buckets();
+    }
+
+    priority_queue(const meta_file<File_T, Files> (& files) [MetaStreams])
+    : priority_queue(files, tpie::get_memory_manager().available()) { }
+
+    priority_queue(const bdd (& bdds) [MetaStreams])
+    : priority_queue(bdds, tpie::get_memory_manager().available()) { }
 
     ////////////////////////////////////////////////////////////////////////////
-    // Public methods
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Hook onto a meta stream
-    ///
-    /// The priority queue needs to be able to know what are the possible layers
-    /// to which requests may be made. This hook_meta_stream function has to be
-    /// called MetaStreams number of times before any elements are pushed.
-    ////////////////////////////////////////////////////////////////////////////
-    void hook_meta_stream(const meta_file<File_T, Files> &f)
+    // Private constructor methods
+  private:
+    void setup_buckets()
     {
-      adiar_debug(_front_bucket_idx == 0, "Given too many meta_streams to hook into");
-      adiar_debug(_back_bucket_idx == 0, "Given too many meta_streams to hook into");
+      if (label_mgr::can_pull()) {
+        _memory_occupied_by_meta -= tpie::get_memory_manager().available();
 
-      bool all_hooked = label_mgr::hook_meta_stream(f);
-      if (all_hooked && label_mgr::can_pull()) {
         label_t label = label_mgr::pull();
         setup_bucket(_front_bucket_idx, label);
 
         while(_back_bucket_idx < Buckets && label_mgr::can_pull()) {
           label_t label = label_mgr::pull();
 
-          adiar_invariant(_label_comparator(_buckets_label[_back_bucket_idx], label),
-                         "");
+          adiar_invariant(_label_comparator(_buckets_label[_back_bucket_idx], label), "");
           adiar_invariant(_front_bucket_idx == 0, "Front bucket not moved");
           adiar_invariant(_back_bucket_idx <= Buckets, "Buckets only created up to given limit");
 
@@ -286,11 +304,9 @@ namespace adiar {
       }
     }
 
-    void hook_meta_stream(const bdd &bdd)
-    {
-      hook_meta_stream(bdd.file);
-    }
-
+    ////////////////////////////////////////////////////////////////////////////
+    // Public methods
+  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Push an element into the stream
     ////////////////////////////////////////////////////////////////////////////
@@ -569,7 +585,7 @@ namespace adiar {
       _buckets_sorter[idx] = std::make_unique<tpie::merge_sorter<T, false, TComparator>>(_t_comparator);
 
       _buckets_sorter[idx] -> set_available_memory(m_single_block<T>(),
-                                                   m_sort<T, Buckets>(_buckets_memory),
+                                                   m_sort<T, Buckets>(_buckets_memory, _memory_occupied_by_meta),
                                                    m_single_block<T>());
       _buckets_sorter[idx] -> begin();
     }
