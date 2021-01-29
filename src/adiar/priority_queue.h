@@ -203,7 +203,6 @@ namespace adiar {
             size_t MetaStreams = 1u, size_t Buckets = ADIAR_PQ_BUCKETS>
   class priority_queue : private LabelExt, private pq_label_mgr<File_T, Files, LabelComparator, MetaStreams>
   {
-    static_assert(0 <= Buckets && Buckets <= 4, "The number of buckets may only be in [0;4]");
     static_assert(0 < MetaStreams, "At least one meta stream should be provided");
 
     typedef pq_label_mgr<File_T, Files, LabelComparator, MetaStreams> label_mgr;
