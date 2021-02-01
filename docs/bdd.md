@@ -101,6 +101,12 @@ copy-constructed from the `node_file`.
     
     Same as `bdd_apply(f, g, less_op)` and computes `~f /\ g`.
 
+- `bdd bdd_ite(bdd f, bdd g, bdd h)`
+
+  Return the BDD representing `f ? g : h`. In other BDD packages such a function
+  is good for manually constructing a BDD bottom-up, but for those purposes one
+  should here instead use the [`node_writer`](/core.md#files) class.
+
 - `bdd bdd_not(bdd f)` (operator: `~`)
 
   Return the BDD representing `~f`.

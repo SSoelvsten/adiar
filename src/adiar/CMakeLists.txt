@@ -25,6 +25,7 @@ set(HEADERS
   bdd/build.h
   bdd/count.h
   bdd/evaluate.h
+  bdd/if_then_else.h
   bdd/negate.h
   bdd/quantify.h
   bdd/restrict.h
@@ -50,6 +51,7 @@ set(SOURCES
   bdd/build.cpp
   bdd/count.cpp
   bdd/evaluate.cpp
+  bdd/if_then_else.cpp
   bdd/negate.cpp
   bdd/quantify.cpp
   bdd/restrict.cpp

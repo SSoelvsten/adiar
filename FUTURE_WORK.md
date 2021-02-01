@@ -38,40 +38,6 @@ like the rest.
 The features are sorted based on the difficulty deriving their design and their
 implementation.
 
-### If-Then-Else
-The _ITE_ operator takes three OBDDs _f_, _g_, and _h_ and constructs an OBDD
-which resembles the _(f ∧ g) ∨ (¬f ∧ h)_ formula. That is, if _f_ is true,
-then output the value of _g_; otherwise output the value of _h_. one should be
-able to reproduce the ideas in _Apply_ to do a simultaneous sweep over all three
-OBDDs simultaneously in one go and gain a major performance gain over
-constructing the above formula with `adiar::apply` and `adiar:negate`.
-
-Yet, there are multiple edge-cases, in which one can do much, much better than
-the above.
-
-- If _f_ is a sink, it is trivial
-
-- If _g_ and _h_ are sinks, it's also either _f_, _~f_, or a collapse to a sink.
-
-- The labels of _f_ are 'above' _g_ and _h_. At this point, one can change the
-  pointers of _f_ to point to the root of _g_ and _h_, where the ids of _h_ are
-  decreased to not conflict with _g_.
-  
-  - If _g_ or _h_ also is separate from the other, then one can do it all
-    without reduction by merely copying the nodes of _g_ and _h_.
-
-There may be many more interesting and common cases, that may run much faster.
-
-One can also encode many other interesting operators within the ITE operator,
-where it might be worth investigating the performance difference between the use
-of _ITE_ rather than the other implementation of the algorithm
-
-| Operator    | Operator (formula) | ITE form                         |
-|-------------|--------------------|----------------------------------|
-| Composition | f(x, g(y), z)      | ITE(g(x), f(x, 1, z), f(x, 0, z) |
-| Existence   | ∃y : f(x, y, z)    | ITE(f(x, 1, z), 1, f(x, 0, z))   |
-| Forall      | ∀y : f(x, y, z)    | ITE(f(x, 1, z), f(x, 0, z), 0)   |
-
 ### Function composition
 The _Composition_ of two OBDDs _f_ and _g_ for some label _i ∊ [n]_ is
 _f ∘<sub>i</sub> g (x)_ and is to be interpreted as _f(x<sub>1</sub>, ...,
