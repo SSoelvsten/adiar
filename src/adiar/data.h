@@ -131,6 +131,7 @@ namespace adiar {
   extern const bool_op or_op;
   extern const bool_op nor_op;
   extern const bool_op xor_op;
+  extern const bool_op xnor_op;
   extern const bool_op imp_op;
   extern const bool_op invimp_op;
   extern const bool_op equiv_op;

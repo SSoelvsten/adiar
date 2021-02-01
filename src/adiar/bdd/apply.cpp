@@ -355,6 +355,11 @@ namespace adiar
     return bdd_apply(bdd_1, bdd_2, xor_op);
   }
 
+  __bdd bdd_xnor(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    return bdd_apply(bdd_1, bdd_2, xnor_op);
+  }
+
   __bdd bdd_imp(const bdd &bdd_1, const bdd &bdd_2)
   {
     return bdd_apply(bdd_1, bdd_2, imp_op);
