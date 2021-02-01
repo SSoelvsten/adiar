@@ -185,6 +185,17 @@ go_bandit([]() {
                                Is().EqualTo(create_sink_ptr(false)));
                   });
 
+                it("XNOR", [&]() {
+                    AssertThat(xnor_op(create_sink_ptr(true), create_sink_ptr(true)),
+                               Is().EqualTo(create_sink_ptr(true)));
+                    AssertThat(xnor_op(create_sink_ptr(true), create_sink_ptr(false)),
+                               Is().EqualTo(create_sink_ptr(false)));
+                    AssertThat(xnor_op(create_sink_ptr(false), create_sink_ptr(true)),
+                               Is().EqualTo(create_sink_ptr(false)));
+                    AssertThat(xnor_op(create_sink_ptr(false), create_sink_ptr(false)),
+                               Is().EqualTo(create_sink_ptr(true)));
+                  });
+
                 it("IMP", [&]() {
                     AssertThat(imp_op(create_sink_ptr(true), create_sink_ptr(true)),
                                Is().EqualTo(create_sink_ptr(true)));

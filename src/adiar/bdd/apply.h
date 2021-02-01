@@ -27,6 +27,7 @@ namespace adiar
   __bdd bdd_or(const bdd &bdd_1, const bdd &bdd_2);
   __bdd bdd_nor(const bdd &bdd_1, const bdd &bdd_2);
   __bdd bdd_xor(const bdd &bdd_1, const bdd &bdd_2);
+  __bdd bdd_xnor(const bdd &bdd_1, const bdd &bdd_2);
   __bdd bdd_imp(const bdd &bdd_1, const bdd &bdd_2);
   __bdd bdd_invimp(const bdd &bdd_1, const bdd &bdd_2);
   __bdd bdd_equiv(const bdd &bdd_1, const bdd &bdd_2);
