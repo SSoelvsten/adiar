@@ -218,6 +218,17 @@ go_bandit([]() {
                                Is().EqualTo(create_sink_ptr(true)));
                   });
 
+                it("EQUIV (flags)", [&]() {
+                    AssertThat(equiv_op(flag(create_sink_ptr(true)), create_sink_ptr(true)),
+                               Is().EqualTo(create_sink_ptr(true)));
+                    AssertThat(equiv_op(create_sink_ptr(true), flag(create_sink_ptr(false))),
+                               Is().EqualTo(create_sink_ptr(false)));
+                    AssertThat(equiv_op(flag(create_sink_ptr(false)), create_sink_ptr(true)),
+                               Is().EqualTo(create_sink_ptr(false)));
+                    AssertThat(equiv_op(create_sink_ptr(false), flag(create_sink_ptr(false))),
+                               Is().EqualTo(create_sink_ptr(true)));
+                  });
+
                 it("DIFF", [&]() {
                     AssertThat(diff_op(create_sink_ptr(true), create_sink_ptr(true)),
                                Is().EqualTo(create_sink_ptr(false)));
