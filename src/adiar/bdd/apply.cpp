@@ -29,8 +29,8 @@ namespace adiar
     bool from_1;
   };
 
-  typedef node_priority_queue<apply_tuple, tuple_queue_label, tuple_queue_1_lt, std::less<>, 2> apply_priority_queue_t;
-  typedef tpie::priority_queue<apply_tuple_data, tuple_queue_2_lt> apply_data_priority_queue_t;
+  typedef node_priority_queue<apply_tuple, tuple_label, tuple_fst_lt, std::less<>, 2> apply_priority_queue_t;
+  typedef tpie::priority_queue<apply_tuple_data, tuple_snd_lt> apply_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -115,15 +115,15 @@ namespace adiar
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
+    // TODO: Do statistics on size of the 2 priority queues
     apply_priority_queue_t appD({bdd_1,bdd_2}, available_memory / 2);
     apply_data_priority_queue_t appD_data(calc_tpie_pq_factor(available_memory / 2));
 
-    label_t out_label = label_of(std::min(v1.uid, v2.uid));
+    label_t out_label = label_of(fst(v1.uid, v2.uid));
     id_t out_id = 0;
 
     // Process root and create initial recursion requests
-    ptr_t low1, low2;
-    ptr_t high1, high2;
+    ptr_t low1, low2, high1, high2;
 
     uid_t root_uid = create_node_uid(out_label, out_id);
     aw.unsafe_push(meta_t { out_label });
@@ -180,7 +180,7 @@ namespace adiar
     apply_resolve_request(appD, aw, op, root_uid, low1, low2);
     apply_resolve_request(appD, aw, op, flag(root_uid), high1, high2);
 
-    // Process all nodes in topological order of both OBDDs
+    // Process nodes in topological order of both BDDs
     while (appD.can_pull() || appD.has_next_layer() || !appD_data.empty()) {
       if (!appD.can_pull() && appD_data.empty()) {
         appD.setup_next_layer();
@@ -190,25 +190,24 @@ namespace adiar
       }
 
       ptr_t source, t1, t2;
-      bool with_data, from_1 = false;
+      bool with_data = false, from_1 = false;
       ptr_t data_low = NIL, data_high = NIL;
 
       // Merge requests from  appD or appD_data
       if (appD.can_pull() && (appD_data.empty() ||
-                              std::min(appD.top().t1, appD.top().t2) <
-                              std::max(appD_data.top().t1, appD_data.top().t2))) {
-        with_data = false;
+                              fst(appD.top().t1, appD.top().t2) <
+                              snd(appD_data.top().t1, appD_data.top().t2))) {
         source = appD.top().source;
         t1 = appD.top().t1;
         t2 = appD.top().t2;
 
         appD.pop();
       } else {
-        with_data = true;
         source = appD_data.top().source;
         t1 = appD_data.top().t1;
         t2 = appD_data.top().t2;
 
+        with_data = true;
         from_1 = appD_data.top().from_1;
         data_low = appD_data.top().data_low;
         data_high = appD_data.top().data_high;
@@ -216,54 +215,21 @@ namespace adiar
         appD_data.pop();
       }
 
-      // Seek request partially in stream
-      if (with_data) {
-        if (from_1) {
-          while (v2.uid < t2) {
-            v2 = in_nodes_2.pull();
-          }
-        } else {
-          while (v1.uid < t1) {
-            v1 = in_nodes_1.pull();
-          }
-        }
-      } else {
-        if (label_of(t1) == label_of(t2)) {
-          while (label_of(v1.uid) < label_of(t1)) {
-            v1 = in_nodes_1.pull();
-          }
-          while (label_of(v2.uid) < label_of(t2)) {
-            v2 = in_nodes_2.pull();
-          }
-        }
+      adiar_invariant(is_sink_ptr(t1) || out_label <= label_of(t1),
+                      "Request should never level-wise be behind current position");
+      adiar_invariant(is_sink_ptr(t2) || out_label <= label_of(t2),
+                      "Request should never level-wise be behind current position");
 
-        if (is_sink_ptr(t1) || (t1 == v1.uid && std::min(t1,t2) == t2)) {
-          while (v2.uid < t2) {
-            v2 = in_nodes_2.pull();
-          }
-        } else if (is_sink_ptr(t2) || (t2 == v2.uid && std::min(t1,t2) == t1)) {
-          while (v1.uid < t1) {
-            v1 = in_nodes_1.pull();
-          }
-        } else if (t1 == t2) {
-          while (v1.uid < t1) {
-            v1 = in_nodes_1.pull();
-          }
-          while (v2.uid < t2) {
-            v2 = in_nodes_2.pull();
-          }
-        } else if (t1 < t2) {
-          while (v1.uid < t1) {
-            v1 = in_nodes_1.pull();
-          }
-        } else {
-          while (v2.uid < t2) {
-            v2 = in_nodes_2.pull();
-          }
-        }
+      // Seek request partially in stream
+      ptr_t t_seek = with_data ? snd(t1,t2) : fst(t1,t2);
+      while (v1.uid < t_seek && in_nodes_1.can_pull()) {
+        v1 = in_nodes_1.pull();
+      }
+      while (v2.uid < t_seek && in_nodes_2.can_pull()) {
+        v2 = in_nodes_2.pull();
       }
 
-      // Forward information across the layer
+      // Forward information across the level
       if (!with_data
           && !is_sink_ptr(t1) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)
           && (v1.uid != t1 || v2.uid != t2)) {
@@ -280,7 +246,7 @@ namespace adiar
       }
 
       // Resolve current node and recurse
-      ptr_t low1, low2, high1, high2;
+      // remember from above: ptr_t low1, low2, high1, high2;
 
       if (is_sink_ptr(t1) || is_sink_ptr(t2) || label_of(t1) != label_of(t2)) {
         if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink_ptr(t2)

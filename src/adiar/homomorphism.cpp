@@ -16,8 +16,8 @@ namespace adiar
     bool from_1;
   };
 
-  typedef node_priority_queue<tuple, tuple_queue_label, tuple_queue_1_lt, std::less<>, 2> homomorphism_priority_queue_t;
-  typedef tpie::priority_queue<homomorphism_tuple_data, tuple_queue_2_lt> homomorphism_data_priority_queue_t;
+  typedef node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2> homomorphism_priority_queue_t;
+  typedef tpie::priority_queue<homomorphism_tuple_data, tuple_snd_lt> homomorphism_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -111,8 +111,8 @@ namespace adiar
 
       // Merge requests from pq or pq_data
       if (pq.can_pull() && (pq_data.empty() ||
-                              std::min(pq.top().t1, pq.top().t2) <
-                              std::max(pq_data.top().t1, pq_data.top().t2))) {
+                              fst(pq.top().t1, pq.top().t2) <
+                              snd(pq_data.top().t1, pq_data.top().t2))) {
         with_data = false;
         t1 = pq.top().t1;
         t2 = pq.top().t2;
@@ -131,33 +131,12 @@ namespace adiar
       }
 
       // Seek request partially in stream
-      if (with_data) {
-        if (from_1) {
-          while (v2.uid < t2) {
-            v2 = in_nodes_2.pull();
-          }
-        } else {
-          while (v1.uid < t1) {
-            v1 = in_nodes_1.pull();
-          }
-        }
-      } else {
-        if (t1 == t2) {
-          while (v1.uid < t1) {
-            v1 = in_nodes_1.pull();
-          }
-          while (v2.uid < t2) {
-            v2 = in_nodes_2.pull();
-          }
-        } else if (t1 < t2) {
-          while (v1.uid < t1) {
-            v1 = in_nodes_1.pull();
-          }
-        } else {
-          while (v2.uid < t2) {
-            v2 = in_nodes_2.pull();
-          }
-        }
+      ptr_t t_seek = with_data ? snd(t1,t2) : fst(t1,t2);
+      while (v1.uid < t_seek && in_nodes_1.can_pull()) {
+        v1 = in_nodes_1.pull();
+      }
+      while (v2.uid < t_seek && in_nodes_2.can_pull()) {
+        v2 = in_nodes_2.pull();
       }
 
       // Forward information across the layer
