@@ -6,7 +6,6 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 #include <adiar/priority_queue.h>
-#include <adiar/reduce.h>
 #include <adiar/tuple.h>
 
 #include <adiar/bdd/build.h>

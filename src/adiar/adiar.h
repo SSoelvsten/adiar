@@ -22,6 +22,7 @@
 #include <adiar/bdd/assignment.h>
 #include <adiar/bdd/count.h>
 #include <adiar/bdd/evaluate.h>
+#include <adiar/bdd/if_then_else.h>
 #include <adiar/bdd/negate.h>
 #include <adiar/bdd/restrict.h>
 #include <adiar/bdd/quantify.h>

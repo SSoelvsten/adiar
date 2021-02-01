@@ -7,9 +7,9 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Given two OBDDs creates one as per an operator.
+  /// \brief Given two BDDs creates one as per an operator.
   ///
-  /// Creates the product construction of the two given OBDDs.
+  /// Creates the product construction of the two given BDDs.
   ///
   /// \param bdd_i     BDD to apply with the other.
   ///
