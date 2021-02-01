@@ -136,7 +136,7 @@ namespace adiar {
 
   const bool_op nand_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return negate(unflag(sink1 & sink2));
+    return negate(and_op(sink1, sink2));
   };
 
   const bool_op or_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
@@ -146,7 +146,7 @@ namespace adiar {
 
   const bool_op nor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return negate(unflag(sink1 | sink2));
+    return negate(or_op(sink1, sink2));
   };
 
   const bool_op xor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
