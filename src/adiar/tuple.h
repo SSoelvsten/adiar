@@ -16,9 +16,49 @@ namespace adiar {
     ptr_t data_high;
   };
 
+  struct triple : tuple
+  {
+    ptr_t t3;
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Ordered access
+  inline ptr_t fst(const ptr_t t1, const ptr_t t2)
+  {
+    return std::min(t1, t2);
+  }
+
+  inline ptr_t fst(const ptr_t t1, const ptr_t t2, const ptr_t t3)
+  {
+    return std::min({t1, t2, t3});
+  }
+
+  inline ptr_t fst(const tuple &t) { return fst(t.t1, t.t2); }
+  inline ptr_t fst(const triple &t) { return fst(t.t1, t.t2, t.t3); }
+
+  inline ptr_t snd(const ptr_t t1, const ptr_t t2)
+  {
+    return std::max(t1, t2);
+  }
+
+  inline ptr_t snd(const ptr_t t1, const ptr_t t2, const ptr_t t3)
+  {
+    return std::max(std::min(t1, t2), std::min(std::max(t1,t2),t3));
+  }
+
+  inline ptr_t snd(const tuple &t) { return snd(t.t1, t.t2); }
+  inline ptr_t snd(const triple &t) { return snd(t.t1, t.t2, t.t3); }
+
+  inline ptr_t trd(const ptr_t t1, const ptr_t t2, const ptr_t t3)
+  {
+    return std::max({t1, t2, t3});
+  }
+
+  inline ptr_t trd(const triple &t) { return trd(t.t1, t.t2, t.t3); }
+
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
-  struct tuple_queue_label
+  struct tuple_label
   {
     label_t label_of(const tuple &t)
     {
@@ -26,21 +66,73 @@ namespace adiar {
     }
   };
 
-  struct tuple_queue_1_lt
+  struct tuple_fst_lt
   {
     bool operator()(const tuple &a, const tuple &b)
     {
-      return std::min(a.t1, a.t2) < std::min(b.t1, b.t2) ||
-        (std::min(a.t1, a.t2) == std::min(b.t1, b.t2) && std::max(a.t1, a.t2) < std::max(b.t1, b.t2));
+      // Sort primarily by the element to be encountered first
+      return fst(a) < fst(b) ||
+        // Group requests to the same tuple together by sorting on the second
+        (fst(a) == fst(b) && snd(a) < snd(b));
     }
   };
 
-  struct tuple_queue_2_lt
+  struct tuple_snd_lt
   {
     bool operator()(const tuple &a, const tuple &b)
     {
-      return std::max(a.t1, a.t2) < std::max(b.t1, b.t2) ||
-            (std::max(a.t1, a.t2) == std::max(b.t1, b.t2) && std::min(a.t1, a.t2) < std::min(b.t1, b.t2));
+      // Sort primarily by the element to be encountered second
+      return snd(a) < snd(b) ||
+         // Group requests to the same tuple together by sorting on the first
+         (snd(a) == snd(b) && fst(a) < fst(b));
+    }
+  };
+
+  struct triple_label
+  {
+    label_t label_of(const triple &t)
+    {
+      return adiar::label_of(fst(t));
+    }
+  };
+
+  struct triple_lt
+  {
+    bool operator()(const triple &a, const triple &b)
+    {
+      return a.t1 < b.t1
+        || (a.t1 == b.t1 && a.t2 < b.t2)
+        || (a.t1 == b.t1 && a.t2 == b.t2 && a.t3 < b.t3);
+    }
+  };
+
+  struct triple_fst_lt
+  {
+    bool operator()(const triple &a, const triple &b)
+    {
+      return fst(a) < fst(b)
+         // If they are tied, sort them coordinate-wise
+         || (fst(a) == fst(b) && triple_lt()(a,b));
+    }
+  };
+
+  struct triple_snd_lt
+  {
+    bool operator()(const triple &a, const triple &b)
+    {
+      return snd(a) < snd(b)
+         // If they are tied, sort them coordinate-wise
+         || (snd(a) == snd(b) && triple_lt()(a,b));
+    }
+  };
+
+  struct triple_trd_lt
+  {
+    bool operator()(const triple &a, const triple &b)
+    {
+      return trd(a) < trd(b)
+         // If they are tied, sort them coordinate-wise
+         || (trd(a) == trd(b) && triple_lt()(a,b));
     }
   };
 }

@@ -36,7 +36,7 @@ namespace adiar
   // quantify_tuple sorted.
   //
   // This improves the speed of the comparators.
-  struct quantify_queue_1_lt
+  struct quantify_1_lt
   {
     bool operator()(const quantify_tuple &a, const quantify_tuple &b)
     {
@@ -44,15 +44,7 @@ namespace adiar
     }
   };
 
-  struct quantify_queue_label
-  {
-    label_t label_of(const quantify_tuple &t)
-    {
-      return adiar::label_of(t.t1);
-    }
-  };
-
-  struct quantify_queue_2_lt
+  struct quantify_2_lt
   {
     bool operator()(const quantify_tuple_data &a, const quantify_tuple_data &b)
     {
@@ -60,8 +52,8 @@ namespace adiar
     }
   };
 
-  typedef node_priority_queue<quantify_tuple, quantify_queue_label, quantify_queue_1_lt> quantify_priority_queue_t;
-  typedef tpie::priority_queue<quantify_tuple_data, quantify_queue_2_lt> quantify_data_priority_queue_t;
+  typedef node_priority_queue<quantify_tuple, tuple_label, quantify_1_lt> quantify_priority_queue_t;
+  typedef tpie::priority_queue<quantify_tuple_data, quantify_2_lt> quantify_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -86,7 +78,7 @@ namespace adiar
       arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
       aw.unsafe_push_sink(out_arc);
     } else {
-      quantD.push({ r1, r2, source });
+      quantD.push({ fst(r1,r2), snd(r1,r2), source });
     }
   }
 
@@ -170,7 +162,7 @@ namespace adiar
 
     if (label_of(v.uid) == label) {
       // Precondition: The input is reduced and will not collapse to a sink-only OBDD
-      quantD.push({ std::min(v.low, v.high), std::max(v.low, v.high), NIL });
+      quantD.push({ fst(v.low, v.high), snd(v.low, v.high), NIL });
     } else {
       aw.unsafe_push(meta_t { out_label });
 
@@ -253,7 +245,7 @@ namespace adiar
         high2 = NIL;
       }
 
-      if (label_of(std::min(t1, t2)) == label) {
+      if (label_of(fst(t1, t2)) == label) {
         // The variable should be quantified: proceed as in Restrict by
         // forwarding the request of source further to the children, though here
         // we keep track of both possibilities.
@@ -262,9 +254,7 @@ namespace adiar
 
         while (true) {
           quantify_resolve_request(quantD, aw, op,
-                                   source,
-                                   std::min(low1, high1),
-                                   std::max(low1, high1));
+                                   source, low1, high1);
 
           if (quantify_update_source_or_break(quantD, quantD_data, source, t1, t2)) {
             break;
@@ -279,14 +269,10 @@ namespace adiar
         out_id++;
 
         quantify_resolve_request(quantD, aw, op,
-                                 out_uid,
-                                 std::min(low1, low2),
-                                 std::max(low1, low2));
+                                 out_uid, low1, low2);
 
         quantify_resolve_request(quantD, aw, op,
-                                 flag(out_uid),
-                                 std::min(high1, high2),
-                                 std::max(high1, high2));
+                                 flag(out_uid), high1, high2);
 
         if (!is_nil(source)) {
           do {
