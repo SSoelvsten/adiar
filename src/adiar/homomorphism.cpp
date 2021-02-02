@@ -11,13 +11,8 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct homomorphism_tuple_data : tuple_data
-  {
-    bool from_1;
-  };
-
   typedef node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2> homomorphism_priority_queue_t;
-  typedef tpie::priority_queue<homomorphism_tuple_data, tuple_snd_lt> homomorphism_data_priority_queue_t;
+  typedef tpie::priority_queue<tuple_data, tuple_snd_lt> homomorphism_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -106,7 +101,7 @@ namespace adiar
       }
 
       ptr_t t1, t2;
-      bool with_data, from_1 = false;
+      bool with_data;
       ptr_t data_low = NIL, data_high = NIL;
 
       // Merge requests from pq or pq_data
@@ -123,7 +118,6 @@ namespace adiar
         t1 = pq_data.top().t1;
         t2 = pq_data.top().t2;
 
-        from_1 = pq_data.top().from_1;
         data_low = pq_data.top().data_low;
         data_high = pq_data.top().data_high;
 
@@ -140,13 +134,14 @@ namespace adiar
       }
 
       // Forward information across the layer
+      bool from_1 = fst(t1,t2) == t1;
+
       if (!with_data
           && !is_sink_ptr(t1) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)
           && (v1.uid != t1 || v2.uid != t2)) {
-        bool from_1 = v1.uid == t1;
         node_t v0 = from_1 ? v1 : v2;
 
-        pq_data.push({ t1, t2, v0.low, v0.high, from_1 });
+        pq_data.push({ t1, t2, v0.low, v0.high });
 
         // Skip all requests to the same node
         while (pq.can_pull() && (pq.top().t1 == t1 && pq.top().t2 == t2)) {
