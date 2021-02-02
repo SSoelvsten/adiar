@@ -26,7 +26,6 @@ namespace adiar
   struct apply_tuple_data : tuple_data
   {
     ptr_t source;
-    bool from_1;
   };
 
   typedef node_priority_queue<apply_tuple, tuple_label, tuple_fst_lt, std::less<>, 2> apply_priority_queue_t;
@@ -190,7 +189,7 @@ namespace adiar
       }
 
       ptr_t source, t1, t2;
-      bool with_data = false, from_1 = false;
+      bool with_data = false;
       ptr_t data_low = NIL, data_high = NIL;
 
       // Merge requests from  appD or appD_data
@@ -208,7 +207,6 @@ namespace adiar
         t2 = appD_data.top().t2;
 
         with_data = true;
-        from_1 = appD_data.top().from_1;
         data_low = appD_data.top().data_low;
         data_high = appD_data.top().data_high;
 
@@ -230,17 +228,18 @@ namespace adiar
       }
 
       // Forward information across the level
+      bool from_1 = fst(t1,t2) == t1;
+
       if (!with_data
           && !is_sink_ptr(t1) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)
           && (v1.uid != t1 || v2.uid != t2)) {
-        bool from_1 = v1.uid == t1;
         node_t v0 = from_1 ? v1 : v2;
 
-        appD_data.push({ t1, t2, v0.low, v0.high, source, from_1 });
+        appD_data.push({ t1, t2, v0.low, v0.high, source });
 
         while (appD.can_pull() && (appD.top().t1 == t1 && appD.top().t2 == t2)) {
           source = appD.pull().source;
-          appD_data.push({ t1, t2, v0.low, v0.high, source, from_1 });
+          appD_data.push({ t1, t2, v0.low, v0.high, source });
         }
         continue;
       }
