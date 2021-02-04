@@ -33,6 +33,19 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
+  inline void apply_init_request(node_stream<> &in_nodes, node_t &v, label_t out_label,
+                                 ptr_t &low, ptr_t &high)
+  {
+    if (!is_sink(v) && label_of(v) == out_label) {
+      low = v.low;
+      high = v.high;
+
+      if (in_nodes.can_pull()) { v = in_nodes.pull(); }
+    } else {
+      low = high = v.uid;
+    }
+  }
+
   inline void apply_resolve_request(apply_priority_queue_t &appD,
                                     arc_writer &aw,
                                     const bool_op &op,
@@ -118,66 +131,20 @@ namespace adiar
     apply_priority_queue_t appD({bdd_1,bdd_2}, available_memory / 2);
     apply_data_priority_queue_t appD_data(calc_tpie_pq_factor(available_memory / 2));
 
+    // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v1.uid, v2.uid));
     id_t out_id = 0;
 
-    // Process root and create initial recursion requests
-    ptr_t low1, low2, high1, high2;
-
-    uid_t root_uid = create_node_uid(out_label, out_id);
     aw.unsafe_push(meta_t { out_label });
 
-    if (is_sink(v1)) {
-      low1 = high1 = v1.uid;
-      low2 = v2.low;
-      high2 = v2.high;
-
-      if (in_nodes_2.can_pull()) {
-        v2 = in_nodes_2.pull();
-      }
-    } else if (is_sink(v2)) {
-      low1 = v1.low;
-      high1 = v1.high;
-      low2 = high2 = v2.uid;
-
-      if (in_nodes_1.can_pull()) {
-        v1 = in_nodes_1.pull();
-      }
-    } else if (label_of(v1) < label_of(v2)) {
-      low1 = v1.low;
-      high1 = v1.high;
-      low2 = v2.uid;
-      high2 = v2.uid;
-
-      if (in_nodes_1.can_pull()) {
-        v1 = in_nodes_1.pull();
-      }
-    } else if (label_of(v1) > label_of(v2)) {
-      low1 = v1.uid;
-      high1 = v1.uid;
-      low2 = v2.low;
-      high2 = v2.high;
-
-      if (in_nodes_2.can_pull()) {
-        v2 = in_nodes_2.pull();
-      }
-    } else {
-      low1 = v1.low;
-      high1 = v1.high;
-      low2 = v2.low;
-      high2 = v2.high;
-
-      if (in_nodes_1.can_pull()) {
-        v1 = in_nodes_1.pull();
-      }
-      if (in_nodes_2.can_pull()) {
-        v2 = in_nodes_2.pull();
-      }
-    }
+    ptr_t low1, low2, high1, high2;
+    apply_init_request(in_nodes_1, v1, out_label, low1, high1);
+    apply_init_request(in_nodes_2, v2, out_label, low2, high2);
 
     // Shortcut the root
-    apply_resolve_request(appD, aw, op, root_uid, low1, low2);
-    apply_resolve_request(appD, aw, op, flag(root_uid), high1, high2);
+    uid_t out_uid = create_node_uid(out_label, out_id);
+    apply_resolve_request(appD, aw, op, out_uid, low1, low2);
+    apply_resolve_request(appD, aw, op, flag(out_uid), high1, high2);
 
     // Process nodes in topological order of both BDDs
     while (appD.can_pull() || appD.has_next_layer() || !appD_data.empty()) {
@@ -228,16 +195,13 @@ namespace adiar
       }
 
       // Forward information across the level
-      bool from_1 = fst(t1,t2) == t1;
-
-      if (!with_data
-          && !is_sink_ptr(t1) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)
-          && (v1.uid != t1 || v2.uid != t2)) {
-        node_t v0 = from_1 ? v1 : v2;
+      if (is_node_ptr(t1) && is_node_ptr(t2) && label_of(t1) == label_of(t2)
+          && !with_data && (v1.uid != t1 || v2.uid != t2)) {
+        node_t v0 = v1.uid == t1 ? v1 : v2;
 
         appD_data.push({ t1, t2, v0.low, v0.high, source });
 
-        while (appD.can_pull() && (appD.top().t1 == t1 && appD.top().t2 == t2)) {
+        while (appD.can_pull() && appD.top().t1 == t1 && appD.top().t2 == t2) {
           source = appD.pull().source;
           appD_data.push({ t1, t2, v0.low, v0.high, source });
         }
@@ -251,26 +215,23 @@ namespace adiar
         if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink_ptr(t2)
           low1 = v1.low;
           high1 = v1.high;
-          low2 = t2;
-          high2 = t2;
+          low2 = high2 = t2;
         } else { // ==> label_of(t1) > label_of(t2) || is_sink_ptr(t1)
-          low1 = t1;
-          high1 = t1;
+          low1 = high1 = t1;
           low2 = v2.low;
           high2 = v2.high;
         }
       } else {
-        low1 = with_data && from_1 ? data_low : v1.low;
-        high1 = with_data && from_1 ? data_high : v1.high;
-        low2 = with_data && !from_1 ? data_low : v2.low;
-        high2 = with_data && !from_1 ? data_high : v2.high;
+        low1  = t1 < t_seek ? data_low  : v1.low;
+        high1 = t1 < t_seek ? data_high : v1.high;
+
+        low2  = t2 < t_seek ? data_low  : v2.low;
+        high2 = t2 < t_seek ? data_high : v2.high;
       }
 
       // Resolve request
-      uid_t out_uid = create_node_uid(out_label, out_id);
-
       adiar_debug(out_id < MAX_ID, "Has run out of ids");
-      out_id++;
+      out_uid = create_node_uid(out_label, out_id++);
 
       apply_resolve_request(appD, aw, op, out_uid, low1, low2);
       apply_resolve_request(appD, aw, op, flag(out_uid), high1, high2);

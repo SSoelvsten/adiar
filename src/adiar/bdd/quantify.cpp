@@ -161,7 +161,7 @@ namespace adiar
     id_t out_id = 0;
 
     if (label_of(v.uid) == label) {
-      // Precondition: The input is reduced and will not collapse to a sink-only OBDD
+      // Precondition: The input is reduced and will not collapse to a sink-only BDD
       quantD.push({ fst(v.low, v.high), snd(v.low, v.high), NIL });
     } else {
       aw.unsafe_push(meta_t { out_label });
@@ -263,10 +263,8 @@ namespace adiar
       } else {
         // The variable should stay: proceed as in Apply by simulating both
         // possibilities in parallel.
-        uid_t out_uid = create_node_uid(out_label, out_id);
-
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
-        out_id++;
+        uid_t out_uid = create_node_uid(out_label, out_id++);
 
         quantify_resolve_request(quantD, aw, op,
                                  out_uid, low1, low2);
