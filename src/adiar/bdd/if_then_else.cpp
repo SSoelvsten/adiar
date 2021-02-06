@@ -50,6 +50,77 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
+  bool bdd_disjunct_levels(const bdd &bdd_1, const bdd &bdd_2)
+  {
+    meta_stream<node_t, 1> in_meta_1(bdd_1);
+    meta_stream<node_t, 1> in_meta_2(bdd_2);
+    while(in_meta_1.can_pull() && in_meta_2.can_pull()) {
+      if (in_meta_1.peek().label == in_meta_2.peek().label) {
+        return false;
+      } else if (in_meta_1.peek().label < in_meta_2.peek().label) {
+        in_meta_1.pull();
+      } else {
+        in_meta_2.pull();
+      }
+    }
+    return true;
+  }
+
+  node_file ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
+  {
+    label_t out_label = MAX_LABEL+1;
+    ptr_t root_then = NIL, root_else = NIL;
+
+    node_file out_nodes;
+    node_writer nw(out_nodes);
+
+    // zip 'then' and 'else' cases
+    node_stream<true> in_nodes_then(bdd_then);
+    node_stream<true> in_nodes_else(bdd_else);
+
+    while (in_nodes_then.can_pull() || in_nodes_else.can_pull()) {
+      bool from_then = in_nodes_then.can_pull()
+        && (!in_nodes_else.can_pull()
+            || in_nodes_then.peek() > in_nodes_else.peek());
+
+      node_t n = from_then ? in_nodes_then.pull() : in_nodes_else.pull();
+
+      if (from_then && !in_nodes_then.can_pull()) { root_then = n.uid; }
+      if (!from_then && !in_nodes_else.can_pull()) { root_else = n.uid; }
+
+      if (label_of(n) != out_label) {
+        out_label = label_of(n);
+        nw.unsafe_push(meta_t {out_label});
+      }
+      nw.unsafe_push(n);
+    }
+
+    // push all nodes from 'if' conditional and remap its sinks
+    adiar_debug(!is_nil(root_then), "Did not obtain root from then stream");
+    adiar_debug(!is_nil(root_else), "Did not obtain root from else stream");
+
+    node_stream<true> in_nodes_if(bdd_if);
+
+    while (in_nodes_if.can_pull()) {
+      node_t n = in_nodes_if.pull();
+      if (label_of(n) != out_label) {
+        out_label = label_of(n);
+        nw.unsafe_push(meta_t {out_label});
+      }
+
+      n.low = is_sink_ptr(n.low)
+        ? (value_of(n.low) ? root_then : root_else)
+        : n.low;
+
+      n.high = is_sink_ptr(n.high)
+        ? (value_of(n.high) ? root_then : root_else)
+        : n.high;
+
+      nw.unsafe_push(n);
+    }
+    return out_nodes;
+  }
+
   inline bool ite_must_forward(node_t v, ptr_t t, label_t out_label, ptr_t t_seek)
   {
     return
@@ -147,15 +218,22 @@ namespace adiar
       return value_of(v_if) ? bdd_then : bdd_else;
     }
 
-    // TODO: If the levels of 'then' and 'else' are disjunct and the 'if' BDD is
-    // above the two others, then we can merely zip the 'then' and 'else' BDDs.
-    // This is only O((N1+N2+N3)/B) I/Os!
-
     node_stream<> in_nodes_then(bdd_then);
     node_t v_then = in_nodes_then.pull();
 
     node_stream<> in_nodes_else(bdd_else);
     node_t v_else = in_nodes_else.pull();
+
+    // If the levels of 'then' and 'else' are disjunct and the 'if' BDD is above
+    // the two others, then we can merely zip the 'then' and 'else' BDDs. This
+    // is only O((N1+N2+N3)/B) I/Os!
+    if (max_label(bdd_if) < label_of(v_then) &&
+        max_label(bdd_if) < label_of(v_then) &&
+        bdd_disjunct_levels(bdd_then, bdd_else)) {
+      return ite_zip_bdds(bdd_if,bdd_then,bdd_else);
+    }
+    // From here on forward, we probably cannot circumvent actually having to do
+    // the product construction.
 
     arc_file out_arcs;
     arc_writer aw(out_arcs);
