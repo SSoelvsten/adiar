@@ -1427,5 +1427,200 @@ go_bandit([]() {
 
             AssertThat(meta.can_pull(), Is().False());
           });
+
+        it("should merely zip disjunct levels if possible [1]", [&]() {
+            node_file bdd_x1_and_x3;
+            /*
+                         1      ---- x1
+                        / \
+                        F 2     ---- x3
+                         / \
+                         T F
+             */
+
+            {
+              node_writer nw_x1_and_x3(bdd_x1_and_x3);
+              nw_x1_and_x3 << create_node(3,42,sink_F,sink_T)                // 2
+                           << create_node(1,0,sink_F,create_node_uid(3,42)); // 1
+            }
+
+            __bdd out = bdd_ite(bdd_x0, bdd_x2, bdd_x1_and_x3);
+
+            node_test_stream ns(out);
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(3,42,
+                                                           sink_F,
+                                                           sink_T)));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(2,0,
+                                                           sink_F,
+                                                           sink_T)));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(1,0,
+                                                           sink_F,
+                                                           create_node_ptr(3,42))));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(0,0,
+                                                           create_node_ptr(1,0),
+                                                           create_node_ptr(2,0))));
+
+            AssertThat(ns.can_pull(), Is().False());
+
+            meta_test_stream<node_t, 1> meta(out);
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(meta.can_pull(), Is().False());
+          });
+
+        it("should merely zip disjunct levels if possible [2]", [&]() {
+            node_file bdd_then;
+            /*
+                         _1_      ---- x2
+                        /   \
+                        2   3     ---- x3
+                       / \ / \
+                       T 4 T 5    ---- x4
+                        / \ / \
+                        F T T 6   ---- x6
+                             / \
+                             T F
+             */
+
+            {
+              node_writer nw_then(bdd_then);
+              nw_then << create_node(6,1,sink_T,sink_F)                              // 6
+                      << create_node(4,1,sink_T,create_node_ptr(6,1))                // 5
+                      << create_node(4,0,sink_F,sink_T)                              // 4
+                      << create_node(3,2,sink_T,create_node_ptr(4,1))                // 3
+                      << create_node(3,0,sink_T,create_node_ptr(4,0))                // 2
+                      << create_node(2,0,create_node_ptr(3,0),create_node_uid(3,2)); // 1
+            }
+
+            node_file bdd_else;
+            /*
+                         _1_      ---- x5
+                        /   \
+                        2   3     ---- x8
+                       / \ / \
+                       T F F T
+            */
+
+            {
+              node_writer nw_else(bdd_else);
+              nw_else << create_node(8,1,sink_T,sink_F)                             // 3
+                      << create_node(8,0,sink_F,sink_T)                             // 2
+                      << create_node(5,0,create_node_ptr(8,0),create_node_ptr(8,1)) // 1
+                ;
+            }
+
+            __bdd out = bdd_ite(bdd_not(bdd_x0_xor_x1), bdd_then, bdd_else);
+
+            node_test_stream ns(out);
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(8,1,
+                                                           sink_T,
+                                                           sink_F)));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(8,0,
+                                                           sink_F,
+                                                           sink_T)));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(6,1,
+                                                           sink_T,
+                                                           sink_F)));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(5,0,
+                                                           create_node_ptr(8,0),
+                                                           create_node_ptr(8,1))));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(4,1,
+                                                           sink_T,
+                                                           create_node_ptr(6,1))));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(4,0,
+                                                           sink_F,
+                                                           sink_T)));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(3,2,
+                                                           sink_T,
+                                                           create_node_ptr(4,1))));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(3,0,
+                                                           sink_T,
+                                                           create_node_ptr(4,0))));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(2,0,
+                                                           create_node_ptr(3,0),
+                                                           create_node_ptr(3,2))));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(1,1,
+                                                           create_node_ptr(5,0),
+                                                           create_node_ptr(2,0))));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(1,0,
+                                                           create_node_ptr(2,0),
+                                                           create_node_ptr(5,0))));
+
+            AssertThat(ns.can_pull(), Is().True());
+            AssertThat(ns.pull(), Is().EqualTo(create_node(0,0,
+                                                           create_node_ptr(1,0),
+                                                           create_node_ptr(1,1))));
+
+            AssertThat(ns.can_pull(), Is().False());
+
+            meta_test_stream<node_t, 1> meta(out);
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 8 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 6 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 5 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 4 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(meta.can_pull(), Is().False());
+          });
       });
   });
