@@ -194,6 +194,9 @@ namespace adiar
       }
 
       // Forward information across the level
+
+      // TODO: We don't need to forward something, if there are no more nodes to
+      // pull from that stream.
       if (is_node_ptr(t1) && is_node_ptr(t2) && label_of(t1) == label_of(t2)
           && !with_data && (v1.uid != t1 || v2.uid != t2)) {
         node_t v0 = v1.uid == t1 ? v1 : v2;
