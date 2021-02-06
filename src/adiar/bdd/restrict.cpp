@@ -48,6 +48,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_restrict(const bdd &bdd, const assignment_file &assignment)
   {
+    // TODO: Assert whether no assignment actually is present in the bdd.
     if (assignment.size() == 0 || is_sink(bdd, is_any)) {
       return bdd;
     }
