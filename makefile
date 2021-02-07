@@ -16,6 +16,10 @@ clean-files:
 	@rm -rf *.adiar*
 	@rm -rf *.dot
 
+clean-test-report:
+	@rm -rf test/report/
+	@rm -rf *.png *.html *.css
+
 clean: | clean-files
 	@rm -r -f build/
 
@@ -24,12 +28,21 @@ clean: | clean-files
 # ============================================================================ #
 test:
 	@mkdir -p build/
-	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug ..
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug -D ADIAR_TEST=ON ..
 	@cd build/ && make $(MAKE_FLAGS) test_unit
 
 	$(MAKE) clean-files
 	@./build/test/test_unit --reporter=info --colorizer=light
 	$(MAKE) clean-files
+
+test-report: | clean-test-report
+  # create report
+	@lcov --capture --directory build/src/adiar/ --output-file ./coverage.info
+	@lcov --remove coverage.info --output-file coverage.info "/usr/*" "*/external/*" "./test/*"
+  # debug info
+	@lcov --list coverage.info
+  # generate html
+	@genhtml coverage.info -o test/report/
 
 # ============================================================================ #
 #  DOT FILE output for visual debugging
