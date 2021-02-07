@@ -833,6 +833,50 @@ go_bandit([]() {
             ;
         }
 
+        node_file bdd_7;
+        /*
+                                     1         ---- x0
+                                    / \
+                                    2__\       ---- x1
+                                   /   |
+                                   3   4       ---- x2
+                                  / \ / \
+                                  F  5  T      ---- x3
+                                    / \
+                                    F T
+        */
+
+        {
+          node_writer nw_7(bdd_7);
+          nw_7 << create_node(3,0,sink_F,sink_T)                             // 5
+               << create_node(2,1,create_node_ptr(3,0),sink_T)               // 4
+               << create_node(2,0,sink_F,create_node_ptr(3,0))               // 3
+               << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
+               << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
+            ;
+        }
+
+        node_file bdd_8;
+        /*
+                                   1         ---- x0
+                                  / \
+                                  2 |        ---- x1
+                                 / \|
+                                 3  |        ---- x2
+                                / \/
+                                T 4          ---- x3
+                                 / \
+                                 T F
+        */
+        {
+          node_writer nw_8(bdd_8);
+          nw_8 << create_node(3,0,sink_T,sink_F)                             // 4
+               << create_node(2,0,sink_T,create_node_ptr(3,0))               // 3
+               << create_node(1,0,create_node_ptr(2,0),create_node_ptr(3,0)) // 2
+               << create_node(0,0,create_node_ptr(1,0),create_node_ptr(3,0)) // 1
+            ;
+        }
+
         //                 END
         // == CREATE BIG OBDDs FOR UNIT TESTS ==
 
@@ -1410,6 +1454,292 @@ go_bandit([]() {
             AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), sink_T }));
 
             AssertThat(sink_arcs.can_pull(), Is().False());
+
+            meta_test_stream<arc_t, 2> meta(out);
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(meta.can_pull(), Is().False());
+          });
+
+        it("should compute (~x0 & ~x1 & x2) ? bdd_2 : bdd_4", [&]() {
+            node_file bdd_if;
+            /*
+                              1       ---- x0
+                             / \
+                             2 F      ---- x1
+                            / \
+                            3 F       ---- x2
+                           / \
+                           F T
+             */
+
+            {
+              node_writer nw_if(bdd_if);
+              nw_if << create_node(2,0,sink_F,sink_T)                // 3
+                    << create_node(1,0,create_node_uid(2,0),sink_F)  // 2
+                    << create_node(0,0,create_node_uid(1,0),sink_F); // 1
+            }
+
+            /*
+                                       (1,1,1)                  ---- x0
+                                ________/   \
+                               /             \
+                           (2,2,2)            \                 ---- x1
+                           /     \             \
+                     (3,4,4)     (F,_,5)     (F,_,3)            ---- x2
+                      /   \       /   \       /   \
+                 (F,_,6) (T,8,_) F (F,_,7)    T   F             ---- x3
+                  /   \   /   \     /   \
+                  T   F   T   F     F   T
+
+                Where the order for x2 is (F,_,3), (3,4,4), (F,_,5) because the
+                (3,4,4) node needs to forward (3,4,_) information once.
+             */
+
+            __bdd out = bdd_ite(bdd_if, bdd_2, bdd_4);
+
+            node_arc_test_stream node_arcs(out);
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (2,2,2)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,3)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,0) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (3,4,4)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,1) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,5)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,2) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,6)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), create_node_ptr(3,0) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (T,8,_)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(3,1) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,7)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,2)), create_node_ptr(3,2) }));
+
+            AssertThat(node_arcs.can_pull(), Is().False());
+
+            sink_arc_test_stream sink_arcs(out);
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (F,_,3)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), sink_T }));
+            AssertThat(sink_arcs.can_pull(), Is().True());
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), sink_F }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (F,_,5)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,2), sink_F }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (F,_,6)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,0), sink_T }));
+            AssertThat(sink_arcs.can_pull(), Is().True());
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), sink_F }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (T,8,_)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,1), sink_T }));
+            AssertThat(sink_arcs.can_pull(), Is().True());
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), sink_F }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (F,_,7)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,2), sink_F }));
+            AssertThat(sink_arcs.can_pull(), Is().True());
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,2)), sink_T }));
+
+            AssertThat(sink_arcs.can_pull(), Is().False());
+
+            meta_test_stream<arc_t, 2> meta(out);
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(meta.can_pull(), Is().False());
+          });
+
+        it("should compute (x0 | (x1 & x2)) ? bdd_8 : bdd_7", [&]() {
+            node_file bdd_if;
+            /*
+                               1        ---- x0
+                              / \
+                              2 T       ---- x1
+                             / \
+                             F 3        ---- x2
+                              / \
+                              F T
+             */
+            {
+              node_writer nw_if(bdd_if);
+              nw_if << create_node(2,0,sink_F,sink_T)               // 3
+                    << create_node(1,0,sink_F,create_node_ptr(2,0)) // 2
+                    << create_node(0,0,create_node_ptr(1,0),sink_T) // 1
+                ;
+            }
+
+            /*
+                                     (1,1,1)        ---- x0
+                             _________/   \
+                            /             |
+                        (2,2,2)           |         ---- x1
+                         /   \            |
+                    (F,_,3) (3,4,4)       |         ---- x2
+                     /   \   /   \________|
+                     F  (F,_,5)        (T,4,_)      ---- x3
+                         /   \          /   \
+                         F   T          T   F
+             */
+
+            __bdd out = bdd_ite(bdd_if, bdd_8, bdd_7);
+
+            node_arc_test_stream node_arcs(out);
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (2,2,2)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,3)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,0) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (3,4,4)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,5)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,0) }));
+            AssertThat(node_arcs.can_pull(), Is().True());
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), create_node_ptr(3,0) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (T,4,_)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(3,1) }));
+            AssertThat(node_arcs.can_pull(), Is().True());
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(3,1) }));
+
+            AssertThat(node_arcs.can_pull(), Is().False());
+
+            sink_arc_test_stream sink_arcs(out);
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (F,_,3)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), sink_F }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (F,_,5)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,0), sink_F }));
+            AssertThat(sink_arcs.can_pull(), Is().True());
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), sink_T }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (T,4,_)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,1), sink_T }));
+            AssertThat(sink_arcs.can_pull(), Is().True());
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), sink_F }));
+
+            AssertThat(sink_arcs.can_pull(), Is().False());
+
+            meta_test_stream<arc_t, 2> meta(out);
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+
+            AssertThat(meta.can_pull(), Is().True());
+            AssertThat(meta.pull(), Is().EqualTo(meta_t { 3 }));
+
+            AssertThat(meta.can_pull(), Is().False());
+          });
+
+        it("should compute bdd_6 ? bdd_4 : bdd_2", [&]() {
+            /*
+                                       (1,1,1)                           ---- x0
+                              __________/   \___________
+                             /                          \
+                          (F,_,2)                    (2,3,3)             ---- x1
+                          /     \                     /   \
+                     (F,_,4)   (F,_,5)           (3,3,6) (4,3,7)         ---- x2
+                      /   \     /   \             /   \   /   \
+                      F (F,_,8) F (F,_,9)         T   F   T   T          ---- x3
+                         /   \     /   \
+                         T   F     F   T
+             */
+
+            __bdd out = bdd_ite(bdd_6, bdd_4, bdd_2);
+
+            node_arc_test_stream node_arcs(out);
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,2)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (2,3,3)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,4)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,0) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,5)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (3,3,6)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), create_node_ptr(2,2) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (4,3,7)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), create_node_ptr(2,3) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,8)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,0) }));
+
+            AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,9)
+            AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(3,1) }));
+
+            AssertThat(node_arcs.can_pull(), Is().False());
+
+            sink_arc_test_stream sink_arcs(out);
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (F,_,4)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), sink_F }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (F,_,5)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), sink_F }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (3,3,6)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,2), sink_T }));
+            AssertThat(sink_arcs.can_pull(), Is().True());
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,2)), sink_F }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (4,3,7)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,3), sink_T }));
+            AssertThat(sink_arcs.can_pull(), Is().True());
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,3)), sink_T }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (F,_,8)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,0), sink_T }));
+            AssertThat(sink_arcs.can_pull(), Is().True());
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), sink_F }));
+
+            AssertThat(sink_arcs.can_pull(), Is().True()); // (F,_,9)
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,1), sink_F }));
+            AssertThat(sink_arcs.can_pull(), Is().True());
+            AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), sink_T }));
 
             meta_test_stream<arc_t, 2> meta(out);
 
