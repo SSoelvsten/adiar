@@ -1,0 +1,2 @@
+fixes:
+  - "adiar/::"  # remove adiar/ in path
