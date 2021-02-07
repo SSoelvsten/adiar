@@ -2,6 +2,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](LICENSE.md)
 [![Built with TPIE](https://img.shields.io/badge/built%20with-TPIE-blue)](https://users-cs.au.dk/~rav/tpie/)
 [![test](https://github.com/SSoelvsten/adiar/workflows/test/badge.svg?branch=master)](/actions?query=workflow%3Atest)
+[![codecov](https://codecov.io/gh/SSoelvsten/adiar/branch/master/graph/badge.svg?token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
 [![examples](https://github.com/SSoelvsten/adiar/workflows/examples/badge.svg?branch=master)](/actions?query=workflow%3Aexamples)
 
 Following up on the work of [[Arge96](#references)], this implementation of
