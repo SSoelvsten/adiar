@@ -23,7 +23,7 @@ jobs:
       run: cmake -E make_directory ${{runner.workspace}}/build
     - name: CMake | configure
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Debug -D ADIAR_TEST=ON
+      run: cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Debug -D CODE_COVERAGE=ON
     - name: CMake | build unit tests
       working-directory: ${{runner.workspace}}/build
       run: cmake --build . --target test_unit
