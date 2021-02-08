@@ -4,7 +4,7 @@ go_bandit([]() {
         ptr_t sink_F = create_sink_ptr(false);
 
         describe("bdd_sink", [&]() {
-            it("can create true sink only", [&]() {
+            it("can create true sink [bdd_sink]", [&]() {
                 bdd res = bdd_sink(true);
                 node_test_stream ns(res);
 
@@ -16,8 +16,32 @@ go_bandit([]() {
                 AssertThat(ms.can_pull(), Is().False());
               });
 
-            it("can create false sink only", [&]() {
+            it("can create true sink [bdd_true]", [&]() {
+                bdd res = bdd_true();
+                node_test_stream ns(res);
+
+                AssertThat(ns.can_pull(), Is().True());
+                AssertThat(ns.pull(), Is().EqualTo(create_sink(true)));
+                AssertThat(ns.can_pull(), Is().False());
+
+                meta_test_stream<node_t, 1> ms(res);
+                AssertThat(ms.can_pull(), Is().False());
+              });
+
+            it("can create false sink [bdd_sink]", [&]() {
                 bdd res = bdd_sink(false);
+                node_test_stream ns(res);
+
+                AssertThat(ns.can_pull(), Is().True());
+                AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+                AssertThat(ns.can_pull(), Is().False());
+
+                meta_test_stream<node_t, 1> ms(res);
+                AssertThat(ms.can_pull(), Is().False());
+              });
+
+            it("can create false sink [bdd_false]", [&]() {
+                bdd res = bdd_false();
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
