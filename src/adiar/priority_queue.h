@@ -359,22 +359,95 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Set up the next nonempty layer to which already some requests
-    /// have been pushed.
+    /// \brief Set up the next nonempty level to which some requests have been
+    /// pushed before the given stop_label.
+    ///
+    /// Sets up the next level to pull elements from.
+    ///
+    /// \param stop_label (optional) level that should be furthest forwarded to.
+    ///
+    /// If the given stop_label is larger than MAX_LABEL (i.e. it is an
+    /// 'illegal' value), then it is treated as not given, i.e. it is ignored
+    /// and the queue forwards to the first non-empty level. This is the default
+    /// behaviour.
     ////////////////////////////////////////////////////////////////////////////
-    void setup_next_layer()
+    void setup_next_layer(label_t stop_label = MAX_LABEL+1)
     {
-      setup_next_layer<false>(0u);
-    }
+      bool has_stop_label = stop_label <= MAX_LABEL;
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Set up the next nonempty layer before the given stop_label. If
-    /// no elements are pushed to layers before stop_label, and said layer also
-    /// is empty, then it will stop at said layer.
-    ////////////////////////////////////////////////////////////////////////////
-    void setup_next_layer(label_t stop_label)
-    {
-      setup_next_layer<true>(stop_label);
+      adiar_debug(!has_stop_label || _label_comparator(front_bucket_label(), stop_label),
+                 "Stop label is prior to the current front bucket");
+
+      adiar_debug(!can_pull(),
+                 "Layer is non-empty");
+
+      adiar_debug(has_next_layer(),
+                 "Has no next layer to go to");
+
+      if constexpr (Buckets == 0) {
+        while (LabelExt::label_of(_overflow_queue.top()) != _buckets_label[0]
+               && (!has_stop_label || _label_comparator(_buckets_label[0], stop_label))) {
+          _buckets_label[0] = label_mgr::pull();
+        }
+        return;
+      }
+
+      adiar_debug(_label_comparator(front_bucket_label(), back_bucket_label()),
+                 "Front bucket run ahead of back bucket");
+
+      // Sort active buckets until we find one with some content
+      for (size_t b = 0;
+           // At most Buckets number of iterations
+           b <= Buckets
+           // Is the bucket for this level empty?
+           && !_has_next_from_bucket
+           // Is the overflow queue without any elements for this level either?
+           && (_overflow_queue.empty() || LabelExt::label_of(_overflow_queue.top()) != front_bucket_label())
+           // We have no stop-label that would stop us here?
+           && (!has_stop_label || stop_label != front_bucket_label())
+           // Do we have more levels to go to?
+           && has_next_bucket();
+           b++) {
+        setup_next_bucket();
+        calc_front_bucket();
+      }
+
+      // Are we still at an empty bucket and behind the overflow queue and the
+      // stop_label? Notice, that we have now instantiated 'Buckets' number of
+      // new merge_sorters ready to place content into them. So, there is no
+      // reason for us to not just keep the merge_sorter and merely fast-forward
+      // on the levels.
+      if (!_has_next_from_bucket && has_next_bucket()
+          // && (_overflow_queue.empty() || LabelExt::label_of(_overflow_queue.top()) != front_bucket_label())
+          && (!has_stop_label || stop_label != front_bucket_label())) {
+        adiar_debug(!has_stop_label || _label_comparator(front_bucket_label(), stop_label),
+                    "stop label should be strictly ahead of current level");
+        adiar_debug(!_overflow_queue.empty(),
+                    "'has_next_layer()' implied non-empty queue, all buckets turned out to be empty, yet overflow queue is also.");
+
+        label_t pq_label = LabelExt::label_of(_overflow_queue.top());
+        stop_label = has_stop_label && _label_comparator(stop_label, pq_label)
+          ? stop_label
+          : pq_label;
+
+        if (_label_comparator(front_bucket_label(), stop_label)) {
+          setup_next_bucket();
+          while (has_next_bucket() && _label_comparator(front_bucket_label(), stop_label)) {
+            if (label_mgr::can_pull()) {
+              _buckets_label[_front_bucket_idx] = label_mgr::pull();
+              _back_bucket_idx = _front_bucket_idx;
+            }
+            _front_bucket_idx = (_front_bucket_idx + 1) % (Buckets + 1);
+          }
+
+          calc_front_bucket();
+        }
+      }
+
+      adiar_debug(!has_next_bucket() || _label_comparator(front_bucket_label(), back_bucket_label()),
+                 "Inconsistency in has_next_bucket predicate");
+      adiar_debug(has_next_bucket() || front_bucket_label() == back_bucket_label(),
+                 "Inconsistency in has_next_bucket predicate");
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -495,75 +568,6 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     // Internal auxiliary methods
   private:
-    template<bool has_stop_label>
-    void setup_next_layer(label_t stop_label)
-    {
-      adiar_debug(!has_stop_label || _label_comparator(front_bucket_label(), stop_label),
-                 "Stop label is prior to the current front bucket");
-
-      adiar_debug(!can_pull(),
-                 "Layer is non-empty");
-
-      adiar_debug(has_next_layer(),
-                 "Has no next layer to go to");
-
-      if constexpr (Buckets == 0) {
-        while (LabelExt::label_of(_overflow_queue.top()) != _buckets_label[0]
-               && (!has_stop_label || _label_comparator(_buckets_label[0], stop_label))) {
-          _buckets_label[0] = label_mgr::pull();
-        }
-        return;
-      }
-
-      adiar_debug(_label_comparator(front_bucket_label(), back_bucket_label()),
-                 "Front bucket run ahead of back bucket");
-
-      // Sort active buckets until we find one with some content
-      for (size_t b = 0;
-           !_has_next_from_bucket
-             && has_next_bucket()
-             && (_overflow_queue.empty()
-                 || !_label_comparator(LabelExt::label_of(_overflow_queue.top()), next_bucket_label()) )
-             && (!has_stop_label
-                 || !_label_comparator(stop_label, next_bucket_label()))
-             && b <= Buckets;
-                 b++) {
-        setup_next_bucket();
-        calc_front_bucket();
-      }
-
-      // Are we still at an empty bucket and behind the overflow queue and the stop_label?
-      if (!_has_next_from_bucket && has_next_bucket() && (has_stop_label || !_overflow_queue.empty())) {
-        if (!has_stop_label || !_overflow_queue.empty()) {
-          label_t pq_label = LabelExt::label_of(_overflow_queue.top());
-          stop_label = has_stop_label && _label_comparator(stop_label, pq_label)
-            ? stop_label
-            : pq_label;
-        }
-
-        if (_label_comparator(front_bucket_label(), stop_label)) {
-          adiar_debug(!_overflow_queue.empty(), "Will plough through all remaining buckets");
-
-          setup_next_bucket();
-          while (has_next_bucket() && _label_comparator(front_bucket_label(), stop_label)) {
-            if (label_mgr::can_pull()) {
-              _buckets_label[_front_bucket_idx] = label_mgr::pull();
-              _back_bucket_idx = _front_bucket_idx;
-            }
-            _front_bucket_idx = (_front_bucket_idx + 1) % (Buckets + 1);
-          }
-
-          calc_front_bucket();
-        }
-      }
-
-
-      adiar_debug(!has_next_bucket() || _label_comparator(front_bucket_label(), back_bucket_label()),
-                 "Inconsistency in has_next_bucket predicate");
-      adiar_debug(has_next_bucket() || front_bucket_label() == back_bucket_label(),
-                 "Inconsistency in has_next_bucket predicate");
-    }
-
     bool has_next_bucket()
     {
       return _front_bucket_idx != _back_bucket_idx;
