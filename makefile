@@ -32,6 +32,8 @@ test:
 	@cd build/ && make $(MAKE_FLAGS) test_unit
 
 	$(MAKE) clean-files
+	@lcov --directory build/src/adiar/ --zerocounters
+
 	@./build/test/test_unit --reporter=info --colorizer=light
 	$(MAKE) clean-files
 
