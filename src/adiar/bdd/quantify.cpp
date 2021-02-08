@@ -62,7 +62,11 @@ namespace adiar
                                        const bool_op &op,
                                        const ptr_t source, const ptr_t r1, const ptr_t r2)
   {
-    if (is_nil(r2)) {
+    // TODO: When adding complement edges, then use 'is_negating' to add a
+    // complementary flag on an arc and change the sink into a NIL. This may
+    // prune the tree a little.
+
+     if (is_nil(r2)) {
       if (is_sink_ptr(r1)) {
         aw.unsafe_push_sink({ source, r1 });
       } else {
@@ -216,7 +220,9 @@ namespace adiar
       }
 
       // Seek element from request in stream
-      while ((!with_data && v.uid < t1) || (with_data && v.uid < t2)) {
+      ptr_t t_seek = with_data ? t2 : t1;
+
+      while (v.uid < t_seek) {
         v = in_nodes.pull();
       }
 
@@ -231,46 +237,38 @@ namespace adiar
         continue;
       }
 
-      // Resolve current node and recurse.
-      ptr_t low1  = with_data ? data_low  : v.low;
-      ptr_t high1 = with_data ? data_high : v.high;
-      ptr_t low2  = with_data ? v.low     : t2;
-      ptr_t high2 = with_data ? v.high    : t2;
-
-      // Have two branches collapsed back into one?
-      if (low1 == low2) {
-        low2 = NIL;
-      }
-      if (high1 == high2) {
-        high2 = NIL;
-      }
-
       if (label_of(fst(t1, t2)) == label) {
         // The variable should be quantified: proceed as in Restrict by
         // forwarding the request of source further to the children, though here
         // we keep track of both possibilities.
-        adiar_debug(is_nil(low2), "Ended in pairing case on request of that already is a pair");
-        adiar_debug(is_nil(high2), "Ended in pairing case on request of that already is a pair");
+        adiar_debug(is_nil(t2), "Ended in pairing case on request that already is a pair");
 
-        while (true) {
-          quantify_resolve_request(quantD, aw, op,
-                                   source, low1, high1);
-
-          if (quantify_update_source_or_break(quantD, quantD_data, source, t1, t2)) {
-            break;
-          }
-        }
+        do {
+          quantify_resolve_request(quantD, aw, op, source, v.low, v.high);
+        } while (!quantify_update_source_or_break(quantD, quantD_data, source, t1, t2));
       } else {
         // The variable should stay: proceed as in Apply by simulating both
         // possibilities in parallel.
+
+        // Resolve current node and recurse.
+        ptr_t low1  = with_data ? data_low  : v.low;
+        ptr_t high1 = with_data ? data_high : v.high;
+        ptr_t low2  = with_data ? v.low     : t2;
+        ptr_t high2 = with_data ? v.high    : t2;
+
+        // Have two branches collapsed back into one?
+        if (is_node_ptr(snd(low1,low2)) && low1 == low2) {
+          low2 = NIL;
+        }
+        if (is_node_ptr(snd(high1,high2)) && high1 == high2) {
+          high2 = NIL;
+        }
+
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
         uid_t out_uid = create_node_uid(out_label, out_id++);
 
-        quantify_resolve_request(quantD, aw, op,
-                                 out_uid, low1, low2);
-
-        quantify_resolve_request(quantD, aw, op,
-                                 flag(out_uid), high1, high2);
+        quantify_resolve_request(quantD, aw, op, out_uid, low1, low2);
+        quantify_resolve_request(quantD, aw, op, flag(out_uid), high1, high2);
 
         if (!is_nil(source)) {
           do {
