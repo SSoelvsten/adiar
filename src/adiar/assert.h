@@ -23,6 +23,8 @@ namespace adiar
 #   define adiar_debug(Expr, Msg) ;
 #endif
 
+  // LCOV_EXCL_START
+
   inline void __adiar_assert(const char* expr_str, bool expr, const char* file, int line, const char* msg)
   {
     if (!expr)
@@ -51,6 +53,8 @@ namespace adiar
         abort();
       }
   }
+
+  // LCOV_EXCL_STOP
 }
 
 #endif // ADIAR_ASSERT_H
