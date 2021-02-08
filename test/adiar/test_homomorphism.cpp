@@ -114,7 +114,7 @@ go_bandit([]() {
 
            where we can mirror the 2 and 3 nodes
          */
-        node_file bdd_1_a, bdd_1_b, bdd_1_a_shifted;
+        node_file bdd_1_a, bdd_1_b, bdd_1_a_shifted, bdd_1b;
         { // Garbage collect writers to free write-lock
           node_writer aw(bdd_1_a);
           aw << create_node(2,1, create_sink_ptr(true), create_sink_ptr(false))
@@ -133,6 +133,12 @@ go_bandit([]() {
              << create_node(11,1, create_node_ptr(12,1), create_sink_ptr(true))
              << create_node(11,0, create_sink_ptr(true), create_node_ptr(12,1))
              << create_node(10,1, create_node_ptr(11,0), create_node_ptr(11,1));
+
+          node_writer dw(bdd_1b); // same as bdd_1_a, but the sink on (1,1) is negated
+          dw << create_node(2,1, create_sink_ptr(true), create_sink_ptr(false))
+             << create_node(1,1, create_node_ptr(2,1), create_sink_ptr(false))
+             << create_node(1,0, create_sink_ptr(true), create_node_ptr(2,1))
+             << create_node(0,1, create_node_ptr(1,0), create_node_ptr(1,1));
         }
 
         it("can compare bdd 1 with x42 and x22", [&]() {
@@ -155,6 +161,13 @@ go_bandit([]() {
            AssertThat(is_homomorphic(bdd_1_a, bdd_1_b, false, true), Is().False());
            AssertThat(is_homomorphic(bdd_1_a, bdd_1_b, true, true), Is().True());
         });
+
+        it("can compare both instances of bdd 1 with one where a single sink is negated ", [&]() {
+           AssertThat(is_homomorphic(bdd_1_a, bdd_1b), Is().False());
+           AssertThat(is_homomorphic(bdd_1_b, bdd_1b, true, false), Is().False());
+           AssertThat(is_homomorphic(bdd_1_a, bdd_1b, false, true), Is().False());
+           AssertThat(is_homomorphic(bdd_1_b, bdd_1b, true, true), Is().False());
+         });
 
         it("can reject bdd 1 shifted by 10 labels", [&]() {
           AssertThat(is_homomorphic(bdd_1_a, bdd_1_a_shifted), Is().False());
@@ -241,6 +254,41 @@ go_bandit([]() {
           AssertThat(is_homomorphic(bdd_2_a, bdd_2_a_shifted, false, true), Is().False());
           AssertThat(is_homomorphic(bdd_2_a, bdd_2_a_shifted, true, true), Is().False());
         });
+
+
+        /*
+             1      ---- x0
+            / \
+            2  \    ---- x1
+           / \  \
+           3 F  4   ---- x2
+          / \  / \
+          T F  T T
+
+          which first proves to be different at (2)
+        */
+        node_file bdd_2b_a, bdd_2b_b;
+        { // Garbage collect writers to free write-lock
+          node_writer aw(bdd_2b_a); // As depicted
+          aw << create_node(2,1, create_sink_ptr(false), create_sink_ptr(true))
+             << create_node(2,0, create_sink_ptr(true), create_sink_ptr(false))
+             << create_node(1,0, create_node_ptr(2,0), create_sink_ptr(false))
+             << create_node(0,1, create_node_ptr(1,0), create_node_ptr(2,1));
+
+          node_writer bw(bdd_2b_b); // x2 nodes swapped
+          bw << create_node(2,3, create_sink_ptr(true), create_sink_ptr(false))
+             << create_node(2,1, create_sink_ptr(false), create_sink_ptr(true))
+             << create_node(1,1, create_node_ptr(2,3), create_sink_ptr(false))
+             << create_node(0,0, create_node_ptr(1,1), create_node_ptr(2,1));
+        }
+
+        it("can differentiate bdd 2 with its almost same structured bdd 2b", [&]() {
+           AssertThat(is_homomorphic(bdd_2_a, bdd_2b_a), Is().False());
+           AssertThat(is_homomorphic(bdd_2_a, bdd_2b_b), Is().False());
+           AssertThat(is_homomorphic(bdd_2_a, bdd_2b_b, true, false), Is().False());
+           AssertThat(is_homomorphic(bdd_2_a, bdd_2b_a, false, true), Is().False());
+           AssertThat(is_homomorphic(bdd_2_a, bdd_2b_b, true, true), Is().False());
+         });
 
         /*
                  _1_     ---- x0
