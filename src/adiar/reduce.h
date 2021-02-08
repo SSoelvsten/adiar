@@ -7,11 +7,11 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Reduce a given edge-based OBDD.
+  /// \brief Reduce a given edge-based BDD.
   ///
-  /// \param arc_file The unreduced obdd in its arc-based representation
+  /// \param arc_file The unreduced bdd in its arc-based representation
   ///
-  /// \return The reduced obdd in a node-based representation
+  /// \return The reduced bdd in a node-based representation
   //////////////////////////////////////////////////////////////////////////////
   node_file reduce(const arc_file &arc_file);
 }

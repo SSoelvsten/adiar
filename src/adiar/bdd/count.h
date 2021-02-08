@@ -14,7 +14,7 @@ namespace adiar
   /// \brief Count all unique (but not necessarily disjoint) paths that satisfy
   /// given predicates.
   ///
-  /// \param nodes The node-based OBDD graph in reverse topological order.
+  /// \param nodes The node-based BDD graph in reverse topological order.
   /// \param sink_pred Predicate whether to count paths going to the given sink.
   ///
   /// \return The number of unique paths.
@@ -33,7 +33,7 @@ namespace adiar
   ///
   ///     min_label <= min_label(nodes) <= max_label(nodes) <= max_label
   ///
-  /// \param bdd       The node-based OBDD graph in reverse topological order.
+  /// \param bdd       The node-based BDD graph in reverse topological order.
   /// \param min_label The smallest label to count from
   /// \param max_label The largest label to count to
   /// \param sink_pred Predicate whether to count paths going to the given sink.
@@ -51,7 +51,7 @@ namespace adiar
   /// where `min_label` and `max_label` are computed from the total number of
   /// variables.
   ///
-  /// \param bdd       The node-based OBDD graph in reverse topological order.
+  /// \param bdd       The node-based BDD graph in reverse topological order.
   /// \param varcount  The total number of variables, that may occur in the bdd.
   /// \param sink_pred Predicate whether to count paths going to the given sink.
   ///
@@ -67,7 +67,7 @@ namespace adiar
   /// min_label and max_label set based on the minimum and maximum label in the
   /// given node_file.
   ///
-  /// \param bdd       The node-based OBDD graph in reverse topological order.
+  /// \param bdd       The node-based BDD graph in reverse topological order.
   /// \param sink_pred Predicate whether to count paths going to the given sink.
   ///
   /// \return The number of unique assignments.

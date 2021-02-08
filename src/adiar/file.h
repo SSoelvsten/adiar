@@ -365,9 +365,10 @@ namespace adiar
   /// given sink_pred.
   ///
   /// \param file   The node_file to check its content
-  /// \param pred   If the given OBDD is sink-only, then secondly the sink is
-  ///               checked with the given sink predicate. Default is any type
-  ///               sink.
+
+  /// \param pred   If the given node_file only contains a sink node, then
+  ///               secondly the sink is checked with the given sink predicate.
+  ///               Default is any type sink.
   //////////////////////////////////////////////////////////////////////////////
   bool is_sink(const node_file &file, const sink_pred &pred = is_any);
 

@@ -1,6 +1,6 @@
 go_bandit([]() {
     describe("BDD: Restrict", [&]() {
-        // == CREATE OBDD FOR UNIT TESTS ==
+        // == CREATE BDD FOR UNIT TESTS ==
         //               START
 
         /*
@@ -24,15 +24,15 @@ go_bandit([]() {
         node_t n2 = create_node(1,0, n3.uid, n4.uid);
         node_t n1 = create_node(0,0, n3.uid, n2.uid);
 
-        node_file obdd;
+        node_file bdd;
 
         { // Garbage collect writer to free write-lock
-          node_writer obdd_w(obdd);
-          obdd_w << n5 << n4 << n3 << n2 << n1;
+          node_writer bdd_w(bdd);
+          bdd_w << n5 << n4 << n3 << n2 << n1;
         }
 
         //                END
-        // == CREATE OBDD FOR UNIT TESTS ==
+        // == CREATE BDD FOR UNIT TESTS ==
 
         it("should bridge layers [1]. Assignment: (_,_,T,_)", [&]() {
             /*
@@ -54,7 +54,7 @@ go_bandit([]() {
               aw << create_assignment(2, true);
             }
 
-            __bdd output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(bdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -112,7 +112,7 @@ go_bandit([]() {
               aw << create_assignment(1, false);
             }
 
-            __bdd output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(bdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -163,7 +163,7 @@ go_bandit([]() {
               aw << create_assignment(1, true);
             }
 
-            __bdd output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(bdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -227,7 +227,7 @@ go_bandit([]() {
                  << create_assignment(3, false);
             }
 
-            __bdd output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(bdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -280,7 +280,7 @@ go_bandit([]() {
                  << create_assignment(3, false);
             }
 
-            __bdd output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(bdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 
@@ -311,7 +311,7 @@ go_bandit([]() {
                  << create_assignment(2, false);
             }
 
-            __bdd output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(bdd, assignment);
 
             node_test_stream out_nodes(output);
 
@@ -330,7 +330,7 @@ go_bandit([]() {
                  << create_assignment(2, false);
             }
 
-            __bdd output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(bdd, assignment);
 
             node_test_stream out_nodes(output);
 
@@ -394,7 +394,7 @@ go_bandit([]() {
         it("should return input unchanged when given an empty assignment", [&]() {
             assignment_file assignment;
 
-            __bdd output = bdd_restrict(obdd, assignment);
+            __bdd output = bdd_restrict(bdd, assignment);
 
             node_test_stream out_nodes(output);
 
@@ -590,7 +590,7 @@ go_bandit([]() {
                  Here, node 4 and 6 are going to be dead, when x1 -> T.
              */
 
-            node_file dead_obdd;
+            node_file dead_bdd;
 
             node_t n9 = create_node(3,1, sink_T, sink_F);
             node_t n8 = create_node(3,0, sink_F, sink_T);
@@ -603,7 +603,7 @@ go_bandit([]() {
             node_t n1 = create_node(0,0, n2.uid, n3.uid);
 
             { // Garbage collect writer to free write-lock
-              node_writer dead_w(dead_obdd);
+              node_writer dead_w(dead_bdd);
               dead_w << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
             }
 
@@ -614,7 +614,7 @@ go_bandit([]() {
               aw << create_assignment(1, true);
             }
 
-            __bdd output = bdd_restrict(dead_obdd, assignment);
+            __bdd output = bdd_restrict(dead_bdd, assignment);
 
             node_arc_test_stream node_arcs(output);
 

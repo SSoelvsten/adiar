@@ -733,7 +733,7 @@ go_bandit([]() {
             AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
           });
 
-        it("can reduce down to a sink (1)", [&]() {
+        it("can reduce down to a sink [1]", [&]() {
             /*
                  1                 F       ---- x0
                 / \      =>
@@ -768,7 +768,7 @@ go_bandit([]() {
             AssertThat(out.meta_size(), Is().EqualTo(0u));
           });
 
-        it("can reduce down to a sink (2)", [&]() {
+        it("can reduce down to a sink [2]", [&]() {
             /*
                1                  T
               / \
@@ -976,7 +976,7 @@ go_bandit([]() {
             AssertThat(out_meta.can_pull(), Is().False());
           });
 
-        it("can return non-reducible single-node variable with MAX_ID (1)", [&]() {
+        it("can return non-reducible single-node variable with MAX_ID [1]", [&]() {
             /*
                  1                 1       ---- x0
                 / \      =>       / \
@@ -1013,7 +1013,7 @@ go_bandit([]() {
             AssertThat(out_meta.can_pull(), Is().False());
           });
 
-        it("can return non-reducible single-node variable with MAX_ID (2)", [&]() {
+        it("can return non-reducible single-node variable with MAX_ID [2]", [&]() {
             /*
                  1                 1       ---- x42
                 / \      =>       / \

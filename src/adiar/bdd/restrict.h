@@ -9,15 +9,15 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Restrict an OBDD based on a partial assignment.
+  /// \brief Restrict an BDD based on a partial assignment.
   ///
   /// \param nodes_in   Input file of nodes
   ///
   /// \param assignment Assignment sorted in order of label (and expected
   ///                   unique)
   ///
-  /// \return           A node_file if the OBDD is restricted to a sink, and
-  ///                   otherwise an arc_file of the restricted OBDD.
+  /// \return           A node_file if the BDD is restricted to a sink, and
+  ///                   otherwise an arc_file of the restricted BDD.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_restrict(const bdd &bdd, const assignment_file &assignment);
 }

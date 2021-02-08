@@ -125,7 +125,7 @@ namespace adiar {
   /// given sink_pred.
   ///
   /// \param file   The node_file to check its content
-  /// \param pred   If the given OBDD is sink-only, then secondly the sink is
+  /// \param pred   If the given BDD is sink-only, then secondly the sink is
   ///               checked with the given sink predicate. Default is any type
   ///               sink.
   //////////////////////////////////////////////////////////////////////////////

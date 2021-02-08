@@ -24,7 +24,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Retrieves the (deepest) assignment that satisfies a given predicate
   ///
-  /// \param nodes           input file of OBDD nodes
+  /// \param nodes           input file of BDD nodes
   ///
   /// \param sink_pred       type of sink-node to be reached with the assignment
   /// \param sorting_pred_t  the desired ordering of the returned assignment

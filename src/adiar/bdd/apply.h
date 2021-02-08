@@ -16,7 +16,7 @@ namespace adiar
   /// \param op        Binary boolean operator to be applied.
   ///
   /// \return A node_file if the operator shortcuts the result to a sink, and
-  ///         otherwise an arc_file of the OBDD representing the operator
+  ///         otherwise an arc_file of the BDD representing the operator
   ///         applied on both inputs.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_apply(const bdd &bdd_1, const bdd &bdd_2, const bool_op &op);
