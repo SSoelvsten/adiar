@@ -1,4 +1,4 @@
-.PHONY: clean build test
+.PHONY: clean build test coverage
 
 MAKE_FLAGS=-j $$(nproc)
 
@@ -16,10 +16,6 @@ clean-files:
 	@rm -rf *.adiar*
 	@rm -rf *.dot
 
-clean-test-report:
-	@rm -rf test/report/
-	@rm -rf *.png *.html *.css
-
 clean: | clean-files
 	@rm -r -f build/
 
@@ -32,18 +28,28 @@ test:
 	@cd build/ && make $(MAKE_FLAGS) test_unit
 
 	$(MAKE) clean-files
-	@lcov --directory build/src/adiar/ --zerocounters
 
 	@./build/test/test_unit --reporter=info --colorizer=light
 	$(MAKE) clean-files
 
-test-report: | clean-test-report
+coverage:
+	@mkdir -p build/
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug -D CODE_COVERAGE=ON ..
+	@cd build/ && make $(MAKE_FLAGS) test_unit
+
+	@lcov --directory build/src/adiar/ --zerocounters
+	$(MAKE) clean-files
+
+	@./build/test/test_unit
+	$(MAKE) clean-files
+
   # create report
+	@rm -rf test/report/
 	@lcov --capture --directory build/src/adiar/ --output-file ./coverage.info
 	@lcov --remove coverage.info --output-file coverage.info "/usr/*" "*/external/*" "./test/*"
-  # debug info
+  # print report to console
 	@lcov --list coverage.info
-  # generate html
+  # print report to html file
 	@genhtml coverage.info -o test/report/
 
 # ============================================================================ #
