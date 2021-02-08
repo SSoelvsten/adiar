@@ -186,12 +186,26 @@ go_bandit([]() {
             AssertThat(out.negate, Is().True());
           });
 
+        it("should XOR (and shortcut on negating) T and x0", [&]() {
+           __bdd out = bdd_apply(bdd_x0, bdd_T, xor_op);
+
+           AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+           AssertThat(out.negate, Is().True());
+         });
+
         it("should NAND (and shortcut on negating) T and x0", [&]() {
             __bdd out = bdd_apply(bdd_x0, bdd_T, nand_op);
 
             AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
             AssertThat(out.negate, Is().True());
           });
+
+        it("should NAND (and shortcut on negating) T and x0", [&]() {
+           __bdd out = bdd_apply(bdd_x0, bdd_T, nand_op);
+
+           AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+           AssertThat(out.negate, Is().True());
+         });
 
         it("should XOR x0 and x1", [&]() {
             /* The order on the leaves are due to the sorting of sink requests
