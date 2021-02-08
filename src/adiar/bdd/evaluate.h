@@ -9,9 +9,9 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Evaluate an OBDD according to an assignment
+  /// \brief Evaluate an BDD according to an assignment
   ///
-  /// \param nodes The node-based OBDD graph in reverse topological order.
+  /// \param nodes The node-based BDD graph in reverse topological order.
   /// \return Sink-value after traversal according to the assignment.
   //////////////////////////////////////////////////////////////////////////////
   bool bdd_eval(const bdd &bdd, const assignment_file &assignment);

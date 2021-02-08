@@ -8,7 +8,7 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an OBDD of only a single sink.
+  /// \brief Create an BDD of only a single sink.
   ///
   /// \param value     The value for the sink
   //////////////////////////////////////////////////////////////////////////////
@@ -18,21 +18,21 @@ namespace adiar
   bdd bdd_true();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an OBDD for the variable with the given label.
+  /// \brief Create an BDD for the variable with the given label.
   ///
   /// \param label     The label of the variable
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_ithvar(label_t label);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an OBDD for the variable with the given label.
+  /// \brief Create an BDD for the variable with the given label.
   ///
   /// \param label     The label of the variable
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_nithvar(label_t label);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an OBDD that is true only when all given labels are set to
+  /// \brief Create an BDD that is true only when all given labels are set to
   ///        to true.
   ///
   /// \param in_labels The labels sorted from smallest to highest.
@@ -42,7 +42,7 @@ namespace adiar
   // TODO: std::vector variant?
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an OBDD that is true only when at least one of the given
+  /// \brief Create an BDD that is true only when at least one of the given
   ///        labels are set to to true.
   ///
   /// \param in_labels The labels sorted from smallest to highest.
@@ -52,7 +52,7 @@ namespace adiar
   // TODO: std::vector variant?
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an OBDD that is true when the number of variables set to
+  /// \brief Create an BDD that is true when the number of variables set to
   ///        true satisfy a given threshold.
   ///
   /// \param min_label The minimum label (inclusive) to start counting from

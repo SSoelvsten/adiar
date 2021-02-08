@@ -16,7 +16,7 @@ namespace adiar {
     std::ofstream out;
     out.open(filename);
 
-    out << "digraph OBDD {" << std::endl;
+    out << "digraph BDD {" << std::endl;
 
     node_stream<> ns(nodes);
 

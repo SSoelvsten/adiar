@@ -149,7 +149,7 @@ namespace adiar
                "given minimum_label should be smaller than the present root label");
 
     adiar_debug(max_label(bdd) <= maximum_label,
-               "given maximum_label should be greater than the largest label in obdd");
+               "given maximum_label should be greater than the largest label in bdd");
 
     return count<true>(bdd, minimum_label, maximum_label, sink_pred);
   }

@@ -9,7 +9,7 @@ namespace adiar {
     std::ofstream out;
     out.open(filename);
 
-    out << "digraph OBDD {" << std::endl;
+    out << "digraph BDD {" << std::endl;
 
     out << "\t// Node Arcs" << std::endl;
 

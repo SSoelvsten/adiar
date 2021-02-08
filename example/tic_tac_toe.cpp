@@ -18,9 +18,9 @@
  * Player O marks the remaining 4^3 - N = 64 - N spaces, how many of these
  * placements are ties?
  *
- * We'd find it interesting to output the size of the largest OBDD, so we create
+ * We'd find it interesting to output the size of the largest BDD, so we create
  * the following global variables. Also it would be of interest to see the best
- * and worst ratio between sink and node arcs in the unreduced OBDDs
+ * and worst ratio between sink and node arcs in the unreduced BDDs
  */
 size_t largest_nodes = 0;
 
@@ -93,14 +93,14 @@ adiar::bdd construct_is_not_winning(std::array<adiar::label_t, 4>& line)
  * Then we need to combine it for all rows, columns and the 4 diagonals to
  * ensure that no rows actually are winning and the game ends in a tie.
  *
- * We'll place these constraints one by one onto an OBDD that is only true if
- * exactly N X's are placed. This OBDD is also easy to create. In fact, it is so
+ * We'll place these constraints one by one onto an BDD that is only true if
+ * exactly N X's are placed. This BDD is also easy to create. In fact, it is so
  * simple and universal, that Adiar already has a builder that creates it in
  * linear time and linear I/O with regards to the output size.
  *
  * The order in which one picks applies something together is very important. An
- * Apply technically just constructs the product of both OBDDs; each state
- * reflects the states of both input OBDDs. From experiments it seems, that one
+ * Apply technically just constructs the product of both BDDs; each state
+ * reflects the states of both input BDDs. From experiments it seems, that one
  * achieves the smallest intermediate size by starting with the ones, where the
  * difference between the label-value for the first cell and the fourth cell is
  * as small as possible.
@@ -273,7 +273,7 @@ int main(int argc, char* argv[])
   tpie::log_info() << "|  | initial size: " << init_nodes << " nodes" << std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
-  tpie::log_info() << "|  | largest OBDD  : " << largest_nodes << " nodes" << std::endl;
+  tpie::log_info() << "|  | largest BDD  : " << largest_nodes << " nodes" << std::endl;
   tpie::log_info() << "|  |" << std::endl;
 
   tpie::log_info() << "|  | final size: " << bdd_nodecount(is_tie) << " nodes"<< std::endl;

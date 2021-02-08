@@ -1,7 +1,7 @@
 go_bandit([]() {
     describe("BDD: Quantify", [&]() {
         ////////////////////////////////////////////////////////////////////////
-        // Sink only OBDDs
+        // Sink only BDDs
         node_file sink_F;
 
         { // Garbage collect writer to free write-lock}
@@ -17,7 +17,7 @@ go_bandit([]() {
         }
 
         ////////////////////////////////////////////////////////////////////////
-        // OBDD 1
+        // BDD 1
         /*
         //   1     ---- x0
         //  / \
@@ -25,18 +25,18 @@ go_bandit([]() {
         //   / \
         //   F T
         */
-        node_file obdd_1;
+        node_file bdd_1;
 
         node_t n1_2 = create_node(1,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
         node_t n1_1 = create_node(0,MAX_ID, create_sink_ptr(true), n1_2.uid);
 
         { // Garbage collect writer to free write-lock
-          node_writer nw_1(obdd_1);
+          node_writer nw_1(bdd_1);
           nw_1 << n1_2 << n1_1;
         }
 
         ////////////////////////////////////////////////////////////////////////
-        // OBDD 2
+        // BDD 2
         /*
         //       1       ---- x0
         //      / \
@@ -46,7 +46,7 @@ go_bandit([]() {
         //  / \ / \
         //  T F F T
         */
-        node_file obdd_2;
+        node_file bdd_2;
 
         node_t n2_5 = create_node(2,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
         node_t n2_4 = create_node(2,MAX_ID-1, create_sink_ptr(true), create_sink_ptr(false));
@@ -55,12 +55,12 @@ go_bandit([]() {
         node_t n2_1 = create_node(0,MAX_ID, n2_2.uid, n2_3.uid);
 
         { // Garbage collect writer to free write-lock
-          node_writer nw_2(obdd_2);
+          node_writer nw_2(bdd_2);
           nw_2 << n2_5 << n2_4 << n2_3 <<n2_2 << n2_1;
         }
 
         ////////////////////////////////////////////////////////////////////////
-        // OBDD 3
+        // BDD 3
         /*
         //       1       ---- x0
         //      / \
@@ -70,7 +70,7 @@ go_bandit([]() {
         //      / \ / \
         //      T F F T
         */
-        node_file obdd_3;
+        node_file bdd_3;
 
         node_t n3_4 = create_node(2,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
         node_t n3_3 = create_node(2,MAX_ID-1, create_sink_ptr(true), create_sink_ptr(false));
@@ -78,12 +78,12 @@ go_bandit([]() {
         node_t n3_1 = create_node(0,MAX_ID, n3_3.uid, n3_2.uid);
 
         { // Garbage collect writer to free write-lock
-          node_writer nw_3(obdd_3);
+          node_writer nw_3(bdd_3);
           nw_3 << n3_4 << n3_3 << n3_2 << n3_1;
         }
 
         ////////////////////////////////////////////////////////////////////////
-        // OBDD 4
+        // BDD 4
         /*
         //       1       ---- x0
         //      / \
@@ -95,7 +95,7 @@ go_bandit([]() {
         //        / \
         //        F T
         */
-        node_file obdd_4;
+        node_file bdd_4;
 
         node_t n4_5 = create_node(3,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
         node_t n4_4 = create_node(2,MAX_ID, n4_5.uid, create_sink_ptr(true));
@@ -104,12 +104,12 @@ go_bandit([]() {
         node_t n4_1 = create_node(0,MAX_ID, n4_3.uid, n4_2.uid);
 
         { // Garbage collect writer to free write-lock
-          node_writer nw_4(obdd_4);
+          node_writer nw_4(bdd_4);
           nw_4 << n4_5 << n4_4 << n4_3 << n4_2 << n4_1;
         }
 
         ////////////////////////////////////////////////////////////////////////
-        // OBDD 5
+        // BDD 5
         /*
         //    1      ---- x0
         //   / \
@@ -119,7 +119,7 @@ go_bandit([]() {
         //  / \ / \
         //  F T T F
         */
-        node_file obdd_5;
+        node_file bdd_5;
 
         node_t n5_4 = create_node(2,MAX_ID, create_sink_ptr(true), create_sink_ptr(false));
         node_t n5_3 = create_node(2,MAX_ID-1, create_sink_ptr(false), create_sink_ptr(true));
@@ -127,22 +127,22 @@ go_bandit([]() {
         node_t n5_1 = create_node(0,MAX_ID, create_sink_ptr(false), n5_2.uid);
 
         { // Garbage collect writer to free write-lock
-          node_writer nw_5(obdd_5);
+          node_writer nw_5(bdd_5);
           nw_5 << n5_4 << n5_3 << n5_2 << n5_1;
         }
 
         ////////////////////////////////////////////////////////////////////////////
-        // x2 variable OBDD
-        node_file obdd_x2;
+        // x2 variable BDD
+        node_file bdd_x2;
 
         { // Garbage collect writer to free write-lock
-          node_writer nw_x2(obdd_x2);
+          node_writer nw_x2(bdd_x2);
           nw_x2 << create_node(2,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
         }
 
         ////////////////////////////////////////////////////////////////////////////
         describe("Exists", [&]() {
-            it("should quantify T sink-only OBDD as itself", [&]() {
+            it("should quantify T sink-only BDD as itself", [&]() {
                 __bdd out = bdd_exists(sink_T, 42);
 
                 node_test_stream out_nodes(out);
@@ -154,7 +154,7 @@ go_bandit([]() {
                 AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
               });
 
-            it("should quantify F sink-only OBDD as itself", [&]() {
+            it("should quantify F sink-only BDD as itself", [&]() {
                 __bdd out = bdd_exists(sink_F, 21);
 
                 node_test_stream out_nodes(out);
@@ -166,8 +166,8 @@ go_bandit([]() {
                 AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
               });
 
-            it("should shortcut quantification of root into T sink [OBDD 1]", [&]() {
-                __bdd out = bdd_exists(obdd_1, 0);
+            it("should shortcut quantification of root into T sink [BDD 1]", [&]() {
+                __bdd out = bdd_exists(bdd_1, 0);
 
                 node_test_stream out_nodes(out);
 
@@ -179,7 +179,7 @@ go_bandit([]() {
               });
 
             it("should shortcut quantification of root into T sink [x2]", [&]() {
-                __bdd out = bdd_exists(obdd_x2, 2);
+                __bdd out = bdd_exists(bdd_x2, 2);
 
                 node_test_stream out_nodes(out);
 
@@ -190,8 +190,8 @@ go_bandit([]() {
                 AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
               });
 
-            it("should shortcut quantification on non-existent label in input [OBDD 1]", [&]() {
-                __bdd out = bdd_exists(obdd_1, 42);
+            it("should shortcut quantification on non-existent label in input [BDD 1]", [&]() {
+                __bdd out = bdd_exists(bdd_1, 42);
 
                 node_test_stream out_nodes(out);
 
@@ -214,9 +214,9 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("should quantify bottom-most nodes [OBDD 1]", [&]() {
+            it("should quantify bottom-most nodes [BDD 1]", [&]() {
                 tpie::file_stream<arc_t> reduce_node_arcs;
-                __bdd out = bdd_exists(obdd_1, 1);
+                __bdd out = bdd_exists(bdd_1, 1);
 
                 node_arc_test_stream node_arcs(out);
                 AssertThat(node_arcs.can_pull(), Is().False());
@@ -241,8 +241,8 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should quantify root without sink arcs [OBDD 2]", [&]() {
-                __bdd out = bdd_exists(obdd_2, 0);
+            it("should quantify root without sink arcs [BDD 2]", [&]() {
+                __bdd out = bdd_exists(bdd_2, 0);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -287,8 +287,8 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should quantify nodes with sink or nodes as children [OBDD 2]", [&]() {
-                __bdd out = bdd_exists(obdd_2, 1);
+            it("should quantify nodes with sink or nodes as children [BDD 2]", [&]() {
+                __bdd out = bdd_exists(bdd_2, 1);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -333,8 +333,8 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should output sink arcs in order, despite the order of resolvement [OBDD 2]", [&]() {
-                __bdd out = bdd_exists(obdd_2, 2);
+            it("should output sink arcs in order, despite the order of resolvement [BDD 2]", [&]() {
+                __bdd out = bdd_exists(bdd_2, 2);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -379,8 +379,8 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should keep nodes as is when skipping quantified layer [OBDD 3]", [&]() {
-                __bdd out = bdd_exists(obdd_3, 1);
+            it("should keep nodes as is when skipping quantified layer [BDD 3]", [&]() {
+                __bdd out = bdd_exists(bdd_3, 1);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -428,8 +428,8 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should output sink arcs in order, despite the order of resolvement [OBDD 3]", [&]() {
-                __bdd out = bdd_exists(obdd_3, 2);
+            it("should output sink arcs in order, despite the order of resolvement [BDD 3]", [&]() {
+                __bdd out = bdd_exists(bdd_3, 2);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -468,8 +468,8 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should resolve sink-sink requests in [OBDD 5]", [&]() {
-                __bdd out = bdd_exists(obdd_5, 1);
+            it("should resolve sink-sink requests in [BDD 5]", [&]() {
+                __bdd out = bdd_exists(bdd_5, 1);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -509,7 +509,7 @@ go_bandit([]() {
               });
 
             it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
-                node_file obdd_chain;
+                node_file bdd_chain;
 
                 node_t n4 = create_node(3,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
                 node_t n3 = create_node(2,MAX_ID, n4.uid, create_sink_ptr(true));
@@ -517,11 +517,11 @@ go_bandit([]() {
                 node_t n1 = create_node(0,MAX_ID, n2.uid, create_sink_ptr(true));
 
                 { // Garbage collect writer to free write-lock
-                  node_writer obdd_chain_w(obdd_chain);
-                  obdd_chain_w << n4 << n3 << n2 << n1;
+                  node_writer bdd_chain_w(bdd_chain);
+                  bdd_chain_w << n4 << n3 << n2 << n1;
                 }
 
-                __bdd out = bdd_exists(obdd_chain, 2);
+                __bdd out = bdd_exists(bdd_chain, 2);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -557,7 +557,7 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("can quantify list [x1, x2] in sink-only OBDD", [&]() {
+            it("can quantify list [x1, x2] in sink-only BDD", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -577,7 +577,7 @@ go_bandit([]() {
                 AssertThat(ms.can_pull(), Is().False());
               });
 
-            it("can quantify list [x1, x2] [OBDD 4]", [&]() {
+            it("can quantify list [x1, x2] [BDD 4]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -585,7 +585,7 @@ go_bandit([]() {
                   lw << 1 << 2;
                 }
 
-                bdd out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(bdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -612,7 +612,7 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("can quantify list [x2, x1] [OBDD 4]", [&]() {
+            it("can quantify list [x2, x1] [BDD 4]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -620,7 +620,7 @@ go_bandit([]() {
                   lw << 2 << 1;
                 }
 
-                bdd out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(bdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -647,7 +647,7 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("should quantify singleton list [x2] [OBDD 4]", [&]() {
+            it("should quantify singleton list [x2] [BDD 4]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -655,7 +655,7 @@ go_bandit([]() {
                   lw << 2;
                 }
 
-                bdd out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(bdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -690,7 +690,7 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("should quantify list [x1, x3] [OBDD 4]", [&]() {
+            it("should quantify list [x1, x3] [BDD 4]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -698,7 +698,7 @@ go_bandit([]() {
                   lw << 1 << 3;
                 }
 
-                bdd out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(bdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -725,7 +725,7 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("should quantify list [x0, x2] [OBDD 4]", [&]() {
+            it("should quantify list [x0, x2] [BDD 4]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -733,7 +733,7 @@ go_bandit([]() {
                   lw << 0 << 2;
                 }
 
-                bdd out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(bdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -760,7 +760,7 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("should quantify list [x3, x1, x0, x2] where it is sink-only already before x2 [OBDD 4]", [&]() {
+            it("should quantify list [x3, x1, x0, x2] where it is sink-only already before x2 [BDD 4]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -768,7 +768,7 @@ go_bandit([]() {
                   lw << 3 << 1 << 0 << 2;
                 }
 
-                bdd out = bdd_exists(obdd_4, labels);
+                bdd out = bdd_exists(bdd_4, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -788,7 +788,7 @@ go_bandit([]() {
                   lw << 2 << 1;
                 }
 
-                bdd out = bdd_exists(obdd_x2, labels);
+                bdd out = bdd_exists(bdd_x2, labels);
 
                 node_test_stream out_nodes(out);
 
@@ -805,7 +805,7 @@ go_bandit([]() {
         // We will not test the Forall operator as much, since it is the same
         // underlying algorithm, but just with the AND operator.
         describe("Forall", [&]() {
-            it("should quantify T sink-only OBDD as itself", [&]() {
+            it("should quantify T sink-only BDD as itself", [&]() {
                 __bdd out = bdd_forall(sink_T, 42);
 
                 node_test_stream out_nodes(out);
@@ -818,7 +818,7 @@ go_bandit([]() {
                 AssertThat(ms.can_pull(), Is().False());
               });
 
-            it("should quantify F sink-only OBDD as itself", [&]() {
+            it("should quantify F sink-only BDD as itself", [&]() {
                 __bdd out = bdd_forall(sink_F, 21);
 
                 node_test_stream out_nodes(out);
@@ -831,8 +831,8 @@ go_bandit([]() {
                 AssertThat(ms.can_pull(), Is().False());
               });
 
-            it("should quantify root with non-shortcutting sink [OBDD 1]", [&]() {
-                __bdd out = bdd_forall(obdd_1, 0);
+            it("should quantify root with non-shortcutting sink [BDD 1]", [&]() {
+                __bdd out = bdd_forall(bdd_1, 0);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -859,8 +859,8 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should quantify root of [OBDD 3]", [&]() {
-                __bdd out = bdd_forall(obdd_3, 0);
+            it("should quantify root of [BDD 3]", [&]() {
+                __bdd out = bdd_forall(bdd_3, 0);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -905,8 +905,8 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should prune shortcuttable requests [OBDD 4]", [&]() {
-                __bdd out = bdd_forall(obdd_4, 2);
+            it("should prune shortcuttable requests [BDD 4]", [&]() {
+                __bdd out = bdd_forall(bdd_4, 2);
 
                 node_arc_test_stream node_arcs(out);
 
@@ -954,7 +954,7 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should quantify list [x0, x2, x1] [OBDD 4]", [&]() {
+            it("should quantify list [x0, x2, x1] [BDD 4]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -962,7 +962,7 @@ go_bandit([]() {
                   lw << 0 << 2 << 1;
                 }
 
-                bdd out = bdd_forall(obdd_4, labels);
+                bdd out = bdd_forall(bdd_4, labels);
 
                 node_test_stream out_nodes(out);
 

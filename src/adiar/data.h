@@ -94,7 +94,7 @@ namespace adiar {
   ///
   /// Notice, that this means we will never have to actually visit to retrieve
   /// its value. That is, the only time a sink has to be explicitly represented
-  /// as a node is when the OBDD only consists of said sink.
+  /// as a node is when the BDD only consists of said sink.
   //////////////////////////////////////////////////////////////////////////////
   uid_t create_sink_uid(bool v);
   ptr_t create_sink_ptr(bool v);
@@ -274,7 +274,7 @@ namespace adiar {
   /// Our layer-aware priority queue needs to manage which bucket corresponds to
   /// which label to place things correctly or in an internal priority queue for
   /// bucket overflows. To make things more efficient, we require the use of
-  /// meta information about the input OBDD streams.
+  /// meta information about the input BDD streams.
   //////////////////////////////////////////////////////////////////////////////
   struct meta
   {

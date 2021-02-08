@@ -302,7 +302,7 @@ namespace adiar
     // We will quantify the labels in the order they are given.
     label_stream<> ls(labels);
     while(ls.can_pull()) {
-      // Did we collapse early to a sink-only OBDD?
+      // Did we collapse early to a sink-only BDD?
       if (is_sink(out, is_any)) {
         break;
       }
