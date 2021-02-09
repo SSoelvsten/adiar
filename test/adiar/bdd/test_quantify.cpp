@@ -1176,6 +1176,54 @@ go_bandit([]() {
                  AssertThat(meta.can_pull(), Is().False());
               });
 
+            it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
+                __bdd out = bdd_forall(bdd_8a, 1);
+
+                node_arc_test_stream node_arcs(out);
+
+                AssertThat(node_arcs.can_pull(), Is().True()); // (3,4)
+                AssertThat(node_arcs.pull(),
+                           Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+                AssertThat(node_arcs.can_pull(), Is().True()); // (5,_)
+                AssertThat(node_arcs.pull(),
+                           Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(3,0) }));
+                AssertThat(node_arcs.can_pull(), Is().True());
+                AssertThat(node_arcs.pull(),
+                           Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,0) }));
+
+                AssertThat(node_arcs.can_pull(), Is().False());
+
+                sink_arc_test_stream sink_arcs(out);
+
+                AssertThat(sink_arcs.can_pull(), Is().True()); // (3,4)
+                AssertThat(sink_arcs.pull(), // false due to 4.low
+                           Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(false) }));
+
+                AssertThat(sink_arcs.can_pull(), Is().True()); // (5,_)
+                AssertThat(sink_arcs.pull(),
+                           Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
+                AssertThat(sink_arcs.can_pull(), Is().True());
+                AssertThat(sink_arcs.pull(),
+                           Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+
+
+                AssertThat(sink_arcs.can_pull(), Is().False());
+
+                meta_test_stream<arc_t, 2> meta(out);
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 0u }));
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 2u }));
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 3u }));
+
+                AssertThat(meta.can_pull(), Is().False());
+              });
+
             it("should quantify list [x0, x2, x1] [BDD 4]", [&]() {
                 label_file labels;
 
@@ -1194,226 +1242,6 @@ go_bandit([]() {
 
                 meta_test_stream<node_t, 1> ms(out);
                 AssertThat(ms.can_pull(), Is().False());
-              });
-          });
-
-        ////////////////////////////////////////////////////////////////////////////
-        // We did not test Forall that much, because it was the same underlying
-        // algorithm. The Unique quantification doubly so.
-        describe("Unique", [&]() {
-            it("should quantify T sink-only BDD as itself", [&]() {
-                __bdd out = bdd_unique(sink_T, 42);
-
-                node_test_stream out_nodes(out);
-
-                AssertThat(out_nodes.can_pull(), Is().True());
-                AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
-                AssertThat(out_nodes.can_pull(), Is().False());
-
-                meta_test_stream<node_t, 1> ms(out);
-                AssertThat(ms.can_pull(), Is().False());
-              });
-
-            it("should quantify F sink-only BDD as itself", [&]() {
-                __bdd out = bdd_unique(sink_F, 21);
-
-                node_test_stream out_nodes(out);
-
-                AssertThat(out_nodes.can_pull(), Is().True());
-                AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
-                AssertThat(out_nodes.can_pull(), Is().False());
-
-                meta_test_stream<node_t, 1> ms(out);
-                AssertThat(ms.can_pull(), Is().False());
-              });
-
-            it("should quantify root into T sink [x2]", [&]() {
-                __bdd out = bdd_exists(bdd_x2, 2);
-
-                node_test_stream out_nodes(out);
-
-                AssertThat(out_nodes.can_pull(), Is().True());
-                AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
-                AssertThat(out_nodes.can_pull(), Is().False());
-
-                AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
-              });
-
-            it("can forward information across a level [BDD 4]", [&]() {
-                 __bdd out = bdd_unique(bdd_4, 1);
-
-                 node_arc_test_stream node_arcs(out);
-
-                 AssertThat(node_arcs.can_pull(), Is().True()); // (3,NIL)
-                 AssertThat(node_arcs.pull(),
-                            Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().True()); // (3,4)
-                 AssertThat(node_arcs.pull(),
-                            Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,1) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().True()); // (5,F)
-                 AssertThat(node_arcs.pull(),
-                            Is().EqualTo(arc { create_node_ptr(2,1), create_node_ptr(3,0) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().True()); // (5,T)
-                 AssertThat(node_arcs.pull(),
-                            Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(3,1) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().True()); // (5,NIL)
-                 AssertThat(node_arcs.pull(),
-                            Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,2) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().False());
-
-                 sink_arc_test_stream sink_arcs(out);
-                 AssertThat(sink_arcs.can_pull(), Is().True()); // (3,NIL)
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(false) }));
-
-                 AssertThat(sink_arcs.can_pull(), Is().True()); // (5,F)
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
-                 AssertThat(sink_arcs.can_pull(), Is().True());
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
-
-                 AssertThat(sink_arcs.can_pull(), Is().True()); // (5,T)
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { create_node_ptr(3,1), create_sink_ptr(true) }));
-                 AssertThat(sink_arcs.can_pull(), Is().True());
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { flag(create_node_ptr(3,1)), create_sink_ptr(false) }));
-
-                 AssertThat(sink_arcs.can_pull(), Is().True()); // (5,NIL)
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { create_node_ptr(3,2), create_sink_ptr(false) }));
-                 AssertThat(sink_arcs.can_pull(), Is().True());
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { flag(create_node_ptr(3,2)), create_sink_ptr(true) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().False());
-
-                 meta_test_stream<arc_t, 2> meta(out);
-
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(meta_t { 0u }));
-
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(meta_t { 2u }));
-
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(meta_t { 3u }));
-
-                 AssertThat(meta.can_pull(), Is().False());
-              });
-
-            it("can forward information across a level [BDD 6]", [&]() {
-                 __bdd out = bdd_unique(bdd_6, 1);
-
-                 node_arc_test_stream node_arcs(out);
-
-                 AssertThat(node_arcs.can_pull(), Is().True()); // (4,6)
-                 AssertThat(node_arcs.pull(),
-                            Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().True()); // (5,6)
-                 AssertThat(node_arcs.pull(),
-                            Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,1) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().True()); // (7,8)
-                 AssertThat(node_arcs.pull(),
-                            Is().EqualTo(arc { create_node_ptr(2,1), create_node_ptr(3,0) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().True()); // (8,F)
-                 AssertThat(node_arcs.pull(),
-                            Is().EqualTo(arc { create_node_ptr(2,0), create_node_ptr(3,1) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().True()); // (8,T)
-                 AssertThat(node_arcs.pull(),
-                            Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,2) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().False());
-
-                 sink_arc_test_stream sink_arcs(out);
-                 AssertThat(sink_arcs.can_pull(), Is().True()); // (5,6)
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(true) }));
-
-                 AssertThat(sink_arcs.can_pull(), Is().True()); // (7,8)
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(true) }));
-                 AssertThat(sink_arcs.can_pull(), Is().True());
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
-
-                 AssertThat(sink_arcs.can_pull(), Is().True()); // (8,F)
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { create_node_ptr(3,1), create_sink_ptr(false) }));
-                 AssertThat(sink_arcs.can_pull(), Is().True());
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { flag(create_node_ptr(3,1)), create_sink_ptr(true) }));
-
-                 AssertThat(sink_arcs.can_pull(), Is().True()); // (8,T)
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { create_node_ptr(3,2), create_sink_ptr(true) }));
-                 AssertThat(sink_arcs.can_pull(), Is().True());
-                 AssertThat(sink_arcs.pull(),
-                            Is().EqualTo(arc_t { flag(create_node_ptr(3,2)), create_sink_ptr(false) }));
-
-                 AssertThat(node_arcs.can_pull(), Is().False());
-
-                 meta_test_stream<arc_t, 2> meta(out);
-
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(meta_t { 0u }));
-
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(meta_t { 2u }));
-
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(meta_t { 3u }));
-
-                 AssertThat(meta.can_pull(), Is().False());
-              });
-
-            // TODO: Test pruning of recursion tree when complement edges allow
-            // to add negation onto the edge and merge a (v,T), (v,F), and
-            // (v,NIL) into a single node.
-
-            it("should quantify list [x1, x3] [BDD 4]", [&]() {
-                label_file labels;
-
-                { // Garbage collect writer to free write-lock
-                  label_writer lw(labels);
-                  lw << 1 << 3;
-                }
-
-                bdd out = bdd_unique(bdd_4, labels);
-
-                node_test_stream out_nodes(out);
-
-                AssertThat(out_nodes.can_pull(), Is().True());
-                AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2,MAX_ID,
-                                                                      create_sink_ptr(false),
-                                                                      create_sink_ptr(true))));
-
-                AssertThat(out_nodes.can_pull(), Is().True());
-                AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0,MAX_ID,
-                                                                      create_node_ptr(2,MAX_ID),
-                                                                      create_sink_ptr(true))));
-
-                AssertThat(out_nodes.can_pull(), Is().False());
-
-                meta_test_stream<node_t, 1> out_meta(out);
-
-                AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 2u }));
-
-                AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 0u }));
-
-                AssertThat(out_meta.can_pull(), Is().False());
               });
           });
       });

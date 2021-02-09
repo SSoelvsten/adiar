@@ -330,16 +330,6 @@ namespace adiar
   {
     return quantify(bdd, labels, and_op);
   }
-
-  __bdd bdd_unique(const bdd &bdd, const label_t &label)
-  {
-    return quantify(bdd, label, xor_op);
-  }
-
-  __bdd bdd_unique(const bdd &bdd, const label_file &labels)
-  {
-    return quantify(bdd, labels, xor_op);
-  }
 }
 
 #endif // ADIAR_QUANTIFY_CPP
