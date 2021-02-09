@@ -13,21 +13,21 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_exists(const bdd &bdd, const label_t &label);
 
-  bdd bdd_exists(const bdd &bdd, const label_file &labels);
+  __bdd bdd_exists(const bdd &bdd, const label_file &labels);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Forall quantify an BDD for a variable with a given label.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_forall(const bdd &bdd, const label_t &label);
 
-  bdd bdd_forall(const bdd &bdd, const label_file &labels);
+  __bdd bdd_forall(const bdd &bdd, const label_file &labels);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Uniquely quantify an BDD for a variable with a given label.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_unique(const bdd &bdd, const label_t &label);
 
-  bdd bdd_unique(const bdd &bdd, const label_file &labels);
+  __bdd bdd_unique(const bdd &bdd, const label_file &labels);
 }
 
 #endif // ADIAR_QUANTIFY_H
