@@ -136,15 +136,6 @@ copy-constructed from the `node_file`.
   
      Forall quantification (and) all variables in `label_file` in the very order
      these variables are provided.
-     
-  - `bdd bdd_unique(bdd, label_t)`
-
-     Unique quantification (xor) of the variable with the given label.
-     
-  - `bdd bdd_unique(bdd, label_file)`
-  
-     Unique quantification (xor) all variables in `label_file` in the very order
-     these variables are provided.
 
 ## Other functions
 
