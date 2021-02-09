@@ -195,6 +195,42 @@ go_bandit([]() {
         }
 
         ////////////////////////////////////////////////////////////////////////////
+        // BDD 8 (b is mirrored on the nodes for x2)
+        /*
+        //           __1__         ---- x0
+        //          /     \
+        //         _2_     \       ---- x1
+        //        /   \     \
+        //        3    4    |      ---- x2
+        //       / \  / \   |
+        //       T  \ F  \  |
+        //           \____\ |
+        //                 \|
+        //                  5      ---- x3
+        //                 / \
+        //                 F T
+        */
+        node_file bdd_8a, bdd_8b;
+
+        { // Garbage collect writer to free write-lock
+          node_writer nw_8a(bdd_8a);
+          nw_8a << create_node(3,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))       // 5
+                << create_node(2,MAX_ID,   create_sink_ptr(false),      create_node_ptr(3,MAX_ID))   // 4
+                << create_node(2,MAX_ID-1, create_sink_ptr(true),       create_node_ptr(3,MAX_ID))   // 3
+                << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))   // 2
+                << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(3,MAX_ID))   // 1
+            ;
+
+          node_writer nw_8b(bdd_8b);
+          nw_8b << create_node(3,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))       // 5
+                << create_node(2,MAX_ID,   create_node_ptr(3,MAX_ID),   create_sink_ptr(false))      // 4
+                << create_node(2,MAX_ID-1, create_node_ptr(3,MAX_ID),   create_sink_ptr(true))       // 3
+                << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))   // 2
+                << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(3,MAX_ID))   // 1
+            ;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////
         describe("Exists", [&]() {
             it("should quantify T sink-only BDD as itself", [&]() {
                 __bdd out = bdd_exists(sink_T, 42);
@@ -707,6 +743,102 @@ go_bandit([]() {
                  AssertThat(meta.pull(), Is().EqualTo(meta_t { 2u }));
 
                  AssertThat(meta.can_pull(), Is().False());
+              });
+
+            it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
+                __bdd out = bdd_exists(bdd_8a, 1);
+
+                node_arc_test_stream node_arcs(out);
+
+                AssertThat(node_arcs.can_pull(), Is().True()); // (3,4)
+                AssertThat(node_arcs.pull(),
+                           Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+                AssertThat(node_arcs.can_pull(), Is().True()); // (5,_)
+                AssertThat(node_arcs.pull(),
+                           Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(3,0) }));
+                AssertThat(node_arcs.can_pull(), Is().True());
+                AssertThat(node_arcs.pull(),
+                           Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,0) }));
+
+                AssertThat(node_arcs.can_pull(), Is().False());
+
+                sink_arc_test_stream sink_arcs(out);
+
+                AssertThat(sink_arcs.can_pull(), Is().True()); // (3,4)
+                AssertThat(sink_arcs.pull(), // true due to 3.low
+                           Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+
+                AssertThat(sink_arcs.can_pull(), Is().True()); // (5,_)
+                AssertThat(sink_arcs.pull(),
+                           Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
+                AssertThat(sink_arcs.can_pull(), Is().True());
+                AssertThat(sink_arcs.pull(),
+                           Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+
+
+                AssertThat(sink_arcs.can_pull(), Is().False());
+
+                meta_test_stream<arc_t, 2> meta(out);
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 0u }));
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 2u }));
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 3u }));
+
+                AssertThat(meta.can_pull(), Is().False());
+              });
+
+            it("should collapse tuple requests of the same node back into request on a single node [BDD 8b]", [&]() {
+                __bdd out = bdd_exists(bdd_8b, 1);
+
+                node_arc_test_stream node_arcs(out);
+
+                AssertThat(node_arcs.can_pull(), Is().True()); // (3,4)
+                AssertThat(node_arcs.pull(),
+                           Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+                AssertThat(node_arcs.can_pull(), Is().True()); // (5,_)
+                AssertThat(node_arcs.pull(),
+                           Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(3,0) }));
+                AssertThat(node_arcs.can_pull(), Is().True());
+                AssertThat(node_arcs.pull(),
+                           Is().EqualTo(arc { create_node_ptr(2,0), create_node_ptr(3,0) }));
+
+                AssertThat(node_arcs.can_pull(), Is().False());
+
+                sink_arc_test_stream sink_arcs(out);
+
+                AssertThat(sink_arcs.can_pull(), Is().True()); // (3,4)
+                AssertThat(sink_arcs.pull(), // true due to 3.low
+                           Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+
+                AssertThat(sink_arcs.can_pull(), Is().True()); // (5,_)
+                AssertThat(sink_arcs.pull(),
+                           Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
+                AssertThat(sink_arcs.can_pull(), Is().True());
+                AssertThat(sink_arcs.pull(),
+                           Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+
+
+                AssertThat(sink_arcs.can_pull(), Is().False());
+
+                meta_test_stream<arc_t, 2> meta(out);
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 0u }));
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 2u }));
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(meta_t { 3u }));
+
+                AssertThat(meta.can_pull(), Is().False());
               });
 
             it("can quantify list [x1, x2] in sink-only BDD", [&]() {
