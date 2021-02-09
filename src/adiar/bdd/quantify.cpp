@@ -60,29 +60,33 @@ namespace adiar
   inline void quantify_resolve_request(quantify_priority_queue_t &quantD,
                                        arc_writer &aw,
                                        const bool_op &op,
-                                       const ptr_t source, const ptr_t r1, const ptr_t r2)
+                                       const ptr_t source, ptr_t r1, ptr_t r2)
   {
-    // TODO: When adding complement edges, then use 'is_negating' to add a
-    // complementary flag on an arc and change the sink into a NIL. This may
-    // prune the tree a little.
+    adiar_debug(!is_nil(r1), "NIL should only ever end up being placed in r2");
 
-     if (is_nil(r2)) {
+    // Collapse requests to the same node back into one
+    if (is_node_ptr(r2) && r1 == r2) { r2 = NIL; }
+
+    if (is_nil(r2)) {
       if (is_sink_ptr(r1)) {
         aw.unsafe_push_sink({ source, r1 });
       } else {
         quantD.push({ r1, r2, source });
       }
-    } else if (is_sink_ptr(r1) && is_sink_ptr(r2)) {
-      arc_t out_arc = { source, op(r1, r2) };
-      aw.unsafe_push_sink(out_arc);
-    } else if (is_sink_ptr(r1) && can_left_shortcut(op, r1)) {
-      arc_t out_arc = { source, op(r1, create_sink_ptr(true)) };
-      aw.unsafe_push_sink(out_arc);
-    } else if (is_sink_ptr(r2) && can_right_shortcut(op, r2)) {
-      arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
-      aw.unsafe_push_sink(out_arc);
     } else {
-      quantD.push({ fst(r1,r2), snd(r1,r2), source });
+      // sort the tuple of requests
+      ptr_t r_fst = fst(r1,r2);
+      ptr_t r_snd = snd(r1,r2);
+
+      if (is_sink_ptr(r_fst) /* && is_sink_ptr(r_snd) */) {
+        arc_t out_arc = { source, op(r_fst, r_snd) };
+        aw.unsafe_push_sink(out_arc);
+      } else if (is_sink_ptr(r_snd) && can_right_shortcut(op, r_snd)) {
+        arc_t out_arc = { source, op(create_sink_ptr(true), r_snd) };
+        aw.unsafe_push_sink(out_arc);
+      } else {
+        quantD.push({ r_fst, r_snd, source });
+      }
     }
   }
 
@@ -136,11 +140,11 @@ namespace adiar
     if (label_of(v) == label && (is_sink_ptr(v.low) || (is_sink_ptr(v.high)))) {
       ptr_t res_sink = NIL;
 
-      if (is_sink_ptr(v.low) && (can_left_shortcut(op, v.low) || can_right_shortcut(op, v.low))) {
+      if (is_sink_ptr(v.low) && can_left_shortcut(op, v.low)) {
         res_sink = v.low;
       }
 
-      if (is_sink_ptr(v.high) && (can_left_shortcut(op, v.high) || can_right_shortcut(op, v.high))) {
+      if (is_sink_ptr(v.high) && can_right_shortcut(op, v.high)) {
         res_sink = v.high;
       }
 
@@ -255,14 +259,6 @@ namespace adiar
         ptr_t high1 = with_data ? data_high : v.high;
         ptr_t low2  = with_data ? v.low     : t2;
         ptr_t high2 = with_data ? v.high    : t2;
-
-        // Have two branches collapsed back into one?
-        if (is_node_ptr(snd(low1,low2)) && low1 == low2) {
-          low2 = NIL;
-        }
-        if (is_node_ptr(snd(high1,high2)) && high1 == high2) {
-          high2 = NIL;
-        }
 
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
         uid_t out_uid = create_node_uid(out_label, out_id++);
