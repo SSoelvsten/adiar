@@ -170,6 +170,31 @@ go_bandit([]() {
         }
 
         ////////////////////////////////////////////////////////////////////////////
+        // BDD 7
+        /*
+        //          _1_        ---- x0
+        //         /   \
+        //         3   2       ---- x1
+        //        / \ / \
+        //        \_ | __\
+        //           |    \
+        //           4    5    ---- x2
+        //          / \  / \
+        //          T F  F T
+        */
+        node_file bdd_7;
+
+        { // Garbage collect writer to free write-lock
+          node_writer nw_7(bdd_7);
+          nw_7 << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))       // 5
+               << create_node(2,MAX_ID-1, create_sink_ptr(true),       create_sink_ptr(false))      // 4
+               << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_node_ptr(2,MAX_ID-1)) // 3
+               << create_node(1,MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))   // 2
+               << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(1,MAX_ID-1)) // 1
+            ;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////
         describe("Exists", [&]() {
             it("should quantify T sink-only BDD as itself", [&]() {
                 __bdd out = bdd_exists(sink_T, 42);
@@ -647,6 +672,43 @@ go_bandit([]() {
                  AssertThat(meta.can_pull(), Is().False());
               });
 
+            it("can forward multiple arcs to the same node across a level [BDD 7]", [&]() {
+                 __bdd out = bdd_exists(bdd_7, 1);
+
+                 node_arc_test_stream node_arcs(out);
+
+                 // The high arc is forwarded first, since (2) was resolved before (3)
+
+                 AssertThat(node_arcs.can_pull(), Is().True()); // (4,5)
+                 AssertThat(node_arcs.pull(),
+                            Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,0) }));
+                 AssertThat(node_arcs.can_pull(), Is().True());
+                 AssertThat(node_arcs.pull(),
+                            Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+                 AssertThat(node_arcs.can_pull(), Is().False());
+
+                 sink_arc_test_stream sink_arcs(out);
+                 AssertThat(sink_arcs.can_pull(), Is().True()); // (4,5)
+                 AssertThat(sink_arcs.pull(),
+                            Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+                 AssertThat(sink_arcs.can_pull(), Is().True()); // (4,5)
+                 AssertThat(sink_arcs.pull(),
+                            Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+
+                 AssertThat(node_arcs.can_pull(), Is().False());
+
+                 meta_test_stream<arc_t, 2> meta(out);
+
+                 AssertThat(meta.can_pull(), Is().True());
+                 AssertThat(meta.pull(), Is().EqualTo(meta_t { 0u }));
+
+                 AssertThat(meta.can_pull(), Is().True());
+                 AssertThat(meta.pull(), Is().EqualTo(meta_t { 2u }));
+
+                 AssertThat(meta.can_pull(), Is().False());
+              });
+
             it("can quantify list [x1, x2] in sink-only BDD", [&]() {
                 label_file labels;
 
@@ -888,6 +950,14 @@ go_bandit([]() {
 
                 meta_test_stream<node_t, 1> ms(out);
                 AssertThat(ms.can_pull(), Is().False());
+              });
+
+            it("should quantify list [] into the original file [BDD 3]", [&]() {
+                label_file labels;
+
+                // __bdd is used to access the node_file
+                __bdd out = bdd_exists(bdd_3, labels);
+                AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
               });
           });
 
@@ -1310,6 +1380,41 @@ go_bandit([]() {
             // TODO: Test pruning of recursion tree when complement edges allow
             // to add negation onto the edge and merge a (v,T), (v,F), and
             // (v,NIL) into a single node.
+
+            it("should quantify list [x1, x3] [BDD 4]", [&]() {
+                label_file labels;
+
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 1 << 3;
+                }
+
+                bdd out = bdd_unique(bdd_4, labels);
+
+                node_test_stream out_nodes(out);
+
+                AssertThat(out_nodes.can_pull(), Is().True());
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2,MAX_ID,
+                                                                      create_sink_ptr(false),
+                                                                      create_sink_ptr(true))));
+
+                AssertThat(out_nodes.can_pull(), Is().True());
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0,MAX_ID,
+                                                                      create_node_ptr(2,MAX_ID),
+                                                                      create_sink_ptr(true))));
+
+                AssertThat(out_nodes.can_pull(), Is().False());
+
+                meta_test_stream<node_t, 1> out_meta(out);
+
+                AssertThat(out_meta.can_pull(), Is().True());
+                AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 2u }));
+
+                AssertThat(out_meta.can_pull(), Is().True());
+                AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 0u }));
+
+                AssertThat(out_meta.can_pull(), Is().False());
+              });
           });
       });
   });
