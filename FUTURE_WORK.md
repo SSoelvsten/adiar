@@ -11,20 +11,16 @@ may constitute interesting undergraduate research projects.
         - [Function composition](#function-composition)
         - [Coudert's and Madre's Restrict](#couderts-and-madres-restrict)
         - [Variable reordering](#variable-reordering)
-    - [Optimising the OBDD](#optimising-the-obdd)
+    - [Optimising the BDD](#optimising-the-bdd)
         - [Complement Edges](#complement-edges)
     - [Extensions](#extensions)
         - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
-        - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
         - [Zero-suppressed Decision Diagrams](#zero-suppressed-decision-diagrams)
+        - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
         - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
-        - [From _recursive_ algorithm to _time-forward processing_ and back again](#from-recursive-algorithm-to-time-forward-processing-and-back-again)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
-        - [Parallelisation](#parallelisation)
-            - [Parallel Layer-aware priority queue](#parallel-layer-aware-priority-queue)
-            - [Reduction Rule 2 within the merge sorting](#reduction-rule-2-within-the-merge-sorting)
-            - [Distribute nodes and information (in order) to worker-threads](#distribute-nodes-and-information-in-order-to-worker-threads)
+        - [From _recursive_ algorithm to _time-forward processing_ and back again](#from-recursive-algorithm-to-time-forward-processing-and-back-again)
 
 <!-- markdown-toc end -->
 
@@ -61,7 +57,7 @@ require quite a bit of creativity, understanding of the I/O model and also of
 the original variable reordering algorithms.
 
 
-## Optimising the OBDD
+## Optimising the BDD
 
 ### Complement Edges
 Currently, we do not support complement edges, though one can expect about a 7%
@@ -78,6 +74,20 @@ non-boolean values, such as integers or floats. Thereby, the algorithms
 immediately yield an I/O efficient implementation of the _Multi-Terminal Binary
 Decision Diagrams_ (MTBDD) of [[Fujita97](README.md#references)].
 
+### Zero-suppressed Decision Diagrams
+A Zero-suppressed Decision Diagram
+([ZDD](https://en.wikipedia.org/wiki/Zero-suppressed_decision_diagram)) is a
+binary decision diagram, which is very compresed when representing sparse sets
+of bit vectors. This has been shown to be great for solving NP-Complete problems
+and symbolic model checking algorithms on sparse sets of states.
+
+To achieve this, ZDDs make use of a different reduction rule than BDDs to do so.
+So, to implement them we need to:
+
+- Generalize the _Reduce_ and _Apply_ algorithms (strategy pattern with lambdas?)
+  to implement all basic operations.
+- Implement other 'new' and more complex algorithms.
+
 ### Multi-valued Decision Diagrams
 By solely using an edge-based representation of the data-structure one can also
 implement a _Multi-valued Decision Diagram_ (MDD) of
@@ -86,23 +96,24 @@ from a non-boolean domain. Switching to the edge-based representation will lead
 to rewriting almost all algorithms, but we may look into recreating the _List
 Decision Diagrams_ of [[Dijk16](README.md#references)] to circumvent this.
 
-
-### Zero-suppressed Decision Diagrams
-A Zero-suppressed Decision Diagram
-([ZDD](https://en.wikipedia.org/wiki/Zero-suppressed_decision_diagram)) is a
-binary decision diagram, which is very compresed when representing sparse sets
-of bit vectors. They make use of different reduction rules 
-
-- Generalize the _Reduce_ algorithm
-- Implement (Time-forward processing) algorithms for all the set operations.
-
-
 ### Free Boolean Decision Diagrams
 One can remove the restriction of ordering the decision diagram to then
 potentially compress the data structure even more. These Free Binary Decision
 Diagrams (FBDD) of [[Meinel94](README.md#references)] may also be possible to
 implement in the setting of Time-forward processing used here.
 
+
+## Optimising the current algorithms
+There are quite a few avenues of trying to shave off a few significant constants
+in the running time on the current algorithms. All suggestions below also make
+the GPU an intriguing subject for a possible heavy improvement in the running
+time.
+
+### Non-comparison based sorting on numbers
+The sorting in multiple variables has already been reduced to a simple sorting
+on a single 64-bit key in the representation of nodes and arcs. It should be
+possible to exploit this with a radix sort for an _O(N)_ time complexity, though
+maybe one will not gain too much due to the _O(sort(N))_ I/O lower bound.
 
 ### From _recursive_ algorithm to _time-forward processing_ and back again
 Most implementations, such as the ones in [[Brace90,
@@ -127,83 +138,3 @@ Based on the memory usage I've witnessed during benchmarking, I think the first
 option is the most promising.
 
 See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issues/98)
-
-## Optimising the current algorithms
-There are quite a few avenues of trying to shave off a few significant constants
-in the running time on the current algorithms. All suggestions below also make
-the GPU an intriguing subject for a possible heavy improvement in the running
-time.
-
-### Non-comparison based sorting on numbers
-The sorting in multiple variables has already been reduced to a simple sorting
-on a single 64-bit key in the representation of nodes and arcs. It should be
-possible to exploit this with a radix sort for an _O(N)_ time complexity, though
-maybe one will not gain too much due to the _O(sort(N))_ I/O lower bound.
-
-### Parallelisation
-The idea of Time-Forward-Processing is inherently sequential, but can we
-parallelise parts of the algorithm? One may want to look into what possibilities
-we have in parallel access to the underlying data structures and algorithms:
-
-- [X] Parallel traversal of the same file stream
-
-- [X] Parallelisable sorting algorithms (Sorting in TPIE is parallelised).
-  
-- [ ] Parallelisable I/O efficient priority queue, such as the one in
-      [[Sitchinava12](README.md#references)].
-
-
-#### Parallel Layer-aware priority queue
-
-Already just allowing the priority queue to be sorted on a different thread than
-where all other computation happens may improve performance.
-
-1. **Layer i → layer j > i+1**
-
-    Since the layer-aware priority queue knows which layer is the current and
-    which one is the next, then the priority queue may on a separate thread
-    prepare all requests send to layer _i+1_ from a layer prior to _i_ ahead of
-    time. It may place these requests in sorted order in a separate list, which
-    may then be implicitly merged when popping elements for layer _i+1_.
-
-
-#### Reduction Rule 2 within the merge sorting
-
-The biggest bottleneck is the priority queue (see above suggestion) and the
-sorting of nodes within each layer of the _Reduce_ step. The computations
-involved with Reduction Rule 1 are so few, that one cannot win from
-parallelising it. The other list of possibly to-be reduced by Reduction Rule 2
-nodes start out being sorted by their label and id to then go through two
-sortings:
-
-1. By their children to make the children-related nodes direct neighbours.
-
-2. Back to their label and id to put them back in order with the transposed
-   graph of where to forward information for later.
-
-Between step _1_ and _2_ the list is split into two in a linear sweep: The list
-of nodes to keep and the ones to remove in favour of another one kept. One may
-include the linear sweep inside the merge procedure of the first parallelised
-sorting to immediately generate these two lists and with that hopefully improve
-the running time.
-
-
-#### Distribute nodes and information (in order) to worker-threads
-
-Let the main thread merely distribute the work: The file-stream is a work-queue
-synchronised with the priority queue for other processes to take their jobs. The
-main thread also is the only one allowed to pop from the priority queue. One may
-also need a process to collect, manage and sort the output of all the workers or
-force them to output in the right order using another priority queue.
-
-The basic idea would then be to let a worker thread pop the next node from the
-file stream and extracts from the priority queue the forwarded information they
-need. They then process their information, push new information to be forwarded
-into the priority queue and return the to-be outputted node or arcs.
-
-Since each layer is independent, then all processes only need to wait for each
-other to finish when going from one layer to another. With
-[semaphores](https://en.wikipedia.org/wiki/Semaphore_(programming)) one can both
-implement a fast and hardware-supported lock on popping the jobs from the file
-stream and a barrier for synchronisation of threads when crossing from one layer
-to the next.
