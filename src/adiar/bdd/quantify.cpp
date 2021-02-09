@@ -285,29 +285,29 @@ namespace adiar
     return out_arcs;
   }
 
-  bdd quantify(const bdd &in_bdd,
-               const label_file &labels,
-               const bool_op &op)
+  __bdd quantify(const bdd &in_bdd,
+                 const label_file &labels,
+                 const bool_op &op)
   {
     adiar_debug(is_commutative(op), "Noncommutative operator used");
 
-    if (labels.size() == 0) {
-      return in_bdd;
-    }
+    if (labels.size() == 0) { return in_bdd; }
 
     bdd out = in_bdd;
 
     // We will quantify the labels in the order they are given.
     label_stream<> ls(labels);
-    while(ls.can_pull()) {
+    while(true) {
       // Did we collapse early to a sink-only BDD?
-      if (is_sink(out, is_any)) {
-        break;
-      }
+      if (is_sink(out, is_any)) { return out; }
 
-      out = quantify(out, ls.pull(), op);
+      label_t label = ls.pull();
+      if (!ls.can_pull()) {
+        return quantify(out, label, op);
+      } else {
+        out = quantify(out, label, op);
+      }
     }
-    return out;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -316,7 +316,7 @@ namespace adiar
     return quantify(bdd, label, or_op);
   }
 
-  bdd bdd_exists(const bdd &bdd, const label_file &labels)
+  __bdd bdd_exists(const bdd &bdd, const label_file &labels)
   {
     return quantify(bdd, labels, or_op);
   }
@@ -326,7 +326,7 @@ namespace adiar
     return quantify(bdd, label,  and_op);
   }
 
-  bdd bdd_forall(const bdd &bdd, const label_file &labels)
+  __bdd bdd_forall(const bdd &bdd, const label_file &labels)
   {
     return quantify(bdd, labels, and_op);
   }
@@ -336,7 +336,7 @@ namespace adiar
     return quantify(bdd, label, xor_op);
   }
 
-  bdd bdd_unique(const bdd &bdd, const label_file &labels)
+  __bdd bdd_unique(const bdd &bdd, const label_file &labels)
   {
     return quantify(bdd, labels, xor_op);
   }
