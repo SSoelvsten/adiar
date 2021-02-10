@@ -14,6 +14,7 @@ namespace adiar
   __bdd bdd_exists(const bdd &bdd, const label_t &label);
 
   __bdd bdd_exists(const bdd &bdd, const label_file &labels);
+  __bdd bdd_exists(bdd &&bdd, const label_file &labels);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Forall quantify an BDD for a variable with a given label.
@@ -21,6 +22,7 @@ namespace adiar
   __bdd bdd_forall(const bdd &bdd, const label_t &label);
 
   __bdd bdd_forall(const bdd &bdd, const label_file &labels);
+  __bdd bdd_forall(bdd &&bdd, const label_file &labels);
 }
 
 #endif // ADIAR_QUANTIFY_H

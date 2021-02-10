@@ -841,7 +841,7 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("can quantify list [x1, x2] in sink-only BDD", [&]() {
+            it("can quantify list [x1, x2] in sink-only BDD [&&bdd]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -861,7 +861,28 @@ go_bandit([]() {
                 AssertThat(ms.can_pull(), Is().False());
               });
 
-            it("can quantify list [x1, x2] [BDD 4]", [&]() {
+            it("can quantify list [x1, x2] in sink-only BDD [const &bdd]", [&]() {
+                label_file labels;
+
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 1 << 2;
+                }
+
+                bdd in_bdd = sink_T;
+                __bdd out = bdd_exists(in_bdd, labels);
+
+                node_test_stream out_nodes(out);
+
+                AssertThat(out_nodes.can_pull(), Is().True());
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+                AssertThat(out_nodes.can_pull(), Is().False());
+
+                meta_test_stream<node_t, 1> ms(out);
+                AssertThat(ms.can_pull(), Is().False());
+              });
+
+            it("can quantify list [x1, x2] [BDD 4 : &&bdd]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -896,7 +917,7 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("can quantify list [x2, x1] [BDD 4]", [&]() {
+            it("can quantify list [x2, x1] [BDD 4 : &&bdd]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -931,7 +952,7 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("should quantify singleton list [x2] [BDD 4]", [&]() {
+            it("should quantify singleton list [x2] [BDD 4 : &&bdd]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -974,7 +995,7 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("should quantify list [x1, x3] [BDD 4]", [&]() {
+            it("should quantify list [x1, x3] [BDD 4 : &&bdd]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -1009,7 +1030,7 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("should quantify list [x0, x2] [BDD 4]", [&]() {
+            it("should quantify list [x0, x2] [BDD 4 : &&bdd]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -1044,7 +1065,43 @@ go_bandit([]() {
                 AssertThat(out_meta.can_pull(), Is().False());
               });
 
-            it("should quantify list [x3, x1, x0, x2] where it is sink-only already before x2 [BDD 4]", [&]() {
+            it("should quantify list [x0, x2] [BDD 4 : const &bdd]", [&]() {
+                label_file labels;
+
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 0 << 2;
+                }
+
+                bdd in_bdd = bdd_4;
+                bdd out = bdd_exists(in_bdd, labels);
+
+                node_test_stream out_nodes(out);
+
+                AssertThat(out_nodes.can_pull(), Is().True());
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
+                                                                      create_sink_ptr(false),
+                                                                      create_sink_ptr(true))));
+
+                AssertThat(out_nodes.can_pull(), Is().True());
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1,MAX_ID,
+                                                                      create_node_ptr(3,MAX_ID),
+                                                                      create_sink_ptr(true))));
+
+                AssertThat(out_nodes.can_pull(), Is().False());
+
+                meta_test_stream<node_t, 1> out_meta(out);
+
+                AssertThat(out_meta.can_pull(), Is().True());
+                AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 3u }));
+
+                AssertThat(out_meta.can_pull(), Is().True());
+                AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 1u }));
+
+                AssertThat(out_meta.can_pull(), Is().False());
+              });
+
+            it("should quantify list [x3, x1, x0, x2] where it is sink-only already before x2 [BDD 4 : &&bdd]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -1064,7 +1121,7 @@ go_bandit([]() {
                 AssertThat(ms.can_pull(), Is().False());
               });
 
-            it("should quantify list [x2, x1] into T sink [x2]", [&]() {
+            it("should quantify list [x2, x1] into T sink [x2 : &&bdd]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -1084,11 +1141,19 @@ go_bandit([]() {
                 AssertThat(ms.can_pull(), Is().False());
               });
 
-            it("should quantify list [] into the original file [BDD 3]", [&]() {
+            it("should quantify list [] into the original file [BDD 3 : &&bdd]", [&]() {
                 label_file labels;
 
                 // __bdd is used to access the node_file
                 __bdd out = bdd_exists(bdd_3, labels);
+                AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+              });
+
+            it("should quantify list [] into the original file [BDD 3 : const &bdd]", [&]() {
+                label_file labels;
+
+                bdd in_bdd = bdd_3;
+                __bdd out = bdd_exists(in_bdd, labels);
                 AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
               });
           });
@@ -1356,7 +1421,7 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should quantify list [x0, x2, x1] [BDD 4]", [&]() {
+            it("should quantify list [x0, x2, x1] [BDD 4 : &&bdd]", [&]() {
                 label_file labels;
 
                 { // Garbage collect writer to free write-lock
@@ -1374,6 +1439,122 @@ go_bandit([]() {
 
                 meta_test_stream<node_t, 1> ms(out);
                 AssertThat(ms.can_pull(), Is().False());
+              });
+
+            it("should quantify list [x0, x2, x1] [BDD 4 : const &bdd]", [&]() {
+                label_file labels;
+
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 0 << 2 << 1;
+                }
+
+                bdd in_bdd = bdd_4;
+                bdd out = bdd_forall(in_bdd, labels);
+
+                node_test_stream out_nodes(out);
+
+                AssertThat(out_nodes.can_pull(), Is().True());
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+                AssertThat(out_nodes.can_pull(), Is().False());
+
+                meta_test_stream<node_t, 1> ms(out);
+                AssertThat(ms.can_pull(), Is().False());
+              });
+
+            it("should quantify list [x1] [BDD 4 : &&bdd]", [&]() {
+                label_file labels;
+
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 1;
+                }
+
+                bdd out = bdd_forall(bdd_4, labels);
+
+                node_test_stream out_nodes(out);
+
+                AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
+                                                                      create_sink_ptr(false),
+                                                                      create_sink_ptr(true))));
+
+                AssertThat(out_nodes.can_pull(), Is().True()); // (3,_) / (3,4)
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2,MAX_ID,
+                                                                      create_sink_ptr(false),
+                                                                      create_node_ptr(3,MAX_ID))));
+
+                // The node (1,_) is reduced away due to its low child is (3,_)
+                // and its high child is (3,4)
+
+                AssertThat(out_nodes.can_pull(), Is().False());
+
+                meta_test_stream<node_t, 1> ms(out);
+
+
+                AssertThat(ms.can_pull(), Is().True());
+                AssertThat(ms.pull(), Is().EqualTo(meta_t { 3u }));
+
+                AssertThat(ms.can_pull(), Is().True());
+                AssertThat(ms.pull(), Is().EqualTo(meta_t { 2u }));
+
+                AssertThat(ms.can_pull(), Is().False());
+              });
+
+            it("should quantify list [x1] [BDD 4 : const &bdd]", [&]() {
+                label_file labels;
+
+                { // Garbage collect writer to free write-lock
+                  label_writer lw(labels);
+                  lw << 1;
+                }
+
+                bdd in_bdd = bdd_4;
+                bdd out = bdd_forall(in_bdd, labels);
+
+                node_test_stream out_nodes(out);
+
+                AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
+                                                                      create_sink_ptr(false),
+                                                                      create_sink_ptr(true))));
+
+                AssertThat(out_nodes.can_pull(), Is().True()); // (3,_) / (3,4)
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2,MAX_ID,
+                                                                      create_sink_ptr(false),
+                                                                      create_node_ptr(3,MAX_ID))));
+
+                // The node (1,_) is reduced away due to its low child is (3,_)
+                // and its high child is (3,4)
+
+                AssertThat(out_nodes.can_pull(), Is().False());
+
+                meta_test_stream<node_t, 1> ms(out);
+
+
+                AssertThat(ms.can_pull(), Is().True());
+                AssertThat(ms.pull(), Is().EqualTo(meta_t { 3u }));
+
+                AssertThat(ms.can_pull(), Is().True());
+                AssertThat(ms.pull(), Is().EqualTo(meta_t { 2u }));
+
+                AssertThat(ms.can_pull(), Is().False());
+              });
+
+            it("should quantify list [] into the original file [BDD 3 : &&bdd]", [&]() {
+                label_file labels;
+
+                // __bdd is used to access the node_file
+                __bdd out = bdd_forall(bdd_3, labels);
+                AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+              });
+
+            it("should quantify list [] into the original file [BDD 3 : const &bdd]", [&]() {
+                label_file labels;
+
+                bdd in_bdd = bdd_3;
+                __bdd out = bdd_forall(in_bdd, labels);
+                AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
               });
           });
       });

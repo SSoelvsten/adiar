@@ -281,50 +281,51 @@ namespace adiar
     return out_arcs;
   }
 
-  __bdd quantify(const bdd &in_bdd,
-                 const label_file &labels,
-                 const bool_op &op)
-  {
-    adiar_debug(is_commutative(op), "Noncommutative operator used");
-
-    if (labels.size() == 0) { return in_bdd; }
-
-    bdd out = in_bdd;
-
-    // We will quantify the labels in the order they are given.
-    label_stream<> ls(labels);
-    while(true) {
-      // Did we collapse early to a sink-only BDD?
-      if (is_sink(out, is_any)) { return out; }
-
-      label_t label = ls.pull();
-      if (!ls.can_pull()) {
-        return quantify(out, label, op);
-      } else {
-        out = quantify(out, label, op);
-      }
-    }
-  }
+# define multi_quantify_macro(bdd_var, labels, op)            \
+  if (labels.size() == 0) { return bdd_var; }                 \
+  label_stream<> ls(labels);                                  \
+  while(true) {                                               \
+    if (is_sink(bdd_var, is_any)) { return bdd_var; }         \
+                                                              \
+    label_t label = ls.pull();                                \
+    if (!ls.can_pull()) {                                     \
+      return quantify(bdd_var, label, op);                    \
+    } else {                                                  \
+      bdd_var = quantify(bdd_var, label, op);                 \
+    }                                                         \
+ }                                                            \
 
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &bdd, const label_t &label)
+  __bdd bdd_exists(const bdd &in_bdd, const label_t &label)
   {
-    return quantify(bdd, label, or_op);
+    return quantify(in_bdd, label, or_op);
   }
 
-  __bdd bdd_exists(const bdd &bdd, const label_file &labels)
+  __bdd bdd_exists(const bdd &in_bdd, const label_file &labels)
   {
-    return quantify(bdd, labels, or_op);
+    bdd out = in_bdd;
+    multi_quantify_macro(out, labels, or_op);
   }
 
-  __bdd bdd_forall(const bdd &bdd, const label_t &label)
+  __bdd bdd_exists(bdd &&in_bdd, const label_file &labels)
   {
-    return quantify(bdd, label,  and_op);
+    multi_quantify_macro(in_bdd, labels, or_op);
   }
 
-  __bdd bdd_forall(const bdd &bdd, const label_file &labels)
+  __bdd bdd_forall(const bdd &in_bdd, const label_t &label)
   {
-    return quantify(bdd, labels, and_op);
+    return quantify(in_bdd, label, and_op);
+  }
+
+  __bdd bdd_forall(const bdd &in_bdd, const label_file &labels)
+  {
+    bdd out = in_bdd;
+    multi_quantify_macro(out, labels, and_op);
+  }
+
+  __bdd bdd_forall(bdd &&in_bdd, const label_file &labels)
+  {
+    multi_quantify_macro(in_bdd, labels, and_op);
   }
 }
 
