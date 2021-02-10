@@ -21,7 +21,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   ///  COMMON VARIABLES AND GENERAL PTR
   //////////////////////////////////////////////////////////////////////////////
-  const uint8_t  LABEL_BITS = 16;
+  const uint8_t  LABEL_BITS = 24;
   const uint64_t MAX_LABEL  = (1ull << LABEL_BITS) - 1;
 
   const uint8_t  ID_BITS = 64 - 2 - LABEL_BITS;
