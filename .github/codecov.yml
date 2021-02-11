@@ -1,2 +1,13 @@
 fixes:
-  - "adiar/::"  # remove adiar/ in path
+  - "adiar/::" 
+
+coverage:
+  precision: 3
+  round: nearest
+  range: "80...95"
+
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
