@@ -78,14 +78,7 @@ set_target_properties(<target> PROPERTIES CXX_STANDARD 17)
 
 
 ## Documentation
-We provide the documentation in two ways:
-
-- A [Github Pages](https://ssoelvsten.github.io/adiar/) website focuses on the
-  usage of the _C++_ library.
-
-- A [Technical Report](https://github.com/SSoelvsten/adiar-report) provides an
-  “_academic_” documentation that focuses on the theory and the algorithmic
-  technique behind this libary.
+We provide the documentation on the following [Github Pages](https://ssoelvsten.github.io/adiar/).
 
 
 ## Usage
