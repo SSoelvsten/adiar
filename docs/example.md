@@ -24,8 +24,8 @@ We will compute the BDD containing all the solutions as described in the paper
 "Parallel Disk-Based Computation for Large, Monolithic Binary Decision Diagrams"
 by Daniel Kunkle, Vlad Slavici, and Gene Cooperman.
 
-We need to first choose some encoding of the problem into a set of variables.
-Well stay with the simple row-by-row ordering of variables for now. That is, we
+We need to first choose some encoding of the problem into a set of variables. We
+will stay with the simple row-by-row ordering of variables for now. That is, we
 represent whether a queen is placed at position (_i_,_j_) on the _N_×_N_ board
 board as the variable with label computed as follows.
 
@@ -42,86 +42,57 @@ inline label_t label_of_position(uint64_t N,
 
 Let us first restrict our attention to the base case of expressing the state of
 a single field (_i_,_j_). We need to express that a single queen is placed here,
-and that it is in no conflict with any other queens on the board; queens on the
-same row, column or diagonals. This essentially is the formula
-`x_ij /\ !is_threatened(i,j)`, where `is_threatened(i,j)` is true if one or
-more queens are placed on conflicting positions.
+and that this queen is in no conflict with any other placed on the board, i.e.
+any queens on the same row, column or diagonals. This essentially is the formula
+`x_ij /\ !is_threatened(i,j)`, where `is_threatened(i,j)` is true if one or more
+queens are placed on conflicting positions.
 
 We could construct the BDD with the builders and algorithms of _Adiar_. But, we
-can do even better than that, because we can explicitly construct it since the
-resulting BDD is well structured! For this, remember from the
-[core](/core.md#files) section that nodes are to be written bottom-up and in
-reverse. By the ordering of variables in `label_of_position` above we need to go
-through the BDD row-by-row and find the diagonals and column based on (_i_,_j_)
-on rows other than _i_. On the _i_th row we have to add all variables. If a
-variable is supposed to be _false_ then we connect its _low_ edge to the node
-generated before it (or to the _true_ sink on the _low_ edge if none is). In the
-case of the _x_<sub>ij</sub> variable it is connected to its preceding node by
-its high edge. All other edges go the to _false_ sink.
+can do even better than that, because the resulting BDD is well structured. So,
+we can explicitly construct in one go with a [node stream](/core.md#files)!
+Remember that nodes are to be written bottom-up and in reverse. By the ordering
+of variables in `label_of_position` we have to deal with (1) queens on the row
+_i_ and (2) queens on other rows. For (1) we have to check all variables,
+whereas for (2) we only need to check on column _j_ and the diagonals. All nodes
+but the one for x<sub>ij</sub> are connected to by their _low_ edge to the node
+generated before them (or to the _true_ sink if said node is first one
+generated). The x<sub>ij</sub> variable is, on the other hand, connected to the
+prior generated node by its high edge. All other edges go the to _false_ sink.
 
 ```c++
 bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
 {
   node_file out;
+  node_writer out_writer(out);
 
-  { // When calling `out.size()` below, we have to make it read-only.
-    // So, we have to detach the node_writer before we do. This is
-    // automatically done on garbage collection, which is why we add
-    // an inner scope.
-    node_writer out_writer(out);
+  uint64_t row = N - 1;
+  ptr_t next = create_sink_ptr(true);
 
-    uint64_t row = N - 1;
-    ptr_t next = create_sink_ptr(true);
+  do {
+    uint64_t row_diff = std::max(row,i) - std::min(row,i);
 
-    do {
-      uint64_t row_diff = std::max(row,i) - std::min(row,i);
+    if (row_diff == 0) {
+      // On row of the queen in question
+      uint64_t column = N - 1;
+      do {
+        label_t label = label_of_position(N, row, column);
 
-      if (row_diff == 0) {
-        // On row of the queen in question
-        uint64_t column = N - 1;
-        do {
-          label_t label = label_of_position(N, row, column);
+        // If (row, column) == (i,j), then the chain goes through high
+        if (column == j) {
+          // Node to check whether the queen actually is placed, and
+          // if so whether all remaining possible conflicts have to
+          // be checked.
+          label_t label = label_of_position(N, i, j);
+          node_t queen = create_node(label,
+                                     0,
+                                     create_sink_ptr(false),
+                                     next);
 
-          // If (row, column) == (i,j), then the chain goes through high
-          if (column == j) {
-            // Node to check whether the queen actually is placed, and
-            // if so whether all remaining possible conflicts have to
-            // be checked.
-            label_t label = label_of_position(N, i, j);
-            node_t queen = create_node(label,
-                                       0,
-                                       create_sink_ptr(false),
-                                       next);
-
-            out_writer << queen;
-            next = queen.uid;
-            continue;
-          }
-
-          node_t out_node = create_node(label,
-                                        0,
-                                        next,
-                                        create_sink_ptr(false));
-
-          out_writer << out_node;
-          next = out_node.uid;
-        } while (column-- > 0);
-      } else {
-        // On another row
-        if (j + row_diff < N) {
-          // Diagonal to the right is within bounds
-          label_t label = label_of_position(N, row, j+row_diff);
-          node_t out_node = create_node(label,
-                                        0,
-                                        next,
-                                        create_sink_ptr(false));
-
-          out_writer << out_node;
-          next = out_node.uid;
+          out_writer << queen;
+          next = queen.uid;
+          continue;
         }
 
-        // Column
-        label_t label = label_of_position(N, row, j);
         node_t out_node = create_node(label,
                                       0,
                                       next,
@@ -129,21 +100,44 @@ bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
 
         out_writer << out_node;
         next = out_node.uid;
+      } while (column-- > 0);
+    } else {
+      // On another row
+      if (j + row_diff < N) {
+        // Diagonal to the right is within bounds
+        label_t label = label_of_position(N, row, j+row_diff);
+        node_t out_node = create_node(label,
+                                      0,
+                                      next,
+                                      create_sink_ptr(false));
 
-        if (row_diff <= j) {
-          // Diagonal to the left is within bounds
-          label_t label = label_of_position(N, row, j-row_diff);
-          node_t out_node = create_node(label,
-                                        0,
-                                        next,
-                                        create_sink_ptr(false));
-
-          out_writer << out_node;
-          next = out_node.uid;
-        }
+        out_writer << out_node;
+        next = out_node.uid;
       }
-    } while (row-- > 0);
-  }
+
+      // Column
+      label_t label = label_of_position(N, row, j);
+      node_t out_node = create_node(label,
+                                    0,
+                                    next,
+                                    create_sink_ptr(false));
+
+      out_writer << out_node;
+      next = out_node.uid;
+
+      if (row_diff <= j) {
+        // Diagonal to the left is within bounds
+        label_t label = label_of_position(N, row, j-row_diff);
+        node_t out_node = create_node(label,
+                                      0,
+                                      next,
+                                      create_sink_ptr(false));
+
+        out_writer << out_node;
+        next = out_node.uid;
+      }
+    }
+  } while (row-- > 0);
 
   return out;
 }
@@ -157,9 +151,9 @@ given an underlying `node_file`.
 
 From the formula in `n_queens_S` we can construct the formula for the entire row
 by combining them with an OR. Since the formula is _true_ only when the queen is
-placed then this is ensures at-least-one queen is on the row. Since `n_queens_S`
-is also only _true_ when said queen has no conflicts then this also immediately
-contains the at-most-one queen constraint of the row.
+placed then this ensures at-least-one queen is placed on the row. Since
+`n_queens_S` is also only _true_ when said queen has no conflicts then this also
+immediately contains the at-most-one queen constraint for said row.
 
 ```c++
 bdd n_queens_R(uint64_t N, uint64_t row)
@@ -174,9 +168,9 @@ bdd n_queens_R(uint64_t N, uint64_t row)
 }
 ```
 
-Now that we have each entire row done, we only need to combine them such that
-all rows are satisfied at the same time. That is, we need to combine the BDDs
-constructed in `n_queens_R` with an AND.
+Now that we can represent a single row, then we only need to combine them such
+that all rows are satisfied at the same time. That is, we need to combine the
+BDDs constructed in `n_queens_R` with an AND.
 
 ```c++
 bdd n_queens_B(uint64_t N)
@@ -247,7 +241,7 @@ inline uint64_t j_of_label(uint64_t N, label_t label)
 
 Now we are ready to implement the recursive procedure that takes care of a row
 and possibly recurses. For a sanity check, we also return the number of
-solutions we have list.
+solutions we have listed.
 
 ```c++
 uint64_t n_queens_list(uint64_t N, uint64_t column,
@@ -336,7 +330,7 @@ uint64_t n_queens_list(uint64_t N, const bdd& board)
 {
   if (N == 1) {
     // To make the recursive function work for N = 1 we would have to
-    // have the count_paths check above at the beginning. That would
+    // have the count_paths above check at the beginning. That would
     // in all other cases merely result in an unecessary counting of
     // paths at the very start.
     std::vector<uint64_t> assignment { 0 };

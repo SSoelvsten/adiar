@@ -15,7 +15,8 @@ possible and/or minimise the number of lvalues of said type.
 
 - [Basic Constructors](#basic-constructors)
 - [Basic Manipulation](#basic-manipulation)
-- [Other functions](#other-functions)
+- [Counting Operations](#counting-operations)
+- [Other Functions](#other-functions)
 - [DOT Output](#dot-output)
 
 ## Basic Constructors
@@ -58,7 +59,7 @@ copy-constructed from the `node_file`.
 - `bdd bdd_apply(bdd, bdd, bool_op)`
 
   Construct a bdd representing the `bool_op` applied onto the two given BDDs.
-  For each operator, we provide a the following alias functions.
+  For each operator, we provide the following alias functions.
   
   - `bdd bdd_and(bdd f, bdd g)` (operator `&`)
   
@@ -79,6 +80,10 @@ copy-constructed from the `node_file`.
   - `bdd bdd_xor(bdd f, bdd g)` (operator `^`)
   
     Same as `bdd_apply(f, g, xor_op)` and computes `f + g`.
+
+  - `bdd bdd_xnor(bdd f, bdd g)`
+  
+    Same as `bdd_apply(f, g, xor_op)` and computes `~(f + g)`.
   
   - `bdd bdd_imp(bdd f, bdd g)`
   
@@ -111,11 +116,11 @@ copy-constructed from the `node_file`.
 
   Return the BDD representing `~f`.
 
-- `bdd bdd_restrict(bdd, assignment_file)`
+- `bdd bdd_restrict(bdd f, assignment_file)`
 
-  Compute the BDD of `bdd` with the its nodes with a label within the
-  `assignment_file` restricted to be the associated value in the same file. The
-  `assignment_file` must be in increasing order wrt. the label.
+  Return the BDD representing `f[xₛ / v, ..., xₜ / v]` for `{s ; vₛ}`, ...,
+  `{t ; vₜ}` in `assignment_file`. The `assignment_file` must be in
+  increasing order wrt. the label.
 
 - Variable quantification
 
@@ -137,24 +142,12 @@ copy-constructed from the `node_file`.
      Forall quantification (and) all variables in `label_file` in the very order
      these variables are provided.
 
-## Other functions
 
-- `bool is_sink(bdd)`
-
-  Whether `bdd` only consists of a sink.
-
-- `label_t min_label(bdd)`
-
-- `label_t max_label(bdd)`
-
-- `bool bdd_eval(bdd f, assignment_file x)`
-
-  Evaluate the given BDD `f` according to the assignment `x` and return the
-  value f(x).
+## Counting Operations
 
 - `uint64_t bdd_nodecount(bdd)`
 
-  The number of nodes (not counting sink nodes) in the BDD.
+   The number of nodes (not counting sink nodes) in the BDD.
 
 - `uint64_t bdd_varcount(bdd)`
 
@@ -162,8 +155,8 @@ copy-constructed from the `node_file`.
 
 - `uint64_t bdd_pathcount(bdd, sink_pred)`
 
-  Count all unique (but not necessarily disjoint) paths that satisfies the given
-  sink predicate (default is only to count _true_ sinks).
+  Count all unique (but not necessarily disjoint) paths that satisfies the
+  given sink predicate (default is only to count _true_ sinks).
 
 - `uint64_t bdd_satcount(bdd, min_label, max_label, sink_pred)`
 
@@ -180,6 +173,25 @@ copy-constructed from the `node_file`.
 
   Count all assignments to variables, given the total number of expected
   variables.
+
+
+## Other Functions
+
+- `bool bdd_eval(bdd f, assignment_file x)`
+
+  Return `f(x)`, i.e. the evaluation of the given BDD for `f` according to the
+  assignment `x`.
+
+- `bool is_sink(bdd f, sink_pred)`
+
+  Whether the BDD for `f` only consists of a sink satisfying the given sink
+  predicate, i.e. `f` is a constant function. By default the predicate for _any_
+  kind of sink is used.
+
+- `label_t min_label(bdd)`
+
+- `label_t max_label(bdd)`
+
 
 ## DOT Output
 

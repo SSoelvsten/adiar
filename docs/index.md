@@ -16,6 +16,7 @@ disk to delay recursion with Time-Forward Processing.
 - [**BDD**](/bdd.md)
   - [**Basic Constructurs**](/bdd.md#basic-constructors)
   - [**Basic Manipulation**](/bdd.md#basic-manipulation)
+  - [**Counting Operations**](/bdd.md#counting-operations)
   - [**Other Functions**](/bdd.md#other-functions)
   - [**DOT Output**](/bdd.md#dot-output)
 

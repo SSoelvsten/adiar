@@ -8,18 +8,14 @@
 
 ## Dependencies
 One needs a C++ compiler of ones choice. All development has been done with the
-gcc compiler, so we recommend one to use the same.
+gcc compiler, so we recommend one to use the same. The project also has
+dependencies on the TPIE library, which itself has dependencies on the Boost
+Library.
+
+On Ubuntu 18+ you can obtain these dependencies with the following command.
 
 ```bash
-apt install g++
-```
-
-The project also has dependencies on the TPIE library, which itself has
-dependencies on the Boost Library. You can on Ubuntu 18+ obtain these
-dependencies with the following commands.
-
-```bash
-apt install libboost-all-dev
+apt install g++ libboost-all-dev
 ```
 
 ## Building with CMake
@@ -30,22 +26,22 @@ apt install cmake
 ```
 
 To get started with using _Adiar_, you need to place the repository somewhere
-within your project. This can neatly be done by adding it as a git submodule.
+locally. The simplest way to do so is to add it as a submodule inside of your
+Git repository.
 
 ```bash
 git submodule add https://github.com/SSoelvsten/adiar external/adiar
 git submodule update --init --recursive
 ```
 
-Then include the following line in your project's _CMakeLists.txt_ the following
-line.
+Then include the following line in your project's _CMakeLists.txt_.
 
 ```cmake
 add_subdirectory (external/adiar adiar)
 ```
 
-Finally, every single executable target can then be linked _Adiar_ in a
-_CMakeLists.txt_ as follows.
+Finally, every single executable target is linked _Adiar_ in the
+_CMakeLists.txt_ with the following lines.
 
 ```cmake
 add_executable(<target> <source>)
@@ -53,11 +49,11 @@ target_link_libraries(<target> adiar)
 set_target_properties(<target> PROPERTIES CXX_STANDARD 17)
 ```
 
-The last line is only necessary, if the `CXX_STANDARD` hasn't been set to 17 or
-higher project-wide.
+You only need to include the third line if the `CXX_STANDARD` has not been set
+project-wide to 17 or higher.
 
 ## Usage
-After having linked up the C++ source file with _Adiar_ as described above, then
+After having linked the C++ source file with _Adiar_ as described above, then
 one needs to include the `<adiar/adiar.h>` header, initialise the library before
 use, and remember to deinitialise the library again before the program
 terminates.

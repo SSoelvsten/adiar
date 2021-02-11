@@ -13,8 +13,8 @@ require direct interaction with the underlying data types and files.
     - [Assignments](#assignments)
 - [Files](#files)
     - [Nodes](#nodes)
-        - [Node Writer](#node-writer)
         - [Node Stream](#node-stream)
+        - [Node Writer](#node-writer)
     - [Assignments and Labels](#assignments-and-labels)
 
 ## Data types
@@ -23,7 +23,7 @@ require direct interaction with the underlying data types and files.
 A non-sink node is uniquely identified by two values: its _label_ and its _id_.
 The prior is the variable it represents, whereas _id_ is a unique number
 specific to the number's _label_. Together they create a unique identifier _uid_
-of a node, that is supposed to reflect the following total ordering of nodes.
+of a node. This identifier is supposed to reflect the following total ordering.
 
 <p style="text-align: center;">
   n < m ≡ n.label < m.label || (n.label = m.label && n.id < m.id)
@@ -34,10 +34,10 @@ acts as a "pointer" to the node and can be constructed as follows.
 
 - `uid_t create_node_uid(label_t label, id_t id)`
 
-- `ptr_t create_node_uid(label_t label, id_t id)`
+- `ptr_t create_node_ptr(label_t label, id_t id)`
 
-To retrieve the label or id of a uid one then one can use one of the following
-functions.
+One then must use the following two functions to again retrieve the label or id
+from a uid.
 
 - `label_t label_of(uid_t u)`
 - `id_t id_of(uid_t u)`
@@ -54,27 +54,37 @@ sink-identifiers by using the following functions.
 - `ptr_t create_sink_ptr(bool v)`
   Creates the identifier to a sink with a given boolean value
 
-- `bool value_of(ptr_t u)`
+- `bool value_of(ptr_t p)`
   Extracts the boolean value of the given sink identifier.
 
-- `uid_t negate(ptr_t u)`
+- `uid_t negate(ptr_t p)`
   Negates the value of the sink
+
+One can identify whether a given `ptr_t` is to a node or a sink with the
+following two predicates.
+
+- `bool is_node_ptr(ptr_t p)`
+
+- `bool is_sink_ptr(ptr_t p)`
 
 With the above a node in _Adiar_ is the following combination of 3 unsigned
 64-bit numbers
 
 ```c++
-struct node { uint64_t uid; uint64_t low; uint64_t high; };
+struct node { uid_t uid; ptr_t low; ptr_t high; };
 ```
 
 For which the operators `<` , `>`, `==`, and `!=` have been defined to reflect
-the ordering based on the uid discussed above.
+the ordering based on the uid discussed above. For convenience, one can create a
+node with the following function.
 
 - `node_t create_node(label_t label, id_t id, uid_t low, uid_t high)`
 
-  Creates a node, given a label and an id for the specific node, together with
+  Create a node, given a label and an id for the specific node, together with
   the identifier for its low and high child. We also provide variants of this
   function, where `low` and `high` are themselves nodes.
+
+ The functions on uids above are also lifted to nodes
 
 - `label_t label_of(node_t n)`
 
@@ -90,7 +100,7 @@ the ordering based on the uid discussed above.
 
 - `bool is_sink(node_t n)`
 
-  Asserts whether the node is a sink or an internal node.
+  Asserts whether the node is a sink node.
 
 - `bool value_of(node_t n)`
 
@@ -113,8 +123,8 @@ struct assignment { label_t label; bool value; };
 ```
 
 For which the operators `<` , `>`, `==`, and `!=` have been defined to reflect
-an increasiing ordering on the label. The `!` operator also is provided to
-negate the value in the assignment.
+an increasiing ordering on the label. The `!` operator negates the value in the
+assignment.
 
 - `assignment_t create_assignment(label_t label, bool value)`
 
@@ -122,17 +132,42 @@ negate the value in the assignment.
 
 ## Files
 
-All algorithms of _Adiar_ rely on working on the explicit ordering of elements
-on disk.
+All algorithms of _Adiar_ rely on exploiting an explicit ordering of elements on
+disk.
 
 ### Nodes
 
-BDDs are stored on disk with the specific exploitable ordering mentioned above
-(c.f. [Nodes and Pointers](#nodes-and-pointers)). If you want to construct a BDD
-by hand then you have to explicitly follow this ordering; otherwise the
-algorithms will have _undefined behaviour_. More precisely, in _Adiar_ a set of
+BDDs are stored on disk with the specific ordering mentioned above (c.f. [Nodes
+and Pointers](#nodes-and-pointers)). If you want to construct a BDD by hand then
+you have to explicitly follow this ordering; otherwise the algorithms will have
+_undefined behaviour_. Yet, that is not the whole story: In _Adiar_ a set of
 nodes are stored in a `node_file` in which all these nodes are stored in
 _reverse_ of the ordering above.
+
+#### Node Stream
+
+One can then read from a `node_file` by use of the `node_stream<bool>` class,
+where the boolean template argument specifies whether the content should be
+reversed (default is an in-order traversal of the nodes, as described
+[above](#nodes-and-pointers)). This class attaches to the `node_file` (and the
+[BDD](/bdd.md) wrapping class) on construction and detaches again on
+deconstruction. The class provides the following member functions
+
+- `void reset()`
+
+  Reset the node_stream back to its beginning.
+  
+- `bool can_pull()`
+
+  Return whether there is a next element to pull.
+
+- `const node pull()`
+
+  Get the next node from the stream and move to the next.
+
+- `const node peek()`
+
+  Get the next node from the stream without moving to the next.
 
 #### Node Writer
 
@@ -167,31 +202,6 @@ The `node_writer` class provides the following member functions
 
   Detach the `node_writer` from its current `node_file`, if any.
 
-#### Node Stream
-
-One can then read from a `node_file` by use of the `node_stream<bool>` class,
-where the boolean template argument specifies whether the content should be
-reversed (default is an in-order traversal of the nodes
-[above](#nodes-and-pointers)). This class attaches to the `node_file` (and the
-[BDD](/bdd.md) wrapping class) on construction and detaches again on
-deconstruction. The class provides the following member functions
-
-- `void reset()`
-
-  Reset the node_stream back to its beginning.
-  
-- `bool can_pull()`
-
-  Return whether there is a next element to pull.
-
-- `const node pull()`
-
-  Get the next node from the stream and move to the next.
-
-- `const node peek()`
-
-  Get the next node from the stream without moving to the next.
-
 It is important to note, that one cannot have multiple `node_writers` attached
 to the same `node_file`. Furthermore, one also has to detach the `node_writer`
 before anything can be read from the `node_file` or that the algorithms of
@@ -206,8 +216,8 @@ as an output. To create such input, resp. traverse such output, one can use the
 [labels](#nodes-and-pointers) for which we provide the `label_writer` and
 `label_stream`.
 
-These writers provide the same interface and the `node_writer` together with
-sanity checks on the ordering. The streams also provide the same member
-functions as above with the addition of an `attach(x_file)`, `attached()`, and
-`detach()` member function.
+These writers provide the same interface as the `node_writer`. They also have
+sanity checks on the ordering of their elements when pushing elements. The
+streams also provide the same member functions as above with the addition of the
+`attach(x_file)`, `attached()`, and `detach()` member functions.
 
