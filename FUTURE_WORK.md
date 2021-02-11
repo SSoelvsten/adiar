@@ -7,8 +7,9 @@ may constitute interesting undergraduate research projects.
 
 - [Future Work](#future-work)
     - [Implementation of missing BDD algorithms](#implementation-of-missing-bdd-algorithms)
-        - [If-Then-Else](#if-then-else)
-        - [Function composition](#function-composition)
+        - [Lexicographical assignments](#lexicographical-assignments)
+        - [Projection](#projection)
+        - [Composition](#composition)
         - [Coudert's and Madre's Restrict](#couderts-and-madres-restrict)
         - [Variable reordering](#variable-reordering)
     - [Optimising the BDD](#optimising-the-bdd)
@@ -32,13 +33,35 @@ All of these of course should be made in the style of _Time-Forward Processing_
 like the rest.
 
 The features are sorted based on the difficulty deriving their design and their
-implementation.
+implementation. The first three already include a description and good ideas of
+how to approach the implementation.
 
-### Function composition
+### Lexicographical assignments
+
+As described in the [lecture by Knuth](https://youtu.be/SQE21efsf7Y?t=2362), one
+can find the _smallest_ and _largest_ lexigraphical assignment by a single
+traversal down through the BDD. In _Adiar_ this would be an _O(N)_ time and
+_O(N/B)_ I/Os sweep.
+
+### Projection
+
+This is the dual to `bdd_exists`, i.e. only keep the variables in the given cube
+and existentially quantify all other variables. The simplest way to do so may be
+to filter out levels in the _meta_ file that are not in the given _label_ file
+and then just call `bdd_exists` on that.
+
+### Composition
 The _Composition_ of two OBDDs _f_ and _g_ for some label _i ∊ [n]_ is
 _f ∘<sub>i</sub> g (x)_ and is to be interpreted as _f(x<sub>1</sub>, ...,
 x<sub>i-1</sub>, g(x<sub>1</sub>, ..., x<sub>n</sub>), x<sub>i+1</sub>, ...,
 x<sub>n</sub>)_.
+
+This can be implemented with a single sweep through _f_ and _g_ by using the
+ideas in the _quantification_ and the _if-then-else_ algorithms. A priority
+queue contains requests on triples `t1`, `t2`, `t3` where `t2` and `t3` are
+nodes from _f_ and `t1` is from _g_. Most optimisations and prunings used for
+both the _if-then-else_ and the _quantification_ algorithm then would apply
+here.
 
 ### Coudert's and Madre's Restrict
 The current _Restrict_ algorithm is the basic algorithm of Bryant, but one has
