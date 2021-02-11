@@ -130,8 +130,8 @@ copy-constructed from the `node_file`.
      
   - `bdd bdd_exists(bdd, label_file)`
   
-     Existentially quantification (or) all variables in `label_file` in the very
-     order these variables are provided.
+     Existential quantification (or) of all variables in the `label_file` in the
+     very order these variables are provided.
 
   - `bdd bdd_forall(bdd, label_t)`
 
@@ -139,8 +139,8 @@ copy-constructed from the `node_file`.
      
   - `bdd bdd_forall(bdd, label_file)`
   
-     Forall quantification (and) all variables in `label_file` in the very order
-     these variables are provided.
+     Forall quantification (and) of all variables in the `label_file` in the
+     very order these variables are provided.
 
 
 ## Counting Operations
