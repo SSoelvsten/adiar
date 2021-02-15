@@ -16,29 +16,30 @@ namespace adiar {
   __bdd::__bdd(const node_file &f) : union_t(f) { }
   __bdd::__bdd(const arc_file &f) : union_t(f) { }
 
-  __bdd::__bdd(const __bdd &o) : union_t(o), negate(o.negate) { }
-
   __bdd::__bdd(const bdd &bdd) : union_t(bdd.file), negate(bdd.negate) { }
 
-  bdd operator~ (__bdd &&in) { return ~bdd(in); }
+
+  bdd operator~ (__bdd &&in) { return ~bdd(std::forward<__bdd>(in)); }
 
   __bdd operator& (__bdd&& lhs, __bdd&& rhs) {
-    return bdd(lhs) & bdd(rhs);
+    return bdd(std::forward<__bdd>(lhs)) & bdd(std::forward<__bdd>(rhs));
   }
 
   __bdd operator| (__bdd&& lhs, __bdd&& rhs) {
-    return bdd(lhs) | bdd(rhs);
+    return bdd(std::forward<__bdd>(lhs)) | bdd(std::forward<__bdd>(rhs));
   }
 
   __bdd operator^ (__bdd&& lhs, __bdd&& rhs) {
-    return bdd(lhs) ^ bdd(rhs);
+    return bdd(std::forward<__bdd>(lhs)) ^ bdd(std::forward<__bdd>(rhs));
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  node_file reduce(const __bdd &maybe_reduced)
+  node_file reduce(__bdd &&maybe_reduced)
   {
-    if (!maybe_reduced.has<node_file>()) {
-      return reduce(maybe_reduced.get<arc_file>());
+    if (maybe_reduced.has<arc_file>()) {
+      node_file out = reduce(maybe_reduced.get<arc_file>());
+      maybe_reduced.set(out); // garbage collect arc_file before return
+      return out;
     }
     return maybe_reduced.get<node_file>();
   }
@@ -59,7 +60,7 @@ namespace adiar {
   bdd::bdd(const bdd &o) : file(o.file), negate(o.negate) { }
   bdd::bdd(bdd &&o) : file(o.file), negate(o.negate) { }
 
-  bdd::bdd(const __bdd &o) : file(reduce(o)), negate(o.negate) { }
+  bdd::bdd(__bdd &&o) : file(reduce(std::forward<__bdd>(o))), negate(o.negate) { }
 
   //////////////////////////////////////////////////////////////////////////////
   bdd& bdd::operator= (const bdd &other)
@@ -69,12 +70,12 @@ namespace adiar {
     return *this;
   }
 
-  bdd& bdd::operator= (const __bdd &other)
+  bdd& bdd::operator= (__bdd &&other)
   {
     free();
 
     // Reduce and move the resulting node_file into our own
-    this -> file = reduce(other);
+    this -> file = reduce(std::forward<__bdd>(other));
     this -> negate = other.negate;
     return *this;
   }
@@ -86,9 +87,9 @@ namespace adiar {
 
   bdd& bdd::operator&= (bdd &&other)
   {
-    __bdd temp = bdd_and(*this, other);
+    __bdd&& temp = bdd_and(*this, other);
     other.free();
-    return (*this = temp);
+    return (*this = std::move(temp));
   }
 
   bdd& bdd::operator|= (const bdd &other)
@@ -98,9 +99,9 @@ namespace adiar {
 
   bdd& bdd::operator|= (bdd &&other)
   {
-    __bdd temp = bdd_or(*this, other);
+    __bdd&& temp = bdd_or(*this, other);
     other.free();
-    return (*this = temp);
+    return (*this = std::move(temp));
   }
 
   bdd& bdd::operator^= (const bdd &other)
@@ -110,9 +111,9 @@ namespace adiar {
 
   bdd& bdd::operator^= (bdd &&other)
   {
-    __bdd temp = bdd_xor(*this, other);
+    __bdd&& temp = bdd_xor(*this, other);
     other.free();
-    return (*this = temp);
+    return (*this = std::move(temp));
   }
 
   bool operator== (const bdd& lhs, const bdd& rhs)
@@ -122,13 +123,12 @@ namespace adiar {
 
   bool operator!= (const bdd& lhs, const bdd& rhs) { return !(lhs == rhs); }
 
-  bdd operator~ (const bdd &bdd) { return bdd_not(bdd); }
-  bdd operator~ (bdd &&bdd) { return bdd_not(bdd); }
+  bdd operator~ (const bdd &in_bdd) { return bdd_not(in_bdd); }
+  bdd operator~ (bdd &&in_bdd) { return bdd_not(std::forward<bdd>(in_bdd)); }
 
   __bdd operator& (const bdd& lhs, const bdd& rhs) { return bdd_and(lhs, rhs); }
   __bdd operator| (const bdd& lhs, const bdd& rhs) { return bdd_or(lhs, rhs); }
   __bdd operator^ (const bdd& lhs, const bdd& rhs) { return bdd_xor(lhs, rhs); }
-
 
   //////////////////////////////////////////////////////////////////////////////
   bool is_sink(const bdd &bdd, const sink_pred &pred)

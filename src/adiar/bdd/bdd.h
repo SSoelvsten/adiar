@@ -5,7 +5,7 @@
 #include <adiar/file.h>
 
 namespace adiar {
-  // Class declarations to be able to befriend them
+  // Class declarations to be able to reference it
   class bdd;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -13,11 +13,21 @@ namespace adiar {
   /// reduced BDD in an arc_file. So, the union_t will be a wrapper for the
   /// combined type.
   ///
-  /// The union_t class (see union.h) uses the std::optional to ensure we don't
-  /// call any expensive yet unnecessary constructors.
+  /// The union_t class ensures we don't call any expensive yet unnecessary
+  /// constructors and ensures only one of the two types are instantiated at a
+  /// time.
   //////////////////////////////////////////////////////////////////////////////
   class __bdd : public union_t<node_file, arc_file>
   {
+    ////////////////////////////////////////////////////////////////////////////
+    // Friends
+    friend node_file reduce(__bdd &&maybe_reduced);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Privatize mutating functions from union.h
+  private:
+    using union_t<node_file, arc_file>::set;
+
     ////////////////////////////////////////////////////////////////////////////
     // Propagating the negation, when given a bdd.
   public:
@@ -28,13 +38,7 @@ namespace adiar {
     // Constructors
     __bdd(const node_file &f);
     __bdd(const arc_file &f);
-
-    __bdd(const __bdd &bdd);
-
     __bdd(const bdd &bdd);
-
-    void set(const node_file &f) = delete;
-    void set(const arc_file &f) = delete;
   };
 
   bdd operator~ (__bdd&&);
@@ -106,13 +110,13 @@ namespace adiar {
     bdd(const bdd &o);
     bdd(bdd &&o);
 
-    bdd(const __bdd &o);
+    bdd(__bdd &&o);
 
     ////////////////////////////////////////////////////////////////////////////
     // Assignment operator overloadings
   public:
     bdd& operator= (const bdd &other);
-    bdd& operator= (const __bdd &other);
+    bdd& operator= (__bdd &&other);
 
     bdd& operator&= (const bdd &other);
     bdd& operator&= (bdd &&other);

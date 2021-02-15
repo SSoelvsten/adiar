@@ -158,33 +158,33 @@ go_bandit([]() {
               });
 
             it("should compute x0 & x1", [&]() {
-                AssertThat(x0_and_x1, Is().EqualTo(x0 & x1));
+                AssertThat(x0_and_x1 == (x0 & x1), Is().True());
               });
 
             it("should compute bdd& in x0 ?= x1", [&]() {
                 bdd out1 = x0; out1 &= x1;
-                AssertThat(out1, Is().EqualTo(x0 & x1));
+                AssertThat(out1 == (x0 & x1), Is().True());
 
                 bdd out2 = x0; out2 |= x1;
-                AssertThat(out2, Is().EqualTo(x0 | x1));
+                AssertThat(out2 == (x0 | x1), Is().True());
 
                 bdd out3 = x0; out3 ^= x1;
-                AssertThat(out3, Is().EqualTo(x0 ^ x1));
+                AssertThat(out3 == (x0 ^ x1), Is().True());
               });
 
             it("should negate __bdd&& in ~(x0 & x1)", [&]() {
-                AssertThat(x0_nand_x1, Is().EqualTo(~(x0 & x1)));
+                AssertThat(x0_nand_x1 == ~(x0 & x1), Is().True());
               });
 
             it("should compute with __bdd&& operators", [&]() {
                 bdd out = (((x0 & x1) | (~x0 & x1)) ^ ((sink_T ^ x0) & (sink_F | x1)));
-                AssertThat(x0 & x1, Is().EqualTo(out));
+                AssertThat((x0 & x1) == out, Is().True());
               });
 
             it("should x0 ?= __bdd&&", [&]() {
                 bdd out = x0;
                 out &= x0 & x1;
-                AssertThat(x0 & x1, Is().EqualTo(out));
+                AssertThat((x0 & x1) == out, Is().True());
               });
           });
 
