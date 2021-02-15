@@ -11,6 +11,17 @@ go_bandit([]() {
 
         bdd x0(x0_nf);
 
+        node_file x1_nf;
+
+        {
+          node_writer nw_1(x1_nf);
+          nw_1 << create_node(1,MAX_ID,
+                              create_sink_ptr(false),
+                              create_sink_ptr(true));
+        }
+
+        bdd x1(x1_nf);
+
         node_file x0_and_x1_nf;
 
         {
@@ -26,6 +37,7 @@ go_bandit([]() {
         }
 
         bdd x0_and_x1(x0_and_x1_nf);
+        bdd x0_nand_x1(x0_and_x1_nf, true);
 
         node_file sink_T_nf;
 
@@ -34,7 +46,7 @@ go_bandit([]() {
           nw_T << create_sink(true);
         }
 
-        node_file sink_T(sink_T_nf);
+        bdd sink_T(sink_T_nf);
 
         node_file sink_F_nf;
 
@@ -44,6 +56,137 @@ go_bandit([]() {
         }
 
         bdd sink_F(sink_F_nf);
+
+        describe("__bdd class", [&]() {
+            it("should copy-construct values from bdd", [&]() {
+                __bdd t1 = x0_and_x1;
+                AssertThat(t1.has<node_file>(), Is().True());
+                AssertThat(t1.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
+                AssertThat(t1.negate, Is().False());
+
+                __bdd t2 = x0_nand_x1;
+                AssertThat(t2.has<node_file>(), Is().True());
+                AssertThat(t2.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
+                AssertThat(t2.negate, Is().True());
+              });
+
+            it("should copy-construct values from __bdd", [&]() {
+                __bdd t1 = x0_and_x1;
+                __bdd t2 = t1;
+                AssertThat(t2.has<node_file>(), Is().True());
+                AssertThat(t2.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
+                AssertThat(t2.negate, Is().False());
+              });
+
+            it("should copy-construct node_file and negation back to bdd", [&]() {
+                // Now that we know the __bdd copy constructor works, then we
+                // can use it to peek into the 'bdd' class
+                __bdd t2 = __bdd(bdd(__bdd(x0_and_x1)));
+                AssertThat(t2.has<node_file>(), Is().True());
+                AssertThat(t2.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
+                AssertThat(t2.negate, Is().False());
+              });
+
+            it("should copy-construct values from node_file", [&]() {
+                __bdd t1 = x0_and_x1;
+                AssertThat(t1.has<node_file>(), Is().True());
+                AssertThat(t1.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
+                AssertThat(t1.negate, Is().False());
+              });
+
+            arc_file af;
+
+            {
+              arc_writer aw(af);
+              aw.unsafe_push_node(arc {flag(create_node_ptr(0,0)), create_node_ptr(1,0)});
+
+              aw.unsafe_push_sink(arc {create_node_ptr(0,0), create_sink_ptr(false)});
+              aw.unsafe_push_sink(arc {create_node_ptr(1,0), create_sink_ptr(true)});
+              aw.unsafe_push_sink(arc {flag(create_node_ptr(1,0)), create_sink_ptr(true)});
+
+              aw.unsafe_push(meta {0});
+              aw.unsafe_push(meta {1});
+            }
+
+            it("should copy-construct values from arc_file", [&]() {
+                __bdd t1 = af;
+                AssertThat(t1.has<arc_file>(), Is().True());
+                AssertThat(t1.get<arc_file>()._file_ptr, Is().EqualTo(af._file_ptr));
+                AssertThat(t1.negate, Is().False());
+              });
+
+            it("should reduce on copy construct to bdd with arc_file", [&]() {
+                bdd out = __bdd(af);
+                AssertThat(out, Is().EqualTo(x0));
+              });
+          });
+
+        describe("operators", [&]() {
+            it("should check sink_F != sink_T", [&]() {
+                AssertThat(sink_F, Is().Not().EqualTo(sink_T));
+              });
+
+            it("should check sink_F != ~sink_F", [&]() {
+                AssertThat(sink_F, Is().Not().EqualTo(~sink_F));
+              });
+
+            it("should check sink_F == ~sink_T", [&]() {
+                AssertThat(sink_F, Is().EqualTo(~sink_T));
+              });
+
+            it("should check ~(x0 & x1) != (x0 & x1)", [&]() {
+                AssertThat(x0_and_x1, Is().Not().EqualTo(x0_nand_x1));
+              });
+
+            node_file x0_and_x1_nf2;
+
+            {
+              node_writer nw_01(x0_and_x1_nf2);
+
+              nw_01 << create_node(1, MAX_ID,
+                                   create_sink_ptr(false),
+                                   create_sink_ptr(true));
+
+              nw_01 << create_node(0, MAX_ID,
+                                   create_sink_ptr(false),
+                                   create_node_ptr(1, MAX_ID));
+            }
+
+            it("should check (x0 & x1) == (x0 & x1)", [&]() {
+                bdd other(x0_and_x1_nf2);
+                AssertThat(x0_and_x1, Is().EqualTo(other));
+              });
+
+            it("should compute x0 & x1", [&]() {
+                AssertThat(x0_and_x1, Is().EqualTo(x0 & x1));
+              });
+
+            it("should compute bdd& in x0 ?= x1", [&]() {
+                bdd out1 = x0; out1 &= x1;
+                AssertThat(out1, Is().EqualTo(x0 & x1));
+
+                bdd out2 = x0; out2 |= x1;
+                AssertThat(out2, Is().EqualTo(x0 | x1));
+
+                bdd out3 = x0; out3 ^= x1;
+                AssertThat(out3, Is().EqualTo(x0 ^ x1));
+              });
+
+            it("should negate __bdd&& in ~(x0 & x1)", [&]() {
+                AssertThat(x0_nand_x1, Is().EqualTo(~(x0 & x1)));
+              });
+
+            it("should compute with __bdd&& operators", [&]() {
+                bdd out = (((x0 & x1) | (~x0 & x1)) ^ ((sink_T ^ x0) & (sink_F | x1)));
+                AssertThat(x0 & x1, Is().EqualTo(out));
+              });
+
+            it("should x0 ?= __bdd&&", [&]() {
+                bdd out = x0;
+                out &= x0 & x1;
+                AssertThat(x0 & x1, Is().EqualTo(out));
+              });
+          });
 
         describe("is_sink predicate", [&]() {
             it("should reject x0 as a sink file", [&]() {

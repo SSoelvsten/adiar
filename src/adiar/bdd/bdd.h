@@ -37,6 +37,10 @@ namespace adiar {
     void set(const arc_file &f) = delete;
   };
 
+  bdd operator~ (__bdd&&);
+  __bdd operator& (__bdd &&, __bdd &&);
+  __bdd operator| (__bdd &&, __bdd &&);
+  __bdd operator^ (__bdd &&, __bdd &&);
 
   //////////////////////////////////////////////////////////////////////////////
   /// A BDD is the reduced node-based representation together with whether it is

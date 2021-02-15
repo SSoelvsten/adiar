@@ -20,6 +20,20 @@ namespace adiar {
 
   __bdd::__bdd(const bdd &bdd) : union_t(bdd.file), negate(bdd.negate) { }
 
+  bdd operator~ (__bdd &&in) { return ~bdd(in); }
+
+  __bdd operator& (__bdd&& lhs, __bdd&& rhs) {
+    return bdd(lhs) & bdd(rhs);
+  }
+
+  __bdd operator| (__bdd&& lhs, __bdd&& rhs) {
+    return bdd(lhs) | bdd(rhs);
+  }
+
+  __bdd operator^ (__bdd&& lhs, __bdd&& rhs) {
+    return bdd(lhs) ^ bdd(rhs);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   node_file reduce(const __bdd &maybe_reduced)
   {
