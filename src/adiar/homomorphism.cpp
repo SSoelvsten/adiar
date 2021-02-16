@@ -22,8 +22,8 @@ namespace adiar
                                            ptr_t r1, ptr_t r2)
   {
     // Are they both a sink (and the same sink)?
-    if (is_sink_ptr(r1) || is_sink_ptr(r2)) {
-      return is_sink_ptr(r1) && is_sink_ptr(r2)
+    if (is_sink(r1) || is_sink(r2)) {
+      return is_sink(r1) && is_sink(r2)
         ? value_of(r1) != value_of(r2)
         : true;
     }
@@ -137,7 +137,7 @@ namespace adiar
       bool from_1 = fst(t1,t2) == t1;
 
       if (!with_data
-          && !is_sink_ptr(t1) && !is_sink_ptr(t2) && label_of(t1) == label_of(t2)
+          && !is_sink(t1) && !is_sink(t2) && label_of(t1) == label_of(t2)
           && (v1.uid != t1 || v2.uid != t2)) {
         node_t v0 = from_1 ? v1 : v2;
 

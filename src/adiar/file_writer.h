@@ -288,7 +288,7 @@ namespace adiar {
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
       // Check latest was not a sink
-      adiar_assert(!_has_latest || !is_sink_ptr(_latest),
+      adiar_assert(!_has_latest || !is_sink(_latest),
                   "Cannot push a node after having pushed a sink");
       adiar_assert(!_has_latest || !is_sink(n),
                   "Cannot push a sink into non-empty file");
@@ -297,9 +297,9 @@ namespace adiar {
       if (_has_latest) {
         adiar_assert(n.uid < _latest,
                     "Pushed node is required to be prior to the existing nodes");
-        adiar_assert(!is_node_ptr(n.low) || label_of(n.uid) < label_of(n.low),
+        adiar_assert(!is_node(n.low) || label_of(n.uid) < label_of(n.low),
                     "Low child must point to a node with a higher label");
-        adiar_assert(!is_node_ptr(n.high) || label_of(n.uid) < label_of(n.high),
+        adiar_assert(!is_node(n.high) || label_of(n.uid) < label_of(n.high),
                     "High child must point to a node with a higher label");
       }
 
@@ -356,13 +356,13 @@ namespace adiar {
 
     void unsafe_push_node(const arc_t &a)
     {
-      adiar_debug(is_node_ptr(a.target), "pushing non-node arc into node file");
+      adiar_debug(is_node(a.target), "pushing non-node arc into node file");
       meta_file_writer::unsafe_push(a, 0);
     }
 
     void unsafe_push_sink(const arc_t &a)
     {
-      adiar_debug(is_sink_ptr(a.target), "pushing non-sink into sink file");
+      adiar_debug(is_sink(a.target), "pushing non-sink into sink file");
       meta_file_writer::unsafe_push(a, 1);
     }
 

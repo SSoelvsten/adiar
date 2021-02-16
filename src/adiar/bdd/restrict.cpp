@@ -38,7 +38,7 @@ namespace adiar
                                        restrict_priority_queue_t &pq,
                                        arc_writer &aw)
   {
-    if(is_sink_ptr(request.target)) {
+    if(is_sink(request.target)) {
       aw.unsafe_push_sink(request);
     } else {
       pq.push(request);
@@ -73,7 +73,7 @@ namespace adiar
     if(a.label == label_of(n)) {
       ptr_t rec_child = a.value ? n.high : n.low;
 
-      if(is_sink_ptr(rec_child)) {
+      if(is_sink(rec_child)) {
         return bdd_sink(value_of(rec_child));
       }
 
@@ -114,7 +114,7 @@ namespace adiar
           arc_t parent_arc = resD.pull();
           arc_t request = { parent_arc.source, rec_child };
 
-          if(is_sink_ptr(rec_child) && is_nil(parent_arc.source)) {
+          if(is_sink(rec_child) && is_nil(parent_arc.source)) {
             // we have restricted ourselves to a sink
             return bdd_sink(value_of(rec_child));
           }

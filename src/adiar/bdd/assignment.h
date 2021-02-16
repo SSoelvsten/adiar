@@ -17,8 +17,8 @@ namespace adiar
 {
   inline bool has_satisfying_sink(const node_t &n, const sink_pred &sink_pred)
   {
-    return (is_sink_ptr(n.low) && sink_pred(n.low))
-      || (is_sink_ptr(n.high) && sink_pred(n.high));
+    return (is_sink(n.low) && sink_pred(n.low))
+      || (is_sink(n.high) && sink_pred(n.high));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ namespace adiar
     simple_file_writer<assignment_t, no_ordering<assignment_t>> ow(out);
 
     label_t label = label_of(prior_node);
-    bool value = is_sink_ptr(prior_node.high) && sink_pred(prior_node.high);
+    bool value = is_sink(prior_node.high) && sink_pred(prior_node.high);
 
     ow.unsafe_push(create_assignment(label, value));
 

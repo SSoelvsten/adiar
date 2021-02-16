@@ -108,11 +108,11 @@ namespace adiar
         nw.unsafe_push(meta_t {out_label});
       }
 
-      n.low = is_sink_ptr(n.low)
+      n.low = is_sink(n.low)
         ? (value_of(n.low) ? root_then : root_else)
         : n.low;
 
-      n.high = is_sink_ptr(n.high)
+      n.high = is_sink(n.high)
         ? (value_of(n.high) ? root_then : root_else)
         : n.high;
 
@@ -125,7 +125,7 @@ namespace adiar
   {
     return
       // is it a node at this level?
-      is_node_ptr(t) && label_of(t) == out_label
+      is_node(t) && label_of(t) == out_label
       // and we should be seeing it later
       && t_seek < t
       // and we haven't by accident just run into it anyway
@@ -151,7 +151,7 @@ namespace adiar
   {
     // Early shortcut an ite, if the sinks of both cases have collapsed to the
     // same anyway
-    if (is_sink_ptr(r_then) && is_sink_ptr(r_else) &&
+    if (is_sink(r_then) && is_sink(r_else) &&
         value_of(r_then) == value_of(r_else)) {
 
       aw.unsafe_push_sink(arc_t { source, r_then });
@@ -159,13 +159,13 @@ namespace adiar
     }
     // Remove irrelevant parts of a request to prune requests similar to
     // shortcutting the operator in bdd_apply.
-    r_then = is_sink_ptr(r_if) && !value_of(r_if) ? NIL : r_then;
-    r_else = is_sink_ptr(r_if) && value_of(r_if) ? NIL : r_else;
+    r_then = is_sink(r_if) && !value_of(r_if) ? NIL : r_then;
+    r_else = is_sink(r_if) && value_of(r_if) ? NIL : r_else;
 
-    if (is_sink_ptr(r_if) && is_sink_ptr(r_then)) {
+    if (is_sink(r_if) && is_sink(r_then)) {
       // => ~NIL => r_if is a sink with the 'true' value
       aw.unsafe_push_sink(arc_t { source, r_then });
-    } else if (is_sink_ptr(r_if) && is_sink_ptr(r_else)) {
+    } else if (is_sink(r_if) && is_sink(r_else)) {
       // => ~NIL => r_if is a sink with the 'false' value
       aw.unsafe_push_sink(arc_t { source, r_else });
     } else {
@@ -405,14 +405,14 @@ namespace adiar
       }
 
       // Resolve current node and recurse
-      if (is_sink_ptr(t_if) || out_label < label_of(t_if)) {
+      if (is_sink(t_if) || out_label < label_of(t_if)) {
         low_if = high_if = t_if;
       } else {
         low_if = t_if == v_if.uid ? v_if.low : data_1_low;
         high_if = t_if == v_if.uid ? v_if.high : data_1_high;
       }
 
-      if (is_nil(t_then) || is_sink_ptr(t_then) || out_label < label_of(t_then)) {
+      if (is_nil(t_then) || is_sink(t_then) || out_label < label_of(t_then)) {
         low_then = high_then = t_then;
       } else if (t_then == v_then.uid) {
         low_then = v_then.low;
@@ -425,7 +425,7 @@ namespace adiar
         high_then = data_2_high;
       }
 
-      if (is_nil(t_else) || is_sink_ptr(t_else) || out_label < label_of(t_else)) {
+      if (is_nil(t_else) || is_sink(t_else) || out_label < label_of(t_else)) {
         low_else = high_else = t_else;
       } else if (t_else == v_else.uid) {
         low_else = v_else.low;

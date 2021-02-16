@@ -32,7 +32,7 @@ namespace adiar
 
       ptr_t next_ptr = unflag(a.value ? current_node.high : current_node.low);
 
-      if(is_sink_ptr(next_ptr)) {
+      if(is_sink(next_ptr)) {
         return value_of(next_ptr);
       }
 

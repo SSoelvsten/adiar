@@ -50,13 +50,13 @@ namespace adiar
                                     const bool_op &op,
                                     ptr_t source, ptr_t r1, ptr_t r2)
   {
-    if (is_sink_ptr(r1) && is_sink_ptr(r2)) {
+    if (is_sink(r1) && is_sink(r2)) {
       arc_t out_arc = { source, op(r1, r2) };
       aw.unsafe_push_sink(out_arc);
-    } else if (is_sink_ptr(r1) && can_left_shortcut(op, r1)) {
+    } else if (is_sink(r1) && can_left_shortcut(op, r1)) {
       arc_t out_arc = { source, op(r1, create_sink_ptr(true)) };
       aw.unsafe_push_sink(out_arc);
-    } else if (is_sink_ptr(r2) && can_right_shortcut(op, r2)) {
+    } else if (is_sink(r2) && can_right_shortcut(op, r2)) {
       arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
       aw.unsafe_push_sink(out_arc);
     } else {
@@ -179,9 +179,9 @@ namespace adiar
         appD_data.pop();
       }
 
-      adiar_invariant(is_sink_ptr(t1) || out_label <= label_of(t1),
+      adiar_invariant(is_sink(t1) || out_label <= label_of(t1),
                       "Request should never level-wise be behind current position");
-      adiar_invariant(is_sink_ptr(t2) || out_label <= label_of(t2),
+      adiar_invariant(is_sink(t2) || out_label <= label_of(t2),
                       "Request should never level-wise be behind current position");
 
       // Seek request partially in stream
@@ -197,7 +197,7 @@ namespace adiar
 
       // TODO: We don't need to forward something, if there are no more nodes to
       // pull from that stream.
-      if (is_node_ptr(t1) && is_node_ptr(t2) && label_of(t1) == label_of(t2)
+      if (is_node(t1) && is_node(t2) && label_of(t1) == label_of(t2)
           && !with_data && (v1.uid != t1 || v2.uid != t2)) {
         node_t v0 = v1.uid == t1 ? v1 : v2;
 
@@ -213,12 +213,12 @@ namespace adiar
       // Resolve current node and recurse
       // remember from above: ptr_t low1, low2, high1, high2;
 
-      if (is_sink_ptr(t1) || is_sink_ptr(t2) || label_of(t1) != label_of(t2)) {
-        if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink_ptr(t2)
+      if (is_sink(t1) || is_sink(t2) || label_of(t1) != label_of(t2)) {
+        if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink(t2)
           low1 = v1.low;
           high1 = v1.high;
           low2 = high2 = t2;
-        } else { // ==> label_of(t1) > label_of(t2) || is_sink_ptr(t1)
+        } else { // ==> label_of(t1) > label_of(t2) || is_sink(t1)
           low1 = high1 = t1;
           low2 = v2.low;
           high2 = v2.high;
