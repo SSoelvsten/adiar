@@ -10,6 +10,7 @@
 #include <adiar/reduce.h>
 
 #include <adiar/bdd/apply.h>
+#include <adiar/bdd/build.h>
 #include <adiar/bdd/negate.h>
 
 namespace adiar {
@@ -82,6 +83,7 @@ namespace adiar {
   }
 
   bdd::bdd(const bdd &o) : file(o.file), negate(o.negate) { }
+  bdd::bdd(bool v) : bdd(bdd_sink(v)) { }
   bdd::bdd(bdd &&o) : file(o.file), negate(o.negate) { }
 
   bdd::bdd(__bdd &&o) : file(reduce(std::forward<__bdd>(o))), negate(o.negate) { }

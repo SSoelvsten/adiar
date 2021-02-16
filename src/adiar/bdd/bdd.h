@@ -114,6 +114,7 @@ namespace adiar {
   public:
     bdd(const node_file &f, bool negate = false);
 
+    bdd(bool v);
     bdd(const bdd &o);
     bdd(bdd &&o);
 
