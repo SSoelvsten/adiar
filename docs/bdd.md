@@ -29,7 +29,7 @@ copy-constructed from the `node_file`.
 - `bdd bdd_sink(bool)`
 
   Create a sink-only BDD with the provided boolean value. Alternatives are
-  `bdd_true()` and `bdd_false()`.
+  `bdd_true()` and `bdd_false()` or to assign a _bool_ directly to a BDD.
   
 - `bdd bdd_ithvar(label_t)`
 

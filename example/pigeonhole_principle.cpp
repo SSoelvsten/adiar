@@ -224,7 +224,7 @@ int main(int argc, char** argv)
 
 
   // =========================================================================
-  adiar::bdd sat_acc = adiar::bdd_true();
+  adiar::bdd sat_acc = true;
 
   const auto sat_and_clause = [&](clause_t &clause) -> void
   {
@@ -240,8 +240,8 @@ int main(int argc, char** argv)
         literal_t v = *it;
 
         adiar::node n = adiar::create_node(v.first, 0,
-                                         v.second ? adiar::create_sink_ptr(true) : next,
-                                         v.second ? next : adiar::create_sink_ptr(true));
+                                           v.second ? adiar::create_sink_ptr(true) : next,
+                                           v.second ? next : adiar::create_sink_ptr(true));
 
         next = n.uid;
 
