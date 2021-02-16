@@ -546,13 +546,13 @@ go_bandit([]() {
 
                 it("can compute sizes of test_file_meta_1", [&]() {
                   AssertThat(test_file_meta_1.size(), Is().EqualTo(2u));
-                  AssertThat(test_file_meta_1.file_size(), Is().EqualTo(2u * 4u + 1u * 8u));
+                  AssertThat(test_file_meta_1.file_size(), Is().EqualTo(2u * 4u + 1u * 4u));
                 });
 
                 it("can compute size of test_file_meta_2", [&]() {
                   test_file_meta_2.make_read_only();
                   AssertThat(test_file_meta_2.size(), Is().EqualTo(5u));
-                  AssertThat(test_file_meta_2.file_size(), Is().EqualTo(5u * 4u + 2u * 8u));
+                  AssertThat(test_file_meta_2.file_size(), Is().EqualTo(5u * 4u + 2u * 4u));
                 });
 
                 describe("node_file", [&]() {
@@ -597,25 +597,25 @@ go_bandit([]() {
                         it("can compute size of node_test_file", [&]() {
                           AssertThat(node_test_file.size(), Is().EqualTo(3u));
                           AssertThat(node_test_file.meta_size(), Is().EqualTo(2u));
-                          AssertThat(node_test_file.file_size(), Is().EqualTo(3u * 24u + 2u * 8u));
+                          AssertThat(node_test_file.file_size(), Is().EqualTo(3u * 24u + 2u * 4u));
                         });
 
                         it("can compute size of x0", [&]() {
                           AssertThat(x0.size(), Is().EqualTo(1u));
                           AssertThat(x0.meta_size(), Is().EqualTo(1u));
-                          AssertThat(x0.file_size(), Is().EqualTo(1u * 24u + 1u * 8u));
+                          AssertThat(x0.file_size(), Is().EqualTo(1u * 24u + 1u * 4u));
                         });
 
                         it("can compute size of x0 & x1", [&]() {
                           AssertThat(x0_and_x1.size(), Is().EqualTo(2u));
                           AssertThat(x0_and_x1.meta_size(), Is().EqualTo(2u));
-                          AssertThat(x0_and_x1.file_size(), Is().EqualTo(2u * 24u + 2u * 8u));
+                          AssertThat(x0_and_x1.file_size(), Is().EqualTo(2u * 24u + 2u * 4u));
                         });
 
                         it("can compute size of sink_T", [&]() {
                           AssertThat(sink_T.size(), Is().EqualTo(1u));
                           AssertThat(sink_T.meta_size(), Is().EqualTo(0u));
-                          AssertThat(sink_T.file_size(), Is().EqualTo(1u * 24u + 0u * 8u));
+                          AssertThat(sink_T.file_size(), Is().EqualTo(1u * 24u + 0u * 4u));
                         });
                     });
 

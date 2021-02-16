@@ -67,7 +67,7 @@ namespace adiar
   ///       equality with the threshold.
   //////////////////////////////////////////////////////////////////////////////
   //template <typename comparator = std::equal_to<uint64_t>()>
-  bdd bdd_counter(label_t min_label, label_t max_label, uint64_t threshold);
+  bdd bdd_counter(label_t min_label, label_t max_label, label_t threshold);
 }
 
 #endif // ADIAR_BUILD_H
