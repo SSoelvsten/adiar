@@ -33,8 +33,10 @@ These uids can be stored within a single unsigned 64-bit integer, which then
 acts as a "pointer" to the node and can be constructed as follows.
 
 - `uid_t create_node_uid(label_t label, id_t id)`
+  Create the identifier for the node with label `label` and identifier `id`.
 
 - `ptr_t create_node_ptr(label_t label, id_t id)`
+  Same as the one above
 
 One then must use the following two functions to again retrieve the label or id
 from a uid.
@@ -51,21 +53,24 @@ A unique identifier for a sink is recognised by a single bit-flag within the
 64-bit number of the identifer. One can create, read from, and manipulate
 sink-identifiers by using the following functions.
 
+- `uid_t create_sink_uid(bool v)`
+  Create the identifier to a sink with a given boolean value
+
 - `ptr_t create_sink_ptr(bool v)`
-  Creates the identifier to a sink with a given boolean value
+  Same as the one above
 
 - `bool value_of(ptr_t p)`
-  Extracts the boolean value of the given sink identifier.
+  Extract the boolean value of the given sink identifier.
 
 - `uid_t negate(ptr_t p)`
-  Negates the value of the sink
+  Negate the value of the sink
 
-One can identify whether a given `ptr_t` is to a node or a sink with the
-following two predicates.
+One can identify whether a given `ptr_t` or `uid_t` is to a node or a sink with
+the following two predicates.
 
-- `bool is_node_ptr(ptr_t p)`
+- `bool is_node(uid_t p)`
 
-- `bool is_sink_ptr(ptr_t p)`
+- `bool is_sink(uid_t p)`
 
 With the above a node in _Adiar_ is the following combination of 3 unsigned
 64-bit numbers
@@ -100,7 +105,7 @@ node with the following function.
 
 - `bool is_sink(node_t n)`
 
-  Asserts whether the node is a sink node.
+  Assert whether the node is a sink node.
 
 - `bool value_of(node_t n)`
 

@@ -37,8 +37,8 @@ namespace adiar {
   typedef uint64_t ptr_t; // F is possibly set true and/or NIL
   typedef uint64_t uid_t; // F is guaranteed false and never NIL
 
-  bool is_sink_ptr(ptr_t p);
-  bool is_node_ptr(ptr_t p);
+  bool is_sink(ptr_t p);
+  bool is_node(ptr_t p);
 
   bool is_flagged(ptr_t p);
   ptr_t flag(ptr_t p);

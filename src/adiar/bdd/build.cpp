@@ -67,7 +67,7 @@ namespace adiar {
       node_t next_node = create_node(next_label, 0, low, high);
 
       adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
-      adiar_assert(is_sink_ptr(high) || next_label < label_of(high),
+      adiar_assert(is_sink(high) || next_label < label_of(high),
                   "Labels not given in increasing order");
 
       high = next_node.uid;
@@ -97,7 +97,7 @@ namespace adiar {
       node_t next_node = create_node(next_label, 0, low, high);
 
       adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
-      adiar_assert(is_sink_ptr(low) || next_label < label_of(low),
+      adiar_assert(is_sink(low) || next_label < label_of(low),
                   "Labels not given in increasing order");
 
       low = next_node.uid;

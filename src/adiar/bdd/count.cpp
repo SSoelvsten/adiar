@@ -48,7 +48,7 @@ namespace adiar
   {
     if (ingoing_sum == 0) { return; }
 
-    if (is_sink_ptr(child_to_resolve)) {
+    if (is_sink(child_to_resolve)) {
       if (sink_pred(child_to_resolve)) {
         result += ingoing_sum * (count_skipped_layers
                                  ? 1u << (max_label - current_label)

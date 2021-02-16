@@ -30,12 +30,12 @@ namespace adiar {
   const uint64_t SINK_BIT = 0x8000000000000000ull;
   const uint64_t FLAG_BIT = 0x0000000000000001ull;
 
-  bool is_sink_ptr(ptr_t p)
+  bool is_sink(ptr_t p)
   {
     return !is_nil(p) && p >= SINK_BIT;
   }
 
-  bool is_node_ptr(ptr_t p)
+  bool is_node(ptr_t p)
   {
     return p <= ~SINK_BIT;
   }
@@ -96,35 +96,35 @@ namespace adiar {
 
   bool value_of(uint64_t n)
   {
-    adiar_debug(is_sink_ptr(n), "Cannot extract value of non-sink");
+    adiar_debug(is_sink(n), "Cannot extract value of non-sink");
 
     return (n & ~SINK_BIT) >> 1;
   }
 
   ptr_t negate(ptr_t n)
   {
-    adiar_debug(is_sink_ptr(n), "Cannot negate non-sink");
+    adiar_debug(is_sink(n), "Cannot negate non-sink");
 
     return 2u ^ n;
   }
 
   const sink_pred is_any = [] ([[maybe_unused]]ptr_t sink) -> bool
   {
-    adiar_debug(is_sink_ptr(sink), "Cannot examine non-sink");
+    adiar_debug(is_sink(sink), "Cannot examine non-sink");
 
     return true;
   };
 
   const sink_pred is_true = [] (ptr_t sink) -> bool
   {
-    adiar_debug(is_sink_ptr(sink), "Cannot examine non-sink");
+    adiar_debug(is_sink(sink), "Cannot examine non-sink");
 
     return value_of(sink);
   };
 
   const sink_pred is_false = [] (ptr_t sink) -> bool
   {
-    adiar_debug(is_sink_ptr(sink), "Cannot examine non-sink");
+    adiar_debug(is_sink(sink), "Cannot examine non-sink");
 
     return !value_of(sink);
   };
@@ -238,10 +238,10 @@ namespace adiar {
   {
     // TODO: Should these be adiar_assert instead to check validity of user input?
     adiar_debug(!is_nil(low), "Cannot create a node with NIL child");
-    adiar_debug(is_sink_ptr(low) || label < label_of(low), "Node is not prior to given low child");
+    adiar_debug(is_sink(low) || label < label_of(low), "Node is not prior to given low child");
 
     adiar_debug(!is_nil(high), "Cannot create a node with NIL child");
-    adiar_debug(is_sink_ptr(high) || label < label_of(high), "Node is not prior to given high child");
+    adiar_debug(is_sink(high) || label < label_of(high), "Node is not prior to given high child");
 
     return create_node(create_node_uid(label, id), low, high);
   }
@@ -298,8 +298,8 @@ namespace adiar {
       return { negate(n.uid), NIL, NIL };
     }
 
-    uint64_t low =  is_sink_ptr(n.low)  ? negate(n.low)  : n.low;
-    uint64_t high = is_sink_ptr(n.high) ? negate(n.high) : n.high;
+    uint64_t low =  is_sink(n.low)  ? negate(n.low)  : n.low;
+    uint64_t high = is_sink(n.high) ? negate(n.high) : n.high;
     return { n.uid, low, high };
   }
 
@@ -338,7 +338,7 @@ namespace adiar {
 
   arc_t negate(const arc_t &a)
   {
-    uint64_t target = is_sink_ptr(a.target) ? negate(a.target) : a.target;
+    uint64_t target = is_sink(a.target) ? negate(a.target) : a.target;
     return { a.source, target };
   }
 
