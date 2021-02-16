@@ -33,15 +33,15 @@ These uids can be stored within a single unsigned 64-bit integer, which then
 acts as a "pointer" to the node and can be constructed as follows.
 
 - `uid_t create_node_uid(label_t label, id_t id)`
-  Create the identifier for the node with label `label` and identifier `id`.
 
-- `ptr_t create_node_ptr(label_t label, id_t id)`
-  Same as the one above
+  Create the identifier for the node with label `label` and identifier `id`.
+  We provide `ptr_t create_node_ptr(label, id)` as an alternative.
 
 One then must use the following two functions to again retrieve the label or id
 from a uid.
 
 - `label_t label_of(uid_t u)`
+
 - `id_t id_of(uid_t u)`
 
 Here `id_t`, `uid_t`, and `ptr_t` are aliases for an unsigned 64-bit integer and
@@ -54,15 +54,16 @@ A unique identifier for a sink is recognised by a single bit-flag within the
 sink-identifiers by using the following functions.
 
 - `uid_t create_sink_uid(bool v)`
-  Create the identifier to a sink with a given boolean value
 
-- `ptr_t create_sink_ptr(bool v)`
-  Same as the one above
+  Create the identifier to a sink with a given boolean value. We also provide
+  `ptr_t create_sink_ptr(v)` as an alternative.
 
 - `bool value_of(ptr_t p)`
+
   Extract the boolean value of the given sink identifier.
 
 - `uid_t negate(ptr_t p)`
+
   Negate the value of the sink
 
 One can identify whether a given `ptr_t` or `uid_t` is to a node or a sink with
