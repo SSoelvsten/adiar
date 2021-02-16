@@ -41,10 +41,17 @@ namespace adiar {
     __bdd(const bdd &bdd);
   };
 
+  // operators to allow __bdd&& arguments on one or two sides of an expression
   bdd operator~ (__bdd&&);
   __bdd operator& (__bdd &&, __bdd &&);
   __bdd operator| (__bdd &&, __bdd &&);
   __bdd operator^ (__bdd &&, __bdd &&);
+  bool operator== (__bdd &&, __bdd &&);
+  bool operator!= (__bdd &&, __bdd &&);
+  bool operator== (const bdd &, __bdd &&);
+  bool operator!= (const bdd &, __bdd &&);
+  bool operator== (__bdd &&, const bdd &);
+  bool operator!= (__bdd &&, const bdd &);
 
   //////////////////////////////////////////////////////////////////////////////
   /// A BDD is the reduced node-based representation together with whether it is

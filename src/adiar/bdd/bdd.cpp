@@ -21,16 +21,40 @@ namespace adiar {
 
   bdd operator~ (__bdd &&in) { return ~bdd(std::forward<__bdd>(in)); }
 
-  __bdd operator& (__bdd&& lhs, __bdd&& rhs) {
+  __bdd operator& (__bdd &&lhs, __bdd &&rhs) {
     return bdd(std::forward<__bdd>(lhs)) & bdd(std::forward<__bdd>(rhs));
   }
 
-  __bdd operator| (__bdd&& lhs, __bdd&& rhs) {
+  __bdd operator| (__bdd &&lhs, __bdd &&rhs) {
     return bdd(std::forward<__bdd>(lhs)) | bdd(std::forward<__bdd>(rhs));
   }
 
-  __bdd operator^ (__bdd&& lhs, __bdd&& rhs) {
+  __bdd operator^ (__bdd &&lhs, __bdd &&rhs) {
     return bdd(std::forward<__bdd>(lhs)) ^ bdd(std::forward<__bdd>(rhs));
+  }
+
+  bool operator== (__bdd &&lhs, __bdd &&rhs) {
+    return bdd(std::forward<__bdd>(lhs)) == bdd(std::forward<__bdd>(rhs));
+  }
+
+  bool operator!= (__bdd &&lhs, __bdd &&rhs) {
+    return bdd(std::forward<__bdd>(lhs)) != bdd(std::forward<__bdd>(rhs));
+  }
+
+  bool operator== (const bdd &lhs, __bdd &&rhs) {
+    return lhs == bdd(std::forward<__bdd>(rhs));
+  }
+
+  bool operator!= (const bdd &lhs, __bdd &&rhs) {
+    return lhs != bdd(std::forward<__bdd>(rhs));
+  }
+
+  bool operator== (__bdd &&lhs, const bdd &rhs) {
+    return bdd(std::forward<__bdd>(lhs)) == rhs;
+  }
+
+  bool operator!= (__bdd &&lhs, const bdd &rhs) {
+    return bdd(std::forward<__bdd>(lhs)) != rhs;
   }
 
   //////////////////////////////////////////////////////////////////////////////
