@@ -42,10 +42,10 @@ from a uid.
 - `label_t label_of(uid_t u)`
 - `id_t id_of(uid_t u)`
 
-Here `label_t`, `id_t`, `uid_t`, and `ptr_t` are aliases for an unsigned 64-bit
-integer. The uid constructed (and the algorithms by extension) only works as
-intended, if the label, resp. id, is less or equal to `MAX_LABEL`, resp.
-`MAX_ID`.
+Here `id_t`, `uid_t`, and `ptr_t` are aliases for an unsigned 64-bit integer and
+`label_t` for an unsigned 32-bit integer. The uid constructed (and the
+algorithms by extension) only works as intended, if the label, resp. id, is less
+or equal to `MAX_LABEL`, resp. `MAX_ID`.
 
 A unique identifier for a sink is recognised by a single bit-flag within the
 64-bit number of the identifer. One can create, read from, and manipulate

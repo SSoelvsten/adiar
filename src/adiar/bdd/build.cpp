@@ -116,7 +116,7 @@ namespace adiar {
       : 0;
   }
 
-  bdd bdd_counter(label_t min_label, label_t max_label, uint64_t threshold)
+  bdd bdd_counter(label_t min_label, label_t max_label, label_t threshold)
   {
     adiar_assert(min_label <= max_label,
                 "The given min_label should be smaller than the given max_label");

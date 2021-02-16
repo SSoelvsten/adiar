@@ -73,7 +73,7 @@ namespace adiar {
   extern const uint64_t MAX_LABEL;
   extern const uint64_t MAX_ID;
 
-  typedef uint64_t label_t;
+  typedef uint32_t label_t;
   typedef uint64_t id_t;
 
   uid_t create_node_uid(label_t label, id_t id);

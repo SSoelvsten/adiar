@@ -63,7 +63,7 @@ namespace adiar {
     adiar_debug(label <= MAX_LABEL, "Cannot represent given label");
     adiar_debug(id <= MAX_ID, "Cannot represent given id");
 
-    return (label << (ID_BITS + 1)) + (id << 1);
+    return ((uint64_t) label << (ID_BITS + 1)) + (id << 1);
   }
 
   ptr_t create_node_ptr(label_t label, id_t id)
