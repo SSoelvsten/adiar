@@ -9,6 +9,7 @@
 #include <tpie/tpie.h>
 #include <tpie/file_stream.h>
 #include <tpie/file.h>
+#include <tpie/sort.h>
 
 // ADIAR imports of the foundational data structure and the union class.
 #include <adiar/data.h>
@@ -295,6 +296,17 @@ namespace adiar
   template<typename T, size_t Files>
   using meta_file = __shared_file<__meta_file<T,Files>>;
 
+  template<typename T, typename sorting_pred_t = std::less<>>
+  void sort(simple_file<T> f, sorting_pred_t pred = sorting_pred_t())
+  {
+    adiar_assert(!f.is_read_only(), "Cannot sort file after read-access");
+
+    tpie::file_stream<T> fs;
+    fs.open(f._file_ptr -> __base_file);
+
+    tpie::progress_indicator_null pi;
+    tpie::sort(fs, pred, pi);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// An unreduced Decision Diagram is given by a two files of arcs; one of

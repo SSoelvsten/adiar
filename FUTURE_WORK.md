@@ -7,7 +7,6 @@ may constitute interesting undergraduate research projects.
 
 - [Future Work](#future-work)
     - [Implementation of missing BDD algorithms](#implementation-of-missing-bdd-algorithms)
-        - [Lexicographical assignments](#lexicographical-assignments)
         - [Projection](#projection)
         - [Composition](#composition)
         - [Coudert's and Madre's Restrict](#couderts-and-madres-restrict)
@@ -35,13 +34,6 @@ like the rest.
 The features are sorted based on the difficulty deriving their design and their
 implementation. The first three already include a description and good ideas of
 how to approach the implementation.
-
-### Lexicographical assignments
-
-As described in the [lecture by Knuth](https://youtu.be/SQE21efsf7Y?t=2362), one
-can find the _smallest_ and _largest_ lexigraphical assignment by a single
-traversal down through the BDD. In _Adiar_ this would be an _O(N)_ time and
-_O(N/B)_ I/Os sweep.
 
 ### Projection
 
