@@ -58,7 +58,7 @@ namespace adiar
     return is_sink(v.low) && !value_of(v.low);
   };
 
-  assignment_file bdd_min_assignment(const bdd &f)
+  assignment_file bdd_satmin(const bdd &f)
   {
     return assignment_find(f, false, pick_low);
   }
@@ -69,7 +69,7 @@ namespace adiar
     return is_node(v.high) || value_of(v.high);
   };
 
-  assignment_file bdd_max_assignment(const bdd &f)
+  assignment_file bdd_satmax(const bdd &f)
   {
     return assignment_find(f, true, pick_high);
   }

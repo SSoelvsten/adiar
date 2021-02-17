@@ -77,7 +77,7 @@ go_bandit([]() {
         }
 
         it("should retrieve minimal assignment [1]", [&]() {
-            assignment_file result = bdd_min_assignment(bdd_1);
+            assignment_file result = bdd_satmin(bdd_1);
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());
@@ -96,7 +96,7 @@ go_bandit([]() {
           });
 
         it("should retrieve minimal assignment [~1]", [&]() {
-            assignment_file result = bdd_min_assignment(bdd_not(bdd_1));
+            assignment_file result = bdd_satmin(bdd_not(bdd_1));
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());
@@ -115,7 +115,7 @@ go_bandit([]() {
           });
 
         it("should retrieve minimal assignment [2]", [&]() {
-            assignment_file result = bdd_min_assignment(bdd_2);
+            assignment_file result = bdd_satmin(bdd_2);
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());
@@ -134,7 +134,7 @@ go_bandit([]() {
           });
 
         it("should retrieve minimal assignment [3]", [&]() {
-            assignment_file result = bdd_min_assignment(bdd_3);
+            assignment_file result = bdd_satmin(bdd_3);
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());
@@ -150,7 +150,7 @@ go_bandit([]() {
           });
 
         it("should retrieve minimal assignment [3]", [&]() {
-            assignment_file result = bdd_min_assignment(bdd_not(bdd_3));
+            assignment_file result = bdd_satmin(bdd_not(bdd_3));
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());
@@ -166,7 +166,7 @@ go_bandit([]() {
           });
 
         it("should retrieve maximal assignment [1]", [&]() {
-            assignment_file result = bdd_max_assignment(bdd_1);
+            assignment_file result = bdd_satmax(bdd_1);
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());
@@ -185,7 +185,7 @@ go_bandit([]() {
           });
 
         it("should retrieve maximal assignment [~1]", [&]() {
-            assignment_file result = bdd_max_assignment(bdd_not(bdd_1));
+            assignment_file result = bdd_satmax(bdd_not(bdd_1));
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());
@@ -204,7 +204,7 @@ go_bandit([]() {
           });
 
         it("should retrieve maximal assignment [2]", [&]() {
-            assignment_file result = bdd_max_assignment(bdd_2);
+            assignment_file result = bdd_satmax(bdd_2);
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());
@@ -223,7 +223,7 @@ go_bandit([]() {
           });
 
         it("should retrieve maximal assignment [~2]", [&]() {
-            assignment_file result = bdd_max_assignment(bdd_not(bdd_2));
+            assignment_file result = bdd_satmax(bdd_not(bdd_2));
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());
@@ -242,7 +242,7 @@ go_bandit([]() {
           });
 
         it("should retrieve maximal assignment [3]", [&]() {
-            assignment_file result = bdd_max_assignment(bdd_3);
+            assignment_file result = bdd_satmax(bdd_3);
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());
@@ -258,7 +258,7 @@ go_bandit([]() {
           });
 
         it("should retrieve maximal assignment [3]", [&]() {
-            assignment_file result = bdd_max_assignment(bdd_not(bdd_3));
+            assignment_file result = bdd_satmax(bdd_not(bdd_3));
             assignment_stream<> out_assignment(result);
 
             AssertThat(out_assignment.can_pull(), Is().True());

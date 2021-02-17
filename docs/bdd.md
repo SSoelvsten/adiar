@@ -182,6 +182,16 @@ copy-constructed from the `node_file`.
   Return `f(x)`, i.e. the evaluation of the given BDD for `f` according to the
   assignment `x`.
 
+- `assignment_file bdd_satmin(bdd f)`
+
+  Return the _lexicographically smallest_ `x` such that `f(x) = 1` and `x`. The
+  variables mentioned in `x` are for all levels in the given BDD.
+
+- `assignment_file bdd_satmax(bdd f)`
+
+  Return the _lexicographically largegst_ `x` such that `f(x) = 1` and `x`. The
+  variables mentioned in `x` are for all levels in the given BDD.
+
 - `bool is_sink(bdd f, sink_pred)`
 
   Whether the BDD for `f` only consists of a sink satisfying the given sink
@@ -190,8 +200,11 @@ copy-constructed from the `node_file`.
 
 - `label_t min_label(bdd)`
 
+  Return the smallest _label_ in the BDD, i.e. the label of the root.
+
 - `label_t max_label(bdd)`
 
+  Return the largest _label_ in the BDD, i.e. the label of the deepest node.
 
 ## DOT Output
 
