@@ -301,8 +301,11 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
     if (adiar::bdd_pathcount(restricted_constraints) == 1) {
       solutions += 1;
 
-      // Request a true assignment (well, only one exists), and have it ordered
-      // by the columns, such that we can use the output for our purposes.
+      // Obtain the lexicographically minimal true assignment. Well, only one
+      // exists, so we get the only one left.
+      adiar::assignment_file forced_assignment = adiar::bdd_min_assignment(restricted_constraints);
+
+      // Sort the variables back in order of the columns, rather than rows.
       struct sort_by_column
       {
       private:
@@ -317,9 +320,10 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
         }
       };
 
-      auto forced_assignment = adiar::bdd_get_assignment(restricted_constraints, adiar::is_true, sort_by_column(N));
+      adiar::sort(forced_assignment, sort_by_column(N));
 
-      adiar::assignment_stream<> fas(forced_assignment.value());
+      // Copy the rest of the assignment into 'partial_assignment'
+      adiar::assignment_stream<> fas(forced_assignment);
       while (fas.can_pull()) {
         adiar::assignment a = fas.pull();
         if (a.value) {

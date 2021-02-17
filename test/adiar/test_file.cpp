@@ -517,6 +517,26 @@ go_bandit([]() {
                   AssertThat(test_file_simple.size(), Is().EqualTo(2u));
                   AssertThat(test_file_simple.file_size(), Is().EqualTo(2u * 4u));
                 });
+
+                it("can sort a yet unread simple_file", [&]() {
+                    simple_file<int> file;
+
+                    { // Garbage collect the writer to detach it before the reader
+                      simple_file_writer<int> fw(file);
+                      fw.push(42);
+                      fw.push(7);
+                      fw.push(21);
+                    }
+
+                    sort(file, std::less<>());
+
+                    file_stream<int, false> fs(file);
+
+                    AssertThat(fs.pull(), Is().EqualTo(7));
+                    AssertThat(fs.pull(), Is().EqualTo(21));
+                    AssertThat(fs.pull(), Is().EqualTo(42));
+                    AssertThat(fs.can_pull(), Is().False());
+                  });
             });
 
             describe("meta_file", [&]() {
