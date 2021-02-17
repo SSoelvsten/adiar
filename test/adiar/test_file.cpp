@@ -1,3 +1,5 @@
+#include <filesystem>
+
 go_bandit([]() {
     describe("CORE: Files, writers, and streams", [&]() {
         describe("file", [&]() {
@@ -453,13 +455,27 @@ go_bandit([]() {
                 });
 
                 it("can construct a new named simple_file", [&]() {
-                  simple_file<int> file("adiar_simple_file_test.adiar");
-                  // TODO: Assert the files exist on the system?
+                  simple_file<int> file("simple_file_test.adiar");
 
-                  simple_file_writer<int> fw(file);
-                  fw.push(1);
-                  fw.push(2);
-                  fw.push(3);
+                  AssertThat(std::filesystem::exists("simple_file_test.adiar"), Is().True());
+
+                  {
+                    simple_file_writer<int> fw(file);
+                    fw.push(1);
+                    fw.push(2);
+                    fw.push(3);
+                  }
+                  AssertThat(file.is_read_only(), Is().False());
+
+                  {
+                    file_stream<int, false> fs(file);
+                    AssertThat(file.is_read_only(), Is().True());
+                    AssertThat(fs.pull(), Is().EqualTo(1));
+                    AssertThat(fs.pull(), Is().EqualTo(2));
+                    AssertThat(fs.pull(), Is().EqualTo(3));
+                    AssertThat(fs.can_pull(), Is().False());
+                  }
+                  AssertThat(file.is_read_only(), Is().True());
                 });
 
                 it("should have two temporary simple_files be two different files", [&]() {
@@ -485,9 +501,12 @@ go_bandit([]() {
                 });
 
                 it("can construct a prior named simple_file (i.e. reopen a stored file)", [&]() {
-                  simple_file<int> file("adiar_simple_file_test.adiar");
+                  AssertThat(std::filesystem::exists("simple_file_test.adiar"), Is().True());
+                  simple_file<int> file("simple_file_test.adiar");
+                  AssertThat(file.is_read_only(), Is().True());
 
                   file_stream<int, false> fs(file);
+                  AssertThat(file.is_read_only(), Is().True());
                   AssertThat(fs.pull(), Is().EqualTo(1));
                   AssertThat(fs.pull(), Is().EqualTo(2));
                   AssertThat(fs.pull(), Is().EqualTo(3));

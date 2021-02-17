@@ -54,9 +54,9 @@ namespace adiar {
       if (attached()) { detach(); }
       _file_ptr = f._file_ptr;
 
-      adiar_debug(!(_file_ptr -> is_read_only()), "Cannot attach a writer onto a read-only file");
+      adiar_assert(!(_file_ptr -> is_read_only()), "Cannot attach a writer onto a read-only file");
 
-      _stream.open(f._file_ptr -> base_file);
+      _stream.open(_file_ptr -> __base_file, ADIAR_WRITE_ACCESS);
       _stream.seek(0, tpie::file_stream_base::end);
 
       // Set up tracker of latest element added
@@ -81,7 +81,10 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     void detach()
     {
+      adiar_assert(!(_file_ptr && _file_ptr -> is_read_only()),
+                   "Stream was detached after someone started reading from it");
       _stream.close();
+      // if (_file_ptr) { _file_ptr.reset(); }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -184,17 +187,17 @@ namespace adiar {
       if (attached()) { detach(); }
       _file_ptr = f._file_ptr;
 
-      adiar_debug(!(_file_ptr -> _meta_file.is_read_only()),
-                  "Cannot attach a writer onto a read-only meta file");
+      adiar_assert(!(_file_ptr -> _meta_file.is_read_only()),
+                   "Cannot attach a writer onto a read-only meta file");
 
-      _meta_stream.open(f._file_ptr -> _meta_file.base_file);
+      _meta_stream.open(f._file_ptr -> _meta_file.__base_file);
       _meta_stream.seek(0, tpie::file_stream_base::end);
 
       for (size_t idx = 0; idx < Files; idx++) {
-        adiar_debug(!(_file_ptr -> _files[idx].is_read_only()),
-                    "Cannot attach a writer onto a read-only content file");
+        adiar_assert(!(_file_ptr -> _files[idx].is_read_only()),
+                     "Cannot attach a writer onto a read-only content file");
 
-        _streams[idx].open(f._file_ptr -> _files[idx].base_file);
+        _streams[idx].open(f._file_ptr -> _files[idx].__base_file);
         _streams[idx].seek(0, tpie::file_stream_base::end);
       }
     }
@@ -217,6 +220,7 @@ namespace adiar {
       for (size_t idx = 0; idx < Files; idx++) {
         _streams[idx].close();
       }
+      // if (_file_ptr) { _file_ptr.reset(); }
     }
 
     ////////////////////////////////////////////////////////////////////////////

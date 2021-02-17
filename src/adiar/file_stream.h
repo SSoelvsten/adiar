@@ -24,7 +24,7 @@ namespace adiar {
     bool _negate = false;
 
     // Use a stream on the shared_access_file to allow simultaneous reads
-    typename tpie::file<T>::stream _stream;
+    typename tpie::file_stream<T> _stream;
 
     // Keep a local shared_ptr to be in on the reference counting
     std::shared_ptr<SharedPtr_T> _file_ptr;
@@ -47,9 +47,9 @@ namespace adiar {
       if (attached()) { detach(); }
 
       _file_ptr = shared_ptr;
-      if (!_file_ptr -> is_read_only()) { _file_ptr -> make_read_only(); }
+      _file_ptr -> make_read_only();
 
-      _stream.attach(f.shared_access_file);
+      _stream.open(f.__base_file, ADIAR_READ_ACCESS);
       _negate = negate;
 
       reset();
@@ -66,16 +66,14 @@ namespace adiar {
 
     ~file_stream()
     {
-      if (attached()) {
-        _stream.detach();
-      }
+      detach();
     }
 
     ////////////////////////////////////////////////////////////////////////////
     void reset()
     {
       if constexpr (REVERSE) {
-        _stream.seek(0, tpie::file_base::stream::end);
+        _stream.seek(0, tpie::file_stream_base::end);
       } else {
         _stream.seek(0);
       }
@@ -114,13 +112,13 @@ namespace adiar {
 
     bool attached()
     {
-      return _stream.attached();
+      return _stream.is_open();
     }
 
     void detach()
     {
-      _stream.detach();
-      _file_ptr.reset();
+      _stream.close();
+      // if (_file_ptr) { _file_ptr.reset(); }
     }
   };
 
