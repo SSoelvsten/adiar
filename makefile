@@ -79,17 +79,17 @@ main:
 #  EXAMPLES
 # ============================================================================ #
 
-example-n-queens: N := 8
-example-n-queens:
+example-queens: N := 8
+example-queens:
   # Build
 	@mkdir -p build/
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
 
-	@cd build/ && make $(MAKE_FLAGS) n_queens
+	@cd build/ && make $(MAKE_FLAGS) queens
 
   # Run
 	@echo ""
-	@./build/example/n_queens ${N} ${M}
+	@./build/example/queens ${N} ${M}
 	@echo ""
 
 example-pigeonhole-principle: N := 10

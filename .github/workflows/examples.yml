@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  n_queens:
+  queens:
     name: 'N-Queens'
     runs-on: ubuntu-latest
 
@@ -22,31 +22,31 @@ jobs:
       run: |
         cmake -E make_directory ${{runner.workspace}}/build
         cd ${{runner.workspace}}/build
-        cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target n_queens
-    - name: Makefile | 1-Queens
+        cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target queens
+    - name: Run | 1-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 1 1024
-    - name: Makefile | 2-Queens
+      run: ./example/queens 1 1024
+    - name: Run | 2-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 2 1024
-    - name: Makefile | 3-Queens
+      run: ./example/queens 2 1024
+    - name: Run | 3-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 3 1024
-    - name: Makefile | 4-Queens
+      run: ./example/queens 3 1024
+    - name: Run | 4-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 4 1024
-    - name: Makefile | 5-Queens
+      run: ./example/queens 4 1024
+    - name: Run | 5-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 5 1024
-    - name: Makefile | 6-Queens
+      run: ./example/queens 5 1024
+    - name: Run | 6-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 6 1024
-    - name: Makefile | 7-Queens
+      run: ./example/queens 6 1024
+    - name: Run | 7-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 7 1024
-    - name: Makefile | 8-Queens
+      run: ./example/queens 7 1024
+    - name: Run | 8-Queens
       working-directory: ${{runner.workspace}}/build
-      run: ./example/n_queens 8 1024
+      run: ./example/queens 8 1024
 
   pigeonhole_principle:
     name: 'Pigeonhole Principle'
@@ -63,34 +63,34 @@ jobs:
         cmake -E make_directory ${{runner.workspace}}/build
         cd ${{runner.workspace}}/build
         cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target pigeonhole_principle
-    - name: Makefile | 2 Pigeons
+    - name: Run | 2 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 1 1024
-    - name: Makefile | 3 Pigeons
+    - name: Run | 3 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 2 1024
-    - name: Makefile | 4 Pigeons
+    - name: Run | 4 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 3 1024
-    - name: Makefile | 5 Pigeons
+    - name: Run | 5 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 4 1024
-    - name: Makefile | 6 Pigeons
+    - name: Run | 6 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 5 1024
-    - name: Makefile | 7 Pigeons
+    - name: Run | 7 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 6 1024
-    - name: Makefile | 8 Pigeons
+    - name: Run | 8 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 7 1024
-    - name: Makefile | 9 Pigeons
+    - name: Run | 9 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 8 1024
-    - name: Makefile | 10 Pigeons
+    - name: Run | 10 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 9 1024
-    - name: Makefile | 11 Pigeons
+    - name: Run | 11 Pigeons
       working-directory: ${{runner.workspace}}/build
       run: ./example/pigeonhole_principle 10 1024
 
@@ -109,9 +109,9 @@ jobs:
         cmake -E make_directory ${{runner.workspace}}/build
         cd ${{runner.workspace}}/build
         cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target tic_tac_toe
-    - name: Makefile | Tic-Tac-Toe (18)
+    - name: Run | Tic-Tac-Toe (18)
       working-directory: ${{runner.workspace}}/build
       run: ./example/tic_tac_toe 18 1024
-    - name: Makefile | Tic-Tac-Toe (20)
+    - name: Run | Tic-Tac-Toe (20)
       working-directory: ${{runner.workspace}}/build
       run: ./example/tic_tac_toe 20 1024
