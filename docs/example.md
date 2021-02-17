@@ -278,8 +278,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
       // Obtain the lexicographically minimal true assignment. Well,
       // only one exists, so we get the only one left.
-      assignment_file forced_assignment =
-          bdd_min_assignment(restricted_constraints);
+      assignment_file forced = bdd_satmin(restricted_constraints);
 
       // Sort the variables back in order of the columns,
       // rather than rows.
@@ -298,10 +297,10 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
         }
       };
 
-      sort(forced_assignment, sort_by_column(N));
+      sort(forced, sort_by_column(N));
 
       // Copy the rest of the assignment into 'partial_assignment'
-      assignment_stream<> fas(forced_assignment);
+      assignment_stream<> fas(forced);
       while (fas.can_pull()) {
         assignment a = fas.pull();
         if (a.value) {

@@ -303,7 +303,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
       // Obtain the lexicographically minimal true assignment. Well, only one
       // exists, so we get the only one left.
-      adiar::assignment_file forced_assignment = adiar::bdd_min_assignment(restricted_constraints);
+      adiar::assignment_file forced_assignment = adiar::bdd_satmin(restricted_constraints);
 
       // Sort the variables back in order of the columns, rather than rows.
       struct sort_by_column

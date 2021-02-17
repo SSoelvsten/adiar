@@ -14,7 +14,7 @@ namespace adiar
   /// \return An assignment_file containing the lexicographically smallest
   /// assignment for the variables with a populated level in the BDD.
   //////////////////////////////////////////////////////////////////////////////
-  assignment_file bdd_min_assignment(const bdd &f);
+  assignment_file bdd_satmin(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Retrieves the lexicographically largest x such that f(x) = 1.
@@ -22,7 +22,7 @@ namespace adiar
   /// The returned assignment file will have a value for every populated level
   /// in the BDD.
   //////////////////////////////////////////////////////////////////////////////
-  assignment_file bdd_max_assignment(const bdd &f);
+  assignment_file bdd_satmax(const bdd &f);
 }
 
 #endif // ADIAR_ASSIGNMENT_H
