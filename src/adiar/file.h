@@ -7,6 +7,7 @@
 
 // TPIE imports
 #include <tpie/tpie.h>
+#include <tpie/file_stream.h>
 #include <tpie/file.h>
 
 // ADIAR imports of the foundational data structure and the union class.
@@ -16,8 +17,8 @@
 
 namespace adiar
 {
-  // TODO: we may want to add friends for the 'internal use only' functions and
-  // variables!
+#define ADIAR_READ_ACCESS tpie::access_type::access_read
+#define ADIAR_WRITE_ACCESS tpie::access_type::access_write
 
   //////////////////////////////////////////////////////////////////////////////
   /// TPIE has many different ways to open a file
@@ -36,83 +37,70 @@ namespace adiar
   /// `tpie::file<T>` or the `tpie::file_stream<T>` respectively. The only thing
   /// is, that we have to be sure, that only one of the two are active at a
   /// time.
-  ///
-  /// TODO: Technically we may want to add a simple read/write lock on each
-  /// file, but that is not currently necessary (and it does have a performance
-  /// cost). Yet, the read-lock analogy we will already use in the choice of
-  /// names for the class methods.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T>
   class file
   {
     static_assert(std::is_pod<T>::value, "File content must be a POD");
 
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the file has been read (and hence should not be further)
+    ////////////////////////////////////////////////////////////////////////////
+    mutable bool __is_read_only = false;
+
+  public: // TODO: Privatize and make friends
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The underlying TPIE file
+    ////////////////////////////////////////////////////////////////////////////
+    tpie::temp_file __base_file;
+
+  private:
+    void touch_file()
+    {
+      // Opening the file with 'access_read_write' automatically creates the
+      // file with header on disk.
+      tpie::file_stream<T> fs;
+      fs.open(__base_file, tpie::access_type::access_read_write);
+    }
+
   public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief For (simultaneous) read-only access to a file.
-    ///
-    /// This cannot be used, when 'is_read_only' is false.
-    ////////////////////////////////////////////////////////////////////////////
-    tpie::file<T> shared_access_file;
+    file() : __base_file() { touch_file(); }
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief For write-only access to the file.
-    ///
-    /// Cannot be used, when 'is_read_only' is true.
-    ////////////////////////////////////////////////////////////////////////////
-    tpie::temp_file base_file;
-
-    file() : base_file() {
-      adiar_debug(!is_read_only(), "Created read-only");
+    file(const std::string &filename) : __base_file(filename, true) {
+      touch_file();
+      if (!empty()) { make_read_only(); }
     }
 
-    file(const std::string &filename, bool persist = true) : base_file(filename, persist) {
-      adiar_debug(!is_read_only(), "Created read-only");
-      // TODO: Make read only, if non-empty?
-    }
-
-    ~file()
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Mark file to be read-only.
+    ////////////////////////////////////////////////////////////////////////////
+    void make_read_only() const
     {
-      shared_access_file.close();
+      __is_read_only = true;
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Make file read-only, allowing multiple access via the
-    /// `shared_access_file` variable.
-    ///
-    /// This assumes, that no `tpie::file_stream<T>` (that is, no
-    /// `adiar::file_writer`) currently is attached to this file.
-    ////////////////////////////////////////////////////////////////////////////
-    void make_read_only()
-    {
-      if (!is_read_only()) {
-        shared_access_file.open(base_file);
-      }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the file is currently in read-only mode.
+    /// \brief Whether the file is currently in read-only mode, i.e. some
+    /// adiar::file_stream has been attached to it and has marked it.
     ////////////////////////////////////////////////////////////////////////////
     bool is_read_only() const
     {
-      return shared_access_file.is_open();
+      return __is_read_only;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// The number of elements in the file
-    ///
-    /// This will make the file read-only, if it wasn't already
     ////////////////////////////////////////////////////////////////////////////
     size_t size()
     {
-      make_read_only();
-      return shared_access_file.size();
+      tpie::file_stream<T> fs;
+      fs.open(__base_file, ADIAR_READ_ACCESS);
+      return fs.size();
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// Same as size() == 0
-    ///
-    /// This will make the file read-only, if it wasn't already
     ////////////////////////////////////////////////////////////////////////////
     bool empty()
     {
@@ -121,8 +109,6 @@ namespace adiar
 
     ////////////////////////////////////////////////////////////////////////////
     /// The size of the file in bytes
-    ///
-    /// This will make the file read-only, if it wasn't already
     ////////////////////////////////////////////////////////////////////////////
     size_t file_size()
     {
@@ -159,7 +145,7 @@ namespace adiar
     /// This assumes, that no `tpie::file_stream<T>` (that is, no
     /// `adiar::file_writer`) currently is attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void make_read_only()
+    void make_read_only() const
     {
       _meta_file.make_read_only();
       for (size_t idx = 0u; idx < Files; idx++) {
@@ -257,9 +243,9 @@ namespace adiar
     __shared_file(__shared_file<T> &&other) : _file_ptr(other._file_ptr) { }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Notice, that while the `make_read_only` and `is_read_only` are maybe not
-    /// `const` for the pointed to underlying file, it is const with respect to
-    /// this very object?
+    /// Notice, that while some of the functions below are not `const` for the
+    /// pointed to underlying file, it is const with respect to this very
+    /// object.
     void make_read_only() const
     {
       _file_ptr -> make_read_only();
@@ -365,7 +351,7 @@ namespace adiar
   /// given sink_pred.
   ///
   /// \param file   The node_file to check its content
-
+  ///
   /// \param pred   If the given node_file only contains a sink node, then
   ///               secondly the sink is checked with the given sink predicate.
   ///               Default is any type sink.
@@ -374,7 +360,6 @@ namespace adiar
 
   label_t min_label(const node_file &file);
   label_t max_label(const node_file &file);
-
 
   uint64_t nodecount(const node_file &nodes);
   uint64_t nodecount(const arc_file &arcs);
