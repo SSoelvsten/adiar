@@ -70,6 +70,8 @@ namespace adiar
                                        uint64_t &result, label_t /* varcount */,
                                        ptr_t child_to_resolve, path_sum request)
   {
+    adiar_debug(request.sum > 0, "No 'empty' request should be created");
+
     if (is_sink(child_to_resolve)) {
       result += value_of(child_to_resolve) ? request.sum : 0u;
     } else {
@@ -82,6 +84,8 @@ namespace adiar
                                       uint64_t &result, label_t varcount,
                                       ptr_t child_to_resolve, sat_sum request)
   {
+    adiar_debug(request.sum > 0, "No 'empty' request should be created");
+
     adiar_debug(request.levels_visited < varcount,
                 "Cannot have already visited more levels than are expected");
 
@@ -109,11 +113,9 @@ namespace adiar
   {
     // Sum all ingoing arcs
     path_sum request = pq.pull();
-    adiar_debug(request.sum > 0, "No 'empty' request should be created");
 
     while (pq.can_pull() && pq.top().uid == n.uid) {
       request.sum += pq.pull().sum;
-      adiar_debug(request.sum > 0, "No 'empty' request should be created");
     }
 
     // Resolve final request
@@ -126,22 +128,21 @@ namespace adiar
                                        uint64_t &result, label_t varcount,
                                        const node_t& n)
   {
+    // Sum all ingoing arcs with the same number of visited levels
+    sat_sum request = pq.pull();
+
     while (pq.can_pull() && pq.top().uid == n.uid) {
-      // Sum all ingoing arcs with the same number of visited levels
-      sat_sum request = pq.pull();
-      adiar_debug(request.sum > 0, "No 'empty' request should be created");
+      sat_sum r = pq.pull();
 
-      while (pq.can_pull()
-             && pq.top().uid == n.uid
-             && pq.top().levels_visited == request.levels_visited) {
-        request.sum += pq.pull().sum;
-        adiar_debug(request.sum > 0, "No 'empty' request should be created");
-      }
+      request.sum = request.sum * (1u << (r.levels_visited - request.levels_visited));
+      request.sum += r.sum;
 
-      // Resolve final request
-      count_resolve_request<sat_sum>(pq, result, varcount, n.low, request);
-      count_resolve_request<sat_sum>(pq, result, varcount, n.high, request);
+      request.levels_visited = r.levels_visited;
     }
+
+    // Resolve final request
+    count_resolve_request<sat_sum>(pq, result, varcount, n.low, request);
+    count_resolve_request<sat_sum>(pq, result, varcount, n.high, request);
   }
 
   //////////////////////////////////////////////////////////////////////////////
