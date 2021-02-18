@@ -13,52 +13,134 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct partial_sum
+  struct path_sum
   {
     uid_t uid;
     uint64_t sum;
   };
 
+  struct sat_sum : path_sum
+  {
+    label_t levels_visited = 0u;
+  };
+
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
-  struct count_queue_lt
+  template<typename T>
+  struct count_queue_lt;
+
+  template<>
+  struct count_queue_lt<path_sum>
   {
-    bool operator()(const partial_sum &a, const partial_sum &b)
+    bool operator()(const path_sum &a, const path_sum &b)
     {
       return a.uid < b.uid;
     }
   };
 
+  template<>
+  struct count_queue_lt<sat_sum>
+  {
+    bool operator()(const sat_sum &a, const sat_sum &b)
+    {
+      return a.uid < b.uid || (a.uid == b.uid && a.levels_visited < b.levels_visited);
+    }
+  };
+
   struct count_queue_label
   {
-    label_t label_of(const partial_sum &s)
+    label_t label_of(const path_sum &s)
     {
       return adiar::label_of(s.uid);
     }
   };
 
-  typedef node_priority_queue<partial_sum, count_queue_label, count_queue_lt> count_priority_queue_t;
+  template <typename T>
+  using count_priority_queue_t = node_priority_queue<T, count_queue_label, count_queue_lt<T>>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  template<bool count_skipped_layers>
-  inline void count_resolve_request(count_priority_queue_t &pq, uint64_t &result, const sink_pred &sink_pred,
-                                    ptr_t child_to_resolve, label_t current_label, label_t max_label,
-                                    uint64_t ingoing_sum = 1u)
+  template<typename T>
+  void count_resolve_request(count_priority_queue_t<T> &pq,
+                             uint64_t &result, label_t varcount,
+                             ptr_t child_to_resolve, T request);
+
+  template<>
+  void count_resolve_request<path_sum>(count_priority_queue_t<path_sum> &pq,
+                                       uint64_t &result, label_t /* varcount */,
+                                       ptr_t child_to_resolve, path_sum request)
   {
-    if (ingoing_sum == 0) { return; }
+    if (is_sink(child_to_resolve)) {
+      result += value_of(child_to_resolve) ? request.sum : 0u;
+    } else {
+      pq.push({ child_to_resolve, request.sum });
+    }
+  }
+
+  template<>
+  void count_resolve_request<sat_sum>(count_priority_queue_t<sat_sum> &pq,
+                                      uint64_t &result, label_t varcount,
+                                      ptr_t child_to_resolve, sat_sum request)
+  {
+    adiar_debug(request.levels_visited < varcount,
+                "Cannot have already visited more levels than are expected");
+
+    label_t levels_visited = request.levels_visited + 1u;
 
     if (is_sink(child_to_resolve)) {
-      if (sink_pred(child_to_resolve)) {
-        result += ingoing_sum * (count_skipped_layers
-                                 ? 1u << (max_label - current_label)
-                                 : 1u);
-      }
+      result += value_of(child_to_resolve)
+        ? request.sum * (1u << (varcount - levels_visited))
+        : 0u;
     } else {
-      pq.push({ child_to_resolve,
-                ingoing_sum * (count_skipped_layers
-                               ? 1u << (label_of(child_to_resolve) - current_label - 1u)
-                               : 1u) });
+      pq.push({ child_to_resolve, request.sum, levels_visited });
+    }
+  }
+
+
+  template<typename T>
+  void count_resolve_requests(count_priority_queue_t<T> &pq,
+                              uint64_t &result, label_t varcount,
+                              const node_t& n);
+
+  template<>
+  void count_resolve_requests<path_sum>(count_priority_queue_t<path_sum> &pq,
+                                        uint64_t &result, label_t varcount,
+                                        const node_t& n)
+  {
+    // Sum all ingoing arcs
+    path_sum request = pq.pull();
+    adiar_debug(request.sum > 0, "No 'empty' request should be created");
+
+    while (pq.can_pull() && pq.top().uid == n.uid) {
+      request.sum += pq.pull().sum;
+      adiar_debug(request.sum > 0, "No 'empty' request should be created");
+    }
+
+    // Resolve final request
+    count_resolve_request<path_sum>(pq, result, varcount, n.low, request);
+    count_resolve_request<path_sum>(pq, result, varcount, n.high, request);
+  }
+
+  template<>
+  void count_resolve_requests<sat_sum>(count_priority_queue_t<sat_sum> &pq,
+                                       uint64_t &result, label_t varcount,
+                                       const node_t& n)
+  {
+    while (pq.can_pull() && pq.top().uid == n.uid) {
+      // Sum all ingoing arcs with the same number of visited levels
+      sat_sum request = pq.pull();
+      adiar_debug(request.sum > 0, "No 'empty' request should be created");
+
+      while (pq.can_pull()
+             && pq.top().uid == n.uid
+             && pq.top().levels_visited == request.levels_visited) {
+        request.sum += pq.pull().sum;
+        adiar_debug(request.sum > 0, "No 'empty' request should be created");
+      }
+
+      // Resolve final request
+      count_resolve_request<sat_sum>(pq, result, varcount, n.low, request);
+      count_resolve_request<sat_sum>(pq, result, varcount, n.high, request);
     }
   }
 
@@ -73,32 +155,25 @@ namespace adiar
     return varcount(bdd.file);
   }
 
-  template<bool count_skipped_layers>
-  inline uint64_t count(const bdd &bdd,
-                        label_t min_label,
-                        label_t max_label,
-                        const sink_pred &sink_pred)
+  template<typename T>
+  inline uint64_t count(const bdd &bdd, label_t varcount)
   {
-    node_stream<> ns(bdd);
-
-    count_priority_queue_t partial_sums({bdd});
-
-    // Take root out and put its children into the priority queue
-    // or count them immediately if they are sinks
-    node_t root = ns.pull();
-
-    uint64_t skipped_layers_before_root = count_skipped_layers && min_label < label_of(root)
-      ? 1u << (label_of(root) - min_label)
-      : 1u;
+    adiar_debug(!is_sink(bdd),
+                "Count algorithm does not work on sink-only edge case");
 
     uint64_t result = 0u;
 
-    count_resolve_request<count_skipped_layers>(partial_sums, result, sink_pred,
-                                                root.low, label_of(root), max_label,
-                                                skipped_layers_before_root);
-    count_resolve_request<count_skipped_layers>(partial_sums, result, sink_pred,
-                                                root.high, label_of(root), max_label,
-                                                skipped_layers_before_root);
+    node_stream<> ns(bdd);
+
+    count_priority_queue_t<T> partial_sums({bdd});
+
+    {
+      node_t root = ns.pull();
+      T request = { root.uid, 1u };
+
+      count_resolve_request<T>(partial_sums, result, varcount, root.low, request);
+      count_resolve_request<T>(partial_sums, result, varcount, root.high, request);
+    }
 
     // Take out the rest of the nodes and process them one by one
     while (ns.can_pull()) {
@@ -107,78 +182,58 @@ namespace adiar
       if (partial_sums.current_layer() != label_of(n)) {
         partial_sums.setup_next_layer();
       }
+      adiar_debug(partial_sums.current_layer() == label_of(n),
+                  "Priority queue is out-of-sync with node stream");
+      adiar_debug(partial_sums.can_pull() && partial_sums.top().uid == n.uid,
+                  "Priority queue is out-of-sync with node stream");
 
-      // Sum all ingoing arcs
-      uint64_t sum = 0u;
-      while (partial_sums.can_pull() && partial_sums.top().uid == n.uid) {
-        sum += partial_sums.pull().sum;
-      }
-
-      // Put children of the current node into the priority queue or count them if they are sinks
-      count_resolve_request<count_skipped_layers>(partial_sums, result, sink_pred,
-                                                  n.low, label_of(n), max_label, sum);
-      count_resolve_request<count_skipped_layers>(partial_sums, result, sink_pred,
-                                                  n.high, label_of(n), max_label, sum);
+      // Resolve requests
+      count_resolve_requests<T>(partial_sums, result, varcount, n);
     }
 
     return result;
   }
 
-  uint64_t bdd_pathcount(const bdd &bdd, const sink_pred &sink_pred)
+  uint64_t bdd_pathcount(const bdd &bdd)
   {
-    if (is_sink(bdd)) {
-      return 0u;
-    }
-
-    return count<false>(bdd, 0, MAX_LABEL, sink_pred);
+    return is_sink(bdd)
+      ? 0
+      : count<path_sum>(bdd, bdd_varcount(bdd));
   }
 
-  uint64_t bdd_satcount(const bdd &bdd,
-                        label_t minimum_label,
-                        label_t maximum_label,
-                        const sink_pred& sink_pred)
+  uint64_t bdd_satcount(const bdd& bdd, size_t varcount)
   {
     if (is_sink(bdd)) {
-      if (is_sink(bdd, sink_pred)) {
-        return 1u << (maximum_label - minimum_label);
-      }
-      return 0u;
+      return is_sink(bdd, is_true) ? 1u << varcount : 0u;
     }
 
-    adiar_debug(minimum_label <= min_label(bdd),
-               "given minimum_label should be smaller than the present root label");
+    adiar_assert(bdd_varcount(bdd) <= varcount,
+                 "given minimum_label should be smaller than the present root label");
 
-    adiar_debug(max_label(bdd) <= maximum_label,
-               "given maximum_label should be greater than the largest label in bdd");
-
-    return count<true>(bdd, minimum_label, maximum_label, sink_pred);
+    return count<sat_sum>(bdd, varcount);
   }
 
-  uint64_t bdd_satcount(const bdd& bdd, size_t varcount, const sink_pred& sink_pred)
+  uint64_t bdd_satcount(const bdd &bdd, label_t minimum_label, label_t maximum_label)
   {
+    uint64_t varcount = maximum_label - minimum_label + 1;
     if (is_sink(bdd)) {
-      if (is_sink(bdd, sink_pred)) {
-        return 1u << varcount;
-      }
-      return 0u;
+      return is_sink(bdd, is_true) ? 1u << varcount : 0u;
     }
 
-    label_t minimum_label = min_label(bdd);
-    label_t maximum_label = (minimum_label + varcount) - 1u;
+    adiar_assert(minimum_label <= min_label(bdd),
+                 "given minimum_label should be smaller than the present root label");
 
-    adiar_debug(max_label(bdd) <= maximum_label,
-               "the bdd spans more labels than the provided varcount suggests");
+    adiar_assert(max_label(bdd) <= maximum_label,
+                 "given maximum_label should be greater than the largest label in bdd");
 
-    return count<true>(bdd, minimum_label, maximum_label, sink_pred);
+    return count<sat_sum>(bdd, varcount);
   }
 
-  uint64_t bdd_satcount(const bdd& bdd, const sink_pred& sink_pred)
+  uint64_t bdd_satcount(const bdd& bdd)
   {
-    if (is_sink(bdd)) {
-      return 0u;
-    }
-
-    return count<true>(bdd, min_label(bdd), max_label(bdd), sink_pred);
+    return is_sink(bdd)
+      ? 0u
+      : count<sat_sum>(bdd, bdd_varcount(bdd));
   }
 }
 

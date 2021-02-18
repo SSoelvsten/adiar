@@ -7,23 +7,40 @@
 
 namespace adiar
 {
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The number of internal nodes used to represent the given BDD.
+  //////////////////////////////////////////////////////////////////////////////
   size_t bdd_nodecount(const bdd &bdd);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The number of levels, i.e. variables, occuring in the BDD.
+  //////////////////////////////////////////////////////////////////////////////
   size_t bdd_varcount(const bdd &bdd);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Count all unique (but not necessarily disjoint) paths that satisfy
-  /// given predicates.
+  /// \brief Count all unique (but not necessarily disjoint) paths to a T sink.
   ///
-  /// \param nodes The node-based BDD graph in reverse topological order.
-  /// \param sink_pred Predicate whether to count paths going to the given sink.
+  /// \param bdd       The node-based BDD to count in.
   ///
   /// \return The number of unique paths.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_pathcount(const bdd &bdd, const sink_pred &sink_pred = is_true);
+  uint64_t bdd_pathcount(const bdd &bdd);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Count all assignments to variables in the given interval that
-  /// satisfy a given predicate.
+  /// \brief Count all assignments to variables that lead to a T sink. We don't
+  /// need to know the exact variables in question, just the number of variables
+  /// involved.
+  ///
+  /// \param bdd       The node-based BDD to count in.
+  /// \param varcount  The total number of variables, that may occur in the bdd.
+  ///
+  /// \return The number of unique assignments.
+  //////////////////////////////////////////////////////////////////////////////
+  uint64_t bdd_satcount(const bdd &bdd, size_t varcount);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Same as `bdd_satcount(bdd, varcount)`, with the varcount computed
+  /// from the given min_label and max_label of the BDD.
   ///
   /// Counts all assignments for variables with the labels
   ///
@@ -33,50 +50,23 @@ namespace adiar
   ///
   ///     min_label <= min_label(nodes) <= max_label(nodes) <= max_label
   ///
-  /// \param bdd       The node-based BDD graph in reverse topological order.
-  /// \param min_label The smallest label to count from
-  /// \param max_label The largest label to count to
-  /// \param sink_pred Predicate whether to count paths going to the given sink.
+  /// \param bdd       The node-based BDD to count in.
+  /// \param min_label The smallest label to count from.
+  /// \param max_label The largest label to count to.
   ///
   /// \return The number of unique assignments.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const bdd &bdd,
-                        label_t min_label,
-                        label_t max_label,
-                        const sink_pred &sink_pred = is_true);
-
+  uint64_t bdd_satcount(const bdd &bdd, label_t min_label, label_t max_label);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Same as `bdd_satcount(bdd, min_label, max_label, sink_pred)`, but
-  /// where `min_label` and `max_label` are computed from the total number of
-  /// variables.
+  /// \brief Same as `bdd_satcount(bdd, min_label, max_label)`, with
+  /// min_label and max_label set based on the given BDD.
   ///
   /// \param bdd       The node-based BDD graph in reverse topological order.
-  /// \param varcount  The total number of variables, that may occur in the bdd.
-  /// \param sink_pred Predicate whether to count paths going to the given sink.
   ///
   /// \return The number of unique assignments.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const bdd &bdd,
-                        size_t varcount,
-                        const sink_pred &sink_pred = is_true);
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Same as `bdd_satcount(bdd, min_label, max_label, sink_pred)`, with
-  /// min_label and max_label set based on the minimum and maximum label in the
-  /// given node_file.
-  ///
-  /// \param bdd       The node-based BDD graph in reverse topological order.
-  /// \param sink_pred Predicate whether to count paths going to the given sink.
-  ///
-  /// \return The number of unique assignments.
-  //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const bdd &bdd,
-                        const sink_pred &sink_pred = is_true);
-
-  // TODO: bdd_satcount with a tpie::file<label_t> or second node_file for
-  // a variable cube
+  uint64_t bdd_satcount(const bdd &bdd);
 }
 
 #endif // ADIAR_COUNT_PATHS_H
