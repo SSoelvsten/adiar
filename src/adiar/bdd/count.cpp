@@ -214,22 +214,6 @@ namespace adiar
     return count<sat_sum>(bdd, varcount);
   }
 
-  uint64_t bdd_satcount(const bdd &bdd, label_t minimum_label, label_t maximum_label)
-  {
-    uint64_t varcount = maximum_label - minimum_label + 1;
-    if (is_sink(bdd)) {
-      return is_sink(bdd, is_true) ? 1u << varcount : 0u;
-    }
-
-    adiar_assert(minimum_label <= min_label(bdd),
-                 "given minimum_label should be smaller than the present root label");
-
-    adiar_assert(max_label(bdd) <= maximum_label,
-                 "given maximum_label should be greater than the largest label in bdd");
-
-    return count<sat_sum>(bdd, varcount);
-  }
-
   uint64_t bdd_satcount(const bdd& bdd)
   {
     return is_sink(bdd)

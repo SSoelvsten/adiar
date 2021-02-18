@@ -39,32 +39,8 @@ namespace adiar
   uint64_t bdd_satcount(const bdd &bdd, size_t varcount);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Same as `bdd_satcount(bdd, varcount)`, with the varcount computed
-  /// from the given min_label and max_label of the BDD.
-  ///
-  /// Counts all assignments for variables with the labels
-  ///
-  ///                 { min_label, min_label + 1, ..., max_label }
-  ///
-  /// Assumes that the given label interval is valid. That is, we assume that
-  ///
-  ///     min_label <= min_label(nodes) <= max_label(nodes) <= max_label
-  ///
-  /// \param bdd       The node-based BDD to count in.
-  /// \param min_label The smallest label to count from.
-  /// \param max_label The largest label to count to.
-  ///
-  /// \return The number of unique assignments.
-  //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const bdd &bdd, label_t min_label, label_t max_label);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Same as `bdd_satcount(bdd, min_label, max_label)`, with
-  /// min_label and max_label set based on the given BDD.
-  ///
-  /// \param bdd       The node-based BDD graph in reverse topological order.
-  ///
-  /// \return The number of unique assignments.
+  /// \brief Same as `bdd_satcount(bdd, varcount)`, with varcount set to be
+  /// `varcount(bdd)`.
   //////////////////////////////////////////////////////////////////////////////
   uint64_t bdd_satcount(const bdd &bdd);
 }

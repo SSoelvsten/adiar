@@ -155,20 +155,16 @@ copy-constructed from the `node_file`.
 
 - `uint64_t bdd_pathcount(bdd)`
 
-  Count all unique (but not necessarily disjoint) paths that satisfies the
-  given sink predicate (default is only to count _true_ sinks).
+  Count all unique (but not necessarily disjoint) paths that lead to a _true_
+  sink.
 
 - `uint64_t bdd_satcount(bdd f, size_t varcount)`
 
   Count the number of satisfying assignments (i.e. the number of `x` such that
-  `f(x) = 1`), given the total number of expected variables. The default value
-  for `varcount` is to be the number of variables occuring in the given BDD,
-  i.e. `bdd_varcount(f)`.
-
-- `uint64_t bdd_satcount(bdd, min_label, max_label)`
-
-  Count the number of satisfying assignments to variables in the interval
-  [`min_label`; `max_label`].
+  `f(x) = 1`), given the total number of expected variables. The given
+  `varcount` should be greater or equal to the number of variables within the
+  BDD, i.e. `bdd_varcount(f)`. The default value for `varcount` is
+  `bdd_varcount(f)`.
 
 ## Other Functions
 
@@ -184,7 +180,7 @@ copy-constructed from the `node_file`.
 
 - `assignment_file bdd_satmax(bdd f)`
 
-  Return the _lexicographically largegst_ `x` such that `f(x) = 1`. The
+  Return the _lexicographically largest_ `x` such that `f(x) = 1`. The
   variables mentioned in `x` are for all levels in the given BDD.
 
 - `bool is_sink(bdd f, sink_pred)`
