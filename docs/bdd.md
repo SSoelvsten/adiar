@@ -153,27 +153,22 @@ copy-constructed from the `node_file`.
 
   The number of variables present in the BDD.
 
-- `uint64_t bdd_pathcount(bdd, sink_pred)`
+- `uint64_t bdd_pathcount(bdd)`
 
   Count all unique (but not necessarily disjoint) paths that satisfies the
   given sink predicate (default is only to count _true_ sinks).
 
-- `uint64_t bdd_satcount(bdd, min_label, max_label, sink_pred)`
+- `uint64_t bdd_satcount(bdd f, size_t varcount)`
 
-  Count all assignments to variables in the interval [`min_label`; `max_label`]
-  that satisfies the given sink predicate (default is only to count _true_
-  sinks)
+  Count the number of satisfying assignments (i.e. the number of `x` such that
+  `f(x) = 1`), given the total number of expected variables. The default value
+  for `varcount` is to be the number of variables occuring in the given BDD,
+  i.e. `bdd_varcount(f)`.
 
-- `uint64_t bdd_satcount(bdd, sink_pred)`
+- `uint64_t bdd_satcount(bdd, min_label, max_label)`
 
-  Same as the `bdd_satcount` above with `min_label`, resp. `max_label`, set to
-  `min_label(bdd)`, resp. `max_label(bdd)`.
-
-- `uint64_t bdd_satcount(bdd, size_t varcount, sink_pred)`
-
-  Count all assignments to variables, given the total number of expected
-  variables.
-
+  Count the number of satisfying assignments to variables in the interval
+  [`min_label`; `max_label`].
 
 ## Other Functions
 
@@ -184,12 +179,12 @@ copy-constructed from the `node_file`.
 
 - `assignment_file bdd_satmin(bdd f)`
 
-  Return the _lexicographically smallest_ `x` such that `f(x) = 1` and `x`. The
+  Return the _lexicographically smallest_ `x` such that `f(x) = 1`. The
   variables mentioned in `x` are for all levels in the given BDD.
 
 - `assignment_file bdd_satmax(bdd f)`
 
-  Return the _lexicographically largegst_ `x` such that `f(x) = 1` and `x`. The
+  Return the _lexicographically largegst_ `x` such that `f(x) = 1`. The
   variables mentioned in `x` are for all levels in the given BDD.
 
 - `bool is_sink(bdd f, sink_pred)`
