@@ -5,10 +5,10 @@
 [![codecov](https://codecov.io/gh/SSoelvsten/adiar/branch/master/graph/badge.svg?token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
 [![examples](https://github.com/SSoelvsten/adiar/workflows/examples/badge.svg?branch=master)](/actions?query=workflow%3Aexamples)
 
-Following up on the work of [[Arge96](#references)], this implementation of
-a BDD library makes use of _Time-Forward Processing_ to improve the I/O
-complexity of BDD Manipulation to achieve efficient manipulation of BDDs, that
-far outgrow the memory limit of the given machine.
+Following up on the work of [[Arge96](#references)], this implementation of a
+BDD [[Bryant86](#references)] library makes use of _Time-Forward Processing_ to
+improve the I/O complexity of BDD Manipulation to achieve efficient manipulation
+of BDDs, that far outgrow the memory limit of the given machine.
 
 **Table of Contents**
 
@@ -36,7 +36,7 @@ The implementation is dependant on the the following external libraries
   Framework for implementation of I/O efficient algorithms. It directly provides
   sorting algorithms and a priotity queue. Both are much faster than the
   algorithms in the _C++_ standard library
-  [[Mølhave12](#references)].
+  [[Vengroff94,Mølhave12](#references)].
 
 - [Bandit](https://github.com/banditcpp/bandit):
   Writing and running unit tests
@@ -158,68 +158,15 @@ The software and documentation files in this repository are provided under the
 - [[Arge96](https://tidsskrift.dk/brics/article/view/20010/17643)]
   Lars Arge. “_The I/O-complexity of Ordered Binary-Decision Diagram
   Manipulation_”. In: _Efficient External-Memory Data Structures and
-  Applications_. 1996
-
-- [[Arge05](https://imada.sdu.dk/~rolf/Edu/DM808/F08/Handouts/ionotes.pdf)]
-  Lars Arge. “_External Memory Geometric Data Structures_”. In: _External Memory
-  Geometric Data Structures_. 2005
-
-- [[Arge10](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5470440)]
-  Lars Arge, Michael T. Goodrich, Nodari Sitchinava. “_Parallel external memory
-  graph algorithms_”. In: _2010 IEEE International Symposium on Parallel
-  Distributed Processing (IPDPS)_. 2010
-
-- [[Arge17](https://pure.au.dk/portal/files/119531804/paper_bigdata17_camera.pdf)]
-  Lars Arge, Mathias Rav, Svend C. Svendsen, Jakob Truelsen. “_External Memory
-  Pipelining Made Easy With TPIE_”. In: _2017 IEEE International Conference on
-  Big Data_. 2017
-
-- [[Brace90](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=114826)]
-  Karl S. Brace, Richard L. Rudell, and Randal E. Bryant. “_Efficient
-  implementation of a BDD package_”. In: _27th ACM/IEEE Design Automation
-  Conference_. 1990, pp. 40 – 45.
+  Applications_. (1996)
 
 - [[Bryant86](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1676819)]
   Randal E. Bryant. “_Graph-Based Algorithms for Boolean Function Manipulation_”.
   In: _IEEE Transactions on Computers_. (1986)
 
-- [[Coudert90](http://www.ocoudert.com/papers/pdf/iccad90.pdf)]
-  Olivier Coudert and Jean Christophe Madre. “_A Unified Framework for the
-  Formal verification of sequential circuits_”. In: _Computer-Aided Design /
-  IEEE International Conference_. (1990)
-
-- [[Dijk16](https://link.springer.com/content/pdf/10.1007/s10009-016-0433-2.pdf)]
-  Tom van Dijk, Jaco van de Pol. “_Sylvan: multi-core framework for decision
-  diagrams_”. In: _International Journal on Software Tools for Technology
-  Transfer_. 2016
-
-- [[Fujita97](https://link.springer.com/article/10.1023/A:1008647823331#citeas)]
-  M. Fujita, P.C. McGeer, J.C.-Y. Yang . “_Multi-Terminal Binary Decision
-  Diagrams: An Efficient Data Structure for Matrix Representation_”. In: _Formal
-  Methods in System Design_. 2012
-
-- [Kam98]
-  Timothy Kam, Tiziano Villa, Robert K. Brayton, and L. Sangiovanni-vincentelli
-  Alberto. “_Multi-valued decision diagrams: Theory and applications_”. In:
-  _Multiple- Valued Logic 4.1_ 1998
-
-- [[Kunkle10](https://dl.acm.org/doi/abs/10.1145/1837210.1837222)] Daniel
-  Kunkle, Vlad Slavici, Gene Cooperman. “_Parallel Disk-Based Computation for
-  Large, Monolithic Binary Decision Diagrams_”. In: _PASCO '10: Proceedings of
-  the 4th International Workshop on Parallel and Symbolic Computation_. 2010
-
-- [Meinel94]
-  J. Gergov and C. Meinel. “_Efficient analysis and manipulation of OBDDs can
-  be extended to FBDDs_”. 1994
-
 - [[Mølhave12](https://dl.acm.org/doi/pdf/10.1145/2367574.2367579)]
-  Thomas Mølhave. “_Using TPIE for Processing Massive Data Sets in C++_”. 2012
+  Thomas Mølhave. “_Using TPIE for Processing Massive Data Sets in C++_”. (2012)
 
-- [[Sanders01](https://dl.acm.org/doi/pdf/10.1145/351827.384249)]
-  Peter Sanders. “_Fast Priority Queues for Cached Memory_”. In: _J. Exp.
-  Algorithmics 5_. 2001
-
-- [[Sitchinava12](https://dl.acm.org/doi/pdf/10.1145/2312005.2312046)]
-  Nodari Sitchinava, Norbert Zeh. “_A Parallel Buffer Tree_”. In: _Proceedings
-  of the Twenty-Fourth Annual ACM Symposium on Parallelism in Algorithms and
-  Architectures_. 2012
+- [[Vengroff94](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.38.3030)]
+  D.E. Vengroff. “_A transparent parallel I/O environment_”. In: _In Proc. 1994
+  DAGS Symposium on Parallel Computation_. pp. 117–134 (1994)

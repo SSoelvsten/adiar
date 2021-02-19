@@ -57,9 +57,9 @@ here.
 
 ### Coudert's and Madre's Restrict
 The current _Restrict_ algorithm is the basic algorithm of Bryant, but one has
-been proposed in [[Coudert90](README.md#references)] that is very different and
-may be used in Verification. They also proposed algorithms with the name
-_Constrain_ and _Expand_.
+been proposed in [[Coudert90](#references)] that is very different and may be
+used in Verification. They also proposed algorithms with the name _Constrain_
+and _Expand_.
 
 ### Variable reordering
 Currently, _Adiar_ only uses a static ordering of the variables, but since the
@@ -78,7 +78,7 @@ the original variable reordering algorithms.
 Currently, we do not support complement edges, though one can expect about a 7%
 factor decrease in the size of the OBDD from using said technique. In the
 recursive algorithms, one can even expect a factor two decrease in the
-algorithms execution time [[Brace90](README.md#references)].
+algorithms execution time [[Brace90](#references)].
 
 
 ## Extensions
@@ -87,14 +87,13 @@ algorithms execution time [[Brace90](README.md#references)].
 One can easily extend the proposed representation of sink nodes to encompass
 non-boolean values, such as integers or floats. Thereby, the algorithms
 immediately yield an I/O efficient implementation of the _Multi-Terminal Binary
-Decision Diagrams_ (MTBDD) of [[Fujita97](README.md#references)].
+Decision Diagrams_ (MTBDD) of [[Fujita97](#references)].
 
 ### Zero-suppressed Decision Diagrams
-A Zero-suppressed Decision Diagram
-([ZDD](https://en.wikipedia.org/wiki/Zero-suppressed_decision_diagram)) is a
-binary decision diagram, which is very compresed when representing sparse sets
-of bit vectors. This has been shown to be great for solving NP-Complete problems
-and symbolic model checking algorithms on sparse sets of states.
+A Zero-suppressed Decision Diagram [[Minato93](#references)] is a binary
+decision diagram, which is very compresed when representing sparse sets of bit
+vectors. This has been shown to be great for solving NP-Complete problems and
+symbolic model checking algorithms on sparse sets of states.
 
 To achieve this, ZDDs make use of a different reduction rule than BDDs to do so.
 So, to implement them we need to:
@@ -106,15 +105,15 @@ So, to implement them we need to:
 ### Multi-valued Decision Diagrams
 By solely using an edge-based representation of the data-structure one can also
 implement a _Multi-valued Decision Diagram_ (MDD) of
-[[Kam98](README.md#references)]. This allows one to succinctly encode a function
+[[Kam98](#references)]. This allows one to succinctly encode a function
 from a non-boolean domain. Switching to the edge-based representation will lead
 to rewriting almost all algorithms, but we may look into recreating the _List
-Decision Diagrams_ of [[Dijk16](README.md#references)] to circumvent this.
+Decision Diagrams_ of [[Dijk16](#references)] to circumvent this.
 
 ### Free Boolean Decision Diagrams
 One can remove the restriction of ordering the decision diagram to then
 potentially compress the data structure even more. These Free Binary Decision
-Diagrams (FBDD) of [[Meinel94](README.md#references)] may also be possible to
+Diagrams (FBDD) of [[Meinel94](#references)] may also be possible to
 implement in the setting of Time-forward processing used here.
 
 
@@ -131,12 +130,12 @@ possible to exploit this with a radix sort for an _O(N)_ time complexity, though
 maybe one will not gain too much due to the _O(sort(N))_ I/O lower bound.
 
 ### From _recursive_ algorithm to _time-forward processing_ and back again
-Most implementations, such as the ones in [[Brace90,
-Dijk16](README.md#references)], make use of a _unique node table_, which is a
-hash-table in which all BDDs exist. This has the benefit of allowing one to
-reuse common subtrees across BDDs (which saves space linear in the number of
-concurrent BDDs in use) and the recursive algorithms run _2_ or even _4_ times
-faster than the current algorithms (when they don't outgrow the main memory).
+Most implementations, such as the ones in [[Brace90, Dijk16](#references)], make
+use of a _unique node table_, which is a hash-table in which all BDDs exist.
+This has the benefit of allowing one to reuse common subtrees across BDDs (which
+saves space linear in the number of concurrent BDDs in use) and the recursive
+algorithms run _2_ or even _4_ times faster than the current algorithms (when
+they don't outgrow the main memory).
 
 _TPIE_ provides a hash table, so one can look into one of the following two
 
@@ -153,3 +152,39 @@ Based on the memory usage I've witnessed during benchmarking, I think the first
 option is the most promising.
 
 See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issues/98)
+
+## References
+
+- [[Brace90](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=114826)]
+  Karl S. Brace, Richard L. Rudell, and Randal E. Bryant. “_Efficient
+  implementation of a BDD package_”. In: _27th ACM/IEEE Design Automation
+  Conference_. pp. 40 – 45 (1990)
+
+- [[Coudert90](http://www.ocoudert.com/papers/pdf/iccad90.pdf)]
+  Olivier Coudert and Jean Christophe Madre. “_A Unified Framework for the
+  Formal verification of sequential circuits_”. In: _Computer-Aided Design /
+  IEEE International Conference_. (1990)
+
+- [[Dijk16](https://link.springer.com/content/pdf/10.1007/s10009-016-0433-2.pdf)]
+  Tom van Dijk, Jaco van de Pol. “_Sylvan: multi-core framework for decision
+  diagrams_”. In: _International Journal on Software Tools for Technology
+  Transfer_. (2016)
+
+- [[Fujita97](https://link.springer.com/article/10.1023/A:1008647823331#citeas)]
+  M. Fujita, P.C. McGeer, J.C.-Y. Yang . “_Multi-Terminal Binary Decision
+  Diagrams: An Efficient Data Structure for Matrix Representation_”. In: _Formal
+  Methods in System Design_. (2012)
+
+- [Kam98]
+  Timothy Kam, Tiziano Villa, Robert K. Brayton, and L. Sangiovanni-vincentelli
+  Alberto. “_Multi-valued decision diagrams: Theory and applications_”. In:
+  _Multiple- Valued Logic 4.1_ (1998)
+
+- [Meinel94]
+  J. Gergov and C. Meinel. “_Efficient analysis and manipulation of OBDDs can
+  be extended to FBDDs_”. (1994)
+
+- [Minato93](https://dl.acm.org/doi/pdf/10.1145/157485.164890)
+  S. Minato. “_Zero-suppressed BDDs for set manipulation in combinatorial
+  problems_”. In: _DAC '93: Proceedings of the 30th international Design
+  Automation Conference_ (1993)
