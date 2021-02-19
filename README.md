@@ -12,34 +12,24 @@ far outgrow the memory limit of the given machine.
 
 **Table of Contents**
 
-- [Installation](#installation)
-    - [Dependencies](#dependencies)
 - [Documentation](#documentation)
+- [Dependencies](#dependencies)
 - [Usage](#usage)
+    - [Makefile targets](#makefile-targets)
     - [Examples and benchmarks](#examples-and-benchmarks)
 - [Future Work](#future-work)
 - [Credits](#credits)
 - [License](#license)
 - [References](#references)
 
-## Installation
 
-The _Adiar_ library is built with _CMake_. After having cloned this repository locally
-and installed its dependencies (cf. [Dependencies](#dependencies)), then include the
-project as a _subdirectory_ within your _CMakeLists.txt_
-```cmake
-add_subdirectory (<path/to/adiar> adiar)
-```
-Then you link up your executable.
-```cmake
-add_executable(<target> <source>)
-target_link_libraries(<target> adiar)
-set_target_properties(<target> PROPERTIES CXX_STANDARD 17)
-```
-The last line is only necessary if the `CXX_STANDARD` has not been set project-wide to
-_17_ or higher.
+## Documentation
+The documentation is provided as a collection of Markdown files in the
+[/docs](https://github.com/SSoelvsten/adiar/tree/master/docs) folder, which are also
+viewable on [Github Pages](https://ssoelvsten.github.io/adiar/).
 
-### Dependencies
+
+## Dependencies
 The implementation is dependant on the the following external libraries
 
 - [TPIE](https://github.com/thomasmoelhave/tpie):
@@ -78,11 +68,10 @@ apt install graphviz
 ```
 
 
-## Documentation
-We provide the documentation on the following [Github Pages](https://ssoelvsten.github.io/adiar/).
-
-
 ## Usage
+
+### Makefile targets
+
 The project is build with _CMake_, though for convenience I have simplified the
 _CMake_ interactions to a single _Makefile_ which works on a local machine. This
 has only been tested on _Ubuntu 18.04 LTS_ and _20.04 LTS_.
