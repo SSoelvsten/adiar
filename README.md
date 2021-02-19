@@ -13,8 +13,7 @@ far outgrow the memory limit of the given machine.
 **Table of Contents**
 
 - [Installation](#installation)
-- [Dependencies](#dependencies)
-    - [In your own project](#in-your-own-project)
+    - [Dependencies](#dependencies)
 - [Documentation](#documentation)
 - [Usage](#usage)
     - [Examples and benchmarks](#examples-and-benchmarks)
@@ -24,8 +23,24 @@ far outgrow the memory limit of the given machine.
 - [References](#references)
 
 ## Installation
-The algorithms are implemented in _C++_ creating a fully fledged BDD library,
-dependant on the the following external libraries
+
+The _Adiar_ library is built with _CMake_. After having cloned this repository locally
+and installed its dependencies (cf. [Dependencies](#dependencies)), then include the
+project as a _subdirectory_ within your _CMakeLists.txt_
+```cmake
+add_subdirectory (<path/to/adiar> adiar)
+```
+Then you link up your executable.
+```cmake
+add_executable(<target> <source>)
+target_link_libraries(<target> adiar)
+set_target_properties(<target> PROPERTIES CXX_STANDARD 17)
+```
+The last line is only necessary if the `CXX_STANDARD` has not been set project-wide to
+_17_ or higher.
+
+### Dependencies
+The implementation is dependant on the the following external libraries
 
 - [TPIE](https://github.com/thomasmoelhave/tpie):
   Framework for implementation of I/O efficient algorithms. It directly provides
@@ -36,8 +51,7 @@ dependant on the the following external libraries
 - [Bandit](https://github.com/banditcpp/bandit):
   Writing and running unit tests
 
-### Dependencies
-All dependencies are directly imported as submodules. If you have not cloned the
+These are directly  imported as submodules. If you have not cloned the
 repository recursively, then run the following command
 
 ```bash
@@ -46,9 +60,9 @@ git submodule update --init --recursive
 
 One also needs a _C++_ compiler of ones choice. All development has currently
 been with the _gcc_ compiler, so we cannot guarantee other compilers will work
-out-of-the-box. The project also has dependencies on _CMake_ and the _Boost
-Library_. On Ubuntu 18+ you can obtain all these dependencies
-with the following commands.
+out-of-the-box. The project is built with _CMake_ and has dependencies on the
+_Boost Library_. On Ubuntu 18+ you can obtain all these with the following
+commands.
 
 ```bash
 apt install g++ cmake libboost-all-dev
@@ -63,19 +77,6 @@ number of tools, such as _graphviz_.
 apt install graphviz
 ```
 
-### In your own project
-The _Adiar_ library is built with _CMake_. First you'll have to include the
-project as a _subdirectory_
-```cmake
-add_subdirectory (<path/to/adiar> adiar)
-```
-Then you link up your executable.
-```cmake
-add_executable(<target> <source>)
-target_link_libraries(<target> adiar)
-set_target_properties(<target> PROPERTIES CXX_STANDARD 17)
-```
-
 
 ## Documentation
 We provide the documentation on the following [Github Pages](https://ssoelvsten.github.io/adiar/).
@@ -86,20 +87,18 @@ The project is build with _CMake_, though for convenience I have simplified the
 _CMake_ interactions to a single _Makefile_ which works on a local machine. This
 has only been tested on _Ubuntu 18.04 LTS_ and _20.04 LTS_.
 
-The primary targets are as follows
+The _Makefile_ provides the following targets
 
-| target  | effect                 |
-|---------|------------------------|
-| `build` | Build the source files |
-| `clean` | Remove all build files |
-| `test`  | Run all unit tests     |
-
-For development and more we also provide the following targets
-
-| target          | effect                                                          |
-|-----------------|-----------------------------------------------------------------|
-| `dot F=<files>` | Convert TPIE persisted file streams `<files>` into DOT files    |
-| `main M=<mem>`  | Run the _main_ function in `main.cpp` with `<mem>` MB of memory |
+| target          | effect                                                               |
+|-----------------|----------------------------------------------------------------------|
+| `build`         | Build the source files                                               |
+| `clean`         | Remove all build files                                               |
+|                 |                                                                      |
+| `test`          | Run all unit tests (with _O2_ optimisations)                         |
+| `coverage`      | Run all unit tests (with no optimisations) and create _lcov_ report  |
+|                 |                                                                      |
+| `dot F=<files>` | Convert persisted _Adiar_ files `<files>` into DOT files             |
+| `main M=<MiB>`  | Run the _main_ function in `src/main.cpp` with `<MiB>` MiB of memory |
 
 To further convert a _.dot_ file into a picture run the following command
 
@@ -109,16 +108,21 @@ dot -O -Tpng filename.dot
 
 ### Examples and benchmarks
 The _/examples_ folder contains examples for using the data structure to solve
-various verification and satisfaction problems. The `main` function also
-includes timing how long it takes to solve and provides other interesting
-statistics.
+various verification and satisfaction problems. Even more examples and
+benchmarks are provided in a separate
+[BDD Benchmarking repository](https://github.com/SSoelvsten/bdd-benchmark).
 
-| target                               | Example                                                             |
-|--------------------------------------|---------------------------------------------------------------------|
-| `example-queens N=<?>`               | N-Queens board creation, counting and enumerating solutions         |
-| `example-pigeonhole-principle N=<?>` | Proves the isomorphism of the _Pigeonhole Principle_ does not exist |
-| `example-tic-tac-toe N=<?>`          | Counting the number of ties on a 3D 4✕4✕4 with _N_ crosses placed  |
+The problem size and memory used for the examples mentioned in the targets below
+can be varied with the following two Makefile variables
 
+- `N`: The _N_ to be used in the problem.
+- `M`: The amount of memory given to _Adiar_ in MiB (default: 1024).
+
+| target                         | Example                                                             |
+|--------------------------------|---------------------------------------------------------------------|
+| `example-queens`               | _N_-Queens board creation, counting and enumerating solutions       |
+| `example-pigeonhole-principle` | Proves _Pigeonhole Principle_ for _N+1_ pigeons placed in _N_ boxes |
+| `example-tic-tac-toe`          | Counting the number of ties on a 3D 4✕4✕4 with _N_ crosses placed  |
 
 ## Future Work
 There are many possible avenues of improving on this approach to the data
