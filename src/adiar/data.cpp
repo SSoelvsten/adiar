@@ -169,10 +169,7 @@ namespace adiar {
     return create_sink_ptr(!value_of(sink2) || value_of(sink1));
   };
 
-  const bool_op equiv_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
-  {
-    return create_sink_ptr(unflag(sink1) == unflag(sink2));
-  };
+  const bool_op equiv_op = xnor_op;
 
   const bool_op diff_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
