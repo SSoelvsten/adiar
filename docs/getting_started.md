@@ -7,10 +7,10 @@
 - [Usage](#usage)
 
 ## Dependencies
-One needs a C++ compiler of ones choice. All development has been done with the
-gcc compiler, so we recommend one to use the same. The project also has
-dependencies on the TPIE library, which itself has dependencies on the Boost
-Library.
+One needs a C++ compiler of ones choice that supports the _17_ standard. All
+development has been done with the gcc compiler, so we recommend one to use the
+same. The project also has dependencies on the TPIE library, which itself has
+dependencies on the Boost Library.
 
 On Ubuntu 18+ you can obtain these dependencies with the following command.
 

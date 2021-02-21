@@ -48,11 +48,11 @@ repository recursively, then run the following command
 git submodule update --init --recursive
 ```
 
-One also needs a _C++_ compiler of ones choice. All development has currently
-been with the _gcc_ compiler, so we cannot guarantee other compilers will work
-out-of-the-box. The project is built with _CMake_ and has dependencies on the
-_Boost Library_. On Ubuntu 18+ you can obtain all these with the following
-commands.
+One also needs a _C++_ compiler that supports the _17_ standard. All development
+has currently been with the _gcc_ compiler, so we cannot guarantee other
+compilers will work out-of-the-box. The project is built with _CMake_ and has
+dependencies on the _Boost Library_. On Ubuntu 20+ you can obtain all these with
+the following commands.
 
 ```bash
 apt install g++ cmake libboost-all-dev
