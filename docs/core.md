@@ -1,21 +1,25 @@
+---
+layout: default
+title: Core
+nav_order: 3
+description: "The underlying data structures nodes and files"
+permalink: /core
+---
+
 # Core
 
 Most of the features of _Adiar_ can be used without knowing anything about how
-the underlying algorithms work. Yet, few BDD functions involve a `label_file` or
-`assignment_file` (c.f. [Assignment and Labels](#assignments-and-labels)), and
-especially an efficient manual construction of a well structured BDDs will
-require direct interaction with the underlying data types and files.
+the underlying algorithms work. Yet, a few BDD functions involve a `label_file`
+or `assignment_file`. Furthermore, an efficient manual construction of a well
+structured BDDs will require direct interaction with the underlying data types
+and files.
+{: .fs-6 .fw-300 }
 
-**Table of Contents**
+## Table of contents
+{: .no_toc .text-delta }
 
-- [Data types](#data-types)
-    - [Nodes and Pointers](#nodes-and-pointers)
-    - [Assignments](#assignments)
-- [Files](#files)
-    - [Nodes](#nodes)
-        - [Node Stream](#node-stream)
-        - [Node Writer](#node-writer)
-    - [Assignments and Labels](#assignments-and-labels)
+1. TOC
+{:toc}
 
 ## Data types
 

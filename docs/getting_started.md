@@ -1,10 +1,18 @@
+---
+layout: default
+title: Getting Started
+nav_order: 2
+description: "The dependencies and installation of _Adiar_ and how to initialise it."
+---
+
 # Getting Started
+{: no_toc}
 
-**Table of Contents**
+## Table of contents
+{: .no_toc .text-delta }
 
-- [Dependencies](#dependencies)
-- [Building with CMake](#building-with-cmake)
-- [Usage](#usage)
+1. TOC
+{:toc}
 
 ## Dependencies
 One needs a C++ compiler of ones choice that supports the _17_ standard. All
