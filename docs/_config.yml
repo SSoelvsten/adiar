@@ -1,4 +1,61 @@
+################################################################################
+#                                 Site settings
+################################################################################
 title: Adiar
-description: An External Memory Decision Diagram Library
+description: An External Memory Binary Decision Diagram Library
 
-theme: jekyll-theme-slate
+# Prior theme choice
+# theme: jekyll-theme-slate
+
+################################################################################
+#                                 Just-the-docs
+################################################################################
+remote_theme: pmarsceill/just-the-docs
+
+# Enable or disable the site search
+# Supports true (default) or false
+search_enabled: true
+search:
+  # Split pages into sections that can be searched individually
+  heading_level: 3
+  # Maximum amount of previews per search result
+  previews: 5
+  # Maximum amount of words to display before a matched word in the preview
+  preview_words_before: 3
+  # Maximum amount of words to display after a matched word in the preview
+  preview_words_after: 3
+  # Set the search token separator
+  tokenizer_separator: /[\s/]+/
+  # Display the relative url in search results
+  rel_url: true
+  # Enable or disable the search button that appears in the bottom right corner
+  # of every page Supports true or false
+  button: true
+
+# Enable or disable heading anchors
+heading_anchors: true
+
+# Aux links for the upper right navigation
+aux_links:
+  "Adiar on GitHub":
+    - "//github.com/ssoelvsten/adiar"
+
+# Makes Aux links open in a new tab. Default is false
+aux_links_new_tab: true
+
+# Sort order for navigation links
+nav_sort: case_insensitive
+
+
+# Back to top link
+back_to_top: true
+back_to_top_text: "Back to top"
+
+footer_content: "The source and the documentation is distributed under the <a href=\"https://github.com/ssoelvsten/adiar/tree/master/LICENSE.md\">MIT license.</a>"
+
+# Footer last edited timestamp
+last_edit_timestamp: true
+last_edit_time_format: "%b %e %Y at %I:%M %p"
+
+# Color scheme
+color_scheme: light

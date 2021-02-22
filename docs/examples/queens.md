@@ -1,22 +1,31 @@
-# N-Queens Example
+---
+layout: default
+title: Queens
+nav_order: 1
+parent: Examples
+description: "N-Queens example"
+permalink: examples/queens
+---
 
-Remember that the N-Queens problem is as follows
+# Queens
+{: .no_toc }
+
+The N-Queens problem is the following combinatorial problem
+{: .fs-6 .fw-300 }
 
 > Given N, then in how many ways can N queens be placed on an N x N chess board
 > without threatening each other?
+{: .fs-6 .fw-300 }
 
-In the following we will solve this problem using BDDs. The final program is
-available in
-[example/n_queens.cpp](https://github.com/SSoelvsten/adiar/blob/master/example/n_queens.cpp).
+We will solve this problem using BDDs. The final program is available in
+[example/queens.cpp](//github.com/SSoelvsten/adiar/blob/master/example/queens.cpp).
+{: .fs-6 .fw-300 }
 
-**Table of Contents**
+## Table of contents
+{: .no_toc .text-delta }
 
-- [Computing the set of all solutions](#computing-the-set-of-all-solutions)
-    - [Explicitly constructing base cases](#explicitly-constructing-base-cases)
-    - [Constructing the entire board](#constructing-the-entire-board)
-    - [Counting the number of solutions](#counting-the-number-of-solutions)
-- [Printing each solution](#printing-each-solution)
-
+1. TOC
+{:toc}
 
 ## Computing the set of all solutions
 
@@ -30,9 +39,7 @@ represent whether a queen is placed at position (_i_,_j_) on the _N_×_N_ board
 board as the variable with label computed as follows.
 
 ```c++
-inline label_t label_of_position(uint64_t N,
-                                 uint64_t i,
-                                 uint64_t j)
+inline label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 {
   return (N * i) + j;
 }
@@ -44,12 +51,15 @@ Let us first restrict our attention to the base case of expressing the state of
 a single field (_i_,_j_). We need to express that a single queen is placed here,
 and that this queen is in no conflict with any other placed on the board, i.e.
 any queens on the same row, column or diagonals. This essentially is the formula
-`x_ij /\ !is_threatened(i,j)`, where `is_threatened(i,j)` is true if one or more
-queens are placed on conflicting positions.
+<p style="text-align: center;">
+  x<sub>ij</sub> ∧ ¬<i>is_threatened</i>(i,j)
+</p>
+where _is_threatened_(i,j) is true if one or more queens are placed on
+conflicting positions.
 
 We could construct the BDD with the builders and algorithms of _Adiar_. But, we
 can do even better than that, because the resulting BDD is well structured. So,
-we can explicitly construct in one go with a [node stream](/core.md#files)!
+we can explicitly construct in one go with a [node stream](../core/files#node-stream)!
 Remember that nodes are to be written bottom-up and in reverse. By the ordering
 of variables in `label_of_position` we have to deal with (1) queens on the row
 _i_ and (2) queens on other rows. For (1) we have to check all variables,
@@ -360,3 +370,4 @@ void n_queens_print_solution(std::vector<uint64_t>& assignment)
   std::cout << "\n";
 }
 ```
+

@@ -1,10 +1,19 @@
-# Getting Started
+---
+layout: default
+title: Getting started
+nav_order: 2
+description: "The dependencies and installation of _Adiar_ and how to initialise it."
+permalink: /getting_started
+---
 
-**Table of Contents**
+# Getting started
+{: .no_toc }
 
-- [Dependencies](#dependencies)
-- [Building with CMake](#building-with-cmake)
-- [Usage](#usage)
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
 
 ## Dependencies
 One needs a C++ compiler of ones choice that supports the _17_ standard. All
@@ -12,7 +21,7 @@ development has been done with the gcc compiler, so we recommend one to use the
 same. The project also has dependencies on the TPIE library, which itself has
 dependencies on the Boost Library.
 
-On Ubuntu 18+ you can obtain these dependencies with the following command.
+On Ubuntu 20+ you can obtain these dependencies with the following command.
 
 ```bash
 apt install g++ libboost-all-dev

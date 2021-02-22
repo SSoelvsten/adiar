@@ -1,29 +1,37 @@
+---
+layout: default
+title: BDD
+nav_order: 3
+description: "The BDD data structure and the functions provided to manipulate it"
+permalink: /bdd
+---
+
 # BDD
+{: .no_toc }
 
 A Binary Decision Diagram (BDD) represents a boolean function
+{: .fs-6 .fw-300 }
 
-<p style="text-align: center;">
+<p class="fs-6 fw-300" style="text-align: center;">
   {0,1}ⁿ → {0,1}
 </p>
 
 The `bdd` class takes care of reference counting and optimal garbage collection
-of the underlying files (c.f. [Files](/core.md#files)). To ensure the most
-disk-space is available, try to garbage collect the `bdd` objects as quickly as
-possible and/or minimise the number of lvalues of said type.
+of the underlying files (cf. [Core/Files](./core/files#nodes)). To ensure the
+most disk-space is available, try to garbage collect the `bdd` objects as
+quickly as possible and/or minimise the number of lvalues of said type.
 
-**Table of Contents**
+## Table of contents
+{: .no_toc .text-delta }
 
-- [Basic Constructors](#basic-constructors)
-- [Basic Manipulation](#basic-manipulation)
-- [Counting Operations](#counting-operations)
-- [Other Functions](#other-functions)
-- [DOT Output](#dot-output)
+1. TOC
+{:toc}
 
 ## Basic Constructors
 
 To construct a more complex but well-structured `bdd` than what follows below,
-create a `node_file` and write the nodes bottom-up with a `node_writer` as
-described in Section [Files](/core.md#files). The `bdd` object can then be
+create a [`node_file`](./core/files#nodes) and write the nodes bottom-up with
+the [`node_writer`](./core/files#node-writer). The `bdd` object can then be
 copy-constructed from the `node_file`.
 
 - `bdd bdd_sink(bool)`
@@ -110,7 +118,7 @@ copy-constructed from the `node_file`.
 
   Return the BDD representing `f ? g : h`. In other BDD packages such a function
   is good for manually constructing a BDD bottom-up, but for those purposes one
-  should here instead use the [`node_writer`](/core.md#files) class.
+  should here instead use the [`node_writer`](./core/files#node-writer) class.
 
 - `bdd bdd_not(bdd f)` (operator: `~`)
 
