@@ -5,7 +5,6 @@
 #include <adiar/adiar.h>
 
 int main(int argc, char* argv[]) {
-  // ========== ADIAR =============
   size_t M = 1024;
 
   try {
@@ -20,11 +19,14 @@ int main(int argc, char* argv[]) {
 
   adiar::adiar_init(M);
 
-  // ===== Your code here... =====
+  {
+    // ===== Your code starts here =====
 
 
 
-  // ========== ADIAR =============
+    // =====  Your code ends here  =====
+  }
+
   adiar::adiar_deinit();
   exit(0);
 }
