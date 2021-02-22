@@ -53,17 +53,6 @@ coverage:
 	@genhtml coverage.info -o test/report/
 
 # ============================================================================ #
-#  DOT FILE output for visual debugging
-# ============================================================================ #
-F =
-
-dot:
-	@mkdir -p build/
-	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug ..
-	@cd build/ && make $(MAKE_FLAGS) adiar_dot
-	@./build/src/adiar_dot ${F}
-
-# ============================================================================ #
 #  MAIN for console debugging
 # ============================================================================ #
 M = 1024

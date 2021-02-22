@@ -86,14 +86,7 @@ The _Makefile_ provides the following targets
 | `test`          | Run all unit tests (with _O2_ optimisations)                         |
 | `coverage`      | Run all unit tests (with no optimisations) and create _lcov_ report  |
 |                 |                                                                      |
-| `dot F=<files>` | Convert persisted _Adiar_ files `<files>` into DOT files             |
 | `main M=<MiB>`  | Run the _main_ function in `src/main.cpp` with `<MiB>` MiB of memory |
-
-To further convert a _.dot_ file into a picture run the following command
-
-```
-dot -O -Tpng filename.dot
-```
 
 ### Examples and benchmarks
 The _/examples_ folder contains examples for using the data structure to solve
