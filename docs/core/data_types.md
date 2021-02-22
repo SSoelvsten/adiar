@@ -31,10 +31,10 @@ of a node. This identifier is supposed to reflect the following total ordering.
 These uids can be stored within a single unsigned 64-bit integer, which then
 acts as a "pointer" to the node and can be constructed as follows.
 
-- `uid_t create_node_uid(label_t label, id_t id)`
+- `uid_t create_node_uid(label_t l, id_t id)`
 
-  Create the identifier for the node with label `label` and identifier `id`.
-  We provide `ptr_t create_node_ptr(label, id)` as an alternative.
+  Create the unique identifier for the node with label _l_ and identifier _id_.
+  We provide `ptr_t create_node_ptr(l, id)` as an alternative.
 
 One then must use the following two functions to again retrieve the label or id
 from a uid.
@@ -54,8 +54,8 @@ sink-identifiers by using the following functions.
 
 - `uid_t create_sink_uid(bool v)`
 
-  Create the identifier to a sink with a given boolean value. We also provide
-  `ptr_t create_sink_ptr(v)` as an alternative.
+  Create the unique identifier to a sink with a given boolean value. We also
+  provide `ptr_t create_sink_ptr(v)` as an alternative.
 
 - `bool value_of(ptr_t p)`
 

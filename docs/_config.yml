@@ -17,7 +17,7 @@ remote_theme: pmarsceill/just-the-docs
 search_enabled: true
 search:
   # Split pages into sections that can be searched individually
-  heading_level: 3
+  heading_level: 4
   # Maximum amount of previews per search result
   previews: 5
   # Maximum amount of words to display before a matched word in the preview
