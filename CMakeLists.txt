@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.8)
 project (adiar
-  VERSION 0.2
+  VERSION 1.0
   DESCRIPTION "Adiar, an external memory decision diagram library"
   LANGUAGES CXX
 )
