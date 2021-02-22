@@ -1,22 +1,28 @@
-# N-Queens Example
+---
+layout: default
+title: Queens
+nav_order: 1
+parent: Examples
+description: "N-Queens example"
+permalink: examples/queens
+---
+
+# N-Queens
+{: .no_toc }
 
 Remember that the N-Queens problem is as follows
-
 > Given N, then in how many ways can N queens be placed on an N x N chess board
 > without threatening each other?
+We will solve this problem using BDDs. The final program is available in
+[example/queens.cpp](//github.com/SSoelvsten/adiar/blob/master/example/queens.cpp).
 
-In the following we will solve this problem using BDDs. The final program is
-available in
-[example/n_queens.cpp](https://github.com/SSoelvsten/adiar/blob/master/example/n_queens.cpp).
+{: .fs-6 .fw-300 }
 
-**Table of Contents**
+## Table of contents
+{: .no_toc .text-delta }
 
-- [Computing the set of all solutions](#computing-the-set-of-all-solutions)
-    - [Explicitly constructing base cases](#explicitly-constructing-base-cases)
-    - [Constructing the entire board](#constructing-the-entire-board)
-    - [Counting the number of solutions](#counting-the-number-of-solutions)
-- [Printing each solution](#printing-each-solution)
-
+1. TOC
+{:toc}
 
 ## Computing the set of all solutions
 
@@ -360,3 +366,4 @@ void n_queens_print_solution(std::vector<uint64_t>& assignment)
   std::cout << "\n";
 }
 ```
+
