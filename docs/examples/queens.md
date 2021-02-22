@@ -7,15 +7,18 @@ description: "N-Queens example"
 permalink: examples/queens
 ---
 
-# N-Queens
+# Queens
 {: .no_toc }
 
 Remember that the N-Queens problem is as follows
-> Given N, then in how many ways can N queens be placed on an N x N chess board
-> without threatening each other?
+{: .fs-6 .fw-300 }
+
+> _Given N, then in how many ways can N queens be placed on an N x N chess board
+> without threatening each other?__
+{: .fs-6 .fw-300 }
+
 We will solve this problem using BDDs. The final program is available in
 [example/queens.cpp](//github.com/SSoelvsten/adiar/blob/master/example/queens.cpp).
-
 {: .fs-6 .fw-300 }
 
 ## Table of contents
@@ -36,9 +39,7 @@ represent whether a queen is placed at position (_i_,_j_) on the _N_×_N_ board
 board as the variable with label computed as follows.
 
 ```c++
-inline label_t label_of_position(uint64_t N,
-                                 uint64_t i,
-                                 uint64_t j)
+inline label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 {
   return (N * i) + j;
 }
@@ -50,8 +51,11 @@ Let us first restrict our attention to the base case of expressing the state of
 a single field (_i_,_j_). We need to express that a single queen is placed here,
 and that this queen is in no conflict with any other placed on the board, i.e.
 any queens on the same row, column or diagonals. This essentially is the formula
-`x_ij /\ !is_threatened(i,j)`, where `is_threatened(i,j)` is true if one or more
-queens are placed on conflicting positions.
+<p style="text-align: center;">
+  x<sub>ij</sub> ∧ ¬<i>is_threatened</i>(i,j)
+</p>
+where _is_threatened_(i,j) is true if one or more queens are placed on
+conflicting positions.
 
 We could construct the BDD with the builders and algorithms of _Adiar_. But, we
 can do even better than that, because the resulting BDD is well structured. So,

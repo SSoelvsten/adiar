@@ -7,7 +7,6 @@ permalink: /
 ---
 
 # Adiar
-
 {: .fs-9 }
 
 _Adiar_ is a library for manipulating Binary Decision Diagrams even when these
@@ -23,25 +22,25 @@ on disk to delay recursion with Time-Forward Processing.
 
 ## Table of Content
 
-- [**Getting Started**](/getting_started)
+1. [Getting started](getting_started)
 
   Dependencies and installation of _Adiar_ and how to initialise it in your C++
   program.
 
-- [**BDD**](/bdd)
+2. [BDD](bdd)
 
   The _BDD_ data structure and the functions provided to manipulate it.
 
-- [**Core**](/core)
+3. [Core](core)
 
   The underlying data structures _nodes_ and _files_ that you would use to
   quickly construct larger Decision Diagrams programmatically.
 
-- [**Examples**](/examples)
+4. [Examples](examples)
 
   Examples that cover the functionalities of _Adiar_.
 
-  - [**N-Queens**](/examples/queens)
+  1. [Queens](examples/queens)
 
 
 ## About the project

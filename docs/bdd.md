@@ -1,13 +1,13 @@
 ---
 layout: default
 title: BDD
-nav_order: 2
+nav_order: 3
 description: "The BDD data structure and the functions provided to manipulate it"
 permalink: /bdd
 ---
 
 # BDD
-{: no_toc}
+{: .no_toc }
 
 A Binary Decision Diagram (BDD) represents a boolean function
 <p style="text-align: center;">

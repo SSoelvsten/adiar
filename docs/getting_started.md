@@ -1,12 +1,13 @@
 ---
 layout: default
-title: Getting Started
+title: Getting started
 nav_order: 2
 description: "The dependencies and installation of _Adiar_ and how to initialise it."
+permalink: /getting_started
 ---
 
-# Getting Started
-{: no_toc}
+# Getting started
+{: .no_toc }
 
 ## Table of contents
 {: .no_toc .text-delta }
