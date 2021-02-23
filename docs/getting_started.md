@@ -15,6 +15,8 @@ permalink: /getting_started
 1. TOC
 {:toc}
 
+---
+
 ## Dependencies
 One needs a C++ compiler of ones choice that supports the _17_ standard. All
 development has been done with the gcc compiler, so we recommend one to use the

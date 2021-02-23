@@ -18,9 +18,8 @@ on disk to delay recursion with Time-Forward Processing.
 
 [View it on GitHub](https://github.com/ssoelvsten/adiar){: .btn .fs-5 .mb-4 .mb-md-0 }
 
----
-
 ## Table of Content
+{: .text-delta }
 
 1. [Getting started](getting_started)
 
@@ -39,6 +38,8 @@ on disk to delay recursion with Time-Forward Processing.
 4. [Examples](examples)
 
    Examples that cover the functionalities of _Adiar_.
+
+---
 
 ## About the project
 

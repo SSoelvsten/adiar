@@ -27,6 +27,8 @@ We will solve this problem using BDDs. The final program is available in
 1. TOC
 {:toc}
 
+---
+
 ## Computing the set of all solutions
 
 We will compute the BDD containing all the solutions as described in the paper

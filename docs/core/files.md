@@ -10,17 +10,13 @@ permalink: core/files
 # Files
 {: .no_toc }
 
-
-All algorithms of _Adiar_ rely on exploiting an explicit ordering of elements on
-disk. To this end, one has to work directly on the way elements are to be stored
-in the files.
-{: .fs-6 .fw-300 }
-
 ## Table of contents
 {: .no_toc .text-delta }
 
 1. TOC
 {:toc}
+
+---
 
 ## Nodes
 

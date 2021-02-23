@@ -27,6 +27,8 @@ quickly as possible and/or minimise the number of lvalues of said type.
 1. TOC
 {:toc}
 
+---
+
 ## Basic Constructors
 
 To construct a more complex but well-structured `bdd` than what follows below,

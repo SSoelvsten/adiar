@@ -16,6 +16,8 @@ permalink: core/data_types
 1. TOC
 {:toc}
 
+---
+
 ## Nodes
 
 ### Identifiers and ordering
