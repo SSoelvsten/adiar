@@ -98,7 +98,7 @@ The problem size and memory used for the examples mentioned in the targets below
 can be varied with the following two Makefile variables
 
 - `N`: The _N_ to be used in the problem.
-- `M`: The amount of memory given to _Adiar_ in MiB (default: 1024).
+- `M`: The amount of memory given to Adiar in MiB (default: 1024).
 
 | target                         | Example                                                             |
 |--------------------------------|---------------------------------------------------------------------|
@@ -127,21 +127,23 @@ group at [Aarhus University](https://cs.au.dk).
 
 Thank you, to the following wonderful people:
 
-- **[Anna Blume Jakobsen](https://github.com/bluekeladry)**: Bachelor student,
-  who implemented _Apply_, _Evaluate_, _Count Assignments_, _Count Paths_,
-  _Reduce_, and _Restrict_ as part of a summer project.
+- **[Anna Blume Jakobsen](https://github.com/bluekeladry)**:
+  Bachelor student, who during a summer project wrote the first implementation
+  of the _Apply_, _Evaluate_, _Count Assignments_, _Count Paths_, _Reduce_, and
+  _Restrict_ algorithms.
 
 - **[Asger Hautop Drewsen](https://github.com/Tyilo)**: Previous maintainer of
   _TPIE_, who helped debug a few issues and gave general feedback on the
   codebase.
 
 - **[Mathias Rav](https://github.com/Mortal)**:
-  Developer of TPIE and always helpful oracle about everything _TPIE_,
-  _I/O_ algorithms and _C++_.
+  Developer of _TPIE_, always helpful oracle about everything _TPIE_,
+  _I/O_ algorithms, and _C++_.
 
 - **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
-  Bachelor student, who implemented _Apply_, _Evaluate_, _Count Assignments_,
-  _Count Paths_, _Reduce_, and _Restrict_ as part of a summer project.
+  Bachelor student, who during a summer project wrote the first implementation
+  of the _Apply_, _Evaluate_, _Count Assignments_, _Count Paths_, _Reduce_, and
+  _Restrict_ algorithms.
 
 
 ## License
