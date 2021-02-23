@@ -42,6 +42,9 @@ on disk to delay recursion with Time-Forward Processing.
 
 ## About the project
 
+This project has been developed at the [Logic and Semantics](https://logsem.github.io/)
+group at [Aarhus University](https://cs.au.dk).
+
 **Current Maintainer:** [Steffan Sølvsten](mailto:soelvsten@cs.au.dk)
 
 ### License

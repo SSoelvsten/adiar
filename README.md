@@ -116,6 +116,9 @@ project.
 
 ## Credits
 
+This project has been developed at the [Logic and Semantics](https://logsem.github.io/)
+group at [Aarhus University](https://cs.au.dk).
+
 - **[Steffan Sølvsten](https://github.com/SSoelvsten)**:
   [soelvsten@cs.au.dk](mailto:soelvsten@cs.au.dk)
 
