@@ -17,7 +17,7 @@ of BDDs, that far outgrow the memory limit of the given machine.
 - [Usage](#usage)
     - [Makefile targets](#makefile-targets)
     - [Examples and benchmarks](#examples-and-benchmarks)
-- [Future Work](#future-work)
+- [Contributions](#contributions)
 - [Credits](#credits)
 - [License](#license)
 - [References](#references)
@@ -106,12 +106,11 @@ can be varied with the following two Makefile variables
 | `example-pigeonhole-principle` | Proves _Pigeonhole Principle_ for _N+1_ pigeons placed in _N_ boxes |
 | `example-tic-tac-toe`          | Counting the number of ties on a 3D 4✕4✕4 with _N_ crosses placed  |
 
-## Future Work
-There are many possible avenues of improving on this approach to the data
-structure. We list quite a few in [FUTURE_WORK.md](/FUTURE_WORK.md). Many of
-these may constitute interesting undergraduate research projects. We would love
-to see the results of such projects as pull requests to improve the main
-project.
+
+## Contributions
+Adiar is not yet feature complete, and there are still many interesting things
+left for _you_ to do. We already list lots of suggestions for possible projects
+and contributions as [future work](/FUTURE_WORK.md).
 
 
 ## Credits
