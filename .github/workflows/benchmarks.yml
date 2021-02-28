@@ -1,0 +1,171 @@
+name: benchmarks
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  fetch-branch:
+    runs-on: ubuntu-latest  
+    steps:
+    - id: identify
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF#refs/heads/})"
+    outputs:
+      branch: ${{ steps.identify.outputs.branch }}
+
+  queens:
+    name: 'Queens'
+    needs: fetch-branch
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Git | checkout SSoelvsten/BDD-Benchmark
+      uses: actions/checkout@v2
+      with:
+        repository: 'ssoelvsten/bdd-benchmark'
+        submodules: 'recursive'
+    - name: Git | switch to branch
+      run: |
+        cd external/adiar
+        git fetch
+        git checkout -b remote/${{ needs.fetch-branch.outputs.branch }}
+
+    - name: Apt | install boost aptitude
+      run: sudo apt install libboost-all-dev aptitude
+    - name: CMake | build
+      run: |
+        cmake -E make_directory build
+        cd build
+        cmake ../ -D CMAKE_BUILD_TYPE=Release && cmake --build . --target adiar_queens
+
+    - name: Run Benchmark | N = 8
+      run: build/src/adiar_queens 8 1024
+    - name: Run Benchmark | N = 9
+      run: build/src/adiar_queens 9 1024
+    - name: Run Benchmark | N = 10
+      run: build/src/adiar_queens 10 1024
+    - name: Run Benchmark | N = 11
+      run: build/src/adiar_queens 11 1024
+    - name: Run Benchmark | N = 12
+      run: build/src/adiar_queens 12 1024
+
+
+  sat_pigeonhole_principle:
+    name: 'SAT: Pigeonhole Principle'
+    needs: fetch-branch
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Git | checkout SSoelvsten/BDD-Benchmark
+      uses: actions/checkout@v2
+      with:
+        repository: 'ssoelvsten/bdd-benchmark'
+        submodules: 'recursive'
+        fetch-depth: '0'
+    - name: Git | checkout pull request
+      run: |
+        cd external/adiar
+        git fetch
+        git checkout ${{ needs.fetch-branch.outputs.branch }}
+        git status
+
+    - name: Apt | install boost aptitude
+      run: sudo apt install libboost-all-dev aptitude
+    - name: CMake | build
+      run: |
+        cmake -E make_directory build
+        cd build
+        cmake ../ -D CMAKE_BUILD_TYPE=Release && cmake --build . --target adiar_sat_pigeonhole_principle
+
+    - name: Run Benchmark | N = 1
+      run: build/src/adiar_sat_pigeonhole_principle 1 1024
+    - name: Run Benchmark | N = 2
+      run: build/src/adiar_sat_pigeonhole_principle 2 1024
+    - name: Run Benchmark | N = 3
+      run: build/src/adiar_sat_pigeonhole_principle 3 1024
+    - name: Run Benchmark | N = 4
+      run: build/src/adiar_sat_pigeonhole_principle 4 1024
+    - name: Run Benchmark | N = 5
+      run: build/src/adiar_sat_pigeonhole_principle 5 1024
+    - name: Run Benchmark | N = 6
+      run: build/src/adiar_sat_pigeonhole_principle 6 1024
+    - name: Run Benchmark | N = 7
+      run: build/src/adiar_sat_pigeonhole_principle 7 1024
+    - name: Run Benchmark | N = 8
+      run: build/src/adiar_sat_pigeonhole_principle 8 1024
+    - name: Run Benchmark | N = 9
+      run: build/src/adiar_sat_pigeonhole_principle 9 1024
+    - name: Run Benchmark | N = 10
+      run: build/src/adiar_sat_pigeonhole_principle 10 1024
+
+
+  sat_queens:
+    name: 'SAT: Queens'
+    needs: fetch-branch
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Git | checkout SSoelvsten/BDD-Benchmark
+      uses: actions/checkout@v2
+      with:
+        repository: 'ssoelvsten/bdd-benchmark'
+        submodules: 'recursive'
+    - name: Git | switch to branch
+      run: |
+        cd external/adiar
+        git fetch
+        git checkout -b remote/${{ needs.fetch-branch.outputs.branch }}
+
+    - name: Apt | install boost aptitude
+      run: sudo apt install libboost-all-dev aptitude
+    - name: CMake | build
+      run: |
+        cmake -E make_directory build
+        cd build
+        cmake ../ -D CMAKE_BUILD_TYPE=Release && cmake --build . --target adiar_sat_queens
+
+    - name: Run Benchmark | N = 5
+      run: build/src/adiar_sat_queens 5 1024
+    - name: Run Benchmark | N = 6
+      run: build/src/adiar_sat_queens 6 1024
+    - name: Run Benchmark | N = 7
+      run: build/src/adiar_sat_queens 7 1024
+    - name: Run Benchmark | N = 8
+      run: build/src/adiar_sat_queens 8 1024
+
+
+  tic_tac_toe:
+    name: 'Tic-Tac-Toe'
+    needs: fetch-branch
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Git | checkout SSoelvsten/BDD-Benchmark
+      uses: actions/checkout@v2
+      with:
+        repository: 'ssoelvsten/bdd-benchmark'
+        submodules: 'recursive'
+    - name: Git | switch to branch
+      run: |
+        cd external/adiar
+        git fetch
+        git checkout -b remote/${{ needs.fetch-branch.outputs.branch }}
+
+    - name: Apt | install boost aptitude
+      run: sudo apt install libboost-all-dev aptitude
+    - name: CMake | build
+      run: |
+        cmake -E make_directory build
+        cd build
+        cmake ../ -D CMAKE_BUILD_TYPE=Release && cmake --build . --target adiar_tic_tac_toe
+
+    - name: Run Benchmark | N = 18
+      run: build/src/adiar_tic_tac_toe 18 1024
+    - name: Run Benchmark | N = 19
+      run: build/src/adiar_tic_tac_toe 19 1024
+    - name: Run Benchmark | N = 20
+      run: build/src/adiar_tic_tac_toe 20 1024
+    - name: Run Benchmark | N = 21
+      run: build/src/adiar_tic_tac_toe 21 1024
+

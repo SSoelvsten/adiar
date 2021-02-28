@@ -9,13 +9,14 @@ on:
 jobs:
 
   queens:
-    name: 'N-Queens'
+    name: 'Queens'
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
+
     - name: Apt | install boost aptitude
       run: sudo apt install libboost-all-dev aptitude
     - name: CMake | build
@@ -23,6 +24,7 @@ jobs:
         cmake -E make_directory ${{runner.workspace}}/build
         cd ${{runner.workspace}}/build
         cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target queens
+
     - name: Run | 1-Queens
       working-directory: ${{runner.workspace}}/build
       run: ./example/queens 1 1024
@@ -47,71 +49,3 @@ jobs:
     - name: Run | 8-Queens
       working-directory: ${{runner.workspace}}/build
       run: ./example/queens 8 1024
-
-  pigeonhole_principle:
-    name: 'Pigeonhole Principle'
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
-    - name: Apt | install boost aptitude
-      run: sudo apt install libboost-all-dev aptitude
-    - name: CMake | build
-      run: |
-        cmake -E make_directory ${{runner.workspace}}/build
-        cd ${{runner.workspace}}/build
-        cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target pigeonhole_principle
-    - name: Run | 2 Pigeons
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/pigeonhole_principle 1 1024
-    - name: Run | 3 Pigeons
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/pigeonhole_principle 2 1024
-    - name: Run | 4 Pigeons
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/pigeonhole_principle 3 1024
-    - name: Run | 5 Pigeons
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/pigeonhole_principle 4 1024
-    - name: Run | 6 Pigeons
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/pigeonhole_principle 5 1024
-    - name: Run | 7 Pigeons
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/pigeonhole_principle 6 1024
-    - name: Run | 8 Pigeons
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/pigeonhole_principle 7 1024
-    - name: Run | 9 Pigeons
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/pigeonhole_principle 8 1024
-    - name: Run | 10 Pigeons
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/pigeonhole_principle 9 1024
-    - name: Run | 11 Pigeons
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/pigeonhole_principle 10 1024
-
-  tic_tac_toe:
-    name: 'Tic-Tac-Toe'
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
-    - name: Apt | install boost aptitude
-      run: sudo apt install libboost-all-dev aptitude
-    - name: CMake | build
-      run: |
-        cmake -E make_directory ${{runner.workspace}}/build
-        cd ${{runner.workspace}}/build
-        cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target tic_tac_toe
-    - name: Run | Tic-Tac-Toe (18)
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/tic_tac_toe 18 1024
-    - name: Run | Tic-Tac-Toe (20)
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/tic_tac_toe 20 1024

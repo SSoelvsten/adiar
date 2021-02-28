@@ -103,8 +103,6 @@ can be varied with the following two Makefile variables
 | target                         | Example                                                             |
 |--------------------------------|---------------------------------------------------------------------|
 | `example-queens`               | _N_-Queens board creation, counting and enumerating solutions       |
-| `example-pigeonhole-principle` | Proves _Pigeonhole Principle_ for _N+1_ pigeons placed in _N_ boxes |
-| `example-tic-tac-toe`          | Counting the number of ties on a 3D 4✕4✕4 with _N_ crosses placed  |
 
 
 ## Contributions
