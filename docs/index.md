@@ -11,7 +11,7 @@ permalink: /
 
 _Adiar_ is a library for manipulating Binary Decision Diagrams even when these
 grow bigger than the memory one has available. To achieve this, all operations
-are not implemented recursively with a global memoization table, but instead
+are not implemented recursively with a shared unique node table, but instead
 they are created as streaming algorithms that exploit the sorting of the graph
 on disk to delay recursion with Time-Forward Processing.
 {: .fs-6 .fw-300 }
