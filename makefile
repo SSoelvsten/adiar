@@ -80,29 +80,3 @@ example-queens:
 	@echo ""
 	@./build/example/queens ${N} ${M}
 	@echo ""
-
-example-pigeonhole-principle: N := 10
-example-pigeonhole-principle:
-  # Build
-	@mkdir -p build/
-	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
-
-	@cd build/ && make $(MAKE_FLAGS) pigeonhole_principle
-
-  # Run
-	@echo ""
-	@./build/example/pigeonhole_principle ${N} ${M}
-	@echo ""
-
-example-tic-tac-toe: N := 20
-example-tic-tac-toe:
-  # Build
-	@mkdir -p build/
-	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
-
-	@cd build/ && make $(MAKE_FLAGS) tic_tac_toe
-
-  # Run
-	@echo ""
-	@./build/example/tic_tac_toe ${N} ${M}
-	@echo ""
