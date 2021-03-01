@@ -9,8 +9,16 @@ on:
 jobs:
 
   queens:
-    name: 'Queens'
+    name: 'Example: ${{ matrix.name }}'
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: 'Queens'
+            exec: queens
+            N: '1 2 3 4 5 6 7 8 9 10 11'
 
     steps:
     - uses: actions/checkout@v2
@@ -23,29 +31,8 @@ jobs:
       run: |
         cmake -E make_directory ${{runner.workspace}}/build
         cd ${{runner.workspace}}/build
-        cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target queens
+        cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=Release && cmake --build . --target ${{ matrix.exec }}
 
-    - name: Run | 1-Queens
+    - name: Run example
       working-directory: ${{runner.workspace}}/build
-      run: ./example/queens 1 1024
-    - name: Run | 2-Queens
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/queens 2 1024
-    - name: Run | 3-Queens
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/queens 3 1024
-    - name: Run | 4-Queens
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/queens 4 1024
-    - name: Run | 5-Queens
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/queens 5 1024
-    - name: Run | 6-Queens
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/queens 6 1024
-    - name: Run | 7-Queens
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/queens 7 1024
-    - name: Run | 8-Queens
-      working-directory: ${{runner.workspace}}/build
-      run: ./example/queens 8 1024
+      run: for n in ${{ matrix.N }}; do ./example/${{ matrix.exec }} $n 1024; done
