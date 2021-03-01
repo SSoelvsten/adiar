@@ -3,6 +3,7 @@ name: benchmarks
 on:
   pull_request:
     branches: [ master ]
+    paths: 'src/adiar/**'
 
 jobs:
 
