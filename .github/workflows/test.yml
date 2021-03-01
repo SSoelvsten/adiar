@@ -9,6 +9,7 @@ on:
 jobs:
 
   test:
+    name: 'Unit test (incl. code coverage)'
     runs-on: ubuntu-latest
 
     steps:
@@ -38,6 +39,6 @@ jobs:
         lcov -c -d build/src/adiar/ -o ./coverage.info
         lcov --remove coverage.info --output-file coverage.info "/usr/*" "*/external/*" "./test/*"
 
-    - name: Upload report to CodeCov.io
+    - name: Upload report to Codecov.io
       working-directory: ${{runner.workspace}}
       run: bash <(curl -s https://codecov.io/bash) -f coverage.info -t ${{ secrets.CODECOV_TOKEN }} || echo "Codecov did not collect coverage reports"
