@@ -9,6 +9,5 @@ has_children: true
 # Examples
 {: .no_toc }
 
-The following examples are provide an introduction to using all aspects of
-_Adiar_.
+The following examples provide an introduction to using all aspects of _Adiar_.
 {: .fs-6 .fw-300 }

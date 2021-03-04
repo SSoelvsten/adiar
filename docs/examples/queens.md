@@ -40,7 +40,7 @@ will stay with the simple row-by-row ordering of variables for now. That is, we
 represent whether a queen is placed at position (_i_,_j_) on the _N_×_N_ board
 board as the variable with label computed as follows.
 
-```c++
+```cpp
 inline label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 {
   return (N * i) + j;
@@ -71,7 +71,7 @@ generated before them (or to the _true_ sink if said node is first one
 generated). The x<sub>ij</sub> variable is, on the other hand, connected to the
 prior generated node by its high edge. All other edges go the to _false_ sink.
 
-```c++
+```cpp
 bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
 {
   node_file out;
@@ -167,14 +167,13 @@ placed then this ensures at-least-one queen is placed on the row. Since
 `n_queens_S` is also only _true_ when said queen has no conflicts then this also
 immediately contains the at-most-one queen constraint for said row.
 
-```c++
+```cpp
 bdd n_queens_R(uint64_t N, uint64_t row)
 {
   bdd out = n_queens_S(N, row, 0);
 
   for (uint64_t j = 1; j < N; j++) {
     out |= n_queens_S(N, row, j);
-    largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
   }
   return out;
 }
@@ -184,7 +183,7 @@ Now that we can represent a single row, then we only need to combine them such
 that all rows are satisfied at the same time. That is, we need to combine the
 BDDs constructed in `n_queens_R` with an AND.
 
-```c++
+```cpp
 bdd n_queens_B(uint64_t N)
 {
   if (N == 1) { return n_queens_S(N, 0, 0); }
@@ -193,20 +192,21 @@ bdd n_queens_B(uint64_t N)
 
   for (uint64_t i = 1; i < N; i++) {
     out &= n_queens_R(N, i);
-    largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
   }
   return out;
 }
 ```
 
-### Counting the number of solutions
+## Counting the number of solutions
 
 When the entire board is constructed as described above, then we merely need to
 count the number of satisfying solutions to the generated BDD.
 
-```c++
+```cpp
 int main(int argc, char* argv[])
 {
+  uint64_t N = std::stoi(argv[1])
+
   bdd board = n_queens_B(N);
   std::cout << bdd_satcount(board) << "\n";
 }
@@ -239,7 +239,7 @@ in memory and on disk.
 We first need to convert a label back into a position on the board before
 getting to that . So, we'll also need the following two small functions.
 
-```c++
+```cpp
 inline uint64_t i_of_label(uint64_t N, label_t label)
 {
   return label / N;
@@ -255,7 +255,7 @@ Now we are ready to implement the recursive procedure that takes care of a row
 and possibly recurses. For a sanity check, we also return the number of
 solutions we have listed.
 
-```c++
+```cpp
 uint64_t n_queens_list(uint64_t N, uint64_t column,
                        std::vector<uint64_t>& partial_assignment,
                        const bdd& constraints)
@@ -363,7 +363,7 @@ uint64_t n_queens_list(uint64_t N, const bdd& board)
 where `n_queens_print_solutions` is a function that prints out the assignment file.
 
 
-```c++
+```cpp
 void n_queens_print_solution(std::vector<uint64_t>& assignment)
 {
   for (uint64_t r : assignment) {
@@ -373,3 +373,15 @@ void n_queens_print_solution(std::vector<uint64_t>& assignment)
 }
 ```
 
+Finally we can print all solutions by calling `n_queens_list` with the board
+constructed in `n_queens_B`.
+
+```cpp
+int main(int argc, char* argv[])
+{
+  uint64_t N = std::stoi(argv[1])
+
+  bdd board = n_queens_B(N);
+  n_queens_list(board);
+}
+```

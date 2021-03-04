@@ -51,8 +51,8 @@ Then include the following line in your project's _CMakeLists.txt_.
 add_subdirectory (external/adiar adiar)
 ```
 
-Finally, every single executable target is linked _Adiar_ in the
-_CMakeLists.txt_ with the following lines.
+Finally, every single executable target is linked to _Adiar_ in the
+_CMakeLists.txt_ file with the following lines.
 
 ```cmake
 add_executable(<target> <source>)
@@ -69,7 +69,7 @@ one needs to include the `<adiar/adiar.h>` header, initialise the library before
 use, and remember to deinitialise the library again before the program
 terminates.
 
-```c++
+```cpp
 #include <adiar/adiar.h>
 
 int main()

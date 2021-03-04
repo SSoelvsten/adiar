@@ -79,7 +79,7 @@ the following two predicates.
 With the above a node in _Adiar_ is the following combination of 3 unsigned
 64-bit numbers
 
-```c++
+```cpp
 struct node { uid_t uid; ptr_t low; ptr_t high; };
 ```
 
@@ -127,7 +127,7 @@ node with the following function.
 An assignment to a variable depends on the _label_ of the variable together with
 the boolean _value_ it is assigned to.
 
-```c++
+```cpp
 struct assignment { label_t label; bool value; };
 ```
 
