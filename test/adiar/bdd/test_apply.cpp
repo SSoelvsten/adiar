@@ -249,10 +249,10 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });
@@ -293,10 +293,10 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });
@@ -337,10 +337,10 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });
@@ -371,7 +371,7 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });
@@ -583,13 +583,13 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 3 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,2u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });
@@ -671,16 +671,16 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 3 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,1u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });
@@ -757,16 +757,16 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,3u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 3 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,2u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });
@@ -842,16 +842,16 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,3u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 3 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,3u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });
@@ -950,16 +950,16 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 1 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,4u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t { 3 }));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,2u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });
@@ -1120,31 +1120,31 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {3}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {4}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(4,3u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {5}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(5,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {6}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(6,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {7}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(7,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {8}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(8,1u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });
@@ -1331,31 +1331,31 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta(out);
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {3}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,3u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {4}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(4,3u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {5}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(5,2u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {6}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(6,4u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {7}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(7,3u)));
 
             AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(meta_t {8}));
+            AssertThat(meta.pull(), Is().EqualTo(create_meta(8,2u)));
 
             AssertThat(meta.can_pull(), Is().False());
           });

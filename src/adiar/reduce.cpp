@@ -121,7 +121,7 @@ namespace adiar
                                             e_low.target,
                                             e_high.target));
 
-        out_writer.unsafe_push(meta_t { label });
+        out_writer.unsafe_push(create_meta(label,1u));
       }
 
       return out_file;
@@ -173,13 +173,10 @@ namespace adiar
         id_t out_id = MAX_ID;
         node_t current_node = child_grouping.pull();
 
-        out_writer.unsafe_push(meta_t { label });
-
-        node_t out_node = create_node(label, out_id, current_node.low, current_node.high);
-        out_writer.unsafe_push(out_node);
-
         adiar_debug(out_id > 0, "Has run out of ids");
-        out_id--;
+
+        node_t out_node = create_node(label, out_id--, current_node.low, current_node.high);
+        out_writer.unsafe_push(out_node);
 
         red2_mapping.push({ current_node.uid, out_node.uid });
 
@@ -199,6 +196,8 @@ namespace adiar
             red2_mapping.push({current_node.uid, out_node.uid});
           }
         }
+
+        out_writer.unsafe_push(create_meta(label, MAX_ID - out_id));
       }
 
       // Sort mappings for Reduction rule 2 back in order of node_arcs

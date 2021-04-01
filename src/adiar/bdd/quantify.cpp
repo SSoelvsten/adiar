@@ -113,10 +113,10 @@ namespace adiar
       meta_t m = in_meta.pull();
 
       // Are we already past where it should be?
-      if (label < m.label) { return false; }
+      if (label < label_of(m)) { return false; }
 
       // Did we find it?
-      if (m.label == label) { return true; }
+      if (label_of(m) == label) { return true; }
     }
     return false;
   }
@@ -172,9 +172,7 @@ namespace adiar
       // Precondition: The input is reduced and will not collapse to a sink-only BDD
       quantify_pq_1.push({ fst(v.low, v.high), snd(v.low, v.high), NIL });
     } else {
-      aw.unsafe_push(meta_t { out_label });
-
-      uid_t out_uid = create_node_uid(out_label, out_id);
+      uid_t out_uid = create_node_uid(out_label, out_id++);
 
       if (is_sink(v.low)) {
         aw.unsafe_push_sink({ out_uid, v.low });
@@ -190,13 +188,13 @@ namespace adiar
 
     while(quantify_pq_1.can_pull() || quantify_pq_1.has_next_level() || !quantify_pq_2.empty()) {
       if (!quantify_pq_1.can_pull() && quantify_pq_2.empty()) {
+        if (out_label != label) {
+          aw.unsafe_push(create_meta(out_label, out_id));
+        }
+
         quantify_pq_1.setup_next_level();
         out_label = quantify_pq_1.current_level();
         out_id = 0;
-
-        if (out_label != label) {
-          aw.unsafe_push(meta_t { out_label });
-        }
       }
 
       ptr_t source, t1, t2;
@@ -273,6 +271,11 @@ namespace adiar
           } while (!quantify_update_source_or_break(quantify_pq_1, quantify_pq_2, source, t1, t2));
         }
       }
+    }
+
+    // Push the level of the very last iteration
+    if (out_label != label) {
+      aw.unsafe_push(create_meta(out_label, out_id));
     }
 
     // TODO: Add bool variable to check whether we really do need to sort.

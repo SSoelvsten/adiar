@@ -272,12 +272,15 @@ namespace adiar {
   class node_writer: public meta_file_writer<node_t, 1>
   {
   private:
-    bool _has_latest = false;
-    uid_t _latest = NIL;
+    uid_t _latest_node = NIL;
+
+    size_t _level_size = 0u;
 
   public:
     node_writer() : meta_file_writer() { }
     node_writer(const node_file &nf) : meta_file_writer(nf) { }
+
+    ~node_writer() { detach(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write the next node to the file.
@@ -292,30 +295,32 @@ namespace adiar {
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
       // Check latest was not a sink
-      adiar_assert(!_has_latest || !is_sink(_latest),
+      adiar_assert(is_nil(_latest_node) || !is_sink(_latest_node),
                   "Cannot push a node after having pushed a sink");
-      adiar_assert(!_has_latest || !is_sink(n),
+      adiar_assert(is_nil(_latest_node) || !is_sink(n),
                   "Cannot push a sink into non-empty file");
 
       // Check it is topologically sorted
-      if (_has_latest) {
-        adiar_assert(n.uid < _latest,
+      if (!is_nil(_latest_node)) {
+        adiar_assert(n.uid < _latest_node,
                     "Pushed node is required to be prior to the existing nodes");
         adiar_assert(!is_node(n.low) || label_of(n.uid) < label_of(n.low),
                     "Low child must point to a node with a higher label");
         adiar_assert(!is_node(n.high) || label_of(n.uid) < label_of(n.high),
                     "High child must point to a node with a higher label");
-      }
 
-      // Check if meta file has to be updated
-      if ((!_has_latest && !is_sink(n)) ||
-          ( _has_latest && label_of(n) != label_of(_latest))) {
-        meta_file_writer::unsafe_push(meta_t { label_of(n) });
+        // Check if the meta file has to be updated
+        if (label_of(n) != label_of(_latest_node)) {
+          meta_file_writer::unsafe_push(create_meta(label_of(_latest_node),
+                                                    _level_size));
+          _level_size = 0u;
+        }
       }
 
       // Write node to file
-      _has_latest = true;
-      _latest = n.uid;
+      _latest_node = n.uid;
+      _level_size++;
+
       meta_file_writer::unsafe_push(n, 0);
     }
 
@@ -330,9 +335,19 @@ namespace adiar {
     void unsafe_push(const node_t &n) { meta_file_writer::unsafe_push(n, 0); }
 
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const node_file &f) { meta_file_writer::attach(f); }
+    void attach(const node_file &f) {
+      // TODO: set _latest_node etc. when opening file
+      meta_file_writer::attach(f);
+    }
     bool attached() const { return meta_file_writer::attached(); }
-    void detach() { return meta_file_writer::detach(); }
+    void detach() {
+      if (!is_nil(_latest_node) && !is_sink(_latest_node)) {
+        meta_file_writer::unsafe_push(create_meta(label_of(_latest_node),
+                                                  _level_size));
+        _level_size = 0u; // move to attach...
+      }
+      return meta_file_writer::detach();
+    }
 
     bool has_pushed() { return meta_file_writer::has_pushed(); }
     bool empty() { return meta_file_writer::empty(); }
