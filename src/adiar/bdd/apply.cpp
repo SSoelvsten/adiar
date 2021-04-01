@@ -27,8 +27,8 @@ namespace adiar
     ptr_t source;
   };
 
-  typedef levelized_node_priority_queue<apply_tuple, tuple_label, tuple_fst_lt, std::less<>, 2> apply_priority_queue_t;
-  typedef tpie::priority_queue<apply_tuple_data, tuple_snd_lt> apply_data_priority_queue_t;
+  typedef levelized_node_priority_queue<apply_tuple, tuple_label, tuple_fst_lt, std::less<>, 2> apply_priority_queue_1_t;
+  typedef tpie::priority_queue<apply_tuple_data, tuple_snd_lt> apply_priority_queue_2_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -45,7 +45,7 @@ namespace adiar
     }
   }
 
-  inline void apply_resolve_request(apply_priority_queue_t &appD,
+  inline void apply_resolve_request(apply_priority_queue_1_t &apply_pq_1,
                                     arc_writer &aw,
                                     const bool_op &op,
                                     ptr_t source, ptr_t r1, ptr_t r2)
@@ -60,7 +60,7 @@ namespace adiar
       arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
       aw.unsafe_push_sink(out_arc);
     } else {
-      appD.push({ r1, r2, source });
+      apply_pq_1.push({ r1, r2, source });
     }
   }
 
@@ -127,8 +127,8 @@ namespace adiar
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
     // TODO: Do statistics on size of the 2 priority queues
-    apply_priority_queue_t appD({bdd_1,bdd_2}, available_memory / 2);
-    apply_data_priority_queue_t appD_data(calc_tpie_pq_factor(available_memory / 2));
+    apply_priority_queue_1_t apply_pq_1({bdd_1,bdd_2}, available_memory / 2);
+    apply_priority_queue_2_t apply_pq_2(calc_tpie_pq_factor(available_memory / 2));
 
     // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v1.uid, v2.uid));
@@ -142,14 +142,14 @@ namespace adiar
 
     // Shortcut the root
     uid_t out_uid = create_node_uid(out_label, out_id);
-    apply_resolve_request(appD, aw, op, out_uid, low1, low2);
-    apply_resolve_request(appD, aw, op, flag(out_uid), high1, high2);
+    apply_resolve_request(apply_pq_1, aw, op, out_uid, low1, low2);
+    apply_resolve_request(apply_pq_1, aw, op, flag(out_uid), high1, high2);
 
     // Process nodes in topological order of both BDDs
-    while (appD.can_pull() || appD.has_next_level() || !appD_data.empty()) {
-      if (!appD.can_pull() && appD_data.empty()) {
-        appD.setup_next_level();
-        out_label = appD.current_level();
+    while (apply_pq_1.can_pull() || apply_pq_1.has_next_level() || !apply_pq_2.empty()) {
+      if (!apply_pq_1.can_pull() && apply_pq_2.empty()) {
+        apply_pq_1.setup_next_level();
+        out_label = apply_pq_1.current_level();
         aw.unsafe_push(meta_t { out_label });
         out_id = 0;
       }
@@ -158,25 +158,25 @@ namespace adiar
       bool with_data = false;
       ptr_t data_low = NIL, data_high = NIL;
 
-      // Merge requests from  appD or appD_data
-      if (appD.can_pull() && (appD_data.empty() ||
-                              fst(appD.top().t1, appD.top().t2) <
-                              snd(appD_data.top().t1, appD_data.top().t2))) {
-        source = appD.top().source;
-        t1 = appD.top().t1;
-        t2 = appD.top().t2;
+      // Merge requests from  apply_pq_1 or apply_pq_2
+      if (apply_pq_1.can_pull() && (apply_pq_2.empty() ||
+                              fst(apply_pq_1.top().t1, apply_pq_1.top().t2) <
+                              snd(apply_pq_2.top().t1, apply_pq_2.top().t2))) {
+        source = apply_pq_1.top().source;
+        t1 = apply_pq_1.top().t1;
+        t2 = apply_pq_1.top().t2;
 
-        appD.pop();
+        apply_pq_1.pop();
       } else {
-        source = appD_data.top().source;
-        t1 = appD_data.top().t1;
-        t2 = appD_data.top().t2;
+        source = apply_pq_2.top().source;
+        t1 = apply_pq_2.top().t1;
+        t2 = apply_pq_2.top().t2;
 
         with_data = true;
-        data_low = appD_data.top().data_low;
-        data_high = appD_data.top().data_high;
+        data_low = apply_pq_2.top().data_low;
+        data_high = apply_pq_2.top().data_high;
 
-        appD_data.pop();
+        apply_pq_2.pop();
       }
 
       adiar_invariant(is_sink(t1) || out_label <= label_of(t1),
@@ -201,11 +201,11 @@ namespace adiar
           && !with_data && (v1.uid != t1 || v2.uid != t2)) {
         node_t v0 = v1.uid == t1 ? v1 : v2;
 
-        appD_data.push({ t1, t2, v0.low, v0.high, source });
+        apply_pq_2.push({ t1, t2, v0.low, v0.high, source });
 
-        while (appD.can_pull() && appD.top().t1 == t1 && appD.top().t2 == t2) {
-          source = appD.pull().source;
-          appD_data.push({ t1, t2, v0.low, v0.high, source });
+        while (apply_pq_1.can_pull() && apply_pq_1.top().t1 == t1 && apply_pq_1.top().t2 == t2) {
+          source = apply_pq_1.pull().source;
+          apply_pq_2.push({ t1, t2, v0.low, v0.high, source });
         }
         continue;
       }
@@ -235,19 +235,19 @@ namespace adiar
       adiar_debug(out_id < MAX_ID, "Has run out of ids");
       out_uid = create_node_uid(out_label, out_id++);
 
-      apply_resolve_request(appD, aw, op, out_uid, low1, low2);
-      apply_resolve_request(appD, aw, op, flag(out_uid), high1, high2);
+      apply_resolve_request(apply_pq_1, aw, op, out_uid, low1, low2);
+      apply_resolve_request(apply_pq_1, aw, op, flag(out_uid), high1, high2);
 
       // Output ingoing arcs
       while (true) {
         arc_t out_arc = { source, out_uid };
         aw.unsafe_push_node(out_arc);
 
-        if (appD.can_pull() && appD.top().t1 == t1 && appD.top().t2 == t2) {
-          source = appD.pull().source;
-        } else if (!appD_data.empty() && appD_data.top().t1 == t1 && appD_data.top().t2 == t2) {
-          source = appD_data.top().source;
-          appD_data.pop();
+        if (apply_pq_1.can_pull() && apply_pq_1.top().t1 == t1 && apply_pq_1.top().t2 == t2) {
+          source = apply_pq_1.pull().source;
+        } else if (!apply_pq_2.empty() && apply_pq_2.top().t1 == t1 && apply_pq_2.top().t2 == t2) {
+          source = apply_pq_2.top().source;
+          apply_pq_2.pop();
         } else {
           break;
         }

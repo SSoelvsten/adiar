@@ -57,7 +57,7 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  inline void quantify_resolve_request(quantify_priority_queue_t &quantD,
+  inline void quantify_resolve_request(quantify_priority_queue_t &quantify_pq_1,
                                        arc_writer &aw,
                                        const bool_op &op,
                                        const ptr_t source, ptr_t r1, ptr_t r2)
@@ -71,7 +71,7 @@ namespace adiar
       if (is_sink(r1)) {
         aw.unsafe_push_sink({ source, r1 });
       } else {
-        quantD.push({ r1, r2, source });
+        quantify_pq_1.push({ r1, r2, source });
       }
     } else {
       // sort the tuple of requests
@@ -85,21 +85,21 @@ namespace adiar
         arc_t out_arc = { source, op(create_sink_ptr(true), r_snd) };
         aw.unsafe_push_sink(out_arc);
       } else {
-        quantD.push({ r_fst, r_snd, source });
+        quantify_pq_1.push({ r_fst, r_snd, source });
       }
     }
   }
 
-  inline bool quantify_update_source_or_break(quantify_priority_queue_t &quantD,
-                                              quantify_data_priority_queue_t &quantD_data,
+  inline bool quantify_update_source_or_break(quantify_priority_queue_t &quantify_pq_1,
+                                              quantify_data_priority_queue_t &quantify_pq_2,
                                               ptr_t &source,
                                               const ptr_t t1, const ptr_t t2)
   {
-    if (quantD.can_pull() && quantD.top().t1 == t1 && quantD.top().t2 == t2) {
-      source = quantD.pull().source;
-    } else if (!quantD_data.empty() && quantD_data.top().t1 == t1 && quantD_data.top().t2 == t2) {
-      source = quantD_data.top().source;
-      quantD_data.pop();
+    if (quantify_pq_1.can_pull() && quantify_pq_1.top().t1 == t1 && quantify_pq_1.top().t2 == t2) {
+      source = quantify_pq_1.pull().source;
+    } else if (!quantify_pq_2.empty() && quantify_pq_2.top().t1 == t1 && quantify_pq_2.top().t2 == t2) {
+      source = quantify_pq_2.top().source;
+      quantify_pq_2.pop();
     } else {
       return true;
     }
@@ -162,15 +162,15 @@ namespace adiar
     arc_writer aw(out_arcs);
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-    quantify_priority_queue_t quantD({bdd}, available_memory / 2);
-    quantify_data_priority_queue_t quantD_data(calc_tpie_pq_factor(available_memory / 2));
+    quantify_priority_queue_t quantify_pq_1({bdd}, available_memory / 2);
+    quantify_data_priority_queue_t quantify_pq_2(calc_tpie_pq_factor(available_memory / 2));
 
     label_t out_label = label_of(v.uid);
     id_t out_id = 0;
 
     if (label_of(v.uid) == label) {
       // Precondition: The input is reduced and will not collapse to a sink-only BDD
-      quantD.push({ fst(v.low, v.high), snd(v.low, v.high), NIL });
+      quantify_pq_1.push({ fst(v.low, v.high), snd(v.low, v.high), NIL });
     } else {
       aw.unsafe_push(meta_t { out_label });
 
@@ -179,19 +179,19 @@ namespace adiar
       if (is_sink(v.low)) {
         aw.unsafe_push_sink({ out_uid, v.low });
       } else {
-        quantD.push({ v.low, NIL, out_uid });
+        quantify_pq_1.push({ v.low, NIL, out_uid });
       }
       if (is_sink(v.high)) {
         aw.unsafe_push_sink({ flag(out_uid), v.high });
       } else {
-        quantD.push({ v.high, NIL, flag(out_uid) });
+        quantify_pq_1.push({ v.high, NIL, flag(out_uid) });
       }
     }
 
-    while(quantD.can_pull() || quantD.has_next_level() || !quantD_data.empty()) {
-      if (!quantD.can_pull() && quantD_data.empty()) {
-        quantD.setup_next_level();
-        out_label = quantD.current_level();
+    while(quantify_pq_1.can_pull() || quantify_pq_1.has_next_level() || !quantify_pq_2.empty()) {
+      if (!quantify_pq_1.can_pull() && quantify_pq_2.empty()) {
+        quantify_pq_1.setup_next_level();
+        out_label = quantify_pq_1.current_level();
         out_id = 0;
 
         if (out_label != label) {
@@ -203,24 +203,24 @@ namespace adiar
       bool with_data = false;
       ptr_t data_low = NIL, data_high = NIL;
 
-      // Merge requests from quantD and quantD_data (pretty much just as for Apply)
-      if (quantD.can_pull() && (quantD_data.empty() || quantD.top().t1 < quantD_data.top().t2)) {
+      // Merge requests from quantify_pq_1 and quantify_pq_2 (pretty much just as for Apply)
+      if (quantify_pq_1.can_pull() && (quantify_pq_2.empty() || quantify_pq_1.top().t1 < quantify_pq_2.top().t2)) {
         with_data = false;
-        source = quantD.top().source;
-        t1 = quantD.top().t1;
-        t2 = quantD.top().t2;
+        source = quantify_pq_1.top().source;
+        t1 = quantify_pq_1.top().t1;
+        t2 = quantify_pq_1.top().t2;
 
-        quantD.pop();
+        quantify_pq_1.pop();
       } else {
         with_data = true;
-        source = quantD_data.top().source;
-        t1 = quantD_data.top().t1;
-        t2 = quantD_data.top().t2;
+        source = quantify_pq_2.top().source;
+        t1 = quantify_pq_2.top().t1;
+        t2 = quantify_pq_2.top().t2;
 
-        data_low = quantD_data.top().data_low;
-        data_high = quantD_data.top().data_high;
+        data_low = quantify_pq_2.top().data_low;
+        data_high = quantify_pq_2.top().data_high;
 
-        quantD_data.pop();
+        quantify_pq_2.pop();
       }
 
       // Seek element from request in stream
@@ -232,11 +232,11 @@ namespace adiar
 
       // Forward information of v.uid == t1 across the level if needed
       if (!with_data && !is_nil(t2) && !is_sink(t2) && label_of(t1) == label_of(t2)) {
-        quantD_data.push({ t1, t2, v.low, v.high, source });
+        quantify_pq_2.push({ t1, t2, v.low, v.high, source });
 
-        while (quantD.can_pull() && (quantD.top().t1 == t1 && quantD.top().t2 == t2)) {
-          source = quantD.pull().source;
-          quantD_data.push({ t1, t2, v.low, v.high, source });
+        while (quantify_pq_1.can_pull() && (quantify_pq_1.top().t1 == t1 && quantify_pq_1.top().t2 == t2)) {
+          source = quantify_pq_1.pull().source;
+          quantify_pq_2.push({ t1, t2, v.low, v.high, source });
         }
         continue;
       }
@@ -248,8 +248,8 @@ namespace adiar
         adiar_debug(is_nil(t2), "Ended in pairing case on request that already is a pair");
 
         do {
-          quantify_resolve_request(quantD, aw, op, source, v.low, v.high);
-        } while (!quantify_update_source_or_break(quantD, quantD_data, source, t1, t2));
+          quantify_resolve_request(quantify_pq_1, aw, op, source, v.low, v.high);
+        } while (!quantify_update_source_or_break(quantify_pq_1, quantify_pq_2, source, t1, t2));
       } else {
         // The variable should stay: proceed as in Apply by simulating both
         // possibilities in parallel.
@@ -263,14 +263,14 @@ namespace adiar
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
         uid_t out_uid = create_node_uid(out_label, out_id++);
 
-        quantify_resolve_request(quantD, aw, op, out_uid, low1, low2);
-        quantify_resolve_request(quantD, aw, op, flag(out_uid), high1, high2);
+        quantify_resolve_request(quantify_pq_1, aw, op, out_uid, low1, low2);
+        quantify_resolve_request(quantify_pq_1, aw, op, flag(out_uid), high1, high2);
 
         if (!is_nil(source)) {
           do {
             arc_t out_arc = { source, out_uid };
             aw.unsafe_push_node(out_arc);
-          } while (!quantify_update_source_or_break(quantD, quantD_data, source, t1, t2));
+          } while (!quantify_update_source_or_break(quantify_pq_1, quantify_pq_2, source, t1, t2));
         }
       }
     }
