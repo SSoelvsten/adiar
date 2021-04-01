@@ -180,10 +180,10 @@ namespace adiar
     while (ns.can_pull()) {
       node_t n = ns.pull();
 
-      if (partial_sums.current_layer() != label_of(n)) {
-        partial_sums.setup_next_layer();
+      if (partial_sums.current_level() != label_of(n)) {
+        partial_sums.setup_next_level();
       }
-      adiar_debug(partial_sums.current_layer() == label_of(n),
+      adiar_debug(partial_sums.current_level() == label_of(n),
                   "Priority queue is out-of-sync with node stream");
       adiar_debug(partial_sums.can_pull() && partial_sums.top().uid == n.uid,
                   "Priority queue is out-of-sync with node stream");

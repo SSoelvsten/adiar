@@ -261,10 +261,10 @@ namespace adiar
     ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
 
     // Process all nodes in topological order of both BDDs
-    while (ite_pq_1.can_pull() || ite_pq_1.has_next_layer() || !ite_pq_2.empty() || !ite_pq_3.empty()) {
+    while (ite_pq_1.can_pull() || ite_pq_1.has_next_level() || !ite_pq_2.empty() || !ite_pq_3.empty()) {
       if (!ite_pq_1.can_pull() && ite_pq_2.empty() && ite_pq_3.empty()) {
-        ite_pq_1.setup_next_layer();
-        out_label = ite_pq_1.current_layer();
+        ite_pq_1.setup_next_level();
+        out_label = ite_pq_1.current_level();
         aw.unsafe_push(meta_t { out_label });
         out_id = 0;
       }

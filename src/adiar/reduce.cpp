@@ -130,9 +130,9 @@ namespace adiar
     // Find the first label
     label_t label = label_of(sink_arcs.peek().source);
 
-    // Process bottom-up each layer
+    // Process bottom-up each level
     while (sink_arcs.can_pull() || redD.can_pull()) {
-      adiar_invariant(label == redD.current_layer(), "label and priority queue are in sync");
+      adiar_invariant(label == redD.current_level(), "label and priority queue are in sync");
 
       // Temporary file for Reduction Rule 1 mappings (opened later if need be)
       tpie::file_stream<mapping> red1_mapping;
@@ -142,7 +142,7 @@ namespace adiar
       child_grouping.set_available_memory(sorter_phase_1, sorter_phase_2, sorter_phase_1);
       child_grouping.begin();
 
-      // Pull out all nodes from redD and sink_arcs for this layer
+      // Pull out all nodes from redD and sink_arcs for this level
       while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label) || redD.can_pull()) {
         arc_t e_high = reduce_get_next(redD, sink_arcs);
         arc_t e_low = reduce_get_next(redD, sink_arcs);
@@ -250,16 +250,16 @@ namespace adiar
         }
       }
 
-      // Move on to the next layer
+      // Move on to the next level
       red1_mapping.close();
 
-      if (redD.has_next_layer()) {
+      if (redD.has_next_level()) {
         if (sink_arcs.can_pull()) {
-          redD.setup_next_layer(label_of(sink_arcs.peek().source));
+          redD.setup_next_level(label_of(sink_arcs.peek().source));
         } else {
-          redD.setup_next_layer();
+          redD.setup_next_level();
         }
-        label = redD.current_layer();
+        label = redD.current_level();
       } else if (!out_writer.has_pushed()) {
         adiar_debug(!node_arcs.can_pull() && !sink_arcs.can_pull(),
                    "Nodes are still left to be processed");

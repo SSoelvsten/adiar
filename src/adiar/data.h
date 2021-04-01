@@ -59,7 +59,7 @@ namespace adiar {
   ///  - L : the variable label. For nodes n1 and n2 with n1.label < n2.label,
   ///        we guarantee that n1 comes before n2 in the stream reading order.
   ///
-  ///  - I : a unique identifier for the nodes on the same layer. For nodes n1
+  ///  - I : a unique identifier for the nodes on the same level. For nodes n1
   ///        and n2 with n1.label == n2.label but n1.id < n2.id, we guarantee
   ///        that n1 comes before n2 in the stream reading order.
   ///
@@ -68,7 +68,7 @@ namespace adiar {
   ///   | S | LLLLLLLLLLLLLLLLLLLL | IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII | F |
   ///
   /// That means that nodes are to be sorted first by their label, and then by
-  /// their layer-identifier.
+  /// their level-identifier.
   //////////////////////////////////////////////////////////////////////////////
   extern const uint64_t MAX_LABEL;
   extern const uint64_t MAX_ID;

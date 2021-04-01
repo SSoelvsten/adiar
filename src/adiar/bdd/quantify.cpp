@@ -188,10 +188,10 @@ namespace adiar
       }
     }
 
-    while(quantD.can_pull() || quantD.has_next_layer() || !quantD_data.empty()) {
+    while(quantD.can_pull() || quantD.has_next_level() || !quantD_data.empty()) {
       if (!quantD.can_pull() && quantD_data.empty()) {
-        quantD.setup_next_layer();
-        out_label = quantD.current_layer();
+        quantD.setup_next_level();
+        out_label = quantD.current_level();
         out_id = 0;
 
         if (out_label != label) {
@@ -230,7 +230,7 @@ namespace adiar
         v = in_nodes.pull();
       }
 
-      // Forward information of v.uid == t1 across the layer if needed
+      // Forward information of v.uid == t1 across the level if needed
       if (!with_data && !is_nil(t2) && !is_sink(t2) && label_of(t1) == label_of(t2)) {
         quantD_data.push({ t1, t2, v.low, v.high, source });
 

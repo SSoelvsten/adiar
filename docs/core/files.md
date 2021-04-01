@@ -55,7 +55,7 @@ functions
 ### Node Writer
 
 To follow the ordering in a `node_file` one has to write nodes bottom-up and in
-reverse for each layer with respect to the _id_. One can write nodes to the file
+reverse for each level with respect to the _id_. One can write nodes to the file
 by use of the `node_writer` object, that can be constructed in two ways.
 
 - `node_writer()`

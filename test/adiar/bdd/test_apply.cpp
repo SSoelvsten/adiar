@@ -857,7 +857,7 @@ go_bandit([]() {
           });
 
         it("should XOR BDD 3 and 1", [&]() {
-            /* The queue appD_data is used to forward data across the layer. When
+            /* The queue appD_data is used to forward data across the level. When
                BDD 1 and 3 are combined, this is needed
 
                   The product between the BDD 3 and BDD 1 then is

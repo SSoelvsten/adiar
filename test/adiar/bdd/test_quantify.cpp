@@ -469,7 +469,7 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("should keep nodes as is when skipping quantified layer [BDD 3]", [&]() {
+            it("should keep nodes as is when skipping quantified level [BDD 3]", [&]() {
                 __bdd out = bdd_exists(bdd_3, 1);
 
                 node_arc_test_stream node_arcs(out);
