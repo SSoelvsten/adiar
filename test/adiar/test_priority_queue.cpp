@@ -314,7 +314,7 @@ go_bandit([]() {
         test_priority_queue<1,0> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can set up priority queue with empty meta stream", [&]() {
@@ -323,10 +323,10 @@ go_bandit([]() {
          test_priority_queue<1,0> pq({f});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can push to and pull from immediate next layer", [&]() {
+      it("can push to and pull from immediate next level", [&]() {
         pq_test_file f;
 
         {
@@ -340,10 +340,10 @@ go_bandit([]() {
 
         test_priority_queue<1,0> pq({f});
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
 
         pq.push(pq_test_data {2, 1});
         AssertThat(pq.size(), Is().EqualTo(1u));
@@ -351,10 +351,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
@@ -372,10 +372,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
@@ -390,10 +390,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
@@ -401,10 +401,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can skip unpushed layers", [&]() {
+      it("can skip unpushed levels", [&]() {
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -418,28 +418,28 @@ go_bandit([]() {
 
         test_priority_queue<1,0> pq({f});
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
 
         pq.push(pq_test_data {4, 1});
         AssertThat(pq.size(), Is().EqualTo(1u));
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can skip unpushed layers up until the given stop_label", [&]() {
+      it("can skip unpushed levels up until the given stop_label", [&]() {
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -453,23 +453,23 @@ go_bandit([]() {
 
         test_priority_queue<1,0> pq({f});
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
 
         pq.push(pq_test_data {4, 1});
         AssertThat(pq.size(), Is().EqualTo(1u));
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer(3u);
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level(3u);
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
@@ -477,7 +477,7 @@ go_bandit([]() {
         AssertThat(pq.can_pull(), Is().False());
       });
 
-      it("can sort elements given out of layer order", [&]() {
+      it("can sort elements given out of level order", [&]() {
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -491,27 +491,27 @@ go_bandit([]() {
 
         test_priority_queue<1,0> pq({f});
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
 
         pq.push(pq_test_data {4, 2});
         AssertThat(pq.size(), Is().EqualTo(1u));
         pq.push(pq_test_data {3, 1});
         AssertThat(pq.size(), Is().EqualTo(2u));
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.can_pull(), Is().False());
 
         pq.push(pq_test_data {2, 1});
         AssertThat(pq.size(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
@@ -523,10 +523,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
@@ -542,10 +542,10 @@ go_bandit([]() {
         AssertThat(pq.can_pull(), Is().False());
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
@@ -571,18 +571,18 @@ go_bandit([]() {
 
          test_priority_queue<1,0> pq({f});
 
-         AssertThat(pq.current_layer(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.current_level(), Is().EqualTo(1u));
+         AssertThat(pq.has_next_level(), Is().False());
          AssertThat(pq.size(), Is().EqualTo(0u));
 
          pq.push(pq_test_data {2, 2});
          AssertThat(pq.size(), Is().EqualTo(1u));
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer();
-         AssertThat(pq.current_layer(), Is().EqualTo(2u));
+         AssertThat(pq.current_level(), Is().EqualTo(1u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level();
+         AssertThat(pq.current_level(), Is().EqualTo(2u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.peek(), Is().EqualTo(pq_test_data {2, 2}));
@@ -596,7 +596,7 @@ go_bandit([]() {
     });
 
     describe("with 1 Bucket", [&]() {
-      it("can set up priority queue with more layers than buckets", [&]() {
+      it("can set up priority queue with more levels than buckets", [&]() {
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -611,10 +611,10 @@ go_bandit([]() {
          test_priority_queue<1,1> pq({f});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can set up priority queue with fewer layers than buckets", [&]() {
+      it("can set up priority queue with fewer levels than buckets", [&]() {
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -626,7 +626,7 @@ go_bandit([]() {
         test_priority_queue<1,1> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can set up priority queue with empty meta stream", [&]() {
@@ -635,7 +635,7 @@ go_bandit([]() {
          test_priority_queue<1,1> pq({f});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can set up priority queue for two meta streams, where one is empty", [&]() {
@@ -687,7 +687,7 @@ go_bandit([]() {
 
         test_priority_queue<1,1> pq({f});
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.can_pull(), Is().False());
 
@@ -698,10 +698,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
@@ -719,10 +719,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
@@ -737,10 +737,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
@@ -748,7 +748,7 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can push into overflow queue [1]", [&]() {
@@ -765,7 +765,7 @@ go_bandit([]() {
 
         test_priority_queue<1,1> pq({f});
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.can_pull(), Is().False());
 
@@ -775,10 +775,10 @@ go_bandit([]() {
         pq.push(pq_test_data {4, 1});
         AssertThat(pq.size(), Is().EqualTo(2u));
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
@@ -786,10 +786,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
@@ -812,17 +812,17 @@ go_bandit([]() {
 
         test_priority_queue<1,1> pq({f});
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.can_pull(), Is().False());
 
         pq.push(pq_test_data {4, 1});
         AssertThat(pq.size(), Is().EqualTo(1u));
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
@@ -831,7 +831,7 @@ go_bandit([]() {
         AssertThat(pq.can_pull(), Is().False());
       });
 
-      it("can skip unpushed layers up to stop_label [1]", [&]() {
+      it("can skip unpushed levels up to stop_label [1]", [&]() {
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -845,32 +845,32 @@ go_bandit([]() {
 
         test_priority_queue<1,1> pq({f});
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.can_pull(), Is().False());
 
         pq.push(pq_test_data {4, 1});
         AssertThat(pq.size(), Is().EqualTo(1u));
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer(3u);
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level(3u);
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can skip unpushed layers up to stop_label [2]", [&]() {
+      it("can skip unpushed levels up to stop_label [2]", [&]() {
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -885,30 +885,30 @@ go_bandit([]() {
 
         test_priority_queue<1,1> pq({f});
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.can_pull(), Is().False());
 
         pq.push(pq_test_data {5, 1});
         AssertThat(pq.size(), Is().EqualTo(1u));
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer(4u);
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level(4u);
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(5u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(5u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {5, 1}));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can merge content of bucket with overflow queue", [&]() {
@@ -926,7 +926,7 @@ go_bandit([]() {
         test_priority_queue<1,1> pq({f});
 
         AssertThat(pq.size(), Is().EqualTo(0u));
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.can_pull(), Is().False());
 
         pq.push(pq_test_data {4, 2}); // overflow
@@ -939,10 +939,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
@@ -954,10 +954,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
@@ -973,10 +973,10 @@ go_bandit([]() {
         AssertThat(pq.can_pull(), Is().False());
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
@@ -1011,10 +1011,10 @@ go_bandit([]() {
          AssertThat(pq.size(), Is().EqualTo(1u));
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer();
-         AssertThat(pq.current_layer(), Is().EqualTo(2u));
+         AssertThat(pq.current_level(), Is().EqualTo(1u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level();
+         AssertThat(pq.current_level(), Is().EqualTo(2u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.peek(), Is().EqualTo(pq_test_data {2, 42}));
@@ -1047,10 +1047,10 @@ go_bandit([]() {
          AssertThat(pq.size(), Is().EqualTo(1u));
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer();
-         AssertThat(pq.current_layer(), Is().EqualTo(5u));
+         AssertThat(pq.current_level(), Is().EqualTo(1u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level();
+         AssertThat(pq.current_level(), Is().EqualTo(5u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.peek(), Is().EqualTo(pq_test_data {5, 3}));
@@ -1084,7 +1084,7 @@ go_bandit([]() {
         test_priority_queue<1,1> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         pq.push(pq_test_data {10, 2});
@@ -1092,10 +1092,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(10u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(10u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {10,2}));
@@ -1107,10 +1107,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(10u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(12u));
+        AssertThat(pq.current_level(), Is().EqualTo(10u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(12u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {12,1}));
@@ -1120,10 +1120,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(1u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(12u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(14u));
+        AssertThat(pq.current_level(), Is().EqualTo(12u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(14u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {14,1}));
@@ -1131,12 +1131,12 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
     });
 
     describe("with 4 Bucket", [&]() {
-      it("can set up priority queue with more layers than buckets", [&]() {
+      it("can set up priority queue with more levels than buckets", [&]() {
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -1155,7 +1155,7 @@ go_bandit([]() {
         test_priority_queue<1,4> pq({f});
       });
 
-      it("can set up priority queue with fewer layers than buckets [1]", [&]() {
+      it("can set up priority queue with fewer levels than buckets [1]", [&]() {
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -1169,7 +1169,7 @@ go_bandit([]() {
          test_priority_queue<1,4> pq({f});
        });
 
-      it("can set up priority queue with fewer layers than buckets [2]", [&]() {
+      it("can set up priority queue with fewer levels than buckets [2]", [&]() {
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -1188,7 +1188,7 @@ go_bandit([]() {
          test_priority_queue<1,4> pq({f});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.has_next_level(), Is().False());
       });
 
 
@@ -1205,7 +1205,7 @@ go_bandit([]() {
          test_priority_queue<2,4> pq({f1,f2});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can set up priority queue for two meta streams, where one is empty [2]", [&]() {
@@ -1222,7 +1222,7 @@ go_bandit([]() {
          test_priority_queue<2,4> pq({f1,f2});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can set up priority queue for two meta streams", [&]() {
@@ -1242,7 +1242,7 @@ go_bandit([]() {
          test_priority_queue<2,4> pq({f1,f2});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can push into and pull from buckets", [&]() {
@@ -1262,7 +1262,7 @@ go_bandit([]() {
 
         test_priority_queue<1,4> pq({f});
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.can_pull(), Is().False());
 
@@ -1278,10 +1278,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(5u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
         AssertThat(pq.size(), Is().EqualTo(5u));
 
         AssertThat(pq.can_pull(), Is().True());
@@ -1307,10 +1307,10 @@ go_bandit([]() {
         pq.push(pq_test_data {3, 1});
         AssertThat(pq.size(), Is().EqualTo(9u));
 
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
@@ -1355,10 +1355,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
@@ -1379,10 +1379,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(5u));
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(5u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {5, 1}));
@@ -1401,10 +1401,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(5u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(6u));
+        AssertThat(pq.current_level(), Is().EqualTo(5u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(6u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {6, 1}));
@@ -1424,10 +1424,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(6u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(7u));
+        AssertThat(pq.current_level(), Is().EqualTo(6u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(7u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {7, 1}));
@@ -1450,7 +1450,7 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can push into overflow queue [1]", [&]() {
@@ -1472,7 +1472,7 @@ go_bandit([]() {
         test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         pq.push(pq_test_data {6, 4});
@@ -1482,10 +1482,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(6u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(6u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {6, 4}));
@@ -1493,10 +1493,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(6u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(8u));
+        AssertThat(pq.current_level(), Is().EqualTo(6u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(8u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {8,2}));
@@ -1504,7 +1504,7 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can push into overflow queue [2]", [&]() {
@@ -1526,17 +1526,17 @@ go_bandit([]() {
         test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         pq.push(pq_test_data {8, 2});
         AssertThat(pq.size(), Is().EqualTo(1u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(8u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(8u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {8,2}));
@@ -1544,7 +1544,7 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can push into overflow queue [3]", [&]() {
@@ -1570,7 +1570,7 @@ go_bandit([]() {
         test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         pq.push(pq_test_data {10, 2});
@@ -1579,10 +1579,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(10u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(10u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {10,1}));
@@ -1593,10 +1593,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(1u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(10u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(12u));
+        AssertThat(pq.current_level(), Is().EqualTo(10u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(12u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {12,3}));
@@ -1604,10 +1604,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can skip unpushed layers until stop_label [1]", [&]() {
+      it("can skip unpushed levels until stop_label [1]", [&]() {
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -1626,23 +1626,23 @@ go_bandit([]() {
         test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         pq.push(pq_test_data {8, 2});
         AssertThat(pq.size(), Is().EqualTo(1u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer(3u);
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level(3u);
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(8u));
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(8u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {8,2}));
@@ -1650,10 +1650,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can skip nonempty layers until stop_label [2]", [&]() {
+      it("can skip nonempty levels until stop_label [2]", [&]() {
         pq_test_file f;
 
         { // Garbage collect the writer early
@@ -1672,23 +1672,23 @@ go_bandit([]() {
         test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         pq.push(pq_test_data {8, 2});
         AssertThat(pq.size(), Is().EqualTo(1u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer(7u);
-        AssertThat(pq.current_layer(), Is().EqualTo(7u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level(7u);
+        AssertThat(pq.current_level(), Is().EqualTo(7u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(7u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(8u));
+        AssertThat(pq.current_level(), Is().EqualTo(7u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(8u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {8,2}));
@@ -1696,7 +1696,7 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can merge content of bucket with overflow queue", [&]() {
@@ -1718,7 +1718,7 @@ go_bandit([]() {
         test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         // Push something into overflow
@@ -1743,10 +1743,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
@@ -1760,10 +1760,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(2u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
@@ -1790,10 +1790,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(3u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
@@ -1818,10 +1818,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(4u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(5u));
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(5u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {5, 1}));
@@ -1846,10 +1846,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(5u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(6u));
+        AssertThat(pq.current_level(), Is().EqualTo(5u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(6u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {6, 1}));
@@ -1878,10 +1878,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(6u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(7u));
+        AssertThat(pq.current_level(), Is().EqualTo(6u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(7u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {7, 1}));
@@ -1908,10 +1908,10 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.current_layer(), Is().EqualTo(7u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(8u));
+        AssertThat(pq.current_level(), Is().EqualTo(7u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(8u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {8, 1}));
@@ -1953,10 +1953,10 @@ go_bandit([]() {
          pq.push(pq_test_data {3, 42}); // bucket
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer();
-         AssertThat(pq.current_layer(), Is().EqualTo(3u));
+         AssertThat(pq.current_level(), Is().EqualTo(1u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level();
+         AssertThat(pq.current_level(), Is().EqualTo(3u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.peek(), Is().EqualTo(pq_test_data {3, 42}));
@@ -1986,10 +1986,10 @@ go_bandit([]() {
          pq.push(pq_test_data {7, 3});  // overflow
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer();
-         AssertThat(pq.current_layer(), Is().EqualTo(7u));
+         AssertThat(pq.current_level(), Is().EqualTo(1u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level();
+         AssertThat(pq.current_level(), Is().EqualTo(7u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.peek(), Is().EqualTo(pq_test_data {7, 3}));
@@ -1998,7 +1998,7 @@ go_bandit([]() {
          AssertThat(pq.can_pull(), Is().False());
       });
 
-      it("can deal with exactly as many layers as buckets", [&]() {
+      it("can deal with exactly as many levels as buckets", [&]() {
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -2017,10 +2017,10 @@ go_bandit([]() {
          pq.push(pq_test_data {2, 1});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(0u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer();
-         AssertThat(pq.current_layer(), Is().EqualTo(2u));
+         AssertThat(pq.current_level(), Is().EqualTo(0u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level();
+         AssertThat(pq.current_level(), Is().EqualTo(2u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
@@ -2029,10 +2029,10 @@ go_bandit([]() {
          pq.push(pq_test_data {3, 1});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(2u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer();
-         AssertThat(pq.current_layer(), Is().EqualTo(3u));
+         AssertThat(pq.current_level(), Is().EqualTo(2u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level();
+         AssertThat(pq.current_level(), Is().EqualTo(3u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
@@ -2047,10 +2047,10 @@ go_bandit([]() {
          AssertThat(pq.can_pull(), Is().False());
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(3u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer();
-         AssertThat(pq.current_layer(), Is().EqualTo(4u));
+         AssertThat(pq.current_level(), Is().EqualTo(3u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level();
+         AssertThat(pq.current_level(), Is().EqualTo(4u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
@@ -2061,10 +2061,10 @@ go_bandit([]() {
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 3}));
 
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can deal with fewer layers as buckets", [&]() {
+      it("can deal with fewer levels as buckets", [&]() {
          pq_test_file f;
 
          { // Garbage collect the writer early
@@ -2081,10 +2081,10 @@ go_bandit([]() {
          pq.push(pq_test_data {1, 1});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(0u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer();
-         AssertThat(pq.current_layer(), Is().EqualTo(1u));
+         AssertThat(pq.current_level(), Is().EqualTo(0u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level();
+         AssertThat(pq.current_level(), Is().EqualTo(1u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {1, 1}));
@@ -2092,10 +2092,10 @@ go_bandit([]() {
          pq.push(pq_test_data {2, 2});
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer();
-         AssertThat(pq.current_layer(), Is().EqualTo(2u));
+         AssertThat(pq.current_level(), Is().EqualTo(1u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level();
+         AssertThat(pq.current_level(), Is().EqualTo(2u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
@@ -2105,7 +2105,7 @@ go_bandit([]() {
 
          AssertThat(pq.can_pull(), Is().False());
 
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can forward to stop_label with an empty overflow queue", [&]() {
@@ -2135,23 +2135,23 @@ go_bandit([]() {
          AssertThat(pq.size(), Is().EqualTo(2u));
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(0u));
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer(2u);
+         AssertThat(pq.current_level(), Is().EqualTo(0u));
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level(2u);
 
-         AssertThat(pq.current_layer(), Is().EqualTo(2u));
+         AssertThat(pq.current_level(), Is().EqualTo(2u));
          AssertThat(pq.can_pull(), Is().False());
 
          pq.push(pq_test_data {3, 2});
          AssertThat(pq.size(), Is().EqualTo(3u));
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_layer(), Is().EqualTo(2u));
+         AssertThat(pq.current_level(), Is().EqualTo(2u));
 
-         AssertThat(pq.has_next_layer(), Is().True());
-         pq.setup_next_layer(4u);
+         AssertThat(pq.has_next_level(), Is().True());
+         pq.setup_next_level(4u);
 
-         AssertThat(pq.current_layer(), Is().EqualTo(3u));
+         AssertThat(pq.current_level(), Is().EqualTo(3u));
 
          AssertThat(pq.can_pull(), Is().True());
          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
@@ -2166,7 +2166,7 @@ go_bandit([]() {
          AssertThat(pq.size(), Is().EqualTo(0u));
 
          AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_layer(), Is().False());
+         AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can push into buckets after bucket level rewrite", [&]() {
@@ -2197,7 +2197,7 @@ go_bandit([]() {
         test_priority_queue<1,4> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
         AssertThat(pq.size(), Is().EqualTo(0u));
 
         pq.push(pq_test_data {9, 2});
@@ -2205,10 +2205,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(1u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(9u));
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(9u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {9,2}));
@@ -2223,10 +2223,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(6u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(9u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(10u));
+        AssertThat(pq.current_level(), Is().EqualTo(9u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(10u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {10,1}));
@@ -2236,30 +2236,30 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(4u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(10u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(11u));
+        AssertThat(pq.current_level(), Is().EqualTo(10u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(11u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {11,1}));
         AssertThat(pq.size(), Is().EqualTo(3u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(11u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(12u));
+        AssertThat(pq.current_level(), Is().EqualTo(11u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(12u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {12,1}));
         AssertThat(pq.size(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(12u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(13u));
+        AssertThat(pq.current_level(), Is().EqualTo(12u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(13u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {13,1}));
@@ -2269,10 +2269,10 @@ go_bandit([]() {
         AssertThat(pq.size(), Is().EqualTo(2u));
 
         AssertThat(pq.can_pull(), Is().False());
-        AssertThat(pq.current_layer(), Is().EqualTo(13u));
-        AssertThat(pq.has_next_layer(), Is().True());
-        pq.setup_next_layer();
-        AssertThat(pq.current_layer(), Is().EqualTo(14u));
+        AssertThat(pq.current_level(), Is().EqualTo(13u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(14u));
 
         AssertThat(pq.can_pull(), Is().True());
         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {14,1}));
@@ -2283,7 +2283,7 @@ go_bandit([]() {
 
         AssertThat(pq.can_pull(), Is().False());
 
-        AssertThat(pq.has_next_layer(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
     });
   });

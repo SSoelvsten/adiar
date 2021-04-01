@@ -146,10 +146,10 @@ namespace adiar
     apply_resolve_request(appD, aw, op, flag(out_uid), high1, high2);
 
     // Process nodes in topological order of both BDDs
-    while (appD.can_pull() || appD.has_next_layer() || !appD_data.empty()) {
+    while (appD.can_pull() || appD.has_next_level() || !appD_data.empty()) {
       if (!appD.can_pull() && appD_data.empty()) {
-        appD.setup_next_layer();
-        out_label = appD.current_layer();
+        appD.setup_next_level();
+        out_label = appD.current_level();
         aw.unsafe_push(meta_t { out_label });
         out_id = 0;
       }

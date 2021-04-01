@@ -34,7 +34,7 @@ go_bandit([]() {
         //                END
         // == CREATE BDD FOR UNIT TESTS ==
 
-        it("should bridge layers [1]. Assignment: (_,_,T,_)", [&]() {
+        it("should bridge level [1]. Assignment: (_,_,T,_)", [&]() {
             /*
                  1      ---- x0
                 / \
@@ -94,7 +94,7 @@ go_bandit([]() {
             AssertThat(meta_arcs.can_pull(), Is().False());
           });
 
-        it("should bridge layers. [2]. Assignment: (_,F,_,_)", [&]() {
+        it("should bridge levels. [2]. Assignment: (_,F,_,_)", [&]() {
             /*
                  1      ---- x0
                 / \
@@ -143,7 +143,7 @@ go_bandit([]() {
             AssertThat(meta_arcs.can_pull(), Is().False());
           });
 
-        it("should bridge layers [3]. Assignment: (_,T,_,_)", [&]() {
+        it("should bridge levels [3]. Assignment: (_,T,_,_)", [&]() {
             /*
                   1         ---- x0
                  / \

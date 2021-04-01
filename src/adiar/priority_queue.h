@@ -170,8 +170,8 @@ namespace adiar {
 
   //////////////////////////////////////////////////////////////////////////////
   /// A levelized priority queue for BDDs capable of improving performance by
-  /// placing all pushed queue elements in buckets for the specific layer and
-  /// then sorting it when one finally arrives at said layer. If no bucket
+  /// placing all pushed queue elements in buckets for the specific level and
+  /// then sorting it when one finally arrives at said level. If no bucket
   /// exists for said request, then they will be placed in a priority queue to
   /// then be merged with the current bucket.
   ///
@@ -333,9 +333,9 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief The label of the current layer
+    /// \brief The label of the current level
     ////////////////////////////////////////////////////////////////////////////
-    label_t current_layer() const
+    label_t current_level() const
     {
       if constexpr (Buckets == 0) {
         return _buckets_label[0];
@@ -345,12 +345,12 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Is there any non-empty layer?
+    /// \brief Is there any non-empty level?
     ////////////////////////////////////////////////////////////////////////////
-    bool has_next_layer()
+    bool has_next_level()
     {
       if constexpr (Buckets == 0) {
-        adiar_debug (!can_pull(), "Cannot check on next layer on empty queue");
+        adiar_debug (!can_pull(), "Cannot check on next level on empty queue");
 
         return !_overflow_queue.empty();
       }
@@ -371,7 +371,7 @@ namespace adiar {
     /// and the queue forwards to the first non-empty level. This is the default
     /// behaviour.
     ////////////////////////////////////////////////////////////////////////////
-    void setup_next_layer(label_t stop_label = MAX_LABEL+1)
+    void setup_next_level(label_t stop_label = MAX_LABEL+1)
     {
       bool has_stop_label = stop_label <= MAX_LABEL;
 
@@ -379,10 +379,10 @@ namespace adiar {
                  "Stop label is prior to the current front bucket");
 
       adiar_debug(!can_pull(),
-                 "Layer is non-empty");
+                 "Level is non-empty");
 
-      adiar_debug(has_next_layer(),
-                 "Has no next layer to go to");
+      adiar_debug(has_next_level(),
+                 "Has no next level to go to");
 
       if constexpr (Buckets == 0) {
         while (LabelExt::label_of(_overflow_queue.top()) != _buckets_label[0]
@@ -423,7 +423,7 @@ namespace adiar {
         adiar_debug(!has_stop_label || _label_comparator(front_bucket_label(), stop_label),
                     "stop label should be strictly ahead of current level");
         adiar_debug(!_overflow_queue.empty(),
-                    "'has_next_layer()' implied non-empty queue, all buckets turned out to be empty, yet overflow queue is also.");
+                    "'has_next_level()' implied non-empty queue, all buckets turned out to be empty, yet overflow queue is also.");
 
         label_t pq_label = LabelExt::label_of(_overflow_queue.top());
         stop_label = has_stop_label && _label_comparator(stop_label, pq_label)
@@ -451,7 +451,7 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Are there more elements on the current layer?
+    /// \brief Are there more elements on the current level?
     ////////////////////////////////////////////////////////////////////////////
     bool can_pull()
     {
@@ -471,19 +471,19 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Is the current layer of elements empty?
+    /// \brief Is the current level of elements empty?
     ////////////////////////////////////////////////////////////////////////////
-    bool empty_layer()
+    bool empty_level()
     {
       return !can_pull();
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Peek the next element on the current layer
+    /// \brief Peek the next element on the current level
     ////////////////////////////////////////////////////////////////////////////
     T peek()
     {
-      adiar_debug (can_pull(), "Cannot peek on empty layer/queue");
+      adiar_debug (can_pull(), "Cannot peek on empty level/queue");
 
       if constexpr (Buckets == 0) {
         return _overflow_queue.top();
@@ -510,11 +510,11 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Pull the next element on the current layer
+    /// \brief Pull the next element on the current level
     ////////////////////////////////////////////////////////////////////////////
     T pull()
     {
-      adiar_debug (can_pull(), "Cannot pull on empty layer/queue");
+      adiar_debug (can_pull(), "Cannot pull on empty level/queue");
 
       _size--;
       if constexpr (Buckets == 0) {
@@ -557,7 +557,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Is the stream empty.
     ///
-    /// If you only want to know if it is empty for the current layer, then use
+    /// If you only want to know if it is empty for the current level, then use
     /// can_pull instead.
     ////////////////////////////////////////////////////////////////////////////
     bool empty() const

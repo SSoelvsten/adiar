@@ -184,7 +184,7 @@ go_bandit([]() {
         //              END
         // == CREATE 'SKIPPING' BDD ==
 
-        it("should be able to evaluate BDD that skips layers [1]", [&skip_bdd]() {
+        it("should be able to evaluate BDD that skips level [1]", [&skip_bdd]() {
             assignment_file assignment;
 
             { // Garbage collect writer to free write-lock
@@ -200,7 +200,7 @@ go_bandit([]() {
             AssertThat(bdd_eval(skip_bdd, assignment), Is().False());
           });
 
-        it("should be able to evaluate BDD that skips layers [2]", [&skip_bdd]() {
+        it("should be able to evaluate BDD that skips level [2]", [&skip_bdd]() {
             assignment_file assignment;
 
             { // Garbage collect writer to free write-lock

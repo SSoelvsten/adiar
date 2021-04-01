@@ -87,17 +87,17 @@ namespace adiar
 
     // process all to-be-visited nodes in topological order
     while(!resD.empty()) {
-      if (resD.empty_layer()) {
-        resD.setup_next_layer();
+      if (resD.empty_level()) {
+        resD.setup_next_level();
 
         // seek assignment
-        while(as.can_pull() && resD.current_layer() > a.label) {
+        while(as.can_pull() && resD.current_level() > a.label) {
           a = as.pull();
         }
 
-        // will any nodes in this layer be outputted?
-        if (a.label != resD.current_layer()) {
-          aw.unsafe_push(meta_t { resD.current_layer() });
+        // will any nodes in this level be outputted?
+        if (a.label != resD.current_level()) {
+          aw.unsafe_push(meta_t { resD.current_level() });
         }
       }
 

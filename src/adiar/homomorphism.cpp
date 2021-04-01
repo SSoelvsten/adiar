@@ -48,7 +48,7 @@ namespace adiar
     }
 
     // Are they trivially not the same thing, since they have different number
-    // of layers (in the _meta_file) or have different number of nodes (in
+    // of levels (in the _meta_file) or have different number of nodes (in
     // _files[0])
     if (f1._file_ptr -> _meta_file.size() != f2._file_ptr -> _meta_file.size()
         || f1._file_ptr -> _files[0].size() != f2._file_ptr -> _files[0].size()) {
@@ -95,9 +95,9 @@ namespace adiar
 
     homomorphism_data_priority_queue_t pq_data(calc_tpie_pq_factor(available_memory / 4));
 
-    while (pq.can_pull() || pq.has_next_layer() || !pq_data.empty()) {
+    while (pq.can_pull() || pq.has_next_level() || !pq_data.empty()) {
       if (!pq.can_pull() && pq_data.empty()) {
-        pq.setup_next_layer();
+        pq.setup_next_level();
       }
 
       ptr_t t1, t2;
@@ -133,7 +133,7 @@ namespace adiar
         v2 = in_nodes_2.pull();
       }
 
-      // Forward information across the layer
+      // Forward information across the level
       bool from_1 = fst(t1,t2) == t1;
 
       if (!with_data
