@@ -145,7 +145,7 @@ namespace adiar
     }
   }
 
-  inline void ite_resolve_request(ite_priority_queue_1_t &ite_pq,
+  inline void ite_resolve_request(ite_priority_queue_1_t &ite_pq_1,
                                   arc_writer &aw,
                                   ptr_t source, ptr_t r_if, ptr_t r_then, ptr_t r_else)
   {
@@ -169,7 +169,7 @@ namespace adiar
       // => ~NIL => r_if is a sink with the 'false' value
       aw.unsafe_push_sink(arc_t { source, r_else });
     } else {
-      ite_pq.push({ r_if, r_then, r_else, source });
+      ite_pq_1.push({ r_if, r_then, r_else, source });
     }
   }
 

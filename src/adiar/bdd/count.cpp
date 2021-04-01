@@ -61,12 +61,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   template<typename T>
-  void count_resolve_request(count_priority_queue_t<T> &pq,
+  void count_resolve_request(count_priority_queue_t<T> &count_pq,
                              uint64_t &result, label_t varcount,
                              ptr_t child_to_resolve, T request);
 
   template<>
-  void count_resolve_request<path_sum>(count_priority_queue_t<path_sum> &pq,
+  void count_resolve_request<path_sum>(count_priority_queue_t<path_sum> &count_pq,
                                        uint64_t &result, label_t /* varcount */,
                                        ptr_t child_to_resolve, path_sum request)
   {
@@ -75,12 +75,12 @@ namespace adiar
     if (is_sink(child_to_resolve)) {
       result += value_of(child_to_resolve) ? request.sum : 0u;
     } else {
-      pq.push({ child_to_resolve, request.sum });
+      count_pq.push({ child_to_resolve, request.sum });
     }
   }
 
   template<>
-  void count_resolve_request<sat_sum>(count_priority_queue_t<sat_sum> &pq,
+  void count_resolve_request<sat_sum>(count_priority_queue_t<sat_sum> &count_pq,
                                       uint64_t &result, label_t varcount,
                                       ptr_t child_to_resolve, sat_sum request)
   {
@@ -96,43 +96,43 @@ namespace adiar
         ? request.sum * (1u << (varcount - levels_visited))
         : 0u;
     } else {
-      pq.push({ child_to_resolve, request.sum, levels_visited });
+      count_pq.push({ child_to_resolve, request.sum, levels_visited });
     }
   }
 
 
   template<typename T>
-  void count_resolve_requests(count_priority_queue_t<T> &pq,
+  void count_resolve_requests(count_priority_queue_t<T> &count_pq,
                               uint64_t &result, label_t varcount,
                               const node_t& n);
 
   template<>
-  void count_resolve_requests<path_sum>(count_priority_queue_t<path_sum> &pq,
+  void count_resolve_requests<path_sum>(count_priority_queue_t<path_sum> &count_pq,
                                         uint64_t &result, label_t varcount,
                                         const node_t& n)
   {
     // Sum all ingoing arcs
-    path_sum request = pq.pull();
+    path_sum request = count_pq.pull();
 
-    while (pq.can_pull() && pq.top().uid == n.uid) {
-      request.sum += pq.pull().sum;
+    while (count_pq.can_pull() && count_pq.top().uid == n.uid) {
+      request.sum += count_pq.pull().sum;
     }
 
     // Resolve final request
-    count_resolve_request<path_sum>(pq, result, varcount, n.low, request);
-    count_resolve_request<path_sum>(pq, result, varcount, n.high, request);
+    count_resolve_request<path_sum>(count_pq, result, varcount, n.low, request);
+    count_resolve_request<path_sum>(count_pq, result, varcount, n.high, request);
   }
 
   template<>
-  void count_resolve_requests<sat_sum>(count_priority_queue_t<sat_sum> &pq,
+  void count_resolve_requests<sat_sum>(count_priority_queue_t<sat_sum> &count_pq,
                                        uint64_t &result, label_t varcount,
                                        const node_t& n)
   {
     // Sum all ingoing arcs with the same number of visited levels
-    sat_sum request = pq.pull();
+    sat_sum request = count_pq.pull();
 
-    while (pq.can_pull() && pq.top().uid == n.uid) {
-      sat_sum r = pq.pull();
+    while (count_pq.can_pull() && count_pq.top().uid == n.uid) {
+      sat_sum r = count_pq.pull();
 
       request.sum = request.sum * (1u << (r.levels_visited - request.levels_visited));
       request.sum += r.sum;
@@ -141,8 +141,8 @@ namespace adiar
     }
 
     // Resolve final request
-    count_resolve_request<sat_sum>(pq, result, varcount, n.low, request);
-    count_resolve_request<sat_sum>(pq, result, varcount, n.high, request);
+    count_resolve_request<sat_sum>(count_pq, result, varcount, n.low, request);
+    count_resolve_request<sat_sum>(count_pq, result, varcount, n.high, request);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -166,30 +166,30 @@ namespace adiar
 
     node_stream<> ns(bdd);
 
-    count_priority_queue_t<T> partial_sums({bdd});
+    count_priority_queue_t<T> count_pq({bdd});
 
     {
       node_t root = ns.pull();
       T request = { root.uid, 1u };
 
-      count_resolve_request<T>(partial_sums, result, varcount, root.low, request);
-      count_resolve_request<T>(partial_sums, result, varcount, root.high, request);
+      count_resolve_request<T>(count_pq, result, varcount, root.low, request);
+      count_resolve_request<T>(count_pq, result, varcount, root.high, request);
     }
 
     // Take out the rest of the nodes and process them one by one
     while (ns.can_pull()) {
       node_t n = ns.pull();
 
-      if (partial_sums.current_level() != label_of(n)) {
-        partial_sums.setup_next_level();
+      if (count_pq.current_level() != label_of(n)) {
+        count_pq.setup_next_level();
       }
-      adiar_debug(partial_sums.current_level() == label_of(n),
+      adiar_debug(count_pq.current_level() == label_of(n),
                   "Priority queue is out-of-sync with node stream");
-      adiar_debug(partial_sums.can_pull() && partial_sums.top().uid == n.uid,
+      adiar_debug(count_pq.can_pull() && count_pq.top().uid == n.uid,
                   "Priority queue is out-of-sync with node stream");
 
       // Resolve requests
-      count_resolve_requests<T>(partial_sums, result, varcount, n);
+      count_resolve_requests<T>(count_pq, result, varcount, n);
     }
 
     return result;

@@ -60,13 +60,13 @@ namespace adiar
   // Helper functions
 
   // Merging priority queue with sink_arc stream
-  inline arc_t reduce_get_next(reduce_priority_queue_t &redD,
+  inline arc_t reduce_get_next(reduce_priority_queue_t &reduce_pq,
                                sink_arc_stream<false> &sink_arcs)
   {
-    if (!redD.can_pull() || (sink_arcs.can_pull() && sink_arcs.peek().source > redD.top().source)) {
+    if (!reduce_pq.can_pull() || (sink_arcs.can_pull() && sink_arcs.peek().source > reduce_pq.top().source)) {
       return sink_arcs.pull();
     } else {
-      return redD.pull();
+      return reduce_pq.pull();
     }
   }
 
@@ -105,7 +105,7 @@ namespace adiar
 
     // The memory given to the priority queue may overlap on the sorter_phase_2,
     // but should not overlap with the two sorter_phase_1
-    reduce_priority_queue_t redD({in_file}, available_memory - (2 * sorter_phase_1));
+    reduce_priority_queue_t reduce_pq({in_file}, available_memory - (2 * sorter_phase_1));
 
     // Check to see if node_arcs is empty
     if (!node_arcs.can_pull()) {
@@ -131,8 +131,8 @@ namespace adiar
     label_t label = label_of(sink_arcs.peek().source);
 
     // Process bottom-up each level
-    while (sink_arcs.can_pull() || redD.can_pull()) {
-      adiar_invariant(label == redD.current_level(), "label and priority queue are in sync");
+    while (sink_arcs.can_pull() || reduce_pq.can_pull()) {
+      adiar_invariant(label == reduce_pq.current_level(), "label and priority queue are in sync");
 
       // Temporary file for Reduction Rule 1 mappings (opened later if need be)
       tpie::file_stream<mapping> red1_mapping;
@@ -142,10 +142,10 @@ namespace adiar
       child_grouping.set_available_memory(sorter_phase_1, sorter_phase_2, sorter_phase_1);
       child_grouping.begin();
 
-      // Pull out all nodes from redD and sink_arcs for this level
-      while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label) || redD.can_pull()) {
-        arc_t e_high = reduce_get_next(redD, sink_arcs);
-        arc_t e_low = reduce_get_next(redD, sink_arcs);
+      // Pull out all nodes from reduce_pq and sink_arcs for this level
+      while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label) || reduce_pq.can_pull()) {
+        arc_t e_high = reduce_get_next(reduce_pq, sink_arcs);
+        arc_t e_low = reduce_get_next(reduce_pq, sink_arcs);
 
         node_t n = node_of(e_low, e_high);
 
@@ -233,7 +233,7 @@ namespace adiar
         while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target) {
           // The is_high flag is included in arc_t..source
           arc_t new_arc = { node_arcs.pull().source, current_map.new_uid };
-          redD.push(new_arc);
+          reduce_pq.push(new_arc);
         }
 
         // Update the mapping that was used
@@ -253,13 +253,13 @@ namespace adiar
       // Move on to the next level
       red1_mapping.close();
 
-      if (redD.has_next_level()) {
+      if (reduce_pq.has_next_level()) {
         if (sink_arcs.can_pull()) {
-          redD.setup_next_level(label_of(sink_arcs.peek().source));
+          reduce_pq.setup_next_level(label_of(sink_arcs.peek().source));
         } else {
-          redD.setup_next_level();
+          reduce_pq.setup_next_level();
         }
-        label = redD.current_level();
+        label = reduce_pq.current_level();
       } else if (!out_writer.has_pushed()) {
         adiar_debug(!node_arcs.can_pull() && !sink_arcs.can_pull(),
                    "Nodes are still left to be processed");

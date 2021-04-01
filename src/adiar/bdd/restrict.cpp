@@ -62,7 +62,7 @@ namespace adiar
     assignment_stream<> as(assignment);
     assignment_t a = as.pull();
 
-    restrict_priority_queue_t resD({bdd});
+    restrict_priority_queue_t restrict_pq({bdd});
 
     // find the next assignment
     while(as.can_pull() && label_of(n) > a.label) {
@@ -77,32 +77,32 @@ namespace adiar
         return bdd_sink(value_of(rec_child));
       }
 
-      resD.push({ NIL, rec_child });
+      restrict_pq.push({ NIL, rec_child });
     } else {
       aw.unsafe_push(meta_t {label_of(n)});
 
-      restrict_resolve_request(low_arc_of(n), resD, aw);
-      restrict_resolve_request(high_arc_of(n), resD, aw);
+      restrict_resolve_request(low_arc_of(n), restrict_pq, aw);
+      restrict_resolve_request(high_arc_of(n), restrict_pq, aw);
     }
 
     // process all to-be-visited nodes in topological order
-    while(!resD.empty()) {
-      if (resD.empty_level()) {
-        resD.setup_next_level();
+    while(!restrict_pq.empty()) {
+      if (restrict_pq.empty_level()) {
+        restrict_pq.setup_next_level();
 
         // seek assignment
-        while(as.can_pull() && resD.current_level() > a.label) {
+        while(as.can_pull() && restrict_pq.current_level() > a.label) {
           a = as.pull();
         }
 
         // will any nodes in this level be outputted?
-        if (a.label != resD.current_level()) {
-          aw.unsafe_push(meta_t { resD.current_level() });
+        if (a.label != restrict_pq.current_level()) {
+          aw.unsafe_push(meta_t { restrict_pq.current_level() });
         }
       }
 
       // seek requested node
-      while (n.uid != resD.top().target) {
+      while (n.uid != restrict_pq.top().target) {
         n = ns.pull();
       }
 
@@ -110,8 +110,8 @@ namespace adiar
       if(a.label == label_of(n)) {
         ptr_t rec_child = a.value ? n.high : n.low;
 
-        while(resD.can_pull() && resD.top().target == n.uid) {
-          arc_t parent_arc = resD.pull();
+        while(restrict_pq.can_pull() && restrict_pq.top().target == n.uid) {
+          arc_t parent_arc = restrict_pq.pull();
           arc_t request = { parent_arc.source, rec_child };
 
           if(is_sink(rec_child) && is_nil(parent_arc.source)) {
@@ -119,17 +119,17 @@ namespace adiar
             return bdd_sink(value_of(rec_child));
           }
 
-          restrict_resolve_request(request, resD, aw);
+          restrict_resolve_request(request, restrict_pq, aw);
 
         }
       } else {
         // outgoing arcs
-        restrict_resolve_request(low_arc_of(n), resD, aw);
-        restrict_resolve_request(high_arc_of(n), resD, aw);
+        restrict_resolve_request(low_arc_of(n), restrict_pq, aw);
+        restrict_resolve_request(high_arc_of(n), restrict_pq, aw);
 
         // Ingoing arcs
-        while(resD.can_pull() && resD.top().target == n.uid) {
-          arc_t parent_arc = resD.pull();
+        while(restrict_pq.can_pull() && restrict_pq.top().target == n.uid) {
+          arc_t parent_arc = restrict_pq.pull();
 
           if(!is_nil(parent_arc.source)) {
             aw.unsafe_push_node(parent_arc);
