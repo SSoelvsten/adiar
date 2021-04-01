@@ -141,7 +141,7 @@ go_bandit([]() {
              << create_node(0,1, create_node_ptr(1,0), create_node_ptr(1,1));
         }
 
-        it("can compare bdd 1 with x42 and x22", [&]() {
+        it("can compare bdd 1 with x42 and x22 [#nodes + inconsistent levels]", [&]() {
           AssertThat(is_homomorphic(x42_a, bdd_1_a), Is().False());
           AssertThat(is_homomorphic(x42_a, bdd_1_a, true, false), Is().False());
           AssertThat(is_homomorphic(x42_a, bdd_1_a, false, true), Is().False());
@@ -169,7 +169,7 @@ go_bandit([]() {
            AssertThat(is_homomorphic(bdd_1_b, bdd_1b, true, true), Is().False());
          });
 
-        it("can reject bdd 1 shifted by 10 labels", [&]() {
+        it("can reject bdd 1 shifted by 10 labels [inconsistent levels]", [&]() {
           AssertThat(is_homomorphic(bdd_1_a, bdd_1_a_shifted), Is().False());
           AssertThat(is_homomorphic(bdd_1_a, bdd_1_a_shifted, true, false), Is().False());
           AssertThat(is_homomorphic(bdd_1_a, bdd_1_a_shifted, false, true), Is().False());
@@ -241,14 +241,14 @@ go_bandit([]() {
           AssertThat(is_homomorphic(bdd_2_a, bdd_2_b, true, true), Is().True());
         });
 
-        it("can compare bdd 1 with bdd 2", [&]() {
+        it("can compare bdd 1 with bdd 2 [inconsistent levels]", [&]() {
           AssertThat(is_homomorphic(bdd_1_a, bdd_2_a), Is().False());
           AssertThat(is_homomorphic(bdd_1_a, bdd_2_a, true, false), Is().False());
           AssertThat(is_homomorphic(bdd_1_a, bdd_2_a, false, true), Is().False());
           AssertThat(is_homomorphic(bdd_1_a, bdd_2_a, true, true), Is().False());
         });
 
-        it("can reject bdd 2 with labels of x2 nodes shifted", [&]() {
+        it("can reject bdd 2 with labels of x2 nodes shifted [inconsistent levels]", [&]() {
           AssertThat(is_homomorphic(bdd_2_a, bdd_2_a_shifted), Is().False());
           AssertThat(is_homomorphic(bdd_2_a, bdd_2_a_shifted, true, false), Is().False());
           AssertThat(is_homomorphic(bdd_2_a, bdd_2_a_shifted, false, true), Is().False());
@@ -293,9 +293,9 @@ go_bandit([]() {
         /*
                  _1_     ---- x0
                 /   \
-               2     3   ---- x1
+               2     4   ---- x1
               / \   / \
-             3   4  F T  ---- x2
+             4   5  F T  ---- x2
             / \ / \
             T F F T
          */
@@ -347,18 +347,52 @@ go_bandit([]() {
           AssertThat(is_homomorphic(bdd_3_b, bdd_3_c, true, true), Is().True());
         });
 
-        it("can compare bdd 1 with bdd 3", [&]() {
+        it("can compare bdd 1 with bdd 3 [#nodes + #levels]", [&]() {
           AssertThat(is_homomorphic(bdd_1_a, bdd_3_a), Is().False());
           AssertThat(is_homomorphic(bdd_1_a, bdd_3_a, true, false), Is().False());
           AssertThat(is_homomorphic(bdd_1_a, bdd_3_a, false, true), Is().False());
           AssertThat(is_homomorphic(bdd_1_a, bdd_3_a, true, true), Is().False());
         });
 
-        it("can compare bdd 2 with bdd 3", [&]() {
+        it("can compare bdd 2 with bdd 3 [#nodes + #levels]", [&]() {
           AssertThat(is_homomorphic(bdd_2_a, bdd_3_a), Is().False());
           AssertThat(is_homomorphic(bdd_2_a, bdd_3_a, true, false), Is().False());
           AssertThat(is_homomorphic(bdd_2_a, bdd_3_a, false, true), Is().False());
           AssertThat(is_homomorphic(bdd_2_a, bdd_3_a, true, true), Is().False());
         });
+
+        /*
+               1     ---- x0
+              / \
+             2  |    ---- x1
+            / \ /
+            F  3     ---- x2
+              / \
+              4 T    ---- x3
+             / \
+             F T
+        */
+        node_file bdd_4;
+        { // Garbage collect writers to free write-lock
+          node_writer aw(bdd_4); // As depicted
+          aw << create_node(3,0, create_sink_ptr(true), create_sink_ptr(false))
+             << create_node(2,0, create_sink_ptr(false), create_sink_ptr(true))
+             << create_node(1,0, create_sink_ptr(false), create_node_ptr(3,0))
+             << create_node(0,0, create_node_ptr(2,0), create_node_ptr(1,0));
+        }
+
+        it("can compare bdd 2 with bdd 4 [#levels]", [&]() {
+            AssertThat(is_homomorphic(bdd_2_a, bdd_4), Is().False());
+            AssertThat(is_homomorphic(bdd_2_a, bdd_4, true, false), Is().False());
+            AssertThat(is_homomorphic(bdd_2_a, bdd_4, false, true), Is().False());
+            AssertThat(is_homomorphic(bdd_2_a, bdd_4, true, true), Is().False());
+          });
+
+        it("can compare bdd 2 with bdd 4 [#levels]", [&]() {
+            AssertThat(is_homomorphic(bdd_3_a, bdd_4), Is().False());
+            AssertThat(is_homomorphic(bdd_3_a, bdd_4, true, false), Is().False());
+            AssertThat(is_homomorphic(bdd_3_a, bdd_4, false, true), Is().False());
+            AssertThat(is_homomorphic(bdd_3_a, bdd_4, true, true), Is().False());
+          });
     });
 });

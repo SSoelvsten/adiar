@@ -47,12 +47,30 @@ namespace adiar
       return negate1 == negate2;
     }
 
-    // Are they trivially not the same thing, since they have different number
-    // of levels (in the _meta_file) or have different number of nodes (in
-    // _files[0])
-    if (f1._file_ptr -> _meta_file.size() != f2._file_ptr -> _meta_file.size()
-        || f1._file_ptr -> _files[0].size() != f2._file_ptr -> _files[0].size()) {
+    // Are they trivially not the same, since they have different number of
+    // nodes (in _files[0])?
+    if (f1._file_ptr -> _files[0].size() != f2._file_ptr -> _files[0].size()) {
       return false;
+    }
+
+    // Are they trivially not the same, since they have different number of
+    // levels (in the _meta_file)?
+    if (f1._file_ptr -> _meta_file.size() != f2._file_ptr -> _meta_file.size()) {
+      return false;
+    }
+
+    // Are they trivially not the same, since the labels or the size of each
+    // level does not match?
+    { // Create new scope to garbage collect the two meta_streams early
+      meta_stream<node_t, 1> in_meta_1(f1);
+      meta_stream<node_t, 1> in_meta_2(f2);
+
+      while (in_meta_1.can_pull()) {
+        adiar_debug(in_meta_2.can_pull(), "meta files are same size");
+        if (in_meta_1.pull() != in_meta_2.pull()) {
+          return false;
+        }
+      }
     }
 
     node_stream<> in_nodes_1(f1, negate1);
