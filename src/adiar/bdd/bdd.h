@@ -75,7 +75,7 @@ namespace adiar {
               typename LabelExt,
               typename TComparator, typename LabelComparator,
               size_t MetaStreams, size_t Buckets>
-    friend class priority_queue;
+    friend class levelized_priority_queue;
 
     // |- functions
     friend bdd bdd_not(const bdd&);

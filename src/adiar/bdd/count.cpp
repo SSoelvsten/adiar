@@ -4,7 +4,7 @@
 #include "count.h"
 
 #include <adiar/file_stream.h>
-#include <adiar/priority_queue.h>
+#include <adiar/levelized_priority_queue.h>
 #include <adiar/reduce.h>
 
 #include <adiar/assert.h>
@@ -56,7 +56,7 @@ namespace adiar
   };
 
   template <typename T>
-  using count_priority_queue_t = node_priority_queue<T, count_queue_label, count_queue_lt<T>>;
+  using count_priority_queue_t = levelized_node_priority_queue<T, count_queue_label, count_queue_lt<T>>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions

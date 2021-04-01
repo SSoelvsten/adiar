@@ -1,4 +1,4 @@
-#include <adiar/priority_queue.h>
+#include <adiar/levelized_priority_queue.h>
 
 using namespace adiar;
 
@@ -30,13 +30,13 @@ typedef meta_file<pq_test_data, 1u> pq_test_file;
 typedef meta_file_writer<pq_test_data, 1u> pq_test_writer;
 
 template <size_t MetaStreams, size_t Buckets>
-using test_priority_queue = priority_queue<pq_test_data, 1u,
-                                           pq_test_data, pq_test_label_ext,
-                                           pq_test_lt, std::less<label_t>,
-                                           MetaStreams, Buckets>;
+using test_priority_queue = levelized_priority_queue<pq_test_data, 1u,
+                                                     pq_test_data, pq_test_label_ext,
+                                                     pq_test_lt, std::less<label_t>,
+                                                     MetaStreams, Buckets>;
 
 go_bandit([]() {
-  describe("CORE: Priority Queue", []() {
+  describe("CORE: Levelized Priority Queue", []() {
 
     describe("Label Manager", [&]() {
       it("can pull from one meta stream", [&]() {

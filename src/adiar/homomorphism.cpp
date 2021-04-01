@@ -4,14 +4,14 @@
 #include "homomorphism.h"
 
 #include <adiar/file_stream.h>
-#include <adiar/priority_queue.h>
+#include <adiar/levelized_priority_queue.h>
 #include <adiar/tuple.h>
 
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  typedef node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2> homomorphism_priority_queue_t;
+  typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2> homomorphism_priority_queue_t;
   typedef tpie::priority_queue<tuple_data, tuple_snd_lt> homomorphism_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
