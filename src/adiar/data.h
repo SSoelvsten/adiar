@@ -271,17 +271,22 @@ namespace adiar {
 
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Our layer-aware priority queue needs to manage which bucket corresponds to
+  /// Our level-aware priority queue needs to manage which bucket corresponds to
   /// which label to place things correctly or in an internal priority queue for
   /// bucket overflows. To make things more efficient, we require the use of
   /// meta information about the input BDD streams.
   //////////////////////////////////////////////////////////////////////////////
   struct meta
   {
-    label_t label;
+    uint64_t level_info;
   };
 
   typedef meta meta_t;
+
+  meta_t create_meta(label_t label, size_t level_size);
+
+  label_t label_of(const meta_t &m);
+  size_t size_of(const meta_t &m);
 
   meta operator! (const meta& m);
 

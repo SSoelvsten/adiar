@@ -38,7 +38,7 @@ namespace adiar {
     node_file nf;
     node_writer nw(nf);
     nw.unsafe_push(create_node(label, 0, create_sink_ptr(false), create_sink_ptr(true)));
-    nw.unsafe_push(meta_t {label});
+    nw.unsafe_push(create_meta(label,1u));
     return nf;
   }
 
@@ -73,7 +73,7 @@ namespace adiar {
       high = next_node.uid;
 
       nw.unsafe_push(next_node);
-      nw.unsafe_push(meta_t {next_label});
+      nw.unsafe_push(create_meta(next_label,1u));
     }
 
     return nf;
@@ -103,7 +103,7 @@ namespace adiar {
       low = next_node.uid;
 
       nw.unsafe_push(next_node);
-      nw.unsafe_push(meta_t {next_label});
+      nw.unsafe_push(create_meta(next_label,1u));
     }
 
     return nf;
@@ -137,7 +137,8 @@ namespace adiar {
     do {
       // Start with the maximal number the accumulated value can be at
       // up to this label.
-      id_t curr_id = std::min(curr_label - min_label, threshold);
+      id_t max_id = std::min(curr_label - min_label, threshold);
+      id_t curr_id = max_id;
 
       // How small has the accumulated sum up to this point to be, such
       // that it is still possible to reach threshold before max_label?
@@ -165,7 +166,7 @@ namespace adiar {
         nw.unsafe_push(adiar::create_node(curr_label, curr_id, low, high));
 
       } while (curr_id-- > min_id);
-      nw.unsafe_push(meta_t {curr_label});
+      nw.unsafe_push(create_meta(curr_label, (max_id - min_id) + 1));
     } while (curr_label-- > min_label);
 
     return nf;

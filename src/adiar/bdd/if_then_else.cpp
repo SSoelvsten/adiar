@@ -55,9 +55,9 @@ namespace adiar
     meta_stream<node_t, 1> in_meta_1(bdd_1);
     meta_stream<node_t, 1> in_meta_2(bdd_2);
     while(in_meta_1.can_pull() && in_meta_2.can_pull()) {
-      if (in_meta_1.peek().label == in_meta_2.peek().label) {
+      if (label_of(in_meta_1.peek()) == label_of(in_meta_2.peek())) {
         return false;
-      } else if (in_meta_1.peek().label < in_meta_2.peek().label) {
+      } else if (label_of(in_meta_1.peek()) < label_of(in_meta_2.peek())) {
         in_meta_1.pull();
       } else {
         in_meta_2.pull();
@@ -68,7 +68,6 @@ namespace adiar
 
   node_file ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
   {
-    label_t out_label = MAX_LABEL+1;
     ptr_t root_then = NIL, root_else = NIL;
 
     node_file out_nodes;
@@ -88,10 +87,6 @@ namespace adiar
       if (from_then && !in_nodes_then.can_pull()) { root_then = n.uid; }
       if (!from_then && !in_nodes_else.can_pull()) { root_else = n.uid; }
 
-      if (label_of(n) != out_label) {
-        out_label = label_of(n);
-        nw.unsafe_push(meta_t {out_label});
-      }
       nw.unsafe_push(n);
     }
 
@@ -103,10 +98,6 @@ namespace adiar
 
     while (in_nodes_if.can_pull()) {
       node_t n = in_nodes_if.pull();
-      if (label_of(n) != out_label) {
-        out_label = label_of(n);
-        nw.unsafe_push(meta_t {out_label});
-      }
 
       n.low = is_sink(n.low)
         ? (value_of(n.low) ? root_then : root_else)
@@ -118,6 +109,22 @@ namespace adiar
 
       nw.unsafe_push(n);
     }
+
+    // merge the meta files
+    meta_stream<node_t,1,true> in_meta_if(bdd_if);
+    meta_stream<node_t,1,true> in_meta_then(bdd_then);
+    meta_stream<node_t,1,true> in_meta_else(bdd_else);
+
+    while (in_meta_if.can_pull() || in_meta_then.can_pull() || in_meta_else.can_pull()) {
+      meta_t m = in_meta_then.can_pull() && (!in_meta_else.can_pull()
+                                             || label_of(in_meta_then.peek()) > label_of(in_meta_else.peek()))
+        ? in_meta_then.pull()
+        : in_meta_else.can_pull() ? in_meta_else.pull() : in_meta_if.pull()
+      ;
+
+      nw.unsafe_push(m);
+    }
+
     return out_nodes;
   }
 
@@ -249,23 +256,22 @@ namespace adiar
     label_t out_label = label_of(fst(v_if.uid, v_then.uid, v_else.uid));
     id_t out_id = 0;
 
-    aw.unsafe_push(meta_t { out_label });
-
     ptr_t low_if, low_then, low_else, high_if, high_then, high_else;
     ite_init_request(in_nodes_if, v_if, out_label, low_if, high_if);
     ite_init_request(in_nodes_then, v_then, out_label, low_then, high_then);
     ite_init_request(in_nodes_else, v_else, out_label, low_else, high_else);
 
-    uid_t out_uid = create_node_uid(out_label, out_id);
+    uid_t out_uid = create_node_uid(out_label, out_id++);
     ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
     ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
 
     // Process all nodes in topological order of both BDDs
     while (ite_pq_1.can_pull() || ite_pq_1.has_next_level() || !ite_pq_2.empty() || !ite_pq_3.empty()) {
       if (!ite_pq_1.can_pull() && ite_pq_2.empty() && ite_pq_3.empty()) {
+        aw.unsafe_push(create_meta(out_label, out_id));
+
         ite_pq_1.setup_next_level();
         out_label = ite_pq_1.current_level();
-        aw.unsafe_push(meta_t { out_label });
         out_id = 0;
       }
 
@@ -469,6 +475,9 @@ namespace adiar
         }
       }
     }
+
+    // Push the level of the very last iteration
+    aw.unsafe_push(create_meta(out_label, out_id));
 
     return out_arcs;
   }

@@ -26,7 +26,7 @@ namespace adiar
     meta_stream<node_t,1> in_meta(f);
 
     bool pick_high = pick_next(v_curr);
-    aw << create_assignment(in_meta.pull().label, pick_high);
+    aw << create_assignment(label_of(in_meta.pull()), pick_high);
 
     ptr_t v_next = pick_high ? v_curr.high : v_curr.low;
 
@@ -35,19 +35,19 @@ namespace adiar
       while (v_curr.uid < v_next) { v_curr = in_nodes.pull(); }
 
       // set default to all skipped levels
-      while (in_meta.peek().label < label_of(v_next)) {
-        aw << create_assignment(in_meta.pull().label, default_for_skipped_var);
+      while (label_of(in_meta.peek()) < label_of(v_next)) {
+        aw << create_assignment(label_of(in_meta.pull()), default_for_skipped_var);
       }
 
       pick_high = pick_next(v_curr);
-      aw << create_assignment(in_meta.pull().label, pick_high);
+      aw << create_assignment(label_of(in_meta.pull()), pick_high);
 
       v_next = pick_high ? v_curr.high : v_curr.low;
     }
 
     // Set the remaining levels to the default value
     while (in_meta.can_pull()) {
-      aw << create_assignment(in_meta.pull().label, default_for_skipped_var);
+      aw << create_assignment(label_of(in_meta.pull()), default_for_skipped_var);
     }
     return out;
   }

@@ -134,23 +134,22 @@ namespace adiar
     label_t out_label = label_of(fst(v1.uid, v2.uid));
     id_t out_id = 0;
 
-    aw.unsafe_push(meta_t { out_label });
-
     ptr_t low1, low2, high1, high2;
     apply_init_request(in_nodes_1, v1, out_label, low1, high1);
     apply_init_request(in_nodes_2, v2, out_label, low2, high2);
 
     // Shortcut the root
-    uid_t out_uid = create_node_uid(out_label, out_id);
+    uid_t out_uid = create_node_uid(out_label, out_id++);
     apply_resolve_request(apply_pq_1, aw, op, out_uid, low1, low2);
     apply_resolve_request(apply_pq_1, aw, op, flag(out_uid), high1, high2);
 
     // Process nodes in topological order of both BDDs
     while (apply_pq_1.can_pull() || apply_pq_1.has_next_level() || !apply_pq_2.empty()) {
       if (!apply_pq_1.can_pull() && apply_pq_2.empty()) {
+        aw.unsafe_push(create_meta(out_label, out_id));
+
         apply_pq_1.setup_next_level();
         out_label = apply_pq_1.current_level();
-        aw.unsafe_push(meta_t { out_label });
         out_id = 0;
       }
 
@@ -253,6 +252,9 @@ namespace adiar
         }
       }
     }
+
+    // Push the level of the very last iteration
+    aw.unsafe_push(create_meta(out_label, out_id));
 
     return out_arcs;
   }

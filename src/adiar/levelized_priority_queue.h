@@ -131,9 +131,9 @@ namespace adiar {
       label_t min_label = 0u;
       for (size_t idx = 0u; idx < MetaStreams; idx++) {
         if (_meta_streams[idx] -> can_pull()
-            && (!has_min_label || _comparator(_meta_streams[idx] -> peek().label, min_label))) {
+            && (!has_min_label || _comparator(label_of(_meta_streams[idx] -> peek()), min_label))) {
           has_min_label = true;
-          min_label = _meta_streams[idx] -> peek().label;
+          min_label = label_of(_meta_streams[idx] -> peek());
         }
       }
 
@@ -151,7 +151,7 @@ namespace adiar {
 
       // pull from all with min_label
       for (const std::unique_ptr<meta_stream<File_T, Files>> &meta_stream : _meta_streams) {
-        if (meta_stream -> can_pull() && meta_stream -> peek().label == min_label) {
+        if (meta_stream -> can_pull() && label_of(meta_stream -> peek()) == min_label) {
           meta_stream -> pull();
         }
       }

@@ -37,9 +37,9 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n4,sink_T });
               aw.unsafe_push_sink({ flag(n4),sink_T });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
-              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,1u));
+              aw.unsafe_push(create_meta(2,2u));
             }
 
             // Reduce it
@@ -72,13 +72,13 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -119,10 +119,10 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n5,sink_F });
               aw.unsafe_push_sink({ flag(n5),sink_T });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
-              aw.unsafe_push(meta_t {2});
-              aw.unsafe_push(meta_t {3});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,1u));
+              aw.unsafe_push(create_meta(2,2u));
+              aw.unsafe_push(create_meta(3,1u));
             }
 
             // Reduce it
@@ -157,16 +157,16 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {3}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(3,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -202,9 +202,9 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n4,sink_F });
               aw.unsafe_push_sink({ flag(n4),sink_T });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
-              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,1u));
+              aw.unsafe_push(create_meta(2,2u));
             }
 
             // Reduce it
@@ -236,13 +236,13 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -283,9 +283,9 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n5, sink_F });
               aw.unsafe_push_sink({ flag(n5), sink_T });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {2});
-              aw.unsafe_push(meta_t {3});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(2,2u));
+              aw.unsafe_push(create_meta(3,2u));
             }
 
             // Reduce it
@@ -318,13 +318,13 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 3 }));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(3,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,2u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -368,10 +368,10 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n6,sink_T });
               aw.unsafe_push_sink({ flag(n6),sink_F });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
-              aw.unsafe_push(meta_t {2});
-              aw.unsafe_push(meta_t {3});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,1u));
+              aw.unsafe_push(create_meta(2,2u));
+              aw.unsafe_push(create_meta(3,2u));
             }
 
             // Reduce it
@@ -412,16 +412,16 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {3}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(3,2u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -462,10 +462,10 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n5,sink_F });
               aw.unsafe_push_sink({ flag(n5),sink_T });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
-              aw.unsafe_push(meta_t {2});
-              aw.unsafe_push(meta_t {3});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,1u));
+              aw.unsafe_push(create_meta(2,2u));
+              aw.unsafe_push(create_meta(3,1u));
             }
 
             // Reduce it
@@ -502,16 +502,16 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {3}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(3,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -547,9 +547,9 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n4,sink_F });
               aw.unsafe_push_sink({ flag(n4),sink_T });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
-              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,1u));
+              aw.unsafe_push(create_meta(2,2u));
             }
 
             // Reduce it
@@ -575,10 +575,10 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -625,10 +625,10 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n7,sink_T });
               aw.unsafe_push_sink({ flag(n7),sink_T });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
-              aw.unsafe_push(meta_t {2});
-              aw.unsafe_push(meta_t {3});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,2u));
+              aw.unsafe_push(create_meta(2,3u));
+              aw.unsafe_push(create_meta(3,1u));
             }
 
 
@@ -667,13 +667,13 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,2u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -684,9 +684,9 @@ go_bandit([]() {
                  1                         ---- x0
                 / \
                 | 2                        ---- x1
-                |/ \        =>
-                3  4                4      ---- x2
-                |X/                / \
+                |/|         =>
+                3 4                 4      ---- x2
+                |X|                / \
                 F T                F T
             */
 
@@ -710,9 +710,9 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n4,sink_F });
               aw.unsafe_push_sink({ flag(n4),sink_T });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
-              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,1u));
+              aw.unsafe_push(create_meta(2,2u));
             }
 
             // Reduce it
@@ -730,7 +730,9 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
           });
 
         it("can reduce down to a sink [1]", [&]() {
@@ -750,7 +752,7 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n1,sink_F });
               aw.unsafe_push_sink({ flag(n1),sink_F });
 
-              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(create_meta(0,1u));
             }
 
             // Reduce it
@@ -791,8 +793,8 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n2,sink_T });
               aw.unsafe_push_sink({ flag(n2),sink_T });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,1u));
             }
 
             // Reduce it
@@ -845,9 +847,9 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n6,sink_T });
               aw.unsafe_push_sink({ flag(n6),sink_F });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
-              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,2u));
+              aw.unsafe_push(create_meta(2,3u));
             }
 
             // Reduce it
@@ -881,13 +883,13 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,2u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -929,9 +931,9 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n6,sink_F });
               aw.unsafe_push_sink({ flag(n6),sink_T });
 
-              aw.unsafe_push(meta_t {0});
-              aw.unsafe_push(meta_t {1});
-              aw.unsafe_push(meta_t {2});
+              aw.unsafe_push(create_meta(0,1u));
+              aw.unsafe_push(create_meta(1,2u));
+              aw.unsafe_push(create_meta(2,3u));
             }
 
             // Reduce it
@@ -965,13 +967,13 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,2u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -993,7 +995,7 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n1,sink_F });
               aw.unsafe_push_sink({ flag(n1),sink_T });
 
-              aw.unsafe_push(meta_t {0});
+              aw.unsafe_push(create_meta(0u,1u));
             }
 
             // Reduce it
@@ -1009,7 +1011,7 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0u,1u)));
             AssertThat(out_meta.can_pull(), Is().False());
           });
 
@@ -1030,7 +1032,7 @@ go_bandit([]() {
               aw.unsafe_push_sink({ n1,sink_F });
               aw.unsafe_push_sink({ flag(n1),sink_T });
 
-              aw.unsafe_push(meta_t {42});
+              aw.unsafe_push(create_meta(42,1u));
             }
 
             // Reduce it
@@ -1046,7 +1048,7 @@ go_bandit([]() {
             meta_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {42}));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(42u,1u)));
             AssertThat(out_meta.can_pull(), Is().False());
           });
       });

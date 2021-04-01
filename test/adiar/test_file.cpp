@@ -91,10 +91,10 @@ go_bandit([]() {
 
                   meta_file_writer<int,1> fw(test_file_meta_1);
 
-                  fw.unsafe_push(meta_t { 0 });
-
                   fw.unsafe_push(21);
                   fw.unsafe_push(42);
+
+                  fw.unsafe_push(create_meta(0,2u));
 
                   AssertThat(test_file_meta_1.is_read_only(), Is().False());
                 });
@@ -103,8 +103,8 @@ go_bandit([]() {
                 it("can hook into and write to test_file_meta_2", [&]() {
                   meta_file_writer<int,2> fw(test_file_meta_2);
 
-                  fw.unsafe_push(meta_t { 5 });
-                  fw.unsafe_push(meta_t { 4 });
+                  fw.unsafe_push(create_meta(5,1u));
+                  fw.unsafe_push(create_meta(4,1u));
 
                   fw.unsafe_push(1); // Check idx argument is defaulted to 0
                   fw.unsafe_push(2, 0);
@@ -119,13 +119,12 @@ go_bandit([]() {
                   meta_file<int, 1>* f = new meta_file<int, 1>();
                   meta_file_writer fw(*f);
 
-                  fw.unsafe_push(meta_t { 0 });
-
                   fw.unsafe_push(21);
 
                   delete f;
 
                   fw.unsafe_push(42);
+                  fw.unsafe_push(create_meta(0,1u));
                 });
 
                 describe("node_writer", [&]() {
@@ -146,8 +145,12 @@ go_bandit([]() {
                       AssertThat(arc_test_file.is_read_only(), Is().False());
 
                       aw.unsafe_push_node(node_arc_1);
-                      aw.unsafe_push(meta_t { 0 });
                     });
+
+                    it("can hook into arc_test_file and write meta", [&]() {
+                        aw.unsafe_push(create_meta(0,1u));
+                        aw.unsafe_push(create_meta(1,1u));
+                      });
 
                     it("can hook into arc_test_file, write sink arcs, and then sort them", [&]() {
                       aw.unsafe_push_sink(sink_arc_3);
@@ -363,7 +366,7 @@ go_bandit([]() {
                        meta_stream ms(test_file_meta_1);
 
                        AssertThat(ms.can_pull(), Is().True());
-                       AssertThat(ms.pull(), Is().EqualTo(meta_t {0}));
+                       AssertThat(ms.pull(), Is().EqualTo(create_meta(0,2u)));
                        AssertThat(ms.can_pull(), Is().False());
                      });
 
@@ -371,9 +374,9 @@ go_bandit([]() {
                        meta_stream ms(node_test_file);
 
                        AssertThat(ms.can_pull(), Is().True());
-                       AssertThat(ms.pull(), Is().EqualTo(meta_t {0}));
+                       AssertThat(ms.pull(), Is().EqualTo(create_meta(0,1u)));
                        AssertThat(ms.can_pull(), Is().True());
-                       AssertThat(ms.pull(), Is().EqualTo(meta_t {1}));
+                       AssertThat(ms.pull(), Is().EqualTo(create_meta(1,2u)));
                        AssertThat(ms.can_pull(), Is().False());
                      });
                 });
@@ -585,13 +588,13 @@ go_bandit([]() {
 
                 it("can compute sizes of test_file_meta_1", [&]() {
                   AssertThat(test_file_meta_1.size(), Is().EqualTo(2u));
-                  AssertThat(test_file_meta_1.file_size(), Is().EqualTo(2u * 4u + 1u * 4u));
+                  AssertThat(test_file_meta_1.file_size(), Is().EqualTo(2u * 4u + 1u * 8u));
                 });
 
                 it("can compute size of test_file_meta_2", [&]() {
                   test_file_meta_2.make_read_only();
                   AssertThat(test_file_meta_2.size(), Is().EqualTo(5u));
-                  AssertThat(test_file_meta_2.file_size(), Is().EqualTo(5u * 4u + 2u * 4u));
+                  AssertThat(test_file_meta_2.file_size(), Is().EqualTo(5u * 4u + 2u * 8u));
                 });
 
                 describe("node_file", [&]() {
@@ -636,25 +639,25 @@ go_bandit([]() {
                         it("can compute size of node_test_file", [&]() {
                           AssertThat(node_test_file.size(), Is().EqualTo(3u));
                           AssertThat(node_test_file.meta_size(), Is().EqualTo(2u));
-                          AssertThat(node_test_file.file_size(), Is().EqualTo(3u * 24u + 2u * 4u));
+                          AssertThat(node_test_file.file_size(), Is().EqualTo(3u * 24u + 2u * 8u));
                         });
 
                         it("can compute size of x0", [&]() {
                           AssertThat(x0.size(), Is().EqualTo(1u));
                           AssertThat(x0.meta_size(), Is().EqualTo(1u));
-                          AssertThat(x0.file_size(), Is().EqualTo(1u * 24u + 1u * 4u));
+                          AssertThat(x0.file_size(), Is().EqualTo(1u * 24u + 1u * 8u));
                         });
 
                         it("can compute size of x0 & x1", [&]() {
                           AssertThat(x0_and_x1.size(), Is().EqualTo(2u));
                           AssertThat(x0_and_x1.meta_size(), Is().EqualTo(2u));
-                          AssertThat(x0_and_x1.file_size(), Is().EqualTo(2u * 24u + 2u * 4u));
+                          AssertThat(x0_and_x1.file_size(), Is().EqualTo(2u * 24u + 2u * 8u));
                         });
 
                         it("can compute size of sink_T", [&]() {
                           AssertThat(sink_T.size(), Is().EqualTo(1u));
                           AssertThat(sink_T.meta_size(), Is().EqualTo(0u));
-                          AssertThat(sink_T.file_size(), Is().EqualTo(1u * 24u + 0u * 4u));
+                          AssertThat(sink_T.file_size(), Is().EqualTo(1u * 24u + 0u * 8u));
                         });
                     });
 

@@ -83,13 +83,13 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta_arcs(output);
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 1 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 3 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().False());
           });
@@ -135,10 +135,10 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta_arcs(output);
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().False());
           });
@@ -198,13 +198,13 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta_arcs(output);
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 0 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,2u)));
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 3 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().False());
           });
@@ -256,10 +256,10 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta_arcs(output);
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 1 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,2u)));
 
             AssertThat(meta_arcs.can_pull(), Is().False());
           });
@@ -297,7 +297,7 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta_arcs(output);
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t { 2 }));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().False());
           });
@@ -394,42 +394,10 @@ go_bandit([]() {
         it("should return input unchanged when given an empty assignment", [&]() {
             assignment_file assignment;
 
-            __bdd output = bdd_restrict(bdd, assignment);
+            __bdd out = bdd_restrict(bdd, assignment);
 
-            node_test_stream out_nodes(output);
-
-            AssertThat(out_nodes.can_pull(), Is().True());
-            AssertThat(out_nodes.pull(), Is().EqualTo(n5));
-
-            AssertThat(out_nodes.can_pull(), Is().True());
-            AssertThat(out_nodes.pull(), Is().EqualTo(n4));
-
-            AssertThat(out_nodes.can_pull(), Is().True());
-            AssertThat(out_nodes.pull(), Is().EqualTo(n3));
-
-            AssertThat(out_nodes.can_pull(), Is().True());
-            AssertThat(out_nodes.pull(), Is().EqualTo(n2));
-
-            AssertThat(out_nodes.can_pull(), Is().True());
-            AssertThat(out_nodes.pull(), Is().EqualTo(n1));
-
-            AssertThat(out_nodes.can_pull(), Is().False());
-
-            meta_test_stream<node_t, 1> out_meta(output);
-
-            AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {3}));
-
-            AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {2}));
-
-            AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {1}));
-
-            AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(meta_t {0}));
-
-            AssertThat(out_meta.can_pull(), Is().False());
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd._file_ptr));
+            AssertThat(out.negate, Is().False());
           });
 
         it("should have sink arcs restricted to a sink sorted [1]", []() {
@@ -495,10 +463,10 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta_arcs(output);
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,2u)));
 
             AssertThat(meta_arcs.can_pull(), Is().False());
           });
@@ -567,10 +535,10 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta_arcs(output);
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t {1}));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,2u)));
 
             AssertThat(meta_arcs.can_pull(), Is().False());
           });
@@ -657,13 +625,13 @@ go_bandit([]() {
             meta_test_stream<arc_t, 2> meta_arcs(output);
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t {0}));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t {2}));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,2u)));
 
             AssertThat(meta_arcs.can_pull(), Is().True());
-            AssertThat(meta_arcs.pull(), Is().EqualTo(meta_t {3}));
+            AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,2u)));
 
             AssertThat(meta_arcs.can_pull(), Is().False());
           });

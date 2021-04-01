@@ -64,6 +64,9 @@ namespace adiar
 
     restrict_priority_queue_t restrict_pq({bdd});
 
+    label_t level = label_of(n);
+    size_t level_size = 0;
+
     // find the next assignment
     while(as.can_pull() && label_of(n) > a.label) {
       a = as.pull();
@@ -79,7 +82,7 @@ namespace adiar
 
       restrict_pq.push({ NIL, rec_child });
     } else {
-      aw.unsafe_push(meta_t {label_of(n)});
+      level_size = 1;
 
       restrict_resolve_request(low_arc_of(n), restrict_pq, aw);
       restrict_resolve_request(high_arc_of(n), restrict_pq, aw);
@@ -88,16 +91,17 @@ namespace adiar
     // process all to-be-visited nodes in topological order
     while(!restrict_pq.empty()) {
       if (restrict_pq.empty_level()) {
+        if (level_size > 0) {
+          aw.unsafe_push(create_meta(level, level_size));
+        }
         restrict_pq.setup_next_level();
 
-        // seek assignment
-        while(as.can_pull() && restrict_pq.current_level() > a.label) {
-          a = as.pull();
-        }
+        level_size = 0;
+        level = restrict_pq.current_level();
 
-        // will any nodes in this level be outputted?
-        if (a.label != restrict_pq.current_level()) {
-          aw.unsafe_push(meta_t { restrict_pq.current_level() });
+        // seek assignment
+        while(as.can_pull() && level > a.label) {
+          a = as.pull();
         }
       }
 
@@ -120,7 +124,6 @@ namespace adiar
           }
 
           restrict_resolve_request(request, restrict_pq, aw);
-
         }
       } else {
         // outgoing arcs
@@ -135,7 +138,14 @@ namespace adiar
             aw.unsafe_push_node(parent_arc);
           }
         }
+
+        level_size++;
       }
+    }
+
+    // Push the level of the very last iteration
+    if (level_size > 0) {
+      aw.unsafe_push(create_meta(level, level_size));
     }
 
     // TODO: Add bool variable to check whether we really do need to sort.
