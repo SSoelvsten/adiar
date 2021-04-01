@@ -12,7 +12,7 @@ set(HEADERS
   file_stream.h
   file_writer.h
   homomorphism.h
-  priority_queue.h
+  levelized_priority_queue.h
   reduce.h
   tuple.h
   union.h
@@ -42,7 +42,7 @@ set(SOURCES
   file_stream.cpp
   file_writer.cpp
   homomorphism.cpp
-  priority_queue.cpp
+  levelized_priority_queue.cpp
   reduce.cpp
 
   # bdd files

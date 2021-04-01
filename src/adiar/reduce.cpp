@@ -7,7 +7,7 @@
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
-#include <adiar/priority_queue.h>
+#include <adiar/levelized_priority_queue.h>
 
 #include <adiar/assert.h>
 
@@ -54,7 +54,7 @@ namespace adiar
     return a.old_uid > b.old_uid;
   };
 
-  typedef arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, std::greater<label_t>> reduce_priority_queue_t;
+  typedef levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, std::greater<label_t>> reduce_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions

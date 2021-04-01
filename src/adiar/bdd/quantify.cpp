@@ -5,7 +5,7 @@
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
-#include <adiar/priority_queue.h>
+#include <adiar/levelized_priority_queue.h>
 #include <adiar/tuple.h>
 #include <adiar/util.h>
 
@@ -52,7 +52,7 @@ namespace adiar
     }
   };
 
-  typedef node_priority_queue<quantify_tuple, tuple_label, quantify_1_lt> quantify_priority_queue_t;
+  typedef levelized_node_priority_queue<quantify_tuple, tuple_label, quantify_1_lt> quantify_priority_queue_t;
   typedef tpie::priority_queue<quantify_tuple_data, quantify_2_lt> quantify_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////

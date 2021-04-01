@@ -5,7 +5,7 @@
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
-#include <adiar/priority_queue.h>
+#include <adiar/levelized_priority_queue.h>
 #include <adiar/tuple.h>
 
 #include <adiar/bdd/build.h>
@@ -44,7 +44,7 @@ namespace adiar
   };
 
 
-  typedef node_priority_queue<ite_triple, triple_label, triple_fst_lt, std::less<>, 3> ite_priority_queue_1_t;
+  typedef levelized_node_priority_queue<ite_triple, triple_label, triple_fst_lt, std::less<>, 3> ite_priority_queue_1_t;
   typedef tpie::priority_queue<ite_triple_data_1, triple_snd_lt> ite_priority_queue_2_t;
   typedef tpie::priority_queue<ite_triple_data_2, triple_trd_lt> ite_priority_queue_3_t;
 

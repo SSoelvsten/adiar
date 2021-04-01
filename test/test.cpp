@@ -48,7 +48,7 @@ public:
 #include "adiar/test_file.cpp"
 #include "adiar/test_dot.cpp"
 
-#include "adiar/test_priority_queue.cpp"
+#include "adiar/test_levelized_priority_queue.cpp"
 
 #include "adiar/test_homomorphism.cpp"
 #include "adiar/test_reduce.cpp"

@@ -8,7 +8,7 @@
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
-#include <adiar/priority_queue.h>
+#include <adiar/levelized_priority_queue.h>
 #include <adiar/reduce.h>
 #include <adiar/util.h>
 
@@ -30,7 +30,7 @@ namespace adiar
     }
   };
 
-  typedef node_priority_queue<arc_t, restrict_queue_label, restrict_queue_lt> restrict_priority_queue_t;
+  typedef levelized_node_priority_queue<arc_t, restrict_queue_label, restrict_queue_lt> restrict_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions

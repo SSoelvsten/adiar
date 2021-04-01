@@ -202,7 +202,8 @@ namespace adiar {
             typename LabelExt,
             typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
             size_t MetaStreams = 1u, size_t Buckets = ADIAR_PQ_BUCKETS>
-  class priority_queue : private LabelExt, private pq_label_mgr<File_T, Files, LabelComparator, MetaStreams>
+  class levelized_priority_queue
+    : private LabelExt, private pq_label_mgr<File_T, Files, LabelComparator, MetaStreams>
   {
     static_assert(0 < MetaStreams, "At least one meta stream should be provided");
 
@@ -236,7 +237,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
   private:
-    priority_queue(tpie::memory_size_type memory_given)
+    levelized_priority_queue(tpie::memory_size_type memory_given)
       : _overflow_queue(calc_tpie_pq_factor(m_overflow_queue<T, Buckets>(memory_given)))
     {
       _memory_occupied_by_meta = tpie::get_memory_manager().available();
@@ -253,9 +254,9 @@ namespace adiar {
     /// \param memory_given    Total amount of memory the priority queue should
     ///                        take.
     ////////////////////////////////////////////////////////////////////////////
-    priority_queue(const meta_file<File_T, Files> (& files) [MetaStreams],
+    levelized_priority_queue(const meta_file<File_T, Files> (& files) [MetaStreams],
                    tpie::memory_size_type memory_given)
-      : priority_queue(memory_given)
+      : levelized_priority_queue(memory_given)
     {
       for (const meta_file<File_T, Files> &f : files) {
         label_mgr::hook_meta_stream(f);
@@ -263,20 +264,20 @@ namespace adiar {
       setup_buckets();
     }
 
-    priority_queue(const bdd (& bdds) [MetaStreams],
+    levelized_priority_queue(const bdd (& bdds) [MetaStreams],
                    tpie::memory_size_type memory_given)
-      : priority_queue(memory_given) {
+      : levelized_priority_queue(memory_given) {
       for (const bdd& b : bdds) {
         label_mgr::hook_meta_stream(b.file);
       }
       setup_buckets();
     }
 
-    priority_queue(const meta_file<File_T, Files> (& files) [MetaStreams])
-    : priority_queue(files, tpie::get_memory_manager().available()) { }
+    levelized_priority_queue(const meta_file<File_T, Files> (& files) [MetaStreams])
+    : levelized_priority_queue(files, tpie::get_memory_manager().available()) { }
 
-    priority_queue(const bdd (& bdds) [MetaStreams])
-    : priority_queue(bdds, tpie::get_memory_manager().available()) { }
+    levelized_priority_queue(const bdd (& bdds) [MetaStreams])
+    : levelized_priority_queue(bdds, tpie::get_memory_manager().available()) { }
 
     ////////////////////////////////////////////////////////////////////////////
     // Private constructor methods
@@ -648,12 +649,12 @@ namespace adiar {
   template <typename T, typename LabelExt,
             typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
             size_t MetaStreams = 1u, size_t Buckets = ADIAR_PQ_BUCKETS>
-  using node_priority_queue = priority_queue<node_t, 1u, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
+  using levelized_node_priority_queue = levelized_priority_queue<node_t, 1u, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
 
   template <typename T, typename LabelExt,
             typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
             size_t MetaStreams = 1u, size_t Buckets = ADIAR_PQ_BUCKETS>
-  using arc_priority_queue = priority_queue<arc_t, 2u, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
+  using levelized_arc_priority_queue = levelized_priority_queue<arc_t, 2u, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
 }
 
 #endif // ADIAR_PRIORITY_QUEUE_H
