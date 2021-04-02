@@ -1,5 +1,5 @@
 # Examples
-![examples](https://github.com/SSoelvsten/adiar/workflows/examples/badge.svg?branch=master)
+![examples](https://github.com/SSoelvsten/adiar/workflows/examples/badge.svg?branch=main)
 
 To benchmark the implementation and also to provide examples of how to use
 _Adiar_ in your project, we provide a few examples. Even more examples can be

@@ -50,4 +50,4 @@ group at [Aarhus University](https://cs.au.dk).
 
 ### License
 The software and documentation files in this repository are distributed under the
-[MIT License](https://github.com/SSoelvsten/adiar/blob/master/LICENSE.md).
+[MIT License](https://github.com/SSoelvsten/adiar/blob/main/LICENSE.md).

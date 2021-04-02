@@ -54,7 +54,7 @@ nav_sort: case_insensitive
 back_to_top: true
 back_to_top_text: "Back to top"
 
-footer_content: "The source and the documentation is distributed under the <a href=\"https://github.com/ssoelvsten/adiar/tree/master/LICENSE.md\">MIT license.</a>"
+footer_content: "The source and the documentation is distributed under the <a href=\"https://github.com/ssoelvsten/adiar/tree/main/LICENSE.md\">MIT license.</a>"
 
 # Footer last edited timestamp
 last_edit_timestamp: true

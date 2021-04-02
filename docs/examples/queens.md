@@ -18,7 +18,7 @@ The N-Queens problem is the following combinatorial problem
 {: .fs-6 .fw-300 }
 
 We will solve this problem using BDDs. The final program is available in
-[example/queens.cpp](//github.com/SSoelvsten/adiar/blob/master/example/queens.cpp).
+[example/queens.cpp](//github.com/SSoelvsten/adiar/blob/main/example/queens.cpp).
 {: .fs-6 .fw-300 }
 
 ## Table of contents

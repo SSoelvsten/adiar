@@ -1,9 +1,9 @@
 # Adiar
 [![MIT License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](LICENSE.md)
 [![Built with TPIE](https://img.shields.io/badge/built%20with-TPIE-blue)](https://users-cs.au.dk/~rav/tpie/)
-[![test](https://github.com/SSoelvsten/adiar/workflows/test/badge.svg?branch=master)](/actions?query=workflow%3Atest)
-[![codecov](https://codecov.io/gh/SSoelvsten/adiar/branch/master/graph/badge.svg?token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
-[![examples](https://github.com/SSoelvsten/adiar/workflows/examples/badge.svg?branch=master)](/actions?query=workflow%3Aexamples)
+[![test](https://github.com/SSoelvsten/adiar/workflows/test/badge.svg?branch=main)](/actions?query=workflow%3Atest)
+[![codecov](https://codecov.io/gh/SSoelvsten/adiar/branch/main/graph/badge.svg?token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
+[![examples](https://github.com/SSoelvsten/adiar/workflows/examples/badge.svg?branch=main)](/actions?query=workflow%3Aexamples)
 
 Following up on the work of [[Arge96](#references)], this implementation of a
 BDD [[Bryant86](#references)] library makes use of _Time-Forward Processing_ to
@@ -25,7 +25,7 @@ of BDDs, that far outgrow the memory limit of the given machine.
 
 ## Documentation
 The documentation is provided as a collection of Markdown files in the
-[/docs](https://github.com/SSoelvsten/adiar/tree/master/docs) folder, which are also
+[/docs](https://github.com/SSoelvsten/adiar/tree/main/docs) folder, which are also
 viewable on [Github Pages](https://ssoelvsten.github.io/adiar/).
 
 
