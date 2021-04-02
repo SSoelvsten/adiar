@@ -1,5 +1,5 @@
-#ifndef ADIAR_COUNT_PATHS_H
-#define ADIAR_COUNT_PATHS_H
+#ifndef ADIAR_COUNT_H
+#define ADIAR_COUNT_H
 
 #include <adiar/data.h>
 
@@ -45,4 +45,4 @@ namespace adiar
   uint64_t bdd_satcount(const bdd &bdd);
 }
 
-#endif // ADIAR_COUNT_PATHS_H
+#endif // ADIAR_COUNT_H
