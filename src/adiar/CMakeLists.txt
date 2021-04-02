@@ -16,7 +16,6 @@ set(HEADERS
   reduce.h
   tuple.h
   union.h
-  util.h
 
   # bdd files
   bdd/apply.h

@@ -10,7 +10,6 @@
 #include <adiar/file_writer.h>
 #include <adiar/levelized_priority_queue.h>
 #include <adiar/reduce.h>
-#include <adiar/util.h>
 
 #include <adiar/bdd/build.h>
 
