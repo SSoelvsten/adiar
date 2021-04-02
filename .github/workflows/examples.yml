@@ -41,8 +41,8 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Apt | install boost aptitude
-      run: sudo apt install libboost-all-dev aptitude
+    - name: Apt | install boost
+      run: sudo apt install libboost-all-dev
     - name: CMake | build
       run: |
         cmake -E make_directory ${{runner.workspace}}/build

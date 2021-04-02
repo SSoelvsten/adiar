@@ -1,5 +1,5 @@
-#ifndef ADIAR_PRIORITY_QUEUE_H
-#define ADIAR_PRIORITY_QUEUE_H
+#ifndef ADIAR_LEVELIZED_PRIORITY_QUEUE_H
+#define ADIAR_LEVELIZED_PRIORITY_QUEUE_H
 
 #include <tpie/tpie.h>
 
@@ -657,4 +657,4 @@ namespace adiar {
   using levelized_arc_priority_queue = levelized_priority_queue<arc_t, 2u, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
 }
 
-#endif // ADIAR_PRIORITY_QUEUE_H
+#endif // ADIAR_LEVELIZED_PRIORITY_QUEUE_H
