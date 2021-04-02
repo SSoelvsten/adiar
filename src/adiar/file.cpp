@@ -1,6 +1,3 @@
-#ifndef ADIAR_FILE_CPP
-#define ADIAR_FILE_CPP
-
 #include "file.h"
 
 #include <adiar/assert.h>
@@ -69,5 +66,3 @@ namespace adiar
     return nodes.meta_size();
   }
 }
-
-#endif // ADIAR_FILE_CPP

@@ -1,6 +1,3 @@
-#ifndef ADIAR_REDUCE_CPP
-#define ADIAR_REDUCE_CPP
-
 #include "reduce.h"
 
 #include <tpie/sort.h>
@@ -269,6 +266,4 @@ namespace adiar
     }
     return out_file;
   }
-} // namespace adiar
-
-#endif // ADIAR_REDUCE_CPP
+}

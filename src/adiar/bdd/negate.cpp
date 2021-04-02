@@ -1,6 +1,3 @@
-#ifndef ADIAR_NEGATE_CPP
-#define ADIAR_NEGATE_CPP
-
 #include "negate.h"
 
 #include <adiar/file_stream.h>
@@ -23,5 +20,3 @@ namespace adiar
     return b;
   }
 }
-
-#endif // ADIAR_NEGATE_CPP

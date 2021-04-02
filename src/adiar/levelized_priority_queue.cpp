@@ -1,6 +1,3 @@
-#ifndef ADIAR_PRIORITY_QUEUE_CPP
-#define ADIAR_PRIORITY_QUEUE_CPP
-
 #include <tpie/priority_queue.h> // imports tpie::consecutive_memory_available
 
 #include "levelized_priority_queue.h"
@@ -16,5 +13,3 @@ namespace adiar {
     return static_cast<float>(memory_given) / static_cast<float>(mm_avail);
   }
 }
-
-#endif // ADIAR_PRIORITY_QUEUE_CPP

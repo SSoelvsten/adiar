@@ -1,6 +1,3 @@
-#ifndef ADIAR_EVALUATE_CPP
-#define ADIAR_EVALUATE_CPP
-
 #include "evaluate.h"
 
 #include <adiar/file_stream.h>
@@ -43,5 +40,3 @@ namespace adiar
     }
   }
 }
-
-#endif // ADIAR_EVALUATE_CPP

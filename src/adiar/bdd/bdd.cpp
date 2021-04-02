@@ -1,6 +1,3 @@
-#ifndef ADIAR_BDD_CPP
-#define ADIAR_BDD_CPP
-
 #include "bdd.h"
 
 #include <memory>
@@ -175,5 +172,3 @@ namespace adiar {
     return max_label(bdd.file);
   }
 }
-
-#endif // ADIAR_BDD_CPP

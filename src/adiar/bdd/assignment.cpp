@@ -1,6 +1,3 @@
-#ifndef ADIAR_ASSIGNMENT_CPP
-#define ADIAR_ASSIGNMENT_CPP
-
 #include <adiar/data.h>
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
@@ -72,5 +69,3 @@ namespace adiar
     return assignment_find(f, true, pick_high);
   }
 }
-
-#endif // ADIAR_ASSIGNMENT_CPP
