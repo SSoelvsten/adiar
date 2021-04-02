@@ -79,11 +79,11 @@ namespace adiar {
     // TODO: Add adiar_assert on size?
   }
 
-  bdd::bdd(const bdd &o) : file(o.file), negate(o.negate) { }
+  bdd::bdd(const bdd &o) : negate(o.negate), file(o.file) { }
   bdd::bdd(bool v) : bdd(bdd_sink(v)) { }
-  bdd::bdd(bdd &&o) : file(o.file), negate(o.negate) { }
+  bdd::bdd(bdd &&o) : negate(o.negate), file(o.file) { }
 
-  bdd::bdd(__bdd &&o) : file(reduce(std::forward<__bdd>(o))), negate(o.negate) { }
+  bdd::bdd(__bdd &&o) : negate(o.negate), file(reduce(std::forward<__bdd>(o))) { }
 
   //////////////////////////////////////////////////////////////////////////////
   bdd& bdd::operator= (const bdd &other)
@@ -98,8 +98,8 @@ namespace adiar {
     free();
 
     // Reduce and move the resulting node_file into our own
-    this -> file = reduce(std::forward<__bdd>(other));
     this -> negate = other.negate;
+    this -> file = reduce(std::forward<__bdd>(other));
     return *this;
   }
 

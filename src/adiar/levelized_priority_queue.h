@@ -238,11 +238,10 @@ namespace adiar {
     // Constructors
   private:
     levelized_priority_queue(tpie::memory_size_type memory_given)
-      : _overflow_queue(calc_tpie_pq_factor(m_overflow_queue<T, Buckets>(memory_given)))
+      : _memory_occupied_by_meta(tpie::get_memory_manager().available()),
+        _buckets_memory(memory_given),
+        _overflow_queue(calc_tpie_pq_factor(m_overflow_queue<T, Buckets>(memory_given)))
     {
-      _memory_occupied_by_meta = tpie::get_memory_manager().available();
-      _buckets_memory = memory_given;
-
       adiar_debug(m_single_block<T>() * (Buckets + 2) < _buckets_memory,
                   "Not enough memory to instantiate all buckets and overflow queue concurrently");
     }
@@ -284,9 +283,13 @@ namespace adiar {
   private:
     void setup_buckets()
     {
-      if (label_mgr::can_pull()) {
-        _memory_occupied_by_meta -= tpie::get_memory_manager().available();
+      // This was set in the private constructor above to be the total amount of
+      // memory. This was done before the label_mgr had created all of its meta
+      // streams, so we can get how much space they already took of what we are
+      // given now.
+      _memory_occupied_by_meta -= tpie::get_memory_manager().available();
 
+      if (label_mgr::can_pull()) {
         label_t label = label_mgr::pull();
         setup_bucket(_front_bucket_idx, label);
 

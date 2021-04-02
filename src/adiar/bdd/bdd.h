@@ -24,14 +24,14 @@ namespace adiar {
     friend node_file reduce(__bdd &&maybe_reduced);
 
     ////////////////////////////////////////////////////////////////////////////
-    // Privatize mutating functions from union.h
-  private:
-    using union_t<node_file, arc_file>::set;
-
-    ////////////////////////////////////////////////////////////////////////////
     // Propagating the negation, when given a bdd.
   public:
     const bool negate = false;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Privatize mutating functions from union.h
+  private:
+    using union_t<node_file, arc_file>::set;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -103,8 +103,8 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     // Internal state
   private:
-    node_file file;
     bool negate = false;
+    node_file file;
 
   private:
     void free();
