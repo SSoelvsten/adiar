@@ -23,3 +23,31 @@ jobs:
         path: src/adiar
         pattern: 'ADIAR_{file}'
         ignore: 'adiar\.h'
+
+  cppcheck:
+    name: 'Cppcheck'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+          
+      - name: 'Run Cppcheck'
+        uses: deep5050/cppcheck-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          enable: warning,performance,portability,information,missingInclude
+          force_language: c++
+          output_file: ./cppcheck_report.txt
+
+      - name: 'Print cppcheck_report.txt'
+        run: cat ./cppcheck_report.txt
+
+      - name: 'Filter cppcheck_report.txt (fail if non-empty)'
+        run: sudo python3 .github/workflows/cppcheck.py ./cppcheck_report.txt
+
+      - name: 'Post cppcheck_report.txt on PR (if failed)'
+        if: failure()
+        uses: machine-learning-apps/pr-comment@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: ./cppcheck_report.txt

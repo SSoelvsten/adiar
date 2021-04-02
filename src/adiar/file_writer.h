@@ -37,7 +37,7 @@ namespace adiar {
 
     Comp _comp = Comp();
 
-    bool _has_latest;
+    bool _has_latest = false;
     T _latest;
 
   public:
