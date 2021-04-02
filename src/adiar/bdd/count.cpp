@@ -1,6 +1,3 @@
-#ifndef ADIAR_COUNT_CPP
-#define ADIAR_COUNT_CPP
-
 #include "count.h"
 
 #include <adiar/file_stream.h>
@@ -221,5 +218,3 @@ namespace adiar
       : count<sat_sum>(bdd, bdd_varcount(bdd));
   }
 }
-
-#endif // ADIAR_COUNT_CPP

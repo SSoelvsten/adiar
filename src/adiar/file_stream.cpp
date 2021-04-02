@@ -1,6 +1,3 @@
-#ifndef ADIAR_FILE_STREAM_CPP
-#define ADIAR_FILE_STREAM_CPP
-
 #include "file_stream.h"
 
 namespace adiar
@@ -17,5 +14,3 @@ namespace adiar
   template<>
   meta_stream<arc_t, 2, true>::meta_stream(const __bdd& bdd) : meta_stream(bdd.get<arc_file>()) { }
 }
-
-#endif // ADIAR_FILE_STREAM_CPP

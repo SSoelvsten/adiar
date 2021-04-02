@@ -1,6 +1,3 @@
-#ifndef ADIAR_FILE_WRITER_CPP
-#define ADIAR_FILE_WRITER_CPP
-
 #include "file_writer.h"
 
 namespace adiar {
@@ -10,5 +7,3 @@ namespace adiar {
     return nw;
   }
 }
-
-#endif // ADIAR_FILE_WRITER_CPP

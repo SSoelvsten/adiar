@@ -1,6 +1,3 @@
-#ifndef ADIAR_IF_THEN_ELSE_CPP
-#define ADIAR_IF_THEN_ELSE_CPP
-
 #include "if_then_else.h"
 
 #include <adiar/file_stream.h>
@@ -482,5 +479,3 @@ namespace adiar
     return out_arcs;
   }
 }
-
-#endif // ADIAR_IF_THEN_ELSE_CPP

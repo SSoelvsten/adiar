@@ -1,6 +1,3 @@
-#ifndef ADIAR_RESTRICT_CPP
-#define ADIAR_RESTRICT_CPP
-
 #include "restrict.h"
 
 #include <tpie/file_stream.h>
@@ -153,5 +150,3 @@ namespace adiar
     return out_arcs;
   }
 }
-
-#endif // ADIAR_RESTRICT_CPP

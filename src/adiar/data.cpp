@@ -1,6 +1,3 @@
-#ifndef ADIAR_DATA_CPP
-#define ADIAR_DATA_CPP
-
 #include "data.h"
 
 #include <assert.h>
@@ -446,5 +443,3 @@ namespace adiar {
     return !(a==b);
   }
 }
-
-#endif // ADIAR_DATA_CPP

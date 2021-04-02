@@ -1,6 +1,3 @@
-#ifndef ADIAR_QUANTIFY_CPP
-#define ADIAR_QUANTIFY_CPP
-
 #include "quantify.h"
 
 #include <adiar/file_stream.h>
@@ -330,5 +327,3 @@ namespace adiar
     multi_quantify_macro(in_bdd, labels, and_op);
   }
 }
-
-#endif // ADIAR_QUANTIFY_CPP

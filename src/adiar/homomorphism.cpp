@@ -1,6 +1,3 @@
-#ifndef ADIAR_HOMOMORPHISM_CPP
-#define ADIAR_HOMOMORPHISM_CPP
-
 #include "homomorphism.h"
 
 #include <adiar/file_stream.h>
@@ -185,5 +182,3 @@ namespace adiar
     return true;
   }
 }
-
-#endif // ADIAR_HOMOMORPHISM_CPP

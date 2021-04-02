@@ -1,6 +1,3 @@
-#ifndef ADIAR_BUILD_CPP
-#define ADIAR_BUILD_CPP
-
 #include "build.h"
 
 #include <adiar/file_stream.h>
@@ -172,5 +169,3 @@ namespace adiar {
     return nf;
   }
 }
-
-#endif // ADIAR_BUILD_CPP

@@ -1,6 +1,3 @@
-#ifndef ADIAR_CPP
-#define ADIAR_CPP
-
 #include "adiar.h"
 
 #include <tpie/tempname.h>
@@ -34,6 +31,3 @@ namespace adiar
     tpie::tpie_finish();
   }
 }
-
-
-#endif // ADIAR_CPP

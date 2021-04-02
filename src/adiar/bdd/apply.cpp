@@ -1,6 +1,3 @@
-#ifndef ADIAR_APPLY_CPP
-#define ADIAR_APPLY_CPP
-
 #include "apply.h"
 
 #include <adiar/file_stream.h>
@@ -315,5 +312,3 @@ namespace adiar
     return bdd_apply(bdd_1, bdd_2, less_op);
   }
 }
-
-#endif // ADIAR_APPLY_CPP

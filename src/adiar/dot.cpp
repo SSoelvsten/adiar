@@ -1,6 +1,3 @@
-#ifndef ADIAR_DOT_CPP
-#define ADIAR_DOT_CPP
-
 #include "dot.h"
 
 namespace adiar {
@@ -44,5 +41,3 @@ namespace adiar {
     out.close();
   }
 }
-
-#endif // ADIAR_DOT_CPP
