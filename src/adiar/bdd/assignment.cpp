@@ -6,8 +6,6 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
-#include <adiar/util.h>
-
 namespace adiar
 {
   assignment_file assignment_find(const bdd &f,
