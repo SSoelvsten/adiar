@@ -9,6 +9,7 @@ may constitute interesting undergraduate research projects.
     - [Implementation of missing BDD algorithms](#implementation-of-missing-bdd-algorithms)
         - [Projection](#projection)
         - [Composition](#composition)
+        - [Advanced satisfiability functions](#advanced-satisfiability-functions)
         - [Coudert's and Madre's Restrict](#couderts-and-madres-restrict)
         - [Variable reordering](#variable-reordering)
     - [Optimising the BDD](#optimising-the-bdd)
@@ -32,7 +33,7 @@ All of these of course should be made in the style of _Time-Forward Processing_
 like the rest.
 
 The features are sorted based on the difficulty deriving their design and their
-implementation. The first three already include a description and good ideas of
+implementation. The first few already include a description and good ideas of
 how to approach the implementation.
 
 ### Projection
@@ -54,6 +55,22 @@ queue contains requests on triples `t1`, `t2`, `t3` where `t2` and `t3` are
 nodes from _f_ and `t1` is from _g_. Most optimisations and prunings used for
 both the _if-then-else_ and the _quantification_ algorithm then would apply
 here.
+
+### Advanced satisfiability functions
+The number of satisfiable assignments can be very large (even larger than
+2<sup>64</sup> at times). Hence, the BDD package BuDDy also provides a
+[bdd_satcountln](http://buddy.sourceforge.net/manual/group__info_ge551a6cc544c7d50a3d7c7fb7f5f9374.html#ge551a6cc544c7d50a3d7c7fb7f5f9374)
+function, that outputs the logarithm of the number of satisfiable assignments.
+The current `count` function should be changed to also support this. To this
+end, the use of template functions for a compile-time strategy should be
+replaced with lambda functions instead (see `bdd_satmin` and `bdd_satmax`
+functions for inspiration).
+
+Furthermore, currently we only provide functions to obtain the lexicographically
+smallest or largest assignment. A `bdd_satall` function with a callback to
+iterate over all assignments would be needed. One could go for outputting
+assignments in lexicographical order, but that may cost extra in I/Os. One
+may instead go for minimizing the distance travelled when picking a child.
 
 ### Coudert's and Madre's Restrict
 The current _Restrict_ algorithm is the basic algorithm of Bryant, but one has
