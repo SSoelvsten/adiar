@@ -7,10 +7,12 @@ may constitute interesting undergraduate research projects.
 
 - [Future Work](#future-work)
     - [Implementation of missing BDD algorithms](#implementation-of-missing-bdd-algorithms)
+        - [Data type conversions](#data-type-conversions)
         - [Projection](#projection)
+        - [Set Manipulation](#set-manipulation)
         - [Composition](#composition)
         - [Advanced satisfiability functions](#advanced-satisfiability-functions)
-        - [Coudert's and Madre's Restrict](#couderts-and-madres-restrict)
+        - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
         - [Variable reordering](#variable-reordering)
     - [Optimising the BDD](#optimising-the-bdd)
         - [Complement Edges](#complement-edges)
@@ -36,18 +38,47 @@ The features are sorted based on the difficulty deriving their design and their
 implementation. The first few already include a description and good ideas of
 how to approach the implementation.
 
+### Data type conversions
+
+If one can convert to the `bdd` data type from an `assignment_file` and a
+`label_file`, then the output of `bdd_satmin`, `bdd_satmax`, etc. can be used
+elsewhere. Likewise, if we can convert a `bdd` back into an `assignment_file`
+or `label_file` then we can use `bdd`'s as input in `bdd_restrict`, `bdd_exists`,
+and `bdd_forall`. That would help bridge the gap between this and other packages.
+
+Similarly, the `bdd_and` and `bdd_or` functions in `bdd/build.cpp` should maybe
+be extended to also take an array, `std::vector`, or even make them variadic.
+
+The simple way to do this would be by _O(N)_ time and _(N/B)_ I/O algorithms that
+use _O(N)_ more space on disk. I would expect though, that with some templating
+it should be possible to reuse the original files and convert the types on-the-fly.
+
 ### Projection
 
-This is the dual to `bdd_exists`, i.e. only keep the variables in the given cube
-and existentially quantify all other variables. The simplest way to do so may be
-to filter out levels in the _meta_ file that are not in the given _label_ file
-and then just call `bdd_exists` on that.
+`bdd_project` is the dual to `bdd_exists`, i.e. only keep the variables in the
+given cube and existentially quantify all other variables. The simplest way to
+do so may be to filter out levels in the _meta_ file that are not in the given
+_label_ file and then just call `bdd_exists` on that. Alternatively, one can
+extend the `bdd_quantify` algorithm to flip the check on a label being within
+the _label_ file.
+
+### Set manipulation
+
+Verification relies heavily on manipulation of sets. For this, we need multiple
+functions, most of which are aliases for other algorithms. See the documentation
+of Sylvan for an overview of this.
+
+Furthermore, one may want to convert back and from `std::set<label_t>` and
+similar data structures.
+
+Finally, one may want to look into Coudert and Madre's _Meta-products_
+representation [[Coudert92](#references)] of sets in BDDs and the functions
+related to it.
 
 ### Composition
-The _Composition_ of two OBDDs _f_ and _g_ for some label _i ∊ [n]_ is
-_f ∘<sub>i</sub> g (x)_ and is to be interpreted as _f(x<sub>1</sub>, ...,
-x<sub>i-1</sub>, g(x<sub>1</sub>, ..., x<sub>n</sub>), x<sub>i+1</sub>, ...,
-x<sub>n</sub>)_.
+The _Composition_ (`bdd_compose`) of two OBDDs _f_ and _g_ for some label
+_i ∊ [n]_ is _f ∘<sub>i</sub> g (x)_ and is to be interpreted as
+_f(x<sub>1</sub>, ..., x<sub>i-1</sub>, g(x<sub>1</sub>, ..., x<sub>n</sub>), x<sub>i+1</sub>, ..., x<sub>n</sub>)_.
 
 This can be implemented with a single sweep through _f_ and _g_ by using the
 ideas in the _quantification_ and the _if-then-else_ algorithms. A priority
@@ -59,12 +90,11 @@ here.
 ### Advanced satisfiability functions
 The number of satisfiable assignments can be very large (even larger than
 2<sup>64</sup> at times). Hence, the BDD package BuDDy also provides a
-[bdd_satcountln](http://buddy.sourceforge.net/manual/group__info_ge551a6cc544c7d50a3d7c7fb7f5f9374.html#ge551a6cc544c7d50a3d7c7fb7f5f9374)
-function, that outputs the logarithm of the number of satisfiable assignments.
-The current `count` function should be changed to also support this. To this
-end, the use of template functions for a compile-time strategy should be
-replaced with lambda functions instead (see `bdd_satmin` and `bdd_satmax`
-functions for inspiration).
+`bdd_satcountln` function, that outputs the logarithm of the number of
+satisfiable assignments. The current `count` function should be changed to
+also support this. To this end, the use of template functions for a
+compile-time strategy should be replaced with lambda functions instead (see
+`bdd_satmin` and `bdd_satmax` functions for inspiration).
 
 Furthermore, currently we only provide functions to obtain the lexicographically
 smallest or largest assignment. A `bdd_satall` function with a callback to
@@ -72,21 +102,36 @@ iterate over all assignments would be needed. One could go for outputting
 assignments in lexicographical order, but that may cost extra in I/Os. One
 may instead go for minimizing the distance travelled when picking a child.
 
-### Coudert's and Madre's Restrict
-The current _Restrict_ algorithm is the basic algorithm of Bryant, but one has
-been proposed in [[Coudert90](#references)] that is very different and may be
-used in Verification. They also proposed algorithms with the name _Constrain_
-and _Expand_.
+### Coudert's and Madre's BDD functions
+In [[Coudert90](#references)] was proposed three functions, that are of interest
+for the field of verification. Inspired by the naming in BuDDy the three functions
+are:
+
+- `bdd_simplify`: Their _Restrict_ function
+- `bdd_constrain`: Their _Constrain_ function
+- `bdd_expand`: Their _Expand_ function
+
 
 ### Variable reordering
+
 Currently, _Adiar_ only uses a static ordering of the variables, but since the
 size of the BDD is heavily influenced by the order chosen then many BDD
-libraries provide variable reordering algorithms, or do these themselves
-behdind the scenes.
+libraries provide variable reordering algorithms, or even do these themselves
+behind the scenes.
 
-How one can rephrase these algorithms within the design of _Adiar_ will probably
-require quite a bit of creativity, understanding of the I/O model and also of
-the original variable reordering algorithms.
+This essentially involves two steps:
+
+- Implement a `bdd_replace` function that is given a label_tuple file
+- Implement heuristics that generate the label_tuple file for the `bdd_replace`,
+  that then can be run with a `bdd_reorder` function.
+
+How one can rephrase these within the design of _Adiar_ will probably require
+quite a bit of creativity, understanding of the I/O model and also of the original
+variable reordering algorithms.
+
+The question also is, what should we do when using a reordered BDD? Should the
+renaming be explicit to the user, or should it stay transparent? The latter would
+result in many more changes in the data types and all other algorithms.
 
 
 ## Optimising the BDD
@@ -107,7 +152,7 @@ immediately yield an I/O efficient implementation of the _Multi-Terminal Binary
 Decision Diagrams_ (MTBDD) of [[Fujita97](#references)].
 
 ### Zero-suppressed Decision Diagrams
-A Zero-suppressed Decision Diagram [[Minato93](#references)] is a binary
+A Zero-suppressed Decision Diagram [[Minato93,Minato01](#references)] is a binary
 decision diagram, which is very compresed when representing sparse sets of bit
 vectors. This has been shown to be great for solving NP-Complete problems and
 symbolic model checking algorithms on sparse sets of states.
@@ -115,9 +160,39 @@ symbolic model checking algorithms on sparse sets of states.
 To achieve this, ZDDs make use of a different reduction rule than BDDs to do so.
 So, to implement them we need to:
 
-- Generalize the _Reduce_ and _Apply_ algorithms (strategy pattern with lambdas?)
-  to implement all basic operations.
+- Generalize the _Reduce_ with a strategy pattern with lambdas.
+
+- Repurpose/Generalize current algorithms wherever possible
+ 
+  - `zdd_empty`: Same as `bdd_false`
+
+  - `zdd_null`/`zdd_base`: Same as `bdd_true`
+
+  - `zdd_ithvar`: Same as `bdd_ithvar`
+
+  - `zdd_union`, `zdd_intsec`, `zdd_diff`: A generalized `bdd_apply` algorithm with
+    _or_, _and_ and _diff_ as the operators. The recursion request generation for ZDDs
+    need to take into account the operator and the reduction rule to be optimal. So, a
+    it is needed to add a strategy pattern in that spot (and to make Apply work with
+    `nil` inside of the request tuples?).
+
+  - `zdd_onset`/`zdd_subset1` and `zdd_offset`/`zdd_subset0`: Can be done with `bdd_restrict`
+
+  - `zdd_count`: Same as `bdd_pathcount`
+  
 - Implement other 'new' and more complex algorithms.
+
+  - `zdd_change`: Should be possible to do in a single bottom-up sweep, though one
+    needs to remove/add nodes based on the reduction rules above the given label.
+  
+  - Unate Cube operations `zdd_prod`, `zdd_div`, `zdd_mod` [[Minato01](#references)]:
+    These seem to again do a double-recursion similar to `bdd_exists` and `bdd_forall`.
+    So, we can probably reuse the same technique to make this more efficient.
+
+- Finally, the functions for reasoning about state-transition systems into ZDDs, such
+  as `bdd_ite`, `bdd_exists` and `bdd_relprod` needs to be translated. See
+  [[Hajighasemi14](#references)] for a recursive version of these.
+
 
 ### Multi-valued Decision Diagrams
 By solely using an edge-based representation of the data-structure one can also
@@ -182,6 +257,11 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
   Formal verification of sequential circuits_”. In: _Computer-Aided Design /
   IEEE International Conference_. (1990)
 
+- [[Coudert92](https://www.researchgate.net/profile/Olivier-Coudert/publication/221059871_Implicit_and_Incremental_Computation_of_Primes_and_Essential_Primes_of_Boolean_Functions/links/556f37fd08aeccd777410eec/Implicit-and-Incremental-Computation-of-Primes-and-Essential-Primes-of-Boolean-Functions.pdf)]
+  Olivier Coudert and Jean Christophe Madre. “_Implicit and Incremental Computation
+  of Primes and Essential Implicant Primes of Boolean Functions_”. In: _Proc.
+  ACM/IEEE 29th DAC_. (1992)
+
 - [[Dijk16](https://link.springer.com/content/pdf/10.1007/s10009-016-0433-2.pdf)]
   Tom van Dijk, Jaco van de Pol. “_Sylvan: multi-core framework for decision
   diagrams_”. In: _International Journal on Software Tools for Technology
@@ -192,6 +272,10 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
   Diagrams: An Efficient Data Structure for Matrix Representation_”. In: _Formal
   Methods in System Design_. (2012)
 
+- [[Hajighasemi14](https://essay.utwente.nl/66388/)]
+  Maryam Hajighasemi. “_Symbolic Model Checking using Zero-suppressed Decision
+  Diagrams_”. Master's Thesis, University of Twente (2014)
+
 - [Kam98]
   Timothy Kam, Tiziano Villa, Robert K. Brayton, and L. Sangiovanni-vincentelli
   Alberto. “_Multi-valued decision diagrams: Theory and applications_”. In:
@@ -201,7 +285,11 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
   J. Gergov and C. Meinel. “_Efficient analysis and manipulation of OBDDs can
   be extended to FBDDs_”. (1994)
 
-- [Minato93](https://dl.acm.org/doi/pdf/10.1145/157485.164890)
+- [[Minato93](https://dl.acm.org/doi/pdf/10.1145/157485.164890)]
   S. Minato. “_Zero-suppressed BDDs for set manipulation in combinatorial
   problems_”. In: _DAC '93: Proceedings of the 30th international Design
   Automation Conference_ (1993)
+
+- [[Minato01](https://eprints.lib.hokudai.ac.jp/dspace/bitstream/2115/16895/1/IJSTTT3-2.pdf)]
+  S. Minato. “_Zero-suppressed BDDs and their applications_”. In: _International
+  Journal on Software Tools for Technology Transfer, 3_ (2001)
