@@ -10,6 +10,9 @@ BDD [[Bryant86](#references)] library makes use of _Time-Forward Processing_ to
 improve the I/O complexity of BDD Manipulation to achieve efficient manipulation
 of BDDs, that far outgrow the memory limit of the given machine.
 
+To cite this BDD project, please cite one or more of the papers listed in
+[CITE.md](/CITE.md).
+
 **Table of Contents**
 
 - [Documentation](#documentation)
