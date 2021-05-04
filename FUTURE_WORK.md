@@ -22,6 +22,7 @@ may constitute interesting undergraduate research projects.
         - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
         - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
+        - [Levelized Files](#levelized-files)
         - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
         - [From _recursive_ algorithm to _time-forward processing_ and back again](#from-recursive-algorithm-to-time-forward-processing-and-back-again)
 
@@ -211,9 +212,16 @@ implement in the setting of Time-forward processing used here.
 
 ## Optimising the current algorithms
 There are quite a few avenues of trying to shave off a few significant constants
-in the running time on the current algorithms. All suggestions below also make
+in the running time on the current algorithms. Some suggestions below also make
 the GPU an intriguing subject for a possible heavy improvement in the running
 time.
+
+### Levelized Files
+The node-based and arc-based representations currently use a single file for the
+entire data structure. If this file is split up per level, then one can
+aggressively garbage collect each level while the algorithms are running. This
+can safe concurrent disk usage and so allow computation on even bigger instances
+before running out of disk space.
 
 ### Non-comparison based sorting on numbers
 The sorting in multiple variables has already been reduced to a simple sorting
