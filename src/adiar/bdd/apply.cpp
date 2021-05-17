@@ -156,8 +156,7 @@ namespace adiar
 
       // Merge requests from  apply_pq_1 or apply_pq_2
       if (apply_pq_1.can_pull() && (apply_pq_2.empty() ||
-                              fst(apply_pq_1.top().t1, apply_pq_1.top().t2) <
-                              snd(apply_pq_2.top().t1, apply_pq_2.top().t2))) {
+                                    fst(apply_pq_1.top()) < snd(apply_pq_2.top()))) {
         source = apply_pq_1.top().source;
         t1 = apply_pq_1.top().t1;
         t2 = apply_pq_1.top().t2;
