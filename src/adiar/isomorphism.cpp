@@ -68,46 +68,47 @@ namespace adiar
     // Set up priority queue for recursion
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
-    isomorphism_priority_queue_t pq({f1,f2},(available_memory * 3) / 4);
+    isomorphism_priority_queue_t isomorphism_pq_1({f1,f2},(available_memory * 3) / 4);
 
     // Check for violation on root children, or 'recurse' otherwise
-    if (isomorphism_resolve_request(pq, v1.low, v2.low)) {
+    if (isomorphism_resolve_request(isomorphism_pq_1, v1.low, v2.low)) {
       return false;
     }
 
-    if (isomorphism_resolve_request(pq, v1.high, v2.high)) {
+    if (isomorphism_resolve_request(isomorphism_pq_1, v1.high, v2.high)) {
       return false;
     }
 
-    isomorphism_data_priority_queue_t pq_data(calc_tpie_pq_factor(available_memory / 4));
+    size_t curr_level_processed = 1;
 
-    while (pq.can_pull() || pq.has_next_level() || !pq_data.empty()) {
-      if (!pq.can_pull() && pq_data.empty()) {
-        pq.setup_next_level();
+    isomorphism_data_priority_queue_t isomorphism_pq_2(calc_tpie_pq_factor(available_memory / 4));
+
+    while (isomorphism_pq_1.can_pull() || isomorphism_pq_1.has_next_level() || !isomorphism_pq_2.empty()) {
+      if (!isomorphism_pq_1.can_pull() && isomorphism_pq_2.empty()) {
+        isomorphism_pq_1.setup_next_level();
       }
 
       ptr_t t1, t2;
       bool with_data;
       ptr_t data_low = NIL, data_high = NIL;
 
-      // Merge requests from pq or pq_data
-      if (pq.can_pull() && (pq_data.empty() ||
-                            fst(pq.top().t1, pq.top().t2) <
-                            snd(pq_data.top().t1, pq_data.top().t2))) {
+      // Merge requests from isomorphism_pq_1 and isomorphism_pq_2
+      if (isomorphism_pq_1.can_pull() && (isomorphism_pq_2.empty() ||
+                                          fst(isomorphism_pq_1.top()) < snd(isomorphism_pq_2.top()))) {
         with_data = false;
-        t1 = pq.top().t1;
-        t2 = pq.top().t2;
+        t1 = isomorphism_pq_1.top().t1;
+        t2 = isomorphism_pq_1.top().t2;
 
-        pq.pop();
+        isomorphism_pq_1.pop();
       } else {
         with_data = true;
-        t1 = pq_data.top().t1;
-        t2 = pq_data.top().t2;
+        t1 = isomorphism_pq_2.top().t1;
+        t2 = isomorphism_pq_2.top().t2;
 
-        data_low = pq_data.top().data_low;
-        data_high = pq_data.top().data_high;
+        data_low = isomorphism_pq_2.top().data_low;
+        data_high = isomorphism_pq_2.top().data_high;
 
-        pq_data.pop();
+        isomorphism_pq_2.pop();
       }
 
       // Seek request partially in stream
@@ -127,23 +128,25 @@ namespace adiar
           && (v1.uid != t1 || v2.uid != t2)) {
         node_t v0 = from_1 ? v1 : v2;
 
-        pq_data.push({ t1, t2, v0.low, v0.high });
+        isomorphism_pq_2.push({ t1, t2, v0.low, v0.high });
 
         // Skip all requests to the same node
-        while (pq.can_pull() && (pq.top().t1 == t1 && pq.top().t2 == t2)) {
-          pq.pull();
+        while (isomorphism_pq_1.can_pull() && (isomorphism_pq_1.top().t1 == t1
+                                               && isomorphism_pq_1.top().t2 == t2)) {
+          isomorphism_pq_1.pull();
         }
+
         continue;
       }
 
       // Check for violation in request, or 'recurse' otherwise
-      if (isomorphism_resolve_request(pq,
+      if (isomorphism_resolve_request(isomorphism_pq_1,
                                       with_data && from_1 ? data_low : v1.low,
                                       with_data && !from_1 ? data_low : v2.low)) {
         return false;
       }
 
-      if (isomorphism_resolve_request(pq,
+      if (isomorphism_resolve_request(isomorphism_pq_1,
                                       with_data && from_1 ? data_high : v1.high,
                                       with_data && !from_1 ? data_high : v2.high)) {
         return false;
