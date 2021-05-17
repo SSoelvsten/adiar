@@ -118,7 +118,7 @@ go_bandit([]() {
               });
           });
 
-        describe("Slow O(sort(N²)) check", [&]() {
+        describe("Slow O(sort(N)) check", [&]() {
             //////////////////////
             // Sink-only cases
             node_file F_a, F_b, T_a;
@@ -459,7 +459,56 @@ go_bandit([]() {
                 AssertThat(is_isomorphic(bdd_3, bdd_3c, true, true), Is().False());
               });
 
-            // TODO: Fail on too many requests
+            it("rejects when resolving more requests on a level than nodes in original BDDs", [&]() {
+                /*
+                       1          ---- x0
+                      / \
+                      | 2         ---- x1
+                      |/ \
+                      3   4       ---- x2
+                     / \ / \
+                     .  .  .
+
+                     (x3 level omitted from drawing)
+
+                   We can then create another version where the low and high of
+                   (2) has been swapped. This can be seen on level x2 (despite
+                   all the children are to something with x3) since the unique
+                   requests are:
+
+                   [ (3,3), (3,4), (4,3) ]
+
+                   which means that (3) in the first one has been related to
+                   both (3) and (4) in the other one. Hence, they cannot be
+                   isomorphic.
+                */
+                node_file bdd_4a;
+                { // Garbage collect writers to free write-lock
+                  node_writer w(bdd_4a);
+                  w << create_node(3,1, create_sink_ptr(false), create_sink_ptr(true))
+                    << create_node(3,0, create_sink_ptr(true), create_sink_ptr(false))
+                    << create_node(2,1, create_node_ptr(3,0), create_node_ptr(3,1))
+                    << create_node(2,0, create_node_ptr(3,1), create_node_ptr(3,0))
+                    << create_node(1,0, create_node_ptr(2,0), create_node_ptr(2,1))
+                    << create_node(0,0, create_node_ptr(2,0), create_node_ptr(1,0));
+                }
+
+                node_file bdd_4b;
+                { // Garbage collect writers to free write-lock
+                  node_writer w(bdd_4b);
+                  w << create_node(3,1, create_sink_ptr(false), create_sink_ptr(true))
+                    << create_node(3,0, create_sink_ptr(true), create_sink_ptr(false))
+                    << create_node(2,1, create_node_ptr(3,0), create_node_ptr(3,1))
+                    << create_node(2,0, create_node_ptr(3,1), create_node_ptr(3,0))
+                    << create_node(1,0, create_node_ptr(2,1), create_node_ptr(2,0)) // <-- this is flipped
+                    << create_node(0,0, create_node_ptr(2,0), create_node_ptr(1,0));
+                }
+
+                AssertThat(is_isomorphic(bdd_4a, bdd_4b, false, false), Is().False());
+                AssertThat(is_isomorphic(bdd_4a, bdd_4b, true, false), Is().False());
+                AssertThat(is_isomorphic(bdd_4b, bdd_4a, false, true), Is().False());
+                AssertThat(is_isomorphic(bdd_4b, bdd_4a, true, true), Is().False());
+              });
           });
       });
   });
