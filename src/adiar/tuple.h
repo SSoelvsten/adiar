@@ -66,14 +66,22 @@ namespace adiar {
     }
   };
 
+  struct tuple_lt
+  {
+    bool operator()(const tuple &a, const tuple &b)
+    {
+      return a.t1 < b.t1 || (a.t1 == b.t1 && a.t2 < b.t2);
+    }
+  };
+
   struct tuple_fst_lt
   {
     bool operator()(const tuple &a, const tuple &b)
     {
       // Sort primarily by the element to be encountered first
       return fst(a) < fst(b) ||
-        // Group requests to the same tuple together by sorting on the second
-        (fst(a) == fst(b) && snd(a) < snd(b));
+        // Group requests to the same tuple together by sorting on the coordinates
+        (fst(a) == fst(b) && tuple_lt()(a,b));
     }
   };
 
@@ -83,8 +91,8 @@ namespace adiar {
     {
       // Sort primarily by the element to be encountered second
       return snd(a) < snd(b) ||
-         // Group requests to the same tuple together by sorting on the first
-         (snd(a) == snd(b) && fst(a) < fst(b));
+        // Group requests to the same tuple together by sorting on the coordinates
+        (snd(a) == snd(b) && tuple_lt()(a,b));
     }
   };
 
