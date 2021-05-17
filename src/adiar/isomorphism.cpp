@@ -6,15 +6,20 @@
 
 namespace adiar
 {
+
   //////////////////////////////////////////////////////////////////////////////
+  // Slow O(sort(N)) I/Os comparison by traversing the product construction and
+  // comparing each related pair of nodes.
+
+  /////////////////////
   // Data structures
   typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2> isomorphism_priority_queue_t;
   typedef tpie::priority_queue<tuple_data, tuple_snd_lt> isomorphism_data_priority_queue_t;
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Helper functions
+  /////////////////////
+  // Helper Functions
 
-  // Return whether one can do an early exit
+  // Returns whether one can do an early termination with false returned
   inline bool isomorphism_resolve_request(isomorphism_priority_queue_t &pq,
                                           ptr_t r1, ptr_t r2)
   {
@@ -35,41 +40,14 @@ namespace adiar
     return false;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  bool is_isomorphic(const node_file &f1, const node_file &f2,
-                     bool negate1, bool negate2)
+  /////////////////////
+  // Precondition:
+  //  - The number of nodes are the same
+  //  - The number of levels are the same
+  //  - The label and size of each level are the same
+  bool slow_isomorphism_check(const node_file &f1, const node_file &f2,
+                              bool negate1, bool negate2)
   {
-    // Are they literally referring to the same underlying file?
-    if (f1._file_ptr == f2._file_ptr) {
-      return negate1 == negate2;
-    }
-
-    // Are they trivially not the same, since they have different number of
-    // nodes (in _files[0])?
-    if (f1._file_ptr -> _files[0].size() != f2._file_ptr -> _files[0].size()) {
-      return false;
-    }
-
-    // Are they trivially not the same, since they have different number of
-    // levels (in the _meta_file)?
-    if (f1._file_ptr -> _meta_file.size() != f2._file_ptr -> _meta_file.size()) {
-      return false;
-    }
-
-    // Are they trivially not the same, since the labels or the size of each
-    // level does not match?
-    { // Create new scope to garbage collect the two meta_streams early
-      meta_stream<node_t, 1> in_meta_1(f1);
-      meta_stream<node_t, 1> in_meta_2(f2);
-
-      while (in_meta_1.can_pull()) {
-        adiar_debug(in_meta_2.can_pull(), "meta files are same size");
-        if (in_meta_1.pull() != in_meta_2.pull()) {
-          return false;
-        }
-      }
-    }
-
     node_stream<> in_nodes_1(f1, negate1);
     node_stream<> in_nodes_2(f2, negate2);
 
@@ -79,14 +57,8 @@ namespace adiar
     if (is_sink(v1) && is_sink(v2)) {
       return value_of(v1) == value_of(v2);
     }
-
-    // We already have from the meta file, if only one of them is a non-sink
-    adiar_debug(!is_sink(v1) && !is_sink(v2), "sink cases handled");
-
-    // Does the root label differ?
-    if (label_of(v1) != label_of(v2)) {
-      return false;
-    }
+    adiar_debug(!is_sink(v1) && !is_sink(v2), "The levels (and hence the sinkness) should coincide");
+    adiar_debug(label_of(v1) == label_of(v2), "The levels (and hence the root) should coincide");
 
     // Set up priority queue for recursion
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
@@ -180,5 +152,43 @@ namespace adiar
     }
 
     return true;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  bool is_isomorphic(const node_file &f1, const node_file &f2,
+                     bool negate1, bool negate2)
+  {
+    // Are they literally referring to the same underlying file?
+    if (f1._file_ptr == f2._file_ptr) {
+      return negate1 == negate2;
+    }
+
+    // Are they trivially not the same, since they have different number of
+    // nodes (in _files[0])?
+    if (f1._file_ptr -> _files[0].size() != f2._file_ptr -> _files[0].size()) {
+      return false;
+    }
+
+    // Are they trivially not the same, since they have different number of
+    // levels (in the _meta_file)?
+    if (f1._file_ptr -> _meta_file.size() != f2._file_ptr -> _meta_file.size()) {
+      return false;
+    }
+
+    // Are they trivially not the same, since the labels or the size of each
+    // level does not match?
+    { // Create new scope to garbage collect the two meta_streams early
+      meta_stream<node_t, 1> in_meta_1(f1);
+      meta_stream<node_t, 1> in_meta_2(f2);
+
+      while (in_meta_1.can_pull()) {
+        adiar_debug(in_meta_2.can_pull(), "meta files are same size");
+        if (in_meta_1.pull() != in_meta_2.pull()) {
+          return false;
+        }
+      }
+    }
+
+    return slow_isomorphism_check(f1, f2, negate1, negate2);
   }
 }
