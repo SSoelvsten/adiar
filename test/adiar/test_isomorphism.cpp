@@ -1,7 +1,7 @@
-#include <adiar/homomorphism.h>
+#include <adiar/isomorphism.h>
 
 go_bandit([]() {
-    describe("CORE: Homomorphism", [&]() {
+    describe("CORE: Isomorphism", [&]() {
         /*
                       Sinks
          */
@@ -19,33 +19,33 @@ go_bandit([]() {
         }
 
         it("can compare two F different sinks ", [&]() {
-          AssertThat(is_homomorphic(F_a, F_b), Is().True());
+          AssertThat(is_isomorphic(F_a, F_b), Is().True());
         });
 
         it("can compare the same F sink ", [&]() {
-          AssertThat(is_homomorphic(F_a, F_a), Is().True());
+          AssertThat(is_isomorphic(F_a, F_a), Is().True());
         });
 
         it("can compare an F with a T sink ", [&]() {
-          AssertThat(is_homomorphic(T_a, F_a), Is().False());
-          AssertThat(is_homomorphic(F_b, T_a), Is().False());
+          AssertThat(is_isomorphic(T_a, F_a), Is().False());
+          AssertThat(is_isomorphic(F_b, T_a), Is().False());
         });
 
         it("can compare the same F sink, where one is negated", [&]() {
-          AssertThat(is_homomorphic(F_a, F_a, true, false), Is().False());
-          AssertThat(is_homomorphic(F_a, F_a, false, true), Is().False());
+          AssertThat(is_isomorphic(F_a, F_a, true, false), Is().False());
+          AssertThat(is_isomorphic(F_a, F_a, false, true), Is().False());
         });
 
         it("can compare an F with a T sink, where one is negated", [&]() {
-          AssertThat(is_homomorphic(T_a, F_a, true, false), Is().True());
-          AssertThat(is_homomorphic(T_a, F_a, false, true), Is().True());
-          AssertThat(is_homomorphic(F_b, T_a, true, false), Is().True());
-          AssertThat(is_homomorphic(F_b, T_a, false, true), Is().True());
+          AssertThat(is_isomorphic(T_a, F_a, true, false), Is().True());
+          AssertThat(is_isomorphic(T_a, F_a, false, true), Is().True());
+          AssertThat(is_isomorphic(F_b, T_a, true, false), Is().True());
+          AssertThat(is_isomorphic(F_b, T_a, false, true), Is().True());
         });
 
         it("can compare an F with a T sink, where both are negated", [&]() {
-          AssertThat(is_homomorphic(T_a, F_a, true, true), Is().False());
-          AssertThat(is_homomorphic(T_a, F_a, true, true), Is().False());
+          AssertThat(is_isomorphic(T_a, F_a, true, true), Is().False());
+          AssertThat(is_isomorphic(T_a, F_a, true, true), Is().False());
         });
 
         /*
@@ -70,37 +70,37 @@ go_bandit([]() {
         }
 
         it("can compare x42 with a sink", [&]() {
-          AssertThat(is_homomorphic(T_a, x42_a), Is().False());
-          AssertThat(is_homomorphic(x42_b, F_a), Is().False());
+          AssertThat(is_isomorphic(T_a, x42_a), Is().False());
+          AssertThat(is_isomorphic(x42_b, F_a), Is().False());
         });
 
         it("can compare the same file instance of x42", [&]() {
-          AssertThat(is_homomorphic(x42_a, x42_a), Is().True());
-          AssertThat(is_homomorphic(x42_a, x42_a, true, false), Is().False());
-          AssertThat(is_homomorphic(x42_a, x42_a, false, true), Is().False());
-          AssertThat(is_homomorphic(x42_a, x42_a, true, true), Is().True());
+          AssertThat(is_isomorphic(x42_a, x42_a), Is().True());
+          AssertThat(is_isomorphic(x42_a, x42_a, true, false), Is().False());
+          AssertThat(is_isomorphic(x42_a, x42_a, false, true), Is().False());
+          AssertThat(is_isomorphic(x42_a, x42_a, true, true), Is().True());
         });
 
         it("can compare the two different files of x42", [&]() {
-          AssertThat(is_homomorphic(x42_a, x42_b), Is().True());
-          AssertThat(is_homomorphic(x42_a, x42_b, true, false), Is().False());
-          AssertThat(is_homomorphic(x42_a, x42_b, false, true), Is().False());
-          AssertThat(is_homomorphic(x42_a, x42_b, true, true), Is().True());
+          AssertThat(is_isomorphic(x42_a, x42_b), Is().True());
+          AssertThat(is_isomorphic(x42_a, x42_b, true, false), Is().False());
+          AssertThat(is_isomorphic(x42_a, x42_b, false, true), Is().False());
+          AssertThat(is_isomorphic(x42_a, x42_b, true, true), Is().True());
         });
 
         it("can compare x42 and ~x42", [&]() {
-          AssertThat(is_homomorphic(x42_a, notx42_a), Is().False());
-          AssertThat(is_homomorphic(x42_a, notx42_a, false, true), Is().True());
-          AssertThat(is_homomorphic(x42_a, notx42_a, true, false), Is().True());
-          AssertThat(is_homomorphic(x42_a, notx42_a, true, true), Is().False());
+          AssertThat(is_isomorphic(x42_a, notx42_a), Is().False());
+          AssertThat(is_isomorphic(x42_a, notx42_a, false, true), Is().True());
+          AssertThat(is_isomorphic(x42_a, notx42_a, true, false), Is().True());
+          AssertThat(is_isomorphic(x42_a, notx42_a, true, true), Is().False());
         });
 
         it("can compare the two different files of x42", [&]() {
-          AssertThat(is_homomorphic(x42_a, x22_a), Is().False());
-          AssertThat(is_homomorphic(x22_a, notx42_a), Is().False());
-          AssertThat(is_homomorphic(x22_a, x42_b, true, false), Is().False());
-          AssertThat(is_homomorphic(x22_a, x42_a, false, true), Is().False());
-          AssertThat(is_homomorphic(x22_a, x42_a, true, true), Is().False());
+          AssertThat(is_isomorphic(x42_a, x22_a), Is().False());
+          AssertThat(is_isomorphic(x22_a, notx42_a), Is().False());
+          AssertThat(is_isomorphic(x22_a, x42_b, true, false), Is().False());
+          AssertThat(is_isomorphic(x22_a, x42_a, false, true), Is().False());
+          AssertThat(is_isomorphic(x22_a, x42_a, true, true), Is().False());
         });
 
         /*
@@ -142,43 +142,43 @@ go_bandit([]() {
         }
 
         it("can compare bdd 1 with x42 and x22 [#nodes + inconsistent levels]", [&]() {
-          AssertThat(is_homomorphic(x42_a, bdd_1_a), Is().False());
-          AssertThat(is_homomorphic(x42_a, bdd_1_a, true, false), Is().False());
-          AssertThat(is_homomorphic(x42_a, bdd_1_a, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_1_b, x22_a), Is().False());
+          AssertThat(is_isomorphic(x42_a, bdd_1_a), Is().False());
+          AssertThat(is_isomorphic(x42_a, bdd_1_a, true, false), Is().False());
+          AssertThat(is_isomorphic(x42_a, bdd_1_a, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_1_b, x22_a), Is().False());
         });
 
         it("can compare bdd 1 with the same instance", [&]() {
-          AssertThat(is_homomorphic(bdd_1_a, bdd_1_a), Is().True());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_1_a, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_1_a, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_1_a, true, true), Is().True());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_1_a), Is().True());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_1_a, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_1_a, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_1_a, true, true), Is().True());
         });
 
         it("can compare both instances of bdd 1", [&]() {
-           AssertThat(is_homomorphic(bdd_1_a, bdd_1_b), Is().True());
-           AssertThat(is_homomorphic(bdd_1_a, bdd_1_b, true, false), Is().False());
-           AssertThat(is_homomorphic(bdd_1_a, bdd_1_b, false, true), Is().False());
-           AssertThat(is_homomorphic(bdd_1_a, bdd_1_b, true, true), Is().True());
+           AssertThat(is_isomorphic(bdd_1_a, bdd_1_b), Is().True());
+           AssertThat(is_isomorphic(bdd_1_a, bdd_1_b, true, false), Is().False());
+           AssertThat(is_isomorphic(bdd_1_a, bdd_1_b, false, true), Is().False());
+           AssertThat(is_isomorphic(bdd_1_a, bdd_1_b, true, true), Is().True());
         });
 
         it("can compare both instances of bdd 1 with one where a single sink is negated ", [&]() {
-           AssertThat(is_homomorphic(bdd_1_a, bdd_1b), Is().False());
-           AssertThat(is_homomorphic(bdd_1_b, bdd_1b, true, false), Is().False());
-           AssertThat(is_homomorphic(bdd_1_a, bdd_1b, false, true), Is().False());
-           AssertThat(is_homomorphic(bdd_1_b, bdd_1b, true, true), Is().False());
+           AssertThat(is_isomorphic(bdd_1_a, bdd_1b), Is().False());
+           AssertThat(is_isomorphic(bdd_1_b, bdd_1b, true, false), Is().False());
+           AssertThat(is_isomorphic(bdd_1_a, bdd_1b, false, true), Is().False());
+           AssertThat(is_isomorphic(bdd_1_b, bdd_1b, true, true), Is().False());
          });
 
         it("can reject bdd 1 shifted by 10 labels [inconsistent levels]", [&]() {
-          AssertThat(is_homomorphic(bdd_1_a, bdd_1_a_shifted), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_1_a_shifted, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_1_a_shifted, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_1_a_shifted, true, true), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_1_a_shifted), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_1_a_shifted, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_1_a_shifted, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_1_a_shifted, true, true), Is().False());
         });
 
         it("can compare both instances of bdd 1, where one is negated", [&]() {
-          AssertThat(is_homomorphic(bdd_1_a, bdd_1_b, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_1_b, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_1_b, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_1_b, true, false), Is().False());
         });
 
         /*
@@ -221,38 +221,38 @@ go_bandit([]() {
         }
 
         it("can compare the same instance of bdd 2", [&]() {
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_a), Is().True());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_a, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_a, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_a, true, true), Is().True());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_a), Is().True());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_a, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_a, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_a, true, true), Is().True());
         });
 
         it("can compare two instances of bdd 2 with only different ids", [&]() {
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_c), Is().True());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_c, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_c, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_c, true, true), Is().True());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_c), Is().True());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_c, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_c, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_c, true, true), Is().True());
         });
 
         it("can compare both instances of bdd 2 that have shuffled nodes", [&]() {
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_b), Is().True());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_b, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_b, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_b, true, true), Is().True());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_b), Is().True());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_b, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_b, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_b, true, true), Is().True());
         });
 
         it("can compare bdd 1 with bdd 2 [inconsistent levels]", [&]() {
-          AssertThat(is_homomorphic(bdd_1_a, bdd_2_a), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_2_a, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_2_a, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_2_a, true, true), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_2_a), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_2_a, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_2_a, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_2_a, true, true), Is().False());
         });
 
         it("can reject bdd 2 with labels of x2 nodes shifted [inconsistent levels]", [&]() {
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_a_shifted), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_a_shifted, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_a_shifted, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_2_a_shifted, true, true), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_a_shifted), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_a_shifted, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_a_shifted, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_2_a_shifted, true, true), Is().False());
         });
 
 
@@ -283,11 +283,11 @@ go_bandit([]() {
         }
 
         it("can differentiate bdd 2 with its almost same structured bdd 2b", [&]() {
-           AssertThat(is_homomorphic(bdd_2_a, bdd_2b_a), Is().False());
-           AssertThat(is_homomorphic(bdd_2_a, bdd_2b_b), Is().False());
-           AssertThat(is_homomorphic(bdd_2_a, bdd_2b_b, true, false), Is().False());
-           AssertThat(is_homomorphic(bdd_2_a, bdd_2b_a, false, true), Is().False());
-           AssertThat(is_homomorphic(bdd_2_a, bdd_2b_b, true, true), Is().False());
+           AssertThat(is_isomorphic(bdd_2_a, bdd_2b_a), Is().False());
+           AssertThat(is_isomorphic(bdd_2_a, bdd_2b_b), Is().False());
+           AssertThat(is_isomorphic(bdd_2_a, bdd_2b_b, true, false), Is().False());
+           AssertThat(is_isomorphic(bdd_2_a, bdd_2b_a, false, true), Is().False());
+           AssertThat(is_isomorphic(bdd_2_a, bdd_2b_b, true, true), Is().False());
          });
 
         /*
@@ -324,41 +324,41 @@ go_bandit([]() {
         }
 
         it("can compare bdd 3 with the same instance", [&]() {
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_a), Is().True());
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_a, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_a, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_a, true, true), Is().True());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_a), Is().True());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_a, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_a, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_a, true, true), Is().True());
         });
 
         it("can compare all instances of bdd 3", [&]() {
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_b), Is().True());
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_b, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_b, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_b, true, true), Is().True());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_b), Is().True());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_b, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_b, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_b, true, true), Is().True());
 
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_c), Is().True());
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_c, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_c, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_3_a, bdd_3_c, true, true), Is().True());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_c), Is().True());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_c, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_c, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_3_a, bdd_3_c, true, true), Is().True());
 
-          AssertThat(is_homomorphic(bdd_3_b, bdd_3_c), Is().True());
-          AssertThat(is_homomorphic(bdd_3_b, bdd_3_c, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_3_b, bdd_3_c, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_3_b, bdd_3_c, true, true), Is().True());
+          AssertThat(is_isomorphic(bdd_3_b, bdd_3_c), Is().True());
+          AssertThat(is_isomorphic(bdd_3_b, bdd_3_c, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_3_b, bdd_3_c, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_3_b, bdd_3_c, true, true), Is().True());
         });
 
         it("can compare bdd 1 with bdd 3 [#nodes + #levels]", [&]() {
-          AssertThat(is_homomorphic(bdd_1_a, bdd_3_a), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_3_a, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_3_a, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_1_a, bdd_3_a, true, true), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_3_a), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_3_a, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_3_a, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_1_a, bdd_3_a, true, true), Is().False());
         });
 
         it("can compare bdd 2 with bdd 3 [#nodes + #levels]", [&]() {
-          AssertThat(is_homomorphic(bdd_2_a, bdd_3_a), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_3_a, true, false), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_3_a, false, true), Is().False());
-          AssertThat(is_homomorphic(bdd_2_a, bdd_3_a, true, true), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_3_a), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_3_a, true, false), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_3_a, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_2_a, bdd_3_a, true, true), Is().False());
         });
 
         /*
@@ -382,17 +382,17 @@ go_bandit([]() {
         }
 
         it("can compare bdd 2 with bdd 4 [#levels]", [&]() {
-            AssertThat(is_homomorphic(bdd_2_a, bdd_4), Is().False());
-            AssertThat(is_homomorphic(bdd_2_a, bdd_4, true, false), Is().False());
-            AssertThat(is_homomorphic(bdd_2_a, bdd_4, false, true), Is().False());
-            AssertThat(is_homomorphic(bdd_2_a, bdd_4, true, true), Is().False());
+            AssertThat(is_isomorphic(bdd_2_a, bdd_4), Is().False());
+            AssertThat(is_isomorphic(bdd_2_a, bdd_4, true, false), Is().False());
+            AssertThat(is_isomorphic(bdd_2_a, bdd_4, false, true), Is().False());
+            AssertThat(is_isomorphic(bdd_2_a, bdd_4, true, true), Is().False());
           });
 
         it("can compare bdd 2 with bdd 4 [#levels]", [&]() {
-            AssertThat(is_homomorphic(bdd_3_a, bdd_4), Is().False());
-            AssertThat(is_homomorphic(bdd_3_a, bdd_4, true, false), Is().False());
-            AssertThat(is_homomorphic(bdd_3_a, bdd_4, false, true), Is().False());
-            AssertThat(is_homomorphic(bdd_3_a, bdd_4, true, true), Is().False());
+            AssertThat(is_isomorphic(bdd_3_a, bdd_4), Is().False());
+            AssertThat(is_isomorphic(bdd_3_a, bdd_4, true, false), Is().False());
+            AssertThat(is_isomorphic(bdd_3_a, bdd_4, false, true), Is().False());
+            AssertThat(is_isomorphic(bdd_3_a, bdd_4, true, true), Is().False());
           });
     });
 });
