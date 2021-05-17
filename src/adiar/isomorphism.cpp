@@ -60,6 +60,11 @@ namespace adiar
     adiar_debug(!is_sink(v1) && !is_sink(v2), "The levels (and hence the sinkness) should coincide");
     adiar_debug(label_of(v1) == label_of(v2), "The levels (and hence the root) should coincide");
 
+    if (!in_nodes_1.can_pull()) {
+      adiar_debug(!in_nodes_1.can_pull(), "The number of nodes should coincide");
+      return v1.low == v2.low && v1.high == v2.high;
+    }
+
     // Set up priority queue for recursion
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
@@ -72,12 +77,6 @@ namespace adiar
 
     if (isomorphism_resolve_request(pq, v1.high, v2.high)) {
       return false;
-    }
-
-    if (in_nodes_1.can_pull()) {
-      adiar_debug(in_nodes_2.can_pull(), "input are the same size");
-      v1 = in_nodes_1.pull();
-      v2 = in_nodes_2.pull();
     }
 
     isomorphism_data_priority_queue_t pq_data(calc_tpie_pq_factor(available_memory / 4));
