@@ -1,0 +1,7 @@
+duplicationConfig:
+  numberOfLinesToCompare: 7
+  #Below patters are in regular exporession
+  exclusions:
+    pathPatterns:
+      - test_.*\.cpp$
+      - \.md$
