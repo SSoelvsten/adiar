@@ -74,7 +74,7 @@ namespace adiar {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bdd::bdd(const node_file &f, bool negate) : file(f), negate(negate)
+  bdd::bdd(const node_file &f, bool negate) : negate(negate), file(f)
   {
     // TODO: Add adiar_assert on size?
   }
