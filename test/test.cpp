@@ -50,7 +50,7 @@ public:
 
 #include "adiar/test_levelized_priority_queue.cpp"
 
-#include "adiar/test_homomorphism.cpp"
+#include "adiar/test_isomorphism.cpp"
 #include "adiar/test_reduce.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////

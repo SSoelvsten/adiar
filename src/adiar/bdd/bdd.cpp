@@ -3,7 +3,7 @@
 #include <memory>
 
 #include <adiar/file_stream.h>
-#include <adiar/homomorphism.h>
+#include <adiar/isomorphism.h>
 #include <adiar/reduce.h>
 
 #include <adiar/bdd/apply.h>
@@ -141,7 +141,7 @@ namespace adiar {
 
   bool operator== (const bdd& lhs, const bdd& rhs)
   {
-    return is_homomorphic(lhs.file, rhs.file, lhs.negate, rhs.negate);
+    return is_isomorphic(lhs.file, rhs.file, lhs.negate, rhs.negate);
   }
 
   bool operator!= (const bdd& lhs, const bdd& rhs) { return !(lhs == rhs); }

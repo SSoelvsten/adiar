@@ -11,7 +11,7 @@ set(HEADERS
   file.h
   file_stream.h
   file_writer.h
-  homomorphism.h
+  isomorphism.h
   levelized_priority_queue.h
   reduce.h
   tuple.h
@@ -40,7 +40,7 @@ set(SOURCES
   file.cpp
   file_stream.cpp
   file_writer.cpp
-  homomorphism.cpp
+  isomorphism.cpp
   levelized_priority_queue.cpp
   reduce.cpp
 

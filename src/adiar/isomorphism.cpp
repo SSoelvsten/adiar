@@ -1,4 +1,4 @@
-#include "homomorphism.h"
+#include "isomorphism.h"
 
 #include <adiar/file_stream.h>
 #include <adiar/levelized_priority_queue.h>
@@ -8,15 +8,15 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2> homomorphism_priority_queue_t;
-  typedef tpie::priority_queue<tuple_data, tuple_snd_lt> homomorphism_data_priority_queue_t;
+  typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2> isomorphism_priority_queue_t;
+  typedef tpie::priority_queue<tuple_data, tuple_snd_lt> isomorphism_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
 
   // Return whether one can do an early exit
-  inline bool homomorphism_resolve_request(homomorphism_priority_queue_t &pq,
-                                           ptr_t r1, ptr_t r2)
+  inline bool isomorphism_resolve_request(isomorphism_priority_queue_t &pq,
+                                          ptr_t r1, ptr_t r2)
   {
     // Are they both a sink (and the same sink)?
     if (is_sink(r1) || is_sink(r2)) {
@@ -36,8 +36,8 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bool is_homomorphic(const node_file &f1, const node_file &f2,
-                      bool negate1, bool negate2)
+  bool is_isomorphic(const node_file &f1, const node_file &f2,
+                     bool negate1, bool negate2)
   {
     // Are they literally referring to the same underlying file?
     if (f1._file_ptr == f2._file_ptr) {
@@ -91,14 +91,14 @@ namespace adiar
     // Set up priority queue for recursion
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
-    homomorphism_priority_queue_t pq({f1,f2},(available_memory * 3) / 4);
+    isomorphism_priority_queue_t pq({f1,f2},(available_memory * 3) / 4);
 
     // Check for violation on root children, or 'recurse' otherwise
-    if (homomorphism_resolve_request(pq, v1.low, v2.low)) {
+    if (isomorphism_resolve_request(pq, v1.low, v2.low)) {
       return false;
     }
 
-    if (homomorphism_resolve_request(pq, v1.high, v2.high)) {
+    if (isomorphism_resolve_request(pq, v1.high, v2.high)) {
       return false;
     }
 
@@ -108,7 +108,7 @@ namespace adiar
       v2 = in_nodes_2.pull();
     }
 
-    homomorphism_data_priority_queue_t pq_data(calc_tpie_pq_factor(available_memory / 4));
+    isomorphism_data_priority_queue_t pq_data(calc_tpie_pq_factor(available_memory / 4));
 
     while (pq.can_pull() || pq.has_next_level() || !pq_data.empty()) {
       if (!pq.can_pull() && pq_data.empty()) {
@@ -121,8 +121,8 @@ namespace adiar
 
       // Merge requests from pq or pq_data
       if (pq.can_pull() && (pq_data.empty() ||
-                              fst(pq.top().t1, pq.top().t2) <
-                              snd(pq_data.top().t1, pq_data.top().t2))) {
+                            fst(pq.top().t1, pq.top().t2) <
+                            snd(pq_data.top().t1, pq_data.top().t2))) {
         with_data = false;
         t1 = pq.top().t1;
         t2 = pq.top().t2;
@@ -166,15 +166,15 @@ namespace adiar
       }
 
       // Check for violation in request, or 'recurse' otherwise
-      if (homomorphism_resolve_request(pq,
-                                       with_data && from_1 ? data_low : v1.low,
-                                       with_data && !from_1 ? data_low : v2.low)) {
+      if (isomorphism_resolve_request(pq,
+                                      with_data && from_1 ? data_low : v1.low,
+                                      with_data && !from_1 ? data_low : v2.low)) {
         return false;
       }
 
-      if (homomorphism_resolve_request(pq,
-                                       with_data && from_1 ? data_high : v1.high,
-                                       with_data && !from_1 ? data_high : v2.high)) {
+      if (isomorphism_resolve_request(pq,
+                                      with_data && from_1 ? data_high : v1.high,
+                                      with_data && !from_1 ? data_high : v2.high)) {
         return false;
       }
     }

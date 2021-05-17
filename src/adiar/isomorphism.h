@@ -1,5 +1,5 @@
-#ifndef ADIAR_HOMOMORPHISM_H
-#define ADIAR_HOMOMORPHISM_H
+#ifndef ADIAR_ISOMORPHISM_H
+#define ADIAR_ISOMORPHISM_H
 
 #include <adiar/data.h>
 #include <adiar/file.h>
@@ -7,10 +7,10 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Given two node files, computes whether they are homomorphic; i.e.
+  /// \brief Given two node files, computes whether they are isomorphic; i.e.
   /// whether they are equivalent.
   ///
-  /// Checks whether the two files are homomorphic, i.e. whether there is a
+  /// Checks whether the two files are isomorphic, i.e. whether there is a
   /// structure-preserving mapping between f1 and f2. This assumes, that both
   /// files are of a unique reduced form.
   ///
@@ -19,8 +19,8 @@ namespace adiar
   ///
   /// \return    Whether the two node_files represent equivalent graphs.
   //////////////////////////////////////////////////////////////////////////////
-  bool is_homomorphic(const node_file &f1, const node_file &f2,
+  bool is_isomorphic(const node_file &f1, const node_file &f2,
                       bool negate1 = false, bool negate2 = false);
 }
 
-#endif // ADIAR_HOMOMORPHISM_H
+#endif // ADIAR_ISOMORPHISM_H
