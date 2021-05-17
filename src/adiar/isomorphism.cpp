@@ -120,6 +120,12 @@ namespace adiar
         v2 = in_nodes_2.pull();
       }
 
+      // Skip all requests to the same node
+      while (isomorphism_pq_1.can_pull() && (isomorphism_pq_1.top().t1 == t1
+                                             && isomorphism_pq_1.top().t2 == t2)) {
+        isomorphism_pq_1.pull();
+      }
+
       // Forward information across the level
       bool from_1 = fst(t1,t2) == t1;
 
@@ -129,13 +135,6 @@ namespace adiar
         node_t v0 = from_1 ? v1 : v2;
 
         isomorphism_pq_2.push({ t1, t2, v0.low, v0.high });
-
-        // Skip all requests to the same node
-        while (isomorphism_pq_1.can_pull() && (isomorphism_pq_1.top().t1 == t1
-                                               && isomorphism_pq_1.top().t2 == t2)) {
-          isomorphism_pq_1.pull();
-        }
-
         continue;
       }
 
