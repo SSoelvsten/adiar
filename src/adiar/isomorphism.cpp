@@ -65,6 +65,10 @@ namespace adiar
       return v1.low == v2.low && v1.high == v2.high;
     }
 
+    // Level file used for bound the number of requests processed before failing
+    meta_stream<node_t, 1> in_meta_1(f1);
+    size_t curr_level_size = size_of(in_meta_1.pull());
+
     // Set up priority queue for recursion
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
@@ -86,6 +90,9 @@ namespace adiar
     while (isomorphism_pq_1.can_pull() || isomorphism_pq_1.has_next_level() || !isomorphism_pq_2.empty()) {
       if (!isomorphism_pq_1.can_pull() && isomorphism_pq_2.empty()) {
         isomorphism_pq_1.setup_next_level();
+
+        curr_level_size = size_of(in_meta_1.pull());
+        curr_level_processed = 0;
       }
 
       ptr_t t1, t2;
@@ -136,6 +143,13 @@ namespace adiar
 
         isomorphism_pq_2.push({ t1, t2, v0.low, v0.high });
         continue;
+      }
+
+      // Check whether more requests were processed on this level than an
+      // isomorphic DAG would allow.
+      curr_level_processed++;
+      if (curr_level_size < curr_level_processed) {
+        return false;
       }
 
       // Check for violation in request, or 'recurse' otherwise
