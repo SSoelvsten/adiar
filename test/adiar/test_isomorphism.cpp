@@ -487,8 +487,7 @@ go_bandit([]() {
             it("rejects on low child mismatch (internal node labels) [3]", [&]() {
                 node_file bdd_3_b;
                 /* Same as bdd_3 negated but with (2) directly going to (4) on the low */
-                { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_3_b);
+                { node_writer w(bdd_3_b);
                   w << create_node(3,MAX_ID, create_sink_ptr(true),     create_sink_ptr(false))
                     << create_node(2,MAX_ID, create_sink_ptr(false),    create_node_ptr(3,MAX_ID))
                     << create_node(1,MAX_ID, create_node_ptr(3,MAX_ID), create_sink_ptr(true))
@@ -497,6 +496,23 @@ go_bandit([]() {
 
                 AssertThat(is_isomorphic(bdd_3, bdd_3_b, true, false), Is().False());
                 AssertThat(is_isomorphic(bdd_3, bdd_3_b, false, true), Is().False());
+              });
+
+            it("rejects on low child mismatch on root", [&]() {
+                node_file bdd_a;
+                { node_writer w(bdd_a);
+                  w << create_node(1,MAX_ID, create_sink_ptr(false), create_sink_ptr(true))
+                    << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_sink_ptr(false));
+                }
+
+                node_file bdd_b;
+                { node_writer w(bdd_b);
+                  w << create_node(1,MAX_ID, create_sink_ptr(true), create_sink_ptr(false))
+                    << create_node(0,MAX_ID, create_sink_ptr(true), create_node_ptr(1,MAX_ID));
+                }
+
+                AssertThat(is_isomorphic(bdd_a, bdd_b, true, false), Is().False());
+                AssertThat(is_isomorphic(bdd_a, bdd_b, false, true), Is().False());
               });
 
             it("rejects on high child mismatch (leaf value) [1]", [&]() {
@@ -522,6 +538,25 @@ go_bandit([]() {
 
                 AssertThat(is_isomorphic(bdd_4, bdd_4_b, true, false), Is().False());
                 AssertThat(is_isomorphic(bdd_4, bdd_4_b, false, true), Is().False());
+              });
+
+            it("rejects on high child mismatch on root", [&]() {
+                node_file bdd_a;
+                { node_writer w(bdd_a);
+                  w << create_node(2,MAX_ID, create_sink_ptr(false),    create_sink_ptr(true))
+                    << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_sink_ptr(true))
+                    << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_sink_ptr(true));
+                }
+
+                node_file bdd_b;
+                { node_writer w(bdd_b);
+                  w << create_node(2,MAX_ID, create_sink_ptr(true),     create_sink_ptr(false))
+                    << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_sink_ptr(false))
+                    << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_sink_ptr(true));
+                }
+
+                AssertThat(is_isomorphic(bdd_a, bdd_b, true, false), Is().False());
+                AssertThat(is_isomorphic(bdd_a, bdd_b, false, true), Is().False());
               });
 
             it("rejects when resolving more requests on a level than nodes in original BDDs", [&]() {
