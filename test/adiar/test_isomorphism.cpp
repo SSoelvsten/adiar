@@ -100,7 +100,7 @@ go_bandit([]() {
                           << create_node(2,0, create_node_ptr(3,0), create_sink_ptr(false))
                           << create_node(1,1, create_node_ptr(2,1), create_node_ptr(2,0))
                           << create_node(1,0, create_node_ptr(2,0), create_node_ptr(2,1))
-                          << create_node(0,0, create_node_ptr(1,0), create_node_ptr(1,0));
+                          << create_node(0,0, create_node_ptr(1,0), create_node_ptr(2,0));
 
                   node_writer w_six_b(six_b);
                   w_six_b << create_node(3,0, create_sink_ptr(false), create_sink_ptr(true))
@@ -118,345 +118,410 @@ go_bandit([]() {
               });
           });
 
-        describe("Slow O(sort(N)) check", [&]() {
+
+        //////////////////////
+        // Sink-only cases
+        node_file F_a, F_b, T_a;
+
+        { // Garbage collect writers to free write-lock
+          node_writer nw_F_a(F_a);
+          nw_F_a << create_sink(false);
+
+          node_writer nw_F_b(F_b);
+          nw_F_b << create_sink(false);
+
+          node_writer nw_T_a(T_a);
+          nw_T_a << create_sink(true);
+        }
+
+        //////////////////////
+        // One-node cases
+        /*
+          1     ---- x42
+          / \
+          F T
+        */
+        node_file x42_a, x42_b, not_x42;
+
+        { // Garbage collect writers to free write-lock
+          node_writer wa(x42_a);
+          wa << create_node(42,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
+
+          node_writer wb(x42_b);
+          wb << create_node(42,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
+
+          node_writer wn(not_x42);
+          wn << create_node(42,MAX_ID, create_sink_ptr(true), create_sink_ptr(false));
+        }
+
+
+        //////////////////////
+        // Traversal cases
+        node_file bdd_1;
+        /*
+            _1_     ---- x0
+           /   \
+           2   3    ---- x1
+          / \ / \
+          T  4  F   ---- x2
+            / \
+            F T
+        */
+        { node_writer w(bdd_1);
+          w << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))
+            << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_sink_ptr(false))
+            << create_node(1,MAX_ID-1, create_sink_ptr(true),       create_node_ptr(2,MAX_ID))
+            << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        }
+
+        node_file bdd_1n;
+        /* bdd_1 negated */
+        { node_writer w(bdd_1n);
+          w << create_node(2,MAX_ID,   create_sink_ptr(true),       create_sink_ptr(false))
+            << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_sink_ptr(true))
+            << create_node(1,MAX_ID-1, create_sink_ptr(false),      create_node_ptr(2,MAX_ID))
+            << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        }
+
+        // bdd_1 with child of (2) flipped in truth value
+        node_file bdd_1_low_leaf;
+        { node_writer w(bdd_1_low_leaf);
+          w << create_node(2,MAX_ID,   create_sink_ptr(false),       create_sink_ptr(true))
+            << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_sink_ptr(false))
+            << create_node(1,MAX_ID-1, create_sink_ptr(false),      create_node_ptr(2,MAX_ID))
+            << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        }
+
+        // bdd_1 with child of (3) flipped in truth value
+        node_file bdd_1_high_leaf;
+        { node_writer w(bdd_1_high_leaf);
+          w << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))
+            << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_sink_ptr(true))
+            << create_node(1,MAX_ID-1, create_sink_ptr(true),       create_node_ptr(2,MAX_ID))
+            << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        }
+
+        node_file bdd_2;
+        /*
+             1    ---- x0
+            / \
+            2 |   ---- x1
+           / \/
+           3  4   ---- x2
+          / \/ \
+          T  F T
+        */
+        { node_writer w(bdd_2);
+          w << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))
+            << create_node(2,MAX_ID-1, create_sink_ptr(true),       create_sink_ptr(false))
+            << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
+            << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(2,MAX_ID));
+        }
+
+        node_file bdd_2n;
+        /* bdd_2 negated */
+        { node_writer w(bdd_2n);
+          w << create_node(2,MAX_ID,   create_sink_ptr(false),    create_sink_ptr(true))
+            << create_node(2,MAX_ID-1, create_sink_ptr(true),     create_sink_ptr(false))
+            << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
+            << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID-1));
+        }
+
+        node_file bdd_2_low_child;
+        /*
+            1      ---- x0
+           / \
+           2 /     ---- x1
+          / X
+          T/ \
+           3  4    ---- x2
+          / \/ \
+          T  F T
+
+          which in traversal look similar to bdd_2 until (2) on level x1
+        */
+        { node_writer w(bdd_2_low_child);
+          w << create_node(2,MAX_ID,   create_sink_ptr(false),    create_sink_ptr(true))
+            << create_node(2,MAX_ID-1, create_sink_ptr(true),     create_sink_ptr(false))
+            << create_node(1,MAX_ID,   create_sink_ptr(true),     create_node_ptr(2,MAX_ID))
+            << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID-1));
+        }
+
+        node_file bdd_2_high_child;
+        /*
+             1      ---- x0
+            / \
+            2  \    ---- x1
+           / \  \
+           3 F  4   ---- x2
+          / \  / \
+          T F  T T
+
+          which in traversal look similar to bdd_2 until (2) on level x1
+        */
+        { node_writer w(bdd_2_high_child);
+          w << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))
+            << create_node(2,MAX_ID-1, create_sink_ptr(true),       create_sink_ptr(false))
+            << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_sink_ptr(false))
+            << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(2,MAX_ID));
+        }
+
+        node_file bdd_3;
+        /*
+           1      ---- x0
+          / \
+          |  2    ---- x1
+          \ / \
+           3  F   ---- x2
+          / \
+          T 4     ---- x3
+           / \
+           F T
+        */
+        { node_writer w(bdd_3);
+          w << create_node(3,MAX_ID, create_sink_ptr(false),    create_sink_ptr(true))
+            << create_node(2,MAX_ID, create_sink_ptr(true),     create_node_ptr(3,MAX_ID))
+            << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_sink_ptr(false))
+            << create_node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID));
+        }
+
+        node_file bdd_4;
+        /*
+             1     ---- x0
+            / \
+           2  |    ---- x1
+          / \ /
+          F  3     ---- x2
+            / \
+            4 T    ---- x3
+           / \
+           F T
+
+          The same as bdd_3 but mirrored horisontally
+        */
+        { node_writer w(bdd_4);
+          w << create_node(3,MAX_ID, create_sink_ptr(true),     create_sink_ptr(false))
+            << create_node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_sink_ptr(true))
+            << create_node(1,MAX_ID, create_sink_ptr(false),    create_node_ptr(2,MAX_ID))
+            << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
+        }
+
+        describe("Fast 2N/B check", [&]() {
+            // The fast checks require the BDDs to be on 'canonical' form, which
+            // makes two isomorphic BDDs truly identical.
+
             //////////////////////
             // Sink-only cases
-            node_file F_a, F_b, T_a;
-
-            { // Garbage collect writers to free write-lock
-              node_writer nw_F_a(F_a);
-              nw_F_a << create_sink(false);
-
-              node_writer nw_F_b(F_b);
-              nw_F_b << create_sink(false);
-
-              node_writer nw_T_a(T_a);
-              nw_T_a << create_sink(true);
-            }
-            it("can compare two F different sinks ", [&]() {
+            it("accepts two different F sinks ", [&]() {
                 AssertThat(is_isomorphic(F_a, F_b), Is().True());
               });
 
-            it("can compare the same F sink ", [&]() {
-                AssertThat(is_isomorphic(F_a, F_a), Is().True());
-              });
-
-            it("can compare an F with a T sink ", [&]() {
+            it("rejects an F and a T sink ", [&]() {
                 AssertThat(is_isomorphic(T_a, F_a), Is().False());
                 AssertThat(is_isomorphic(F_b, T_a), Is().False());
               });
 
-            it("can compare the same F sink, where one is negated", [&]() {
-                AssertThat(is_isomorphic(F_a, F_a, true, false), Is().False());
-                AssertThat(is_isomorphic(F_a, F_a, false, true), Is().False());
-              });
-
-            it("can compare an F with a T sink, where one is negated", [&]() {
-                AssertThat(is_isomorphic(T_a, F_a, true, false), Is().True());
-                AssertThat(is_isomorphic(T_a, F_a, false, true), Is().True());
-                AssertThat(is_isomorphic(F_b, T_a, true, false), Is().True());
-                AssertThat(is_isomorphic(F_b, T_a, false, true), Is().True());
-              });
-
-            it("can compare an F with a T sink, where both are negated", [&]() {
+            it("rejects an F with a T sink, where both are negated", [&]() {
                 AssertThat(is_isomorphic(T_a, F_a, true, true), Is().False());
                 AssertThat(is_isomorphic(T_a, F_a, true, true), Is().False());
               });
 
             //////////////////////
             // One-node cases
-            /*
-                  1     ---- x42
-                 / \
-                 F T
-            */
-            node_file x42_a, x42_b, not_x42;
-
-            { // Garbage collect writers to free write-lock
-              node_writer wa(x42_a);
-              wa << create_node(42,1, create_sink_ptr(true), create_sink_ptr(false));
-
-              node_writer wb(x42_b);
-              wb << create_node(42,0, create_sink_ptr(true), create_sink_ptr(false));
-
-              node_writer wn(not_x42);
-              wn << create_node(42,2, create_sink_ptr(false), create_sink_ptr(true));
-            }
-
-            it("accepts compare two different x42", [&]() {
+            it("accepts two different x42", [&]() {
                 AssertThat(is_isomorphic(x42_a, x42_b, false, false), Is().True());
+                AssertThat(is_isomorphic(x42_a, x42_b, true, true), Is().True());
               });
 
-            it("rejects x42 with ~x42", [&]() {
+            it("rejects x42 and ~x42", [&]() {
                 AssertThat(is_isomorphic(x42_a, not_x42, false, false), Is().False());
-              });
-
-            it("accepts x42 with negated ~x42", [&]() {
-                AssertThat(is_isomorphic(x42_a, not_x42, false, true), Is().True());
+                AssertThat(is_isomorphic(x42_a, not_x42, true, true), Is().False());
               });
 
             //////////////////////
             // Traversal cases
-            /*
-                     _1_     ---- x0
-                    /   \
-                    2   3    ---- x1
-                   / \ / \
-                   T  4  F   ---- x2
-                     / \
-                     F T
+            it("rejects its negation [1]", [&]() {
+                AssertThat(is_isomorphic(bdd_1, bdd_1n, false, false), Is().False());
+                AssertThat(is_isomorphic(bdd_1, bdd_1n, true, true), Is().False());
+              });
 
-               where we can mirror the 2 and 3 nodes
-            */
-            node_file bdd_1;
-            { // Garbage collect writers to free write-lock
-              node_writer w(bdd_1);
-              w << create_node(2,1, create_sink_ptr(true), create_sink_ptr(false))
-                << create_node(1,1, create_node_ptr(2,1), create_sink_ptr(true))
-                << create_node(1,0, create_sink_ptr(true), create_node_ptr(2,1))
-                << create_node(0,1, create_node_ptr(1,0), create_node_ptr(1,1));
-            }
+            it("rejects its negation [2]", [&]() {
+                AssertThat(is_isomorphic(bdd_2, bdd_2n, false, false), Is().False());
+                AssertThat(is_isomorphic(bdd_2, bdd_2n, true, true), Is().False());
+              });
 
-            /*
-                 1    ---- x0
-                / \
-                2 |   ---- x1
-               / \/
-               3  4   ---- x2
-              / \/ \
-              T  F T
+            it("rejects on low child mismatch (leaf value) [1]", [&]() {
+                AssertThat(is_isomorphic(bdd_1, bdd_1_low_leaf, false, false), Is().False());
+                AssertThat(is_isomorphic(bdd_1, bdd_1_low_leaf, true, true), Is().False());
+              });
 
-              where we can mirror the 3 and 4 nodes
-            */
-            node_file bdd_2;
-            { // Garbage collect writers to free write-lock
-              node_writer w(bdd_2);
-              w << create_node(2,1, create_sink_ptr(false), create_sink_ptr(true))
-                << create_node(2,0, create_sink_ptr(true), create_sink_ptr(false))
-                << create_node(1,0, create_node_ptr(2,0), create_node_ptr(2,1))
-                << create_node(0,1, create_node_ptr(1,0), create_node_ptr(2,1));
-            }
+            it("rejects on low child mismatch (internal node vs. leaf) [2]", [&]() {
+                AssertThat(is_isomorphic(bdd_2, bdd_2_low_child, false, false), Is().False());
+                AssertThat(is_isomorphic(bdd_2, bdd_2_low_child, true, true), Is().False());
+              });
 
-            it("accepts with negation of negated [1]", [&]() {
-                // bdd_1 with children negated
-                node_file bdd_1n;
+
+            it("rejects on low child mismatch (internal node labels) [3]", [&]() {
+                node_file bdd_3_b;
+                /* Same as bdd_3 but with (2) directly going to (4) on the low */
                 { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_1n);
-                  w << create_node(2,1, create_sink_ptr(false), create_sink_ptr(true))
-                    << create_node(1,1, create_node_ptr(2,1), create_sink_ptr(false))
-                    << create_node(1,0, create_sink_ptr(false), create_node_ptr(2,1))
-                    << create_node(0,1, create_node_ptr(1,0), create_node_ptr(1,1));
+                  node_writer w(bdd_3_b);
+                  w << create_node(3,MAX_ID, create_sink_ptr(false),    create_sink_ptr(true))
+                    << create_node(2,MAX_ID, create_sink_ptr(true),     create_node_ptr(3,MAX_ID))
+                    << create_node(1,MAX_ID, create_node_ptr(3,MAX_ID), create_sink_ptr(false))
+                    << create_node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID));
                 }
 
+                AssertThat(is_isomorphic(bdd_3, bdd_3_b, false, false), Is().False());
+                AssertThat(is_isomorphic(bdd_3, bdd_3_b, true, true), Is().False());
+              });
+
+            it("rejects on high child mismatch (leaf value) [1]", [&]() {
+                AssertThat(is_isomorphic(bdd_1, bdd_1_high_leaf, false, false), Is().False());
+                AssertThat(is_isomorphic(bdd_1, bdd_1_high_leaf, true, true), Is().False());
+              });
+
+            it("rejects on high child mismatch (internal node vs. leaf) [2]", [&]() {
+                AssertThat(is_isomorphic(bdd_2, bdd_2_high_child, false, false), Is().False());
+                AssertThat(is_isomorphic(bdd_2, bdd_2_high_child, true, true), Is().False());
+              });
+
+            it("rejects on high child mismatch (internal node labels) [4]", [&]() {
+                node_file bdd_4_b;
+                /* Same as bdd_4 but with (2) directly going to (4) on the high */
+                { node_writer w(bdd_4_b);
+                  w << create_node(3,MAX_ID, create_sink_ptr(true),     create_sink_ptr(false))
+                    << create_node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_sink_ptr(true))
+                    << create_node(1,MAX_ID, create_sink_ptr(false),    create_node_ptr(3,MAX_ID))
+                    << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
+                }
+
+                AssertThat(is_isomorphic(bdd_4, bdd_4_b, false, false), Is().False());
+                AssertThat(is_isomorphic(bdd_4, bdd_4_b, true, true), Is().False());
+              });
+          });
+
+        describe("Slow O(sort(N)) check", [&]() {
+            //////////////////////
+            // Sink-only cases
+            it("accepts two F sinks, where one is negated", [&]() {
+                AssertThat(is_isomorphic(F_a, F_b, true, false), Is().False());
+                AssertThat(is_isomorphic(F_a, F_b, false, true), Is().False());
+              });
+
+            it("accepts an F with a T sink, where one is negated", [&]() {
+                AssertThat(is_isomorphic(T_a, F_a, true, false), Is().True());
+                AssertThat(is_isomorphic(T_a, F_a, false, true), Is().True());
+                AssertThat(is_isomorphic(F_b, T_a, true, false), Is().True());
+                AssertThat(is_isomorphic(F_b, T_a, false, true), Is().True());
+              });
+
+            //////////////////////
+            // One-node cases
+            it("rejects two x42, where one is negated", [&]() {
+                AssertThat(is_isomorphic(x42_a, x42_b, false, true), Is().False());
+                AssertThat(is_isomorphic(x42_a, x42_b, true, false), Is().False());
+              });
+
+            it("accepts x42 with negated ~x42", [&]() {
+                AssertThat(is_isomorphic(x42_a, not_x42, false, true), Is().True());
+                AssertThat(is_isomorphic(x42_a, not_x42, true, false), Is().True());
+              });
+
+            //////////////////////
+            // Traversal cases
+            it("accepts with negation of negated [1]", [&]() {
                 AssertThat(is_isomorphic(bdd_1, bdd_1n, false, true), Is().True());
                 AssertThat(is_isomorphic(bdd_1, bdd_1n, true, false), Is().True());
               });
 
             it("accepts with negation of negated [2]", [&]() {
-                // bdd_1 with children negated
-                node_file bdd_2n;
-                { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_2n);
-                  w << create_node(2,1, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(2,0, create_sink_ptr(false), create_sink_ptr(true))
-                    << create_node(1,0, create_node_ptr(2,0), create_node_ptr(2,1))
-                    << create_node(0,1, create_node_ptr(1,0), create_node_ptr(2,1));
-                }
-
                 AssertThat(is_isomorphic(bdd_2, bdd_2n, false, true), Is().True());
                 AssertThat(is_isomorphic(bdd_2, bdd_2n, true, false), Is().True());
               });
 
-
             it("accepts with nodes swapped [1]", [&]() {
-                // bdd_1 with nodes (2) and (3) swapped
+                // bdd_1 with nodes (2) and (3) swapped (and hence non-canonical)
                 node_file bdd_1b;
                 { // Garbage collect writers to free write-lock
                   node_writer w(bdd_1b);
-                  w << create_node(2,1, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(1,1, create_sink_ptr(true), create_node_ptr(2,1))
-                    << create_node(1,0, create_node_ptr(2,1), create_sink_ptr(true))
-                    << create_node(0,1, create_node_ptr(1,1), create_node_ptr(1,0));
+                  w << create_node(2,MAX_ID,   create_sink_ptr(false),    create_sink_ptr(true))
+                    << create_node(1,MAX_ID,   create_sink_ptr(true),     create_node_ptr(2,MAX_ID))
+                    << create_node(1,MAX_ID-1, create_node_ptr(2,MAX_ID), create_sink_ptr(false))
+                    << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(1,MAX_ID-1));
                 }
 
                 AssertThat(is_isomorphic(bdd_1, bdd_1b, false, false), Is().True());
+                AssertThat(is_isomorphic(bdd_1n, bdd_1b, true, false), Is().True());
+                AssertThat(is_isomorphic(bdd_1n, bdd_1b, false, true), Is().True());
                 AssertThat(is_isomorphic(bdd_1, bdd_1b, true, true), Is().True());
               });
 
             it("accepts with nodes swapped [2]", [&]() {
-                // bdd_2 with nodes (3) and (4) swapped
+                // bdd_2 with nodes (3) and (4) swapped (and hence non-canonical)
                 node_file bdd_2b;
                 { // Garbage collect writers to free write-lock
                   node_writer w(bdd_2b);
-                  w << create_node(2,1, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(2,0, create_sink_ptr(false), create_sink_ptr(true))
-                    << create_node(1,0, create_node_ptr(2,1), create_node_ptr(2,0))
-                    << create_node(0,1, create_node_ptr(1,0), create_node_ptr(2,0));
+                  w << create_node(2,MAX_ID,   create_sink_ptr(true),     create_sink_ptr(false))
+                    << create_node(2,MAX_ID-1, create_sink_ptr(false),    create_sink_ptr(true))
+                    << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
+                    << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID-1));
                 }
 
                 AssertThat(is_isomorphic(bdd_2, bdd_2b, false, false), Is().True());
+                AssertThat(is_isomorphic(bdd_2n, bdd_2b, true, false), Is().True());
+                AssertThat(is_isomorphic(bdd_2n, bdd_2b, false, true), Is().True());
                 AssertThat(is_isomorphic(bdd_2, bdd_2b, true, true), Is().True());
               });
 
             it("rejects on low child mismatch (leaf value) [1]", [&]() {
-                // bdd_1 with low child of 2 flipped in truth value
-                node_file bdd_1c;
-                { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_1c);
-                  w << create_node(2,1, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(1,1, create_node_ptr(2,1), create_sink_ptr(true))
-                    << create_node(1,0, create_sink_ptr(false), create_node_ptr(2,1))
-                    << create_node(0,1, create_node_ptr(1,0), create_node_ptr(1,1));
-                }
-
-                AssertThat(is_isomorphic(bdd_1, bdd_1c, false, false), Is().False());
-                AssertThat(is_isomorphic(bdd_1, bdd_1c, true, true), Is().False());
+                AssertThat(is_isomorphic(bdd_1n, bdd_1_low_leaf, true, false), Is().False());
+                AssertThat(is_isomorphic(bdd_1n, bdd_1_low_leaf, false, true), Is().False());
               });
 
             it("rejects on low child mismatch (internal node vs. leaf) [2]", [&]() {
-                /*
-                     1      ---- x0
-                    / \
-                    2  \    ---- x1
-                   / \  \
-                   T 3  4   ---- x2
-                    / \/ \
-                    T  F T
-
-                  which in traversal look similar to bdd_2 until (2) on level x1
-                */
-                node_file bdd_2c;
-                { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_2c);
-                  w << create_node(2,1, create_sink_ptr(false), create_sink_ptr(true))
-                    << create_node(2,0, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(1,0, create_sink_ptr(true), create_node_ptr(2,0))
-                    << create_node(0,1, create_node_ptr(1,0), create_node_ptr(2,1));
-                }
-
-                AssertThat(is_isomorphic(bdd_2, bdd_2c, false, false), Is().False());
-                AssertThat(is_isomorphic(bdd_2, bdd_2c, true, false), Is().False());
-                AssertThat(is_isomorphic(bdd_2, bdd_2c, false, true), Is().False());
-                AssertThat(is_isomorphic(bdd_2, bdd_2c, true, true), Is().False());
+                AssertThat(is_isomorphic(bdd_2n, bdd_2_low_child, true, false), Is().False());
+                AssertThat(is_isomorphic(bdd_2n, bdd_2_low_child, false, true), Is().False());
               });
 
-            it("rejects on low child mismatch (internal node labels)", [&]() {
-                /*
-                    1      ---- x0
-                   / \
-                   |  2    ---- x1
-                   \ / \
-                    3  F   ---- x2
-                   / \
-                   T 4     ---- x3
-                    / \
-                    F T
-                */
-                node_file bdd_3;
+            it("rejects on low child mismatch (internal node labels) [3]", [&]() {
+                node_file bdd_3_b;
+                /* Same as bdd_3 negated but with (2) directly going to (4) on the low */
                 { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_3);
-                  w << create_node(3,0, create_sink_ptr(false), create_sink_ptr(true))
-                    << create_node(2,0, create_sink_ptr(true), create_node_ptr(3,0))
-                    << create_node(1,0, create_node_ptr(2,0), create_sink_ptr(false))
-                    << create_node(0,0, create_node_ptr(2,0), create_node_ptr(1,0));
+                  node_writer w(bdd_3_b);
+                  w << create_node(3,MAX_ID, create_sink_ptr(true),     create_sink_ptr(false))
+                    << create_node(2,MAX_ID, create_sink_ptr(false),    create_node_ptr(3,MAX_ID))
+                    << create_node(1,MAX_ID, create_node_ptr(3,MAX_ID), create_sink_ptr(true))
+                    << create_node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID));
                 }
 
-                // Same with (2) directly going to (4) on the low
-                node_file bdd_3c;
-                { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_3c);
-                  w << create_node(3,0, create_sink_ptr(false), create_sink_ptr(true))
-                    << create_node(2,0, create_sink_ptr(true), create_node_ptr(3,0))
-                    << create_node(1,0, create_node_ptr(3,0), create_sink_ptr(false))
-                    << create_node(0,0, create_node_ptr(2,0), create_node_ptr(1,0));
-                }
-
-                AssertThat(is_isomorphic(bdd_3, bdd_3c, false, false), Is().False());
-                AssertThat(is_isomorphic(bdd_3, bdd_3c, true, false), Is().False());
-                AssertThat(is_isomorphic(bdd_3, bdd_3c, false, true), Is().False());
-                AssertThat(is_isomorphic(bdd_3, bdd_3c, true, true), Is().False());
+                AssertThat(is_isomorphic(bdd_3, bdd_3_b, true, false), Is().False());
+                AssertThat(is_isomorphic(bdd_3, bdd_3_b, false, true), Is().False());
               });
 
             it("rejects on high child mismatch (leaf value) [1]", [&]() {
-                // bdd_1 with low child of 2 flipped in truth value
-                node_file bdd_1c;
-                { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_1c);
-                  w << create_node(2,1, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(1,1, create_node_ptr(2,1), create_sink_ptr(false))
-                    << create_node(1,0, create_sink_ptr(true), create_node_ptr(2,1))
-                    << create_node(0,1, create_node_ptr(1,0), create_node_ptr(1,1));
-                }
-
-                AssertThat(is_isomorphic(bdd_1, bdd_1c, false, false), Is().False());
-                AssertThat(is_isomorphic(bdd_1, bdd_1c, true, true), Is().False());
+                AssertThat(is_isomorphic(bdd_1n, bdd_1_high_leaf, false, true), Is().False());
+                AssertThat(is_isomorphic(bdd_1n, bdd_1_high_leaf, true, false), Is().False());
               });
 
             it("rejects on high child mismatch (internal node vs. leaf) [2]", [&]() {
-                /*
-                     1      ---- x0
-                    / \
-                    2  \    ---- x1
-                   / \  \
-                   3 F  4   ---- x2
-                  / \  / \
-                  T F  T T
-
-                  which in traversal look similar to bdd_2 until (2) on level x1
-                */
-                node_file bdd_2c;
-                { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_2c);
-                  w << create_node(2,1, create_sink_ptr(false), create_sink_ptr(true))
-                    << create_node(2,0, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(1,0, create_node_ptr(2,0), create_sink_ptr(false))
-                    << create_node(0,1, create_node_ptr(1,0), create_node_ptr(2,1));
-                }
-
-                AssertThat(is_isomorphic(bdd_2, bdd_2c, false, false), Is().False());
-                AssertThat(is_isomorphic(bdd_2, bdd_2c, true, false), Is().False());
-                AssertThat(is_isomorphic(bdd_2, bdd_2c, false, true), Is().False());
-                AssertThat(is_isomorphic(bdd_2, bdd_2c, true, true), Is().False());
+                AssertThat(is_isomorphic(bdd_2n, bdd_2_high_child, true, false), Is().False());
+                AssertThat(is_isomorphic(bdd_2n, bdd_2_high_child, false, true), Is().False());
               });
 
-            it("rejects on high child mismatch (internal node labels)", [&]() {
-                /*
-                    1     ---- x0
-                   / \
-                   2  |    ---- x1
-                  / \ /
-                  F  3     ---- x2
-                    / \
-                    4 T    ---- x3
-                   / \
-                   F T
-
-                   The same as the other internal node label child mismatch
-                   (bdd_3), but mirrored horisontally
-                */
-                node_file bdd_3;
-                { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_3);
-                  w << create_node(3,0, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(2,0, create_node_ptr(3,0), create_sink_ptr(true))
-                    << create_node(1,0, create_sink_ptr(false), create_node_ptr(2,0))
-                    << create_node(0,0, create_node_ptr(1,0), create_node_ptr(2,0));
+            it("rejects on high child mismatch (internal node labels) [4]", [&]() {
+                node_file bdd_4_b;
+                /* Same as bdd_4 negated but with (2) directly going to (4) on
+                   the high */
+                { node_writer w(bdd_4_b);
+                  w << create_node(3,MAX_ID, create_sink_ptr(false),    create_sink_ptr(true))
+                    << create_node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_sink_ptr(false))
+                    << create_node(1,MAX_ID, create_sink_ptr(true),     create_node_ptr(3,MAX_ID))
+                    << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
                 }
 
-                // Same with (2) directly going to (4) on the high
-                node_file bdd_3c;
-                { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_3c);
-                  w << create_node(3,0, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(2,0, create_node_ptr(3,0), create_sink_ptr(true))
-                    << create_node(1,0, create_sink_ptr(false), create_node_ptr(3,0))
-                    << create_node(0,0, create_node_ptr(1,0), create_node_ptr(2,0));
-                }
-
-                AssertThat(is_isomorphic(bdd_3, bdd_3c, false, false), Is().False());
-                AssertThat(is_isomorphic(bdd_3, bdd_3c, true, false), Is().False());
-                AssertThat(is_isomorphic(bdd_3, bdd_3c, false, true), Is().False());
-                AssertThat(is_isomorphic(bdd_3, bdd_3c, true, true), Is().False());
+                AssertThat(is_isomorphic(bdd_4, bdd_4_b, true, false), Is().False());
+                AssertThat(is_isomorphic(bdd_4, bdd_4_b, false, true), Is().False());
               });
 
             it("rejects when resolving more requests on a level than nodes in original BDDs", [&]() {
@@ -482,32 +547,31 @@ go_bandit([]() {
                    both (3) and (4) in the other one. Hence, they cannot be
                    isomorphic.
                 */
-                node_file bdd_4a;
+                node_file bdd_5_a;
                 { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_4a);
-                  w << create_node(3,1, create_sink_ptr(false), create_sink_ptr(true))
-                    << create_node(3,0, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(2,1, create_node_ptr(3,0), create_node_ptr(3,1))
-                    << create_node(2,0, create_node_ptr(3,1), create_node_ptr(3,0))
-                    << create_node(1,0, create_node_ptr(2,0), create_node_ptr(2,1))
-                    << create_node(0,0, create_node_ptr(2,0), create_node_ptr(1,0));
+                  node_writer w(bdd_5_a);
+                  w << create_node(3,MAX_ID,   create_sink_ptr(false), create_sink_ptr(true))
+                    << create_node(3,MAX_ID-1, create_sink_ptr(true), create_sink_ptr(false))
+                    << create_node(2,MAX_ID,   create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))
+                    << create_node(2,MAX_ID-1, create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID-1))
+                    << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
+                    << create_node(0,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(1,MAX_ID));
                 }
 
-                node_file bdd_4b;
+                node_file bdd_5_b;
                 { // Garbage collect writers to free write-lock
-                  node_writer w(bdd_4b);
-                  w << create_node(3,1, create_sink_ptr(false), create_sink_ptr(true))
-                    << create_node(3,0, create_sink_ptr(true), create_sink_ptr(false))
-                    << create_node(2,1, create_node_ptr(3,0), create_node_ptr(3,1))
-                    << create_node(2,0, create_node_ptr(3,1), create_node_ptr(3,0))
-                    << create_node(1,0, create_node_ptr(2,1), create_node_ptr(2,0)) // <-- this is flipped
-                    << create_node(0,0, create_node_ptr(2,0), create_node_ptr(1,0));
+                  node_writer w(bdd_5_b);
+                  w << create_node(3,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))
+                    << create_node(3,MAX_ID-1, create_sink_ptr(true),       create_sink_ptr(false))
+                    << create_node(2,MAX_ID,   create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))
+                    << create_node(2,MAX_ID-1, create_node_ptr(3,MAX_ID),   create_node_ptr(3,MAX_ID-1))
+                    // This one has its children flipped
+                    << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_node_ptr(2,MAX_ID-1))
+                    << create_node(0,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(1,MAX_ID));
                 }
 
-                AssertThat(is_isomorphic(bdd_4a, bdd_4b, false, false), Is().False());
-                AssertThat(is_isomorphic(bdd_4a, bdd_4b, true, false), Is().False());
-                AssertThat(is_isomorphic(bdd_4b, bdd_4a, false, true), Is().False());
-                AssertThat(is_isomorphic(bdd_4b, bdd_4a, true, true), Is().False());
+                AssertThat(is_isomorphic(bdd_5_a, bdd_5_b, true, false), Is().False());
+                AssertThat(is_isomorphic(bdd_5_b, bdd_5_a, false, true), Is().False());
               });
           });
       });

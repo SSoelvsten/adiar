@@ -24,7 +24,6 @@ go_bandit([]() {
             arc_file in;
 
             { // Garbage collect writer early
-              // TODO: What happens here...?
               arc_writer aw(in);
 
               aw.unsafe_push_node({ flag(n1),n2 });
@@ -44,6 +43,8 @@ go_bandit([]() {
 
             // Reduce it
             node_file out = reduce(in);
+
+            AssertThat(out._file_ptr -> canonical, Is().True());
 
             // Check it looks all right
             node_test_stream out_nodes(out);
@@ -128,6 +129,8 @@ go_bandit([]() {
             // Reduce it
             node_file out = reduce(in);
 
+            AssertThat(out._file_ptr -> canonical, Is().True());
+
             // Check it looks all right
             node_test_stream out_nodes(out);
 
@@ -210,6 +213,8 @@ go_bandit([]() {
             // Reduce it
             node_file out = reduce(in);
 
+            AssertThat(out._file_ptr -> canonical, Is().True());
+
             // Check it looks all right
             node_test_stream out_nodes(out);
 
@@ -290,6 +295,8 @@ go_bandit([]() {
 
             // Reduce it
             node_file out = reduce(in);
+
+            AssertThat(out._file_ptr -> canonical, Is().True());
 
             // Check it looks all right
             node_test_stream out_nodes(out);
@@ -376,6 +383,8 @@ go_bandit([]() {
 
             // Reduce it
             node_file out = reduce(in);
+
+            AssertThat(out._file_ptr -> canonical, Is().True());
 
             // Check it looks all right
             node_test_stream out_nodes(out);
@@ -471,6 +480,7 @@ go_bandit([]() {
             // Reduce it
             node_file out = reduce(in);
 
+            AssertThat(out._file_ptr -> canonical, Is().True());
 
             // Check it looks all right
             node_test_stream out_nodes(out);
@@ -555,6 +565,8 @@ go_bandit([]() {
             // Reduce it
             node_file out = reduce(in);
 
+            AssertThat(out._file_ptr -> canonical, Is().True());
+
             // Check it looks all right
             node_test_stream out_nodes(out);
 
@@ -634,6 +646,8 @@ go_bandit([]() {
 
             // Reduce it
             node_file out = reduce(in);
+
+            AssertThat(out._file_ptr -> canonical, Is().True());
 
             // Check it looks all right
             node_test_stream out_nodes(out);
@@ -718,6 +732,8 @@ go_bandit([]() {
             // Reduce it
             node_file out = reduce(in);
 
+            AssertThat(out._file_ptr -> canonical, Is().True());
+
             // Check it looks all right
             node_test_stream out_nodes(out);
 
@@ -757,6 +773,8 @@ go_bandit([]() {
 
             // Reduce it
             node_file out = reduce(in);
+
+            AssertThat(out._file_ptr -> canonical, Is().True());
 
             // Check it looks all right
             node_test_stream out_nodes(out);
@@ -799,6 +817,8 @@ go_bandit([]() {
 
             // Reduce it
             node_file out = reduce(in);
+
+            AssertThat(out._file_ptr -> canonical, Is().True());
 
             // Check it looks all right
             node_test_stream out_nodes(out);
@@ -854,6 +874,8 @@ go_bandit([]() {
 
             // Reduce it
             node_file out = reduce(in);
+
+            AssertThat(out._file_ptr -> canonical, Is().True());
 
             // Check it looks all right
             node_test_stream out_nodes(out);
@@ -939,6 +961,8 @@ go_bandit([]() {
             // Reduce it
             node_file out = reduce(in);
 
+            AssertThat(out._file_ptr -> canonical, Is().True());
+
             // Check it looks all right
             node_test_stream out_nodes(out);
 
@@ -1001,6 +1025,8 @@ go_bandit([]() {
             // Reduce it
             node_file out = reduce(in);
 
+            AssertThat(out._file_ptr -> canonical, Is().True());
+
             // Check it looks all right
             node_test_stream out_nodes(out);
 
@@ -1037,6 +1063,8 @@ go_bandit([]() {
 
             // Reduce it
             node_file out = reduce(in);
+
+            AssertThat(out._file_ptr -> canonical, Is().True());
 
             // Check it looks all right
             node_test_stream out_nodes(out);

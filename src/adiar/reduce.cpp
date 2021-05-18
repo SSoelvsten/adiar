@@ -71,6 +71,8 @@ namespace adiar
   node_file reduce(const arc_file &in_file)
   {
     node_file out_file;
+    out_file._file_ptr -> canonical = true;
+
     node_writer out_writer(out_file);
 
     // Set up
