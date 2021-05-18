@@ -161,11 +161,10 @@ namespace adiar {
   template <typename T, size_t Files>
   class meta_file_writer
   {
-  private:
+  protected:
     // Keep a local shared_ptr to be in on the reference counting
     std::shared_ptr<__meta_file<T, Files>> _file_ptr;
 
-  protected:
     tpie::file_stream<meta_t> _meta_stream;
     tpie::file_stream<T> _streams [Files];
 
@@ -272,13 +271,16 @@ namespace adiar {
   class node_writer: public meta_file_writer<node_t, 1>
   {
   private:
-    uid_t _latest_node = NIL;
+    node_t _latest_node = { NIL, NIL, NIL };
+    bool _canonical = true;
 
     size_t _level_size = 0u;
 
   public:
     node_writer() : meta_file_writer() { }
-    node_writer(const node_file &nf) : meta_file_writer(nf) { }
+    node_writer(const node_file &nf) : meta_file_writer(nf),
+                                       _canonical(!meta_file_writer::has_pushed()
+                                                  || nf._file_ptr -> canonical) { }
 
     ~node_writer() { detach(); }
 
@@ -286,28 +288,42 @@ namespace adiar {
     /// \brief Write the next node to the file.
     ///
     /// Writes the given node to the end of the file and also writes to the meta
-    /// file if necessary. The given node must have valid children (not checked)
-    /// and must be topologically prior to any nodes already written to the
-    /// file (checked).
+    /// file if necessary. The given node must have valid children (not
+    /// checked), no duplicate nodes created (not properly checked), and must be
+    /// topologically prior to any nodes already written to the file (checked).
     ////////////////////////////////////////////////////////////////////////////
     void push(const node_t &n)
     {
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
-      // Check latest was not a sink
-      adiar_assert(is_nil(_latest_node) || !is_sink(_latest_node),
-                  "Cannot push a node after having pushed a sink");
-      adiar_assert(is_nil(_latest_node) || !is_sink(n),
-                  "Cannot push a sink into non-empty file");
+      // Check validity of input based on latest written node
+      if (!is_nil(_latest_node.uid)) {
+        adiar_assert(!is_sink(_latest_node),
+                     "Cannot push a node after having pushed a sink");
+        adiar_assert(!is_sink(n),
+                     "Cannot push a sink into non-empty file");
 
-      // Check it is topologically sorted
-      if (!is_nil(_latest_node)) {
-        adiar_assert(n.uid < _latest_node,
+        // Check it is topologically sorted
+        adiar_assert(n.uid < _latest_node.uid,
                     "Pushed node is required to be prior to the existing nodes");
         adiar_assert(!is_node(n.low) || label_of(n.uid) < label_of(n.low),
                     "Low child must point to a node with a higher label");
         adiar_assert(!is_node(n.high) || label_of(n.uid) < label_of(n.high),
                     "High child must point to a node with a higher label");
+
+        // Check it is canonically sorted
+        if (_canonical) {
+          if (label_of(_latest_node) == label_of(n)) {
+            bool id_diff = id_of(n.uid) == id_of(_latest_node) - 1u;
+            bool children_ordered = n.high < _latest_node.high
+                                    || (n.high == _latest_node.high && n.low < _latest_node.low);
+
+            _canonical = id_diff && children_ordered;
+          } else {
+            bool id_reset = id_of(n) == MAX_ID;
+            _canonical = id_reset;
+          }
+        }
 
         // Check if the meta file has to be updated
         if (label_of(n) != label_of(_latest_node)) {
@@ -318,7 +334,7 @@ namespace adiar {
       }
 
       // Write node to file
-      _latest_node = n.uid;
+      _latest_node = n;
       _level_size++;
 
       meta_file_writer::unsafe_push(n, 0);
@@ -341,7 +357,9 @@ namespace adiar {
     }
     bool attached() const { return meta_file_writer::attached(); }
     void detach() {
-      if (!is_nil(_latest_node) && !is_sink(_latest_node)) {
+      _file_ptr -> canonical = _canonical;
+
+      if (!is_nil(_latest_node.uid) && !is_sink(_latest_node)) {
         meta_file_writer::unsafe_push(create_meta(label_of(_latest_node),
                                                   _level_size));
         _level_size = 0u; // move to attach...

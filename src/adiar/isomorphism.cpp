@@ -6,7 +6,6 @@
 
 namespace adiar
 {
-
   //////////////////////////////////////////////////////////////////////////////
   // Slow O(sort(N)) I/Os comparison by traversing the product construction and
   // comparing each related pair of nodes.
@@ -61,7 +60,7 @@ namespace adiar
     adiar_debug(label_of(v1) == label_of(v2), "The levels (and hence the root) should coincide");
 
     if (!in_nodes_1.can_pull()) {
-      adiar_debug(!in_nodes_1.can_pull(), "The number of nodes should coincide");
+      adiar_debug(!in_nodes_2.can_pull(), "The number of nodes should coincide");
       return v1.low == v2.low && v1.high == v2.high;
     }
 
@@ -170,6 +169,36 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  // Fast 2N/B I/Os comparison by comparing the i'th nodes numerically. This
+  // requires, that the node_file is 'canonical' in the following sense:
+  //
+  // - For each level, the ids are decreasing from MAX_ID in increments of one.
+  // - There are no duplicate nodes.
+  // - Nodes within each level are sorted by the children (e.g. ordered first on
+  //   'high', secondly on 'low').
+  //
+  // See Section 3.3 in 'Efficient Binary Decision Diagram Manipulation in
+  // External Memory' on arXiv (v2 or newer) for an induction proof this is a
+  // valid comparison.
+
+  /////////////////////
+  // Precondition:
+  //  - The number of nodes are the same (to simplify the 'while' condition)
+  //  - The node_files are both 'canonical'.
+  //  - The negation flags given for both node_files agree (breaks canonicity)
+  bool fast_isomorphism_check(const node_file &f1, const node_file &f2)
+  {
+    node_stream<> in_nodes_1(f1);
+    node_stream<> in_nodes_2(f2);
+
+    while (in_nodes_1.can_pull()) {
+      adiar_debug(in_nodes_2.can_pull(), "The number of nodes should coincide");
+      if (in_nodes_1.pull() != in_nodes_2.pull()) { return false; }
+    }
+    return true;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   bool is_isomorphic(const node_file &f1, const node_file &f2,
                      bool negate1, bool negate2)
   {
@@ -204,6 +233,15 @@ namespace adiar
       }
     }
 
-    return slow_isomorphism_check(f1, f2, negate1, negate2);
+    // TODO: Use 'fast_isomorphism_check' when there is only one node per level.
+
+    // Compare their content to discern whether there exists an isomorphism
+    // between them.
+    if (f1._file_ptr -> canonical && f2._file_ptr -> canonical
+        && negate1 == negate2) {
+      return fast_isomorphism_check(f1, f2);
+    } else {
+      return slow_isomorphism_check(f1, f2, negate1, negate2);
+    }
   }
 }
