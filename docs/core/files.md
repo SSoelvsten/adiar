@@ -72,7 +72,10 @@ The `node_writer` class provides the following member functions
 - `void push(node_t n)` (operator `<<`)
 
   Push a single node to the `node_file`. This also applies a few sanity checks
-  on the provided input, such as checks on the ordering.
+  on the provided input, such as checks on the ordering. This does not check
+  whether the children named by _n_ do indeed exist in the file. If you provide
+  an _n_ with spurious children, then algorithms with this as their input will
+  have _undefined behaviour_.
 
 - `void attach(node_file f)`
 
