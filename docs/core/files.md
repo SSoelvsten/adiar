@@ -20,12 +20,13 @@ permalink: core/files
 
 ## Nodes
 
-BDDs are stored on disk with the specific ordering mentioned in section
+BDDs are stored on disk with the specific ordering mentioned in Section
 [Core/Data types](./data_types#identifiers-and-ordering). If you want to
 construct a BDD by hand then you have to explicitly follow this ordering;
 otherwise the algorithms will have _undefined behaviour_. Yet, that is not the
 whole story: In _Adiar_ a set of nodes are stored in a `node_file` in which all
-these nodes are stored in _reverse_ of the ordering above.
+these nodes are stored in _reverse_ of the ordering.
+
 
 ### Node Stream
 
@@ -90,6 +91,36 @@ to the same `node_file`. Furthermore, one also has to detach the `node_writer`
 before anything can be read from the `node_file` or that the algorithms of
 _Adiar_ can process on them. So, remember to either detach it explicitly or have
 the `node_writer` destructed before calling any such functions.
+
+#### A note on equality checking
+
+The _equality checking_ algorithm (`==`) of _Adiar_ exploits multiple
+characteristics of decision diagrams to speed up its computation. If you want to
+use your self-made decision diagrams in equality checking, then you have to be
+sure to adhere to write it in its reduced form.
+
+1. Do not write nodes that are suppressed in the decision diagram, e.g. for BDDs
+   do not write nodes with _low_ == _high_.
+
+2. Do not write duplicate nodes to the same file, i.e. nodes where both their
+   _low_ children are the same and their _high_ children are the same.
+
+Equality checking also is much faster if the constructed decision diagram is on
+_canonical_ form. The decision diagram being canonical means that it also
+satisfies the following two constraints.
+
+1. The first node pushed to each level has _id_ `MAX_LABEL`, the next has _id_
+   `MAX_LABEL - 1`, and so on.
+
+2. The nodes within each level are lexicographically ordered by their children
+  (_high_ first then _low_). That is, a node _n_ written to the file after
+  already having written node _m_ on the same level must not only satisfy _n <
+  m_ from Section [Core/Data types](./data_types#identifiers-and-ordering) but
+  also the following extended constraint
+
+<p style="text-align: center;">
+  n.id < m.id ≡ n.high < m.high || (n.high = m.high && n.low < m.low)
+</p>
 
 ## Assignments and Labels
 
