@@ -94,7 +94,7 @@ namespace adiar {
     friend bdd operator~ (const bdd& bdd);
     friend bdd operator~ (bdd&& bdd);
 
-    friend __bdd bdd_apply(const bdd &bdd_1, const bdd &bdd_2, const bool_op &op);
+    friend class apply_prod_policy;
     friend __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else);
     friend __bdd operator& (const bdd &lhs, const bdd &rhs);
     friend __bdd operator| (const bdd &lhs, const bdd &rhs);
