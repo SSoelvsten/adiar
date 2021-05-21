@@ -15,6 +15,7 @@ namespace adiar
   typedef std::function<ptr_t(const node_t&)> reduction_rule_t;
 
   extern const reduction_rule_t reduction_rule_bdd;
+  extern const reduction_rule_t reduction_rule_zdd;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Reduce a given edge-based BDD.

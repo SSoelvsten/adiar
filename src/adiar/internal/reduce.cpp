@@ -19,6 +19,13 @@ namespace adiar
     return NIL;
   };
 
+  const reduction_rule_t reduction_rule_zdd = [](const node_t& n) -> ptr_t
+  {
+    if (is_sink(n.high) && !value_of(n.high)) { return n.low; }
+    return NIL;
+  };
+
+
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
   struct mapping
