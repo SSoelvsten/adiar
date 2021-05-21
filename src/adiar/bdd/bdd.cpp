@@ -18,7 +18,6 @@ namespace adiar {
 
   __bdd::__bdd(const bdd &bdd) : union_t(bdd.file), negate(bdd.negate) { }
 
-
   bdd operator~ (__bdd &&in) { return ~bdd(std::forward<__bdd>(in)); }
 
   __bdd operator& (__bdd &&lhs, __bdd &&rhs) {
@@ -61,7 +60,8 @@ namespace adiar {
   node_file reduce(__bdd &&maybe_reduced)
   {
     if (maybe_reduced.has<arc_file>()) {
-      node_file out = reduce(maybe_reduced.get<arc_file>());
+      node_file out = reduce(maybe_reduced.get<arc_file>(),
+                             reduction_rule_bdd);
       maybe_reduced.set(out); // garbage collect arc_file before return
       return out;
     }

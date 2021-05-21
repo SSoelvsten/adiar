@@ -12,6 +12,14 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
+  // Reduction Rule 1 variants
+  const reduction_rule_t reduction_rule_bdd = [](const node_t& n) -> ptr_t
+  {
+    if (n.low == n.high) { return n.low; }
+    return NIL;
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
   // Data structures
   struct mapping
   {
@@ -69,7 +77,7 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  node_file reduce(const arc_file &in_file)
+  node_file reduce(const arc_file &in_file, const reduction_rule_t& reduction_rule)
   {
     node_file out_file;
     out_file._file_ptr -> canonical = true;
@@ -112,9 +120,10 @@ namespace adiar
       arc_t e_high = sink_arcs.pull();
       arc_t e_low = sink_arcs.pull();
 
-      // Apply reduction rule 1 if applicable
-      if (e_high.target == e_low.target) {
-        out_writer.unsafe_push(create_sink(value_of(e_low.target)));
+      // Apply reduction rule 1, if applicable
+      ptr_t reduction_rule_ret = reduction_rule(node_of(e_low,e_high));
+      if (!is_nil(reduction_rule_ret)) {
+        out_writer.unsafe_push(create_sink(value_of(reduction_rule_ret)));
       } else {
         label_t label = label_of(e_low.source);
         out_writer.unsafe_push(create_node(label, MAX_ID,
@@ -150,11 +159,12 @@ namespace adiar
         node_t n = node_of(e_low, e_high);
 
         // Apply Reduction rule 1
-        if (n.low == n.high) {
-          if (!red1_mapping.is_open()) {
-            red1_mapping.open();
-          }
-          red1_mapping.write({ n.uid, n.low });
+        ptr_t reduction_rule_ret = reduction_rule(n);
+        if (!is_nil(reduction_rule_ret)) {
+          // Open red1_mapping first (and create file on disk) when at least one
+          // element is written to it.
+          if (!red1_mapping.is_open()) { red1_mapping.open(); }
+          red1_mapping.write({ n.uid, reduction_rule_ret });
         } else {
           child_grouping.push(n);
         }
