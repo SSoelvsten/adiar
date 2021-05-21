@@ -32,6 +32,7 @@ set(HEADERS
   # internal
   internal/isomorphism.h
   internal/levelized_priority_queue.h
+  internal/product_construction.h
   internal/reduce.h
 )
 
