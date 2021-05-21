@@ -16,13 +16,13 @@ namespace adiar
   const reduction_rule_t reduction_rule_bdd = [](const node_t& n) -> ptr_t
   {
     if (n.low == n.high) { return n.low; }
-    return NIL;
+    return n.uid;
   };
 
   const reduction_rule_t reduction_rule_zdd = [](const node_t& n) -> ptr_t
   {
     if (is_sink(n.high) && !value_of(n.high)) { return n.low; }
-    return NIL;
+    return n.uid;
   };
 
 
@@ -129,7 +129,7 @@ namespace adiar
 
       // Apply reduction rule 1, if applicable
       ptr_t reduction_rule_ret = reduction_rule(node_of(e_low,e_high));
-      if (!is_nil(reduction_rule_ret)) {
+      if (reduction_rule_ret != e_low.source) {
         out_writer.unsafe_push(create_sink(value_of(reduction_rule_ret)));
       } else {
         label_t label = label_of(e_low.source);
@@ -167,7 +167,7 @@ namespace adiar
 
         // Apply Reduction rule 1
         ptr_t reduction_rule_ret = reduction_rule(n);
-        if (!is_nil(reduction_rule_ret)) {
+        if (reduction_rule_ret != n.uid) {
           // Open red1_mapping first (and create file on disk) when at least one
           // element is written to it.
           if (!red1_mapping.is_open()) { red1_mapping.open(); }
