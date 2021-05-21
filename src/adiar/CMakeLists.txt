@@ -11,9 +11,6 @@ set(HEADERS
   file.h
   file_stream.h
   file_writer.h
-  isomorphism.h
-  levelized_priority_queue.h
-  reduce.h
   tuple.h
   union.h
 
@@ -31,6 +28,11 @@ set(HEADERS
 
   # debug files
   dot.h
+
+  # internal
+  internal/isomorphism.h
+  internal/levelized_priority_queue.h
+  internal/reduce.h
 )
 
 set(SOURCES
@@ -40,9 +42,6 @@ set(SOURCES
   file.cpp
   file_stream.cpp
   file_writer.cpp
-  isomorphism.cpp
-  levelized_priority_queue.cpp
-  reduce.cpp
 
   # bdd files
   bdd/apply.cpp
@@ -58,6 +57,11 @@ set(SOURCES
 
   # debug files
   dot.cpp
+
+  # internal
+  internal/isomorphism.cpp 
+  internal/levelized_priority_queue.cpp
+  internal/reduce.cpp
 )
 
 if (ADIAR_SHARED)

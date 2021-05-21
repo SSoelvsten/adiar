@@ -1,4 +1,4 @@
-#include <adiar/levelized_priority_queue.h>
+#include <adiar/internal/levelized_priority_queue.h>
 
 using namespace adiar;
 
@@ -36,7 +36,7 @@ using test_priority_queue = levelized_priority_queue<pq_test_data, 1u,
                                                      MetaStreams, Buckets>;
 
 go_bandit([]() {
-  describe("CORE: Levelized Priority Queue", []() {
+  describe("INTERNAL: Levelized Priority Queue", []() {
 
     describe("Label Manager", [&]() {
       it("can pull from one meta stream", [&]() {

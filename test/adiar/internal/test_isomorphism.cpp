@@ -1,7 +1,7 @@
-#include <adiar/isomorphism.h>
+#include <adiar/internal/isomorphism.h>
 
 go_bandit([]() {
-    describe("CORE: Isomorphism", [&]() {
+    describe("INTERNAL: Isomorphism", [&]() {
         describe("Trivial cases", [&]() {
             node_file sink_F, x21, x42, x21_and_x22, x21_and_x22_and_x42, x21_and_x42, x21_xor_x42;
 
