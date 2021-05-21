@@ -1,7 +1,6 @@
 #include "file.h"
 
 #include <adiar/assert.h>
-#include <adiar/reduce.h>
 
 #include <adiar/file_stream.h>
 

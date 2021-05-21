@@ -1,7 +1,6 @@
 #ifndef ADIAR_REDUCE_H
 #define ADIAR_REDUCE_H
 
-#include <adiar/data.h>
 #include <adiar/file.h>
 
 namespace adiar

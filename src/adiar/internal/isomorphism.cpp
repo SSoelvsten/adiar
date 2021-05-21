@@ -1,8 +1,9 @@
 #include "isomorphism.h"
 
-#include <adiar/file_stream.h>
-#include <adiar/levelized_priority_queue.h>
 #include <adiar/tuple.h>
+#include <adiar/file_stream.h>
+
+#include <adiar/internal/levelized_priority_queue.h>
 
 namespace adiar
 {

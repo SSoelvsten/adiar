@@ -2,9 +2,11 @@
 
 #include <memory>
 
+#include <adiar/data.h>
 #include <adiar/file_stream.h>
-#include <adiar/isomorphism.h>
-#include <adiar/reduce.h>
+
+#include <adiar/internal/isomorphism.h>
+#include <adiar/internal/reduce.h>
 
 #include <adiar/bdd/apply.h>
 #include <adiar/bdd/build.h>

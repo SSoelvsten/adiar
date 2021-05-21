@@ -4,7 +4,8 @@
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
-#include <adiar/levelized_priority_queue.h>
+
+#include <adiar/internal/levelized_priority_queue.h>
 
 #include <adiar/assert.h>
 

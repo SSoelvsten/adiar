@@ -1,8 +1,8 @@
 #include "count.h"
 
 #include <adiar/file_stream.h>
-#include <adiar/levelized_priority_queue.h>
-#include <adiar/reduce.h>
+
+#include <adiar/internal/levelized_priority_queue.h>
 
 #include <adiar/assert.h>
 

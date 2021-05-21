@@ -46,12 +46,17 @@ public:
 #include "adiar/test_union.cpp"
 
 #include "adiar/test_file.cpp"
+
+////////////////////////////////////////////////////////////////////////////////
+// ADIAR Debug unit tests
 #include "adiar/test_dot.cpp"
 
-#include "adiar/test_levelized_priority_queue.cpp"
+////////////////////////////////////////////////////////////////////////////////
+// ADIAR Internal unit tests
+#include "adiar/internal/test_levelized_priority_queue.cpp"
 
-#include "adiar/test_isomorphism.cpp"
-#include "adiar/test_reduce.cpp"
+#include "adiar/internal/test_isomorphism.cpp"
+#include "adiar/internal/test_reduce.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR BDD unit tests
