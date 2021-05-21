@@ -9,8 +9,8 @@ namespace adiar
   /// \brief Applies Reduction Rule 1 to a node (should the node be omitted or
   ///        not?)
   ///
-  /// \return Returns NIL if the node should be kept as-is. Otherwise, the node
-  ///         should be replaced with the returned value.
+  /// \return Returns the uid of the node to use. This is either the given node,
+  ///         one of its children, or a sink.
   //////////////////////////////////////////////////////////////////////////////
   typedef std::function<ptr_t(const node_t&)> reduction_rule_t;
 
