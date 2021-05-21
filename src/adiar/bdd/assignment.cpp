@@ -7,7 +7,7 @@ namespace adiar
 {
   assignment_file assignment_find(const bdd &f,
                                   bool default_for_skipped_var,
-                                  std::function<bool(node_t)> pick_next)
+                                  const std::function<bool(node_t)>& pick_next)
   {
     adiar_assert(!is_sink(f),
                  "Cannot extract an assignment from a sink file");
