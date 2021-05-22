@@ -15,7 +15,6 @@ go_bandit([]() {
              / \
              F T
         */
-
         { // Garbage collect writer to free write-lock
           node_t n4 = create_node(3,0, sink_F, sink_T);
           node_t n3 = create_node(2,0, sink_F, n4.uid);
@@ -36,7 +35,6 @@ go_bandit([]() {
            / \ /
            F  T
         */
-
         { // Garbage collect writer to free write-lock
           node_t n2 = create_node(2,0, sink_F, sink_T);
           node_t n1 = create_node(1,0, n2.uid, sink_T);
@@ -49,6 +47,7 @@ go_bandit([]() {
         /*
           T
         */
+        // This describes the set {}
 
         { // Garbage collect writer to free write-lock
           node_writer nw_T(zdd_T);
@@ -59,6 +58,7 @@ go_bandit([]() {
         /*
           F
         */
+        // This describes no set
 
         { // Garbage collect writer to free write-lock
           node_writer nw_F(zdd_F);
@@ -71,6 +71,7 @@ go_bandit([]() {
           / \
           F T
         */
+        // This describes the set { 1 }
 
         { // Garbage collect writer to free write-lock
           node_writer nw_root_1(zdd_root_1);
@@ -94,6 +95,28 @@ go_bandit([]() {
                 AssertThat(zdd_varcount(zdd_T), Is().EqualTo(0u));
                 AssertThat(zdd_varcount(zdd_F), Is().EqualTo(0u));
                 AssertThat(zdd_varcount(zdd_root_1), Is().EqualTo(1u));
+              });
+          });
+
+        describe("size", [&]() {
+            it("can count family { {x2, x3}, {x0, x2, x3}, {x0, x1, x3} } [1]", [&]() {
+                AssertThat(zdd_size(zdd_1), Is().EqualTo(3u));
+              });
+
+            it("can count family { {x1}, {x2} } [2]", [&]() {
+                AssertThat(zdd_size(zdd_2), Is().EqualTo(2u));
+              });
+
+            it("can count family { Ø } [T]", [&]() {
+                AssertThat(zdd_size(zdd_T), Is().EqualTo(1u));
+              });
+
+            it("can count family Ø [F]", [&]() {
+                AssertThat(zdd_size(zdd_F), Is().EqualTo(0u));
+              });
+
+            it("can count family { 1 } [root_1]", [&]() {
+                AssertThat(zdd_size(zdd_root_1), Is().EqualTo(1u));
               });
           });
       });

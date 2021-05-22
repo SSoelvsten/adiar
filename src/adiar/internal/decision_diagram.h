@@ -63,6 +63,11 @@ namespace adiar {
               size_t MetaStreams, size_t Buckets>
     friend class levelized_priority_queue;
 
+    template<typename prod_policy, typename out_t, typename in_t>
+    friend out_t product_construction(const in_t &in_1,
+                                      const in_t &in_2,
+                                      const bool_op &op);
+
     friend label_t min_label(const decision_diagram &dd);
     friend label_t max_label(const decision_diagram &dd);
 
