@@ -5,7 +5,7 @@
 
 namespace adiar {
   __decision_diagram::__decision_diagram(const decision_diagram &dd)
-    : union_t(dd.file), negate(dd.negate) { };
+    : _union(dd.file), negate(dd.negate) { };
 
   //////////////////////////////////////////////////////////////////////////////
   bool is_sink(const decision_diagram &dd, const sink_pred &pred)

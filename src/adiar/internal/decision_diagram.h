@@ -1,42 +1,70 @@
 #ifndef ADIAR_INTERNAL_DECISION_DIAGRAM_H
 #define ADIAR_INTERNAL_DECISION_DIAGRAM_H
 
-#include <adiar/union.h>
 #include <adiar/file.h>
 
-namespace adiar {
+#include <variant>
+
+namespace adiar
+{
+  //////////////////////////////////////////////////////////////////////////////
   // Class declarations to be able to reference it
   class decision_diagram;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// An algorithm may return a node-based decision diagram in a node_file or a
-  /// yet to-be reduced decision diagram in an arc_file. So, the union_t will be
-  /// a wrapper for the combined type.
-  ///
-  /// The union_t class ensures we don't call any expensive yet unnecessary
-  /// constructors and ensures only one of the two types are instantiated at a
-  /// time.
+  /// A std::variant is used to distinguish the type of file. This uses
+  /// std::monostate to hold a 'nothing' value, i.e. when there is no file.
   //////////////////////////////////////////////////////////////////////////////
-  class __decision_diagram : public union_t<node_file, arc_file>
+  typedef std::monostate no_file;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// An algorithm may return a node-based decision diagram in a node_file or a
+  /// yet to-be reduced decision diagram in an arc_file. So, we use a
+  /// std::variant to hold the the node_file or arc_file without having to pay
+  /// for the expensive constructors and use a lot of space.
+  ///
+  /// We also include a std::monostate to allow an algorithm to return None,
+  /// though that will lead to an exception in most cases.
+  //////////////////////////////////////////////////////////////////////////////
+  class __decision_diagram
   {
+  public:
     ////////////////////////////////////////////////////////////////////////////
-    // 'privatize' mutating functions from union.h
-  protected:
-    using union_t<node_file, arc_file>::set;
+    // Friends
+    template <typename T, size_t Files, bool REVERSE>
+    friend class meta_stream;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Union of node_file and arc_file (with std::monostate for 'error')
+    const std::variant<std::monostate, node_file, arc_file> _union;
 
     ////////////////////////////////////////////////////////////////////////////
     // Propagating the negation flag below
-  public:
     const bool negate = false;
 
-  public:
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
-    __decision_diagram(const node_file &f) : union_t(f) { }
+    __decision_diagram() { }
 
-    __decision_diagram(const arc_file &f) : union_t(f) { }
+    __decision_diagram(const node_file &f) : _union(f) { }
 
-    __decision_diagram(const decision_diagram &dd); // decision_diagram.cppx
+    __decision_diagram(const arc_file &f) : _union(f) { }
+
+    __decision_diagram(const decision_diagram &dd); // decision_diagram.cpp
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Accessors
+    template<typename T>
+    bool has() const
+    {
+      return std::holds_alternative<T>(_union);
+    }
+
+    template<typename T>
+    const T& get() const
+    {
+      return std::get<T>(_union);
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
