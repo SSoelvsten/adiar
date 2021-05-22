@@ -1,5 +1,5 @@
-#ifndef ADIAR_BUILD_H
-#define ADIAR_BUILD_H
+#ifndef ADIAR_BDD_BUILD_H
+#define ADIAR_BDD_BUILD_H
 
 #include <adiar/data.h>
 #include <adiar/file.h>
@@ -70,4 +70,4 @@ namespace adiar
   bdd bdd_counter(label_t min_label, label_t max_label, label_t threshold);
 }
 
-#endif // ADIAR_BUILD_H
+#endif // ADIAR_BDD_BUILD_H

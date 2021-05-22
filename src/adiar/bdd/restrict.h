@@ -1,5 +1,5 @@
-#ifndef ADIAR_RESTRICT_H
-#define ADIAR_RESTRICT_H
+#ifndef ADIAR_BDD_RESTRICT_H
+#define ADIAR_BDD_RESTRICT_H
 
 #include <adiar/data.h>
 #include <adiar/file.h>
@@ -22,4 +22,4 @@ namespace adiar
   __bdd bdd_restrict(const bdd &bdd, const assignment_file &assignment);
 }
 
-#endif // ADIAR_RESTRICT_H
+#endif // ADIAR_BDD_RESTRICT_H

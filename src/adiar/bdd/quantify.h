@@ -1,5 +1,5 @@
-#ifndef ADIAR_QUANTIFY_H
-#define ADIAR_QUANTIFY_H
+#ifndef ADIAR_BDD_QUANTIFY_H
+#define ADIAR_BDD_QUANTIFY_H
 
 #include <adiar/data.h>
 #include <adiar/file.h>
@@ -25,4 +25,4 @@ namespace adiar
   __bdd bdd_forall(bdd &&bdd, const label_file &labels);
 }
 
-#endif // ADIAR_QUANTIFY_H
+#endif // ADIAR_BDD_QUANTIFY_H

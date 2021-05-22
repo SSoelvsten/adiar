@@ -263,11 +263,11 @@ namespace adiar {
       setup_buckets();
     }
 
-    levelized_priority_queue(const bdd (& bdds) [MetaStreams],
+    levelized_priority_queue(const decision_diagram (& dds) [MetaStreams],
                    tpie::memory_size_type memory_given)
       : levelized_priority_queue(memory_given) {
-      for (const bdd& b : bdds) {
-        label_mgr::hook_meta_stream(b.file);
+      for (const decision_diagram& dd : dds) {
+        label_mgr::hook_meta_stream(dd.file);
       }
       setup_buckets();
     }
@@ -275,8 +275,8 @@ namespace adiar {
     levelized_priority_queue(const meta_file<File_T, Files> (& files) [MetaStreams])
     : levelized_priority_queue(files, tpie::get_memory_manager().available()) { }
 
-    levelized_priority_queue(const bdd (& bdds) [MetaStreams])
-    : levelized_priority_queue(bdds, tpie::get_memory_manager().available()) { }
+    levelized_priority_queue(const decision_diagram (& dds) [MetaStreams])
+    : levelized_priority_queue(dds, tpie::get_memory_manager().available()) { }
 
     ////////////////////////////////////////////////////////////////////////////
     // Private constructor methods

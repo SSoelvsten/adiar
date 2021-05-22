@@ -72,6 +72,12 @@ public:
 #include "adiar/bdd/test_quantify.cpp"
 #include "adiar/bdd/test_restrict.cpp"
 
+////////////////////////////////////////////////////////////////////////////////
+// ADIAR ZDD unit tests
+#include "adiar/zdd/test_zdd.cpp"
+
+#include "adiar/zdd/test_count.cpp"
+
 int main(int argc, char* argv[]) {
 #ifdef NDEBUG
   std::cerr << "Warning: Internal assertions are not enabled!\n\n";

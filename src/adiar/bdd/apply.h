@@ -1,5 +1,5 @@
-#ifndef ADIAR_APPLY_H
-#define ADIAR_APPLY_H
+#ifndef ADIAR_BDD_APPLY_H
+#define ADIAR_BDD_APPLY_H
 
 #include <adiar/data.h>
 #include <adiar/bdd/bdd.h>
@@ -35,4 +35,4 @@ namespace adiar
   __bdd bdd_less(const bdd &bdd_1, const bdd &bdd_2);
 }
 
-#endif // ADIAR_APPLY_H
+#endif // ADIAR_BDD_APPLY_H

@@ -1,5 +1,5 @@
-#ifndef ADIAR_EVALUATE_H
-#define ADIAR_EVALUATE_H
+#ifndef ADIAR_BDD_EVALUATE_H
+#define ADIAR_BDD_EVALUATE_H
 
 #include <adiar/data.h>
 #include <adiar/file.h>
@@ -17,4 +17,4 @@ namespace adiar
   bool bdd_eval(const bdd &bdd, const assignment_file &assignment);
 }
 
-#endif // ADIAR_EVALUATE_H
+#endif // ADIAR_BDD_EVALUATE_H
