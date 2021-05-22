@@ -48,13 +48,12 @@ namespace adiar
   ///         otherwise an arc_file of the BDD representing the operator
   ///         applied on both inputs.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename out_t, typename in_t, typename prod_policy>
+  template<typename prod_policy, typename out_t, typename in_t>
   out_t product_construction(const in_t &in_1,
                              const in_t &in_2,
                              const bool_op &op)
   {
-    // Resolve being given the same underlying input
-    if (prod_policy::is_same_file(in_1,in_2)) {
+    if (in_1.file._file_ptr == in_2.file._file_ptr) {
       return prod_policy::resolve_same_file(in_1, in_2, op);
     }
 
