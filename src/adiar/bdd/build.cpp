@@ -7,7 +7,8 @@
 
 #include <adiar/assert.h>
 
-namespace adiar {
+namespace adiar
+{
   // TODO: Memoization table for the sink, ithvar, and nithvar builders
 
   bdd bdd_sink(bool value)

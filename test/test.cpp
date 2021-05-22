@@ -23,6 +23,8 @@ public:
   node_test_stream(node_file &f): node_stream<true>(f) { }
   node_test_stream(bdd &f): node_stream<true>(f) { }
   node_test_stream(__bdd &f): node_stream<true>(f.get<node_file>()) { }
+  node_test_stream(zdd &f): node_stream<true>(f) { }
+  node_test_stream(__zdd &f): node_stream<true>(f.get<node_file>()) { }
 };
 
 class node_arc_test_stream: public node_arc_stream<true>
@@ -30,6 +32,7 @@ class node_arc_test_stream: public node_arc_stream<true>
 public:
   node_arc_test_stream(arc_file &f): node_arc_stream<true>(f) { }
   node_arc_test_stream(__bdd &bdd): node_arc_stream<true>(bdd.get<arc_file>()) { }
+  node_arc_test_stream(__zdd &zdd): node_arc_stream<true>(zdd.get<arc_file>()) { }
 };
 
 class sink_arc_test_stream: public sink_arc_stream<true>
@@ -37,6 +40,7 @@ class sink_arc_test_stream: public sink_arc_stream<true>
 public:
   sink_arc_test_stream(arc_file &f): sink_arc_stream<true>(f) { }
   sink_arc_test_stream(__bdd &bdd): sink_arc_stream<true>(bdd.get<arc_file>()) { }
+  sink_arc_test_stream(__zdd &zdd): sink_arc_stream<true>(zdd.get<arc_file>()) { }
 };
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -76,6 +80,7 @@ public:
 // ADIAR ZDD unit tests
 #include "adiar/zdd/test_zdd.cpp"
 
+#include "adiar/zdd/test_build.cpp"
 #include "adiar/zdd/test_count.cpp"
 
 int main(int argc, char* argv[]) {
