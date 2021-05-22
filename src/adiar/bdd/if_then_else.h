@@ -1,5 +1,5 @@
-#ifndef ADIAR_IF_THEN_ELSE_H
-#define ADIAR_IF_THEN_ELSE_H
+#ifndef ADIAR_BDD_IF_THEN_ELSE_H
+#define ADIAR_BDD_IF_THEN_ELSE_H
 
 #include <adiar/data.h>
 #include <adiar/bdd/bdd.h>
@@ -22,4 +22,4 @@ namespace adiar
   __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else);
 }
 
-#endif // ADIAR_IF_THEN_ELSE_H
+#endif // ADIAR_BDD_IF_THEN_ELSE_H

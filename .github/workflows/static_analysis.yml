@@ -10,19 +10,27 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Check include guard of adiar.h
+    - name: Check adiar.h
       uses: sbeyer/include-guards-check-action@v1.0.0
       with:
         path: src/adiar
         pattern: '{file}'
         only: 'adiar\.h'
 
-    - name: Check include guards of remaining files
+    - name: Check other files in src/adiar files
       uses: sbeyer/include-guards-check-action@v1.0.0
       with:
         path: src/adiar
         pattern: 'ADIAR_{file}'
-        ignore: 'adiar\.h'
+        ignore: '(\/[b,z]dd\/.*)|(adiar\.h)'
+
+    - name: Check src/adiar/bdd and src/adiar/zdd
+      uses: sbeyer/include-guards-check-action@v1.0.0
+      with:
+        path: src/adiar
+        pattern: 'ADIAR_{last_dir}_{file}'
+        only: '\/[b,z]dd/.*'
+
 
   cppcheck:
     name: 'Cppcheck'

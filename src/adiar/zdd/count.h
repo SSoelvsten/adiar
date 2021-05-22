@@ -1,21 +1,21 @@
-#ifndef ADIAR_BDD_NEGATE_H
-#define ADIAR_BDD_NEGATE_H
+#ifndef ADIAR_ZDD_COUNT_H
+#define ADIAR_ZDD_COUNT_H
 
 #include <adiar/data.h>
 
-#include <adiar/bdd/bdd.h>
+#include <adiar/zdd/zdd.h>
 
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Negate a given node-based BDD.
+  /// \brief The number of internal nodes used to represent the given BDD.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_not(const bdd &bdd);
+  size_t zdd_nodecount(const zdd &zdd);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Negate a given node-based BDD.
+  /// \brief The number of levels, i.e. variables, occuring in the BDD.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_not(bdd &&bdd);
+  size_t zdd_varcount(const zdd &zdd);
 }
 
-#endif // ADIAR_BDD_NEGATE_H
+#endif // ADIAR_ZDD_COUNT_H

@@ -6,6 +6,7 @@
 #include <adiar/data.h>
 #include <adiar/file.h>
 
+#include <adiar/internal/decision_diagram.h>
 #include <adiar/bdd/bdd.h>
 
 #include <adiar/assert.h>
@@ -167,8 +168,8 @@ namespace adiar {
       : meta_file_stream<node_t, 1, 0, !REVERSE>(file, negate)
     { }
 
-    node_stream(const bdd &bdd)
-      : meta_file_stream<node_t, 1, 0, !REVERSE>(bdd.file, bdd.negate)
+    node_stream(const decision_diagram &dd)
+      : meta_file_stream<node_t, 1, 0, !REVERSE>(dd.file, dd.negate)
     { }
   };
 
@@ -190,10 +191,10 @@ namespace adiar {
       : file_stream<meta_t, !REVERSE, __meta_file<T, Files>>(f._file_ptr -> _meta_file, f._file_ptr)
     { }
 
-    meta_stream(const bdd &bdd) : meta_stream(bdd.file) { }
+    meta_stream(const decision_diagram &dd) : meta_stream(dd.file) { }
 
-    // Primarily used for testing...
-    meta_stream(const __bdd &bdd);
+    // Only used for testing...
+    meta_stream(const __decision_diagram &dd);
 
     // TODO: 'attach', 'attached', and 'detach'
   };

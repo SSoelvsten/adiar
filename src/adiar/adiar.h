@@ -4,28 +4,36 @@
 #include <string>
 
 ////////////////////////////////////////////////////////////////////////////////
-/// ADIAR Core
+/// Core
 #include <adiar/data.h>
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-/// ADIAR BDD
+/// BDD
 #include <adiar/bdd/bdd.h>
 
 // Simple constructors
 #include <adiar/bdd/build.h>
 
-// Algorithms
+// Manipulation operations
 #include <adiar/bdd/apply.h>
-#include <adiar/bdd/assignment.h>
 #include <adiar/bdd/count.h>
-#include <adiar/bdd/evaluate.h>
 #include <adiar/bdd/if_then_else.h>
 #include <adiar/bdd/negate.h>
 #include <adiar/bdd/restrict.h>
 #include <adiar/bdd/quantify.h>
+
+// Other operations
+#include <adiar/bdd/assignment.h>
+#include <adiar/bdd/evaluate.h>
+
+////////////////////////////////////////////////////////////////////////////////
+/// ZDD
+#include <adiar/zdd/count.h>
+#include <adiar/zdd/zdd.h>
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Debugging

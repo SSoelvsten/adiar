@@ -1,5 +1,5 @@
-#ifndef ADIAR_ASSIGNMENT_H
-#define ADIAR_ASSIGNMENT_H
+#ifndef ADIAR_BDD_ASSIGNMENT_H
+#define ADIAR_BDD_ASSIGNMENT_H
 
 #include <adiar/file.h>
 #include <adiar/bdd/bdd.h>
@@ -25,4 +25,4 @@ namespace adiar
   assignment_file bdd_satmax(const bdd &f);
 }
 
-#endif // ADIAR_ASSIGNMENT_H
+#endif // ADIAR_BDD_ASSIGNMENT_H

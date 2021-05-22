@@ -26,10 +26,15 @@ set(HEADERS
   bdd/quantify.h
   bdd/restrict.h
 
+  # zdd files
+  zdd/count.h
+  zdd/zdd.h
+
   # debug files
   dot.h
 
   # internal
+  internal/decision_diagram.h
   internal/isomorphism.h
   internal/levelized_priority_queue.h
   internal/product_construction.h
@@ -56,10 +61,15 @@ set(SOURCES
   bdd/quantify.cpp
   bdd/restrict.cpp
 
+  # zdd files
+  zdd/count.cpp
+  zdd/zdd.cpp
+
   # debug files
   dot.cpp
 
   # internal
+  internal/decision_diagram.cpp
   internal/isomorphism.cpp 
   internal/levelized_priority_queue.cpp
   internal/reduce.cpp
