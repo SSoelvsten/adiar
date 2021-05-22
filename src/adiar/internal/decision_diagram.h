@@ -1,5 +1,5 @@
-#ifndef ADIAR_DECISION_DIAGRAM_H
-#define ADIAR_DECISION_DIAGRAM_H
+#ifndef ADIAR_INTERNAL_DECISION_DIAGRAM_H
+#define ADIAR_INTERNAL_DECISION_DIAGRAM_H
 
 #include <adiar/union.h>
 #include <adiar/file.h>
@@ -114,4 +114,4 @@ namespace adiar {
   label_t max_label(const decision_diagram &dd);
 }
 
-#endif // ADIAR_DECISION_DIAGRAM_H
+#endif // ADIAR_INTERNAL_DECISION_DIAGRAM_H

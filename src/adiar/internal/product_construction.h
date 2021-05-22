@@ -1,5 +1,5 @@
-#ifndef ADIAR_PRODUCT_CONSTRUCTION_H
-#define ADIAR_PRODUCT_CONSTRUCTION_H
+#ifndef ADIAR_INTERNAL_PRODUCT_CONSTRUCTION_H
+#define ADIAR_INTERNAL_PRODUCT_CONSTRUCTION_H
 
 #include <adiar/data.h>
 #include <adiar/bdd/bdd.h>
@@ -211,4 +211,4 @@ namespace adiar
   }
 }
 
-#endif // ADIAR_PRODUCT_CONSTRUCTION_H
+#endif // ADIAR_INTERNAL_PRODUCT_CONSTRUCTION_H

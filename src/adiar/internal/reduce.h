@@ -1,5 +1,5 @@
-#ifndef ADIAR_REDUCE_H
-#define ADIAR_REDUCE_H
+#ifndef ADIAR_INTERNAL_REDUCE_H
+#define ADIAR_INTERNAL_REDUCE_H
 
 #include <adiar/file.h>
 
@@ -29,4 +29,4 @@ namespace adiar
                    const reduction_rule_t& reduction_rule);
 }
 
-#endif // ADIAR_REDUCE_H
+#endif // ADIAR_INTERNAL_REDUCE_H

@@ -1,5 +1,5 @@
-#ifndef ADIAR_ISOMORPHISM_H
-#define ADIAR_ISOMORPHISM_H
+#ifndef ADIAR_INTERNAL_ISOMORPHISM_H
+#define ADIAR_INTERNAL_ISOMORPHISM_H
 
 #include <adiar/data.h>
 #include <adiar/file.h>
@@ -23,4 +23,4 @@ namespace adiar
                       bool negate1 = false, bool negate2 = false);
 }
 
-#endif // ADIAR_ISOMORPHISM_H
+#endif // ADIAR_INTERNAL_ISOMORPHISM_H
