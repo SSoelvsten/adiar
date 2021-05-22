@@ -27,6 +27,7 @@ set(HEADERS
   bdd/restrict.h
 
   # zdd files
+  zdd/build.h
   zdd/count.h
   zdd/zdd.h
 
@@ -63,6 +64,7 @@ set(SOURCES
   bdd/restrict.cpp
 
   # zdd files
+  zdd/build.cpp
   zdd/count.cpp
   zdd/zdd.cpp
 
