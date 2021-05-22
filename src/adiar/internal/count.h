@@ -1,5 +1,5 @@
-#ifndef ADIAR_COUNT_H
-#define ADIAR_COUNT_H
+#ifndef ADIAR_INTERNAL_COUNT_H
+#define ADIAR_INTERNAL_COUNT_H
 
 #include <adiar/data.h>
 #include <adiar/file_stream.h>
@@ -119,4 +119,4 @@ namespace adiar
   }
 }
 
-#endif // ADIAR_COUNT_H
+#endif // ADIAR_INTERNAL_COUNT_H
