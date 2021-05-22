@@ -20,6 +20,7 @@ namespace adiar {
 
   //////////////////////////////////////////////////////////////////////////////
   // Constructors
+  __zdd::__zdd() : __decision_diagram() { }
   __zdd::__zdd(const node_file &f) : __decision_diagram(f) { }
   __zdd::__zdd(const arc_file &f) : __decision_diagram(f) { }
 

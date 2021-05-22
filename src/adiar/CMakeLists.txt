@@ -12,7 +12,6 @@ set(HEADERS
   file_stream.h
   file_writer.h
   tuple.h
-  union.h
 
   # bdd files
   bdd/apply.h

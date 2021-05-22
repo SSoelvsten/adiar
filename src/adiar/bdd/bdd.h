@@ -14,6 +14,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   class __bdd : public __decision_diagram {
   public:
+    __bdd();
     __bdd(const node_file &f);
     __bdd(const arc_file &f);
     __bdd(const bdd &bdd);

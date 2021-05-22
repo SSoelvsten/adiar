@@ -24,6 +24,7 @@ namespace adiar {
 
   //////////////////////////////////////////////////////////////////////////////
   // Constructors
+  __bdd::__bdd() : __decision_diagram() { }
   __bdd::__bdd(const node_file &f) : __decision_diagram(f) { }
   __bdd::__bdd(const arc_file &f) : __decision_diagram(f) { }
 
