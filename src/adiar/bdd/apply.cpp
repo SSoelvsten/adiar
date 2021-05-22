@@ -19,11 +19,6 @@ namespace adiar
   class apply_prod_policy
   {
   public:
-    static bool is_same_file(const bdd &bdd_1, const bdd &bdd_2)
-    {
-      return bdd_1.file._file_ptr == bdd_2.file._file_ptr;
-    }
-
     static __bdd resolve_same_file(const bdd &bdd_1, const bdd &bdd_2,
                                    const bool_op &op)
     {
@@ -93,7 +88,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_apply(const bdd &bdd_1, const bdd &bdd_2, const bool_op &op)
   {
-    return product_construction<__bdd, bdd, apply_prod_policy>(bdd_1, bdd_2, op);
+    return product_construction<apply_prod_policy, __bdd>(bdd_1, bdd_2, op);
   }
 
   //////////////////////////////////////////////////////////////////////////////

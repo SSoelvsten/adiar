@@ -38,8 +38,8 @@ namespace adiar {
     friend __zdd;
 
     // |- functions
-    friend uint64_t zdd_nodecount(const zdd&);
-    friend uint64_t zdd_varcount(const zdd&);
+    friend size_t zdd_nodecount(const zdd&);
+    friend label_t zdd_varcount(const zdd&);
 
     // |- operators
     friend bool operator== (const zdd& lhs, const zdd& rhs);

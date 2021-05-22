@@ -181,7 +181,7 @@ go_bandit([]() {
               });
 
             it("should count paths of a root-only BDD [1]", [&]() {
-                AssertThat(bdd_satcount(bdd_root_1), Is().EqualTo(1u));
+                AssertThat(bdd_pathcount(bdd_root_1), Is().EqualTo(1u));
               });
           });
 

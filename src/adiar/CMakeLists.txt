@@ -34,6 +34,7 @@ set(HEADERS
   dot.h
 
   # internal
+  internal/count.h
   internal/decision_diagram.h
   internal/isomorphism.h
   internal/levelized_priority_queue.h

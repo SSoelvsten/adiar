@@ -44,8 +44,8 @@ namespace adiar {
     // |- functions
     friend bdd bdd_not(const bdd&);
     friend bdd bdd_not(bdd&&);
-    friend uint64_t bdd_nodecount(const bdd&);
-    friend uint64_t bdd_varcount(const bdd&);
+    friend size_t bdd_nodecount(const bdd&);
+    friend label_t bdd_varcount(const bdd&);
 
     // |- operators
     friend bool operator== (const bdd& lhs, const bdd& rhs);
