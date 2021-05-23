@@ -9,15 +9,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Given two BDDs creates one as per an operator.
   ///
-  /// Creates the product construction of the two given BDDs.
-  ///
   /// \param bdd_i     BDD to apply with the other.
   ///
   /// \param op        Binary boolean operator to be applied.
   ///
-  /// \return A node_file if the operator shortcuts the result to a sink, and
-  ///         otherwise an arc_file of the BDD representing the operator
-  ///         applied on both inputs.
+  /// \return The product construction of the two that represents the boolean
+  ///         operator applied to the output of both functions.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_apply(const bdd &bdd_1, const bdd &bdd_2, const bool_op &op);
 

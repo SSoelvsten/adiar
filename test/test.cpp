@@ -157,6 +157,7 @@ namespace snowhouse
 
 #include "adiar/zdd/test_build.cpp"
 #include "adiar/zdd/test_count.cpp"
+#include "adiar/zdd/test_set_op.cpp"
 
 int main(int argc, char* argv[]) {
 #ifdef NDEBUG
