@@ -1,6 +1,8 @@
 #ifndef ADIAR_INTERNAL_PRODUCT_CONSTRUCTION_H
 #define ADIAR_INTERNAL_PRODUCT_CONSTRUCTION_H
 
+#include <variant>
+
 #include <adiar/data.h>
 #include <adiar/bdd/bdd.h>
 
@@ -24,6 +26,15 @@ namespace adiar
   typedef tpie::priority_queue<prod_tuple_2, tuple_snd_lt>
   prod_priority_queue_2_t;
 
+  struct prod_rec_output {
+    tuple low;
+    tuple high;
+  };
+
+  struct prod_rec_skipto : tuple { };
+
+  typedef std::variant<prod_rec_output, prod_rec_skipto> prod_rec;
+
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   inline void prod_init_request(node_t &v, label_t out_label,
@@ -35,6 +46,44 @@ namespace adiar
     } else {
       low = high = v.uid;
     }
+  }
+
+  inline void prod_recurse_out(prod_priority_queue_1_t &prod_pq_1, arc_writer &aw,
+                               const bool_op &op,
+                               ptr_t source, tuple target)
+  {
+    if (is_sink(target.t1) && is_sink(target.t2)) {
+      arc_t out_arc = { source, op(target.t1, target.t2) };
+      aw.unsafe_push_sink(out_arc);
+    } else {
+      adiar_debug(label_of(source) < label_of(std::min(target.t1, target.t2)),
+                  "should always push recursion for 'later' level");
+
+      prod_pq_1.push({ target.t1, target.t2, source });
+    }
+  }
+
+  // TODO: Macro?
+  inline void prod_recurse_in(prod_priority_queue_1_t &prod_pq_1, prod_priority_queue_2_t &prod_pq_2,
+                              ptr_t t1, ptr_t t2, std::function<void(ptr_t)> on_source)
+  {
+    while (prod_pq_1.can_pull() && prod_pq_1.top().t1 == t1 && prod_pq_1.top().t2 == t2) {
+      on_source(prod_pq_1.pull().source);
+    }
+
+    while (!prod_pq_2.empty() && prod_pq_2.top().t1 == t1 && prod_pq_2.top().t2 == t2) {
+      on_source(prod_pq_2.top().source);
+      prod_pq_2.pop();
+    }
+  }
+
+  inline node_file prod_sink(ptr_t t1, ptr_t t2, const bool_op &op)
+  {
+    node_file sink_file;
+    node_writer sink_writer(sink_file);
+    sink_writer.unsafe_push(create_sink(value_of(op(t1,t2))));
+
+    return sink_file;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -64,7 +113,11 @@ namespace adiar
     node_t v2 = in_nodes_2.pull();
 
     if (is_sink(v1) || is_sink(v2)) {
-      return prod_policy::resolve_sink_root(v1, in_1, v2, in_2, op);
+      out_t maybe_resolved = prod_policy::resolve_sink_root(v1, in_1, v2, in_2, op);
+
+      if (!(std::holds_alternative<no_file>(maybe_resolved._union))) {
+        return maybe_resolved;
+      }
     }
 
     // Set-up for Product Construction Algorithm
@@ -81,23 +134,37 @@ namespace adiar
     id_t out_id = 0;
 
     ptr_t low1, low2, high1, high2;
-    // TODO: Variadic?
     prod_init_request(v1, out_label, low1, high1);
     prod_init_request(v2, out_label, low2, high2);
 
     // Shortcut the root
-    uid_t out_uid = create_node_uid(out_label, out_id++);
-    prod_policy::resolve_request(prod_pq_1, aw,
-                                 v1.uid, v2.uid, op,
-                                 out_uid, low1, low2);
-    prod_policy::resolve_request(prod_pq_1, aw,
-                                 v1.uid, v2.uid, op,
-                                 flag(out_uid), high1, high2);
+    {
+      prod_rec root_rec = prod_policy::resolve_request(op, v1.uid, v2.uid,
+                                                       low1, low2, high1, high2);
+
+      if (std::holds_alternative<prod_rec_output>(root_rec)) {
+        prod_rec_output r = std::get<prod_rec_output>(root_rec);
+        uid_t out_uid = create_node_uid(out_label, out_id++);
+
+        prod_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
+        prod_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
+      } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
+        prod_rec_skipto r = std::get<prod_rec_skipto>(root_rec);
+
+        if (is_sink(r.t1) && is_sink(r.t2)) {
+          return prod_sink(r.t1, r.t2, op);
+        } else {
+          prod_pq_1.push({ r.t1, r.t2, NIL });
+        }
+      }
+    }
 
     // Process nodes in topological order of both BDDs
     while (prod_pq_1.can_pull() || prod_pq_1.has_next_level() || !prod_pq_2.empty()) {
       if (!prod_pq_1.can_pull() && prod_pq_2.empty()) {
-        aw.unsafe_push(create_meta(out_label, out_id));
+        if (out_id > 0) { // Only output meta information on prior level, if output
+          aw.unsafe_push(create_meta(out_label, out_id));
+        }
 
         prod_pq_1.setup_next_level();
         out_label = prod_pq_1.current_level();
@@ -110,12 +177,10 @@ namespace adiar
 
       // Merge requests from  prod_pq_1 or prod_pq_2
       if (prod_pq_1.can_pull() && (prod_pq_2.empty() ||
-                                    fst(prod_pq_1.top()) < snd(prod_pq_2.top()))) {
+                                   fst(prod_pq_1.top()) < snd(prod_pq_2.top()))) {
         source = prod_pq_1.top().source;
         t1 = prod_pq_1.top().t1;
         t2 = prod_pq_1.top().t2;
-
-        prod_pq_1.pop();
       } else {
         source = prod_pq_2.top().source;
         t1 = prod_pq_2.top().t1;
@@ -124,8 +189,6 @@ namespace adiar
         with_data = true;
         data_low = prod_pq_2.top().data_low;
         data_high = prod_pq_2.top().data_high;
-
-        prod_pq_2.pop();
       }
 
       adiar_invariant(is_sink(t1) || out_label <= label_of(t1),
@@ -146,8 +209,6 @@ namespace adiar
       if (is_node(t1) && is_node(t2) && label_of(t1) == label_of(t2)
           && !with_data && (v1.uid != t1 || v2.uid != t2)) {
         node_t v0 = v1.uid == t1 ? v1 : v2;
-
-        prod_pq_2.push({ t1, t2, v0.low, v0.high, source });
 
         while (prod_pq_1.can_pull() && prod_pq_1.top().t1 == t1 && prod_pq_1.top().t2 == t2) {
           source = prod_pq_1.pull().source;
@@ -178,28 +239,47 @@ namespace adiar
       }
 
       // Resolve request
-      adiar_debug(out_id < MAX_ID, "Has run out of ids");
-      out_uid = create_node_uid(out_label, out_id++);
+      prod_rec rec_res = prod_policy::resolve_request(op, t1, t2, low1, low2, high1, high2);
 
-      prod_policy::resolve_request(prod_pq_1, aw,
-                                   t1, t2, op,
-                                   out_uid, low1, low2);
-      prod_policy::resolve_request(prod_pq_1, aw,
-                                   t1, t2, op,
-                                   flag(out_uid), high1, high2);
+      if (std::holds_alternative<prod_rec_output>(rec_res)) {
+        prod_rec_output r = std::get<prod_rec_output>(rec_res);
 
-      // Output ingoing arcs
-      while (true) {
-        arc_t out_arc = { source, out_uid };
-        aw.unsafe_push_node(out_arc);
+        adiar_debug(out_id < MAX_ID, "Has run out of ids");
+        uid_t out_uid = create_node_uid(out_label, out_id++);
 
-        if (prod_pq_1.can_pull() && prod_pq_1.top().t1 == t1 && prod_pq_1.top().t2 == t2) {
-          source = prod_pq_1.pull().source;
-        } else if (!prod_pq_2.empty() && prod_pq_2.top().t1 == t1 && prod_pq_2.top().t2 == t2) {
-          source = prod_pq_2.top().source;
-          prod_pq_2.pop();
+        prod_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
+        prod_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
+
+        prod_recurse_in(prod_pq_1, prod_pq_2, t1, t2,
+                        [&aw, &out_uid, &r](ptr_t s){
+                          if (!is_nil(s)) {
+                            aw.unsafe_push_node({ s, out_uid });
+                          }
+                        });
+
+      } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
+        prod_rec_skipto r = std::get<prod_rec_skipto>(rec_res);
+        if (is_sink(r.t1) && is_sink(r.t2)) {
+          if (is_nil(prod_pq_1.peek().source)) {
+            // Skipped in both DAGs all the way from the root until a pair of sinks.
+            return prod_sink(r.t1, r.t2, op);
+          }
+
+          // TODO: Out-of-order sinks?
+          adiar_debug(out_id < MAX_ID, "Has run out of ids");
+          uid_t out_uid = create_node_uid(out_label, out_id++);
+          ptr_t out_sink = op(r.t1, r.t2);
+
+          aw.unsafe_push_sink({out_uid, out_sink});
+          aw.unsafe_push_sink({flag(out_uid), out_sink});
+
+          prod_recurse_in(prod_pq_1, prod_pq_2, t1, t2,
+                          [&aw, &out_uid, &r](ptr_t s){
+                            aw.unsafe_push_node({ s, out_uid });
+                          });
         } else {
-          break;
+          prod_recurse_in(prod_pq_1, prod_pq_2, t1, t2,
+                          [&prod_pq_1, &r](ptr_t s){ prod_pq_1.push({ r.t1, r.t2, s }); });
         }
       }
     }

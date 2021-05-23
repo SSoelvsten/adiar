@@ -28,6 +28,7 @@ set(HEADERS
   # zdd files
   zdd/build.h
   zdd/count.h
+  zdd/set_op.h
   zdd/zdd.h
 
   # debug files
@@ -65,6 +66,7 @@ set(SOURCES
   # zdd files
   zdd/build.cpp
   zdd/count.cpp
+  zdd/set_op.cpp
   zdd/zdd.cpp
 
   # debug files

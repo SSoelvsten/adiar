@@ -59,7 +59,7 @@ namespace adiar
 
   inline void __adiar_unreachable(const char* file, int line)
   {
-    std::cerr << "Reached \"unreachable\" statement'\n"
+    std::cerr << "Reached \"unreachable\" statement\n"
               << "Source:\t\t" << file << ", line " << line << "\n";
     abort();
   }

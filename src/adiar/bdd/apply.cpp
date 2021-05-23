@@ -37,6 +37,7 @@ namespace adiar
       return op_F == sink_1_F ? bdd_1 : ~bdd_1;
     }
 
+  public:
     static __bdd resolve_sink_root(const node_t &v1, const bdd& bdd_1,
                                    const node_t &v2, const bdd& bdd_2,
                                    const bool_op &op)
@@ -66,22 +67,27 @@ namespace adiar
       adiar_unreachable();
     }
 
-    static void resolve_request(prod_priority_queue_1_t &prod_pq_1, arc_writer &aw,
-                                ptr_t /* t1 */, ptr_t /* t2 */, const bool_op &op,
-                                ptr_t source, ptr_t r1, ptr_t r2)
+  private:
+    static tuple __resolve_request(const bool_op &op, ptr_t r1, ptr_t r2)
     {
-      if (is_sink(r1) && is_sink(r2)) {
-        arc_t out_arc = { source, op(r1, r2) };
-        aw.unsafe_push_sink(out_arc);
-      } else if (is_sink(r1) && can_left_shortcut(op, r1)) {
-        arc_t out_arc = { source, op(r1, create_sink_ptr(true)) };
-        aw.unsafe_push_sink(out_arc);
+      if (is_sink(r1) && can_left_shortcut(op, r1)) {
+        return { r1, create_sink_ptr(true) };
       } else if (is_sink(r2) && can_right_shortcut(op, r2)) {
-        arc_t out_arc = { source, op(create_sink_ptr(true), r2) };
-        aw.unsafe_push_sink(out_arc);
+        return { create_sink_ptr(true), r2 };
       } else {
-        prod_pq_1.push({ r1, r2, source });
+        return { r1, r2 };
       }
+    }
+
+  public:
+    static prod_rec resolve_request(const bool_op &op,
+                                    ptr_t /* t1 */, ptr_t /* t2 */,
+                                    ptr_t low1, ptr_t low2, ptr_t high1, ptr_t high2)
+    {
+      return prod_rec_output {
+        __resolve_request(op, low1, low2),
+        __resolve_request(op, high1, high2)
+      };
     }
   };
 
