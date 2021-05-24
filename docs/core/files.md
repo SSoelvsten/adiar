@@ -112,8 +112,8 @@ Equality checking also is much faster if the constructed decision diagram is on
 _canonical_ form. The decision diagram being canonical means that it also
 satisfies the following two constraints.
 
-1. The first node pushed to each level has _id_ `MAX_LABEL`, the next has _id_
-   `MAX_LABEL - 1`, and so on.
+1. The first node pushed to each level has _id_ `MAX_ID`, the next has _id_
+   `MAX_ID - 1`, and so on.
 
 2. The nodes within each level are lexicographically ordered by their children
   (_high_ first then _low_). That is, a node _n_ written to the file after
