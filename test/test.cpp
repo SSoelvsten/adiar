@@ -43,6 +43,82 @@ public:
   sink_arc_test_stream(__zdd &zdd): sink_arc_stream<true>(zdd.get<arc_file>()) { }
 };
 ////////////////////////////////////////////////////////////////////////////////
+// To improve the error messages
+
+namespace snowhouse
+{
+  std::string string_of_adiar_uid(adiar::uid_t p)
+  {
+    std::stringstream stream;
+    if (is_nil(p)) {
+      stream << "NIL";
+    } else if (is_sink(p)) {
+      stream << value_of(p);
+    } else { // is_node(p)
+      stream << "(x" << label_of(p) << ", " << id_of(p) << ")" ;
+    }
+    return stream.str();
+  }
+
+  template<>
+  struct Stringizer<arc_t>
+  {
+    static std::string ToString(const arc_t& a)
+    {
+      std::stringstream stream;
+      stream << "arc: "
+             << string_of_adiar_uid(a.source)
+             << " " << (is_flagged(a.source) ? "--->" : "- ->") << " "
+             << string_of_adiar_uid(a.target)
+        ;
+      return stream.str();
+    }
+  };
+
+  template<>
+  struct Stringizer<node_t>
+  {
+    static std::string ToString(const node_t& n)
+    {
+      std::stringstream stream;
+      if (is_sink(n)) {
+        stream << "node: " << value_of(n);
+      } else {
+        stream << "node: ("
+               << string_of_adiar_uid(n.uid)
+               << ", "
+               << string_of_adiar_uid(n.low)
+               << ", "
+               << string_of_adiar_uid(n.high)
+               << ")"
+          ;
+      }
+      return stream.str();
+    }
+  };
+
+  template<>
+  struct Stringizer<meta_t>
+  {
+    static std::string ToString(const meta_t& m)
+    {
+      std::stringstream stream;
+      stream << "meta: (x" << label_of(m) << ", #nodes = " << size_of(m) << ")";
+      return stream.str();
+    }
+  };
+
+  template<>
+  struct Stringizer<assignment_t>
+  {
+    static std::string ToString(const assignment_t& a)
+    {
+      std::stringstream stream;
+      stream << "assignment: [x" << a.label << "|->" << a.value << "]";
+      return stream.str();
+    }
+  };
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR Core unit tests
