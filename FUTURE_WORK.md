@@ -9,7 +9,7 @@ may constitute interesting undergraduate research projects.
     - [Implementation of missing BDD algorithms](#implementation-of-missing-bdd-algorithms)
         - [Data type conversions](#data-type-conversions)
         - [Projection](#projection)
-        - [Set Manipulation](#set-manipulation)
+        - [Set manipulation](#set-manipulation)
         - [Composition](#composition)
         - [Advanced satisfiability functions](#advanced-satisfiability-functions)
         - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
@@ -17,6 +17,7 @@ may constitute interesting undergraduate research projects.
     - [Optimising the BDD](#optimising-the-bdd)
         - [Complement Edges](#complement-edges)
     - [Extensions](#extensions)
+        - [Proof Logging](#proof-logging)
         - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
         - [Zero-suppressed Decision Diagrams](#zero-suppressed-decision-diagrams)
         - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
@@ -25,6 +26,7 @@ may constitute interesting undergraduate research projects.
         - [Levelized Files](#levelized-files)
         - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
         - [From _recursive_ algorithm to _time-forward processing_ and back again](#from-recursive-algorithm-to-time-forward-processing-and-back-again)
+    - [References](#references)
 
 <!-- markdown-toc end -->
 
@@ -146,6 +148,63 @@ algorithms execution time [[Brace90](#references)].
 
 ## Extensions
 
+### Proof Logging
+A problem in SAT solving is trusting the solver when it claims a formula to be
+_unsatisfiable_. To this end, the solver can create a _extended resolution
+proof_, though doing so is not a trivial task. Yet, the nature of the BDD
+operations in fact naturally give rise to these very proofs, as the algorithms
+in [[Bryant21](#references)] do.
+
+The underlying idea in [[Bryant21](#references)] is to store within each node
+the associated extension variable _u_ and the four proof steps that encode the
+formula '_u_ <-> ITE(_x_,_u_<sub>1</sub>,_u_<sub>0</sub>)'.
+
+- To integrate these into _Adiar_ it seems best to place them in a separate file
+  that maps each node to these five numbers. Most importantly, this allows one
+  to turn the feature off to safe on memory and computation time.
+
+The algorithms are then changed as follows
+
+- During the Apply of BDDs for two functions _f_ and _g_, all nodes in the
+  intermediate output can remember what pair of variables (_u_,_v_) is
+  associated with them.
+
+- The Reduce then puts the output of Apply back in canonical form. Here, we
+  would try to collapse the (_u_,_v_) tuples back into a single variable.
+  
+  - From the output of Apply we can retrieve the original (_u_,_v_) and their
+    defining proof steps.
+  
+  - Within the priority queue the variable _w_<sub>i</sub> for each child is
+    forwarded together with its defining clauses OPL, OPH (ANDL and ANDH in
+    [[Bryant21](#references)], but we can generalise it to any binary operator).
+    This is merely three more integers.
+  
+  - We can use the idea of _taint tracking_ to merge the (_u_,_v_) variables.
+    From bottom-up we remember whether the node was like ...
+    
+    1. ... in neither f or g
+    2. ... in f
+    3. ... in g
+    4. ... in both f and g.
+    
+    These taints can be created in the Apply. Then, it is propagated upwards and
+    updated for each node based on the given taint of its resolved children.
+    When these cases are labelled in binary starting from 0 then the resulting
+    case is derived merely with the & bit-operator. When the taint of a node is
+    resolved, then we should be able to output the new clauses to the Proof
+    Checker, if any. In the case of _d._ with two different extension variables
+    we would need to connect them.
+
+  - An open question is still how to notice whether a variable goes out of
+    scope. Likely, this is possible within the Reduce algorithm after having
+    sorted all remaining nodes by their children.
+
+Since most of the work is placed within the Reduce algorithm, then almost all
+other algorithms (such as quantification) can also immediately create the
+relevant proof.
+
+
 ### Multi-Terminal Binary Decision Diagrams
 One can easily extend the proposed representation of sink nodes to encompass
 non-boolean values, such as integers or floats. Thereby, the algorithms
@@ -259,6 +318,10 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
   Karl S. Brace, Richard L. Rudell, and Randal E. Bryant. “_Efficient
   implementation of a BDD package_”. In: _27th ACM/IEEE Design Automation
   Conference_. pp. 40 – 45 (1990)
+
+- [[Bryant21](https://arxiv.org/abs/2105.00885)]
+  Randal E. Bryant, Marijn J. H. Heule. “_Generating Extended Resolution Proofs
+  with a BDD-Based SAT Solver (Extended Paper)_”. In: _arXiv_. (2021)
 
 - [[Coudert90](http://www.ocoudert.com/papers/pdf/iccad90.pdf)]
   Olivier Coudert and Jean Christophe Madre. “_A Unified Framework for the
