@@ -124,6 +124,13 @@ follow the `make <target>` with `N=<value>`.
 | _N_      | Board size (default: 8)       |
 | _M_      | Memory in MiB (default: 1024) |
 
+**example/knights-tour**
+
+| variable | description                   |
+|----------|-------------------------------|
+| _N_      | Board size (default: 8)       |
+| _M_      | Memory in MiB (default: 1024) |
+
 
 ## Contributions
 Adiar is not yet feature complete, and there are still many interesting things

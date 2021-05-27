@@ -1,13 +1,4 @@
-#include <vector>
-#include <chrono>
-
-// TPIE Imports
-#include <tpie/tpie.h>
-#include <tpie/tpie_log.h>
-
-// Adiar Imports
-#include <adiar/adiar.h>
-
+#include "examples_common.cpp"
 
 /*******************************************************************************
  * We base our example for N-Queens on the procedure as described in the paper
@@ -247,11 +238,11 @@ uint64_t deepest_column = 0;
  * clean. */
 void n_queens_print_solution(std::vector<uint64_t>& assignment)
 {
-  tpie::log_info() << "|  |  | ";
+  std::cout << "|  |  | ";
   for (uint64_t r : assignment) {
-    tpie::log_info() << r << " ";
+    std::cout << r << " ";
   }
-  tpie::log_info() << std::endl;
+  std::cout << std::endl;
 }
 
 /* At this point, we now also need to convert an assignment back into a position
@@ -350,7 +341,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
 uint64_t n_queens_list(uint64_t N, const adiar::bdd& board)
 {
-  tpie::log_info() << "|  | solutions:" << std::endl;
+  std::cout << "|  | solutions:" << std::endl;
 
   if (N == 1) {
     /* To make the recursive function work for N = 1 we would have to have the
@@ -402,17 +393,6 @@ uint64_t expected_result[28] = {
   234907967154122528
 };
 
-
-/* A few chrono wrappers to improve readability of the code below */
-inline auto get_timestamp() {
-  return std::chrono::high_resolution_clock::now();
-}
-
-inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
-                        std::chrono::high_resolution_clock::time_point &after) {
-  return std::chrono::duration_cast<std::chrono::seconds>(after - before).count();
-}
-
 /* Finally, to run the above we need to initialize the underlying TPIE library
  * first, from which point all the file_streams, priority queues and sorters
  * used are at our disposal.
@@ -425,24 +405,24 @@ int main(int argc, char* argv[])
 
   try {
     if (argc == 1) {
-      tpie::log_info() << "Missing argument for N and M" << std::endl;
+      std::cout << "Missing argument for N and M" << std::endl;
     } else {
       N = std::stoi(argv[1]);
       if (N == 0 || N > 27) {
-        tpie::log_info() << "N should be in interval [1;27]: " << argv[1] << std::endl;
+        std::cout << "N should be in interval [1;27]: " << argv[1] << std::endl;
         N = 0;
       }
       if (argc == 3) {
         M = std::stoi(argv[2]);
         if (M <= 0) {
-          tpie::log_info() << "M should at least be 1: " << argv[2] << std::endl;
+          std::cout << "M should at least be 1: " << argv[2] << std::endl;
         }
       }
     }
   } catch (std::invalid_argument const &ex) {
-    tpie::log_info() << "Invalid number: " << argv[1] << std::endl;
+    std::cout << "Invalid number: " << argv[1] << std::endl;
   } catch (std::out_of_range const &ex) {
-    tpie::log_info() << "Number out of range: " << argv[1] << std::endl;
+    std::cout << "Number out of range: " << argv[1] << std::endl;
   }
 
   if (N == 0 || M <= 0) {
@@ -451,43 +431,44 @@ int main(int argc, char* argv[])
 
   // ===== ADIAR =====
   // Initialize
+
   adiar::adiar_init(M*1024*1024);
-  tpie::log_info() << "| Initialized Adiar with " << M << " MB of memory"  << std::endl << "|" << std::endl;
+  std::cout << "| Initialized Adiar with " << M << " MiB of memory"  << std::endl << "|" << std::endl;
 
   // ===== N Queens =====
 
-  tpie::log_info() << "| " << N << "-Queens : Board construction"  << std::endl;
+  std::cout << "| " << N << "-Queens : Board construction"  << std::endl;
   auto before_board = get_timestamp();
   adiar::bdd board = n_queens_B(N);
   auto after_board = get_timestamp();
 
-  tpie::log_info() << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
-  tpie::log_info() << "|  | largest BDD  : " << largest_nodes << " nodes" << std::endl;
-  tpie::log_info() << "|  | final size: " << bdd_nodecount(board) << " nodes"<< std::endl;
+  std::cout << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
+  std::cout << "|  | largest BDD  : " << largest_nodes << " nodes" << std::endl;
+  std::cout << "|  | final size: " << bdd_nodecount(board) << " nodes"<< std::endl;
 
   // Run counting example
   auto before_count = get_timestamp();
   uint64_t solutions = n_queens_count(board);
   auto after_count = get_timestamp();
 
-  tpie::log_info() << "| " << N << "-Queens : Counting assignments"  << std::endl;
-  tpie::log_info() << "|  | number of solutions: " << solutions << std::endl;
-  tpie::log_info() << "|  | time: " << duration_of(before_count, after_count) << " s" << std::endl;
+  std::cout << "| " << N << "-Queens : Counting assignments"  << std::endl;
+  std::cout << "|  | number of solutions: " << solutions << std::endl;
+  std::cout << "|  | time: " << duration_of(before_count, after_count) << " s" << std::endl;
 
   bool correct_result = solutions == expected_result[N];
 
   // Run enumeration example (for reasonably small N)
   if (N <= 8) {
-    tpie::log_info() << "| " << N << "-Queens (Pruning search)"  << std::endl;
+    std::cout << "| " << N << "-Queens (Pruning search)"  << std::endl;
     auto before_list = get_timestamp();
     uint64_t listed_solutions = n_queens_list(N, board);
     auto after_list = get_timestamp();
 
     correct_result = correct_result && listed_solutions == expected_result[N];
 
-    tpie::log_info() << "|  | number of solutions: " << listed_solutions << std::endl;
-    tpie::log_info() << "|  | deepest recursion: " << deepest_column << " columns" << std::endl;
-    tpie::log_info() << "|  | time: " << duration_of(before_list, after_list) << " s" << std::endl;
+    std::cout << "|  | number of solutions: " << listed_solutions << std::endl;
+    std::cout << "|  | deepest recursion: " << deepest_column << " columns" << std::endl;
+    std::cout << "|  | time: " << duration_of(before_list, after_list) << " s" << std::endl;
   }
 
   // ===== ADIAR =====
