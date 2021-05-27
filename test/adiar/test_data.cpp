@@ -325,6 +325,33 @@ go_bandit([]() {
                   });
 
                 describe("is_negating", []() {
+                    it("can check on T sink on the left", [&]() {
+                        AssertThat(is_left_negating(and_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(is_left_negating(or_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(is_left_negating(xor_op, create_sink_ptr(true)), Is().True());
+                        AssertThat(is_left_negating(imp_op, create_sink_ptr(true)), Is().False());
+                      });
+
+                    it("can check on F sink on the left", [&]() {
+                        AssertThat(is_left_negating(and_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(is_left_negating(or_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(is_left_negating(xor_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(is_left_negating(imp_op, create_sink_ptr(false)), Is().False());
+                      });
+
+                    it("can check on T sink on the right", [&]() {
+                        AssertThat(is_right_negating(and_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(is_right_negating(or_op, create_sink_ptr(true)), Is().False());
+                        AssertThat(is_right_negating(xor_op, create_sink_ptr(true)), Is().True());
+                        AssertThat(is_right_negating(imp_op, create_sink_ptr(true)), Is().False());
+                      });
+
+                    it("can check on F sink on the right", [&]() {
+                        AssertThat(is_right_negating(and_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(is_right_negating(or_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(is_right_negating(xor_op, create_sink_ptr(false)), Is().False());
+                        AssertThat(is_right_negating(imp_op, create_sink_ptr(false)), Is().False());
+                      });
                   });
 
                 it("can check the operators for being commutative", [&]() {
@@ -513,6 +540,55 @@ go_bandit([]() {
           });
 
         describe("Nodes", [&]() {
+            it("should create node", [&]() {
+                auto sink_f = create_sink_ptr(false);
+                auto sink_t = create_sink_ptr(true);
+
+                // Test create_node(label, id, ptr, ptr)
+                auto n1 = create_node(3,12,sink_f,sink_t);
+                AssertThat(n1.uid, Is().EqualTo(create_node_ptr(3,12)));
+                AssertThat(label_of(n1), Is().EqualTo(3u));
+                AssertThat(id_of(n1), Is().EqualTo(12u));
+
+                AssertThat(n1.low, Is().EqualTo(sink_f));
+                AssertThat(n1.high, Is().EqualTo(sink_t));
+
+                auto n2 = create_node(3,42,sink_t,sink_f);
+                AssertThat(n2.uid, Is().EqualTo(create_node_ptr(3,42)));
+                AssertThat(label_of(n2), Is().EqualTo(3u));
+                AssertThat(id_of(n2), Is().EqualTo(42u));
+
+                AssertThat(n2.low, Is().EqualTo(sink_t));
+                AssertThat(n2.high, Is().EqualTo(sink_f));
+
+                // Test create_node(label, id, node&, node&)
+                auto n3 = create_node(2,2,n1,n2);
+                AssertThat(n3.uid, Is().EqualTo(create_node_ptr(2,2)));
+                AssertThat(label_of(n3), Is().EqualTo(2u));
+                AssertThat(id_of(n3), Is().EqualTo(2u));
+
+                AssertThat(n3.low, Is().EqualTo(n1.uid));
+                AssertThat(n3.high, Is().EqualTo(n2.uid));
+
+                // Test create_node(label, ptr, node&)
+                auto n4 = create_node(1,7,sink_t,n3);
+                AssertThat(n4.uid, Is().EqualTo(create_node_ptr(1,7)));
+                AssertThat(label_of(n4), Is().EqualTo(1u));
+                AssertThat(id_of(n4), Is().EqualTo(7u));
+
+                AssertThat(n4.low, Is().EqualTo(sink_t));
+                AssertThat(n4.high, Is().EqualTo(n3.uid));
+
+                // Test create_node(label, ptr, node&)
+                auto n5 = create_node(0,3,sink_t,n4);
+                AssertThat(n5.uid, Is().EqualTo(create_node_ptr(0,3)));
+                AssertThat(label_of(n5), Is().EqualTo(0u));
+                AssertThat(id_of(n5), Is().EqualTo(3u));
+
+                AssertThat(n5.low, Is().EqualTo(sink_t));
+                AssertThat(n5.high, Is().EqualTo(n4.uid));
+              });
+
             it("should sort by label, then by id", [&]() {
                 auto sink_f = create_sink_ptr(false);
                 auto sink_t = create_sink_ptr(true);
@@ -809,6 +885,12 @@ go_bandit([]() {
                 AssertThat(a1 != b1, Is().False());
                 AssertThat(a2 != b2, Is().False());
                 AssertThat(a3 != b3, Is().False());
+              });
+
+            it("can be negated on its value", [&]() {
+                AssertThat(!a1, Is().EqualTo(create_assignment(2, true)));
+                AssertThat(!a2, Is().EqualTo(create_assignment(2, false)));
+                AssertThat(!a3, Is().EqualTo(create_assignment(3, true)));
               });
           });
       });
