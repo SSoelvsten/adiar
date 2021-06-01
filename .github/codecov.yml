@@ -1,6 +1,10 @@
 fixes:
   - "adiar/::" 
 
+ignore:
+  - "external"
+  - "test"
+
 coverage:
   precision: 3
   round: nearest
