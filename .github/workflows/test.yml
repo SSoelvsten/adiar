@@ -52,7 +52,7 @@ jobs:
     - name: Generate code coverage report
       working-directory: ${{runner.workspace}}
       run: |
-        lcov -c -d build/src/adiar/ -o ./coverage.info
+        lcov -c -d build/ -o ./coverage.info
         lcov --remove coverage.info --output-file coverage.info "/usr/*" "*/external/*" "./test/*"
 
     - name: Upload report to Codecov.io

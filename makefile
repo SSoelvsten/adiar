@@ -45,7 +45,7 @@ coverage:
 
   # create report
 	@rm -rf test/report/
-	@lcov --capture --directory build/src/adiar/ --output-file ./coverage.info
+	@lcov --capture --directory build/ --output-file ./coverage.info
 	@lcov --remove coverage.info --output-file coverage.info "/usr/*" "*/external/*" "./test/*"
   # print report to console
 	@lcov --list coverage.info
