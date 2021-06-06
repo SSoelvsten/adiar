@@ -85,7 +85,7 @@ namespace adiar
 
     size_t curr_level_processed = 1;
 
-    isomorphism_data_priority_queue_t isomorphism_pq_2(calc_tpie_pq_factor(available_memory / 4));
+    isomorphism_data_priority_queue_t isomorphism_pq_2(available_memory / 4);
 
     while (isomorphism_pq_1.can_pull() || isomorphism_pq_1.has_next_level() || !isomorphism_pq_2.empty()) {
       if (!isomorphism_pq_1.can_pull() && isomorphism_pq_2.empty()) {

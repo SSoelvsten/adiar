@@ -74,7 +74,7 @@ set(SOURCES
 
   # internal
   internal/decision_diagram.cpp
-  internal/isomorphism.cpp 
+  internal/isomorphism.cpp
   internal/levelized_priority_queue.cpp
   internal/reduce.cpp
 )

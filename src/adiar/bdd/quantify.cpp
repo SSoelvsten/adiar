@@ -160,7 +160,7 @@ namespace adiar
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
     quantify_priority_queue_t quantify_pq_1({bdd}, available_memory / 2);
-    quantify_data_priority_queue_t quantify_pq_2(calc_tpie_pq_factor(available_memory / 2));
+    quantify_data_priority_queue_t quantify_pq_2(available_memory / 2);
 
     label_t out_label = label_of(v.uid);
     id_t out_id = 0;
