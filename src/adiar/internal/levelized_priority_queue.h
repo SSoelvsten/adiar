@@ -18,20 +18,6 @@ namespace adiar {
   extern tpie::dummy_progress_indicator pq_tpie_progress_indicator;
 
   ////////////////////////////////////////////////////////////////////////////
-  /// \brief Conversion from intended memory to give a `tpie::priority_queue<>`
-  /// to the float `factor` it takes as an argument.
-  ///
-  /// Example of usage:
-  ///
-  /// `tpie::priority_queue<...> pq(calc_tpie_pq_factor(intended_bytes)`
-  float calc_tpie_pq_factor(tpie::memory_size_type memory_given);
-
-  ////////////////////////////////////////////////////////////////////////////
-  // TODO: TPIE priority queue wrapper? It can deal with the calc_tpie_pq_factor
-  // function above, and given an estimate of elements within it can choose to
-  // use the tpie::internal_priority_queue.
-
-  ////////////////////////////////////////////////////////////////////////////
   // Levelized Priority Queue memory size computations
   //
   // We set up the merge_sorters such that they have a very low memory footprint
@@ -240,7 +226,7 @@ namespace adiar {
     levelized_priority_queue(tpie::memory_size_type memory_given)
       : _memory_occupied_by_meta(tpie::get_memory_manager().available()),
         _buckets_memory(memory_given),
-        _overflow_queue(calc_tpie_pq_factor(m_overflow_queue<T, Buckets>(memory_given)))
+        _overflow_queue(m_overflow_queue<T, Buckets>(memory_given))
     {
       adiar_debug(m_single_block<T>() * (Buckets + 2) < _buckets_memory,
                   "Not enough memory to instantiate all buckets and overflow queue concurrently");
