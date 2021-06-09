@@ -623,6 +623,54 @@ go_bandit([]() {
                 AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
               });
 
+            it("computes (and skip to sink) { {0,2}, {0}, {2} } \\ { {1}, {2}, Ø }", [&]() {
+                /*
+                        1                             F       ---- x0
+                       / \
+                      /   \         _1_                         ---- x1
+                      |   |        /   \       =>
+                      2   3        2   3                        ---- x2
+                     / \ / \      / \ / \
+                     F T T T      T F F T
+
+                     Where (2) and (3) are swapped in order on the right. Notice,
+                     that (2) on the right technically is illegal, but it makes
+                     for a much simpler counter-example that catches
+                     prod_pq_1.peek() throwing an error on being empty.
+                 */
+
+                node_file zdd_a;
+
+                { // Garbage collect writers early
+                  node_writer nw_a(zdd_a);
+                  nw_a << create_node(2,MAX_ID, sink_T, sink_T)
+                       << create_node(2,MAX_ID-1, sink_F, sink_T)
+                       << create_node(0,MAX_ID, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
+                    ;
+                }
+
+                node_file zdd_b;
+
+                { // Garbage collect writers early
+                  node_writer nw_b(zdd_b);
+                  nw_b << create_node(2,MAX_ID, sink_T, sink_F)
+                       << create_node(2,MAX_ID-1, sink_F, sink_T)
+                       << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
+                    ;
+                }
+
+                __zdd out = zdd_intsec(zdd_a, zdd_b);
+
+                node_test_stream out_nodes(out);
+
+                AssertThat(out_nodes.can_pull(), Is().True());
+                AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+
+                AssertThat(out_nodes.can_pull(), Is().False());
+
+                AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+              });
+
             it("computes (and skips in) { {0,1,2}, {0,2}, {0}, {2} } } /\\ { {0,2}, {0}, {1}, {2} }", [&]() {
                 /*
                         1             1                 (1,1)      ---- x0

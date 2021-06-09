@@ -276,7 +276,7 @@ namespace adiar
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(rec_res);
         if (is_sink(r.t1) && is_sink(r.t2)) {
-          if (is_nil(prod_pq_1.peek().source)) {
+          if (is_nil(source)) {
             // Skipped in both DAGs all the way from the root until a pair of sinks.
             return prod_sink(r.t1, r.t2, op);
           }
