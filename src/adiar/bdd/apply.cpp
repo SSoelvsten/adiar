@@ -89,6 +89,8 @@ namespace adiar
         __resolve_request(op, high1, high2)
       };
     }
+
+    static constexpr bool no_skip = false;
   };
 
   //////////////////////////////////////////////////////////////////////////////

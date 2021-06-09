@@ -183,7 +183,7 @@ namespace adiar
     // Process nodes in topological order of both BDDs
     while (prod_pq_1.can_pull() || prod_pq_1.has_next_level() || !prod_pq_2.empty()) {
       if (!prod_pq_1.can_pull() && prod_pq_2.empty()) {
-        if (out_id > 0) { // Only output meta information on prior level, if output
+        if (prod_policy::no_skip || out_id > 0) { // Only output meta information on prior level, if output
           aw.unsafe_push(create_meta(out_label, out_id));
         }
 
@@ -262,7 +262,7 @@ namespace adiar
       // Resolve request
       prod_rec rec_res = prod_policy::resolve_request(op, t1, t2, low1, low2, high1, high2);
 
-      if (std::holds_alternative<prod_rec_output>(rec_res)) {
+      if (prod_policy::no_skip || std::holds_alternative<prod_rec_output>(rec_res)) {
         prod_rec_output r = std::get<prod_rec_output>(rec_res);
 
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
@@ -296,8 +296,10 @@ namespace adiar
       }
     }
 
-    // Push the level of the very last iteration
-    aw.unsafe_push(create_meta(out_label, out_id));
+    if (prod_policy::no_skip || out_id > 0) {
+      // Push the level of the very last iteration
+      aw.unsafe_push(create_meta(out_label, out_id));
+    }
 
     return out_arcs;
   }
