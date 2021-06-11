@@ -32,6 +32,8 @@ namespace adiar {
 
   bdd::bdd(const node_file &f, bool negate) : decision_diagram(f, negate) { }
 
+  bdd::bdd() : bdd(false) { }
+
   bdd::bdd(const bdd &o) : decision_diagram(o) { }
   bdd::bdd(bdd &&o) : decision_diagram(o) { }
 

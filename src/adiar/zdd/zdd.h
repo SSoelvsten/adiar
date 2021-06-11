@@ -51,6 +51,7 @@ namespace adiar {
   public:
     zdd(const node_file &f, bool negate = false);
 
+    zdd();
     zdd(const zdd &o);
     zdd(zdd &&o);
 
