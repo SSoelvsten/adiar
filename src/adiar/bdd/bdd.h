@@ -64,6 +64,8 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
   public:
+    bdd();
+
     bdd(const node_file &f, bool negate = false);
 
     bdd(const bdd &o);

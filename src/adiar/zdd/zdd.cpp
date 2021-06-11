@@ -8,6 +8,8 @@
 #include <adiar/internal/isomorphism.h>
 #include <adiar/internal/reduce.h>
 
+#include <adiar/zdd/build.h>
+
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   zdd reduce(__zdd &&maybe_reduced)
@@ -27,6 +29,8 @@ namespace adiar {
   __zdd::__zdd(const zdd &dd) : __decision_diagram(dd) { }
 
   zdd::zdd(const node_file &f, bool negate) : decision_diagram(f, negate) { }
+
+  zdd::zdd() : zdd(zdd_empty()) { }
 
   zdd::zdd(const zdd &o) : decision_diagram(o) { }
   zdd::zdd(zdd &&o) : decision_diagram(o) { }
