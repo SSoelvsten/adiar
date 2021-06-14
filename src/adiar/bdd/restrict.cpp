@@ -144,9 +144,6 @@ namespace adiar
       aw.unsafe_push(create_meta(level, level_size));
     }
 
-    // TODO: Add bool variable to check whether we really do need to sort.
-    aw.sort_sinks();
-
     return out_arcs;
   }
 }

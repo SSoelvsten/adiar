@@ -314,20 +314,23 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// An unreduced Decision Diagram is given by a two files of arcs; one of
-  /// node-to-node arcs (in reverse topological order) and one of node-to-sink
-  /// arcs (in topological order).
+  /// An unreduced Decision Diagram is given by a three files of arcs:
+  ///
+  /// - [0] : node-to-node arcs (in reverse topological order)
+  /// - [1] : node-to-sink arcs (in topological order).
+  /// - [2] : node-to-sink arcs (out-of order of the ones in [1])
   //////////////////////////////////////////////////////////////////////////////
-  typedef meta_file<arc_t, 2> arc_file;
+  constexpr size_t ARC_FILE_COUNT = 3u;
+
+  typedef meta_file<arc_t, ARC_FILE_COUNT> arc_file;
 
 
   //////////////////////////////////////////////////////////////////////////////
   /// A reduced Decision Diagram is given by a single sorted file by nodes.
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: This is only made to add the `meta_size` function. Do we actually
-  // care for that?
+  constexpr size_t NODE_FILE_COUNT = 1u;
 
-  class node_file : public meta_file<node_t, 1>
+  class node_file : public meta_file<node_t, NODE_FILE_COUNT>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////

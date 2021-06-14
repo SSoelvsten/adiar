@@ -2,7 +2,6 @@
 #define ADIAR_FILE_WRITER_H
 
 #include <tpie/file_stream.h>
-#include <tpie/sort.h>
 
 #include <adiar/data.h>
 #include <adiar/file.h>
@@ -268,7 +267,7 @@ namespace adiar {
   /// the meta file and providing sanity checks on the input on user-created
   /// BDDs.
   //////////////////////////////////////////////////////////////////////////////
-  class node_writer: public meta_file_writer<node_t, 1>
+  class node_writer: public meta_file_writer<node_t, NODE_FILE_COUNT>
   {
   private:
     node_t _latest_node = { NIL, NIL, NIL };
@@ -356,6 +355,7 @@ namespace adiar {
       meta_file_writer::attach(f);
     }
     bool attached() const { return meta_file_writer::attached(); }
+
     void detach() {
       _file_ptr -> canonical = _canonical;
 
@@ -377,12 +377,21 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// FOR INTERNAL USE ONLY.
   //////////////////////////////////////////////////////////////////////////////
-  class arc_writer: public meta_file_writer<arc_t, 2>
+  class arc_writer: public meta_file_writer<arc_t, ARC_FILE_COUNT>
   {
+  private:
+    bool __has_latest_sink = false;
+    arc_t __latest_sink;
+
   public:
     arc_writer() { }
     arc_writer(const arc_file &af) {
       attach(af);
+    }
+
+    ~arc_writer()
+    {
+      detach();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -400,29 +409,14 @@ namespace adiar {
     void unsafe_push_sink(const arc_t &a)
     {
       adiar_debug(is_sink(a.target), "pushing non-sink into sink file");
-      meta_file_writer::unsafe_push(a, 1);
-    }
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Most algorithms are able to output everything in-order. Yet, the
-    /// Restrict and Quantify algorithms, since they skip levels, may output the
-    /// sinks out-of-order.
-    ///
-    /// Since the correctness of all algorithms rely on the ordering of the
-    /// input, then we need to be able to fix this. TPIE provides a sorting of a
-    /// file_stream, which minimises the space usage as much as possible.
-    ///
-    /// One could think to instead always have the sinks in a tpie::merge_sorter
-    /// and then pull them out, since the arc_file anyways only contains
-    /// intermediate output. The time difference between writing an
-    /// in-order-list to a stream is much lower than sorting an already sorted
-    /// list. So, on average this seems to be better (and simpler).
-    ////////////////////////////////////////////////////////////////////////////
-    void sort_sinks()
-    {
-      adiar_debug(attached(), "Missing arc_file attached");
-      tpie::progress_indicator_null pi;
-      tpie::sort(_streams[1], by_source_lt(), pi);
+      if (!__has_latest_sink || a.source > __latest_sink.source) { // in-order
+        __has_latest_sink = true;
+        __latest_sink = a;
+        meta_file_writer::unsafe_push(a, 1);
+      } else { // out-of-order
+        meta_file_writer::unsafe_push(a, 2);
+      }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -433,7 +427,14 @@ namespace adiar {
 
     bool attached() const { return meta_file_writer::attached(); }
 
-    void detach() { return meta_file_writer::detach(); }
+    void detach() {
+      if (attached() && _streams[2].size() > 0) {
+        tpie::progress_indicator_null pi;
+        tpie::sort(_streams[2], by_source_lt(), pi);
+      }
+
+      return meta_file_writer::detach();
+    }
   };
 }
 
