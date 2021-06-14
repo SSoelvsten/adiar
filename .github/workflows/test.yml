@@ -34,7 +34,9 @@ jobs:
         submodules: 'recursive'
 
     - name: Apt | install boost aptitude graphviz lcov
-      run: sudo apt install libboost-all-dev graphviz lcov
+      run: |
+        sudo apt update
+        sudo apt install libboost-all-dev graphviz lcov
 
     - name: CMake | mkdir build
       run: cmake -E make_directory ${{runner.workspace}}/build
