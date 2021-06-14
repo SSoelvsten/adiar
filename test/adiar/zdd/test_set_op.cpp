@@ -750,7 +750,7 @@ go_bandit([]() {
                 /*
                     1          1                  (1,1)         ---- x0
                    / \        / \                 /   \
-                   2 T        F 2                 F (T,2)      ---- x1
+                   2 T        F 2                 F (T,2)       ---- x1
                   / \          / \       ==>         / \
                   F T          F T                   F F
                  */
@@ -774,20 +774,14 @@ go_bandit([]() {
 
                 node_arc_test_stream node_arcs(out);
 
-                AssertThat(node_arcs.can_pull(), Is().True());
-                AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
-
                 AssertThat(node_arcs.can_pull(), Is().False());
 
                 sink_arc_test_stream sink_arcs(out);
 
                 AssertThat(sink_arcs.can_pull(), Is().True());
                 AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), sink_F }));
-
                 AssertThat(sink_arcs.can_pull(), Is().True());
-                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), sink_F }));
-                AssertThat(sink_arcs.can_pull(), Is().True());
-                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), sink_F }));
+                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), sink_F }));
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
@@ -795,9 +789,6 @@ go_bandit([]() {
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
-
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
                 AssertThat(meta.can_pull(), Is().False());
               });
@@ -875,11 +866,11 @@ go_bandit([]() {
                 /*
                      1         1                (1,1)
                     / \       / \               /   \
-                    2 T       2  \            (2,2)  \
-                   / \       / \ |     =>      / \   |
-                   F T       F T 3             F T (T,3)
-                                / \                 / \
-                                F T                 F F
+                    2 T       2  \            (2,2)  F
+                   / \       / \ |     =>      / \
+                   F T       F T 3             F T
+                                / \
+                                F T
                  */
 
                 node_file zdd_a;
@@ -905,22 +896,18 @@ go_bandit([]() {
                 AssertThat(node_arcs.can_pull(), Is().True());
                 AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
 
-                AssertThat(node_arcs.can_pull(), Is().True());
-                AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,0) }));
 
                 AssertThat(node_arcs.can_pull(), Is().False());
 
                 sink_arc_test_stream sink_arcs(out);
 
                 AssertThat(sink_arcs.can_pull(), Is().True());
+                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), sink_F }));
+
+                AssertThat(sink_arcs.can_pull(), Is().True());
                 AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), sink_F }));
                 AssertThat(sink_arcs.can_pull(), Is().True());
                 AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), sink_T }));
-
-                AssertThat(sink_arcs.can_pull(), Is().True());
-                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), sink_F }));
-                AssertThat(sink_arcs.can_pull(), Is().True());
-                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), sink_F }));
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
@@ -931,9 +918,6 @@ go_bandit([]() {
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(1,1u)));
-
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(2,1u)));
 
                 AssertThat(meta.can_pull(), Is().False());
               });
@@ -1115,24 +1099,19 @@ go_bandit([]() {
                 node_arc_test_stream node_arcs(out);
 
                 AssertThat(node_arcs.can_pull(), Is().True());
-                AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
-
-                AssertThat(node_arcs.can_pull(), Is().True());
-                AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+                AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
 
                 AssertThat(node_arcs.can_pull(), Is().False());
 
                 sink_arc_test_stream sink_arcs(out);
 
                 AssertThat(sink_arcs.can_pull(), Is().True());
-                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), sink_F }));
-                AssertThat(sink_arcs.can_pull(), Is().True());
-                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), sink_F }));
+                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), sink_F }));
 
                 AssertThat(sink_arcs.can_pull(), Is().True());
-                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), sink_F }));
+                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), sink_F }));
                 AssertThat(sink_arcs.can_pull(), Is().True());
-                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), sink_T }));
+                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), sink_T }));
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
@@ -1142,7 +1121,7 @@ go_bandit([]() {
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
                 AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
+                AssertThat(meta.pull(), Is().EqualTo(create_meta(1,1u)));
 
                 AssertThat(meta.can_pull(), Is().False());
               });
