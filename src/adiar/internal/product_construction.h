@@ -89,6 +89,13 @@ namespace adiar
     }
   };
 
+  struct prod_recurse_in__noop
+  {
+    inline void operator()(prod_priority_queue_1_t&, arc_writer&,
+                           const prod_rec_skipto &, ptr_t)
+    { /* do nothing */ }
+  };
+
   struct prod_recurse_in__forward
   {
     inline void operator()(prod_priority_queue_1_t &prod_pq_1, arc_writer&,
@@ -281,15 +288,9 @@ namespace adiar
             return prod_sink(r.t1, r.t2, op);
           }
 
-          // TODO: Out-of-order sinks?
-          adiar_debug(out_id < MAX_ID, "Has run out of ids");
-          uid_t out_uid = create_node_uid(out_label, out_id++);
-          ptr_t out_sink = op(r.t1, r.t2);
+          prod_recurse_out(prod_pq_1, aw, op, source, r);
 
-          aw.unsafe_push_sink({out_uid, out_sink});
-          aw.unsafe_push_sink({flag(out_uid), out_sink});
-
-          prod_recurse_in<prod_recurse_in__output_arcs>(prod_pq_1, prod_pq_2, aw, out_uid, t1, t2);
+          prod_recurse_in<prod_recurse_in__noop>(prod_pq_1, prod_pq_2, aw, r, t1, t2);
         } else {
           prod_recurse_in<prod_recurse_in__forward>(prod_pq_1, prod_pq_2, aw, r, t1, t2);
         }
