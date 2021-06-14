@@ -2,6 +2,7 @@
 #define ADIAR_FILE_STREAM_H
 
 #include <tpie/tpie.h>
+#include <tpie/sort.h>
 
 #include <adiar/data.h>
 #include <adiar/file.h>
@@ -161,7 +162,7 @@ namespace adiar {
   };
 
   template<bool REVERSE = false>
-  class node_stream : public meta_file_stream<node_t, 1, 0, !REVERSE>
+  class node_stream : public meta_file_stream<node_t, NODE_FILE_COUNT, 0, !REVERSE>
   {
   public:
     node_stream(const node_file &file, bool negate = false)
@@ -174,10 +175,69 @@ namespace adiar {
   };
 
   template<bool REVERSE = false>
-  using node_arc_stream = meta_file_stream<arc_t, 2, 0, !REVERSE>;
+  using node_arc_stream = meta_file_stream<arc_t, ARC_FILE_COUNT, 0, !REVERSE>;
 
   template<bool REVERSE = false>
-  using sink_arc_stream = meta_file_stream<arc_t, 2, 1, !REVERSE>;
+  using in_order_arc_stream = meta_file_stream<arc_t, ARC_FILE_COUNT, 1, !REVERSE>;
+
+  template<bool REVERSE = false>
+  using out_of_order_arc_stream = meta_file_stream<arc_t, ARC_FILE_COUNT, 2, !REVERSE>;
+
+  template<bool REVERSE = false>
+  class sink_arc_stream
+    : private in_order_arc_stream<REVERSE>, private out_of_order_arc_stream<REVERSE>
+  {
+  public:
+    sink_arc_stream(const arc_file &file, bool negate = false)
+      : in_order_arc_stream<REVERSE>(file, negate),
+        out_of_order_arc_stream<REVERSE>(file, negate)
+    { }
+
+  private:
+    bool pull_from_in_order()
+    {
+      bool in_order_pull = in_order_arc_stream<REVERSE>::can_pull();
+      bool out_of_order_pull = out_of_order_arc_stream<REVERSE>::can_pull();
+
+      if (in_order_pull != out_of_order_pull) {
+        return in_order_pull;
+      }
+
+      ptr_t in_order_source = in_order_arc_stream<REVERSE>::peek().source;
+      ptr_t out_of_order_source = out_of_order_arc_stream<REVERSE>::peek().source;
+
+      return (REVERSE && in_order_source < out_of_order_source)
+        || (!REVERSE && in_order_source > out_of_order_source);
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    void reset()
+    {
+      in_order_arc_stream<REVERSE>::reset();
+      out_of_order_arc_stream<REVERSE>::reset();
+    }
+
+    bool can_pull()
+    {
+      return in_order_arc_stream<REVERSE>::can_pull()
+        || out_of_order_arc_stream<REVERSE>::can_pull();
+    }
+
+    const arc_t pull()
+    {
+      return pull_from_in_order()
+        ? in_order_arc_stream<REVERSE>::pull()
+        : out_of_order_arc_stream<REVERSE>::pull();
+    }
+
+    const arc_t peek()
+    {
+      return pull_from_in_order()
+        ? in_order_arc_stream<REVERSE>::peek()
+        : out_of_order_arc_stream<REVERSE>::peek();
+    }
+  };
 
   //////////////////////////////////////////////////////////////////////////////
   /// For file streams of elements of a file with meta information, we also

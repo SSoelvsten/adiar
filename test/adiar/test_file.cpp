@@ -152,14 +152,10 @@ go_bandit([]() {
                         aw.unsafe_push(create_meta(1,1u));
                       });
 
-                    it("can hook into arc_test_file, write sink arcs, and then sort them", [&]() {
+                    it("can hook into arc_test_file and  write sink arcs out of order", [&]() {
                       aw.unsafe_push_sink(sink_arc_3);
                       aw.unsafe_push_sink(sink_arc_1);
                       aw.unsafe_push_sink(sink_arc_2);
-
-                      aw.sort_sinks();
-
-                      AssertThat(arc_test_file.is_read_only(), Is().False());
                     });
                 });
             });

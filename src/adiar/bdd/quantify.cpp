@@ -275,9 +275,6 @@ namespace adiar
       aw.unsafe_push(create_meta(out_label, out_id));
     }
 
-    // TODO: Add bool variable to check whether we really do need to sort.
-    aw.sort_sinks();
-
     return out_arcs;
   }
 

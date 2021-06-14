@@ -101,7 +101,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -140,7 +140,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -219,7 +219,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -289,7 +289,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -378,7 +378,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -581,7 +581,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -735,7 +735,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -791,7 +791,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -860,7 +860,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -924,7 +924,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -1045,7 +1045,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -1081,7 +1081,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -1136,7 +1136,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
@@ -1204,7 +1204,7 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, 2> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
 
                 AssertThat(meta.can_pull(), Is().True());
                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));

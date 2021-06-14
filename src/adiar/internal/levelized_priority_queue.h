@@ -638,12 +638,12 @@ namespace adiar {
   template <typename T, typename LabelExt,
             typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
             size_t MetaStreams = 1u, size_t Buckets = ADIAR_PQ_BUCKETS>
-  using levelized_node_priority_queue = levelized_priority_queue<node_t, 1u, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
+  using levelized_node_priority_queue = levelized_priority_queue<node_t, NODE_FILE_COUNT, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
 
   template <typename T, typename LabelExt,
             typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
             size_t MetaStreams = 1u, size_t Buckets = ADIAR_PQ_BUCKETS>
-  using levelized_arc_priority_queue = levelized_priority_queue<arc_t, 2u, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
+  using levelized_arc_priority_queue = levelized_priority_queue<arc_t, ARC_FILE_COUNT, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
 }
 
 #endif // ADIAR_INTERNAL_LEVELIZED_PRIORITY_QUEUE_H
