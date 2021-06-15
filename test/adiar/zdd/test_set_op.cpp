@@ -862,13 +862,13 @@ go_bandit([]() {
                 AssertThat(meta.can_pull(), Is().False());
               });
 
-            it("computes { {0}, {1} } /\\ { {1}, {0,2} }", [&]() {
+            it("computes (and skip) { {0}, {1} } /\\ { {1}, {0,2} }", [&]() {
                 /*
-                     1         1                (1,1)
+                     1         1                (1,1)      ---- x0
                     / \       / \               /   \
-                    2 T       2  \            (2,2)  F
+                    2 T       2  \            (2,2) F      ---- x1
                    / \       / \ |     =>      / \
-                   F T       F T 3             F T
+                   F T       F T 3             F T         ---- x2
                                 / \
                                 F T
                  */
@@ -908,6 +908,68 @@ go_bandit([]() {
                 AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), sink_F }));
                 AssertThat(sink_arcs.can_pull(), Is().True());
                 AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), sink_T }));
+
+                AssertThat(sink_arcs.can_pull(), Is().False());
+
+                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
+
+                AssertThat(meta.can_pull(), Is().True());
+                AssertThat(meta.pull(), Is().EqualTo(create_meta(1,1u)));
+
+                AssertThat(meta.can_pull(), Is().False());
+              });
+
+            it("computes (and skip) { {0,2}, {1,2}, Ø } /\\ { {0,1}, {0}, {1} }", [&]() {
+                /*
+                     1         1                    (1,1)    ---- x0
+                    / \       / \                   /   \
+                    2  \      2 T                 (2,2) |    ---- x1
+                   / \ |     / \       =>         /   \ |
+                   T  3      T T                  T   F F    ---- x2
+                     / \
+                     F T
+
+                   This shortcuts the (3,T) tuple twice.
+                 */
+
+                node_file zdd_a;
+                node_file zdd_b;
+
+                { // Garbage collect writers early
+                  node_writer nw_a(zdd_a);
+                  nw_a << create_node(2,MAX_ID, sink_F, sink_T)
+                       << create_node(1,MAX_ID, sink_T, create_node_ptr(2,MAX_ID))
+                       << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID))
+                    ;
+
+                  node_writer nw_b(zdd_b);
+                  nw_b << create_node(1,MAX_ID, sink_T, sink_T)
+                       << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), sink_T)
+                    ;
+                }
+
+                __zdd out = zdd_intsec(zdd_a, zdd_b);
+
+                node_arc_test_stream node_arcs(out);
+
+                AssertThat(node_arcs.can_pull(), Is().True());
+                AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+
+
+                AssertThat(node_arcs.can_pull(), Is().False());
+
+                sink_arc_test_stream sink_arcs(out);
+
+                AssertThat(sink_arcs.can_pull(), Is().True());
+                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), sink_F }));
+
+                AssertThat(sink_arcs.can_pull(), Is().True());
+                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), sink_T }));
+                AssertThat(sink_arcs.can_pull(), Is().True());
+                AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), sink_F }));
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 

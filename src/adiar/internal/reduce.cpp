@@ -54,7 +54,6 @@ namespace adiar
     }
   };
 
-
   //////////////////////////////////////////////////////////////////////////////
   // For sorting for Reduction Rule 2 (and back again)
   const auto reduce_node_children_lt = [](const node_t &a, const node_t &b) -> bool {
@@ -148,7 +147,7 @@ namespace adiar
 
     // Process bottom-up each level
     while (sink_arcs.can_pull() || reduce_pq.can_pull()) {
-      adiar_invariant(label == reduce_pq.current_level(), "label and priority queue are in sync");
+      adiar_invariant(label == reduce_pq.current_level(), "label and priority queue should be in sync");
 
       // Temporary file for Reduction Rule 1 mappings (opened later if need be)
       tpie::file_stream<mapping> red1_mapping;

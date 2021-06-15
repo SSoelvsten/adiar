@@ -78,7 +78,7 @@ namespace adiar
     }
   }
 
-  struct prod_recurse_in__output_arcs
+  struct prod_recurse_in__output_node
   {
     inline void operator()(prod_priority_queue_1_t&, arc_writer &aw,
                            uid_t out_uid, ptr_t source)
@@ -89,11 +89,13 @@ namespace adiar
     }
   };
 
-  struct prod_recurse_in__noop
+  struct prod_recurse_in__output_sink
   {
-    inline void operator()(prod_priority_queue_1_t&, arc_writer&,
-                           const prod_rec_skipto &, ptr_t)
-    { /* do nothing */ }
+    inline void operator()(prod_priority_queue_1_t&, arc_writer &aw,
+                           ptr_t out_sink, ptr_t source)
+    {
+      aw.unsafe_push_sink({ source, out_sink });
+    }
   };
 
   struct prod_recurse_in__forward
@@ -278,7 +280,7 @@ namespace adiar
         prod_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
         prod_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
 
-        prod_recurse_in<prod_recurse_in__output_arcs>(prod_pq_1, prod_pq_2, aw, out_uid, t1, t2);
+        prod_recurse_in<prod_recurse_in__output_node>(prod_pq_1, prod_pq_2, aw, out_uid, t1, t2);
 
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(rec_res);
@@ -288,9 +290,7 @@ namespace adiar
             return prod_sink(r.t1, r.t2, op);
           }
 
-          prod_recurse_out(prod_pq_1, aw, op, source, r);
-
-          prod_recurse_in<prod_recurse_in__noop>(prod_pq_1, prod_pq_2, aw, r, t1, t2);
+          prod_recurse_in<prod_recurse_in__output_sink>(prod_pq_1, prod_pq_2, aw, op(r.t1, r.t2), t1, t2);
         } else {
           prod_recurse_in<prod_recurse_in__forward>(prod_pq_1, prod_pq_2, aw, r, t1, t2);
         }
