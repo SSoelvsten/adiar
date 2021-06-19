@@ -35,6 +35,7 @@ set(HEADERS
   dot.h
 
   # internal
+  internal/build.h
   internal/count.h
   internal/decision_diagram.h
   internal/isomorphism.h

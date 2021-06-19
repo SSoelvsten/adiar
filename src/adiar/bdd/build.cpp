@@ -3,108 +3,47 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
+#include <adiar/internal/build.h>
+
 #include <adiar/bdd/negate.h>
 
 #include <adiar/assert.h>
 
 namespace adiar
 {
-  // TODO: Memoization table for the sink, ithvar, and nithvar builders
-
   bdd bdd_sink(bool value)
   {
-    node_file nf;
-    node_writer nw(nf);
-    nw.unsafe_push(create_sink(value));
-    return nf;
+    return build_sink(value);
   }
 
   bdd bdd_true()
   {
-    return bdd_sink(true);
+    return build_sink(true);
   }
 
   bdd bdd_false()
   {
-    return bdd_sink(false);
+    return build_sink(false);
   }
 
   bdd bdd_ithvar(label_t label)
   {
-    adiar_assert(label <= MAX_LABEL, "Cannot represent that large a label");
-
-    node_file nf;
-    node_writer nw(nf);
-    nw.unsafe_push(create_node(label, 0, create_sink_ptr(false), create_sink_ptr(true)));
-    nw.unsafe_push(create_meta(label,1u));
-    return nf;
+    return build_ithvar(label);
   }
 
   bdd bdd_nithvar(label_t label)
   {
-    adiar_assert(label <= MAX_LABEL, "Cannot represent that large a label");
-
-    return bdd_not(bdd_ithvar(label));
+    return bdd_not(build_ithvar(label));
   }
 
   bdd bdd_and(const label_file &labels)
   {
-    if (labels.size() == 0) {
-      return bdd_sink(true);
-    }
-
-    ptr_t low = create_sink_ptr(false);
-    ptr_t high = create_sink_ptr(true);
-
-    node_file nf;
-    node_writer nw(nf);
-
-    label_stream<true> ls(labels);
-    while(ls.can_pull()) {
-      label_t next_label = ls.pull();
-      node_t next_node = create_node(next_label, 0, low, high);
-
-      adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
-      adiar_assert(is_sink(high) || next_label < label_of(high),
-                  "Labels not given in increasing order");
-
-      high = next_node.uid;
-
-      nw.unsafe_push(next_node);
-      nw.unsafe_push(create_meta(next_label,1u));
-    }
-
-    return nf;
+    return build_chain<true, false, true>(labels);
   }
 
   bdd bdd_or(const label_file &labels)
   {
-    if (labels.size() == 0) {
-      return bdd_sink(false);
-    }
-
-    ptr_t low = create_sink_ptr(false);
-    ptr_t high = create_sink_ptr(true);
-
-    node_file nf;
-    node_writer nw(nf);
-
-    label_stream<true> ls(labels);
-    while(ls.can_pull()) {
-      label_t next_label = ls.pull();
-      node_t next_node = create_node(next_label, 0, low, high);
-
-      adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
-      adiar_assert(is_sink(low) || next_label < label_of(low),
-                  "Labels not given in increasing order");
-
-      low = next_node.uid;
-
-      nw.unsafe_push(next_node);
-      nw.unsafe_push(create_meta(next_label,1u));
-    }
-
-    return nf;
+    return build_chain<false, true, false>(labels);
   }
 
   inline id_t bdd_counter_min_id(label_t label, label_t max_label, uint64_t threshold)
