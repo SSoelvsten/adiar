@@ -236,14 +236,28 @@ go_bandit([]() {
         describe("bdd_counter", [&]() {
             it("creates trivially do counting to 10 in [0,8]", [&]() {
                 bdd res = bdd_counter(0, 8, 10);
-                AssertThat(is_sink(res), Is().True());
-                AssertThat(is_sink(res, is_true), Is().True());
+
+                node_test_stream ns(res);
+
+                AssertThat(ns.can_pull(), Is().True());
+                AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+                AssertThat(ns.can_pull(), Is().False());
+
+                meta_test_stream<node_t, 1> ms(res);
+                AssertThat(ms.can_pull(), Is().False());
               });
 
             it("creates trivially do counting to 10 in [10,18]", [&]() {
                 bdd res = bdd_counter(10, 18, 10);
-                AssertThat(is_sink(res), Is().True());
-                AssertThat(is_sink(res, is_true), Is().True());
+
+                node_test_stream ns(res);
+
+                AssertThat(ns.can_pull(), Is().True());
+                AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+                AssertThat(ns.can_pull(), Is().False());
+
+                meta_test_stream<node_t, 1> ms(res);
+                AssertThat(ms.can_pull(), Is().False());
               });
 
             it("creates counting to 0 in [1,5]", [&]() {
