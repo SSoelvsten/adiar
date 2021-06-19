@@ -123,7 +123,7 @@ namespace adiar {
     ptr_t lt_sink = create_sink_ptr(false); // create_sink(comparator(threshold - 1, threshold));
 
     if (max_label - min_label + 1 < threshold) {
-      return bdd_sink(lt_sink);
+      return bdd_sink(false);
     }
 
     node_file nf;
