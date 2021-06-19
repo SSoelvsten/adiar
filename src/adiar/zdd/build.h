@@ -25,12 +25,35 @@ namespace adiar
   zdd zdd_null();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create a ZDD for the family of the singleton set { x_i } only, i.e
-  ///        a ZDD that represents { {z_i} }.
+  /// \brief Create a ZDD for the family of the singleton set { i } only, i.e
+  ///        a ZDD that represents { {i} }.
   ///
   /// \param label     The label of the variable x_i
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_ithvar(label_t label);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a ZDD for the family of the singleton set { i_1, i_2, ...,
+  ///        i_k } only, i.e a ZDD that represents { {i_1, i_2, ..., i_k} }.
+  ///
+  /// \param label     The labels of the variables to include in this set
+  //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_vars(const label_file &labels);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a ZDD for the family of all singleton sets { i_j }, i.e
+  ///        a ZDD that represents { {x_i1}, {x_i2}, ..., {i_k} }.
+  ///
+  /// \param label     The label of the variable x_i
+  //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_singletons(const label_file &labels);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a ZDD for the power set of all variables.
+  ///
+  /// \param label     The label of the variable x_i
+  //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_powerset(const label_file &labels);
 }
 
 #endif // ADIAR_ZDD_BUILD_H

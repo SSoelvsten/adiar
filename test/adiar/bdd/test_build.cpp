@@ -130,19 +130,19 @@ go_bandit([]() {
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
-                AssertThat(ns.pull(), Is().EqualTo(create_node(5, 0,
+                AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID,
                                                                sink_F,
                                                                sink_T)));
 
                 AssertThat(ns.can_pull(), Is().True());
-                AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
+                AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID,
                                                                sink_F,
-                                                               create_node_ptr(5,0))));
+                                                               create_node_ptr(5,MAX_ID))));
 
                 AssertThat(ns.can_pull(), Is().True());
-                AssertThat(ns.pull(), Is().EqualTo(create_node(1, 0,
+                AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID,
                                                                sink_F,
-                                                               create_node_ptr(2,0))));
+                                                               create_node_ptr(2,MAX_ID))));
 
                 AssertThat(ns.can_pull(), Is().False());
 
@@ -188,18 +188,18 @@ go_bandit([]() {
                 node_test_stream ns(res);
 
                 AssertThat(ns.can_pull(), Is().True());
-                AssertThat(ns.pull(), Is().EqualTo(create_node(5, 0,
+                AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID,
                                                                       sink_F,
                                                                       sink_T)));
 
                 AssertThat(ns.can_pull(), Is().True());
-                AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
-                                                                      create_node_ptr(5,0),
+                AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID,
+                                                                      create_node_ptr(5,MAX_ID),
                                                                       sink_T)));
 
                 AssertThat(ns.can_pull(), Is().True());
-                AssertThat(ns.pull(), Is().EqualTo(create_node(1, 0,
-                                                                      create_node_ptr(2,0),
+                AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                                      create_node_ptr(2,MAX_ID),
                                                                       sink_T)));
 
                 AssertThat(ns.can_pull(), Is().False());
