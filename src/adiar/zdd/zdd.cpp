@@ -9,6 +9,7 @@
 #include <adiar/internal/reduce.h>
 
 #include <adiar/zdd/build.h>
+#include <adiar/zdd/set_op.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,42 @@ namespace adiar {
 
   //////////////////////////////////////////////////////////////////////////////
   // Operators
+  __zdd operator& (__zdd &&lhs, __zdd &&rhs) {
+    return zdd(std::forward<__zdd>(lhs)) & zdd(std::forward<__zdd>(rhs));
+  }
+
+  __zdd operator& (const zdd &lhs, __zdd &&rhs) {
+    return lhs & zdd(std::forward<__zdd>(rhs));
+  }
+
+  __zdd operator& (__zdd &&lhs, const zdd &rhs) {
+    return zdd(std::forward<__zdd>(lhs)) & rhs;
+  }
+
+  __zdd operator| (__zdd &&lhs, __zdd &&rhs) {
+    return zdd(std::forward<__zdd>(lhs)) | zdd(std::forward<__zdd>(rhs));
+  }
+
+  __zdd operator| (const zdd &lhs, __zdd &&rhs) {
+    return lhs | zdd(std::forward<__zdd>(rhs));
+  }
+
+  __zdd operator| (__zdd &&lhs, const zdd &rhs) {
+    return zdd(std::forward<__zdd>(lhs)) | rhs;
+  }
+
+  __zdd operator- (__zdd &&lhs, __zdd &&rhs) {
+    return zdd(std::forward<__zdd>(lhs)) - zdd(std::forward<__zdd>(rhs));
+  }
+
+  __zdd operator- (const zdd &lhs, __zdd &&rhs) {
+    return lhs - zdd(std::forward<__zdd>(rhs));
+  }
+
+  __zdd operator- (__zdd &&lhs, const zdd &rhs) {
+    return zdd(std::forward<__zdd>(lhs)) - rhs;
+  }
+
   bool operator== (__zdd &&lhs, __zdd &&rhs) {
     return zdd(std::forward<__zdd>(lhs)) == zdd(std::forward<__zdd>(rhs));
   }
@@ -77,10 +114,50 @@ namespace adiar {
     return (*this = reduce(std::forward<__zdd>(other)));
   }
 
+  zdd& zdd::operator&= (const zdd &other)
+  {
+    return (*this = zdd_intsec(*this, other));
+  }
+
+  zdd& zdd::operator&= (zdd &&other)
+  {
+    __zdd&& temp = zdd_intsec(*this, other);
+    other.free();
+    return (*this = std::move(temp));
+  }
+
+  zdd& zdd::operator|= (const zdd &other)
+  {
+    return (*this = zdd_union(*this, other));
+  }
+
+  zdd& zdd::operator|= (zdd &&other)
+  {
+    __zdd&& temp = zdd_union(*this, other);
+    other.free();
+    return (*this = std::move(temp));
+  }
+
+  zdd& zdd::operator-= (const zdd &other)
+  {
+    return (*this = zdd_diff(*this, other));
+  }
+
+  zdd& zdd::operator-= (zdd &&other)
+  {
+    __zdd&& temp = zdd_diff(*this, other);
+    other.free();
+    return (*this = std::move(temp));
+  }
+
   bool operator== (const zdd& lhs, const zdd& rhs)
   {
     return is_isomorphic(lhs.file, rhs.file);
   }
 
   bool operator!= (const zdd& lhs, const zdd& rhs) { return !(lhs == rhs); }
+
+  __zdd operator& (const zdd& lhs, const zdd& rhs) { return zdd_intsec(lhs, rhs); }
+  __zdd operator| (const zdd& lhs, const zdd& rhs) { return zdd_union(lhs, rhs); }
+  __zdd operator- (const zdd& lhs, const zdd& rhs) { return zdd_diff(lhs, rhs); }
 }

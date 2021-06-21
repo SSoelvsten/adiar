@@ -28,6 +28,18 @@ namespace adiar {
   bool operator== (__zdd &&, const zdd &);
   bool operator!= (__zdd &&, const zdd &);
 
+  __zdd operator& (__zdd &&, __zdd &&);
+  __zdd operator& (const zdd &, __zdd &&);
+  __zdd operator& (__zdd &&, const __zdd &);
+
+  __zdd operator| (__zdd &&, __zdd &&);
+  __zdd operator| (const zdd &, __zdd &&);
+  __zdd operator| (__zdd &&, const zdd &);
+
+  __zdd operator- (__zdd &&, __zdd &&);
+  __zdd operator- (const zdd &, __zdd &&);
+  __zdd operator- (__zdd &&, const zdd &);
+
   //////////////////////////////////////////////////////////////////////////////
   /// A ZDD is the reduced node-based representation of a decision diagram.
   //////////////////////////////////////////////////////////////////////////////
@@ -46,6 +58,10 @@ namespace adiar {
     friend bool operator== (const zdd& lhs, const zdd& rhs);
     friend bool operator!= (const zdd& lhs, const zdd& rhs);
 
+    friend __zdd operator& (const zdd &lhs, const zdd &rhs);
+    friend __zdd operator| (const zdd &lhs, const zdd &rhs);
+    friend __zdd operator- (const zdd &lhs, const zdd &rhs);
+
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
   public:
@@ -62,6 +78,15 @@ namespace adiar {
   public:
     zdd& operator= (const zdd &other);
     zdd& operator= (__zdd &&other);
+
+    zdd& operator&= (const zdd &other);
+    zdd& operator&= (zdd &&other);
+
+    zdd& operator|= (const zdd &other);
+    zdd& operator|= (zdd &&other);
+
+    zdd& operator-= (const zdd &other);
+    zdd& operator-= (zdd &&other);
   };
 }
 

@@ -261,7 +261,7 @@ int main(int argc, char* argv[])
     auto before_paths = get_timestamp();
     paths = constraint_transition(N,0);
     for (int t = 1; t < N*N-1; t++) {
-      paths = zdd_intsec(paths, constraint_transition(N,t));
+      paths &= constraint_transition(N,t);
       largest_nodes = std::max(largest_nodes, zdd_nodecount(paths));
     }
     auto after_paths = get_timestamp();
@@ -272,7 +272,7 @@ int main(int argc, char* argv[])
     auto before_only_once = get_timestamp();
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
-        paths = zdd_intsec(paths, constraint_exactly_once(N,i,j));
+        paths &= constraint_exactly_once(N,i,j);
         largest_nodes = std::max(largest_nodes, zdd_nodecount(paths));
       }
     }
