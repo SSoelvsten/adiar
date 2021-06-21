@@ -67,7 +67,9 @@ else()
 endif()
 
 include(GenerateExportHeader)
-generate_export_header(adiar)
+generate_export_header(adiar
+  EXPORT_MACRO_NAME ADIAR_API
+)
 
 # ============================================================================ #
 # Link dependencies
@@ -77,7 +79,7 @@ target_link_libraries(adiar tpie)
 # Setup as library
 
 target_include_directories(adiar PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/..
-                                       ${CMAKE_CURRENT_SOURCE_DIR}/..)
+                                        ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 set_target_properties(adiar PROPERTIES
   # Language settings
@@ -97,5 +99,8 @@ set_target_properties(adiar PROPERTIES
 )
 
 install(TARGETS adiar
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib)
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        INCLUDES DESTINATION ${LIBLEGACY_INCLUDE_DIRS}
+)
