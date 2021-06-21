@@ -98,6 +98,8 @@ set_target_properties(adiar PROPERTIES
   POSITION_INDEPENDENT_CODE ON
 )
 
+target_compile_features(adiar PUBLIC cxx_std_17)
+
 install(TARGETS adiar
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

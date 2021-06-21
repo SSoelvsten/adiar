@@ -57,11 +57,7 @@ _CMakeLists.txt_ file with the following lines.
 ```cmake
 add_executable(<target> <source>)
 target_link_libraries(<target> adiar)
-set_target_properties(<target> PROPERTIES CXX_STANDARD 17)
 ```
-
-You only need to include the third line if the `CXX_STANDARD` has not been set
-project-wide to 17 or higher.
 
 ## Usage
 After having linked the C++ source file with _Adiar_ as described above, then
