@@ -49,12 +49,36 @@ namespace adiar {
     return bdd(std::forward<__bdd>(lhs)) & bdd(std::forward<__bdd>(rhs));
   }
 
+  __bdd operator& (const bdd &lhs, __bdd &&rhs) {
+    return lhs & bdd(std::forward<__bdd>(rhs));
+  }
+
+  __bdd operator& (__bdd &&lhs, const bdd &rhs) {
+    return bdd(std::forward<__bdd>(lhs)) & rhs;
+  }
+
   __bdd operator| (__bdd &&lhs, __bdd &&rhs) {
     return bdd(std::forward<__bdd>(lhs)) | bdd(std::forward<__bdd>(rhs));
   }
 
+  __bdd operator| (const bdd &lhs, __bdd &&rhs) {
+    return lhs | bdd(std::forward<__bdd>(rhs));
+  }
+
+  __bdd operator| (__bdd &&lhs, const bdd &rhs) {
+    return bdd(std::forward<__bdd>(lhs)) | rhs;
+  }
+
   __bdd operator^ (__bdd &&lhs, __bdd &&rhs) {
     return bdd(std::forward<__bdd>(lhs)) ^ bdd(std::forward<__bdd>(rhs));
+  }
+
+  __bdd operator^ (const bdd &lhs, __bdd &&rhs) {
+    return lhs ^ bdd(std::forward<__bdd>(rhs));
+  }
+
+  __bdd operator^ (__bdd &&lhs, const bdd &rhs) {
+    return bdd(std::forward<__bdd>(lhs)) ^ rhs;
   }
 
   bool operator== (__bdd &&lhs, __bdd &&rhs) {
@@ -131,17 +155,17 @@ namespace adiar {
     return (*this = std::move(temp));
   }
 
-  bool operator== (const bdd& lhs, const bdd& rhs)
+  bool operator== (const bdd &lhs, const bdd &rhs)
   {
     return is_isomorphic(lhs.file, rhs.file, lhs.negate, rhs.negate);
   }
 
-  bool operator!= (const bdd& lhs, const bdd& rhs) { return !(lhs == rhs); }
+  bool operator!= (const bdd &lhs, const bdd &rhs) { return !(lhs == rhs); }
 
   bdd operator~ (const bdd &in_bdd) { return bdd_not(in_bdd); }
   bdd operator~ (bdd &&in_bdd) { return bdd_not(std::forward<bdd>(in_bdd)); }
 
-  __bdd operator& (const bdd& lhs, const bdd& rhs) { return bdd_and(lhs, rhs); }
-  __bdd operator| (const bdd& lhs, const bdd& rhs) { return bdd_or(lhs, rhs); }
-  __bdd operator^ (const bdd& lhs, const bdd& rhs) { return bdd_xor(lhs, rhs); }
+  __bdd operator& (const bdd &lhs, const bdd &rhs) { return bdd_and(lhs, rhs); }
+  __bdd operator| (const bdd &lhs, const bdd &rhs) { return bdd_or(lhs, rhs); }
+  __bdd operator^ (const bdd &lhs, const bdd &rhs) { return bdd_xor(lhs, rhs); }
 }
