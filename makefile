@@ -83,12 +83,12 @@ example/queens:
 
   # Run
 	@echo ""
-	@./build/example/queens ${N} ${M}
+	./build/example/queens -N ${N} -M ${M}
 	@echo ""
 
 
-example/knights_tour: N := 5
-example/knights_tour:
+example/knights_tour/all: N := 5
+example/knights_tour/all:
   # Build
 	@mkdir -p build/
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
@@ -97,5 +97,18 @@ example/knights_tour:
 
   # Run
 	@echo ""
-	@./build/example/knights_tour ${N} ${M}
+	@./build/example/knights_tour -N ${N} -M ${M}
+	@echo ""
+
+example/knights_tour/closed: N := 6
+example/knights_tour/closed:
+  # Build
+	@mkdir -p build/
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
+
+	@cd build/ && make $(MAKE_FLAGS) knights_tour
+
+  # Run
+	@echo ""
+	@./build/example/knights_tour -N ${N} -M ${M} -c
 	@echo ""
