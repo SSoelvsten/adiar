@@ -54,4 +54,4 @@ jobs:
 
     - name: Run example
       working-directory: ${{runner.workspace}}/build
-      run: for n in ${{ matrix.N }}; do ./example/${{ matrix.exec }} $n 1024; done
+      run: for n in ${{ matrix.N }}; do ./example/${{ matrix.exec }} -N $n -M 1024; done

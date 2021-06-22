@@ -400,33 +400,14 @@ uint64_t expected_result[28] = {
 int main(int argc, char* argv[])
 {
   // ===== Parse argument =====
-  uint64_t N = 0;
-  size_t M = 1;
-
-  try {
-    if (argc == 1) {
-      std::cout << "Missing argument for N and M" << std::endl;
-    } else {
-      N = std::stoi(argv[1]);
-      if (N == 0 || N > 27) {
-        std::cout << "N should be in interval [1;27]: " << argv[1] << std::endl;
-        N = 0;
-      }
-      if (argc == 3) {
-        M = std::stoi(argv[2]);
-        if (M <= 0) {
-          std::cout << "M should at least be 1: " << argv[2] << std::endl;
-        }
-      }
+  {
+    bool should_error_exit = init_cl_arguments(argc, argv);
+    if (!should_error_exit && N == 0) {
+      std::cout << "  Must specify positive number for N" << std::endl;
+      should_error_exit = true;
     }
-  } catch (std::invalid_argument const &ex) {
-    std::cout << "Invalid number: " << argv[1] << std::endl;
-  } catch (std::out_of_range const &ex) {
-    std::cout << "Number out of range: " << argv[1] << std::endl;
-  }
 
-  if (N == 0 || M <= 0) {
-    exit(1);
+    if (should_error_exit) { exit(1); }
   }
 
   // ===== ADIAR =====

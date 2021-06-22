@@ -70,13 +70,35 @@ adiar::ptr_t ptr_to_next(int N, int i_from, int j_from, int i_to, int j_to, int 
   return adiar::create_sink_ptr(false);
 }
 
+/*****************************************************************************
+ * To only look at the closed tours, i.e. hamiltonian cycles and not hamiltonian
+ * paths, we merely fix it to start in the top-left corner. Since we are
+ * counting unoriented paths, then we can fix one of the two possible next
+ * squares to be the one used at t = 1.
+ *
+ * The following array includes these very squares.
+ */
+const int closed_squares [3][2] = {{0,0}, {1,2}, {2,1}};
+
+bool is_closed_square(int i, int j)
+{
+  return (i == closed_squares[0][0] && j == closed_squares[0][1])
+      || (i == closed_squares[1][0] && j == closed_squares[1][1])
+      || (i == closed_squares[2][0] && j == closed_squares[2][1]);
+}
+
 /******************************************************************************/
+template<bool filter_closed_squares = false>
 void constraint_dont_care(adiar::node_writer &out_writer, adiar::ptr_t &curr_root,
                           int N, int max_t, int min_t)
 {
   for (int curr_t = max_t; curr_t >= min_t; curr_t--) {
     for (int i = N - 1; i >= 0; i--) {
       for (int j = N - 1; j >= 0; j--) {
+        if (filter_closed_squares && is_closed_square(i,j)) {
+          continue;
+        }
+
         adiar::node_t out_node = adiar::create_node(label_of_position(N,i,j,curr_t),
                                                     0,
                                                     curr_root,
@@ -104,7 +126,7 @@ adiar::zdd constraint_transition(int N, int t)
     adiar::ptr_t curr_root = adiar::create_sink_ptr(true);
 
     // "Don't care" for future time steps
-    constraint_dont_care(out_writer, curr_root, N, N*N-1, t+2);
+    constraint_dont_care<>(out_writer, curr_root, N, N*N-1, t+2);
 
     // Node chains at time-step t+1 where exactly one possible square (i',j') is
     // visited for every possible one (i,j) at time step t.
@@ -146,7 +168,7 @@ adiar::zdd constraint_transition(int N, int t)
     }
 
     // "Don't care" Previous time steps
-    constraint_dont_care(out_writer, curr_root, N, t-1, 0);
+    constraint_dont_care<>(out_writer, curr_root, N, t-1, 0);
   }
 
   largest_nodes = std::max(largest_nodes, out.size());
@@ -195,9 +217,50 @@ adiar::zdd constraint_exactly_once(uint64_t N, uint64_t i, uint64_t j)
   return out;
 }
 
+/*******************************************************************************
+ * For only the closed tours (i.e. hamiltonian cycles) we start in (0,0) (i.e.
+ * the top left), go to (1,2) and then end in (2,1). These numbers are placed in
+ * the array closed_squares above.
+ */
+adiar::zdd constraint_closed(uint64_t N)
+{
+  adiar::node_file out;
+
+  { adiar::node_writer out_writer(out);
+
+    // Set final time step to (2,1)
+    adiar::node_t n_t_end = adiar::create_node(label_of_position(N, closed_squares[2][0],closed_squares[2][1], N*N-1),
+                                               adiar::MAX_ID,
+                                               adiar::create_sink_ptr(false),
+                                               adiar::create_sink_ptr(true));
+    out_writer << n_t_end;
+
+    // Create don't care on all intermediate steps
+    adiar::ptr_t curr_root = n_t_end.uid;
+    constraint_dont_care<true>(out_writer, curr_root, N, N*N-2, 2);
+
+    // Set t = 1 to (1,2)
+    adiar::node_t n_t_1 = adiar::create_node(label_of_position(N, closed_squares[1][0],closed_squares[1][1], 1),
+                                             adiar::MAX_ID,
+                                             adiar::create_sink_ptr(false),
+                                             curr_root);
+    out_writer << n_t_1;
+
+    // Set t = 0 to (0,0)
+    adiar::node_t n_t_0 = adiar::create_node(label_of_position(N, closed_squares[0][0],closed_squares[0][1], 0),
+                                             adiar::MAX_ID,
+                                             adiar::create_sink_ptr(false),
+                                             n_t_1.uid);
+    out_writer << n_t_0;
+  }
+
+  largest_nodes = std::max(largest_nodes, out.size());
+  return out;
+}
+
 // expected number of directed tours taken from:
 //  https://en.wikipedia.org/wiki/Knight%27s_tour#Number_of_tours
-uint64_t expected_paths[9] = {
+uint64_t expected_all[9] = {
   0,
   1,
   0,
@@ -209,36 +272,47 @@ uint64_t expected_paths[9] = {
   19591828170979904
 };
 
+uint64_t expected_closed[10] = {
+  0,
+  1,
+  0,
+  0,
+  0,
+  0,
+  9862,
+  0,
+  13267364410532,
+  0
+};
+
 int main(int argc, char* argv[])
 {
   // ===== Parse argument =====
-  uint64_t N = 0;
-  size_t M = 1;
+  bool only_closed = false;
 
-  try {
-    if (argc == 1) {
-      std::cout << "Missing argument for N and M" << std::endl;
-    } else {
-      N = std::stoi(argv[1]);
-      if (N == 0 || N > 27) {
-        std::cout << "N should be in interval [1;27]: " << argv[1] << std::endl;
-        N = 0;
-      }
-      if (argc == 3) {
-        M = std::stoi(argv[2]);
-        if (M <= 0) {
-          std::cout << "M should at least be 1: " << argv[2] << std::endl;
-        }
+  {
+    int c;
+    bool should_error_exit = init_cl_arguments(argc, argv);
+
+    while ((c = getopt(argc, argv, "c")) != -1) {
+      switch(c) {
+      case 'c':
+        // HACK: 'constraint_closed' only works for 3x3 boards and bigger.
+        only_closed = 3u <= N;
+        continue;
+
+      case 'h':
+        std::cout << "        -c       [ ]          Enumerate only closed tours (rather open and closed)" << std::endl;
+        exit(0);
       }
     }
-  } catch (std::invalid_argument const &ex) {
-    std::cout << "Invalid number: " << argv[1] << std::endl;
-  } catch (std::out_of_range const &ex) {
-    std::cout << "Number out of range: " << argv[1] << std::endl;
-  }
 
-  if (N == 0 || M <= 0) {
-    exit(1);
+    if (!should_error_exit && N == 0) {
+      std::cout << "  Must specify positive number for N" << std::endl;
+      should_error_exit = true;
+    }
+
+    if (should_error_exit) { exit(1); }
   }
 
   // ===== ADIAR =====
@@ -249,7 +323,7 @@ int main(int argc, char* argv[])
 
   // ===== Knight's Tour =====
 
-  std::cout << "| Knight's Tour (" << N << "x" << N << ")" << std::endl
+  std::cout << "| " << N << "x" << N << " Knight's Tour (" << (only_closed ? "Closed" : "Open and Closed") << ")" << std::endl
             << "|" << std::endl;;
 
   adiar::zdd paths;
@@ -259,7 +333,7 @@ int main(int argc, char* argv[])
     paths = adiar::zdd_ithvar(0);
   } else {
     auto before_paths = get_timestamp();
-    paths = constraint_transition(N,0);
+    paths = only_closed ? constraint_closed(N) : constraint_transition(N,0);
     for (int t = 1; t < N*N-1; t++) {
       paths &= constraint_transition(N,t);
       largest_nodes = std::max(largest_nodes, zdd_nodecount(paths));
@@ -272,6 +346,8 @@ int main(int argc, char* argv[])
     auto before_only_once = get_timestamp();
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
+        if (only_closed && is_closed_square(i,j)) { continue; }
+
         paths &= constraint_exactly_once(N,i,j);
         largest_nodes = std::max(largest_nodes, zdd_nodecount(paths));
       }
@@ -292,14 +368,17 @@ int main(int argc, char* argv[])
             << "| Solutions: " << solutions << std::endl
             << "|" << std::endl
             << "| Memory use:" << std::endl
-            << "|  | Largest ZDD: " << largest_nodes << " nodes" << std::endl;
-
-  bool correct_result = solutions == expected_paths[N];
+            << "|  | Largest ZDD: " << largest_nodes << " nodes" << std::endl
+            << "|  | Final ZDD: " << zdd_nodecount(paths) << " nodes" << std::endl;
 
   // ===== ADIAR =====
   // Close all of Adiar down again
   adiar::adiar_deinit();
 
   // Return 'all good'
+  bool correct_result = only_closed
+    ? (N < 10 ? solutions == expected_closed[N] : true)
+    : (N < 9 ? solutions == expected_all[N] : true);
+
   exit(correct_result ? 0 : 1);
 }
