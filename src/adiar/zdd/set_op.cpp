@@ -7,6 +7,7 @@
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/product_construction.h>
 
+#include <adiar/zdd/zdd.h>
 #include <adiar/zdd/build.h>
 
 #include <adiar/assert.h>
@@ -43,10 +44,9 @@ namespace adiar
       || (is_sink(high2) && can_right_shortcut_zdd(op, high2));
   }
 
-
   //////////////////////////////////////////////////////////////////////////////
   // ZDD product construction policy
-  class zdd_prod_policy
+  class zdd_prod_policy : public zdd_policy, public prod_mixed_level_merger
   {
   public:
     static __zdd resolve_same_file(const zdd &zdd_1, const zdd &/* zdd_2 */,
@@ -108,18 +108,8 @@ namespace adiar
 
   public:
     static prod_rec resolve_request(const bool_op &op,
-                                    ptr_t t1, ptr_t t2,
                                     ptr_t low1, ptr_t low2, ptr_t high1, ptr_t high2)
     {
-      // Compensate for omitted node with high arc to F
-      if (is_sink(t1) || is_sink(t2) || label_of(t1) != label_of(t2)) {
-        if (t1 > t2) {
-          high1 = create_sink_ptr(false);
-        } else { // t1 < t2
-          high2 = create_sink_ptr(false);
-        }
-      }
-
       // Skip node, if it would be removed in the following Reduce
       if (zdd_skippable(op, high1, high2)) {
         return prod_rec_skipto { low1, low2 };

@@ -7,6 +7,7 @@
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/product_construction.h>
 
+#include <adiar/bdd/bdd.h>
 #include <adiar/bdd/build.h>
 #include <adiar/bdd/negate.h>
 
@@ -16,7 +17,7 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   // Apply policy for product construction.
-  class apply_prod_policy
+  class apply_prod_policy : public bdd_policy, public prod_mixed_level_merger
   {
   public:
     static __bdd resolve_same_file(const bdd &bdd_1, const bdd &bdd_2,
@@ -81,7 +82,6 @@ namespace adiar
 
   public:
     static prod_rec resolve_request(const bool_op &op,
-                                    ptr_t /* t1 */, ptr_t /* t2 */,
                                     ptr_t low1, ptr_t low2, ptr_t high1, ptr_t high2)
     {
       return prod_rec_output {

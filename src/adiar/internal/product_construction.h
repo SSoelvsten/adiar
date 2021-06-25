@@ -4,7 +4,14 @@
 #include <variant>
 
 #include <adiar/data.h>
+#include <adiar/tuple.h>
+
+#include <adiar/file.h>
+#include <adiar/file_stream.h>
+#include <adiar/file_writer.h>
+
 #include <adiar/bdd/bdd.h>
+
 
 namespace adiar
 {
@@ -37,17 +44,6 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  inline void prod_init_request(node_t &v, label_t out_label,
-                                ptr_t &low, ptr_t &high)
-  {
-    if (!is_sink(v) && label_of(v) == out_label) {
-      low = v.low;
-      high = v.high;
-    } else {
-      low = high = v.uid;
-    }
-  }
-
   inline void prod_recurse_out(prod_priority_queue_1_t &prod_pq_1, arc_writer &aw,
                                const bool_op &op,
                                ptr_t source, tuple target)
@@ -116,16 +112,133 @@ namespace adiar
     return sink_file;
   }
 
+  inline bool prod_from_1(ptr_t t1, ptr_t t2)
+  {
+    return fst(t1,t2) == t1;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  class prod_same_level_merger
+  {
+  public:
+    static void merge_root(ptr_t &low1, ptr_t &high1, ptr_t &low2, ptr_t &high2,
+                           label_t /* level */,
+                           const node_t &v1, const node_t &v2)
+    {
+      low1 = v1.low;
+      high1 = v1.high;
+
+      low2 = v2.low;
+      high2 = v2.high;
+    }
+
+  public:
+    static void merge_data(ptr_t &low1, ptr_t &high1, ptr_t &low2, ptr_t &high2,
+                           ptr_t t1, ptr_t t2, ptr_t t_seek,
+                           const node_t &v1, const node_t &v2,
+                           ptr_t data_low, ptr_t data_high)
+    {
+      low1  = t1 < t_seek ? data_low  : v1.low;
+      high1 = t1 < t_seek ? data_high : v1.high;
+
+      low2  = t2 < t_seek ? data_low  : v2.low;
+      high2 = t2 < t_seek ? data_high : v2.high;
+    }
+  };
+
+  class prod_mixed_level_merger
+  {
+  private:
+    static void __merge_root(const node_t &v, label_t level,
+                             ptr_t &low, ptr_t &high)
+    {
+      if (!is_sink(v) && label_of(v) == level) {
+        low = v.low;
+        high = v.high;
+      } else {
+        low = high = v.uid;
+      }
+    }
+
+  public:
+    static void merge_root(ptr_t &low1, ptr_t &high1, ptr_t &low2, ptr_t &high2,
+                           label_t level,
+                           const node_t &v1, const node_t &v2)
+    {
+      __merge_root(v1, level, low1, high1);
+      __merge_root(v2, level, low2, high2);
+    }
+
+  public:
+    static void merge_data(ptr_t &low1, ptr_t &high1, ptr_t &low2, ptr_t &high2,
+                           ptr_t t1, ptr_t t2, ptr_t t_seek,
+                           const node_t &v1, const node_t &v2,
+                           ptr_t data_low, ptr_t data_high)
+    {
+      if (is_sink(t1) || is_sink(t2) || label_of(t1) != label_of(t2)) {
+        if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink(t2)
+          low1 = v1.low;
+          high1 = v1.high;
+          low2 = high2 = t2;
+        } else { // ==> label_of(t1) > label_of(t2) || is_sink(t1)
+          low1 = high1 = t1;
+          low2 = v2.low;
+          high2 = v2.high;
+        }
+      } else {
+        prod_same_level_merger::merge_data(low1,high1, low2,high2,
+                                           t1, t2, t_seek,
+                                           v1, v2,
+                                           data_low, data_high);
+      }
+    }
+  };
+
   //////////////////////////////////////////////////////////////////////////////
   /// Creates the product construction of the given two DAGs.
   ///
-  /// \param nodes_i   DAGs to combine into one.
+  /// Behaviour of the product construction is controlled with the 'prod_policy'
+  /// class, which exposes static void strategy functions.
   ///
-  /// \param op        Binary boolean operator to be applied.
+  /// - resolve_same_file:
+  ///   Creates the out_t based on knowing both inputs refer to the same
+  ///   underlying file.
   ///
-  /// \return A node_file if the operator shortcuts the result to a sink, and
-  ///         otherwise an arc_file of the BDD representing the operator
-  ///         applied on both inputs.
+  /// - resolve_sink_root:
+  ///   Resolves (if possible) the cases for one of the two DAGs only being a
+  ///   sink. Uses the _union in the 'out_t' to trigger an early termination. If
+  ///   it holds an 'adiar::no_file', then the algorithm proceeds to the actual
+  ///   product construction.
+  ///
+  /// - resolve_request:
+  ///   Given all information collected for the two nodes (both children, if
+  ///   they are on the same level. Otherwise, only the first-seen node),
+  ///   returns whether (a) a node should be output and its two children to
+  ///   recurse to or (b) no node should be output (i.e. it is skipped) and what
+  ///   child to forward the request to.
+  ///
+  /// - no_skip:
+  ///   Constexpr boolean whether the strategy guarantees never to skip a level.
+  ///   This shortcuts some boolean conditions at compile-time.
+  ///
+  /// This 'prod_policy' also should inherit the general policy for the
+  /// decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in
+  /// zdd/zdd.h and so on). This provides the following functions
+  ///
+  /// - compute_cofactor:
+  ///   Used to change the low and high children retrieved from the input during
+  ///   the product construction.
+  ///
+  /// Other parameters are:
+  ///
+  /// \param in_i  DAGs to combine into one. Here, 'in_t' should be of type
+  ///              `decision_diagram` or a class that inherits from it.
+  ///
+  /// \param op    Binary boolean operator to be applied. See data.h for the
+  ///              ones directly provided by Adiar.
+  ///
+  /// \return      A class that inherits from __decision_diagram and describes
+  ///              the product of the two given DAGs.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy, typename out_t, typename in_t>
   out_t product_construction(const in_t &in_1,
@@ -164,13 +277,14 @@ namespace adiar
     id_t out_id = 0;
 
     ptr_t low1, low2, high1, high2;
-    prod_init_request(v1, out_label, low1, high1);
-    prod_init_request(v2, out_label, low2, high2);
+    prod_policy::merge_root(low1,high1, low2,high2, out_label, v1, v2);
 
-    // Shortcut the root
+    // Shortcut the root (maybe)
     {
-      prod_rec root_rec = prod_policy::resolve_request(op, v1.uid, v2.uid,
-                                                       low1, low2, high1, high2);
+      prod_policy::compute_cofactor(on_level(v1, out_label), low1, high1);
+      prod_policy::compute_cofactor(on_level(v2, out_label), low2, high2);
+
+      prod_rec root_rec = prod_policy::resolve_request(op, low1, low2, high1, high2);
 
       if (std::holds_alternative<prod_rec_output>(root_rec)) {
         prod_rec_output r = std::get<prod_rec_output>(root_rec);
@@ -238,7 +352,7 @@ namespace adiar
       // Forward information across the level
       if (is_node(t1) && is_node(t2) && label_of(t1) == label_of(t2)
           && !with_data && (v1.uid != t1 || v2.uid != t2)) {
-        node_t v0 = v1.uid == t1 ? v1 : v2;
+        node_t v0 = t1 == v1.uid /*prod_from_1(t1,t2)*/ ? v1 : v2;
 
         while (prod_pq_1.can_pull() && prod_pq_1.top().t1 == t1 && prod_pq_1.top().t2 == t2) {
           source = prod_pq_1.pull().source;
@@ -249,27 +363,16 @@ namespace adiar
 
       // Resolve current node and recurse
       // remember from above: ptr_t low1, low2, high1, high2;
-
-      if (is_sink(t1) || is_sink(t2) || label_of(t1) != label_of(t2)) {
-        if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink(t2)
-          low1 = v1.low;
-          high1 = v1.high;
-          low2 = high2 = t2;
-        } else { // ==> label_of(t1) > label_of(t2) || is_sink(t1)
-          low1 = high1 = t1;
-          low2 = v2.low;
-          high2 = v2.high;
-        }
-      } else {
-        low1  = t1 < t_seek ? data_low  : v1.low;
-        high1 = t1 < t_seek ? data_high : v1.high;
-
-        low2  = t2 < t_seek ? data_low  : v2.low;
-        high2 = t2 < t_seek ? data_high : v2.high;
-      }
+      prod_policy::merge_data(low1,high1, low2,high2,
+                              t1, t2, t_seek,
+                              v1, v2,
+                              data_low, data_high);
 
       // Resolve request
-      prod_rec rec_res = prod_policy::resolve_request(op, t1, t2, low1, low2, high1, high2);
+      prod_policy::compute_cofactor(on_level(t1, out_label), low1, high1);
+      prod_policy::compute_cofactor(on_level(t2, out_label), low2, high2);
+
+      prod_rec rec_res = prod_policy::resolve_request(op, low1, low2, high1, high2);
 
       if (prod_policy::no_skip || std::holds_alternative<prod_rec_output>(rec_res)) {
         prod_rec_output r = std::get<prod_rec_output>(rec_res);

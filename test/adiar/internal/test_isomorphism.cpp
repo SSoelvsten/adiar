@@ -1,4 +1,4 @@
-#include <adiar/internal/isomorphism.h>
+#include <adiar/internal/pred.h>
 
 go_bandit([]() {
     describe("INTERNAL: Isomorphism", [&]() {
@@ -137,7 +137,7 @@ go_bandit([]() {
         //////////////////////
         // One-node cases
         /*
-          1     ---- x42
+           1     ---- x42
           / \
           F T
         */

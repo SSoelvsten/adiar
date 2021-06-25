@@ -22,11 +22,28 @@ namespace adiar {
 
   // operators to allow __zdd&& arguments on one or two sides of an expression
   bool operator== (__zdd &&, __zdd &&);
-  bool operator!= (__zdd &&, __zdd &&);
   bool operator== (const zdd &, __zdd &&);
-  bool operator!= (const zdd &, __zdd &&);
   bool operator== (__zdd &&, const zdd &);
+
+  bool operator!= (__zdd &&, __zdd &&);
+  bool operator!= (const zdd &, __zdd &&);
   bool operator!= (__zdd &&, const zdd &);
+
+  bool operator<= (__zdd &&, __zdd &&);
+  bool operator<= (const zdd &, __zdd &&);
+  bool operator<= (__zdd &&, const zdd &);
+
+  bool operator>= (__zdd &&, __zdd &&);
+  bool operator>= (const zdd &, __zdd &&);
+  bool operator>= (__zdd &&, const zdd &);
+
+  bool operator< (__zdd &&, __zdd &&);
+  bool operator< (const zdd &, __zdd &&);
+  bool operator< (__zdd &&, const zdd &);
+
+  bool operator> (__zdd &&, __zdd &&);
+  bool operator> (const zdd &, __zdd &&);
+  bool operator> (__zdd &&, const zdd &);
 
   __zdd operator& (__zdd &&, __zdd &&);
   __zdd operator& (const zdd &, __zdd &&);
@@ -54,13 +71,8 @@ namespace adiar {
     friend size_t zdd_nodecount(const zdd&);
     friend label_t zdd_varcount(const zdd&);
 
-    // |- operators
-    friend bool operator== (const zdd& lhs, const zdd& rhs);
-    friend bool operator!= (const zdd& lhs, const zdd& rhs);
-
-    friend __zdd operator& (const zdd &lhs, const zdd &rhs);
-    friend __zdd operator| (const zdd &lhs, const zdd &rhs);
-    friend __zdd operator- (const zdd &lhs, const zdd &rhs);
+    friend bool zdd_subseteq(const zdd&, const zdd&);
+    friend bool zdd_disjoint(const zdd &, const zdd &);
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
@@ -87,6 +99,29 @@ namespace adiar {
 
     zdd& operator-= (const zdd &other);
     zdd& operator-= (zdd &&other);
+  };
+
+  bool operator== (const zdd& lhs, const zdd& rhs);
+  bool operator!= (const zdd& lhs, const zdd& rhs);
+
+  bool operator<= (const zdd& lhs, const zdd& rhs);
+  bool operator>= (const zdd& lhs, const zdd& rhs);
+
+  bool operator< (const zdd& lhs, const zdd& rhs);
+  bool operator> (const zdd& lhs, const zdd& rhs);
+
+  __zdd operator& (const zdd &lhs, const zdd &rhs);
+  __zdd operator| (const zdd &lhs, const zdd &rhs);
+  __zdd operator- (const zdd &lhs, const zdd &rhs);
+
+  //////////////////////////////////////////////////////////////////////////////
+  class zdd_policy
+  {
+  public:
+    static inline void compute_cofactor(bool on_curr_level, ptr_t &, ptr_t &high)
+    {
+      if (!on_curr_level) { high = create_sink_ptr(false); }
+    }
   };
 }
 

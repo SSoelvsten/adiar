@@ -28,6 +28,7 @@ set(HEADERS
   # zdd files
   zdd/build.h
   zdd/count.h
+  zdd/pred.h
   zdd/set_op.h
   zdd/zdd.h
 
@@ -38,7 +39,7 @@ set(HEADERS
   internal/build.h
   internal/count.h
   internal/decision_diagram.h
-  internal/isomorphism.h
+  internal/pred.h
   internal/levelized_priority_queue.h
   internal/product_construction.h
   internal/reduce.h
@@ -67,6 +68,7 @@ set(SOURCES
   # zdd files
   zdd/build.cpp
   zdd/count.cpp
+  zdd/pred.cpp
   zdd/set_op.cpp
   zdd/zdd.cpp
 
@@ -75,7 +77,7 @@ set(SOURCES
 
   # internal
   internal/decision_diagram.cpp
-  internal/isomorphism.cpp
+  internal/pred.cpp
   internal/levelized_priority_queue.cpp
   internal/reduce.cpp
 )

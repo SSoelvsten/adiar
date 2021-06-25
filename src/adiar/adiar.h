@@ -33,6 +33,7 @@
 /// ZDD
 #include <adiar/zdd/build.h>
 #include <adiar/zdd/count.h>
+#include <adiar/zdd/pred.h>
 #include <adiar/zdd/set_op.h>
 #include <adiar/zdd/zdd.h>
 

@@ -59,9 +59,6 @@ namespace adiar {
     friend label_t bdd_varcount(const bdd&);
 
     // |- operators
-    friend bool operator== (const bdd& lhs, const bdd& rhs);
-    friend bool operator!= (const bdd& lhs, const bdd& rhs);
-
     friend bdd operator~ (const bdd& bdd);
     friend bdd operator~ (bdd&& bdd);
 
@@ -99,6 +96,19 @@ namespace adiar {
 
     bdd& operator^= (const bdd &other);
     bdd& operator^= (bdd &&other);
+  };
+
+  bool operator== (const bdd& lhs, const bdd& rhs);
+  bool operator!= (const bdd& lhs, const bdd& rhs);
+
+  //////////////////////////////////////////////////////////////////////////////
+  class bdd_policy
+  {
+  public:
+    static inline void compute_cofactor(bool /* on_curr_level */,
+                                        ptr_t & /* low */,
+                                        ptr_t & /* high */)
+    { /* do nothing */ }
   };
 }
 

@@ -91,6 +91,11 @@ namespace adiar
               size_t MetaStreams, size_t Buckets>
     friend class levelized_priority_queue;
 
+    friend bool is_isomorphic(const decision_diagram&, const decision_diagram&);
+
+    template<typename comp_policy>
+    friend bool comparison_check(const decision_diagram &in_1, const decision_diagram &in_2);
+
     template<typename prod_policy, typename out_t, typename in_t>
     friend out_t product_construction(const in_t &in_1,
                                       const in_t &in_2,
