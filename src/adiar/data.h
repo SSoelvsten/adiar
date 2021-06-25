@@ -166,6 +166,8 @@ namespace adiar {
 
   bool is_commutative(const bool_op &op);
 
+  //////////////////////////////////////////////////////////////////////////////
+  bool on_level(ptr_t p, label_t level);
 
   //////////////////////////////////////////////////////////////////////////////
   /// A node then contains a unique identifier for said node in n.uid_t together
@@ -193,6 +195,8 @@ namespace adiar {
   node_t create_sink(bool value);
   bool is_sink(const node_t &n);
   bool value_of(const node_t &n);
+
+  bool on_level(const node_t &n, label_t level);
 
   node_t negate(const node_t& n);
   node operator! (const node& a);

@@ -5,7 +5,7 @@
 #include <adiar/data.h>
 #include <adiar/file_stream.h>
 
-#include <adiar/internal/isomorphism.h>
+#include <adiar/internal/pred.h>
 #include <adiar/internal/reduce.h>
 
 #include <adiar/bdd/apply.h>
@@ -45,65 +45,24 @@ namespace adiar {
   // Operators
   bdd operator~ (__bdd &&in) { return ~bdd(std::forward<__bdd>(in)); }
 
-  __bdd operator& (__bdd &&lhs, __bdd &&rhs) {
-    return bdd(std::forward<__bdd>(lhs)) & bdd(std::forward<__bdd>(rhs));
+#define __bdd_oper(out_t, op)                                              \
+  out_t operator op (__bdd &&lhs, __bdd &&rhs) {                           \
+    return bdd(std::forward<__bdd>(lhs)) op bdd(std::forward<__bdd>(rhs)); \
+  }                                                                        \
+                                                                           \
+  out_t operator op (const bdd &lhs, __bdd &&rhs) {                        \
+    return lhs op bdd(std::forward<__bdd>(rhs));                           \
+  }                                                                        \
+                                                                           \
+  out_t operator op (__bdd &&lhs, const bdd &rhs) {                        \
+    return bdd(std::forward<__bdd>(lhs)) op rhs;                           \
   }
 
-  __bdd operator& (const bdd &lhs, __bdd &&rhs) {
-    return lhs & bdd(std::forward<__bdd>(rhs));
-  }
-
-  __bdd operator& (__bdd &&lhs, const bdd &rhs) {
-    return bdd(std::forward<__bdd>(lhs)) & rhs;
-  }
-
-  __bdd operator| (__bdd &&lhs, __bdd &&rhs) {
-    return bdd(std::forward<__bdd>(lhs)) | bdd(std::forward<__bdd>(rhs));
-  }
-
-  __bdd operator| (const bdd &lhs, __bdd &&rhs) {
-    return lhs | bdd(std::forward<__bdd>(rhs));
-  }
-
-  __bdd operator| (__bdd &&lhs, const bdd &rhs) {
-    return bdd(std::forward<__bdd>(lhs)) | rhs;
-  }
-
-  __bdd operator^ (__bdd &&lhs, __bdd &&rhs) {
-    return bdd(std::forward<__bdd>(lhs)) ^ bdd(std::forward<__bdd>(rhs));
-  }
-
-  __bdd operator^ (const bdd &lhs, __bdd &&rhs) {
-    return lhs ^ bdd(std::forward<__bdd>(rhs));
-  }
-
-  __bdd operator^ (__bdd &&lhs, const bdd &rhs) {
-    return bdd(std::forward<__bdd>(lhs)) ^ rhs;
-  }
-
-  bool operator== (__bdd &&lhs, __bdd &&rhs) {
-    return bdd(std::forward<__bdd>(lhs)) == bdd(std::forward<__bdd>(rhs));
-  }
-
-  bool operator!= (__bdd &&lhs, __bdd &&rhs) {
-    return bdd(std::forward<__bdd>(lhs)) != bdd(std::forward<__bdd>(rhs));
-  }
-
-  bool operator== (const bdd &lhs, __bdd &&rhs) {
-    return lhs == bdd(std::forward<__bdd>(rhs));
-  }
-
-  bool operator!= (const bdd &lhs, __bdd &&rhs) {
-    return lhs != bdd(std::forward<__bdd>(rhs));
-  }
-
-  bool operator== (__bdd &&lhs, const bdd &rhs) {
-    return bdd(std::forward<__bdd>(lhs)) == rhs;
-  }
-
-  bool operator!= (__bdd &&lhs, const bdd &rhs) {
-    return bdd(std::forward<__bdd>(lhs)) != rhs;
-  }
+  __bdd_oper(__bdd, &)
+  __bdd_oper(__bdd, |)
+  __bdd_oper(__bdd, ^)
+  __bdd_oper(bool, ==)
+  __bdd_oper(bool, !=)
 
   //////////////////////////////////////////////////////////////////////////////
   bdd& bdd::operator= (const bdd &other)
@@ -157,7 +116,7 @@ namespace adiar {
 
   bool operator== (const bdd &lhs, const bdd &rhs)
   {
-    return is_isomorphic(lhs.file, rhs.file, lhs.negate, rhs.negate);
+    return is_isomorphic(lhs, rhs);
   }
 
   bool operator!= (const bdd &lhs, const bdd &rhs) { return !(lhs == rhs); }

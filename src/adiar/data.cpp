@@ -221,6 +221,12 @@ namespace adiar {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  bool on_level(ptr_t p, label_t level)
+  {
+    return is_sink(p) ? false : label_of(p) == level;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   ///  NODE
   //////////////////////////////////////////////////////////////////////////////
   node create_node(uid_t uid, ptr_t low, ptr_t high)
@@ -284,6 +290,11 @@ namespace adiar {
     adiar_debug(!is_sink(n), "Cannot extract label of a sink");
 
     return label_of(n.uid);
+  }
+
+  bool on_level(const node&n, label_t level)
+  {
+    return on_level(n.uid, level);
   }
 
   node_t negate(const node_t &n)
