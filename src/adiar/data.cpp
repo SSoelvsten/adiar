@@ -158,12 +158,12 @@ namespace adiar {
 
   const bool_op imp_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return or_op(negate(sink1), sink2);
+    return create_sink_ptr(unflag(sink1) <= unflag(sink2));
   };
 
   const bool_op invimp_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
   {
-    return or_op(negate(sink2), sink1);
+    return create_sink_ptr(unflag(sink2) <= unflag(sink1));
   };
 
   const bool_op equiv_op = xnor_op;
