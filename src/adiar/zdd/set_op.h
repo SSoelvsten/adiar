@@ -9,7 +9,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Given two ZDDs creates one as per an operator.
   ///
-  /// \param bdd_i     ZDD to apply with the other.
+  /// \param zdd_i     ZDD to apply with the other.
   ///
   /// \param op        Binary boolean operator to be applied.
   ///
