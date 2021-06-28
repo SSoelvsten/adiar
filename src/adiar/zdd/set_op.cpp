@@ -4,7 +4,6 @@
 #include <adiar/file_writer.h>
 #include <adiar/tuple.h>
 
-#include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/product_construction.h>
 
 #include <adiar/zdd/zdd.h>

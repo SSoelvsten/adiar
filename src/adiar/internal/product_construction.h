@@ -12,6 +12,7 @@
 
 #include <adiar/bdd/bdd.h>
 
+#include <adiar/internal/levelized_priority_queue.h>
 
 namespace adiar
 {
