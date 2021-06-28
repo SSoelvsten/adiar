@@ -29,6 +29,7 @@ set(HEADERS
   zdd/build.h
   zdd/count.h
   zdd/pred.h
+  zdd/project.h
   zdd/set_op.h
   zdd/zdd.h
 
@@ -70,6 +71,7 @@ set(SOURCES
   zdd/build.cpp
   zdd/count.cpp
   zdd/pred.cpp
+  zdd/project.cpp
   zdd/set_op.cpp
   zdd/zdd.cpp
 
