@@ -6,6 +6,7 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/levelized_priority_queue.h>
+#include <adiar/internal/util.h>
 
 #include <adiar/bdd/build.h>
 
@@ -31,8 +32,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_restrict(const bdd &bdd, const assignment_file &assignment)
   {
-    // TODO: Assert whether no assignment actually is present in the bdd.
-    if (assignment.size() == 0 || is_sink(bdd, is_any)) {
+    if (assignment.size() == 0
+        || is_sink(bdd, is_any)
+        || disjoint_labels<assignment_file, assignment_stream<>>(assignment, bdd)) {
       return bdd;
     }
 
@@ -51,13 +53,13 @@ namespace adiar
     size_t level_size = 0;
 
     // find the next assignment
-    while(as.can_pull() && label_of(n) > a.label) {
+    while(as.can_pull() && label_of(a) < label_of(n)) {
       a = as.pull();
     }
 
     // process the root and create initial recursion requests
-    if(a.label == label_of(n)) {
-      ptr_t rec_child = a.value ? n.high : n.low;
+    if(label_of(a) == label_of(n)) {
+      ptr_t rec_child = value_of(a) ? n.high : n.low;
 
       if(is_sink(rec_child)) {
         return bdd_sink(value_of(rec_child));
@@ -83,7 +85,7 @@ namespace adiar
         level = restrict_pq.current_level();
 
         // seek assignment
-        while(as.can_pull() && level > a.label) {
+        while(as.can_pull() && level > label_of(a)) {
           a = as.pull();
         }
       }
@@ -94,8 +96,8 @@ namespace adiar
       }
 
       // process node and forward information
-      if(a.label == label_of(n)) {
-        ptr_t rec_child = a.value ? n.high : n.low;
+      if(label_of(a) == label_of(n)) {
+        ptr_t rec_child = value_of(a) ? n.high : n.low;
 
         while(restrict_pq.can_pull() && restrict_pq.top().target == n.uid) {
           arc_t parent_arc = restrict_pq.pull();

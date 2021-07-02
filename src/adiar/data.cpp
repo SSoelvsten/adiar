@@ -394,6 +394,16 @@ namespace adiar {
     return { label, value };
   }
 
+  label_t label_of(const assignment_t& a)
+  {
+    return a.label;
+  }
+
+  bool value_of(const assignment_t& a)
+  {
+    return a.value;
+  }
+
   assignment operator! (const assignment& a)
   {
     return { a.label, !a.value };

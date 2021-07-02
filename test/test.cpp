@@ -114,7 +114,7 @@ namespace snowhouse
     static std::string ToString(const assignment_t& a)
     {
       std::stringstream stream;
-      stream << "assignment: [x" << a.label << "|->" << a.value << "]";
+      stream << "assignment: [x" << label_of(a) << "|->" << value_of(a) << "]";
       return stream.str();
     }
   };

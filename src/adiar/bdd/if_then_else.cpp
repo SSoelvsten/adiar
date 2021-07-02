@@ -5,6 +5,7 @@
 #include <adiar/tuple.h>
 
 #include <adiar/internal/levelized_priority_queue.h>
+#include <adiar/internal/util.h>
 
 #include <adiar/bdd/build.h>
 #include <adiar/bdd/apply.h>
@@ -48,22 +49,6 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  bool bdd_disjunct_levels(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    meta_stream<node_t, 1> in_meta_1(bdd_1);
-    meta_stream<node_t, 1> in_meta_2(bdd_2);
-    while(in_meta_1.can_pull() && in_meta_2.can_pull()) {
-      if (label_of(in_meta_1.peek()) == label_of(in_meta_2.peek())) {
-        return false;
-      } else if (label_of(in_meta_1.peek()) < label_of(in_meta_2.peek())) {
-        in_meta_1.pull();
-      } else {
-        in_meta_2.pull();
-      }
-    }
-    return true;
-  }
-
   node_file ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
   {
     ptr_t root_then = NIL, root_else = NIL;
@@ -229,12 +214,12 @@ namespace adiar
     node_stream<> in_nodes_else(bdd_else);
     node_t v_else = in_nodes_else.pull();
 
-    // If the levels of 'then' and 'else' are disjunct and the 'if' BDD is above
+    // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
     // the two others, then we can merely zip the 'then' and 'else' BDDs. This
     // is only O((N1+N2+N3)/B) I/Os!
     if (max_label(bdd_if) < label_of(v_then) &&
         max_label(bdd_if) < label_of(v_then) &&
-        bdd_disjunct_levels(bdd_then, bdd_else)) {
+        disjoint_labels(bdd_then, bdd_else)) {
       return ite_zip_bdds(bdd_if,bdd_then,bdd_else);
     }
     // From here on forward, we probably cannot circumvent actually having to do
@@ -243,7 +228,6 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    // TODO: Do statistics on size of the 3 priority queues
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
     ite_priority_queue_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, available_memory / 3);

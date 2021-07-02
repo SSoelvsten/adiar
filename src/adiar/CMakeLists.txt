@@ -45,6 +45,7 @@ set(HEADERS
   internal/product_construction.h
   internal/quantify.h
   internal/reduce.h
+  internal/util.h
 )
 
 set(SOURCES

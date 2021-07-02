@@ -339,7 +339,7 @@ go_bandit([]() {
             AssertThat(out_nodes.can_pull(), Is().False());
           });
 
-        it("should return T sink given a T sink", [&]() {
+        it("should return input unchanged when given a T sink", [&]() {
             node_file T_file;
 
             { // Garbage collect writer to free write-lock
@@ -356,16 +356,13 @@ go_bandit([]() {
                  << create_assignment(42, false);
             }
 
-            __bdd output = bdd_restrict(T_file, assignment);
+            __bdd out = bdd_restrict(T_file, assignment);
 
-            node_test_stream out_nodes(output);
-
-            AssertThat(out_nodes.can_pull(), Is().True());
-            AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
-            AssertThat(out_nodes.can_pull(), Is().False());
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(T_file._file_ptr));
+            AssertThat(out.negate, Is().False());
           });
 
-        it("should return F sink given a F sink", [&]() {
+        it("should return input unchanged when given a F sink", [&]() {
             node_file F_file;
 
             { // Garbage collect writer to free write-lock
@@ -382,17 +379,30 @@ go_bandit([]() {
                  << create_assignment(28, false);
             }
 
-            __bdd output = bdd_restrict(F_file, assignment);
+            __bdd out = bdd_restrict(F_file, assignment);
 
-            node_test_stream out_nodes(output);
-
-            AssertThat(out_nodes.can_pull(), Is().True());
-            AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
-            AssertThat(out_nodes.can_pull(), Is().False());
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(F_file._file_ptr));
+            AssertThat(out.negate, Is().False());
           });
 
         it("should return input unchanged when given an empty assignment", [&]() {
             assignment_file assignment;
+
+            __bdd out = bdd_restrict(bdd, assignment);
+
+            AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd._file_ptr));
+            AssertThat(out.negate, Is().False());
+          });
+
+        it("should return input unchanged when assignment that is disjoint of its live variables", [&]() {
+            assignment_file assignment;
+            { // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(5, false)
+                 << create_assignment(6, true)
+                 << create_assignment(7, true)
+                ;
+            }
 
             __bdd out = bdd_restrict(bdd, assignment);
 
