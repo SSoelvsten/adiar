@@ -235,10 +235,25 @@ namespace adiar {
   bool operator== (const arc &a, const arc &b);
   bool operator!= (const arc &a, const arc &b);
 
-  struct by_source_lt : public std::binary_function<arc_t, arc_t, bool>
+  struct arc_source_lt : public std::binary_function<arc_t, arc_t, bool>
   {
-    bool operator()(const arc_t& a, const arc_t& b) const
-    { return a.source < b.source; }
+    bool operator ()(const arc_t& a, const arc_t& b) const {
+      return a.source < b.source;
+    }
+  };
+
+  struct arc_target_lt : public std::binary_function<arc_t, arc_t, bool>
+  {
+    bool operator ()(const arc_t& a, const arc_t& b) const {
+      return a.target < b.target;
+    }
+  };
+
+  struct arc_target_label
+  {
+    label_t label_of(const arc_t& a) const {
+      return adiar::label_of(a.target);
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////

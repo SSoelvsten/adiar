@@ -1,7 +1,6 @@
 #include "restrict.h"
 
-#include <tpie/file_stream.h>
-#include <tpie/sort.h>
+#include <adiar/data.h>
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
@@ -14,19 +13,7 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
-  struct restrict_queue_lt {
-    bool operator ()(const arc_t& a, const arc_t& b) {
-      return a.target < b.target;
-    }
-  };
-
-  struct restrict_queue_label {
-    label_t label_of(const arc_t& a) {
-      return adiar::label_of(a.target);
-    }
-  };
-
-  typedef levelized_node_priority_queue<arc_t, restrict_queue_label, restrict_queue_lt> restrict_priority_queue_t;
+  typedef levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt> restrict_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
