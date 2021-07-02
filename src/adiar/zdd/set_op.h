@@ -17,7 +17,7 @@ namespace adiar
   ///         operator applied to the two family of sets.
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Should this be exposed to the end user?
-  __zdd zdd_set_op(const zdd &zdd_1, const zdd &zdd_2, const bool_op &op);
+  __zdd zdd_binop(const zdd &zdd_1, const zdd &zdd_2, const bool_op &op);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Given two ZDDs creates a new ZDD that represents the union of their

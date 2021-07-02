@@ -124,7 +124,7 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_set_op(const zdd &zdd_1, const zdd &zdd_2, const bool_op &op)
+  __zdd zdd_binop(const zdd &zdd_1, const zdd &zdd_2, const bool_op &op)
   {
     return product_construction<zdd_prod_policy, __zdd>(zdd_1, zdd_2, op);
   }
@@ -132,16 +132,16 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_union(const zdd &zdd_1, const zdd &zdd_2)
   {
-    return zdd_set_op(zdd_1, zdd_2, or_op);
+    return zdd_binop(zdd_1, zdd_2, or_op);
   }
 
   __zdd zdd_intsec(const zdd &zdd_1, const zdd &zdd_2)
   {
-    return zdd_set_op(zdd_1, zdd_2, and_op);
+    return zdd_binop(zdd_1, zdd_2, and_op);
   }
 
   __zdd zdd_diff(const zdd &zdd_1, const zdd &zdd_2)
   {
-    return zdd_set_op(zdd_1, zdd_2, diff_op);
+    return zdd_binop(zdd_1, zdd_2, diff_op);
   }
 }
