@@ -1,6 +1,8 @@
 #ifndef ADIAR_TUPLE_H
 #define ADIAR_TUPLE_H
 
+#include <functional>
+
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
@@ -66,7 +68,7 @@ namespace adiar {
     }
   };
 
-  struct tuple_lt
+  struct tuple_lt : public std::binary_function<tuple, tuple, bool>
   {
     bool operator()(const tuple &a, const tuple &b)
     {
@@ -74,7 +76,7 @@ namespace adiar {
     }
   };
 
-  struct tuple_fst_lt
+  struct tuple_fst_lt : public std::binary_function<tuple, tuple, bool>
   {
     bool operator()(const tuple &a, const tuple &b)
     {
@@ -85,7 +87,7 @@ namespace adiar {
     }
   };
 
-  struct tuple_snd_lt
+  struct tuple_snd_lt : public std::binary_function<tuple, tuple, bool>
   {
     bool operator()(const tuple &a, const tuple &b)
     {
@@ -104,7 +106,7 @@ namespace adiar {
     }
   };
 
-  struct triple_lt
+  struct triple_lt : public std::binary_function<triple, triple, bool>
   {
     bool operator()(const triple &a, const triple &b)
     {
@@ -114,7 +116,7 @@ namespace adiar {
     }
   };
 
-  struct triple_fst_lt
+  struct triple_fst_lt : public std::binary_function<triple, triple, bool>
   {
     bool operator()(const triple &a, const triple &b)
     {
@@ -124,7 +126,7 @@ namespace adiar {
     }
   };
 
-  struct triple_snd_lt
+  struct triple_snd_lt : public std::binary_function<triple, triple, bool>
   {
     bool operator()(const triple &a, const triple &b)
     {
@@ -134,7 +136,7 @@ namespace adiar {
     }
   };
 
-  struct triple_trd_lt
+  struct triple_trd_lt : public std::binary_function<triple, triple, bool>
   {
     bool operator()(const triple &a, const triple &b)
     {

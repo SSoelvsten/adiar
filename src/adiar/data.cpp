@@ -378,7 +378,7 @@ namespace adiar {
   node node_of(const arc& low, const arc& high)
   {
     adiar_debug(unflag(low.source) == unflag(high.source), "Arcs are not of the same node");
-    adiar_debug(!is_high(low), "High-flag set on low child");
+    adiar_debug(!is_high(low), "High flag set on low child");
     adiar_debug(is_high(high), "High flag not set on high child");
 
     return { low.source, low.target, high.target };

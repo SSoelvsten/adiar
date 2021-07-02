@@ -430,7 +430,7 @@ namespace adiar {
     void detach() {
       if (attached() && _streams[2].size() > 0) {
         tpie::progress_indicator_null pi;
-        tpie::sort(_streams[2], by_source_lt(), pi);
+        tpie::sort(_streams[2], arc_source_lt(), pi);
       }
 
       return meta_file_writer::detach();

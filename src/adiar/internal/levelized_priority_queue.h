@@ -366,10 +366,10 @@ namespace adiar {
       bool has_stop_label = stop_label <= MAX_LABEL;
 
       adiar_debug(!has_stop_label || _label_comparator(front_bucket_label(), stop_label),
-                 "Stop label is prior to the current front bucket");
+                 "Stop label should be past the current front bucket");
 
       adiar_debug(!can_pull(),
-                 "Level is non-empty");
+                 "Level should be emptied before moving on");
 
       adiar_debug(has_next_level(),
                  "Has no next level to go to");
