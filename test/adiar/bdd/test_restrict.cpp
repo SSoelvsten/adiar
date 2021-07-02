@@ -318,6 +318,9 @@ go_bandit([]() {
             AssertThat(out_nodes.can_pull(), Is().True());
             AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
             AssertThat(out_nodes.can_pull(), Is().False());
+
+            meta_test_stream<node_t, NODE_FILE_COUNT> meta_arcs(output);
+            AssertThat(meta_arcs.can_pull(), Is().False());
           });
 
         it("should return T sink. Assignment: (T,T,F,_)", [&]() {
@@ -337,6 +340,9 @@ go_bandit([]() {
             AssertThat(out_nodes.can_pull(), Is().True());
             AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
             AssertThat(out_nodes.can_pull(), Is().False());
+
+            meta_test_stream<node_t, NODE_FILE_COUNT> meta_arcs(output);
+            AssertThat(meta_arcs.can_pull(), Is().False());
           });
 
         it("should return input unchanged when given a T sink", [&]() {
@@ -643,6 +649,66 @@ go_bandit([]() {
             AssertThat(meta_arcs.can_pull(), Is().True());
             AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,2u)));
 
+            AssertThat(meta_arcs.can_pull(), Is().False());
+          });
+
+        it("should return sink-child of restricted root [assignment = T]", [&]() {
+            node_file sink_child_of_root_bdd;
+
+            node_t n2 = create_node(2,MAX_ID, sink_T, sink_T);
+            node_t n1 = create_node(1,MAX_ID, n2.uid, sink_F);
+
+            { // Garbage collect writer to free write-lock
+              node_writer dead_w(sink_child_of_root_bdd);
+              dead_w << n2 << n1;
+            }
+
+            assignment_file assignment;
+
+            {  // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(1, true);
+            }
+
+            __bdd out = bdd_restrict(sink_child_of_root_bdd, assignment);
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            meta_test_stream<node_t, NODE_FILE_COUNT> meta_arcs(out);
+            AssertThat(meta_arcs.can_pull(), Is().False());
+          });
+
+        it("should return sink-child of restricted root [assignment = F]", [&]() {
+            node_file sink_child_of_root_bdd;
+
+            node_t n2 = create_node(2,MAX_ID, sink_T, sink_T);
+            node_t n1 = create_node(0,MAX_ID, sink_T, n2.uid);
+
+            { // Garbage collect writer to free write-lock
+              node_writer dead_w(sink_child_of_root_bdd);
+              dead_w << n2 << n1;
+            }
+
+            assignment_file assignment;
+
+            {  // Garbage collect writer to free write-lock
+              assignment_writer aw(assignment);
+              aw << create_assignment(0, false);
+            }
+
+            __bdd out = bdd_restrict(sink_child_of_root_bdd, assignment);
+
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+            AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            meta_test_stream<node_t, NODE_FILE_COUNT> meta_arcs(out);
             AssertThat(meta_arcs.can_pull(), Is().False());
           });
       });
