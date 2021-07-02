@@ -269,8 +269,8 @@ namespace adiar {
   /// An assignment to a variable consists of its label and the value of its
   /// assignment.
   ///
-  /// TODO: We know that the label is only 16 bits, so we could place the
-  /// boolean value inside of the label.
+  /// TODO: We know that the label is only 24 out of 32 bits, so we could place
+  /// the boolean value inside of the label.
   //////////////////////////////////////////////////////////////////////////////
   struct assignment {
     label_t label;
@@ -280,6 +280,9 @@ namespace adiar {
   typedef assignment assignment_t;
 
   assignment_t create_assignment(label_t label, bool value);
+
+  label_t label_of(const assignment_t& a);
+  bool value_of(const assignment_t& a);
 
   assignment operator! (const assignment& a);
 

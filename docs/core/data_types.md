@@ -138,3 +138,11 @@ assignment.
 - `assignment_t create_assignment(label_t label, bool value)`
 
   Create an assignment given a label and value.
+
+- `label_t label_of(assignment_t assignment)`
+
+  Obtain the label of the variable to-be assigned a value.
+
+- `assignment_t create_assignment(label_t label, bool value)`
+
+  Obtain the value to-be assigned to the variable with the label.
