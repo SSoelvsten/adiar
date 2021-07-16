@@ -19,7 +19,6 @@ may constitute interesting undergraduate and graduate projects.
         - [Proof Logging](#proof-logging)
     - [Other Decision Diagrams](#other-decision-diagrams)
         - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
-        - [Zero-suppressed Decision Diagrams](#zero-suppressed-decision-diagrams)
         - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
         - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
@@ -225,49 +224,6 @@ One can easily extend the proposed representation of sink nodes to encompass
 non-boolean values, such as integers or floats. Thereby, the algorithms
 immediately yield an I/O efficient implementation of the _Multi-Terminal Binary
 Decision Diagrams_ (MTBDD) of [[Fujita97](#references)].
-
-### Zero-suppressed Decision Diagrams
-A Zero-suppressed Decision Diagram [[Minato93,Minato01](#references)] is a binary
-decision diagram, which is very compresed when representing sparse sets of bit
-vectors. This has been shown to be great for solving NP-Complete problems and
-symbolic model checking algorithms on sparse sets of states.
-
-To achieve this, ZDDs make use of a different reduction rule than BDDs to do so.
-So, to implement them we need to:
-
-- Generalize the _Reduce_ with a strategy pattern with lambdas.
-
-- Repurpose/Generalize current algorithms wherever possible
- 
-  - `zdd_empty`: Same as `bdd_false`
-
-  - `zdd_null`/`zdd_base`: Same as `bdd_true`
-
-  - `zdd_ithvar`: Same as `bdd_ithvar`
-
-  - `zdd_union`, `zdd_intsec`, `zdd_diff`: A generalized `bdd_apply` algorithm with
-    _or_, _and_ and _diff_ as the operators. The recursion request generation for ZDDs
-    need to take into account the operator and the reduction rule to be optimal. So, a
-    it is needed to add a strategy pattern in that spot (and to make Apply work with
-    `nil` inside of the request tuples?).
-
-  - `zdd_onset`/`zdd_subset1` and `zdd_offset`/`zdd_subset0`: Can be done with `bdd_restrict`
-
-  - `zdd_count`: Same as `bdd_pathcount`
-  
-- Implement other 'new' and more complex algorithms.
-
-  - `zdd_change`: Should be possible to do in a single bottom-up sweep, though one
-    needs to remove/add nodes based on the reduction rules above the given label.
-  
-  - Unate Cube operations `zdd_prod`, `zdd_div`, `zdd_mod` [[Minato01](#references)]:
-    These seem to again do a double-recursion similar to `bdd_exists` and `bdd_forall`.
-    So, we can probably reuse the same technique to make this more efficient.
-
-- Finally, the functions for reasoning about state-transition systems into ZDDs, such
-  as `bdd_ite`, `bdd_exists` and `bdd_relprod` needs to be translated. See
-  [[Hajighasemi14](#references)] for a recursive version of these.
-
 
 ### Multi-valued Decision Diagrams
 By solely using an edge-based representation of the data-structure one can also
