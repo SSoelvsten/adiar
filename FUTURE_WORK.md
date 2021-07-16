@@ -13,7 +13,6 @@ may constitute interesting undergraduate research projects.
         - [Composition](#composition)
         - [Advanced satisfiability functions](#advanced-satisfiability-functions)
         - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
-        - [Variable reordering](#variable-reordering)
     - [Optimising the BDD](#optimising-the-bdd)
         - [Complement Edges](#complement-edges)
     - [Extensions](#extensions)
@@ -113,28 +112,6 @@ are:
 - `bdd_simplify`: Their _Restrict_ function
 - `bdd_constrain`: Their _Constrain_ function
 - `bdd_expand`: Their _Expand_ function
-
-
-### Variable reordering
-
-Currently, _Adiar_ only uses a static ordering of the variables, but since the
-size of the BDD is heavily influenced by the order chosen then many BDD
-libraries provide variable reordering algorithms, or even do these themselves
-behind the scenes.
-
-This essentially involves two steps:
-
-- Implement a `bdd_replace` function that is given a label_tuple file
-- Implement heuristics that generate the label_tuple file for the `bdd_replace`,
-  that then can be run with a `bdd_reorder` function.
-
-How one can rephrase these within the design of _Adiar_ will probably require
-quite a bit of creativity, understanding of the I/O model and also of the original
-variable reordering algorithms.
-
-The question also is, what should we do when using a reordered BDD? Should the
-renaming be explicit to the user, or should it stay transparent? The latter would
-result in many more changes in the data types and all other algorithms.
 
 
 ## Optimising the BDD
