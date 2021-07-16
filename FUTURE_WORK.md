@@ -1,22 +1,22 @@
 # Future Work
 In the following we list multiple avenues for optimisations and extensions which
-may constitute interesting undergraduate research projects.
+may constitute interesting undergraduate and graduate projects.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
 - [Future Work](#future-work)
-    - [Implementation of missing BDD algorithms](#implementation-of-missing-bdd-algorithms)
+    - [Missing BDD algorithms](#missing-bdd-algorithms)
         - [Data type conversions](#data-type-conversions)
         - [Projection](#projection)
         - [Set manipulation](#set-manipulation)
         - [Composition](#composition)
         - [Advanced satisfiability functions](#advanced-satisfiability-functions)
         - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
-    - [Optimising the BDD](#optimising-the-bdd)
-        - [Complement Edges](#complement-edges)
-    - [Extensions](#extensions)
+    - [Additional Featyres](#additional-features)
+        - [Attributed Edges](#attributed-edges)
         - [Proof Logging](#proof-logging)
+    - [Other Decision Diagrams](#other-decision-diagrams)
         - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
         - [Zero-suppressed Decision Diagrams](#zero-suppressed-decision-diagrams)
         - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
@@ -30,8 +30,8 @@ may constitute interesting undergraduate research projects.
 <!-- markdown-toc end -->
 
 
-## Implementation of missing BDD algorithms
-There are still many features for BDDs not yet addressed in the _Adiar_ library,
+## Missing BDD algorithms
+There are still many algorithms for BDDs not yet present in the _Adiar_ library,
 and valuable additions to the current project can be made in implementing these.
 All of these of course should be made in the style of _Time-Forward Processing_
 like the rest.
@@ -52,7 +52,7 @@ Similarly, the `bdd_and` and `bdd_or` functions in `bdd/build.cpp` should maybe
 be extended to also take an array, `std::vector`, or even make them variadic.
 
 The simple way to do this would be by _O(N)_ time and _(N/B)_ I/O algorithms that
-use _O(N)_ more space on disk. I would expect though, that with some templating
+use _O(N)_ more space on disk. I would expect though that (with some templating)
 it should be possible to reuse the original files and convert the types on-the-fly.
 
 ### Projection
@@ -114,16 +114,19 @@ are:
 - `bdd_expand`: Their _Expand_ function
 
 
-## Optimising the BDD
+## Additional features
 
-### Complement Edges
+### Attributed edges
 Currently, we do not support complement edges, though one can expect about a 7%
 factor decrease in the size of the OBDD from using said technique. In the
 recursive algorithms, one can even expect a factor two decrease in the
 algorithms execution time [[Brace90](#references)].
 
+Our bit representation of _unique identifiers_ already has a single bit-flag,
+which is currently unused in a _node_ and on the _target_ of an _arc_. These are
+currently reserved for implementation of this very feature, meaning we primarily
+are lacking the additional logic in all of the algorithms.
 
-## Extensions
 
 ### Proof Logging
 A problem in SAT solving is trusting the solver when it claims a formula to be
@@ -181,6 +184,8 @@ Since most of the work is placed within the Reduce algorithm, then almost all
 other algorithms (such as quantification) can also immediately create the
 relevant proof.
 
+
+## Other Decision Diagrams
 
 ### Multi-Terminal Binary Decision Diagrams
 One can easily extend the proposed representation of sink nodes to encompass
@@ -291,10 +296,15 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
 
 ## References
 
+- [[Blum80](https://www.sciencedirect.com/science/article/pii/S0020019080900782)]
+  Manuel Blum, Ashok K. Chandra, and Mark N.Wegman. “_Equivalence of free boolean
+  graphs can be decided probabilistically in polynomial time_”. In: _27th ACM/IEEE Design Automation
+  Conference_. pp. 40 – 45 (1990)
+
 - [[Brace90](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=114826)]
   Karl S. Brace, Richard L. Rudell, and Randal E. Bryant. “_Efficient
-  implementation of a BDD package_”. In: _27th ACM/IEEE Design Automation
-  Conference_. pp. 40 – 45 (1990)
+  implementation of a BDD package_”. In: _Information Processing Letters 10.2_.
+  (1980)
 
 - [[Bryant21](https://arxiv.org/abs/2105.00885)]
   Randal E. Bryant, Marijn J. H. Heule. “_Generating Extended Resolution Proofs
