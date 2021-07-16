@@ -15,6 +15,7 @@ may constitute interesting undergraduate and graduate projects.
         - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
     - [Additional Featyres](#additional-features)
         - [Attributed Edges](#attributed-edges)
+        - [Hash Values](#hash-values)
         - [Proof Logging](#proof-logging)
     - [Other Decision Diagrams](#other-decision-diagrams)
         - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
@@ -126,6 +127,38 @@ Our bit representation of _unique identifiers_ already has a single bit-flag,
 which is currently unused in a _node_ and on the _target_ of an _arc_. These are
 currently reserved for implementation of this very feature, meaning we primarily
 are lacking the additional logic in all of the algorithms.
+
+
+### Hash Values
+This approach is based on a suggestion by Bryant for how to improve the
+performance of equality checking. His idea is based on [[Blum80](#references)].
+His intention was to obtain an O(N/B) I/O comparison at price of increased
+memory, but the equality checking in
+[#127](https://github.com/SSoelvsten/adiar/pull/127) obtains the same bound
+without any increase in size by exploiting a feature of our _Reduce_ algorithm.
+Yet, this idea of hashing could be useful for further improving the speed of our
+equality checking in the negative cases.
+
+Let _p_ be a prime number (though the math may work out even when doing all
+computations with the non-prime p = 2<sup>k</sup>, i.e. by abusing the overflow
+of unsigned integers). Consider a hash function _H_ (all numbers computed modulo
+_p_) defined as follows
+
+- Leaves hash to their value, i.e. H(0) = 0 and H(1) = 1
+
+- Variables x<sub>i</sub> hash to a random value in [0;_p_)
+
+- Internal nodes has as follows:
+  H((x<sub>i</sub>), v<sub>0</sub>, v<sub>1</sub>) =
+  H(x<sub>i</sub>) H(v<sub>1</sub>) + (1 - H(x<sub>i</sub>) H(v<sub>0</sub>))
+
+Then the probability of two different BDDs share the same hash value is 1/_p_.
+
+Notice, we only care about the hash value at the root, so we do not need to
+store the hash value within each and every node. Instead, similar to
+_canonicity_ in [#127](https://github.com/SSoelvsten/adiar/pull/127), we can
+store the hash of the root (and its negation) as two numbers in the `node_file`
+and merely propagate the hash values in the priority queue of `adiar::reduce`.
 
 
 ### Proof Logging
