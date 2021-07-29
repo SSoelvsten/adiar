@@ -7,14 +7,12 @@ may constitute interesting undergraduate and graduate projects.
 
 - [Future Work](#future-work)
     - [Missing BDD algorithms](#missing-bdd-algorithms)
-        - [Data type conversions](#data-type-conversions)
-        - [Projection](#projection)
         - [Set manipulation](#set-manipulation)
         - [Composition](#composition)
         - [Advanced satisfiability functions](#advanced-satisfiability-functions)
         - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
-    - [Additional Featyres](#additional-features)
-        - [Attributed Edges](#attributed-edges)
+    - [Additional features](#additional-features)
+        - [Attributed edges](#attributed-edges)
         - [Hash Values](#hash-values)
         - [Proof Logging](#proof-logging)
     - [Other Decision Diagrams](#other-decision-diagrams)
@@ -23,7 +21,6 @@ may constitute interesting undergraduate and graduate projects.
         - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Levelized Files](#levelized-files)
-        - [Non-comparison based sorting on numbers](#non-comparison-based-sorting-on-numbers)
         - [From _recursive_ algorithm to _time-forward processing_ and back again](#from-recursive-algorithm-to-time-forward-processing-and-back-again)
     - [References](#references)
 
@@ -40,42 +37,13 @@ The features are sorted based on the difficulty deriving their design and their
 implementation. The first few already include a description and good ideas of
 how to approach the implementation.
 
-### Data type conversions
-
-If one can convert to the `bdd` data type from an `assignment_file` and a
-`label_file`, then the output of `bdd_satmin`, `bdd_satmax`, etc. can be used
-elsewhere. Likewise, if we can convert a `bdd` back into an `assignment_file`
-or `label_file` then we can use `bdd`'s as input in `bdd_restrict`, `bdd_exists`,
-and `bdd_forall`. That would help bridge the gap between this and other packages.
-
-Similarly, the `bdd_and` and `bdd_or` functions in `bdd/build.cpp` should maybe
-be extended to also take an array, `std::vector`, or even make them variadic.
-
-The simple way to do this would be by _O(N)_ time and _(N/B)_ I/O algorithms that
-use _O(N)_ more space on disk. I would expect though that (with some templating)
-it should be possible to reuse the original files and convert the types on-the-fly.
-
-### Projection
-
-`bdd_project` is the dual to `bdd_exists`, i.e. only keep the variables in the
-given cube and existentially quantify all other variables. The simplest way to
-do so may be to filter out levels in the _meta_ file that are not in the given
-_label_ file and then just call `bdd_exists` on that. Alternatively, one can
-extend the `bdd_quantify` algorithm to flip the check on a label being within
-the _label_ file.
-
 ### Set manipulation
 
 Verification relies heavily on manipulation of sets. For this, we need multiple
 functions, most of which are aliases for other algorithms. See the documentation
-of Sylvan for an overview of this.
-
-Furthermore, one may want to convert back and from `std::set<label_t>` and
-similar data structures.
-
-Finally, one may want to look into Coudert and Madre's _Meta-products_
-representation [[Coudert92](#references)] of sets in BDDs and the functions
-related to it.
+of Sylvan for an overview of this. More interesting is Coudert and Madre's
+_Meta-products_ representation [[Coudert92](#references)] of sets in BDDs and the
+functions related to it.
 
 ### Composition
 The _Composition_ (`bdd_compose`) of two OBDDs _f_ and _g_ for some label
@@ -93,10 +61,7 @@ here.
 The number of satisfiable assignments can be very large (even larger than
 2<sup>64</sup> at times). Hence, the BDD package BuDDy also provides a
 `bdd_satcountln` function, that outputs the logarithm of the number of
-satisfiable assignments. The current `count` function should be changed to
-also support this. To this end, the use of template functions for a
-compile-time strategy should be replaced with lambda functions instead (see
-`bdd_satmin` and `bdd_satmax` functions for inspiration).
+satisfiable assignments.
 
 Furthermore, currently we only provide functions to obtain the lexicographically
 smallest or largest assignment. A `bdd_satall` function with a callback to
@@ -220,9 +185,13 @@ relevant proof.
 ## Other Decision Diagrams
 
 ### Multi-Terminal Binary Decision Diagrams
-One can easily extend the proposed representation of sink nodes to encompass
-non-boolean values, such as integers or floats. Thereby, the algorithms
-immediately yield an I/O efficient implementation of the _Multi-Terminal Binary
+One can extend the proposed representation of sink nodes to encompass non-boolean
+values, such as integers or floats. To this end, one should template all structs
+and functions in _data.h_ with the type to interpret the bit values in the leafs.
+This templating should then be lifted to all _file_ types, the _decision diagram_
+types, and finally all algorithms. This lifting may result in having to expose
+internal algorithms and restructure the project. Yet, this templating will
+immediately yield an I/O efficient implementation of _Multi-Terminal Binary
 Decision Diagrams_ (MTBDD) of [[Fujita97](#references)].
 
 ### Multi-valued Decision Diagrams
@@ -252,12 +221,6 @@ entire data structure. If this file is split up per level, then one can
 aggressively garbage collect each level while the algorithms are running. This
 can safe concurrent disk usage and so allow computation on even bigger instances
 before running out of disk space.
-
-### Non-comparison based sorting on numbers
-The sorting in multiple variables has already been reduced to a simple sorting
-on a single 64-bit key in the representation of nodes and arcs. It should be
-possible to exploit this with a radix sort for an _O(N)_ time complexity, though
-maybe one will not gain too much due to the _O(sort(N))_ I/O lower bound.
 
 ### From _recursive_ algorithm to _time-forward processing_ and back again
 Most implementations, such as the ones in [[Brace90, Dijk16](#references)], make
@@ -315,7 +278,7 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
   Transfer_. (2016)
 
 - [[Fujita97](https://link.springer.com/article/10.1023/A:1008647823331#citeas)]
-  M. Fujita, P.C. McGeer, J.C.-Y. Yang . “_Multi-Terminal Binary Decision
+  M. Fujita, P.C. McGeer, J.C.-Y. Yang. “_Multi-Terminal Binary Decision
   Diagrams: An Efficient Data Structure for Matrix Representation_”. In: _Formal
   Methods in System Design_. (2012)
 
