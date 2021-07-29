@@ -15,6 +15,7 @@ may constitute interesting undergraduate and graduate projects.
         - [Attributed edges](#attributed-edges)
         - [Hash Values](#hash-values)
         - [Proof Logging](#proof-logging)
+        - [Dynamic Variable Reordering](#dynamic-variable-reordering)
     - [Other Decision Diagrams](#other-decision-diagrams)
         - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
         - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
@@ -122,7 +123,7 @@ Notice, we only care about the hash value at the root, so we do not need to
 store the hash value within each and every node. Instead, similar to
 _canonicity_ in [#127](https://github.com/SSoelvsten/adiar/pull/127), we can
 store the hash of the root (and its negation) as two numbers in the `node_file`
-and merely propagate the hash values in the priority queue of `adiar::reduce`.
+and merely propagate the hash values in the priority queue of `reduce`.
 
 
 ### Proof Logging
@@ -182,6 +183,81 @@ other algorithms (such as quantification) can also immediately create the
 relevant proof.
 
 
+### Dynamic Variable Reordering
+
+Many other BDD packages provide dynamic variable reordering (e.g.
+[BuDDy](#references) and [CUDD](#references)), where the order of the variables
+are changed with the goal to decrease the size of the decision diagram in
+question. Finding the optimal variable order is an NP-complete problem, so all
+packages either use some notion of a local search procedure to find a _somewhat_
+good ordering or some other heuristics.
+
+**Reordering a single BDD (Sifting)**
+
+The most famous reordering procedure is Rudell's sifting algorithm
+[[Rudell93](#references)]. This is based on the observation by prior authors
+that two adjacent variables can be swapped without affecting any nodes of any
+other variable in the DAG. To allow this swapping in Adiar, one will need to
+first look into the [Levelized Files](#levelized-files) refactor below. After
+this is done, then the sifting algorithm can be mapped to the decision diagrams
+of Adiar.
+
+Since the _meta file_ in _Adiar_ also provides the size of each level, then one
+can use the lower bounds in [[Drechsler01](#references)] to prune the search of
+the sifting algorithm.
+
+**Matching ordering between BDDs**
+
+Implementing the sifting algorithm would suffice for other BDD packages, but not
+for Adiar, since (almost) all decision diagrams are stored independently. So,
+one may end up with two decision diagrams using two different variable orders π
+and π'. To make _apply_ and other non-unary algorithms work with such decision
+diagrams they have to be put onto the same variable order. A few algorithms have
+been designed for specifically such cases. If one or more of these are
+translated into an I/O efficient version, then one can put the given decision
+diagrams on a common order before running the desired non-unary operation.
+
+The most promising seems to be the level-by-level algorithm of Savický and
+Wegener [[Savický97](#references)]. This is an iterative version of the
+recursive algorithms in [[Meinel94](#references)] and [[Bern05](#references)],
+which heightens my confidence in highlighting this very procedure. For
+simplicity one may assume that the new desired ordering is the identity. Let _f_
+be the original BDD.
+
+1. Start with a recursion request for the root _x_<sub>1</sub>.
+
+2. For every level, merge recursion requests that induce the same graph in the
+   original BDD.
+
+  - Obtain an assignment σ that reflects a path going to each node. Here, one
+    needs to traverse the under-construction BDD back up to the root. To this
+    end, the [Levelized Files](#levelized-files) may again make all of this
+    easier.
+
+  - For two different requests to the same level with assignments σ and σ' check
+    whether they induce the same graph, i.e. check whether _Restrict(f, σ) =
+    Restrict(f, σ')_. If they induce the same graph, then merge these two
+    requests.
+
+    In the paper they do this by constructing a _keyword_ string that describes
+    the DFS walk of the restricted BDD. Essentially, we can think of them having
+    computed the two restricts. They only ever have two of them present at any
+    moment to safe on space, and instead recompute keywords if needed. So, it
+    makes much more sense to compute whether they induce the same subgraph with
+    an `bdd_restrict_isomorphic` algorithm taking the logic of `bdd_restrict`
+    with the optimisations of `is_isomorphic`.
+
+3. Create new recursion requests for internal-node children and immediately
+   output sink-children.
+
+Due to _2._ and _3._ one does in fact not need to use `reduce`. Instead one can
+immediately convert the `arc_file` to a `node_file` (though maybe each level
+should be sorted to make it _canonical_). Yet, I wonder whether it in practice
+is not better to leave it to the current Reduce implementation to remove
+duplicate subtrees (which skips most of the work in _2._) even though it breaks
+the worst-case guarantees.
+
+
 ## Other Decision Diagrams
 
 ### Multi-Terminal Binary Decision Diagrams
@@ -205,7 +281,7 @@ Decision Diagrams_ of [[Dijk16](#references)] to circumvent this.
 ### Free Boolean Decision Diagrams
 One can remove the restriction of ordering the decision diagram to then
 potentially compress the data structure even more. These Free Binary Decision
-Diagrams (FBDD) of [[Meinel94](#references)] may also be possible to
+Diagrams (FBDD) of [[Gergov94](#references)] may also be possible to
 implement in the setting of Time-forward processing used here.
 
 
@@ -248,10 +324,14 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
 
 ## References
 
+- [[Bern05](https://link.springer.com/chapter/10.1007/3-540-60045-0_36)]
+  Jochen Bern, Christoph Meinel, Anna Slobodová. “_Global rebuilding of OBDDs
+  avoiding memory requirement maxima_”. In: _Computer Aided Verification_ (2005)
+
 - [[Blum80](https://www.sciencedirect.com/science/article/pii/S0020019080900782)]
-  Manuel Blum, Ashok K. Chandra, and Mark N.Wegman. “_Equivalence of free boolean
-  graphs can be decided probabilistically in polynomial time_”. In: _27th ACM/IEEE Design Automation
-  Conference_. pp. 40 – 45 (1990)
+  Manuel Blum, Ashok K. Chandra, and Mark N.Wegman. “_Equivalence of free
+  boolean graphs can be decided probabilistically in polynomial time_”. In:
+  _27th ACM/IEEE Design Automation Conference_. pp. 40 – 45 (1990)
 
 - [[Brace90](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=114826)]
   Karl S. Brace, Richard L. Rudell, and Randal E. Bryant. “_Efficient
@@ -277,10 +357,19 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
   diagrams_”. In: _International Journal on Software Tools for Technology
   Transfer_. (2016)
 
+- [[Drechsler01](https://ieeexplore.ieee.org/document/905674)]
+  Rolf Drechsler Wolfgang Günther. “_Using lower bounds during dynamic BDD
+  minimization_”. In: _IEEE Transactions on Computer-Aided Design of Integrated
+  Circuits and Systems _. (2001)
+
 - [[Fujita97](https://link.springer.com/article/10.1023/A:1008647823331#citeas)]
   M. Fujita, P.C. McGeer, J.C.-Y. Yang. “_Multi-Terminal Binary Decision
   Diagrams: An Efficient Data Structure for Matrix Representation_”. In: _Formal
   Methods in System Design_. (2012)
+
+- [[Gergov94](https://citeseer.ist.psu.edu/viewdoc/citations;jsessionid=EFE9D48EA6750B06CD2FB09B23D5CF2E?doi=10.1.1.45.5821)]
+  J. Gergov and C. Meinel. “_Efficient analysis and manipulation of OBDDs can
+  be extended to FBDDs_”. (1994)
 
 - [[Hajighasemi14](https://essay.utwente.nl/66388/)]
   Maryam Hajighasemi. “_Symbolic Model Checking using Zero-suppressed Decision
@@ -291,9 +380,15 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
   Alberto. “_Multi-valued decision diagrams: Theory and applications_”. In:
   _Multiple- Valued Logic 4.1_ (1998)
 
-- [Meinel94]
-  J. Gergov and C. Meinel. “_Efficient analysis and manipulation of OBDDs can
-  be extended to FBDDs_”. (1994)
+- [[Lind-Nielsen99](http://www.itu.dk/research/buddy/)]
+  Jørn Lind-Nielsen. “_BuDDy: A binary decision diagram package_”. Technical
+  report, _Department of Information Technology, Technical University of
+  Denmark_, 1999.
+
+- [[Meinel94](https://link.springer.com/chapter/10.1007/3-540-58338-6_98)]
+  Christoph Meinel, Anna Slobodová. “_On the complexity of constructing optimal
+  ordered binary decision diagrams_”. In: _International Symposium on
+  Mathematical Foundations of Computer Science_ (1994)
 
 - [[Minato93](https://dl.acm.org/doi/pdf/10.1145/157485.164890)]
   S. Minato. “_Zero-suppressed BDDs for set manipulation in combinatorial
@@ -303,3 +398,17 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
 - [[Minato01](https://eprints.lib.hokudai.ac.jp/dspace/bitstream/2115/16895/1/IJSTTT3-2.pdf)]
   S. Minato. “_Zero-suppressed BDDs and their applications_”. In: _International
   Journal on Software Tools for Technology Transfer, 3_ (2001)
+
+- [[Rudell93](https://ieeexplore.ieee.org/document/580029)]
+  Richard Rudell. “_Dynamic variable ordering for ordered binary decision
+  diagrams_”. In: _ Proceedings of 1993 International Conference on Computer
+  Aided Design_ (1993)
+
+- [[Savický97](https://link.springer.com/article/10.1007/s002360050083)
+  Petr Savický, Ingo Wegener. “_Efficient algorithms for the transformation
+  between different types of binary decision diagrams_”. In: _Acta Informatica
+  volume 34_ (1997)
+
+- [[Somenzi2015](https://docplayer.net/34293942-Cudd-cu-decision-diagram-package-release-3-0-0.html)]
+  Fabio Somenzi. “_CUDD: CU decision diagram package, 3.0_”. University of
+  Colorado at Boulder (2015)
