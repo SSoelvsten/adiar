@@ -20,6 +20,7 @@ may constitute interesting undergraduate and graduate projects.
         - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
         - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
         - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
+        - [Shared Decision Diagrams](#shared-decision-diagrams)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Levelized Files](#levelized-files)
         - [From _recursive_ algorithm to _time-forward processing_ and back again](#from-recursive-algorithm-to-time-forward-processing-and-back-again)
@@ -149,23 +150,23 @@ The algorithms are then changed as follows
 
 - The Reduce then puts the output of Apply back in canonical form. Here, we
   would try to collapse the (_u_,_v_) tuples back into a single variable.
-  
+
   - From the output of Apply we can retrieve the original (_u_,_v_) and their
     defining proof steps.
-  
+
   - Within the priority queue the variable _w_<sub>i</sub> for each child is
     forwarded together with its defining clauses OPL, OPH (ANDL and ANDH in
     [[Bryant21](#references)], but we can generalise it to any binary operator).
     This is merely three more integers.
-  
+
   - We can use the idea of _taint tracking_ to merge the (_u_,_v_) variables.
     From bottom-up we remember whether the node was like ...
-    
+
     1. ... in neither f or g
     2. ... in f
     3. ... in g
     4. ... in both f and g.
-    
+
     These taints can be created in the Apply. Then, it is propagated upwards and
     updated for each node based on the given taint of its resolved children.
     When these cases are labelled in binary starting from 0 then the resulting
@@ -197,10 +198,10 @@ good ordering or some other heuristics.
 The most famous reordering procedure is Rudell's sifting algorithm
 [[Rudell93](#references)]. This is based on the observation by prior authors
 that two adjacent variables can be swapped without affecting any nodes of any
-other variable in the DAG. To allow this swapping in Adiar, one will need to
+other variable in the DAG. To allow this swapping in _Adiar_, one will need to
 first look into the [Levelized Files](#levelized-files) refactor below. After
 this is done, then the sifting algorithm can be mapped to the decision diagrams
-of Adiar.
+of _Adiar_.
 
 Since the _meta file_ in _Adiar_ also provides the size of each level, then one
 can use the lower bounds in [[Drechsler01](#references)] to prune the search of
@@ -209,7 +210,7 @@ the sifting algorithm.
 **Matching ordering between BDDs**
 
 Implementing the sifting algorithm would suffice for other BDD packages, but not
-for Adiar, since (almost) all decision diagrams are stored independently. So,
+for _Adiar_, since (almost) all decision diagrams are stored independently. So,
 one may end up with two decision diagrams using two different variable orders π
 and π'. To make _apply_ and other non-unary algorithms work with such decision
 diagrams they have to be put onto the same variable order. A few algorithms have
@@ -257,7 +258,6 @@ is not better to leave it to the current Reduce implementation to remove
 duplicate subtrees (which skips most of the work in _2._) even though it breaks
 the worst-case guarantees.
 
-
 ## Other Decision Diagrams
 
 ### Multi-Terminal Binary Decision Diagrams
@@ -271,18 +271,68 @@ immediately yield an I/O efficient implementation of _Multi-Terminal Binary
 Decision Diagrams_ (MTBDD) of [[Fujita97](#references)].
 
 ### Multi-valued Decision Diagrams
-By solely using an edge-based representation of the data-structure one can also
-implement a _Multi-valued Decision Diagram_ (MDD) of
-[[Kam98](#references)]. This allows one to succinctly encode a function
-from a non-boolean domain. Switching to the edge-based representation will lead
-to rewriting almost all algorithms, but we may look into recreating the _List
-Decision Diagrams_ of [[Dijk16](#references)] to circumvent this.
+TPIE allows one to use a custom _serializer_ and _deserializer_ for their
+`tpie::file_stream` and `tpie::merge_sorter`. With this, one can change the
+`adiar::node` struct to be of variable size such that they can describe the
+_Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)]. Alternatively,
+one can create the "union" of `adiar::uid_t` and `adiar::ptr_t` such that
+consecutive (64-bit) elements describe a single node. Another approach for MDDs
+would be to look into recreating the _List Decision Diagrams_ of
+[[Dijk16](#references)] to keep the decision diagram binary.
 
 ### Free Boolean Decision Diagrams
 One can remove the restriction of ordering the decision diagram to then
 potentially compress the data structure even more. These Free Binary Decision
 Diagrams (FBDD) of [[Gergov94](#references)] may also be possible to
 implement in the setting of Time-forward processing used here.
+
+### Shared Decision Diagrams
+
+**NOTE:** This is best done in a completely new repository, where some files
+(e.g. `data.*`, `tuple.*`, `levelized_priority_queue.*`) are moved over.
+
+Equality Checking in _Adiar_ has an _O(sort(N))_ worst case I/O complexity,
+which in most practical cases is going to be an _2 N/B_ complexity. Since the
+decision diagrams are stored in separate files, it is unlikely that one can
+improve this further (both in the constant and in the asymptotics). Question is,
+whether on can have a _shared_ node table while still being able to deploy the
+time-forward processing applied here - in this case equality checking would be
+decreased to _O(1)_ as desired. In many ways, one can take inspiration from the
+work of [[Ochi93, Ashar94, Sanghavi96](#references)], but circumvent the
+asymptotic bad performance by not using a hash-table for every level.
+
+Let _T_ be the number of elements in the common node data structure.
+
+- The _Apply_ should then use at most _O(T/B + sort(N<sub>f</sub>
+  N<sub>g</sub>))_ I/Os in the worst case.
+
+  Here, "possibly new nodes" that are pairs of existing nodes are placed in a
+  separate output and the following _Reduce_ would bottom-up identify the
+  already existent nodes and add new nodes. The _Apply_ procedure can even
+  shortcut computation for some recursion requests, (_v_, _w_), when _v_ = _w_.
+
+- The _Reduce_ becomes much more complicated, since one has to check whether the
+  resolved node is a duplicate or should be added to the nodes on said level.
+  The most vital question to resolve to this end is what the common _unique node
+  data structure_ should be?
+
+  - The most likely good way to do so is with a list of nodes sorted
+    lexicographically by their children. This way, duplicates can be found in a
+    single scan. One needs to be sure to keep it sorted while adding new nodes,
+    but this should be possible as a merge of the two sorted lists; one may even
+    be able to do this as an in-place merge on the very _unique nodes_ list.
+
+  - A B-tree may also be applicable to this use case.
+
+  If it is a mere list of nodes, then garbage collection is a simple top-down
+  mark-and-sweep using time-forward processing that uses _O(sort(T))_ number of
+  I/Os.
+
+The benefit of all this work would be to decrease equality checking to _O(1)_ in
+the worst case and to decrease the overall memory occupied, when one has a lot
+of concurrent decision diagrams alive. Yet, this does also happen at the cost of
+having to read a much larger input. Only a practical evaluation can gauge
+whether it is of benefit.
 
 
 ## Optimising the current algorithms
@@ -342,6 +392,11 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
   Randal E. Bryant, Marijn J. H. Heule. “_Generating Extended Resolution Proofs
   with a BDD-Based SAT Solver (Extended Paper)_”. In: _arXiv_. (2021)
 
+- [[Cheong94](https://ieeexplore.ieee.org/document/629886)]
+  Pranav Ashar and Matthew Cheong. “_Efficient breadth-first manipulation of
+  binary decision diagrams_”. In: _Proceedings of the
+  1994 IEEE/ACM International Conference on Computer-Aided Design_. (1994)
+
 - [[Coudert90](http://www.ocoudert.com/papers/pdf/iccad90.pdf)]
   Olivier Coudert and Jean Christophe Madre. “_A Unified Framework for the
   Formal verification of sequential circuits_”. In: _Computer-Aided Design /
@@ -399,10 +454,21 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
   S. Minato. “_Zero-suppressed BDDs and their applications_”. In: _International
   Journal on Software Tools for Technology Transfer, 3_ (2001)
 
+- [[Ochi93](https://www.computer.org/csdl/proceedings-article/iccad/1993/00580030/12OmNAXglQz)]
+  Hiroyuki Ochi, Koichi Yasuoka, and Shuzo Yajima. “_Breadth-first manipulation
+  of very large binary-decision diagrams_”. In: _Proceedings of 1993
+  International Conference on Computer Aided Design (ICCAD),_ (1993)
+
 - [[Rudell93](https://ieeexplore.ieee.org/document/580029)]
   Richard Rudell. “_Dynamic variable ordering for ordered binary decision
   diagrams_”. In: _ Proceedings of 1993 International Conference on Computer
   Aided Design_ (1993)
+
+- [[Sanghavi96](https://link.springer.com/article/10.1007/s002360050083)
+  Jagesh V. Sanghavi, Rajeev K. Ranjan, Robert K. Brayton, and Alberto
+  Sangiovanni-Vincentelli. “_High performance BDD package by exploiting
+  memory hierarchy_”. In: _Proceedings of the 33rd Annual Design
+  Automation Conference_ (1996)
 
 - [[Savický97](https://link.springer.com/article/10.1007/s002360050083)
   Petr Savický, Ingo Wegener. “_Efficient algorithms for the transformation
