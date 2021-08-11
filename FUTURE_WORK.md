@@ -186,12 +186,12 @@ relevant proof.
 
 ### Dynamic Variable Reordering
 
-Many other BDD packages provide dynamic variable reordering (e.g.
-[BuDDy](#references) and [CUDD](#references)), where the order of the variables
-are changed with the goal to decrease the size of the decision diagram in
-question. Finding the optimal variable order is an NP-complete problem, so all
-packages either use some notion of a local search procedure to find a _somewhat_
-good ordering or some other heuristics.
+Many other BDD packages provide dynamic variable reordering (e.g. BuDDy
+[[Lind-Nielsen99](#references)] and CUDD [[Somenzi15](#references)]), where the
+order of the variables are changed with the goal to decrease the size of the
+decision diagram in question. Finding the optimal variable order is an
+NP-complete problem, so all packages either use some notion of a local search
+procedure to find a _somewhat_ good ordering or some other heuristics.
 
 **Reordering a single BDD (Sifting)**
 
@@ -349,28 +349,21 @@ can safe concurrent disk usage and so allow computation on even bigger instances
 before running out of disk space.
 
 ### From _recursive_ algorithm to _time-forward processing_ and back again
-Most implementations, such as the ones in [[Brace90, Dijk16](#references)], make
-use of a _unique node table_, which is a hash-table in which all BDDs exist.
-This has the benefit of allowing one to reuse common subtrees across BDDs (which
-saves space linear in the number of concurrent BDDs in use) and the recursive
-algorithms run _2_ or even _4_ times faster than the current algorithms (when
-they don't outgrow the main memory).
+Most implementations (e.g. [[Brace90, Dijk16, Lind-Nielsen99, Somenzi15](#references)]),
+make use of a _unique node table_, which is a hash-table in which all BDDs
+exist. This has the benefit of allowing one to reuse common subtrees across BDDs
+(which saves space linear in the number of concurrent BDDs in use) and the
+recursive algorithms run for very small instances by several orders of
+magnitudes faster than _Adiar_.
 
-_TPIE_ provides a hash table, so one can look into one of the following two
+It would of interest to bridge conventional packages to _Adiar_. If the inputs
+to a BDD operation are from the _unique node table_, then the recursive
+algorithm is used. If one or more are on disk, then time-forward processing is
+used, and any input from the unique node table are converted _on-the-fly_.
 
-1. When a BDD outgrows the main memory, we may be able to convert to the current
-   time-forward processing algorithms instead of crashing (which the other BDD
-   libraries do). When a stream-based BDD grows small enough again, then we may
-   be able to place it back in the _unique node table_.
-
-2. If one can keep using the same node identifiers in the table, then one may
-   also use both data structures at the same time. Some parts of the BDD is in
-   main memory, while others are in the stream.
-
-Based on the memory usage I've witnessed during benchmarking, I think the first
-option is the most promising.
-
-See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issues/98)
+See also the discussion in issue
+[#98](https://github.com/SSoelvsten/adiar/issues/98). Notice, that we can use
+the estimate on the output to figure out, whether we need to output to disk.
 
 ## References
 
@@ -475,6 +468,6 @@ See also the discussion in issue [#98](https://github.com/SSoelvsten/adiar/issue
   between different types of binary decision diagrams_”. In: _Acta Informatica
   volume 34_ (1997)
 
-- [[Somenzi2015](https://docplayer.net/34293942-Cudd-cu-decision-diagram-package-release-3-0-0.html)]
+- [[Somenzi15](https://docplayer.net/34293942-Cudd-cu-decision-diagram-package-release-3-0-0.html)]
   Fabio Somenzi. “_CUDD: CU decision diagram package, 3.0_”. University of
   Colorado at Boulder (2015)
