@@ -4,8 +4,14 @@
 #include <adiar/data.h>
 #include <adiar/file.h>
 
+#include <adiar/statistics.h>
+
 namespace adiar
 {
+  //////////////////////////////////////////////////////////////////////////////
+  /// Struct to hold statistics
+  extern stats_t::equality_t stats_equality;
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Given two node files, computes whether they are isomorphic; i.e.
   /// whether they are equivalent.
@@ -20,7 +26,7 @@ namespace adiar
   /// \return    Whether the two node_files represent equivalent graphs.
   //////////////////////////////////////////////////////////////////////////////
   bool is_isomorphic(const node_file &f1, const node_file &f2,
-                      bool negate1 = false, bool negate2 = false);
+                     bool negate1 = false, bool negate2 = false);
 }
 
 #endif // ADIAR_ISOMORPHISM_H

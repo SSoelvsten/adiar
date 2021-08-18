@@ -15,6 +15,8 @@ namespace adiar
   typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2> isomorphism_priority_queue_t;
   typedef tpie::priority_queue<tuple_data, tuple_snd_lt> isomorphism_data_priority_queue_t;
 
+  stats_t::equality_t stats_equality;
+
   /////////////////////
   // Helper Functions
 
@@ -47,6 +49,10 @@ namespace adiar
   bool slow_isomorphism_check(const node_file &f1, const node_file &f2,
                               bool negate1, bool negate2)
   {
+#ifdef ADIAR_STATS
+    stats_equality.slow_check.runs++;
+#endif
+
     node_stream<> in_nodes_1(f1, negate1);
     node_stream<> in_nodes_2(f2, negate2);
 
@@ -61,6 +67,9 @@ namespace adiar
 
     if (!in_nodes_1.can_pull()) {
       adiar_debug(!in_nodes_2.can_pull(), "The number of nodes should coincide");
+#ifdef ADIAR_STATS
+      stats_equality.slow_check.exit_on_root++;
+#endif
       return v1.low == v2.low && v1.high == v2.high;
     }
 
@@ -75,10 +84,16 @@ namespace adiar
 
     // Check for violation on root children, or 'recurse' otherwise
     if (isomorphism_resolve_request(isomorphism_pq_1, v1.low, v2.low)) {
+#ifdef ADIAR_STATS
+      stats_equality.slow_check.exit_on_children++;
+#endif
       return false;
     }
 
     if (isomorphism_resolve_request(isomorphism_pq_1, v1.high, v2.high)) {
+#ifdef ADIAR_STATS
+      stats_equality.slow_check.exit_on_children++;
+#endif
       return false;
     }
 
@@ -148,6 +163,9 @@ namespace adiar
       // isomorphic DAG would allow.
       curr_level_processed++;
       if (curr_level_size < curr_level_processed) {
+#ifdef ADIAR_STATS
+        stats_equality.slow_check.exit_on_processed_on_level++;
+#endif
         return false;
       }
 
@@ -155,12 +173,18 @@ namespace adiar
       if (isomorphism_resolve_request(isomorphism_pq_1,
                                       with_data && from_1 ? data_low : v1.low,
                                       with_data && !from_1 ? data_low : v2.low)) {
+#ifdef ADIAR_STATS
+        stats_equality.slow_check.exit_on_children++;
+#endif
         return false;
       }
 
       if (isomorphism_resolve_request(isomorphism_pq_1,
                                       with_data && from_1 ? data_high : v1.high,
                                       with_data && !from_1 ? data_high : v2.high)) {
+#ifdef ADIAR_STATS
+        stats_equality.slow_check.exit_on_children++;
+#endif
         return false;
       }
     }
@@ -188,12 +212,20 @@ namespace adiar
   //  - The negation flags given for both node_files agree (breaks canonicity)
   bool fast_isomorphism_check(const node_file &f1, const node_file &f2)
   {
+#ifdef ADIAR_STATS
+    stats_equality.fast_check.runs++;
+#endif
     node_stream<> in_nodes_1(f1);
     node_stream<> in_nodes_2(f2);
 
     while (in_nodes_1.can_pull()) {
       adiar_debug(in_nodes_2.can_pull(), "The number of nodes should coincide");
-      if (in_nodes_1.pull() != in_nodes_2.pull()) { return false; }
+      if (in_nodes_1.pull() != in_nodes_2.pull()) {
+#ifdef ADIAR_STATS
+        stats_equality.fast_check.exit_on_mismatch++;
+#endif
+        return false;
+      }
     }
     return true;
   }
@@ -204,18 +236,27 @@ namespace adiar
   {
     // Are they literally referring to the same underlying file?
     if (f1._file_ptr == f2._file_ptr) {
+#ifdef ADIAR_STATS
+      stats_equality.exit_on_same_file++;
+#endif
       return negate1 == negate2;
     }
 
     // Are they trivially not the same, since they have different number of
     // nodes (in _files[0])?
     if (f1._file_ptr -> _files[0].size() != f2._file_ptr -> _files[0].size()) {
+#ifdef ADIAR_STATS
+      stats_equality.exit_on_nodecount++;
+#endif
       return false;
     }
 
     // Are they trivially not the same, since they have different number of
     // levels (in the _meta_file)?
     if (f1._file_ptr -> _meta_file.size() != f2._file_ptr -> _meta_file.size()) {
+#ifdef ADIAR_STATS
+      stats_equality.exit_on_varcount++;
+#endif
       return false;
     }
 
@@ -228,6 +269,9 @@ namespace adiar
       while (in_meta_1.can_pull()) {
         adiar_debug(in_meta_2.can_pull(), "meta files are same size");
         if (in_meta_1.pull() != in_meta_2.pull()) {
+#ifdef ADIAR_STATS
+          stats_equality.exit_on_levels_mismatch++;
+#endif
           return false;
         }
       }

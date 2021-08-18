@@ -64,7 +64,7 @@ M = 1024
 
 main:
 	@mkdir -p build/
-	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug ..
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug -D ADIAR_STATS_EXTRA=ON ..
 	@cd build/ && make $(MAKE_FLAGS) adiar_main
 	@echo "" && echo ""
 	@./build/src/adiar_main ${M}
