@@ -23,6 +23,7 @@ may constitute interesting undergraduate and graduate projects.
         - [Shared Decision Diagrams](#shared-decision-diagrams)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Levelized Files](#levelized-files)
+        - [Levelized Parallel Computation](#levelized-parallel-computation)
         - [From _recursive_ algorithm to _time-forward processing_ and back again](#from-recursive-algorithm-to-time-forward-processing-and-back-again)
     - [References](#references)
 
@@ -347,6 +348,103 @@ entire data structure. If this file is split up per level, then one can
 aggressively garbage collect each level while the algorithms are running. This
 can safe concurrent disk usage and so allow computation on even bigger instances
 before running out of disk space.
+
+### Levelized Parallel Computation
+A few experiments show, that the Reduce algorithm in practice removes very few
+redundant nodes. So, the Reduce only really puts it on canonical form and saves
+on space. Should this premise be true even for larger cases, then we may be able
+to obtain a major boost in performance by computing operations in parallel.
+
+For example, consider a `bdd_apply(bdd_apply(...), ...)`. The outer Apply can
+already start processing nodes on level _i_ when the inner one is at a level
+_j_>_i_. This puts all Applys (and all other single-sweep BDD operations!) in a
+_levelized lockstep_
+
+
+**Levelized Pipe**
+
+To this end, the outer Apply needs a _pipe_ that feeds it the _safe to read_
+parts of the output of the inner Apply. From the inner Applys perspective, it
+needs as an argument an output handler (i.e. a _pipe_):
+
+1. If the output is supposed to be a reduced file, then they are pushed as before
+   to two different files. Then these can be Reduced.
+
+2. If the output is supposed to be piped directly into another `bdd_apply` then
+   we place the inserted arcs into the relevant `tpie::merge_sorters` in a
+   queue. This is in many ways akin to the levelized priority queue.
+
+   - We also remember the number of elements pushed to each sorter. This way we
+     can compare with the meta data to see whether a level has all the expected
+     elements or not.
+
+     This effectively splits the queue in two: (1) the ready sorters that can be
+     used by the Apply at the end of the pipe and (2) the sorters still waiting
+     for some elements by the Apply at the start of the pipe.
+
+     One can store the size of part (1) in a single number `levels_ready`.
+
+   - Due to this levelized lockstep, most synchronisation between threads can be
+     done with _semaphores_ inside the pipe. For example, when going from one
+     level to another, one decreases its `levels_ready` semaphore; if it turns
+     negative, then it is because the next sorter is part of half (2) rather
+     than (1).
+
+     This semaphore ensures that the thread of the receiving Apply is only ever
+     _runnable_ if it has something to process.
+
+   - The meta data itself needs to be stored in a thread shareable file, i.e.
+     one should use the `tpie::file` and `tpie::file::stream` classes with a
+     semaphore or a simple lock.
+
+3. If the input is a base case (e.g. `bdd_ithvar(i)`), then some BDD
+   construction algorithms could be done top-to-bottom rather than bottom-up. If
+   the [levelized files](#levelized-files) above are added too, then this makes
+   a level available before the underlying algorithm has finished constructing
+   all nodes.
+
+   This kind of a pipe may not be worth the effort though, since most of these
+   BDDs are smaller than a few thousand nodes (i.e. less than a few kB).
+
+**Processing/Scheduling Tree**
+
+It probably is necessary to first precompute some (read-only) binary tree that
+describes the operations and the base cases.
+
+Part of this tree should also be whether the operation should be parallelised or
+not, because every thread should have some disjoint amount of TPIEs memory. So,
+one needs to find a scheduling on the tree, such that all concurrent threads
+have 128+ MiB of their own, and which balances the number of threads with the
+amount of the memory they have.
+
+
+**Piped Apply**
+
+The Apply itself works as before with time-forward processing. The main
+difference is, that its two arguments may not be a fully computed BDD in a file,
+but rather some set of operations instead (i.e. a node in a processing tree).
+
+For each of these uncomputed results we create a pipe and feed it to a newly
+spawned thread. The Apply itself then runs as usual by pulling from the
+streams/pipes and processing the nodes and then pushing to its own output pipe.
+To this end, one can make the `node_stream` change behaviour based on what kind
+of pipe it was given at construction time.
+
+
+**Negation**
+
+Negation can be stored inside this computation tree as a "complement edge". If
+the computation result is negated, then this merely is a flag on the pipe to do
+so on the fly (similar to what we do now).
+
+
+**Expected Gain of Reduce**
+
+Based on experiments or even prior runs of Reduce, one can make a prediction of
+how many nodes will be removed with the Reduce. When this estimate meets a
+certain threshold, then one can place a Reduce computation inside of the pipe to
+keep the disk usage close to what otherwise would be used.
+
 
 ### From _recursive_ algorithm to _time-forward processing_ and back again
 Most implementations (e.g. [[Brace90, Dijk16, Lind-Nielsen99, Somenzi15](#references)]),
