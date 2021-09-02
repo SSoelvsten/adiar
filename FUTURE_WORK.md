@@ -24,7 +24,7 @@ may constitute interesting undergraduate and graduate projects.
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Levelized Files](#levelized-files)
         - [Levelized Parallel Computation](#levelized-parallel-computation)
-        - [From _recursive_ algorithm to _time-forward processing_ and back again](#from-recursive-algorithm-to-time-forward-processing-and-back-again)
+        - [From _recursion_ to _time-forward processing_ and back again](#from-recursion-to-time-forward-processing-and-back-again)
     - [References](#references)
 
 <!-- markdown-toc end -->
@@ -446,22 +446,61 @@ certain threshold, then one can place a Reduce computation inside of the pipe to
 keep the disk usage close to what otherwise would be used.
 
 
-### From _recursive_ algorithm to _time-forward processing_ and back again
-Most implementations (e.g. [[Brace90, Dijk16, Lind-Nielsen99, Somenzi15](#references)]),
+### From _recursion_ to _time-forward processing_ and back again
+As mentioned in issue [#98](https://github.com/SSoelvsten/adiar/issues/98) the
+current set of algorithms are very slow for very small instances. This is in parts
+due to the nature of the TPIE data structures. So, some of it can be regained by
+switching to internal memory data structures, but some slowdown may just be inherent
+to the very nature of our iterative algorithms.
+
+Most other implementations (e.g. [[Brace90, Dijk16, Lind-Nielsen99, Somenzi15](#references)]),
 make use of a _unique node table_, which is a hash-table in which all BDDs
 exist. This has the benefit of allowing one to reuse common subtrees across BDDs
 (which saves space linear in the number of concurrent BDDs in use) and the
 recursive algorithms run for very small instances by several orders of
 magnitudes faster than _Adiar_.
 
-It would of interest to bridge conventional packages to _Adiar_. If the inputs
-to a BDD operation are from the _unique node table_, then the recursive
-algorithm is used. If one or more are on disk, then time-forward processing is
-used, and any input from the unique node table are converted _on-the-fly_.
+**Bridging the gap**
 
-See also the discussion in issue
-[#98](https://github.com/SSoelvsten/adiar/issues/98). Notice, that we can use
-the estimate on the output to figure out, whether we need to output to disk.
+By bridging the gap between the two methods, we get the best of both world. To do
+this, parts of the given memory is not used for TPIE, but rather for a separate
+unique node table and a cache. For small amounts of memory half of what is given
+can be dedicated to these internal memory decision diagrams.
+
+A BDD is then either (1) a TPIE file or (2) a pointer to a node in the hash table.
+
+All BDD operations then use O(1) time and I/Os to switch between different versions.
+
+  - When an algorithm is only given decision diagrams in internal memory, then
+    the classical recursive algorithms are used.
+    
+  - If both decision diagrams are in external memory, then the current algorithms
+    are used.
+    
+  - If the given decision diagrams are mixed, then the external memory algorithms
+    are used. To this end, the traversal of the internal memory decision diagram
+    has to be simulated, which can be done with a sorted set or priority queue.
+    
+    The `tpie::internal_priority_queue` may be of interest in this case. Most of
+    this can also be handled at compile time with templating.
+    
+As described in [#98](https://github.com/SSoelvsten/adiar/issues/98), we can
+easily compute an upper bound on the output size. With this, we can figure out,
+whether the output can be within the _unique node table_ or has to be placed in
+an external memory file.
+
+The Reduce algorithm can be templated such that it either outputs to a TPIE file
+or uses the _find-or-insert_ function to place its output. This templating also
+includes changing what is forwarded in its priority queue from a _uid_ to an
+actual pointer into the hash table.
+
+**Alternative**
+
+Instead of reimplementing an entire hash table based approach, one may want to
+look into using another BDD library underneath. The Sylvan library can first
+really be used, when [attributed edges](#attributed-edges) as described above
+has already been added; until then BuDDy and CUDD are possible options.
+
 
 ## References
 
