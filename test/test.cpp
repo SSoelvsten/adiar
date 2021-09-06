@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
 #endif
 
   // Initialize ADIAR and TPIE
-  adiar_init(1024);
+  adiar_init(1024 * 1024 * 1024);
 
   // Run tests
   auto bandit_ret = bandit::run(argc, argv);

@@ -451,7 +451,7 @@ int main(int argc, char* argv[])
 
   // ===== ADIAR =====
   // Initialize
-  adiar::adiar_init(M);
+  adiar::adiar_init(M*1024*1024);
   tpie::log_info() << "| Initialized Adiar with " << M << " MB of memory"  << std::endl << "|" << std::endl;
 
   // ===== N Queens =====

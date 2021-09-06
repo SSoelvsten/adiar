@@ -4,12 +4,12 @@
 
 namespace adiar
 {
-  void adiar_init(size_t memory_limit_mb, std::string temp_dir)
+  void adiar_init(size_t memory_limit_bytes, std::string temp_dir)
   {
     tpie::tpie_init();
 
     // Memory usage
-    set_limit(memory_limit_mb);
+    set_limit(memory_limit_bytes);
 
     // Temporary files
     tpie::tempname::set_default_base_name("ADIAR");
@@ -20,10 +20,11 @@ namespace adiar
     }
   }
 
-  void set_limit(size_t memory_limit_mb)
+  void set_limit(size_t memory_limit_bytes)
   {
-    adiar_assert(memory_limit_mb >= 128, "ADIAR requires at least 128 MB of memory");
-    tpie::get_memory_manager().set_limit(memory_limit_mb * 1024 * 1024);
+    adiar_assert(memory_limit_bytes >= 128 * 1024 * 1024,
+                 "ADIAR requires at least 128 MiB of memory");
+    tpie::get_memory_manager().set_limit(memory_limit_bytes);
   }
 
   void adiar_deinit()
