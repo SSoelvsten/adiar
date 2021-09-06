@@ -83,4 +83,4 @@ jobs:
         cmake ../ -D CMAKE_BUILD_TYPE=Release && cmake --build . --target ${{ matrix.exec }}
 
     - name: Run Benchmark
-      run: for n in ${{ matrix.N }}; do build/src/${{ matrix.exec }} $n 1024; done
+      run: for n in ${{ matrix.N }}; do build/src/${{ matrix.exec }} -N $n -M 1024; done
