@@ -34,18 +34,18 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Initiates ADIAR with the given amount of memory in MB
+  /// \brief Initiates ADIAR with the given amount of memory (given in bytes)
   ///
   /// TODO: Should we provide an option to change the maximum variable number?
   ///       What about opening files by others? Should we store that somehow in
   ///       the first element of the meta stream?
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_init(size_t memory_limit_mb, std::string temp_dir = "");
+  void adiar_init(size_t memory_limit_bytes, std::string temp_dir = "");
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Changes the memory limit used by ADIAR
+  /// \brief Changes the memory limit used by ADIAR (given in bytes)
   //////////////////////////////////////////////////////////////////////////////
-  void set_limit(size_t memory_limit_mb);
+  void set_limit(size_t memory_limit_bytes);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Closes and cleans up everything by ADIAR

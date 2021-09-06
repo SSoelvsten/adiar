@@ -70,7 +70,7 @@ terminates.
 
 int main()
 {
-  adiar::adiar_init(128);
+  adiar::adiar_init(128 * 1024 * 1024);
 
   {
     // do your stuff here...
@@ -82,9 +82,9 @@ int main()
 
 The `adiar_init` function initialises the BDD library given the following arguments
 
-- `memory_limit_mb`
+- `memory_limit_bytes`
 
-  The amount of internal memory in MiB that the _Adiar_ BDD library is allowed
+  The amount of internal memory (in bytes) that the _Adiar_ BDD library is allowed
   to use.
 
 - `temp_dir` (optional)

@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
     tpie::log_info() << "Number out of range: " << argv[1] << std::endl;
   }
 
-  adiar::adiar_init(M);
+  adiar::adiar_init(M * 1024 * 1024);
 
   {
     // ===== Your code starts here =====
