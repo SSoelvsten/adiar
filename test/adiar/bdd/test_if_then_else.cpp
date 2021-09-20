@@ -1774,7 +1774,8 @@ go_bandit([]() {
                            << create_node(1,0,sink_F,create_node_uid(3,42)); // 1
             }
 
-            __bdd out = bdd_ite(bdd_x0, bdd_x2, bdd_x1_and_x3);
+            bdd out = bdd_ite(bdd_x0, bdd_x2, bdd_x1_and_x3);
+            AssertThat(is_canonical(out), Is().False());
 
             node_test_stream ns(out);
 
@@ -1858,7 +1859,8 @@ go_bandit([]() {
                 ;
             }
 
-            __bdd out = bdd_ite(bdd_not(bdd_x0_xor_x1), bdd_then, bdd_else);
+            bdd out = bdd_ite(bdd_not(bdd_x0_xor_x1), bdd_then, bdd_else);
+            AssertThat(is_canonical(out), Is().False());
 
             node_test_stream ns(out);
 
@@ -1951,6 +1953,114 @@ go_bandit([]() {
             AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
 
             AssertThat(meta.can_pull(), Is().False());
+          });
+
+        it("can derive canonicity when zipping with one-node 'if'", [&]() {
+            node_file bdd_if;
+            {
+              node_writer nw_if(bdd_if);
+              nw_if << create_node(0,MAX_ID,sink_T,sink_F);
+            }
+
+            node_file bdd_a;
+            {
+              node_writer nw_a(bdd_a);
+              nw_a << create_node(2,MAX_ID,sink_F,sink_T);
+            }
+
+            node_file bdd_b;
+            {
+              node_writer nw_b(bdd_b);
+              nw_b << create_node(1,MAX_ID,sink_T,sink_F);
+            }
+
+            bdd out_1 = bdd_ite(bdd_if, bdd_a, bdd_b);
+            AssertThat(is_canonical(out_1), Is().True());
+
+            bdd out_1n = bdd_ite(bdd_not(bdd_if), bdd_a, bdd_b);
+            AssertThat(is_canonical(out_1n), Is().True());
+
+            bdd out_2 = bdd_ite(bdd_if, bdd_b, bdd_a);
+            AssertThat(is_canonical(out_2), Is().True());
+
+            bdd out_2n = bdd_ite(bdd_not(bdd_if), bdd_b, bdd_a);
+            AssertThat(is_canonical(out_2n), Is().True());
+         });
+
+
+        it("can derive canonicity when zipping negated 'then' or 'else'", [&]() {
+            node_file bdd_if;
+            {
+              node_writer nw_if(bdd_if);
+              nw_if << create_node(0,MAX_ID,sink_T,sink_F);
+            }
+            AssertThat(is_canonical(bdd_if), Is().True());
+
+            node_file bdd_a;
+            {
+              node_writer nw_a(bdd_a);
+              nw_a << create_node(2,MAX_ID,sink_F,sink_T);
+            }
+            AssertThat(is_canonical(bdd_a), Is().True());
+
+            node_file bdd_b;
+            {
+              node_writer nw_b(bdd_b);
+              nw_b << create_node(3,MAX_ID,   sink_F, sink_T)
+                   << create_node(3,MAX_ID-1, sink_T, sink_F)
+                   << create_node(1,MAX_ID,   create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID));
+            }
+            AssertThat(is_canonical(bdd_b), Is().True());
+
+            node_file bdd_c;
+            {
+              node_writer nw_c(bdd_c);
+              nw_c << create_node(1,MAX_ID, sink_T, sink_F);
+            }
+            AssertThat(is_canonical(bdd_c), Is().True());
+
+            bdd out_1 = bdd_ite(bdd_if, bdd_not(bdd_a), bdd_b);
+            AssertThat(is_canonical(out_1), Is().True());
+
+            bdd out_2 = bdd_ite(bdd_if, bdd_a, bdd_not(bdd_b));
+            AssertThat(is_canonical(out_2), Is().False());
+
+            bdd out_3 = bdd_ite(bdd_if, bdd_a, bdd_not(bdd_c));
+            AssertThat(is_canonical(out_3), Is().True());
+
+            bdd out_4 = bdd_ite(bdd_if, bdd_not(bdd_b), bdd_not(bdd_a));
+            AssertThat(is_canonical(out_4), Is().False());
+         });
+
+        it("can derive canonicity when zipping 'if' with multiple nodes on a level", [&]() {
+            node_file bdd_if;
+            {
+              node_writer nw_if(bdd_if);
+              nw_if << create_node(1,MAX_ID,   sink_T,                      sink_T)
+                    << create_node(1,MAX_ID-1, sink_F,                      sink_F)
+                    << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+            }
+
+            node_file bdd_a;
+            {
+              node_writer nw_a(bdd_a);
+              nw_a << create_node(3,MAX_ID,sink_F,sink_T);
+            }
+
+            node_file bdd_b;
+            {
+              node_writer nw_b(bdd_b);
+              nw_b << create_node(2,MAX_ID,sink_T,sink_F);
+            }
+
+            bdd out_1 = bdd_ite(bdd_if, bdd_a, bdd_b);
+            AssertThat(is_canonical(out_1), Is().True());
+
+            bdd out_2 = bdd_ite(bdd_not(bdd_if), bdd_a, bdd_b);
+            AssertThat(is_canonical(out_2), Is().False());
+
+            bdd out_3 = bdd_ite(bdd_not(bdd_if), bdd_b, bdd_a);
+            AssertThat(is_canonical(out_3), Is().True());
           });
       });
   });

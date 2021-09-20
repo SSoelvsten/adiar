@@ -51,62 +51,51 @@ namespace adiar
   // Helper functions
   node_file ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
   {
+    // TODO: What is the performance of '<<' rather than 'unsafe_push'? If there
+    // is a major difference, then we may want to "inline" the '<<' with its
+    // _canonical check here.
+
     ptr_t root_then = NIL, root_else = NIL;
 
     node_file out_nodes;
-    node_writer nw(out_nodes);
+      node_writer nw(out_nodes);
 
-    // zip 'then' and 'else' cases
-    node_stream<true> in_nodes_then(bdd_then);
-    node_stream<true> in_nodes_else(bdd_else);
+      // zip 'then' and 'else' cases
+      node_stream<true> in_nodes_then(bdd_then);
+      node_stream<true> in_nodes_else(bdd_else);
 
-    while (in_nodes_then.can_pull() || in_nodes_else.can_pull()) {
-      bool from_then = in_nodes_then.can_pull()
-        && (!in_nodes_else.can_pull()
-            || in_nodes_then.peek() > in_nodes_else.peek());
+      while (in_nodes_then.can_pull() || in_nodes_else.can_pull()) {
+        bool from_then = in_nodes_then.can_pull()
+          && (!in_nodes_else.can_pull()
+              || in_nodes_then.peek() > in_nodes_else.peek());
 
-      node_t n = from_then ? in_nodes_then.pull() : in_nodes_else.pull();
+        node_t n = from_then ? in_nodes_then.pull() : in_nodes_else.pull();
 
-      if (from_then && !in_nodes_then.can_pull()) { root_then = n.uid; }
-      if (!from_then && !in_nodes_else.can_pull()) { root_else = n.uid; }
+        if (from_then && !in_nodes_then.can_pull()) { root_then = n.uid; }
+        if (!from_then && !in_nodes_else.can_pull()) { root_else = n.uid; }
 
-      nw.unsafe_push(n);
-    }
+        nw << n;
+      }
 
-    // push all nodes from 'if' conditional and remap its sinks
-    adiar_debug(!is_nil(root_then), "Did not obtain root from then stream");
-    adiar_debug(!is_nil(root_else), "Did not obtain root from else stream");
+      // push all nodes from 'if' conditional and remap its sinks
+      adiar_debug(!is_nil(root_then), "Did not obtain root from then stream");
+      adiar_debug(!is_nil(root_else), "Did not obtain root from else stream");
 
-    node_stream<true> in_nodes_if(bdd_if);
+      node_stream<true> in_nodes_if(bdd_if);
 
-    while (in_nodes_if.can_pull()) {
-      node_t n = in_nodes_if.pull();
+      while (in_nodes_if.can_pull()) {
+        node_t n = in_nodes_if.pull();
 
-      n.low = is_sink(n.low)
-        ? (value_of(n.low) ? root_then : root_else)
-        : n.low;
+        n.low = is_sink(n.low)
+          ? (value_of(n.low) ? root_then : root_else)
+          : n.low;
 
-      n.high = is_sink(n.high)
-        ? (value_of(n.high) ? root_then : root_else)
-        : n.high;
+        n.high = is_sink(n.high)
+          ? (value_of(n.high) ? root_then : root_else)
+          : n.high;
 
-      nw.unsafe_push(n);
-    }
-
-    // merge the meta files
-    meta_stream<node_t,1,true> in_meta_if(bdd_if);
-    meta_stream<node_t,1,true> in_meta_then(bdd_then);
-    meta_stream<node_t,1,true> in_meta_else(bdd_else);
-
-    while (in_meta_if.can_pull() || in_meta_then.can_pull() || in_meta_else.can_pull()) {
-      meta_t m = in_meta_then.can_pull() && (!in_meta_else.can_pull()
-                                             || label_of(in_meta_then.peek()) > label_of(in_meta_else.peek()))
-        ? in_meta_then.pull()
-        : in_meta_else.can_pull() ? in_meta_else.pull() : in_meta_if.pull()
-      ;
-
-      nw.unsafe_push(m);
-    }
+        nw << n;
+      }
 
     return out_nodes;
   }
