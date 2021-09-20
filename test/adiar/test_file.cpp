@@ -136,6 +136,74 @@ go_bandit([]() {
 
                       AssertThat(node_test_file.is_read_only(), Is().False());
                     });
+
+                    it("can derive whether it is on canonical form [1]", [&]() {
+                       node_file nf;
+                       {
+                         node_writer nw(nf);
+                         nw << create_node(42, MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
+                       }
+
+                       AssertThat(is_canonical(nf), Is().True());
+                     });
+
+                    it("can derive whether it is on canonical form [2]", [&]() {
+                        node_file nf;
+                        {
+                          node_writer nw(nf);
+                          nw << create_node(21, 42, create_sink_ptr(false), create_sink_ptr(true));
+                        }
+
+                        AssertThat(is_canonical(nf), Is().False());
+                      });
+
+                    it("can derive whether it is on canonical form [3]", [&]() {
+                        node_file nf;
+                        {
+                          node_writer nw(nf);
+                          nw << create_node(42, MAX_ID, create_sink_ptr(false), create_sink_ptr(true))
+                             << create_node(42, MAX_ID-1, create_sink_ptr(true), create_sink_ptr(false))
+                             << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
+                        }
+
+                        AssertThat(is_canonical(nf), Is().True());
+                      });
+
+                    it("can derive whether it is on canonical form [4]", [&]() {
+                        node_file nf;
+                        {
+                          node_writer nw(nf);
+                          nw << create_node(42, MAX_ID, create_sink_ptr(true), create_sink_ptr(false))
+                             << create_node(42, MAX_ID-1, create_sink_ptr(false), create_sink_ptr(true))
+                             << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
+                        }
+
+                        AssertThat(is_canonical(nf), Is().False());
+                      });
+
+                    it("can derive whether it is on canonical form [5]", [&]() {
+                        node_file nf;
+                        {
+                          node_writer nw(nf);
+                          nw << create_node(42, MAX_ID, create_sink_ptr(false), create_sink_ptr(true))
+                             << create_node(42, MAX_ID-1, create_sink_ptr(true), create_sink_ptr(false))
+                             << create_node(21, MAX_ID-1, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
+                        }
+
+                        AssertThat(is_canonical(nf), Is().False());
+                      });
+
+                    it("can derive whether it is on canonical form [6]", [&]() {
+                        node_file nf;
+                        {
+                          node_writer nw(nf);
+                          nw << create_node(42, MAX_ID, create_sink_ptr(false), create_sink_ptr(true))
+                             << create_node(42, MAX_ID-2, create_sink_ptr(true), create_sink_ptr(false))
+                             << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-2));
+                        }
+
+                        AssertThat(is_canonical(nf), Is().False());
+                      });
                 });
 
                 describe("arc_writer", [&]() {

@@ -330,6 +330,10 @@ namespace adiar {
                                                     _level_size));
           _level_size = 0u;
         }
+      } else {
+        if(!is_sink(n) && id_of(n) != MAX_ID) {
+          _canonical = false;
+        }
       }
 
       // Write node to file
