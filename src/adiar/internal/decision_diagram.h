@@ -91,6 +91,7 @@ namespace adiar
               size_t MetaStreams, size_t Buckets>
     friend class levelized_priority_queue;
 
+    friend bool is_canonical(const decision_diagram &dd);
     friend bool is_isomorphic(const decision_diagram&, const decision_diagram&);
 
     template<typename comp_policy>
@@ -124,6 +125,21 @@ namespace adiar
     decision_diagram(const decision_diagram &dd)
       : negate(dd.negate), file(dd.file) { }
   };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Check whether a given decision diagram is canonical, i.e. has the
+  /// following stronger guarantees than the total ordering of nodes.
+  ///
+  /// - Nodes within a level are effectively sorted based on their children:
+  ///   high first, then low.
+  ///
+  /// - Identifiers are from MAX_ID and down (when read bottom-up)
+  ///
+  /// If this is true, then equality checking (see 'pred.h') can be done in a
+  /// single cheap linear scan rather than with an O(N log N) time-forwarding
+  /// algorithm.
+  //////////////////////////////////////////////////////////////////////////////
+  bool is_canonical(const decision_diagram &dd);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Check whether a given decision diagram is sink-only and satisfies

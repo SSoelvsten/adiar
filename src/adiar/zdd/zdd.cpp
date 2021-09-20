@@ -13,15 +13,6 @@
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
-  zdd reduce(__zdd &&maybe_reduced)
-  {
-    if (maybe_reduced.has<arc_file>()) {
-      return reduce(maybe_reduced.get<arc_file>(), reduction_rule_zdd);
-    }
-    return zdd(maybe_reduced.get<node_file>(), maybe_reduced.negate);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
   // Constructors
   __zdd::__zdd() : __decision_diagram() { }
   __zdd::__zdd(const node_file &f) : __decision_diagram(f) { }
@@ -36,7 +27,7 @@ namespace adiar {
   zdd::zdd(const zdd &o) : decision_diagram(o) { }
   zdd::zdd(zdd &&o) : decision_diagram(o) { }
 
-  zdd::zdd(__zdd &&o) : decision_diagram(reduce(std::forward<__zdd>(o))) { }
+  zdd::zdd(__zdd &&o) : decision_diagram(reduce<zdd_policy>(std::forward<__zdd>(o))) { }
 
   //////////////////////////////////////////////////////////////////////////////
   // Operators
@@ -75,7 +66,7 @@ namespace adiar {
   zdd& zdd::operator= (__zdd &&other)
   {
     free();
-    return (*this = reduce(std::forward<__zdd>(other)));
+    return (*this = reduce<zdd_policy>(std::forward<__zdd>(other)));
   }
 
   zdd& zdd::operator&= (const zdd &other)

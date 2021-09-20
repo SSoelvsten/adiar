@@ -14,15 +14,6 @@
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
-  bdd reduce(__bdd &&maybe_reduced)
-  {
-    if (maybe_reduced.has<arc_file>()) {
-      return reduce(maybe_reduced.get<arc_file>(), reduction_rule_bdd);
-    }
-    return bdd(maybe_reduced.get<node_file>(), maybe_reduced.negate);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
   // Constructors
   __bdd::__bdd() : __decision_diagram() { }
   __bdd::__bdd(const node_file &f) : __decision_diagram(f) { }
@@ -32,14 +23,13 @@ namespace adiar {
 
   bdd::bdd(const node_file &f, bool negate) : decision_diagram(f, negate) { }
 
-  bdd::bdd() : bdd(false) { }
-
   bdd::bdd(const bdd &o) : decision_diagram(o) { }
   bdd::bdd(bdd &&o) : decision_diagram(o) { }
 
-  bdd::bdd(__bdd &&o) : decision_diagram(reduce(std::forward<__bdd>(o))) { }
+  bdd::bdd(__bdd &&o) : decision_diagram(reduce<bdd_policy>(std::forward<__bdd>(o))) { }
 
   bdd::bdd(bool v) : bdd(bdd_sink(v)) { }
+  bdd::bdd() : bdd(false) { }
 
   //////////////////////////////////////////////////////////////////////////////
   // Operators
@@ -75,7 +65,7 @@ namespace adiar {
   bdd& bdd::operator= (__bdd &&other)
   {
     free();
-    return (*this = reduce(std::forward<__bdd>(other)));
+    return (*this = reduce<bdd_policy>(std::forward<__bdd>(other)));
   }
 
   bdd& bdd::operator&= (const bdd &other)

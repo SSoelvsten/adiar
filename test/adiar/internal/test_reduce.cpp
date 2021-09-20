@@ -1,9 +1,109 @@
+// Import Reduce algorithm
 #include <adiar/internal/reduce.h>
+
+// Import Decision Diagram policies
+#include <adiar/bdd/bdd.h>
+#include <adiar/zdd/zdd.h>
 
 go_bandit([]() {
     describe("INTERNAL: Reduce", [&]() {
         ptr_t sink_T = create_sink_ptr(true);
         ptr_t sink_F = create_sink_ptr(false);
+
+        node_file x0x1_node_file;
+
+        { // Garbage collect writer to free write-lock
+          node_writer nw(x0x1_node_file);
+
+          nw << create_node(1,MAX_ID, sink_F, sink_T)
+             << create_node(0,MAX_ID, sink_F, create_node_ptr(1,MAX_ID));
+        }
+
+        it("preserves negation flag on reduced input [1]", [&]() {
+            /*
+               1                  1      ---- x0
+              / \                / \
+              F 2        =>      F 2     ---- x1
+               / \                / \
+               F T                F T
+            */
+
+            // Reduce it
+            bdd in(x0x1_node_file, false);
+            bdd out = reduce<bdd_policy>(in);
+
+            AssertThat(is_canonical(out), Is().True());
+
+            // Check it looks all right
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+
+            // n2
+            AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                                  sink_F,
+                                                                  sink_T)));
+            AssertThat(out_nodes.can_pull(), Is().True());
+
+            // n1
+            AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                  sink_F,
+                                                                  create_node_ptr(1,MAX_ID))));
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            meta_test_stream<node_t, 1> out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
+          });
+
+        it("preserves negation flag on reduced input [2]", [&]() {
+            /*
+               1                  1      ---- x0
+              / \                / \
+              F 2      = ~ =>    T 2     ---- x1
+               / \                / \
+               F T                T F
+            */
+
+            // Reduce it
+            bdd in(x0x1_node_file, true);
+            bdd out = reduce<bdd_policy>(in);
+
+            AssertThat(is_canonical(out), Is().True());
+
+            // Check it looks all right
+            node_test_stream out_nodes(out);
+
+            AssertThat(out_nodes.can_pull(), Is().True());
+
+            // n2
+            AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                                  sink_T,
+                                                                  sink_F)));
+            AssertThat(out_nodes.can_pull(), Is().True());
+
+            // n1
+            AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                  sink_T,
+                                                                  create_node_ptr(1,MAX_ID))));
+            AssertThat(out_nodes.can_pull(), Is().False());
+
+            meta_test_stream<node_t, 1> out_meta(out);
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+
+            AssertThat(out_meta.can_pull(), Is().True());
+            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+
+            AssertThat(out_meta.can_pull(), Is().False());
+          });
 
         describe("Reduction Rule 2", [&]() {
             it("applies to sink arcs [1]", [&]() {
@@ -43,9 +143,10 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                bdd out = reduce<bdd_policy>(in);
+
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -126,9 +227,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -214,9 +315,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -310,9 +411,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -409,9 +510,9 @@ go_bandit([]() {
 
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -514,9 +615,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -600,9 +701,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -682,9 +783,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -767,9 +868,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -851,9 +952,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -920,9 +1021,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -962,9 +1063,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -975,7 +1076,8 @@ go_bandit([]() {
                 AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                AssertThat(out.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> out_meta(out);
+                AssertThat(out_meta.can_pull(), Is().False());
               });
 
             it("can propagate reduction rule 1 up to a sink", [&]() {
@@ -1006,9 +1108,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -1017,7 +1119,8 @@ go_bandit([]() {
                 AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                AssertThat(out.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> out_meta(out);
+                AssertThat(out_meta.can_pull(), Is().False());
               });
 
             it("can return non-reducible single-node variable with MAX_ID", [&]() {
@@ -1041,9 +1144,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                bdd out = reduce<bdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -1089,9 +1192,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_zdd);
+                zdd out = reduce<zdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -1152,9 +1255,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_zdd);
+                zdd out = reduce<zdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -1236,9 +1339,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_zdd);
+                zdd out = reduce<zdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -1289,9 +1392,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_zdd);
+                zdd out = reduce<zdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -1302,7 +1405,8 @@ go_bandit([]() {
                 AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                AssertThat(out.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> out_meta(out);
+                AssertThat(out_meta.can_pull(), Is().False());
               });
 
             it("can reduce the root", [&]() {
@@ -1333,9 +1437,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_zdd);
+                zdd out = reduce<zdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -1382,9 +1486,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_bdd);
+                zdd out = reduce<zdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);
@@ -1393,7 +1497,8 @@ go_bandit([]() {
                 AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
                 AssertThat(out_nodes.can_pull(), Is().False());
 
-                AssertThat(out.meta_size(), Is().EqualTo(0u));
+                meta_test_stream<node_t, 1> out_meta(out);
+                AssertThat(out_meta.can_pull(), Is().False());
               });
 
             it("can return non-reducible single-node variable with MAX_ID", [&]() {
@@ -1417,9 +1522,9 @@ go_bandit([]() {
                 }
 
                 // Reduce it
-                node_file out = reduce(in, reduction_rule_zdd);
+                zdd out = reduce<zdd_policy>(in);
 
-                AssertThat(out._file_ptr -> canonical, Is().True());
+                AssertThat(is_canonical(out), Is().True());
 
                 // Check it looks all right
                 node_test_stream out_nodes(out);

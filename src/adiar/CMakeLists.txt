@@ -84,7 +84,6 @@ set(SOURCES
   internal/decision_diagram.cpp
   internal/pred.cpp
   internal/levelized_priority_queue.cpp
-  internal/reduce.cpp
 )
 
 if (ADIAR_SHARED)
