@@ -122,6 +122,13 @@ namespace adiar {
     typedef __zdd unreduced_t;
 
   public:
+    static inline ptr_t reduction_rule(const node_t &n)
+    {
+      if (is_sink(n.high) && !value_of(n.high)) { return n.low; }
+      return n.uid;
+    }
+
+  public:
     static inline void compute_cofactor(bool on_curr_level, ptr_t &, ptr_t &high)
     {
       if (!on_curr_level) { high = create_sink_ptr(false); }

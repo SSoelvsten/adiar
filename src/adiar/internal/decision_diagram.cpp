@@ -8,6 +8,11 @@ namespace adiar {
     : _union(dd.file), negate(dd.negate) { };
 
   //////////////////////////////////////////////////////////////////////////////
+  bool is_canonical(const decision_diagram &dd)
+  {
+    return dd.file._file_ptr -> canonical;
+  }
+
   bool is_sink(const decision_diagram &dd, const sink_pred &pred)
   {
     node_stream<> ns(dd);

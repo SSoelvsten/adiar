@@ -109,6 +109,13 @@ namespace adiar {
     typedef __bdd unreduced_t;
 
   public:
+    static inline ptr_t reduction_rule(const node_t &n)
+    {
+      if (n.low == n.high) { return n.low; }
+      return n.uid;
+    }
+
+  public:
     static inline void compute_cofactor(bool /* on_curr_level */,
                                         ptr_t & /* low */,
                                         ptr_t & /* high */)

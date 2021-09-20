@@ -190,7 +190,7 @@ go_bandit([]() {
               });
 
             it("should compute with __bdd&& operators", [&]() {
-                bdd out = (((x0 & ~x1) | (~x0 & x1)) ^ ((x1 ^ x0) & (~x0 & x1)));
+                bdd out = ((x0 & ~x1) | (~x0 & x1)) ^ ((x1 ^ x0) & (~x0 & x1));
                 AssertThat((x0 & ~x1) == out, Is().True());
                 AssertThat((x0 & ~x1) != out, Is().False());
               });
@@ -199,14 +199,14 @@ go_bandit([]() {
                 // Notice, that the two expressions with sink_T and sink_F
                 // shortcut with the operator for a bdd with the negation flag
                 // set correctly.
-                bdd out = (((x0 & x1) | (~x0 & x1)) ^ ((sink_T ^ x0) & (sink_F | x1)));
+                bdd out = ((x0 & x1) | (~x0 & x1)) ^ ((sink_T ^ x0) & (sink_F | x1));
                 AssertThat((x0 & x1) == out, Is().True());
                 AssertThat((x0 & x1) != out, Is().False());
               });
 
             it("should compute with __bdd&& and bdd& in operators [2]", [&]() {
                 // The right-hand-side will evaluate to a bdd, since sink_F negates.
-                bdd out = (((~x0 | (x0 & x1)) ^ (sink_T ^ (x1 ^ x0))));
+                bdd out = ((~x0 | (x0 & x1)) ^ (sink_T ^ (x1 ^ x0)));
                 AssertThat((~x0 & x1) == out, Is().True());
                 AssertThat((~x0 & x1) != out, Is().False());
               });
