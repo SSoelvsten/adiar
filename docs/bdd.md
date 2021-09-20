@@ -13,7 +13,7 @@ A Binary Decision Diagram (BDD) represents a boolean function
 {: .fs-6 .fw-300 }
 
 <p class="fs-6 fw-300" style="text-align: center;">
-  {0,1}ⁿ → {0,1}
+  {0,1}<sup>n</sup> → {0,1}
 </p>
 
 The `bdd` class takes care of reference counting and optimal garbage collection
@@ -75,7 +75,7 @@ interval [*min_label*; *max_label*] are true.
 ### `bdd bdd_apply(bdd f, bdd g, bool_op op)`
 {: .no_toc }
 
-Construct a bdd representing the *op* applied onto the BDDs for _f_ and _g_. For
+Construct a BDD representing the *op* applied onto the BDDs for _f_ and _g_. For
 each operator, we provide the following alias functions:
   
 - `bdd bdd_and(bdd f, bdd g)` (operator `&`)
