@@ -7,11 +7,12 @@
 
 #include <adiar/internal/substitution.h>
 
+#include <adiar/bdd/bdd.h>
 #include <adiar/bdd/build.h>
 
 namespace adiar
 {
-  class restrict_policy
+  class restrict_policy : public bdd_policy
   {
   public:
     static inline bdd resolve_empty_assignment(const bdd &in)
@@ -27,7 +28,7 @@ namespace adiar
 
   public:
     static inline __bdd resolve_root_assign(const node_t &n, const assignment_t &a,
-                                            const bdd &in, const assignment_file &,
+                                            const bdd &/*in*/, const assignment_file &,
                                             ptr_t &rec_child)
     {
       rec_child = value_of(a) ? n.high : n.low;
@@ -45,6 +46,6 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_restrict(const bdd &dd, const assignment_file &assignment)
   {
-    return substitute<restrict_policy, bdd, __bdd>(dd, assignment);
+    return substitute<restrict_policy>(dd, assignment);
   }
 }

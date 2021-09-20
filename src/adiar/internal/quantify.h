@@ -104,8 +104,7 @@ namespace adiar
     return false;
   }
 
-  template<typename in_t>
-  inline bool quantify_has_label(const label_t label, const in_t &in)
+  inline bool quantify_has_label(const label_t label, const decision_diagram &in)
   {
     meta_stream<node_t, 1> in_meta(in);
     while(in_meta.can_pull()) {
@@ -121,10 +120,10 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename quantify_policy, typename out_t, typename in_t>
-  out_t quantify(const in_t &in,
-                 const label_t label,
-                 const bool_op &op)
+  template<typename quantify_policy>
+  typename quantify_policy::unreduced_t quantify(const typename quantify_policy::reduced_t &in,
+                                                 const label_t label,
+                                                 const bool_op &op)
   {
     adiar_debug(is_commutative(op), "Noncommutative operator used");
 
@@ -138,7 +137,7 @@ namespace adiar
     node_t v = in_nodes.pull();
 
     if (label_of(v) == label && (is_sink(v.low) || is_sink(v.high))) {
-      out_t maybe_resolved = quantify_policy::resolve_sink_root(v, op);
+      typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_sink_root(v, op);
 
       if (!(std::holds_alternative<no_file>(maybe_resolved._union))) {
         return maybe_resolved;

@@ -79,8 +79,8 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename count_policy, typename queue_t, typename in_t>
-  uint64_t count(const in_t &dd, label_t varcount)
+  template<typename count_policy, typename queue_t>
+  uint64_t count(const decision_diagram &dd, label_t varcount)
   {
     adiar_debug(!is_sink(dd),
                 "Count algorithm does not work on sink-only edge case");

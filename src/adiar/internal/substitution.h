@@ -32,8 +32,9 @@ namespace adiar
     }
   }
 
-  template<typename substitution_policy, typename in_t, typename out_t>
-  out_t substitute(const in_t &in, const assignment_file &assignment)
+  template<typename substitution_policy>
+  typename substitution_policy::unreduced_t substitute(const typename substitution_policy::reduced_t &in,
+                                                       const assignment_file &assignment)
   {
     if (assignment.size() == 0) {
       return substitution_policy::resolve_empty_assignment(in);
@@ -67,7 +68,7 @@ namespace adiar
     // process the root and create initial recursion requests
     if(label_of(a) == label_of(n)) {
       ptr_t rec_child;
-      out_t maybe_resolved = substitution_policy::resolve_root_assign(n, a, in, assignment, rec_child);
+      typename substitution_policy::unreduced_t maybe_resolved = substitution_policy::resolve_root_assign(n, a, in, assignment, rec_child);
 
       if (!(std::holds_alternative<no_file>(maybe_resolved._union))) {
         return maybe_resolved;
