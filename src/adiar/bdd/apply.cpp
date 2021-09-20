@@ -96,7 +96,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_apply(const bdd &bdd_1, const bdd &bdd_2, const bool_op &op)
   {
-    return product_construction<apply_prod_policy, __bdd>(bdd_1, bdd_2, op);
+    return product_construction<apply_prod_policy>(bdd_1, bdd_2, op);
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -126,7 +126,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_binop(const zdd &zdd_1, const zdd &zdd_2, const bool_op &op)
   {
-    return product_construction<zdd_prod_policy, __zdd>(zdd_1, zdd_2, op);
+    return product_construction<zdd_prod_policy>(zdd_1, zdd_2, op);
   }
 
   //////////////////////////////////////////////////////////////////////////////

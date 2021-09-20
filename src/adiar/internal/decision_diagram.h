@@ -96,10 +96,10 @@ namespace adiar
     template<typename comp_policy>
     friend bool comparison_check(const decision_diagram &in_1, const decision_diagram &in_2);
 
-    template<typename prod_policy, typename out_t, typename in_t>
-    friend out_t product_construction(const in_t &in_1,
-                                      const in_t &in_2,
-                                      const bool_op &op);
+    template<typename prod_policy>
+    friend typename prod_policy::unreduced_t product_construction(const typename prod_policy::reduced_t &in_1,
+                                                                  const typename prod_policy::reduced_t &in_2,
+                                                                  const bool_op &op);
 
     friend label_t min_label(const decision_diagram &dd);
     friend label_t max_label(const decision_diagram &dd);

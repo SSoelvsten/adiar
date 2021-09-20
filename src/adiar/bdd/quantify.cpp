@@ -63,16 +63,16 @@ namespace adiar
                                                                                \
     label_t label = ls.pull();                                                 \
     if (!ls.can_pull()) {                                                      \
-      return quantify<bdd_quantify_policy, __bdd, bdd>(bdd_var, label, op);    \
+      return quantify<bdd_quantify_policy>(bdd_var, label, op);                \
     } else {                                                                   \
-      bdd_var = quantify<bdd_quantify_policy, __bdd, bdd>(bdd_var, label, op); \
+      bdd_var = quantify<bdd_quantify_policy>(bdd_var, label, op);             \
     }                                                                          \
  }                                                                             \
 
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_exists(const bdd &in_bdd, const label_t &label)
   {
-    return quantify<bdd_quantify_policy, __bdd, bdd>(in_bdd, label, or_op);
+    return quantify<bdd_quantify_policy>(in_bdd, label, or_op);
   }
 
   __bdd bdd_exists(const bdd &in_bdd, const label_file &labels)
@@ -88,7 +88,7 @@ namespace adiar
 
   __bdd bdd_forall(const bdd &in_bdd, const label_t &label)
   {
-    return quantify<bdd_quantify_policy, __bdd, bdd>(in_bdd, label, and_op);
+    return quantify<bdd_quantify_policy>(in_bdd, label, and_op);
   }
 
   __bdd bdd_forall(const bdd &in_bdd, const label_file &labels)

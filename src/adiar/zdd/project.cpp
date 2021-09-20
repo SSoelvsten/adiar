@@ -43,11 +43,6 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  inline __zdd zdd_project_remove_label(const zdd &dd, label_t i)
-  {
-    return quantify<zdd_project_policy, __zdd, zdd>(dd, i, or_op);
-  }
-
   label_file extract_non_dom(const zdd &dd, const label_file &dom)
   {
     label_file dom_inv;
@@ -92,7 +87,7 @@ namespace adiar
   while (ls.can_pull()) {                                             \
     if (is_sink(zdd_var)) { return zdd_var; };                        \
                                                                       \
-    zdd_var = zdd_project_remove_label(dd, ls.pull());                \
+    zdd_var = quantify<zdd_project_policy>(dd, ls.pull(), or_op);     \
   }                                                                   \
   return zdd_var;                                                     \
 

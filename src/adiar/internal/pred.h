@@ -37,8 +37,11 @@ namespace adiar
 
   /////////////////////
   // Data structures
-  typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2> comparison_priority_queue_t;
-  typedef tpie::priority_queue<tuple_data, tuple_snd_lt> comparison_data_priority_queue_t;
+  typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2>
+  comparison_priority_queue_t;
+
+  typedef tpie::priority_queue<tuple_data, tuple_snd_lt>
+  comparison_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   /// Behaviour can be changed with the 'comp_policy'.

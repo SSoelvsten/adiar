@@ -105,6 +105,10 @@ namespace adiar {
   class bdd_policy
   {
   public:
+    typedef bdd reduced_t;
+    typedef __bdd unreduced_t;
+
+  public:
     static inline void compute_cofactor(bool /* on_curr_level */,
                                         ptr_t & /* low */,
                                         ptr_t & /* high */)

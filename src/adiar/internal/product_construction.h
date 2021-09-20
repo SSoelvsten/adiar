@@ -202,7 +202,7 @@ namespace adiar
   /// class, which exposes static void strategy functions.
   ///
   /// - resolve_same_file:
-  ///   Creates the out_t based on knowing both inputs refer to the same
+  ///   Creates the output based on knowing both inputs refer to the same
   ///   underlying file.
   ///
   /// - resolve_sink_root:
@@ -232,8 +232,7 @@ namespace adiar
   ///
   /// Other parameters are:
   ///
-  /// \param in_i  DAGs to combine into one. Here, 'in_t' should be of type
-  ///              `decision_diagram` or a class that inherits from it.
+  /// \param in_i  DAGs to combine into one.
   ///
   /// \param op    Binary boolean operator to be applied. See data.h for the
   ///              ones directly provided by Adiar.
@@ -241,10 +240,10 @@ namespace adiar
   /// \return      A class that inherits from __decision_diagram and describes
   ///              the product of the two given DAGs.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename prod_policy, typename out_t, typename in_t>
-  out_t product_construction(const in_t &in_1,
-                             const in_t &in_2,
-                             const bool_op &op)
+  template<typename prod_policy>
+  typename prod_policy::unreduced_t product_construction(const typename prod_policy::reduced_t &in_1,
+                                                         const typename prod_policy::reduced_t &in_2,
+                                                         const bool_op &op)
   {
     if (in_1.file._file_ptr == in_2.file._file_ptr) {
       return prod_policy::resolve_same_file(in_1, in_2, op);
@@ -257,7 +256,7 @@ namespace adiar
     node_t v2 = in_nodes_2.pull();
 
     if (is_sink(v1) || is_sink(v2)) {
-      out_t maybe_resolved = prod_policy::resolve_sink_root(v1, in_1, v2, in_2, op);
+      typename prod_policy::unreduced_t maybe_resolved = prod_policy::resolve_sink_root(v1, in_1, v2, in_2, op);
 
       if (!(std::holds_alternative<no_file>(maybe_resolved._union))) {
         return maybe_resolved;
