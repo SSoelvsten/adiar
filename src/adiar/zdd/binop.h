@@ -1,5 +1,5 @@
-#ifndef ADIAR_ZDD_SET_OP_H
-#define ADIAR_ZDD_SET_OP_H
+#ifndef ADIAR_ZDD_BINOP_H
+#define ADIAR_ZDD_BINOP_H
 
 #include <adiar/data.h>
 #include <adiar/zdd/zdd.h>
@@ -38,4 +38,4 @@ namespace adiar
   __zdd zdd_diff(const zdd &zdd_1, const zdd &zdd_2);
 }
 
-#endif // ADIAR_ZDD_SET_OP_H
+#endif // ADIAR_ZDD_BINOP_H

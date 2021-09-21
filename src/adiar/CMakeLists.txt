@@ -30,7 +30,7 @@ set(HEADERS
   zdd/count.h
   zdd/pred.h
   zdd/project.h
-  zdd/set_op.h
+  zdd/binop.h
   zdd/zdd.h
 
   # debug files
@@ -74,7 +74,7 @@ set(SOURCES
   zdd/count.cpp
   zdd/pred.cpp
   zdd/project.cpp
-  zdd/set_op.cpp
+  zdd/binop.cpp
   zdd/zdd.cpp
 
   # debug files

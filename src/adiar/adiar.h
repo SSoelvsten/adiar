@@ -31,13 +31,20 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 /// ZDD
-#include <adiar/zdd/build.h>
-#include <adiar/zdd/count.h>
-#include <adiar/zdd/pred.h>
-#include <adiar/zdd/project.h>
-#include <adiar/zdd/set_op.h>
 #include <adiar/zdd/zdd.h>
 
+// Simple constructors
+#include <adiar/zdd/build.h>
+
+// Manipulation operations
+#include <adiar/zdd/binop.h>
+#include <adiar/zdd/project.h>
+
+// Other operations
+#include <adiar/zdd/count.h>
+
+// Predicates
+#include <adiar/zdd/pred.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Debugging

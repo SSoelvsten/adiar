@@ -1,4 +1,4 @@
-#include "set_op.h"
+#include "binop.h"
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
