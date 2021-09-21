@@ -155,11 +155,11 @@ namespace snowhouse
 // ADIAR ZDD unit tests
 #include "adiar/zdd/test_zdd.cpp"
 
+#include "adiar/zdd/test_binop.cpp"
 #include "adiar/zdd/test_build.cpp"
 #include "adiar/zdd/test_count.cpp"
 #include "adiar/zdd/test_pred.cpp"
 #include "adiar/zdd/test_project.cpp"
-#include "adiar/zdd/test_set_op.cpp"
 
 int main(int argc, char* argv[]) {
 #ifdef NDEBUG
