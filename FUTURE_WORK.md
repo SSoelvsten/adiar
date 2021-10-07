@@ -8,6 +8,7 @@ may constitute interesting undergraduate and graduate projects.
 - [Future Work](#future-work)
     - [Missing BDD algorithms](#missing-bdd-algorithms)
         - [Set manipulation](#set-manipulation)
+        - [Linear Optimisation](#linear-optimisation)
         - [Composition](#composition)
         - [Advanced satisfiability functions](#advanced-satisfiability-functions)
         - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
@@ -47,6 +48,15 @@ functions, most of which are aliases for other algorithms. See the documentation
 of Sylvan for an overview of this. More interesting is Coudert and Madre's
 _Meta-products_ representation [[Coudert92](#references)] of sets in BDDs and the
 functions related to it.
+
+### Linear Optimisation
+
+Given a linear cost function on the input variables for a BDD or ZDD one should
+be able to derive the value of the best (i.e. minimal or maximal) solution in
+O(sort(N)) I/Os with a similar algorithm as for Counting paths.
+
+The question then is, how does one (a) maintain the entire path traversed or (b)
+reconstruct said path?
 
 ### Composition
 The _Composition_ (`bdd_compose`) of two OBDDs _f_ and _g_ for some label
