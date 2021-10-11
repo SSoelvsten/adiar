@@ -48,13 +48,15 @@ install(DIRECTORY src/adiar
 # ============================================================================ #
 # Unit Tests
 # ============================================================================ #
-if (MAIN_PROJECT)
+option(ADIAR_TEST "Build unit tests for adiar" ${MAIN_PROJECT})
+if (ADIAR_TEST)
   add_subdirectory (test)
 endif()
 
 # ============================================================================ #
 # Examples
 # ============================================================================ #
-if (MAIN_PROJECT)
+option(ADIAR_EXAMPLES "Build examples for usage of adiar" ${MAIN_PROJECT})
+if (ADIAR_EXAMPLES)
   add_subdirectory (example)
 endif ()
