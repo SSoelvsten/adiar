@@ -50,12 +50,20 @@ functions related to it.
 
 ### Linear Optimisation
 
-Given a linear cost function on the input variables for a BDD or ZDD one should
-be able to derive the value of the best (i.e. minimal or maximal) solution in
-O(sort(N)) I/Os with a similar algorithm as for Counting paths.
+Donald Knuth solved the NP-complete _travelling salesman_  problem to optimality
+in a graph of 50 nodes in one of his [lectures](https://youtu.be/SQE21efsf7Y?t=3776).
 
-The question then is, how does one (a) maintain the entire path traversed or (b)
-reconstruct said path?
+If we want to support the same, we need to derive the optimal solution given a
+linear cost function on the input variables for a BDD / ZDD. That is, the value
+of a path is derived from a list of _integers_/_floats_ constants; each constant
+is added to the value of a path, if one followed the _true_ edge rather than the
+_false_ edge.
+
+One should be able to derive this value of the best (i.e. minimal or maximal)
+solution in O(sort(N)) I/Os with a similar algorithm as for Counting paths. The
+question then is, how does one (a) maintain the entire path traversed or (b)
+reconstruct said path? I think (b) is the most promising by using O(N) extra
+space and time after the initial sweep.
 
 ### Advanced satisfiability functions
 The number of satisfiable assignments can be very large (even larger than
