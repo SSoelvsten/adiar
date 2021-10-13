@@ -9,7 +9,6 @@ may constitute interesting undergraduate and graduate projects.
     - [Missing BDD algorithms](#missing-bdd-algorithms)
         - [Set manipulation](#set-manipulation)
         - [Linear Optimisation](#linear-optimisation)
-        - [Composition](#composition)
         - [Advanced satisfiability functions](#advanced-satisfiability-functions)
         - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
     - [Additional features](#additional-features)
@@ -57,18 +56,6 @@ O(sort(N)) I/Os with a similar algorithm as for Counting paths.
 
 The question then is, how does one (a) maintain the entire path traversed or (b)
 reconstruct said path?
-
-### Composition
-The _Composition_ (`bdd_compose`) of two OBDDs _f_ and _g_ for some label
-_i ∊ [n]_ is _f ∘<sub>i</sub> g (x)_ and is to be interpreted as
-_f(x<sub>1</sub>, ..., x<sub>i-1</sub>, g(x<sub>1</sub>, ..., x<sub>n</sub>), x<sub>i+1</sub>, ..., x<sub>n</sub>)_.
-
-This can be implemented with a single sweep through _f_ and _g_ by using the
-ideas in the _quantification_ and the _if-then-else_ algorithms. A priority
-queue contains requests on triples `t1`, `t2`, `t3` where `t2` and `t3` are
-nodes from _f_ and `t1` is from _g_. Most optimisations and prunings used for
-both the _if-then-else_ and the _quantification_ algorithm then would apply
-here.
 
 ### Advanced satisfiability functions
 The number of satisfiable assignments can be very large (even larger than
