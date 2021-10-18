@@ -21,7 +21,7 @@ available to _Adiar_. The default is 1024 MiB.
 
 **Files:** `queens.cpp`
 
-**Target:** `make example-queens N=<?>`
+**Target:** `make example/queens N=<?>`
 
 Solve the N-Queens problem for _N = `?`_ (default: `8`). This is done by
 constructing an BDD row-by-row that represents whether the row is in a legal

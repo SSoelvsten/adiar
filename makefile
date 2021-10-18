@@ -73,8 +73,8 @@ main:
 #  EXAMPLES
 # ============================================================================ #
 
-example-queens: N := 8
-example-queens:
+example/queens: N := 8
+example/queens:
   # Build
 	@mkdir -p build/
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..

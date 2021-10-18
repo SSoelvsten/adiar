@@ -24,9 +24,8 @@ of BDDs, that far outgrow the memory limit of the given machine.
 
 
 ## Documentation
-The documentation is provided as a collection of Markdown files in the
-[/docs](https://github.com/SSoelvsten/adiar/tree/main/docs) folder, which are also
-viewable on [Github Pages](https://ssoelvsten.github.io/adiar/).
+The documentation is provided as a collection of Markdown files in the _docs/_
+folder, which are also viewable on [Github Pages](https://ssoelvsten.github.io/adiar/).
 
 
 ## Dependencies
@@ -88,21 +87,22 @@ The _Makefile_ provides the following targets
 |                 |                                                                      |
 | `main M=<MiB>`  | Run the _main_ function in `src/main.cpp` with `<MiB>` MiB of memory |
 
-### Examples and benchmarks
-The _/examples_ folder contains examples for using the data structure to solve
-various verification and satisfaction problems. Even more examples and
-benchmarks are provided in a separate
-[BDD Benchmarking repository](https://github.com/SSoelvsten/bdd-benchmark).
+### Examples
+The _example/_ folder contains examples for using the data structures in Adiar.
+The _README.md_ file in said folder contains a more in-depth description of each
+of the examples. Even more examples and benchmarks are provided in a separate
+[BDD Benchmarking repository](https://github.com/SSoelvsten/bdd-benchmark**.
 
-The problem size and memory used for the examples mentioned in the targets below
-can be varied with the following two Makefile variables
+Each example takes a set of arguments as input, which can be parsed to the
+program as a makefile variable. That is, to change the value of _N_ to to value
+follow the `make <target>` with `N=<value>`.
 
-- `N`: The _N_ to be used in the problem.
-- `M`: The amount of memory given to Adiar in MiB (default: 1024).
+**example/queens**
 
-| target                         | Example                                                             |
-|--------------------------------|---------------------------------------------------------------------|
-| `example-queens`               | _N_-Queens board creation, counting and enumerating solutions       |
+| variable | description                   |
+|----------|-------------------------------|
+| _N_      | Board size (default: 8)       |
+| _M_      | Memory in MiB (default: 1024) |
 
 
 ## Contributions
