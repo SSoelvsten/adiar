@@ -22,7 +22,6 @@ may constitute interesting undergraduate and graduate projects.
         - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
         - [Shared Decision Diagrams](#shared-decision-diagrams)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
-        - [Levelized Files](#levelized-files)
         - [Levelized Parallel Computation](#levelized-parallel-computation)
     - [References](#references)
 
@@ -204,8 +203,9 @@ The most famous reordering procedure is Rudell's sifting algorithm
 [[Rudell93](#references)]. This is based on the observation by prior authors
 that two adjacent variables can be swapped without affecting any nodes of any
 other variable in the DAG. To allow this swapping in _Adiar_, one will need to
-first look into the [Levelized Files](#levelized-files) refactor below. After
-this is done, then the sifting algorithm can be mapped to the decision diagrams
+first look into the _levelized files_ refactor described in
+[#154](https://github.com/SSoelvsten/adiar/issues/154). After this is done,
+then the sifting algorithm can (hopefully) be mapped to the decision diagrams
 of _Adiar_.
 
 Since the _meta file_ in _Adiar_ also provides the size of each level, then one
@@ -237,8 +237,9 @@ be the original BDD.
 
   - Obtain an assignment σ that reflects a path going to each node. Here, one
     needs to traverse the under-construction BDD back up to the root. To this
-    end, the [Levelized Files](#levelized-files) may again make all of this
-    easier.
+    end, the _levelized files_
+    ([#154](https://github.com/SSoelvsten/adiar/issues/154)) may again make all
+    of this easier.
 
   - For two different requests to the same level with assignments σ and σ' check
     whether they induce the same graph, i.e. check whether _Restrict(f, σ) =
@@ -346,13 +347,6 @@ in the running time on the current algorithms. Some suggestions below also make
 the GPU an intriguing subject for a possible heavy improvement in the running
 time.
 
-### Levelized Files
-The node-based and arc-based representations currently use a single file for the
-entire data structure. If this file is split up per level, then one can
-aggressively garbage collect each level while the algorithms are running. This
-can safe concurrent disk usage and so allow computation on even bigger instances
-before running out of disk space.
-
 ### Levelized Parallel Computation
 A few experiments show, that the Reduce algorithm in practice removes very few
 redundant nodes. So, the Reduce only really puts it on canonical form and saves
@@ -403,12 +397,13 @@ needs as an argument an output handler (i.e. a _pipe_):
 
 3. If the input is a base case (e.g. `bdd_ithvar(i)`), then some BDD
    construction algorithms could be done top-to-bottom rather than bottom-up. If
-   the [levelized files](#levelized-files) above are added too, then this makes
-   a level available before the underlying algorithm has finished constructing
-   all nodes.
+   the _levelized files_ ([#154](https://github.com/SSoelvsten/adiar/issues/154))
+   are added too, then this makes a level available before the underlying algorithm
+   has finished constructing all nodes.
 
    This kind of a pipe may not be worth the effort though, since most of these
-   BDDs are smaller than a few thousand nodes (i.e. less than a few kB).
+   BDDs are smaller than a few thousand nodes (i.e. less than a few kB) and so
+   take no time to construct.
 
 **Processing/Scheduling Tree**
 
