@@ -125,10 +125,9 @@ group at [Aarhus University](https://cs.au.dk).
 
 Thank you, to the following wonderful people:
 
-- **[Anna Blume Jakobsen](https://github.com/bluekeladry)**:
-  Bachelor student, who during a summer project wrote the first implementation
-  of the _Apply_, _Evaluate_, _Count Assignments_, _Count Paths_, _Reduce_, and
-  _Restrict_ algorithms.
+- **[Anna Blume Jakobsen](https://github.com/AnnaBlume99)**:
+  Bachelor student, who during a summer project wrote the prototype
+  implementation of many core algorithms.
 
 - **[Asger Hautop Drewsen](https://github.com/Tyilo)**: Previous maintainer of
   _TPIE_, who helped debug a few issues and gave general feedback on the
@@ -139,9 +138,8 @@ Thank you, to the following wonderful people:
   _I/O_ algorithms, and _C++_.
 
 - **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
-  Bachelor student, who during a summer project wrote the first implementation
-  of the _Apply_, _Evaluate_, _Count Assignments_, _Count Paths_, _Reduce_, and
-  _Restrict_ algorithms.
+  Bachelor student, who during a summer project wrote the prototype
+  implementation of many core algorithms.
 
 
 ## License
