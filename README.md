@@ -108,7 +108,8 @@ follow the `make <target>` with `N=<value>`.
 ## Contributions
 Adiar is not yet feature complete, and there are still many interesting things
 left for _you_ to do. We already list lots of suggestions for possible projects
-and contributions as [future work](/FUTURE_WORK.md).
+as [future work](/FUTURE_WORK.md) and other possible things to contribute with
+as [issues](https://github.com/SSoelvsten/adiar/issues).
 
 
 ## Credits
