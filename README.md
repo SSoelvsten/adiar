@@ -31,41 +31,61 @@ folder, which are also viewable on [Github Pages](https://ssoelvsten.github.io/a
 ## Dependencies
 The implementation is dependant on the the following external libraries
 
-- [TPIE](https://github.com/thomasmoelhave/tpie):
+- [**TPIE**](https://github.com/thomasmoelhave/tpie):
+
   Framework for implementation of I/O efficient algorithms. It directly provides
   sorting algorithms and a priotity queue. Both are much faster than the
   algorithms in the _C++_ standard library
   [[Vengroff94,Mølhave12](#references)].
 
-- [Bandit](https://github.com/banditcpp/bandit):
-  Writing and running unit tests
+- [**Bandit**](https://github.com/banditcpp/bandit):
 
-These are directly  imported as submodules. If you have not cloned the
-repository recursively, then run the following command
+  Unit testing framework that is easy-to-read and write.
+
+These are directly imported as submodules. If you have not cloned the repository
+recursively, then run the following command
 
 ```bash
 git submodule update --init --recursive
 ```
 
-One also needs a _C++_ compiler that supports the _17_ standard. All development
-has currently been with the _gcc_ compiler, so we cannot guarantee other
-compilers will work out-of-the-box. The project is built with _CMake_ and has
-dependencies on the _Boost Library_. On Ubuntu 20+ you can obtain all these with
-the following commands.
+Other dependencies that we cannot provide as a submodule are shown below. The
+_ticked_ dependencies are mandatory to install.
 
-```bash
-apt install g++ cmake libboost-all-dev
-```
+- [x] **CMake** and a **C++ compiler**
 
-As a visual aid, the internal representation of the Decision Diagrams can be
-output as [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language))
-files. These can then be turned into a graphical representation by use of a
-number of tools, such as _graphviz_.
+  One also needs a _C++_ compiler that supports the _17_ standard and _CMake_.
+  All development has currently been with the _gcc_ compiler, so we cannot
+  guarantee other compilers will work out-of-the-box. On Ubuntu you can obtain
+  these with the following command
 
-```bash
-apt install graphviz
-```
+  ```bash
+  sudo apt install g++ cmake
+  ```
 
+- [x] **Boost**
+
+  Furthermore, TPIE has a dependency on the [Boost](https://www.boost.org/)
+  Library. On Ubuntu you can obtain this with the following command.
+
+  ```bash
+  sudo apt install libboost-all-dev
+  ```
+
+  You can also build and install it from its
+  [source](https://github.com/boostorg/boost).
+
+- [ ] **DOT**
+
+  As a visual aid, the internal representation of the Decision Diagrams can be
+  output as
+  [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) files.
+  These can then be turned into a graphical representation by use of a number of
+  tools, such as _graphviz_.
+
+  ```bash
+  sudo apt install graphviz
+  ```
 
 ## Usage
 
