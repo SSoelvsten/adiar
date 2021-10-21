@@ -12,9 +12,9 @@ int main(int argc, char* argv[]) {
       M = std::stoi(argv[1]);
     }
   } catch (std::invalid_argument const &ex) {
-    tpie::log_info() << "Invalid number: " << argv[1] << std::endl;
+    std::cout << "Invalid number: " << argv[1] << std::endl;
   } catch (std::out_of_range const &ex) {
-    tpie::log_info() << "Number out of range: " << argv[1] << std::endl;
+    std::cout << "Number out of range: " << argv[1] << std::endl;
   }
 
   adiar::adiar_init(M * 1024 * 1024);
@@ -26,6 +26,8 @@ int main(int argc, char* argv[]) {
 
     // =====  Your code ends here  =====
   }
+
+  adiar::adiar_printstat();
 
   adiar::adiar_deinit();
   exit(0);

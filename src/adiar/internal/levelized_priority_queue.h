@@ -12,6 +12,8 @@
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 
+#include <adiar/statistics.h>
+
 #include <adiar/bdd/bdd.h>
 
 namespace adiar {
@@ -153,6 +155,10 @@ namespace adiar {
 #ifndef ADIAR_PQ_BUCKETS
 #define ADIAR_PQ_BUCKETS 1u
 #endif
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Struct to hold statistics
+  extern stats_t::priority_queue_t stats_priority_queue;
 
   //////////////////////////////////////////////////////////////////////////////
   /// A levelized priority queue for BDDs capable of improving performance by
@@ -316,9 +322,15 @@ namespace adiar {
         size_t bucket_idx = (_front_bucket_idx + bucket) % (Buckets + 1);
         if (_buckets_label[bucket_idx] == label) {
           _buckets_sorter[bucket_idx] -> push(t);
+#ifdef ADIAR_STATS_EXTRA
+          stats_priority_queue.push_bucket++;
+#endif
           return;
         }
       }
+#ifdef ADIAR_STATS_EXTRA
+      stats_priority_queue.push_overflow++;
+#endif
       _overflow_queue.push(t);
     }
 

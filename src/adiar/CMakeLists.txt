@@ -47,6 +47,9 @@ set(HEADERS
   internal/reduce.h
   internal/substitution.h
   internal/util.h
+
+  # statistics
+  statistics.h
 )
 
 set(SOURCES
@@ -84,6 +87,10 @@ set(SOURCES
   internal/decision_diagram.cpp
   internal/pred.cpp
   internal/levelized_priority_queue.cpp
+  internal/reduce.cpp
+
+  # statistics
+  statistics.cpp
 )
 
 if (ADIAR_SHARED)
@@ -96,6 +103,16 @@ include(GenerateExportHeader)
 generate_export_header(adiar
   EXPORT_MACRO_NAME ADIAR_API
 )
+
+# ============================================================================ #
+# Link dependencies
+option(ADIAR_STATS "Collect statistics" OFF)
+option(ADIAR_STATS_EXTRA "Collect (a lot of) statistics" OFF)
+if (ADIAR_STATS_EXTRA)
+  target_compile_definitions(adiar PRIVATE ADIAR_STATS ADIAR_STATS_EXTRA)
+elseif (ADIAR_STATS)
+  target_compile_definitions(adiar PRIVATE ADIAR_STATS)
+endif()
 
 # ============================================================================ #
 # Link dependencies
