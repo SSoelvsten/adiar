@@ -16,7 +16,7 @@ of BDDs, that far outgrow the memory limit of the given machine.
 - [Dependencies](#dependencies)
 - [Usage](#usage)
     - [Makefile targets](#makefile-targets)
-    - [Examples and benchmarks](#examples-and-benchmarks)
+    - [Examples](#examples)
 - [Contributions](#contributions)
 - [Credits](#credits)
 - [License](#license)
