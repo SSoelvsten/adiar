@@ -5,8 +5,8 @@
 [![codecov](https://codecov.io/gh/SSoelvsten/adiar/branch/main/graph/badge.svg?token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
 [![examples](https://github.com/SSoelvsten/adiar/workflows/examples/badge.svg?branch=main)](/actions?query=workflow%3Aexamples)
 
-Following up on the work of [[Arge96](#references)], this implementation of a
-BDD [[Bryant86](#references)] library makes use of _Time-Forward Processing_ to
+Following up on the work of [[Arge96](#references)], Adiar<sup>[1](#footnotes)</sup> is a BDD
+[[Bryant86](#references)] library that makes use of _Time-Forward Processing_ to
 improve the I/O complexity of BDD Manipulation to achieve efficient manipulation
 of BDDs, that far outgrow the memory limit of the given machine.
 
@@ -184,3 +184,7 @@ The software and documentation files in this repository are provided under the
 - [[Vengroff94](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.38.3030)]
   D.E. Vengroff. “_A transparent parallel I/O environment_”. In: _In Proc. 1994
   DAGS Symposium on Parallel Computation_. pp. 117–134 (1994)
+
+## Footnotes
+
+1. **adiar** &#10216; portugese &#10217; ( *verb* ) : to defer, to postpone
