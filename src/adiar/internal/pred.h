@@ -14,6 +14,10 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
+  /// Struct to hold statistics for equality checking
+  extern stats_t::equality_t stats_equality;
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Given two node files, computes whether they are isomorphic; i.e.
   /// whether they are equivalent.
   ///
@@ -32,10 +36,6 @@ namespace adiar
   bool is_isomorphic(const decision_diagram &a, const decision_diagram &b);
 
   //////////////////////////////////////////////////////////////////////////////
-  // O(sort(N_1 * N_2)) I/Os comparison by traversing the product construction
-  // and comparing each related pair of nodes.
-
-  /////////////////////
   // Data structures
   typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt, std::less<>, 2>
   comparison_priority_queue_t;
@@ -152,7 +152,7 @@ namespace adiar
 
       // Skip all requests to the same node
       while (comparison_pq_1.can_pull() && (comparison_pq_1.top().t1 == t1
-                                             && comparison_pq_1.top().t2 == t2)) {
+                                            && comparison_pq_1.top().t2 == t2)) {
         comparison_pq_1.pull();
       }
 

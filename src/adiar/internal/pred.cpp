@@ -4,6 +4,8 @@
 
 namespace adiar
 {
+  stats_t::equality_t stats_equality;
+
   //////////////////////////////////////////////////////////////////////////////
   // Slow O(sort(N)) I/Os comparison by traversing the product construction and
   // comparing each related pair of nodes.
@@ -37,7 +39,11 @@ namespace adiar
     bool on_step()
     {
       curr_level_processed++;
-      return curr_level_size < curr_level_processed;
+      const bool ret_value = curr_level_size < curr_level_processed;
+#ifdef ADIAR_STATS
+      if (ret_value) { stats_equality.slow_check.exit_on_processed_on_level++; }
+#endif
+      return ret_value;
     }
 
     static constexpr bool termination_value = tv;
@@ -57,12 +63,18 @@ namespace adiar
     static bool resolve_sinks(const node_t &v1, const node_t &v2, bool &ret_value)
     {
       ret_value = is_sink(v1) && is_sink(v2) && value_of(v1) == value_of(v2);
+#ifdef ADIAR_STATS
+        stats_equality.slow_check.exit_on_root++;
+#endif
       return true;
     }
 
   public:
     static bool resolve_singletons(const node &v1, const node_t v2)
     {
+#ifdef ADIAR_STATS
+      stats_equality.slow_check.exit_on_root++;
+#endif
       adiar_debug(label_of(v1) == label_of(v2), "Levels match per the precondition");
       return v1.low == v2.low && v1.high == v2.high;
     }
@@ -73,13 +85,21 @@ namespace adiar
     {
       // Are they both a sink (and the same sink)?
       if (is_sink(r1) || is_sink(r2)) {
-        return is_sink(r1) && is_sink(r2)
-          ? value_of(r1) != value_of(r2)
-          : true;
+        if (is_sink(r1) && is_sink(r2) && value_of(r1) == value_of(r2)) {
+          return false;
+        } else {
+#ifdef ADIAR_STATS
+          stats_equality.slow_check.exit_on_children++;
+#endif
+          return true;
+        }
       }
 
       // Do they NOT point to a node with the same level?
       if (label_of(r1) != label_of(r2)) {
+#ifdef ADIAR_STATS
+        stats_equality.slow_check.exit_on_children++;
+#endif
         return true;
       }
 
@@ -119,12 +139,20 @@ namespace adiar
   //  - The negation flags given for both node_files agree (breaks canonicity)
   bool fast_isomorphism_check(const node_file &f1, const node_file &f2)
   {
+#ifdef ADIAR_STATS
+    stats_equality.fast_check.runs++;
+#endif
     node_stream<> in_nodes_1(f1);
     node_stream<> in_nodes_2(f2);
 
     while (in_nodes_1.can_pull()) {
       adiar_debug(in_nodes_2.can_pull(), "The number of nodes should coincide");
-      if (in_nodes_1.pull() != in_nodes_2.pull()) { return false; }
+      if (in_nodes_1.pull() != in_nodes_2.pull()) {
+#ifdef ADIAR_STATS
+        stats_equality.fast_check.exit_on_mismatch++;
+#endif
+        return false;
+      }
     }
     return true;
   }
@@ -135,18 +163,27 @@ namespace adiar
   {
     // Are they literally referring to the same underlying file?
     if (f1._file_ptr == f2._file_ptr) {
+#ifdef ADIAR_STATS
+      stats_equality.exit_on_same_file++;
+#endif
       return negate1 == negate2;
     }
 
     // Are they trivially not the same, since they have different number of
     // nodes (in _files[0])?
     if (f1._file_ptr -> _files[0].size() != f2._file_ptr -> _files[0].size()) {
+#ifdef ADIAR_STATS
+      stats_equality.exit_on_nodecount++;
+#endif
       return false;
     }
 
     // Are they trivially not the same, since they have different number of
     // levels (in the _meta_file)?
     if (f1._file_ptr -> _meta_file.size() != f2._file_ptr -> _meta_file.size()) {
+#ifdef ADIAR_STATS
+      stats_equality.exit_on_varcount++;
+#endif
       return false;
     }
 
@@ -159,6 +196,9 @@ namespace adiar
       while (in_meta_1.can_pull()) {
         adiar_debug(in_meta_2.can_pull(), "meta files are same size");
         if (in_meta_1.pull() != in_meta_2.pull()) {
+#ifdef ADIAR_STATS
+          stats_equality.exit_on_levels_mismatch++;
+#endif
           return false;
         }
       }
@@ -168,8 +208,7 @@ namespace adiar
 
     // Compare their content to discern whether there exists an isomorphism
     // between them.
-    if (f1._file_ptr -> canonical && f2._file_ptr -> canonical
-        && negate1 == negate2) {
+    if (f1._file_ptr -> canonical && f2._file_ptr -> canonical && negate1 == negate2) {
       return fast_isomorphism_check(f1, f2);
     } else {
       return comparison_check<isomorphism_policy>(f1, f2, negate1, negate2);

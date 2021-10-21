@@ -11,8 +11,14 @@
 
 #include <adiar/assert.h>
 
+#include <adiar/statistics.h>
+
 namespace adiar
 {
+  //////////////////////////////////////////////////////////////////////////////
+  /// Struct to hold statistics
+  extern stats_t::reduce_t stats_reduce;
+
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
   struct mapping
@@ -95,6 +101,11 @@ namespace adiar
     // Set up
     const arc_file in_file = input.template get<arc_file>();
 
+#ifdef ADIAR_STATS
+    stats_reduce.sum_node_arcs += in_file._file_ptr -> _files[0].size();
+    stats_reduce.sum_sink_arcs += in_file._file_ptr -> _files[1].size();
+#endif
+
     node_arc_stream<> node_arcs(in_file);
     sink_arc_stream<> sink_arcs(in_file);
 
@@ -133,6 +144,9 @@ namespace adiar
       // Apply reduction rule 1, if applicable
       ptr_t reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
       if (reduction_rule_ret != e_low.source) {
+#ifdef ADIAR_STATS_EXTRA
+        stats_reduce.removed_by_rule_1++;
+#endif
         out_writer.unsafe_push(create_sink(value_of(reduction_rule_ret)));
       } else {
         label_t label = label_of(e_low.source);
@@ -174,6 +188,9 @@ namespace adiar
           // Open red1_mapping first (and create file on disk) when at least one
           // element is written to it.
           if (!red1_mapping.is_open()) { red1_mapping.open(); }
+#ifdef ADIAR_STATS_EXTRA
+          stats_reduce.removed_by_rule_1++;
+#endif
           red1_mapping.write({ n.uid, reduction_rule_ret });
         } else {
           child_grouping.push(n);
@@ -205,6 +222,9 @@ namespace adiar
         while (child_grouping.can_pull()) {
           node_t next_node = child_grouping.pull();
           if (current_node.low == next_node.low && current_node.high == next_node.high) {
+#ifdef ADIAR_STATS_EXTRA
+            stats_reduce.removed_by_rule_2++;
+#endif
             red2_mapping.push({ next_node.uid, out_node.uid });
           } else {
             current_node = next_node;
