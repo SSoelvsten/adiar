@@ -111,7 +111,7 @@ The _Makefile_ provides the following targets
 The _example/_ folder contains examples for using the data structures in Adiar.
 The _README.md_ file in said folder contains a more in-depth description of each
 of the examples. Even more examples and benchmarks are provided in a separate
-[BDD Benchmarking repository](https://github.com/SSoelvsten/bdd-benchmark**.
+[BDD Benchmarking repository](https://github.com/SSoelvsten/bdd-benchmark).
 
 Each example takes a set of arguments as input, which can be parsed to the
 program as a makefile variable. That is, to change the value of _N_ to to value
