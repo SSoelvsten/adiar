@@ -23,7 +23,8 @@ may constitute interesting undergraduate and graduate projects.
         - [Shared Decision Diagrams](#shared-decision-diagrams)
     - [Optimising the current algorithms](#optimising-the-current-algorithms)
         - [Levelized Parallel Computation](#levelized-parallel-computation)
-    - [References](#references)
+        - [STXXL](#stxxl)
+- [References](#references)
 
 <!-- markdown-toc end -->
 
@@ -443,6 +444,16 @@ Based on experiments or even prior runs of Reduce, one can make a prediction of
 how many nodes will be removed with the Reduce. When this estimate meets a
 certain threshold, then one can place a Reduce computation inside of the pipe to
 keep the disk usage close to what otherwise would be used.
+
+### STXXL
+
+The [STXXL](https://github.com/stxxl/stxxl) library is an alternative to the TPIE
+library we use now. The major difference is, that it is considerably faster at
+the cost of exposing the nitty-gritty details about the hardware to the programmer.
+
+Assuming STXXL is as usable and well maintained as TPIE, then we may be able to
+use that library instead and this way get even closer in performance to the
+conventional implementations.
 
 
 ## References
