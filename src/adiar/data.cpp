@@ -439,24 +439,22 @@ namespace adiar {
 
   meta_t create_meta(label_t label, size_t level_size)
   {
-    // we reuse the same logic above to store both values in 64 bits. This is
-    // only to save on memory, not actually to do anything else.
-    return { create_node_uid(label,level_size) };
+    return { label, level_size };
   }
 
   label_t label_of(const meta_t& m)
   {
-    return label_of(m.level_info);
+    return m.label;
   }
 
   size_t size_of(const meta_t& m)
   {
-    return id_of(m.level_info);
+    return m.size;
   }
 
   bool operator== (const meta& a, const meta& b)
   {
-    return a.level_info == b.level_info;
+    return a.label == b.label && a.size == b.size;
   }
 
   bool operator!= (const meta& a, const meta& b)
