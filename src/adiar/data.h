@@ -300,12 +300,13 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   struct meta
   {
-    uint64_t level_info;
+    label_t label;
+    size_t size;
   };
 
   typedef meta meta_t;
 
-  meta_t create_meta(label_t label, size_t level_size);
+  meta_t create_meta(label_t label, size_t size);
 
   label_t label_of(const meta_t &m);
   size_t size_of(const meta_t &m);
