@@ -40,6 +40,7 @@ set(HEADERS
   internal/build.h
   internal/count.h
   internal/decision_diagram.h
+  internal/memory.h
   internal/pred.h
   internal/levelized_priority_queue.h
   internal/product_construction.h
@@ -85,6 +86,7 @@ set(SOURCES
 
   # internal
   internal/decision_diagram.cpp
+  internal/memory.cpp
   internal/pred.cpp
   internal/levelized_priority_queue.cpp
   internal/reduce.cpp
