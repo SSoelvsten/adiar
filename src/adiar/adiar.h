@@ -63,12 +63,8 @@ namespace adiar
   ///       What about opening files by others? Should we store that somehow in
   ///       the first element of the meta stream?
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_init(size_t memory_limit_bytes, std::string temp_dir = "");
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Changes the memory limit used by ADIAR (given in bytes)
-  //////////////////////////////////////////////////////////////////////////////
-  void set_limit(size_t memory_limit_bytes);
+  void adiar_init(size_t memory_limit_bytes, std::string temp_dir = "");
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Closes and cleans up everything by ADIAR
