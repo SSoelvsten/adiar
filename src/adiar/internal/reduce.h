@@ -1,13 +1,12 @@
 #ifndef ADIAR_INTERNAL_REDUCE_H
 #define ADIAR_INTERNAL_REDUCE_H
 
-#include <tpie/sort.h>
-
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/levelized_priority_queue.h>
+#include <adiar/internal/sorter.h>
 
 #include <adiar/assert.h>
 
@@ -47,19 +46,27 @@ namespace adiar
     }
   };
 
+  typedef levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, std::greater<label_t>> reduce_priority_queue_t;
+
   //////////////////////////////////////////////////////////////////////////////
   // For sorting for Reduction Rule 2 (and back again)
-  const auto reduce_node_children_lt = [](const node_t &a, const node_t &b) -> bool {
-    return a.high > b.high ||
-           (a.high == b.high && a.low > b.low) ||
-           (a.high == b.high && a.low == b.low && a.uid > b.uid);
+  struct reduce_node_children_lt
+  {
+    bool operator()(const node_t &a, const node_t &b)
+    {
+      return a.high > b.high ||
+        (a.high == b.high && a.low > b.low) ||
+        (a.high == b.high && a.low == b.low && a.uid > b.uid);
+    }
   };
 
-  const auto reduce_uid_lt = [](const mapping &a, const mapping &b) -> bool {
-    return a.old_uid > b.old_uid;
+  struct reduce_uid_lt
+  {
+    bool operator()(const mapping &a, const mapping &b)
+    {
+      return a.old_uid > b.old_uid;
+    }
   };
-
-  typedef levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, std::greater<label_t>> reduce_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -111,30 +118,7 @@ namespace adiar
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
-    tpie::dummy_progress_indicator pi;
-
-    // Phase 1 and 3 of the sorters; pushing and popping data.
-    size_t sorter_phase_1 = std::max((sizeof(node) * 128 * 1024 + 5 * 1024 * 1024),
-                                     available_memory / 20); // ~8MB
-
-    adiar_debug(2 * sorter_phase_1 < available_memory / 2,
-               "Taking too much memory for the sorter blocks");
-
-    // Phase 2 of the sorter; merge_sort on the data. Take...
-    size_t sorter_phase_2 = std::max(sorter_phase_1 * 2, // at least 2x the first and third phase (~16 MB), or...
-                                     std::min(// ...the rest of the memory
-                                              available_memory / 2,
-                                              // ...half of the in_file, plus then some
-                                              sizeof(node_t) * (in_file.size() / 2))
-                                     // Yet, minus the amount of space we have reserved for the other sorter
-                                     - sorter_phase_1);
-
-    adiar_debug(sorter_phase_1 < sorter_phase_2,
-               "Not enough space for sorting phase");
-
-    // The memory given to the priority queue may overlap on the sorter_phase_2,
-    // but should not overlap with the two sorter_phase_1
-    reduce_priority_queue_t reduce_pq({in_file}, available_memory - (2 * sorter_phase_1));
+    reduce_priority_queue_t reduce_pq({in_file}, available_memory / 2);
 
     // Check to see if node_arcs is empty
     if (!node_arcs.can_pull()) {
@@ -171,9 +155,8 @@ namespace adiar
       tpie::file_stream<mapping> red1_mapping;
 
       // Sorter to find Reduction Rule 2 mappings
-      tpie::merge_sorter<node_t, false, decltype(reduce_node_children_lt)> child_grouping(reduce_node_children_lt);
-      child_grouping.set_available_memory(sorter_phase_1, sorter_phase_2, sorter_phase_1);
-      child_grouping.begin();
+      external_sorter<node_t, reduce_node_children_lt>
+        child_grouping(available_memory / 2, 2);
 
       // Pull out all nodes from reduce_pq and sink_arcs for this level
       while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label) || reduce_pq.can_pull()) {
@@ -198,12 +181,10 @@ namespace adiar
       }
 
       // Sort and apply Reduction rule 2
-      child_grouping.end();
-      child_grouping.calc(pi);
+      child_grouping.sort();
 
-      tpie::merge_sorter<mapping, false, decltype(reduce_uid_lt)> red2_mapping(reduce_uid_lt);
-      red2_mapping.set_available_memory(sorter_phase_1, sorter_phase_2, sorter_phase_1);
-      red2_mapping.begin();
+      external_sorter<mapping, reduce_uid_lt>
+        red2_mapping(available_memory / 2, 2);
 
       if (child_grouping.can_pull()) {
         // Set up for remapping, keeping the very first node seen
@@ -241,8 +222,7 @@ namespace adiar
       }
 
       // Sort mappings for Reduction rule 2 back in order of node_arcs
-      red2_mapping.end();
-      red2_mapping.calc(pi);
+      red2_mapping.sort();
 
       // Merging of red1_mapping and red2_mapping
       mapping next_red1 = {0, 0};
