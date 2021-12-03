@@ -18,8 +18,16 @@ namespace adiar
     | tpie::TEMPFILE
     | tpie::FILE_MANAGER;
 
+  bool _adiar_initialized = false;
+
   void adiar_init(size_t memory_limit_bytes, std::string temp_dir)
   {
+    if (_adiar_initialized) {
+      std::cerr << "Adiar has already been initialized!" << std::endl;
+      return;
+    }
+    _adiar_initialized = true;
+
     tpie::tpie_init(TPIE_SUBSYSTEMS);
 
     // Memory management
@@ -27,8 +35,14 @@ namespace adiar
     memory::set_limit(memory_limit_bytes);
   }
 
+  bool adiar_initialized()
+  {
+    return _adiar_initialized;
+  }
+
   void adiar_deinit()
   {
-    tpie::tpie_finish(TPIE_SUBSYSTEMS);
+    if (_adiar_initialized) tpie::tpie_finish(TPIE_SUBSYSTEMS);
+    _adiar_initialized = false;
   }
 }
