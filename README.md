@@ -1,14 +1,21 @@
 # Adiar
-[![MIT License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](LICENSE.md)
-[![Built with TPIE](https://img.shields.io/badge/built%20with-TPIE-blue)](https://users-cs.au.dk/~rav/tpie/)
-[![test](https://github.com/SSoelvsten/adiar/workflows/test/badge.svg?branch=main)](/actions?query=workflow%3Atest)
-[![codecov](https://codecov.io/gh/SSoelvsten/adiar/branch/main/graph/badge.svg?token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
-[![examples](https://github.com/SSoelvsten/adiar/workflows/examples/badge.svg?branch=main)](/actions?query=workflow%3Aexamples)
+[![MIT License](https://img.shields.io/github/license/ssoelvsten/adiar)](LICENSE.md)
+&nbsp;
+[![Release](https://img.shields.io/github/v/release/ssoelvsten/adiar)](https://github.com/SSoelvsten/adiar/releases)
+&nbsp;
+[![Documentation](https://img.shields.io/website?down_message=not%20available&label=docs&up_message=available&url=https%3A%2F%2Fssoelvsten.github.io%2Fadiar)](ssoelvsten.github.io/adiar)
+&nbsp;
+[![codecov](https://img.shields.io/codecov/c/github/ssoelvsten/adiar?logo=codecov&logoColor=white&token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
+&nbsp;
+[![test](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/test/main?label=test&logo=github&logoColor=white)](/actions?query=workflow%3Atest)
+&nbsp;
+[![examples](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/examples/main?label=examples&logo=github&logoColor=white)](/actions?query=workflow%3Aexamples)
 
-Following up on the work of [[Arge96](#references)], Adiar<sup>[1](#footnotes)</sup> is a BDD
-[[Bryant86](#references)] library that makes use of _Time-Forward Processing_ to
-improve the I/O complexity of BDD Manipulation to achieve efficient manipulation
-of BDDs, that far outgrow the memory limit of the given machine.
+Based on the work of Lars Arge [[Arge96](#references)], Adiar<sup>[1](#footnotes)</sup>
+is a BDD package [[Bryant86](#references)] that makes use of _Time-Forward Processing_
+to improve the I/O complexity of BDD Manipulation. This makes it able to achieve
+efficient manipulation of BDDs, even when they outgrow the memory limit of the
+given machine.
 
 **Table of Contents**
 
@@ -36,7 +43,7 @@ The implementation is dependant on the the following external libraries
   Framework for implementation of I/O efficient algorithms. It directly provides
   sorting algorithms and a priotity queue. Both are much faster than the
   algorithms in the _C++_ standard library
-  [[Vengroff94,Mølhave12](#references)].
+  [[Vengroff94](#references), [Mølhave12](#references)].
 
 - [**Bandit**](https://github.com/banditcpp/bandit):
 
@@ -125,6 +132,7 @@ The value **T** can either be _all_or _closed_.
 | _M_      | Memory in MiB (default: 1024)                    |
 
 ## Contributions
+
 Adiar is not yet feature complete, and there are still many interesting things
 left for _you_ to do. We already list lots of suggestions for possible projects
 as [future work](/FUTURE_WORK.md) and other possible things to contribute with
