@@ -1,0 +1,60 @@
+name: 'benchmark (pull request)'
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  fetch-branch:
+    name: 'Fetch branch name'
+    runs-on: ubuntu-latest  
+
+    steps:
+    - id: identify
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF#refs/heads/})"
+
+    outputs:
+      branch: ${{ steps.identify.outputs.branch }}
+
+  skip_duplicate:
+    name: 'Check whether to skip job'
+    continue-on-error: true
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          paths: '["src/adiar/**"]'
+
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+
+  run_benchmark:
+    name: 'Run benchmark report'
+    runs-on: ubuntu-latest
+
+    needs: [fetch-branch, skip_duplicate]
+    if: ${{ needs.skip_duplicate.outputs.should_skip != 'true' }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: 'Apt install'
+        run: |
+          sudo apt update
+          sudo apt install libboost-all-dev
+
+      - name: 'Run benchmark.py'
+        run: |
+          python3 ./.github/workflows/benchmark.py main ${{ needs.fetch-branch.outputs.branch }}
+
+      - name: 'Post benchmark.out on PR'
+        uses: machine-learning-apps/pr-comment@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: ./benchmark.out
+
