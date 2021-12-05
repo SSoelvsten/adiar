@@ -7,7 +7,7 @@
 &nbsp;
 [![codecov](https://img.shields.io/codecov/c/github/ssoelvsten/adiar?logo=codecov&logoColor=white&token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
 &nbsp;
-[![test](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/test/main?label=test&logo=github&logoColor=white)](/actions?query=workflow%3Atest)
+[![test](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/unit%20test/main?label=test&logo=github&logoColor=white)](/actions?query=workflow%3Atest)
 &nbsp;
 [![examples](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/examples/main?label=examples&logo=github&logoColor=white)](/actions?query=workflow%3Aexamples)
 
