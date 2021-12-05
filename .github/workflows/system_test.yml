@@ -67,6 +67,7 @@ jobs:
     - name: Git | checkout pull request
       run: |
         cd external/adiar
+        git remote set-url origin https://github.com/${{ github.event.pull_request.head.repo.full_name }}.git
         git fetch
         git checkout ${{ needs.fetch-branch.outputs.branch }}
         git status
