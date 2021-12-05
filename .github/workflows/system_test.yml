@@ -1,4 +1,4 @@
-name: benchmarks
+name: 'system test'
 
 on:
   pull_request:
