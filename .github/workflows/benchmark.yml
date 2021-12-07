@@ -52,6 +52,7 @@ jobs:
           python3 ./.github/workflows/benchmark.py main ${{ needs.fetch-branch.outputs.branch }}
 
       - name: 'Post benchmark.out on PR'
+        if: always()
         uses: machine-learning-apps/pr-comment@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
