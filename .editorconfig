@@ -4,7 +4,7 @@
 
 root = true
 
-[**.{c, cpp, gitignore, h, hpp, md, txt, yaml, yml}]
+[**.{c, cpp, gitignore, h, hpp, md, py, pyw, txt, yaml, yml}]
 indent_style = space
 end_of_line = lf
 charset = utf-8
