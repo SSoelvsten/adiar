@@ -16,6 +16,18 @@ jobs:
     outputs:
       branch: ${{ steps.identify.outputs.branch }}
 
+  fetch-remote:
+    name: 'Fetch remote'
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: identify
+        run: |
+          echo "##[set-output name=remote;]$(if [ ${GITHUB_REPOSITORY} == 'SSoelvsten/adiar' ]; then echo 'origin'; else echo '${GITHUB_REPOSITORY}'; fi)"
+
+    outputs:
+      remote: ${{ steps.identify.outputs.remote }}
+
   skip_duplicate:
     name: 'Check whether to skip job'
     continue-on-error: true
@@ -34,7 +46,7 @@ jobs:
     name: 'Run benchmark report'
     runs-on: ubuntu-latest
 
-    needs: [fetch-branch, skip_duplicate]
+    needs: [fetch-branch, fetch-remote, skip_duplicate]
     if: ${{ needs.skip_duplicate.outputs.should_skip != 'true' }}
 
     steps:
@@ -49,7 +61,7 @@ jobs:
 
       - name: 'Run benchmark.py'
         run: |
-          python3 ./.github/workflows/benchmark.py main ${{ needs.fetch-branch.outputs.branch }}
+          python3 ./.github/workflows/benchmark.py origin main ${{ needs.fetch-remote.outputs.remote }} ${{ needs.fetch-branch.outputs.branch }}
 
       - name: 'Post benchmark.out on PR'
         if: always()
