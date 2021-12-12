@@ -185,10 +185,10 @@ namespace adiar {
       if (attached()) { detach(); }
       _file_ptr = f._file_ptr;
 
-      adiar_assert(!(_file_ptr -> _meta_file.is_read_only()),
+      adiar_assert(!(_file_ptr -> _level_info_file.is_read_only()),
                    "Cannot attach a writer onto a read-only meta file");
 
-      _meta_stream.open(f._file_ptr -> _meta_file.__base_file);
+      _meta_stream.open(f._file_ptr -> _level_info_file.__base_file);
       _meta_stream.seek(0, tpie::file_stream_base::end);
 
       for (size_t idx = 0; idx < Files; idx++) {

@@ -179,8 +179,8 @@ namespace adiar
     }
 
     // Are they trivially not the same, since they have different number of
-    // levels (in the _meta_file)?
-    if (f1._file_ptr -> _meta_file.size() != f2._file_ptr -> _meta_file.size()) {
+    // levels (in the _level_info_file)?
+    if (f1._file_ptr -> _level_info_file.size() != f2._file_ptr -> _level_info_file.size()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_varcount++;
 #endif

@@ -134,7 +134,7 @@ namespace adiar
     // easy cases to check for isomorphism.
     bool canonical = false;
 
-    file<level_info> _meta_file;
+    file<level_info> _level_info_file;
     file<T> _files [Files];
 
     __meta_file() {
@@ -146,14 +146,14 @@ namespace adiar
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Make file read-only, allowing multiple access via the
-    /// `shared_access_file` variable in the _meta_file or any of the _files.
+    /// `shared_access_file` variable in the _level_info_file or any of the _files.
     ///
     /// This assumes, that no `tpie::file_stream<T>` (that is, no
     /// `adiar::file_writer`) currently is attached to this file.
     ////////////////////////////////////////////////////////////////////////////
     void make_read_only() const
     {
-      _meta_file.make_read_only();
+      _level_info_file.make_read_only();
       for (size_t idx = 0u; idx < Files; idx++) {
         _files[idx].make_read_only();
       }
@@ -169,7 +169,7 @@ namespace adiar
           return false;
         };
       }
-      return _meta_file.is_read_only();
+      return _level_info_file.is_read_only();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -194,7 +194,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     size_t meta_size()
     {
-      return _meta_file.size();
+      return _level_info_file.size();
     }
 
     ////////////////////////////////////////////////////////////////////////////
