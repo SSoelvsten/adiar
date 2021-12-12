@@ -56,24 +56,12 @@ _ticked_ dependencies are mandatory to install.
 
   One also needs a _C++_ compiler that supports the _17_ standard and _CMake_.
   All development has currently been with the _gcc_ compiler, so we cannot
-  guarantee other compilers will work out-of-the-box. On Ubuntu you can obtain
-  these with the following command
-
-  ```bash
-  sudo apt install g++ cmake
-  ```
+  guarantee other compilers will work out-of-the-box.
 
 - [x] **Boost**
 
   Furthermore, TPIE has a dependency on the [Boost](https://www.boost.org/)
-  Library. On Ubuntu you can obtain this with the following command.
-
-  ```bash
-  sudo apt install libboost-all-dev
-  ```
-
-  You can also build and install it from its
-  [source](https://github.com/boostorg/boost).
+  Library.
 
 - [ ] **DOT**
 
@@ -83,9 +71,12 @@ _ticked_ dependencies are mandatory to install.
   These can then be turned into a graphical representation by use of a number of
   tools, such as _graphviz_.
 
-  ```bash
-  sudo apt install graphviz
-  ```
+To install all of the above then run the respective below.
+
+| Operating System | Shell command                                         |
+|------------------|-------------------------------------------------------|
+| Ubuntu 18+       | `apt install cmake g++     libboost-all-dev graphviz` |
+| Fedora 35+       | `dnf install cmake gcc-c++ boost-devel      graphviz` |
 
 ## Usage
 
