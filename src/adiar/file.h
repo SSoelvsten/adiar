@@ -134,7 +134,7 @@ namespace adiar
     // easy cases to check for isomorphism.
     bool canonical = false;
 
-    file<meta> _meta_file;
+    file<level_info> _meta_file;
     file<T> _files [Files];
 
     __meta_file() {
@@ -190,7 +190,7 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// The number of elements in the meta file
+    /// The number of elements in the level_info file
     ////////////////////////////////////////////////////////////////////////////
     size_t meta_size()
     {
@@ -202,7 +202,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     size_t file_size()
     {
-      return size() * sizeof(T) + meta_size() * sizeof(meta_t);
+      return size() * sizeof(T) + meta_size() * sizeof(level_info_t);
     }
   };
 

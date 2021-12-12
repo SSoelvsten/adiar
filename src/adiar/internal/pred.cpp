@@ -194,7 +194,7 @@ namespace adiar
       meta_stream<node_t, 1> in_meta_2(f2);
 
       while (in_meta_1.can_pull()) {
-        adiar_debug(in_meta_2.can_pull(), "meta files are same size");
+        adiar_debug(in_meta_2.can_pull(), "level_info files are same size");
         if (in_meta_1.pull() != in_meta_2.pull()) {
 #ifdef ADIAR_STATS
           stats_equality.exit_on_levels_mismatch++;

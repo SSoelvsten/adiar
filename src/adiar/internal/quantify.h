@@ -108,7 +108,7 @@ namespace adiar
   {
     meta_stream<node_t, 1> in_meta(in);
     while(in_meta.can_pull()) {
-      meta_t m = in_meta.pull();
+      level_info_t m = in_meta.pull();
 
       // Are we already past where it should be?
       if (label < label_of(m)) { return false; }

@@ -215,7 +215,7 @@ go_bandit([]() {
                       aw.unsafe_push_node(node_arc_1);
                     });
 
-                    it("can hook into arc_test_file and write meta", [&]() {
+                    it("can hook into arc_test_file and write level_info", [&]() {
                         aw.unsafe_push(create_meta(0,1u));
                         aw.unsafe_push(create_meta(1,1u));
                       });
@@ -426,7 +426,7 @@ go_bandit([]() {
                 });
 
                 describe("meta_stream", [&]() {
-                     it("can read meta stream of test_file_meta_1", [&]() {
+                     it("can read level_info stream of test_file_meta_1", [&]() {
                        meta_stream ms(test_file_meta_1);
 
                        AssertThat(ms.can_pull(), Is().True());
@@ -434,7 +434,7 @@ go_bandit([]() {
                        AssertThat(ms.can_pull(), Is().False());
                      });
 
-                     it("can read meta stream of node_test_file", [&]() {
+                     it("can read level_info stream of node_test_file", [&]() {
                        meta_stream ms(node_test_file);
 
                        AssertThat(ms.can_pull(), Is().True());
@@ -652,13 +652,13 @@ go_bandit([]() {
 
                 it("can compute sizes of test_file_meta_1", [&]() {
                   AssertThat(test_file_meta_1.size(), Is().EqualTo(2u));
-                  AssertThat(test_file_meta_1.file_size(), Is().EqualTo(2u * sizeof(int) + 1u * sizeof(meta_t)));
+                  AssertThat(test_file_meta_1.file_size(), Is().EqualTo(2u * sizeof(int) + 1u * sizeof(level_info_t)));
                 });
 
                 it("can compute size of test_file_meta_2", [&]() {
                   test_file_meta_2.make_read_only();
                   AssertThat(test_file_meta_2.size(), Is().EqualTo(5u));
-                  AssertThat(test_file_meta_2.file_size(), Is().EqualTo(5u * sizeof(int) + 2u * sizeof(meta_t)));
+                  AssertThat(test_file_meta_2.file_size(), Is().EqualTo(5u * sizeof(int) + 2u * sizeof(level_info_t)));
                 });
 
                 describe("node_file", [&]() {
@@ -703,25 +703,25 @@ go_bandit([]() {
                         it("can compute size of node_test_file", [&]() {
                           AssertThat(node_test_file.size(), Is().EqualTo(3u));
                           AssertThat(node_test_file.meta_size(), Is().EqualTo(2u));
-                          AssertThat(node_test_file.file_size(), Is().EqualTo(3u * sizeof(node_t) + 2u * sizeof(meta_t)));
+                          AssertThat(node_test_file.file_size(), Is().EqualTo(3u * sizeof(node_t) + 2u * sizeof(level_info_t)));
                         });
 
                         it("can compute size of x0", [&]() {
                           AssertThat(x0.size(), Is().EqualTo(1u));
                           AssertThat(x0.meta_size(), Is().EqualTo(1u));
-                          AssertThat(x0.file_size(), Is().EqualTo(1u * sizeof(node_t) + 1u * sizeof(meta_t)));
+                          AssertThat(x0.file_size(), Is().EqualTo(1u * sizeof(node_t) + 1u * sizeof(level_info_t)));
                         });
 
                         it("can compute size of x0 & x1", [&]() {
                           AssertThat(x0_and_x1.size(), Is().EqualTo(2u));
                           AssertThat(x0_and_x1.meta_size(), Is().EqualTo(2u));
-                          AssertThat(x0_and_x1.file_size(), Is().EqualTo(2u * sizeof(node_t) + 2u * sizeof(meta_t)));
+                          AssertThat(x0_and_x1.file_size(), Is().EqualTo(2u * sizeof(node_t) + 2u * sizeof(level_info_t)));
                         });
 
                         it("can compute size of sink_T", [&]() {
                           AssertThat(sink_T.size(), Is().EqualTo(1u));
                           AssertThat(sink_T.meta_size(), Is().EqualTo(0u));
-                          AssertThat(sink_T.file_size(), Is().EqualTo(1u * sizeof(node_t) + 0u * sizeof(meta_t)));
+                          AssertThat(sink_T.file_size(), Is().EqualTo(1u * sizeof(node_t) + 0u * sizeof(level_info_t)));
                         });
                     });
 

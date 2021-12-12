@@ -432,32 +432,32 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   ///  META
   //////////////////////////////////////////////////////////////////////////////
-  meta operator! (const meta& m)
+  level_info operator! (const level_info& m)
   {
     return m;
   }
 
-  meta_t create_meta(label_t label, size_t level_size)
+  level_info_t create_meta(label_t label, size_t level_size)
   {
     return { label, level_size };
   }
 
-  label_t label_of(const meta_t& m)
+  label_t label_of(const level_info_t& m)
   {
     return m.label;
   }
 
-  size_t size_of(const meta_t& m)
+  size_t size_of(const level_info_t& m)
   {
     return m.size;
   }
 
-  bool operator== (const meta& a, const meta& b)
+  bool operator== (const level_info& a, const level_info& b)
   {
     return a.label == b.label && a.size == b.size;
   }
 
-  bool operator!= (const meta& a, const meta& b)
+  bool operator!= (const level_info& a, const level_info& b)
   {
     return !(a==b);
   }

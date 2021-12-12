@@ -164,7 +164,7 @@ namespace adiar {
     // Keep a local shared_ptr to be in on the reference counting
     std::shared_ptr<__meta_file<T, Files>> _file_ptr;
 
-    tpie::file_stream<meta_t> _meta_stream;
+    tpie::file_stream<level_info_t> _meta_stream;
     tpie::file_stream<T> _streams [Files];
 
   public:
@@ -222,9 +222,9 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Write directly (and solely) to the meta file without any checks
+    /// Write directly (and solely) to the level_info file without any checks
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const meta_t &m)
+    void unsafe_push(const level_info_t &m)
     {
       _meta_stream.write(m);
     }
@@ -286,7 +286,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write the next node to the file.
     ///
-    /// Writes the given node to the end of the file and also writes to the meta
+    /// Writes the given node to the end of the file and also writes to the level_info
     /// file if necessary. The given node must have valid children (not
     /// checked), no duplicate nodes created (not properly checked), and must be
     /// topologically prior to any nodes already written to the file (checked).
@@ -324,7 +324,7 @@ namespace adiar {
           }
         }
 
-        // Check if the meta file has to be updated
+        // Check if the level_info file has to be updated
         if (label_of(n) != label_of(_latest_node)) {
           meta_file_writer::unsafe_push(create_meta(label_of(_latest_node),
                                                     _level_size));
@@ -344,9 +344,9 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Write directly (and solely) to meta file without any checks
+    /// Write directly (and solely) to level_info file without any checks
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const meta_t &m) { meta_file_writer::unsafe_push(m); }
+    void unsafe_push(const level_info_t &m) { meta_file_writer::unsafe_push(m); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// Write directly (and solely) to nodes file without any checks
@@ -399,7 +399,7 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const meta_t &m)
+    void unsafe_push(const level_info_t &m)
     {
       meta_file_writer::unsafe_push(m);
     }
