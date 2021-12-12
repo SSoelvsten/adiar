@@ -98,12 +98,12 @@ namespace snowhouse
   };
 
   template<>
-  struct Stringizer<meta_t>
+  struct Stringizer<level_info_t>
   {
-    static std::string ToString(const meta_t& m)
+    static std::string ToString(const level_info_t& m)
     {
       std::stringstream stream;
-      stream << "meta: (x" << label_of(m) << ", #nodes = " << size_of(m) << ")";
+      stream << "level_info: (x" << label_of(m) << ", #nodes = " << size_of(m) << ")";
       return stream.str();
     }
   };

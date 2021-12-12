@@ -306,7 +306,7 @@ namespace adiar
     // Process nodes in topological order of both BDDs
     while (prod_pq_1.can_pull() || prod_pq_1.has_next_level() || !prod_pq_2.empty()) {
       if (!prod_pq_1.can_pull() && prod_pq_2.empty()) {
-        if (prod_policy::no_skip || out_id > 0) { // Only output meta information on prior level, if output
+        if (prod_policy::no_skip || out_id > 0) { // Only output level_info information on prior level, if output
           aw.unsafe_push(create_meta(out_label, out_id));
         }
 

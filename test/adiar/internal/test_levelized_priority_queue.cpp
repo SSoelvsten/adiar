@@ -39,7 +39,7 @@ go_bandit([]() {
   describe("INTERNAL: Levelized Priority Queue", []() {
 
     describe("Label Manager", [&]() {
-      it("can pull from one meta stream", [&]() {
+      it("can pull from one level_info stream", [&]() {
         pq_test_file f;
         { // Garbage collect the writer
           pq_test_writer fw(f);
@@ -69,7 +69,7 @@ go_bandit([]() {
         AssertThat(mgr.can_pull(), Is().False());
       });
 
-      it("can peek from one meta streams", [&]() {
+      it("can peek from one level_info streams", [&]() {
         pq_test_file f;
 
         { // Garbage collect the writer
@@ -96,7 +96,7 @@ go_bandit([]() {
         AssertThat(mgr.pull(), Is().EqualTo(4u));
       });
 
-      it("can pull from merge of two meta streams, where one is empty [1]", [&]() {
+      it("can pull from merge of two level_info streams, where one is empty [1]", [&]() {
          pq_test_file f1;
          pq_test_file f2;
 
@@ -118,7 +118,7 @@ go_bandit([]() {
       });
 
 
-      it("can pull from merge of two meta streams, where one is empty [2]", [&]() {
+      it("can pull from merge of two level_info streams, where one is empty [2]", [&]() {
          pq_test_file f1;
          pq_test_file f2;
 
@@ -143,7 +143,7 @@ go_bandit([]() {
          AssertThat(mgr.can_pull(), Is().False());
       });
 
-      it("can pull from merge of two meta streams [1]", [&]() {
+      it("can pull from merge of two level_info streams [1]", [&]() {
         pq_test_file f1;
         pq_test_file f2;
 
@@ -180,7 +180,7 @@ go_bandit([]() {
         AssertThat(mgr.can_pull(), Is().False());
       });
 
-      it("can pull from merge of two meta streams [2] (std::less)", [&]() {
+      it("can pull from merge of two level_info streams [2] (std::less)", [&]() {
         pq_test_file f1;
         pq_test_file f2;
 
@@ -208,7 +208,7 @@ go_bandit([]() {
         AssertThat(mgr.can_pull(), Is().False());
       });
 
-      it("can pull from merge of two meta streams [2] (std::greater)", [&]() {
+      it("can pull from merge of two level_info streams [2] (std::greater)", [&]() {
          pq_test_file f1;
          pq_test_file f2;
 
@@ -235,7 +235,7 @@ go_bandit([]() {
          AssertThat(mgr.can_pull(), Is().False());
       });
 
-      it("can peek merge of two meta stream", [&]() {
+      it("can peek merge of two level_info stream", [&]() {
         pq_test_file f1;
         pq_test_file f2;
 
@@ -333,7 +333,7 @@ go_bandit([]() {
         AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can set up priority queue with empty meta stream", [&]() {
+      it("can set up priority queue with empty level_info stream", [&]() {
          pq_test_file f;
 
          test_priority_queue<1,1> pq({f});
@@ -342,7 +342,7 @@ go_bandit([]() {
          AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can set up priority queue for two meta streams, where one is empty", [&]() {
+      it("can set up priority queue for two level_info streams, where one is empty", [&]() {
          pq_test_file f1;
 
          {
@@ -358,7 +358,7 @@ go_bandit([]() {
          AssertThat(pq.can_pull(), Is().False());
       });
 
-      it("can set up priority queue for two meta streams", [&]() {
+      it("can set up priority queue for two level_info streams", [&]() {
          pq_test_file f1;
          pq_test_file f2;
 
@@ -886,7 +886,7 @@ go_bandit([]() {
          test_priority_queue<1,4> pq({f});
        });
 
-      it("can set up priority queue with empty meta stream", [&]() {
+      it("can set up priority queue with empty level_info stream", [&]() {
          pq_test_file f;
 
          test_priority_queue<1,4> pq({f});
@@ -896,7 +896,7 @@ go_bandit([]() {
       });
 
 
-      it("can set up priority queue for two meta streams, where one is empty [1]", [&]() {
+      it("can set up priority queue for two level_info streams, where one is empty [1]", [&]() {
          pq_test_file f1;
          pq_test_file f2;
 
@@ -912,7 +912,7 @@ go_bandit([]() {
          AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can set up priority queue for two meta streams, where one is empty [2]", [&]() {
+      it("can set up priority queue for two level_info streams, where one is empty [2]", [&]() {
          pq_test_file f1;
          pq_test_file f2;
 
@@ -929,7 +929,7 @@ go_bandit([]() {
          AssertThat(pq.has_next_level(), Is().False());
       });
 
-      it("can set up priority queue for two meta streams", [&]() {
+      it("can set up priority queue for two level_info streams", [&]() {
          pq_test_file f1;
          pq_test_file f2;
 

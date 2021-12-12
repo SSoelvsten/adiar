@@ -298,23 +298,23 @@ namespace adiar {
   /// bucket overflows. To make things more efficient, we require the use of
   /// meta information about the input BDD streams.
   //////////////////////////////////////////////////////////////////////////////
-  struct meta
+  struct level_info
   {
     label_t label;
     size_t size;
   };
 
-  typedef meta meta_t;
+  typedef level_info level_info_t;
 
-  meta_t create_meta(label_t label, size_t size);
+  level_info_t create_meta(label_t label, size_t size);
 
-  label_t label_of(const meta_t &m);
-  size_t size_of(const meta_t &m);
+  label_t label_of(const level_info_t &m);
+  size_t size_of(const level_info_t &m);
 
-  meta operator! (const meta& m);
+  level_info operator! (const level_info& m);
 
-  bool operator== (const meta &a, const meta &b);
-  bool operator!= (const meta &a, const meta &b);
+  bool operator== (const level_info &a, const level_info &b);
+  bool operator!= (const level_info &a, const level_info &b);
 }
 
 #endif // ADIAR_DATA_H

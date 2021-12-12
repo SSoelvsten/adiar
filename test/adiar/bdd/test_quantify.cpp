@@ -323,12 +323,12 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should quantify root without sink arcs [BDD 2]", [&]() {
@@ -366,15 +366,15 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(1u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(1u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,2u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,2u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should quantify nodes with sink or nodes as children [BDD 2]", [&]() {
@@ -412,15 +412,15 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,2u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,2u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should output sink arcs in order, despite the order of resolvement [BDD 2]", [&]() {
@@ -458,15 +458,15 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(1u,2u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(1u,2u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should keep nodes as is when skipping quantified level [BDD 3]", [&]() {
@@ -506,15 +506,15 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,2u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,2u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should output sink arcs in order, despite the order of resolvement [BDD 3]", [&]() {
@@ -546,15 +546,15 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(1u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(1u,1u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should resolve sink-sink requests in [BDD 5]", [&]() {
@@ -586,15 +586,15 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,1u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
@@ -635,15 +635,15 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(1u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(1u,1u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("can forward information across a level [BDD 6]", [&]() {
@@ -694,18 +694,18 @@ go_bandit([]() {
 
                  AssertThat(node_arcs.can_pull(), Is().False());
 
-                 meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                 meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                 AssertThat(level_info.can_pull(), Is().True());
+                 AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,2u)));
+                 AssertThat(level_info.can_pull(), Is().True());
+                 AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,2u)));
 
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(create_meta(3u,2u)));
+                 AssertThat(level_info.can_pull(), Is().True());
+                 AssertThat(level_info.pull(), Is().EqualTo(create_meta(3u,2u)));
 
-                 AssertThat(meta.can_pull(), Is().False());
+                 AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("can forward multiple arcs to the same node across a level [BDD 7]", [&]() {
@@ -734,15 +734,15 @@ go_bandit([]() {
 
                  AssertThat(node_arcs.can_pull(), Is().False());
 
-                 meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                 meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                 AssertThat(level_info.can_pull(), Is().True());
+                 AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,1u)));
+                 AssertThat(level_info.can_pull(), Is().True());
+                 AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,1u)));
 
-                 AssertThat(meta.can_pull(), Is().False());
+                 AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -779,18 +779,18 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(3u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(3u,1u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should collapse tuple requests of the same node back into request on a single node [BDD 8b]", [&]() {
@@ -827,18 +827,18 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(3u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(3u,1u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("can quantify list [x1, x2] in sink-only BDD [&&bdd]", [&]() {
@@ -1208,12 +1208,12 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(1u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(1u,1u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should quantify root of [BDD 3]", [&]() {
@@ -1251,15 +1251,15 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(1u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(1u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,2u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,2u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should prune shortcuttable requests [BDD 4]", [&]() {
@@ -1297,18 +1297,18 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(1u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(1u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(3u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(3u,1u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("can forward information across a level [BDD 6]", [&]() {
@@ -1359,18 +1359,18 @@ go_bandit([]() {
 
                  AssertThat(node_arcs.can_pull(), Is().False());
 
-                 meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                 meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                 AssertThat(level_info.can_pull(), Is().True());
+                 AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,2u)));
+                 AssertThat(level_info.can_pull(), Is().True());
+                 AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,2u)));
 
-                 AssertThat(meta.can_pull(), Is().True());
-                 AssertThat(meta.pull(), Is().EqualTo(create_meta(3u,2u)));
+                 AssertThat(level_info.can_pull(), Is().True());
+                 AssertThat(level_info.pull(), Is().EqualTo(create_meta(3u,2u)));
 
-                 AssertThat(meta.can_pull(), Is().False());
+                 AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -1407,18 +1407,18 @@ go_bandit([]() {
 
                 AssertThat(sink_arcs.can_pull(), Is().False());
 
-                meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+                meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(0u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(2u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(2u,1u)));
 
-                AssertThat(meta.can_pull(), Is().True());
-                AssertThat(meta.pull(), Is().EqualTo(create_meta(3u,1u)));
+                AssertThat(level_info.can_pull(), Is().True());
+                AssertThat(level_info.pull(), Is().EqualTo(create_meta(3u,1u)));
 
-                AssertThat(meta.can_pull(), Is().False());
+                AssertThat(level_info.can_pull(), Is().False());
               });
 
             it("should quantify list [x0, x2, x1] [BDD 4 : &&bdd]", [&]() {

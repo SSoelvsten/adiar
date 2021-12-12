@@ -23,10 +23,10 @@ namespace adiar {
   /// We will use a stream of labels to retrieve the values from. Since this may
   /// be one or more streams (Apply, Equality, and Relational Product, and
   /// Reduce all need to consider two input streams). Luckily, the priority
-  /// queue will never have to outlive its meta stream, so we may merely just
+  /// queue will never have to outlive its level_info stream, so we may merely just
   /// have a reference to it.
   ///
-  /// What we need is a policy, that is able to merge one or more meta streams.
+  /// What we need is a policy, that is able to merge one or more level_info streams.
   /// Currently these always are to be read in reverse, so let us merely
   /// implement a manager for just that.
   //////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ namespace adiar {
     bool can_pull()
     {
       adiar_debug(_files_given == MetaStreams,
-                 "Cannot check existence of next element before being attached to all meta streams");
+                 "Cannot check existence of next element before being attached to all level_info streams");
 
       for (size_t idx = 0u; idx < MetaStreams; idx++) {
         if (_meta_streams[idx] -> can_pull()) {
@@ -70,7 +70,7 @@ namespace adiar {
     label_t peek()
     {
       adiar_debug(_files_given == MetaStreams,
-                 "Peeking element before being attached to all expected meta streams");
+                 "Peeking element before being attached to all expected level_info streams");
       adiar_debug(can_pull(),
                  "Cannot peek past end of all streams");
 
@@ -90,7 +90,7 @@ namespace adiar {
     label_t pull()
     {
       adiar_debug(_files_given == MetaStreams,
-                 "Pulling element before being attached to all expected meta streams");
+                 "Pulling element before being attached to all expected level_info streams");
       adiar_debug(can_pull(),
                  "Cannot pull past end of all streams");
 
@@ -135,9 +135,9 @@ namespace adiar {
   /// \param TComparator Sorting comparator to use in the inner queue, buckets
   ///                    and for merging.
   ///
-  /// \param MetaStreams Number of meta information streams about the input
+  /// \param MetaStreams Number of level_info information streams about the input
   ///
-  /// \param LabelComparator Comparator to be used for merging multiple meta
+  /// \param LabelComparator Comparator to be used for merging multiple level_info
   ///                        information streams together.
   ///                         - std::less    : top-down labelling
   ///                         - std::greater : bottom-up labelling
@@ -156,7 +156,7 @@ namespace adiar {
   class levelized_priority_queue
     : private LabelExt, private pq_label_mgr<File_T, Files, LabelComparator, MetaStreams>
   {
-    static_assert(0 < MetaStreams, "At least one meta stream should be provided");
+    static_assert(0 < MetaStreams, "At least one level_info stream should be provided");
     static_assert(0 < Buckets, "Bucketized levelized priority queue requires at least one bucket");
 
     typedef pq_label_mgr<File_T, Files, LabelComparator, MetaStreams> label_mgr;
@@ -241,7 +241,7 @@ namespace adiar {
     void init_buckets()
     {
       // This was set in the private constructor above to be the total amount of
-      // memory. This was done before the label_mgr had created all of its meta
+      // memory. This was done before the label_mgr had created all of its level_info
       // streams, so we can get how much space they already took of what we are
       // given now.
       _memory_occupied_by_meta -= tpie::get_memory_manager().available();

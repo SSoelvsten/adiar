@@ -246,15 +246,15 @@ go_bandit([]() {
 
             AssertThat(sink_arcs.can_pull(), Is().False());
 
-            meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+            meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(0,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(1,2u)));
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(level_info.can_pull(), Is().False());
           });
 
         it("should IMPLY (and shortcut) on x0 and x1", [&]() {
@@ -290,15 +290,15 @@ go_bandit([]() {
 
             AssertThat(sink_arcs.can_pull(), Is().False());
 
-            meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+            meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(0,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(1,1u)));
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(level_info.can_pull(), Is().False());
           });
 
         it("should OR (and shortcut) on x0 and x2", [&]() {
@@ -334,15 +334,15 @@ go_bandit([]() {
 
             AssertThat(sink_arcs.can_pull(), Is().False());
 
-            meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+            meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(0,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(2,1u)));
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(level_info.can_pull(), Is().False());
           });
 
         it("should AND x0 and !x0", [&]() {
@@ -368,12 +368,12 @@ go_bandit([]() {
 
             AssertThat(sink_arcs.can_pull(), Is().False());
 
-            meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+            meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(0,1u)));
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(level_info.can_pull(), Is().False());
           });
 
         it("should AND (and shortcut) F and x0", [&]() {
@@ -580,18 +580,18 @@ go_bandit([]() {
 
             AssertThat(sink_arcs.can_pull(), Is().False());
 
-            meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+            meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(1,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,2u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(2,2u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,2u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(3,2u)));
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(level_info.can_pull(), Is().False());
           });
 
         /* The product construction of bbd_1 and bdd_2 above is as follows in sorted order.
@@ -673,21 +673,21 @@ go_bandit([]() {
 
             AssertThat(sink_arcs.can_pull(), Is().False());
 
-            meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+            meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(0,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(1,2u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(2,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(3,1u)));
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(level_info.can_pull(), Is().False());
           });
 
         it("should AND (and shortcut) BBD 1 and 2", [&]() {
@@ -759,21 +759,21 @@ go_bandit([]() {
 
             AssertThat(sink_arcs.can_pull(), Is().False());
 
-            meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+            meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(0,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(1,2u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,3u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(2,3u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,2u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(3,2u)));
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(level_info.can_pull(), Is().False());
           });
 
         it("should XOR BBD 1 and 2", [&]() {
@@ -844,21 +844,21 @@ go_bandit([]() {
 
             AssertThat(sink_arcs.can_pull(), Is().False());
 
-            meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+            meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(0,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(1,2u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,3u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(2,3u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,3u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(3,3u)));
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(level_info.can_pull(), Is().False());
           });
 
         it("should XOR BDD 3 and 1", [&]() {
@@ -952,21 +952,21 @@ go_bandit([]() {
 
             AssertThat(sink_arcs.can_pull(), Is().False());
 
-            meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+            meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(0,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,2u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(1,2u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,4u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(2,4u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,2u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(3,2u)));
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(level_info.can_pull(), Is().False());
           });
 
         it("should group all recursion requests together", [&]() {
@@ -1046,21 +1046,21 @@ go_bandit([]() {
 
             AssertThat(sink_arcs.can_pull(), Is().False());
 
-            meta_test_stream<arc_t, ARC_FILE_COUNT> meta(out);
+            meta_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(0,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(1,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(1,1u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(2,2u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(2,2u)));
 
-            AssertThat(meta.can_pull(), Is().True());
-            AssertThat(meta.pull(), Is().EqualTo(create_meta(3,1u)));
+            AssertThat(level_info.can_pull(), Is().True());
+            AssertThat(level_info.pull(), Is().EqualTo(create_meta(3,1u)));
 
-            AssertThat(meta.can_pull(), Is().False());
+            AssertThat(level_info.can_pull(), Is().False());
           });
 
 

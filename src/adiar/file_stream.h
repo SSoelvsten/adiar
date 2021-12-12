@@ -241,14 +241,14 @@ namespace adiar {
 
   //////////////////////////////////////////////////////////////////////////////
   /// For file streams of elements of a file with meta information, we also
-  /// provide a stream to read content of the underlying meta file.
+  /// provide a stream to read content of the underlying level_info file.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, size_t Files, bool REVERSE = false>
-  class meta_stream : public file_stream<meta_t, !REVERSE, __meta_file<T, Files>>
+  class meta_stream : public file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>
   {
   public:
     meta_stream(const meta_file<T,Files> &f)
-      : file_stream<meta_t, !REVERSE, __meta_file<T, Files>>(f._file_ptr -> _meta_file, f._file_ptr)
+      : file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>(f._file_ptr -> _meta_file, f._file_ptr)
     { }
 
     meta_stream(const decision_diagram &dd) : meta_stream(dd.file) { }
