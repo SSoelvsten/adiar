@@ -42,14 +42,14 @@ namespace adiar {
     // Notice, that this will break, if the original file is garbage collected
     // before the priority queue. But, currently the original file always is an
     // argument to the function, in which this pq_label_mgr lives within.
-    std::unique_ptr<meta_stream<File_T, Files>> _meta_streams [MetaStreams];
+    std::unique_ptr<level_info_stream<File_T, Files>> _meta_streams [MetaStreams];
 
   public:
     bool hook_meta_stream(const meta_file<File_T, Files> &f)
     {
       adiar_debug(_files_given < MetaStreams, "Given more files than was expected");
 
-      _meta_streams[_files_given] = std::make_unique<meta_stream<File_T, Files>>(f);
+      _meta_streams[_files_given] = std::make_unique<level_info_stream<File_T, Files>>(f);
 
       return ++_files_given == MetaStreams;
     }
@@ -97,9 +97,9 @@ namespace adiar {
       label_t min_label = peek();
 
       // pull from all with min_label
-      for (const std::unique_ptr<meta_stream<File_T, Files>> &meta_stream : _meta_streams) {
-        if (meta_stream -> can_pull() && label_of(meta_stream -> peek()) == min_label) {
-          meta_stream -> pull();
+      for (const std::unique_ptr<level_info_stream<File_T, Files>> &level_info_stream : _meta_streams) {
+        if (level_info_stream -> can_pull() && label_of(level_info_stream -> peek()) == min_label) {
+          level_info_stream -> pull();
         }
       }
 

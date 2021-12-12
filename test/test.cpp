@@ -15,7 +15,7 @@ using namespace adiar;
 // We also do a few little hacks, to read unreduced output from the file_union
 // class.
 template <typename T, size_t Files>
-using meta_test_stream = meta_stream<T, Files, true>;
+using level_info_test_stream = level_info_stream<T, Files, true>;
 
 class node_test_stream: public node_stream<true>
 {

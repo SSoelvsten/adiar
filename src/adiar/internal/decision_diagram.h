@@ -32,7 +32,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     // Friends
     template <typename T, size_t Files, bool REVERSE>
-    friend class meta_stream;
+    friend class level_info_stream;
 
     ////////////////////////////////////////////////////////////////////////////
     // Union of node_file and arc_file (with std::monostate for 'error')
@@ -79,7 +79,7 @@ namespace adiar
     friend class __decision_diagram;
 
     template <typename T, size_t Files, bool REVERSE>
-    friend class meta_stream;
+    friend class level_info_stream;
 
     template <bool REVERSE>
     friend class node_stream;

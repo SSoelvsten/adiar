@@ -49,7 +49,7 @@ namespace adiar
     label_writer diw(dom_inv);
 
     label_stream<> ls(dom);
-    meta_stream<node_t, 1> dd_meta(dd);
+    level_info_stream<node_t, 1> dd_meta(dd);
 
     while (dd_meta.can_pull()) {
       label_t dd_label = label_of(dd_meta.pull());

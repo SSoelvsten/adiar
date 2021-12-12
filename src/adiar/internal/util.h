@@ -9,8 +9,8 @@
 #include <adiar/internal/decision_diagram.h>
 
 namespace adiar {
-  template<typename in1_t = decision_diagram, typename stream1_t = meta_stream<node_t, NODE_FILE_COUNT>,
-           typename in2_t = decision_diagram, typename stream2_t = meta_stream<node_t, NODE_FILE_COUNT>>
+  template<typename in1_t = decision_diagram, typename stream1_t = level_info_stream<node_t, NODE_FILE_COUNT>,
+           typename in2_t = decision_diagram, typename stream2_t = level_info_stream<node_t, NODE_FILE_COUNT>>
   bool disjoint_labels(const in1_t &in1, const in2_t &in2)
   {
     stream1_t s1(in1);
