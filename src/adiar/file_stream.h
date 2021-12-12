@@ -248,7 +248,7 @@ namespace adiar {
   {
   public:
     meta_stream(const meta_file<T,Files> &f)
-      : file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>(f._file_ptr -> _meta_file, f._file_ptr)
+      : file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>(f._file_ptr -> _level_info_file, f._file_ptr)
     { }
 
     meta_stream(const decision_diagram &dd) : meta_stream(dd.file) { }
