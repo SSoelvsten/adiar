@@ -106,7 +106,7 @@ namespace adiar
 
   inline bool quantify_has_label(const label_t label, const decision_diagram &in)
   {
-    meta_stream<node_t, 1> in_meta(in);
+    level_info_stream<node_t, 1> in_meta(in);
     while(in_meta.can_pull()) {
       level_info_t m = in_meta.pull();
 

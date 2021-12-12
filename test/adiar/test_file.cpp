@@ -425,9 +425,9 @@ go_bandit([]() {
                   AssertThat(fs.pull(), Is().EqualTo(21));
                 });
 
-                describe("meta_stream", [&]() {
+                describe("level_info_stream", [&]() {
                      it("can read level_info stream of test_file_meta_1", [&]() {
-                       meta_stream ms(test_file_meta_1);
+                       level_info_stream ms(test_file_meta_1);
 
                        AssertThat(ms.can_pull(), Is().True());
                        AssertThat(ms.pull(), Is().EqualTo(create_meta(0,2u)));
@@ -435,7 +435,7 @@ go_bandit([]() {
                      });
 
                      it("can read level_info stream of node_test_file", [&]() {
-                       meta_stream ms(node_test_file);
+                       level_info_stream ms(node_test_file);
 
                        AssertThat(ms.can_pull(), Is().True());
                        AssertThat(ms.pull(), Is().EqualTo(create_meta(0,1u)));

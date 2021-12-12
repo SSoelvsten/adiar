@@ -244,17 +244,17 @@ namespace adiar {
   /// provide a stream to read content of the underlying level_info file.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, size_t Files, bool REVERSE = false>
-  class meta_stream : public file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>
+  class level_info_stream : public file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>
   {
   public:
-    meta_stream(const meta_file<T,Files> &f)
+    level_info_stream(const meta_file<T,Files> &f)
       : file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>(f._file_ptr -> _level_info_file, f._file_ptr)
     { }
 
-    meta_stream(const decision_diagram &dd) : meta_stream(dd.file) { }
+    level_info_stream(const decision_diagram &dd) : level_info_stream(dd.file) { }
 
     // Only used for testing...
-    meta_stream(const __decision_diagram &dd);
+    level_info_stream(const __decision_diagram &dd);
 
     // TODO: 'attach', 'attached', and 'detach'
   };

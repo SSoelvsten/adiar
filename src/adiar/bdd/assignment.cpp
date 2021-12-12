@@ -18,7 +18,7 @@ namespace adiar
     node_stream<> in_nodes(f);
     node_t v_curr = in_nodes.pull();
 
-    meta_stream<node_t,1> in_meta(f);
+    level_info_stream<node_t,1> in_meta(f);
 
     bool pick_high = pick_next(v_curr);
     aw << create_assignment(label_of(in_meta.pull()), pick_high);
