@@ -84,3 +84,23 @@ jobs:
 
     - name: Run Benchmark
       run: for n in ${{ matrix.N }}; do build/src/${{ matrix.exec }} -N $n -M 1024; done
+
+  run-dummy:
+    name: 'Benchmark: ${{ matrix.name }}'
+    runs-on: ubuntu-latest
+
+    needs: [fetch-branch, skip_duplicate]
+    if: ${{ needs.skip_duplicate.outputs.should_skip == 'true' }}
+
+    strategy:
+      matrix:
+        include:
+          - name: 'Queens'
+          - name: 'SAT: Pigeonhole Princiople'
+          - name: 'SAT: Queens'
+          - name: 'Tic-Tac-Toe'
+
+    steps:
+    - name: Echo skip
+      run: |
+        echo "Running benchmark is skipped"
