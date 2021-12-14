@@ -2,15 +2,17 @@
 #include <cstdint>
 #include <getopt.h>
 #include <chrono>
+#include <ratio>
 
 /* A few chrono wrappers to improve readability of the code below */
-inline auto get_timestamp() {
+typedef std::chrono::high_resolution_clock::time_point timestamp_t;
+
+inline timestamp_t get_timestamp() {
   return std::chrono::high_resolution_clock::now();
 }
 
-inline auto duration_of(std::chrono::high_resolution_clock::time_point &before,
-                        std::chrono::high_resolution_clock::time_point &after) {
-  return std::chrono::duration_cast<std::chrono::seconds>(after - before).count();
+inline double duration_of(timestamp_t &before, timestamp_t &after) {
+  return std::chrono::duration<double, std::ratio<1,1> /* seconds */>(after - before).count();
 }
 
 // Adiar Imports

@@ -423,18 +423,18 @@ int main(int argc, char* argv[])
 
     // ===== N Queens =====
     std::cout << "| " << N << "-Queens : Board construction"  << std::endl;
-    auto before_board = get_timestamp();
+    timestamp_t before_board = get_timestamp();
     adiar::bdd board = n_queens_B();
-    auto after_board = get_timestamp();
+    timestamp_t after_board = get_timestamp();
 
     std::cout << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
     std::cout << "|  | largest BDD  : " << largest_nodes << " nodes" << std::endl;
     std::cout << "|  | final size: " << bdd_nodecount(board) << " nodes"<< std::endl;
 
     // Run counting example
-    auto before_count = get_timestamp();
+    timestamp_t before_count = get_timestamp();
     uint64_t solutions = n_queens_count(board);
-    auto after_count = get_timestamp();
+    timestamp_t after_count = get_timestamp();
 
     std::cout << "| " << N << "-Queens : Counting assignments"  << std::endl;
     std::cout << "|  | number of solutions: " << solutions << std::endl;
@@ -445,9 +445,9 @@ int main(int argc, char* argv[])
     // Run enumeration example (for reasonably small N)
     if (N <= 8) {
       std::cout << "| " << N << "-Queens (Pruning search)"  << std::endl;
-      auto before_list = get_timestamp();
+      timestamp_t before_list = get_timestamp();
       uint64_t listed_solutions = n_queens_list(N, board);
-      auto after_list = get_timestamp();
+      timestamp_t after_list = get_timestamp();
 
       correct_result = correct_result && listed_solutions == expected_result[N];
 
