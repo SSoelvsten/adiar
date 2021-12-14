@@ -34,13 +34,6 @@ namespace adiar {
       adiar_debug(number_of_sorters > 0, "Number of sorters should be positive");
       adiar_debug(number_of_sorters > 1, "TODO: memory calculations for single sorter");
 
-      // Get the minimum requirement for each sorter phase. Note, we combine the
-      // size of 1 and 3 for sake of simplicity.
-      const tpie::memory_size_type min1_3 = std::max(_sorter.minimum_memory_phase_1(),
-                                                     _sorter.minimum_memory_phase_3());
-
-      const tpie::memory_size_type min2 = _sorter.minimum_memory_phase_3();
-
       // We intend to have the memory divided between all the sorters, such that
       // one can be in phase 2 while everyone else is in phase 1 or 3.
       //
@@ -59,16 +52,27 @@ namespace adiar {
       //       phase 1.
 
       const tpie::memory_size_type phase1 =
-        std::max(min1_3, (memory_bytes >> 4) / (number_of_sorters - 1));
+        std::max(std::max(_sorter.minimum_memory_phase_1(), _sorter.minimum_memory_phase_3()),
+                 (memory_bytes >> 4) / (number_of_sorters - 1));
 
       const tpie::memory_size_type phase2 =
         memory_bytes - phase1 * (number_of_sorters - 1);
 
-      // Sanity checks
-      adiar_debug(min1_3 <= phase1, "Not enough memory for phase 1");
-      adiar_debug(min2 <= phase2,   "Not enough memory for phase 2");
+      const tpie::memory_size_type phase3 =
+        phase1;
 
-      _sorter.set_available_memory(phase1, phase2, phase1);
+      // Sanity checks
+      adiar_debug(_sorter.minimum_memory_phase_1() <= phase1,
+                  "Not enough memory for phase 1");
+
+      adiar_debug(_sorter.minimum_memory_phase_2() <= phase2,
+                  "Not enough memory for phase 2");
+
+      adiar_debug(_sorter.minimum_memory_phase_3() <= phase3,
+                  "Not enough memory for phase 1");
+
+      // Set the available memory and start the sorter
+      _sorter.set_available_memory(phase1, phase2, phase3);
       _sorter.begin();
     }
 
