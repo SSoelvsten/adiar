@@ -103,9 +103,9 @@ def markdown_table(args, timings):
     number_of_rows = len(timings[args[0][0]][args[0][1]])
     rows = []
 
-    for r in range(0, number_of_rows):
-        rows.append(' | '.join([t + ' ' * (len(b)-len(str(t)))
-                                for (b, t) in [(f'{r}/{b}', str(timings[r][b])) for (r,b) in args]]))
+    for i in range(0, number_of_rows):
+        rows.append(' | '.join([t + ' ' * (len(b)-len(t))
+                                for (b, t) in [(f'{r}/{b}', f'{timings[r][b][i]:.2f}') for (r,b) in args]]))
 
     return '\n'.join(['| '+ header +' |', '|-'+ line +'-|'] + ['| '+ r +' |' for r in rows])
 
