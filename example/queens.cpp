@@ -69,7 +69,7 @@ inline adiar::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
  * down to only O(N) time and O(N/B) I/Os rather than O(sort(N)) in both time
  * and I/Os. One pretty much cannot do this base case faster.
  */
-adiar::bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
+adiar::bdd n_queens_S(uint64_t i, uint64_t j)
 {
   adiar::node_file out;
 
@@ -163,12 +163,12 @@ adiar::bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
  * active BDDs. In other words, each BDD is completely separate and no memory is
  * saved, if there is a major overlap. So, we will choose to do it iteratively.
  */
-adiar::bdd n_queens_R(uint64_t N, uint64_t row)
+adiar::bdd n_queens_R(uint64_t i)
 {
-  adiar::bdd out = n_queens_S(N, row, 0);
+  adiar::bdd out = n_queens_S(i, 0);
 
   for (uint64_t j = 1; j < N; j++) {
-    out |= n_queens_S(N, row, j);
+    out |= n_queens_S(i, j);
     largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
   }
   return out;
@@ -179,16 +179,16 @@ adiar::bdd n_queens_R(uint64_t N, uint64_t row)
  * again iterate over all rows to combine them one-by-one. One can probably
  * remove the code duplication that we now introduce.
  */
-adiar::bdd n_queens_B(uint64_t N)
+adiar::bdd n_queens_B()
 {
   if (N == 1) {
-    return n_queens_S(N, 0, 0);
+    return n_queens_S(0, 0);
   }
 
-  adiar::bdd out = n_queens_R(N, 0);
+  adiar::bdd out = n_queens_R(0);
 
   for (uint64_t i = 1; i < N; i++) {
-    out &= n_queens_R(N, i);
+    out &= n_queens_R(i);
     largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
   }
   return out;
@@ -416,40 +416,45 @@ int main(int argc, char* argv[])
   adiar::adiar_init(M*1024*1024);
   std::cout << "| Initialized Adiar with " << M << " MiB of memory"  << std::endl << "|" << std::endl;
 
-  // ===== N Queens =====
+  bool correct_result = true;
 
-  std::cout << "| " << N << "-Queens : Board construction"  << std::endl;
-  auto before_board = get_timestamp();
-  adiar::bdd board = n_queens_B(N);
-  auto after_board = get_timestamp();
+  { // Add scope to garbage collect all 'adiar::bdd' instances before calling
+    // the 'adiar::adiar_deinit()' function.
 
-  std::cout << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
-  std::cout << "|  | largest BDD  : " << largest_nodes << " nodes" << std::endl;
-  std::cout << "|  | final size: " << bdd_nodecount(board) << " nodes"<< std::endl;
+    // ===== N Queens =====
+    std::cout << "| " << N << "-Queens : Board construction"  << std::endl;
+    auto before_board = get_timestamp();
+    adiar::bdd board = n_queens_B();
+    auto after_board = get_timestamp();
 
-  // Run counting example
-  auto before_count = get_timestamp();
-  uint64_t solutions = n_queens_count(board);
-  auto after_count = get_timestamp();
+    std::cout << "|  | time: " << duration_of(before_board, after_board) << " s" << std::endl;
+    std::cout << "|  | largest BDD  : " << largest_nodes << " nodes" << std::endl;
+    std::cout << "|  | final size: " << bdd_nodecount(board) << " nodes"<< std::endl;
 
-  std::cout << "| " << N << "-Queens : Counting assignments"  << std::endl;
-  std::cout << "|  | number of solutions: " << solutions << std::endl;
-  std::cout << "|  | time: " << duration_of(before_count, after_count) << " s" << std::endl;
+    // Run counting example
+    auto before_count = get_timestamp();
+    uint64_t solutions = n_queens_count(board);
+    auto after_count = get_timestamp();
 
-  bool correct_result = solutions == expected_result[N];
+    std::cout << "| " << N << "-Queens : Counting assignments"  << std::endl;
+    std::cout << "|  | number of solutions: " << solutions << std::endl;
+    std::cout << "|  | time: " << duration_of(before_count, after_count) << " s" << std::endl;
 
-  // Run enumeration example (for reasonably small N)
-  if (N <= 8) {
-    std::cout << "| " << N << "-Queens (Pruning search)"  << std::endl;
-    auto before_list = get_timestamp();
-    uint64_t listed_solutions = n_queens_list(N, board);
-    auto after_list = get_timestamp();
+    correct_result = solutions == expected_result[N];
 
-    correct_result = correct_result && listed_solutions == expected_result[N];
+    // Run enumeration example (for reasonably small N)
+    if (N <= 8) {
+      std::cout << "| " << N << "-Queens (Pruning search)"  << std::endl;
+      auto before_list = get_timestamp();
+      uint64_t listed_solutions = n_queens_list(N, board);
+      auto after_list = get_timestamp();
 
-    std::cout << "|  | number of solutions: " << listed_solutions << std::endl;
-    std::cout << "|  | deepest recursion: " << deepest_column << " columns" << std::endl;
-    std::cout << "|  | time: " << duration_of(before_list, after_list) << " s" << std::endl;
+      correct_result = correct_result && listed_solutions == expected_result[N];
+
+      std::cout << "|  | number of solutions: " << listed_solutions << std::endl;
+      std::cout << "|  | deepest recursion: " << deepest_column << " columns" << std::endl;
+      std::cout << "|  | time: " << duration_of(before_list, after_list) << " s" << std::endl;
+    }
   }
 
   // ===== ADIAR =====
