@@ -3,13 +3,13 @@
 &nbsp;
 [![Release](https://img.shields.io/github/v/release/ssoelvsten/adiar)](https://github.com/SSoelvsten/adiar/releases)
 &nbsp;
-[![Documentation](https://img.shields.io/website?down_message=not%20available&label=docs&up_message=available&url=https%3A%2F%2Fssoelvsten.github.io%2Fadiar)](ssoelvsten.github.io/adiar)
+[![Documentation](https://img.shields.io/website?down_message=not%20available&label=docs&up_message=available&url=https%3A%2F%2Fssoelvsten.github.io%2Fadiar)](https://ssoelvsten.github.io/adiar)
 &nbsp;
 [![codecov](https://img.shields.io/codecov/c/github/ssoelvsten/adiar?logo=codecov&logoColor=white&token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
 &nbsp;
-[![test](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/unit%20test/main?label=test&logo=github&logoColor=white)](/actions?query=workflow%3Atest)
+[![test](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/unit%20test/main?label=test&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/unit_test.yml)
 &nbsp;
-[![examples](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/examples/main?label=examples&logo=github&logoColor=white)](/actions?query=workflow%3Aexamples)
+[![examples](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/examples/main?label=examples&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/examples.yml)
 
 Based on the work of Lars Arge [[Arge96](#references)], Adiar<sup>[1](#footnotes)</sup>
 is a BDD package [[Bryant86](#references)] that makes use of _Time-Forward Processing_
