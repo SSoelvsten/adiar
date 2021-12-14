@@ -171,7 +171,7 @@ Thank you, to the following wonderful people:
 
 ## License
 The software and documentation files in this repository are provided under the
-[MIT License](/LICENSE.md).
+[LGPL 3 License](/LICENSE.md).
 
 Using Adiar will indirectly use [TPIE](https://github.com/thomasmoelhave/tpie)
 underneath, which in turn is licensed under the _GPL 3_ license. Hence, your
