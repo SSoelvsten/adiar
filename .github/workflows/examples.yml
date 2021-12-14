@@ -21,7 +21,7 @@ jobs:
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
 
-  queens:
+  run-example:
     name: 'Example: ${{ matrix.name }}'
     runs-on: ubuntu-latest
 
@@ -55,3 +55,21 @@ jobs:
     - name: Run example
       working-directory: ${{runner.workspace}}/build
       run: for n in ${{ matrix.N }}; do ./example/${{ matrix.exec }} -N $n -M 1024; done
+
+  run-dummy:
+    name: 'Example: ${{ matrix.name }}'
+    runs-on: ubuntu-latest
+
+    needs: skip_duplicate
+    if: ${{ needs.skip_duplicate.outputs.should_skip == 'true' }}
+
+    strategy:
+      matrix:
+        include:
+          - name: 'Queens'
+
+    steps:
+    - name: Echo skip
+      run: |
+        echo "Running examples is skipped"
+
