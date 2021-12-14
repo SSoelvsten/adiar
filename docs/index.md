@@ -53,8 +53,10 @@ group at [Aarhus University](https://cs.au.dk).
 **Current Maintainer:** [Steffan Sølvsten](mailto:soelvsten@cs.au.dk)
 
 ### License
-The software and documentation files in this repository are distributed under the
-[MIT License](https://github.com/SSoelvsten/adiar/blob/main/LICENSE.md).
+The software and documentation files in this repository are provided under the
+[GPL 3 License](/LICENSE.md). In short, you can use Adiar in any project (also a
+closed-source commercial one), but if you change Adiar itself, then you have to
+make the changes to Adiar public.
 
 Using Adiar will indirectly use [TPIE](https://github.com/thomasmoelhave/tpie)
 underneath, which in turn is licensed under the _GPL 3_ license. Hence, your

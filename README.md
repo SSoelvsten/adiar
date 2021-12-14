@@ -171,7 +171,9 @@ Thank you, to the following wonderful people:
 
 ## License
 The software and documentation files in this repository are provided under the
-[MIT License](/LICENSE.md).
+[GPL 3 License](/LICENSE.md). In short, you can use Adiar in any project (also a
+closed-source commercial one), but if you change Adiar itself, then you have to
+make the changes to Adiar public.
 
 Using Adiar will indirectly use [TPIE](https://github.com/thomasmoelhave/tpie)
 underneath, which in turn is licensed under the _GPL 3_ license. Hence, your
