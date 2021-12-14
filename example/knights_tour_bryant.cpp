@@ -332,18 +332,18 @@ int main(int argc, char* argv[])
   if (N == 1) {
     paths = adiar::zdd_ithvar(0);
   } else {
-    auto before_paths = get_timestamp();
+    timestamp_t before_paths = get_timestamp();
     paths = only_closed ? constraint_closed(N) : constraint_transition(N,0);
     for (int t = 1; t < N*N-1; t++) {
       paths &= constraint_transition(N,t);
       largest_nodes = std::max(largest_nodes, zdd_nodecount(paths));
     }
-    auto after_paths = get_timestamp();
+    timestamp_t after_paths = get_timestamp();
 
     std::cout << "|  | Transition intersection: " << std::endl
               << "|  |  " << duration_of(before_paths, after_paths) << " s" << std::endl;
 
-    auto before_only_once = get_timestamp();
+    timestamp_t before_only_once = get_timestamp();
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
         if (only_closed && is_closed_square(i,j)) { continue; }
@@ -352,15 +352,15 @@ int main(int argc, char* argv[])
         largest_nodes = std::max(largest_nodes, zdd_nodecount(paths));
       }
     }
-    auto after_only_once = get_timestamp();
+    timestamp_t after_only_once = get_timestamp();
 
     std::cout << "|  | Exactly once per constraint: " << std::endl
               << "|  |  " << duration_of(before_only_once, after_only_once) << " s" << std::endl;
   }
 
-  auto before_count = get_timestamp();
+  timestamp_t before_count = get_timestamp();
   uint64_t solutions = zdd_size(paths);
-  auto after_count = get_timestamp();
+  timestamp_t after_count = get_timestamp();
 
   std::cout << "|  | Counting elements: " << std::endl
             << "|  |  " << duration_of(before_count, after_count) << " s" << std::endl
