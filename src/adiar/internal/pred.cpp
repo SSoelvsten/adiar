@@ -111,7 +111,7 @@ namespace adiar
   public:
     // Since we guarantee to be on the same level, then we merely provide a noop
     // (similar to the bdd_policy) for the cofactor.
-    static inline void compute_cofactor(bool on_curr_level, ptr_t &, ptr_t &)
+    static inline void compute_cofactor([[maybe_unused]] bool on_curr_level, ptr_t &, ptr_t &)
     { adiar_invariant(on_curr_level, "No request have mixed levels"); }
 
   public:
