@@ -146,7 +146,7 @@ def comparison_report(args, timings):
 
     # Compute differences
     reference_t = min(timings[args[0][0]][args[0][1]])
-    tested_t = [(rb, min(timings[b[0]][b[1]])) for rb in args[1::]]
+    tested_t = [(rb, min(timings[rb[0]][rb[1]])) for rb in args[1::]]
 
     diffs = []
 
@@ -155,17 +155,17 @@ def comparison_report(args, timings):
                  for (rb,t) in tested_t]
     else:
         diffs = [(rb, float('inf') if t > 0 else float(0))
-                 for (rxb,t) in tested_t]
+                 for (rb,t) in tested_t]
 
     # Check if any diffs violate the threshold
     worst_diff = 0.0 if len(diffs) == 0 else max([t for (rb,t) in diffs])
     report_color = 'green' if worst_diff < 0.01 else ('yellow' if worst_diff < 0.05 else 'red')
     exit_code = -1 if report_color == 'red' else 0
 
-    diffs_txt = [f'`{rb[0]/rb[1]}` ' + ('does not impact performance'
-                                        if t == 0.0
-                                        else ('is '+('an improvement' if t < 0.0 else 'a regression')+
-                                              f' of {abs(t)*100.0:.2f}%'))
+    diffs_txt = [f'`{rb[0]}/{rb[1]}` ' + ('does not impact performance'
+                                          if t == 0.0
+                                          else ('is '+('an improvement' if t < 0.0 else 'a regression')+
+                                                f' of {abs(t)*100.0:.2f}%'))
                  for (rb,t) in diffs]
 
     output_txt = (f'# Benchmark Report :{report_color}_circle:\n' +
