@@ -46,13 +46,18 @@ namespace adiar {
       // TODO: It would be better to make p2 'exponentially' larger than p1 for
       //       some notion of 'exponentiality'.
       //
-      // TODO: p2 should be upper-bounded by the maximal number of elements
-      //       possible. If this decreases its size compared to what is
-      //       above, then the remaining space should be distributed among all
-      //       phase 1.
+      // TODO: phase 1 should be upper bounded by the number of elements
+      //       possibly placed in this queue. See Issue #189 on ssoelvsten/adiar
+      //       as to why. I would suggest for to upper bound the 1/16th by
+      //       slightly more than the amount of memory necessary to hold all
+      //       values simultaneously.
+
+      // Quickfix: Issue #250 of thomasmoelhave/tpie
+      const tpie::memory_size_type minimum_phase1 = std::max(_sorter.minimum_memory_phase_1(),
+                                                             sizeof(T) * 128 * 1024 + 5 * 1024 * 1024);
 
       const tpie::memory_size_type phase1 =
-        std::max(std::max(_sorter.minimum_memory_phase_1(), _sorter.minimum_memory_phase_3()),
+        std::max(std::max(minimum_phase1, _sorter.minimum_memory_phase_3()),
                  (memory_bytes >> 4) / (number_of_sorters - 1));
 
       const tpie::memory_size_type phase2 =
