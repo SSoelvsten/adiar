@@ -115,7 +115,7 @@ Return the number of variables present in the ZDD for _A_.
 ### `uint64_t bdd_size(bdd A)`
 {: .no_toc }
 
-Return _|A|_, i.e. the number of sets of elements in the family of sets _A_.
+Return _\|A\|_, i.e. the number of sets of elements in the family of sets _A_.
 
 ## Predicates
 
