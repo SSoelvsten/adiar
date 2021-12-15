@@ -48,33 +48,27 @@ namespace adiar
   class path_count_policy
   {
   public:
-    static void count_resolve_request(count_priority_queue_t<path_sum> &count_pq,
-                                      uint64_t &result, label_t /* varcount */,
-                                      ptr_t child_to_resolve, path_sum request)
+    inline static uint64_t forward_request(count_priority_queue_t<path_sum> &count_pq,
+                                           const label_t /* varcount */,
+                                           const ptr_t child_to_resolve,
+                                           const path_sum &request)
     {
       adiar_debug(request.sum > 0, "No 'empty' request should be created");
 
       if (is_sink(child_to_resolve)) {
-        result += value_of(child_to_resolve) ? request.sum : 0u;
+        return value_of(child_to_resolve) ? request.sum : 0u;
       } else {
         count_pq.push({ child_to_resolve, request.sum });
+        return 0u;
       }
     }
 
-    static void count_resolve_requests(count_priority_queue_t<path_sum> &count_pq,
-                                       uint64_t &result, label_t varcount,
-                                       const node_t& n)
+    inline static path_sum combine_requests(const path_sum &acc, const path_sum &next)
     {
-      // Sum all ingoing arcs
-      path_sum request = count_pq.pull();
+      adiar_debug(acc.uid == next.uid,
+                  "Requests should be for the same node");
 
-      while (count_pq.can_pull() && count_pq.top().uid == n.uid) {
-        request.sum += count_pq.pull().sum;
-      }
-
-      // Resolve final request
-      count_resolve_request(count_pq, result, varcount, n.low, request);
-      count_resolve_request(count_pq, result, varcount, n.high, request);
+      return { acc.uid, acc.sum + next.sum };
     }
   };
 
@@ -95,8 +89,8 @@ namespace adiar
       node_t root = ns.pull();
       queue_t request = { root.uid, 1u };
 
-      count_policy::count_resolve_request(count_pq, result, varcount, root.low, request);
-      count_policy::count_resolve_request(count_pq, result, varcount, root.high, request);
+      result += count_policy::forward_request(count_pq, varcount, root.low, request);
+      result += count_policy::forward_request(count_pq, varcount, root.high, request);
     }
 
     // Take out the rest of the nodes and process them one by one
@@ -112,7 +106,14 @@ namespace adiar
                   "Priority queue is out-of-sync with node stream");
 
       // Resolve requests
-      count_policy::count_resolve_requests(count_pq, result, varcount, n);
+      queue_t request = count_pq.pull();
+
+      while (count_pq.can_pull() && count_pq.top().uid == n.uid) {
+        request = count_policy::combine_requests(request, count_pq.pull());
+      }
+
+      result += count_policy::forward_request(count_pq, varcount, n.low, request);
+      result += count_policy::forward_request(count_pq, varcount, n.high, request);
     }
 
     return result;

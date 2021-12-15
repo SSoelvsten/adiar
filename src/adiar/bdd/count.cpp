@@ -30,9 +30,10 @@ namespace adiar
   class sat_count_policy
   {
   public:
-    static void count_resolve_request(count_priority_queue_t<sat_sum> &count_pq,
-                                      uint64_t &result, label_t varcount,
-                                      ptr_t child_to_resolve, sat_sum request)
+    inline static uint64_t forward_request(count_priority_queue_t<sat_sum> &count_pq,
+                                           const label_t varcount,
+                                           const ptr_t child_to_resolve,
+                                           const sat_sum &request)
     {
       adiar_debug(request.sum > 0, "No 'empty' request should be created");
 
@@ -42,33 +43,28 @@ namespace adiar
       label_t levels_visited = request.levels_visited + 1u;
 
       if (is_sink(child_to_resolve)) {
-        result += value_of(child_to_resolve)
+        return value_of(child_to_resolve)
           ? request.sum * (1u << (varcount - levels_visited))
           : 0u;
       } else {
         count_pq.push({ child_to_resolve, request.sum, levels_visited });
+        return 0u;
       }
     }
 
-    static void count_resolve_requests(count_priority_queue_t<sat_sum> &count_pq,
-                                       uint64_t &result, label_t varcount,
-                                       const node_t& n)
+    inline static sat_sum combine_requests(const sat_sum &acc, const sat_sum &next)
     {
-      // Sum all ingoing arcs with the same number of visited levels
-      sat_sum request = count_pq.pull();
+      adiar_debug(acc.uid == next.uid,
+                  "Requests should be for the same node");
 
-      while (count_pq.can_pull() && count_pq.top().uid == n.uid) {
-        sat_sum r = count_pq.pull();
+      adiar_debug(acc.levels_visited <= next.levels_visited,
+                  "Requests should be ordered on the number of levels visited");
 
-        request.sum = request.sum * (1u << (r.levels_visited - request.levels_visited));
-        request.sum += r.sum;
-
-        request.levels_visited = r.levels_visited;
-      }
-
-      // Resolve final request
-      count_resolve_request(count_pq, result, varcount, n.low, request);
-      count_resolve_request(count_pq, result, varcount, n.high, request);
+      return {
+        acc.uid,
+        acc.sum * (1u << (next.levels_visited - acc.levels_visited)) + next.sum,
+        next.levels_visited
+      };
     }
   };
 
