@@ -193,7 +193,10 @@ namespace adiar {
   private:
     static tpie::memory_size_type m_overflow_queue(tpie::memory_size_type memory_given)
     {
-      return memory_given / std::max(10lu, Buckets+1 + 1);
+      const tpie::memory_size_type eight_MiB = 8 * 1024;
+      const tpie::memory_size_type weighted_share = memory_given / (4*(Buckets+1) + 1);
+
+      return std::max(eight_MiB, weighted_share);
     }
 
     levelized_priority_queue(tpie::memory_size_type memory_given)
