@@ -55,3 +55,10 @@ group at [Aarhus University](https://cs.au.dk).
 ### License
 The software and documentation files in this repository are distributed under the
 [MIT License](https://github.com/SSoelvsten/adiar/blob/main/LICENSE.md).
+
+Using Adiar will indirectly use [TPIE](https://github.com/thomasmoelhave/tpie)
+underneath, which in turn is licensed under the _GPL 3_ license. Hence, your
+resulting binaries linked to Adiar will also be under that license. If you share
+that binary with others, then you will be obliged to make the source public.
+This can be resolved by making Adiar use an alternative to TPIE, such as
+[STXXL](https://github.com/stxxl/stxxl).
