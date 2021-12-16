@@ -26,11 +26,12 @@ set(HEADERS
   bdd/restrict.h
 
   # zdd files
+  zdd/binop.h
   zdd/build.h
   zdd/count.h
   zdd/pred.h
   zdd/project.h
-  zdd/binop.h
+  zdd/subset.h
   zdd/zdd.h
 
   # debug files
@@ -75,11 +76,12 @@ set(SOURCES
   bdd/restrict.cpp
 
   # zdd files
+  zdd/binop.cpp
   zdd/build.cpp
   zdd/count.cpp
   zdd/pred.cpp
   zdd/project.cpp
-  zdd/binop.cpp
+  zdd/subset.cpp
   zdd/zdd.cpp
 
   # debug files

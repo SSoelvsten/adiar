@@ -11,13 +11,18 @@
 
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
-#include <adiar/internal/util.h>
 
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
-  typedef levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt> substitute_priority_queue_t;
+  typedef levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt>
+  substitute_priority_queue_t;
+
+  struct substitute_rec_output { node_t out; };
+  struct substitute_rec_skipto { ptr_t child; };
+
+  typedef std::variant<substitute_rec_output, substitute_rec_skipto> substitute_rec;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -33,53 +38,47 @@ namespace adiar
   }
 
   template<typename substitution_policy>
-  typename substitution_policy::unreduced_t substitute(const typename substitution_policy::reduced_t &in,
-                                                       const assignment_file &assignment)
+  typename substitution_policy::unreduced_t substitute(const typename substitution_policy::reduced_t &dd,
+                                                       const typename substitution_policy::substitution_t &na)
   {
-    if (assignment.size() == 0) {
-      return substitution_policy::resolve_empty_assignment(in);
-    }
-    if (is_sink(in, is_any)) {
-      return substitution_policy::resolve_sink_root(in, assignment);
-    }
-    if (disjoint_labels<assignment_file, assignment_stream<>>(assignment, in)) {
-      return substitution_policy::resolve_disjoint_labels(in, assignment);
+    if (na.size() == 0 || is_sink(dd, is_any) || substitution_policy::disjoint_labels(na, dd)) {
+      return dd;
     }
 
-    assignment_stream<> as(assignment);
-    assignment_t a = as.pull();
+    typename substitution_policy::substitution_mgr smgr(na);
 
-    node_stream<> ns(in);
+    node_stream<> ns(dd);
     node_t n = ns.pull();
 
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    substitute_priority_queue_t substitute_pq({in});
+    substitute_priority_queue_t substitute_pq({dd});
 
     label_t level = label_of(n);
     size_t level_size = 0;
 
-    // find the next assignment
-    while(as.can_pull() && label_of(n) > label_of(a)) {
-      a = as.pull();
-    }
-
     // process the root and create initial recursion requests
-    if(label_of(a) == label_of(n)) {
-      ptr_t rec_child;
-      typename substitution_policy::unreduced_t maybe_resolved = substitution_policy::resolve_root_assign(n, a, in, assignment, rec_child);
+    {
+      smgr.setup_for_level(level);
+      const substitute_rec rec_res = smgr.resolve_node(n, level);
 
-      if (!(std::holds_alternative<no_file>(maybe_resolved._union))) {
-        return maybe_resolved;
+      if (std::holds_alternative<substitute_rec_output>(rec_res)) {
+        const node_t n_res = std::get<substitute_rec_output>(rec_res).out;
+
+        level_size = 1;
+
+        substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
+        substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
+      } else { // std::holds_alternative<substitute_rec_skipto>(n_res)
+        const ptr_t rec_child = std::get<substitute_rec_skipto>(rec_res).child;;
+
+        if(is_sink(rec_child)) {
+          return substitution_policy::sink(value_of(rec_child));
+        }
+
+        substitute_pq.push({ NIL, rec_child });
       }
-
-      substitute_pq.push({ NIL, rec_child });
-    } else {
-      level_size = 1;
-
-      substitute_resolve_request(low_arc_of(n), substitute_pq, aw);
-      substitute_resolve_request(high_arc_of(n), substitute_pq, aw);
     }
 
     // process all to-be-visited nodes in topological order
@@ -93,10 +92,7 @@ namespace adiar
         level_size = 0;
         level = substitute_pq.current_level();
 
-        // seek assignment
-        while(as.can_pull() && level > label_of(a)) {
-          a = as.pull();
-        }
+        smgr.setup_for_level(level);
       }
 
       // seek requested node
@@ -105,12 +101,31 @@ namespace adiar
       }
 
       // process node and forward information
-      if(label_of(a) == label_of(n)) {
-        ptr_t rec_child = value_of(a) ? n.high : n.low;
+      const substitute_rec rec_res = smgr.resolve_node(n, level);
+
+      if(std::holds_alternative<substitute_rec_output>(rec_res)) {
+        const node_t n_res = std::get<substitute_rec_output>(rec_res).out;
+
+        // outgoing arcs
+        substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
+        substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
+
+        // Ingoing arcs
+        while(substitute_pq.can_pull() && substitute_pq.top().target == n_res.uid) {
+          const arc_t parent_arc = substitute_pq.pull();
+
+          if(!is_nil(parent_arc.source)) {
+            aw.unsafe_push_node(parent_arc);
+          }
+        }
+
+        level_size++;
+      } else { // std::holds_alternative<substitute_rec_skipto>(rec_res)
+        const ptr_t rec_child = std::get<substitute_rec_skipto>(rec_res).child;
 
         while(substitute_pq.can_pull() && substitute_pq.top().target == n.uid) {
-          arc_t parent_arc = substitute_pq.pull();
-          arc_t request = { parent_arc.source, rec_child };
+          const arc_t parent_arc = substitute_pq.pull();
+          const arc_t request = { parent_arc.source, rec_child };
 
           if(is_sink(rec_child) && is_nil(parent_arc.source)) {
             // we have restricted ourselves to a sink
@@ -119,21 +134,6 @@ namespace adiar
 
           substitute_resolve_request(request, substitute_pq, aw);
         }
-      } else {
-        // outgoing arcs
-        substitute_resolve_request(low_arc_of(n), substitute_pq, aw);
-        substitute_resolve_request(high_arc_of(n), substitute_pq, aw);
-
-        // Ingoing arcs
-        while(substitute_pq.can_pull() && substitute_pq.top().target == n.uid) {
-          arc_t parent_arc = substitute_pq.pull();
-
-          if(!is_nil(parent_arc.source)) {
-            aw.unsafe_push_node(parent_arc);
-          }
-        }
-
-        level_size++;
       }
     }
 
