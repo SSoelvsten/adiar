@@ -2,10 +2,12 @@
 
 #include <adiar/data.h>
 
+#include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/substitution.h>
+#include <adiar/internal/util.h>
 
 #include <adiar/bdd/bdd.h>
 #include <adiar/bdd/build.h>
@@ -15,30 +17,41 @@ namespace adiar
   class restrict_policy : public bdd_policy
   {
   public:
-    static inline bdd resolve_empty_assignment(const bdd &in)
-    { return in; }
+    typedef assignment_file substitution_t;
 
-  public:
-    static inline bdd resolve_sink_root(const bdd& in, const assignment_file&)
-    { return in; }
-
-  public:
-    static inline bdd resolve_disjoint_labels(const bdd &in, const assignment_file &)
-    { return in; }
-
-  public:
-    static inline __bdd resolve_root_assign(const node_t &n, const assignment_t &a,
-                                            const bdd &/*in*/, const assignment_file &,
-                                            ptr_t &rec_child)
+    class substitution_mgr
     {
-      rec_child = value_of(a) ? n.high : n.low;
-      if(is_sink(rec_child)) {
-        return bdd_sink(value_of(rec_child));
+      assignment_stream<> as;
+      assignment_t a;
+
+    public:
+      substitution_mgr(substitution_t af) : as(af)
+      {
+        a = as.pull();
       }
-      return __bdd(); // Return nothing
-    }
+
+      void setup_for_level(label_t level) {
+        while (label_of(a) < level && as.can_pull()) {
+          a = as.pull();
+        }
+      }
+
+      substitute_rec resolve_node(const node_t &n, const label_t level)
+      {
+        adiar_debug(label_of(n) == level, "level should be of the given node");
+
+        if (label_of(a) == level) {
+          return substitute_rec_skipto { value_of(a) ? n.high : n.low };
+        } else {
+          return substitute_rec_output { n };
+        }
+      }
+    };
 
   public:
+    static inline bool disjoint_labels(const assignment_file &na, const bdd &dd)
+    { return adiar::disjoint_labels<assignment_file, assignment_stream<>>(na, dd); }
+
     static inline bdd sink(bool sink_val)
     { return bdd_sink(sink_val); }
   };
