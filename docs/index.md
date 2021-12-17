@@ -54,7 +54,8 @@ group at [Aarhus University](https://cs.au.dk).
 
 ### License
 The software and documentation files in this repository are provided under the
-[LGPL 3 License](https://www.gnu.org/licenses/lgpl-3.0.en.html).
+[LGPL 3 License](https://www.gnu.org/licenses/lgpl-3.0.en.html) but with a
+_Static Linking Exception_.
 
 Using Adiar will indirectly use [TPIE](https://github.com/thomasmoelhave/tpie)
 underneath, which in turn is licensed under the _GPL 3_ license. Hence, your
