@@ -24,8 +24,53 @@ namespace adiar
 
   typedef std::variant<substitute_rec_output, substitute_rec_skipto> substitute_rec;
 
+  enum substitute_act { KEEP, FIX_FALSE, FIX_TRUE };
+
+  //////////////////////////////////////////////////////////////////////////////
+  class substitute_assignment_act
+  {
+    assignment_stream<> as;
+    assignment_t a;
+
+  public:
+    typedef assignment_file action_t;
+
+    substitute_assignment_act(const action_t &af) : as(af)
+    {
+      a = as.pull();
+    }
+
+    substitute_act action_for_level(label_t level) {
+      while (label_of(a) < level && as.can_pull()) {
+        a = as.pull();
+      }
+
+      if (label_of(a) == level) {
+        return value_of(a) ? substitute_act::FIX_TRUE : substitute_act::FIX_FALSE;
+      } else {
+        return substitute_act::KEEP;
+      }
+    }
+  };
+
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
+  template<typename substitute_policy, typename substitute_act_mgr>
+  inline substitute_rec substitute_apply_act(const substitute_act &act,
+                                             const node_t &n,
+                                             substitute_act_mgr &amgr)
+  {
+    switch (act) {
+    case substitute_act::FIX_FALSE:
+      return substitute_policy::fix_false(n, amgr);
+    case substitute_act::FIX_TRUE:
+      return substitute_policy::fix_true(n, amgr);
+    default:
+    case substitute_act::KEEP:
+      return substitute_policy::keep_node(n, amgr);
+    }
+  }
+
   inline void substitute_resolve_request(const arc_t &request,
                                        substitute_priority_queue_t &pq,
                                        arc_writer &aw)
@@ -37,16 +82,10 @@ namespace adiar
     }
   }
 
-  template<typename substitution_policy>
-  typename substitution_policy::unreduced_t substitute(const typename substitution_policy::reduced_t &dd,
-                                                       const typename substitution_policy::substitution_t &na)
+  template<typename substitute_policy, typename substitute_act_mgr>
+  typename substitute_policy::unreduced_t substitute(const typename substitute_policy::reduced_t &dd,
+                                                     substitute_act_mgr &amgr)
   {
-    if (na.size() == 0 || is_sink(dd, is_any) || substitution_policy::disjoint_labels(na, dd)) {
-      return dd;
-    }
-
-    typename substitution_policy::substitution_mgr smgr(na);
-
     node_stream<> ns(dd);
     node_t n = ns.pull();
 
@@ -58,10 +97,11 @@ namespace adiar
     label_t level = label_of(n);
     size_t level_size = 0;
 
+    substitute_act action = amgr.action_for_level(level);
+
     // process the root and create initial recursion requests
     {
-      smgr.setup_for_level(level);
-      const substitute_rec rec_res = smgr.resolve_node(n, level);
+      const substitute_rec rec_res = substitute_apply_act<substitute_policy>(action, n, amgr);
 
       if (std::holds_alternative<substitute_rec_output>(rec_res)) {
         const node_t n_res = std::get<substitute_rec_output>(rec_res).out;
@@ -74,7 +114,7 @@ namespace adiar
         const ptr_t rec_child = std::get<substitute_rec_skipto>(rec_res).child;;
 
         if(is_sink(rec_child)) {
-          return substitution_policy::sink(value_of(rec_child));
+          return substitute_policy::sink(value_of(rec_child), amgr);
         }
 
         substitute_pq.push({ NIL, rec_child });
@@ -92,7 +132,7 @@ namespace adiar
         level_size = 0;
         level = substitute_pq.current_level();
 
-        smgr.setup_for_level(level);
+        action = amgr.action_for_level(level);
       }
 
       // seek requested node
@@ -101,7 +141,7 @@ namespace adiar
       }
 
       // process node and forward information
-      const substitute_rec rec_res = smgr.resolve_node(n, level);
+      const substitute_rec rec_res = substitute_apply_act<substitute_policy>(action, n, amgr);
 
       if(std::holds_alternative<substitute_rec_output>(rec_res)) {
         const node_t n_res = std::get<substitute_rec_output>(rec_res).out;
@@ -129,7 +169,7 @@ namespace adiar
 
           if(is_sink(rec_child) && is_nil(parent_arc.source)) {
             // we have restricted ourselves to a sink
-            return substitution_policy::sink(value_of(rec_child));
+            return substitute_policy::sink(value_of(rec_child), amgr);
           }
 
           substitute_resolve_request(request, substitute_pq, aw);
@@ -144,9 +184,6 @@ namespace adiar
 
     return out_arcs;
   }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // TODO: Generalised BDD 'composition'
 }
 
 #endif // H_ADIAR_INTERNAL_SUBSTITUTION_H

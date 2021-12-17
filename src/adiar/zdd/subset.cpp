@@ -1,8 +1,6 @@
-#include "binop.h"
+#include "subset.h"
 
 #include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
-#include <adiar/tuple.h>
 
 #include <adiar/internal/substitution.h>
 #include <adiar/internal/util.h>
@@ -14,52 +12,162 @@
 
 namespace adiar
 {
-  class zdd_offset_policy : public zdd_policy
+  template<substitute_act FIX_VALUE>
+  class zdd_subset_label_act
   {
-  public:
-  public:
-    typedef label_file substitution_t;
+    label_stream<> ls;
+    label_t l;
 
-    class substitution_mgr
+    // We will rememeber how far the algorithm in substitution.h has got
+    label_t alg_level = 0;
+
+  public:
+    typedef label_file action_t;
+
+    zdd_subset_label_act(const action_t &lf) : ls(lf)
     {
-      label_stream<> ls;
-      label_t l;
+      l = ls.pull();
+    }
 
-    public:
-      substitution_mgr(substitution_t lf) : ls(lf)
-      {
+  private:
+    inline void forward_to_level(const label_t new_level) {
+      adiar_debug(alg_level <= new_level,
+                  "The algorithm should ask for the levels in increasing order.");
+
+      alg_level = new_level;
+
+      while (l < new_level && ls.can_pull()) {
         l = ls.pull();
       }
-
-      void setup_for_level(label_t level) {
-        while (l < level && ls.can_pull()) {
-          l = ls.pull();
-        }
-      }
-
-      substitute_rec resolve_node(const node_t &n, const label_t level)
-      {
-        adiar_debug(label_of(n) == level, "level should be of the given node");
-
-        if (l == level) {
-          return substitute_rec_skipto { n.low };
-        } else {
-          return substitute_rec_output { n };
-        }
-      }
-    };
+    }
 
   public:
-    static inline bool disjoint_labels(const label_file &na, const zdd &dd)
-    { return adiar::disjoint_labels<label_file, label_stream<>>(na, dd); }
+    substitute_act action_for_level(const label_t new_level) {
+      forward_to_level(new_level);
+      return l == new_level ? FIX_VALUE : substitute_act::KEEP;
+    }
 
-    static inline zdd sink(bool sink_val)
-    { return zdd_sink(sink_val); }
+  public:
+    bool has_level_incl() {
+      return alg_level <= l || ls.can_pull();
+    }
+
+    label_t level_incl()
+    {
+      return l;
+    }
+
+    bool has_level_excl() {
+      return alg_level < l || (/*alg_level == l &&*/ ls.can_pull());
+    }
+
+    label_t level_excl()
+    {
+      // similar to forward_to_level, but with a '<=' to make it skip past 'level'
+      while (l <= alg_level && ls.can_pull()) { l = ls.pull(); }
+      return l;
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  template<typename zdd_subset_act>
+  class zdd_offset_policy : public zdd_policy
+  {
+  public:
+    static substitute_rec keep_node(const node_t &n, zdd_subset_act &/*amgr*/)
+    { return substitute_rec_output { n }; }
+
+    static substitute_rec fix_false(const node_t &n, zdd_subset_act &/*amgr*/)
+    { return substitute_rec_skipto { n.low }; }
+
+    static substitute_rec fix_true(const node_t &n, zdd_subset_act &amgr)
+    {
+      adiar_debug(false, "should never be called");
+      return keep_node(n, amgr);
+    }
+
+  public:
+    static inline zdd sink(bool sink_val,
+                           zdd_subset_label_act<substitute_act::FIX_FALSE>& /*amgr*/)
+    { return zdd_sink(sink_val); }
+  };
+
   __zdd zdd_offset(const zdd &dd, const label_file &l)
   {
-    return substitute<zdd_offset_policy>(dd, l);
+    if (l.size() == 0
+        || is_sink(dd, is_any)
+        || disjoint_labels<label_file, label_stream<>>(l, dd)) {
+      return dd;
+    }
+
+    zdd_subset_label_act<substitute_act::FIX_FALSE> amgr(l);
+    return substitute<zdd_offset_policy<zdd_subset_label_act<substitute_act::FIX_FALSE>>>(dd, amgr);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename zdd_subset_act>
+  class zdd_onset_policy : public zdd_policy
+  {
+  public:
+    static substitute_rec keep_node(const node_t &n, zdd_subset_act &amgr)
+    {
+      if (amgr.has_level_incl()) {
+        adiar_debug(amgr.level_incl() != label_of(n),
+                    "keep_node is only called in a context where the action is KEEP");
+
+        // If recursion goes past the intended level, then it is replaced with
+        // the false sink.
+        const ptr_t low  = is_sink(n.low) || label_of(n.low) > amgr.level_incl()
+          ? create_sink_ptr(false)
+          : n.low;
+
+        // If this applies to high, then the node should be skipped entirely.
+        if (is_sink(n.high) || label_of(n.high) > amgr.level_incl()) {
+          return substitute_rec_skipto { low };
+        }
+        return substitute_rec_output { create_node(n.uid, low, n.high) };
+      }
+      return substitute_rec_output { n };
+    }
+
+    static substitute_rec fix_false(const node_t &n, zdd_subset_act &amgr)
+    {
+      adiar_debug(false, "should never be called");
+      return keep_node(n, amgr);
+    }
+
+    static substitute_rec fix_true(const node_t &n, zdd_subset_act &amgr)
+    {
+      if (amgr.has_level_excl()) {
+        // Since substitution.h already knows what action to take for the rest
+        // of this level, then it is fine for us to already forward to the next
+        // and ask for when the next level is.
+        //
+        // TODO: maybe we should have it support a lookahead of two? This is
+        // quite a processing heavy way of doing so.
+        if (is_sink(n.high) || label_of(n.high) > amgr.level_excl()) {
+          return substitute_rec_skipto { create_sink_ptr(false) };
+        }
+      }
+      return substitute_rec_output { create_node(n.uid, create_sink_ptr(false), n.high) };
+    }
+
+  public:
+    static inline zdd sink(bool sink_val,
+                           zdd_subset_label_act<substitute_act::FIX_TRUE>& amgr)
+    {
+      return zdd_sink(!amgr.has_level_excl() && sink_val);
+    }
+  };
+
+  __zdd zdd_onset(const zdd &dd, const label_file &l)
+  {
+    if (l.size() == 0 || is_sink(dd, is_false)) { return dd; }
+    if (is_sink(dd, is_true) || disjoint_labels<label_file, label_stream<>>(l, dd)) {
+      return zdd_empty();
+    }
+
+    zdd_subset_label_act<substitute_act::FIX_TRUE> amgr(l);
+    return substitute<zdd_onset_policy<zdd_subset_label_act<substitute_act::FIX_TRUE>>>(dd, amgr);
   }
 }
