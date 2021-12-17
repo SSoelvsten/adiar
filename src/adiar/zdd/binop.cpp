@@ -1,7 +1,6 @@
 #include "binop.h"
 
 #include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
 #include <adiar/tuple.h>
 
 #include <adiar/internal/product_construction.h>
