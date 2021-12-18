@@ -80,7 +80,7 @@ Construct the ZDD for _{ s ∈ A ∪ B | op(s ∈ A, s ∈ B) }_, where *op* is 
 operator whether to include a set _s_ based on whether they are included in _A_
 and/or _B_. Some operators are also provided with an alias function:
 
-- `zdd zdd_intsec(zdd A, zdd B)` (operator `|`)
+- `zdd zdd_union(zdd A, zdd B)` (operator `|`)
   
   Same as `zdd_binop(A, B, or_op)` and computes _A ∪ B_.
 
