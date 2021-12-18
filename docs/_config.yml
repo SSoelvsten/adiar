@@ -7,9 +7,6 @@ description: An External Memory Binary Decision Diagram Library
 plugins:
   - jekyll-seo-tag
 
-# Prior theme choice
-# theme: jekyll-theme-slate
-
 ################################################################################
 #                                 Just-the-docs
 ################################################################################
