@@ -16,7 +16,11 @@ namespace adiar
   class zdd_subset_label_act
   {
     label_stream<> ls;
-    label_t l;
+
+    label_t l_incl;
+    label_t l_excl;
+
+    bool has_excl = false;
 
     // We will rememeber how far the algorithm in substitution.h has got
     label_t alg_level = 0;
@@ -26,7 +30,7 @@ namespace adiar
 
     zdd_subset_label_act(const action_t &lf) : ls(lf)
     {
-      l = ls.pull();
+      l_incl = ls.pull();
     }
 
   private:
@@ -36,36 +40,46 @@ namespace adiar
 
       alg_level = new_level;
 
-      while (l < new_level && ls.can_pull()) {
-        l = ls.pull();
+      if (l_incl < new_level && has_excl) {
+        l_incl = l_excl;
+        has_excl = false;
+      }
+
+      while (l_incl < new_level && ls.can_pull()) {
+        l_incl = ls.pull();
       }
     }
 
   public:
     substitute_act action_for_level(const label_t new_level) {
       forward_to_level(new_level);
-      return l == new_level ? FIX_VALUE : substitute_act::KEEP;
+      return l_incl == new_level ? FIX_VALUE : substitute_act::KEEP;
     }
 
   public:
     bool has_level_incl() {
-      return alg_level <= l || ls.can_pull();
+      return alg_level <= l_incl || ls.can_pull();
     }
 
     label_t level_incl()
     {
-      return l;
+      return l_incl;
     }
 
     bool has_level_excl() {
-      return alg_level < l || (/*alg_level == l &&*/ ls.can_pull());
+      return alg_level < l_incl || has_excl || ls.can_pull();
     }
 
     label_t level_excl()
     {
-      // similar to forward_to_level, but with a '<=' to make it skip past 'level'
-      while (l <= alg_level && ls.can_pull()) { l = ls.pull(); }
-      return l;
+      if (alg_level < l_incl) { return l_incl; }
+
+      if (!has_excl) {
+        l_excl = ls.pull();
+        has_excl = true;
+      }
+
+      return l_excl;
     }
   };
 
@@ -112,9 +126,6 @@ namespace adiar
     static substitute_rec keep_node(const node_t &n, zdd_subset_act &amgr)
     {
       if (amgr.has_level_incl()) {
-        adiar_debug(amgr.level_incl() != label_of(n),
-                    "keep_node is only called in a context where the action is KEEP");
-
         // If recursion goes past the intended level, then it is replaced with
         // the false sink.
         const ptr_t low  = is_sink(n.low) || label_of(n.low) > amgr.level_incl()
@@ -139,12 +150,6 @@ namespace adiar
     static substitute_rec fix_true(const node_t &n, zdd_subset_act &amgr)
     {
       if (amgr.has_level_excl()) {
-        // Since substitution.h already knows what action to take for the rest
-        // of this level, then it is fine for us to already forward to the next
-        // and ask for when the next level is.
-        //
-        // TODO: maybe we should have it support a lookahead of two? This is
-        // quite a processing heavy way of doing so.
         if (is_sink(n.high) || label_of(n.high) > amgr.level_excl()) {
           return substitute_rec_skipto { create_sink_ptr(false) };
         }
