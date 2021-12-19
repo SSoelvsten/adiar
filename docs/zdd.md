@@ -92,6 +92,18 @@ and/or _B_. Some operators are also provided with an alias function:
   
   Same as `zdd_binop(A, B, diff_op)` and computes _A \ B_.
 
+### `zdd zdd_offset(zdd A, label_file is)`
+{: .no_toc }
+
+Computes the ZDD for _{ a ∈ A | ∀i ∈ is : i ∉ a }_, i.e. where the variables _i_
+in _is_ are set to 0.
+
+### `zdd zdd_onset(zdd A, label_file is)`
+{: .no_toc }
+
+Computes the ZDD for _{ a ∈ A | ∀i ∈ is : i ∈ a }_, i.e. where the variables _i_
+in _is_ are set to 1.
+
 ### `zdd zdd_project(zdd A, label_file is)`
 {: .no_toc }
 
