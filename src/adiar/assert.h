@@ -54,15 +54,10 @@ namespace adiar
       }
   }
 
-#   define adiar_unreachable()                  \
-  __adiar_unreachable(__FILE__, __LINE__)
-
-  inline void __adiar_unreachable(const char* file, int line)
-  {
-    std::cerr << "Reached \"unreachable\" statement\n"
-              << "Source:\t\t" << file << ", line " << line << "\n";
-    abort();
-  }
+#   define adiar_unreachable()                                                  \
+  std::cerr << "Reached \"unreachable\" statement\n"                            \
+            << "Source:\t\t" << __FILE__ << ", line " << __LINE__ << std::endl; \
+  __builtin_unreachable()
 
   // LCOV_EXCL_STOP
 }
