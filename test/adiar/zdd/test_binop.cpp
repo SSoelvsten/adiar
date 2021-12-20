@@ -1,5 +1,5 @@
 go_bandit([]() {
-    describe("ZDD: Set Operations", [&]() {
+    describe("ZDD: Binary operators on set", [&]() {
         // == CREATE SINK-ONLY BDD FOR UNIT TESTS ==
         //                  START
         node_file zdd_F;
@@ -33,13 +33,25 @@ go_bandit([]() {
         // == CREATE SINGLE VARIABLE FOR UNIT TESTS ==
 
         describe("zdd_union", [&]() {
-            it("should shortcut on same file", [&]() {
-                __zdd out_1 = zdd_union(zdd_x0, zdd_x0);
-                AssertThat(out_1.get<node_file>()._file_ptr, Is().EqualTo(zdd_x0._file_ptr));
+            it("should shortcut Ø on same file", [&]() {
+              __zdd out = zdd_union(zdd_F, zdd_F);
+              AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_F._file_ptr));
+            });
 
-                __zdd out_2 = zdd_union(zdd_x1, zdd_x1);
-                AssertThat(out_2.get<node_file>()._file_ptr, Is().EqualTo(zdd_x1._file_ptr));
-               });
+            it("should shortcut { Ø } on same file", [&]() {
+              __zdd out = zdd_union(zdd_T, zdd_T);
+              AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_T._file_ptr));
+            });
+
+            it("should shortcut { {0} } on same file", [&]() {
+              __zdd out = zdd_union(zdd_x0, zdd_x0);
+              AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_x0._file_ptr));
+            });
+
+            it("should shortcut { {1} } on same file", [&]() {
+              __zdd out = zdd_union(zdd_x1, zdd_x1);
+              AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_x1._file_ptr));
+            });
 
             it("computes Ø U { {Ø} }", [&]() {
                 __zdd out = zdd_union(zdd_F, zdd_T);
