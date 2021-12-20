@@ -94,10 +94,9 @@ namespace adiar
     static substitute_rec fix_false(const node_t &n, zdd_subset_act &/*amgr*/)
     { return substitute_rec_skipto { n.low }; }
 
-    static substitute_rec fix_true(const node_t &n, zdd_subset_act &amgr)
+    static substitute_rec fix_true(const node_t &/*n*/, zdd_subset_act &/*amgr*/)
     {
-      adiar_debug(false, "should never be called");
-      return keep_node(n, amgr);
+      adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
   public:
@@ -141,10 +140,9 @@ namespace adiar
       return substitute_rec_output { n };
     }
 
-    static substitute_rec fix_false(const node_t &n, zdd_subset_act &amgr)
+    static substitute_rec fix_false(const node_t &/*n*/, zdd_subset_act &/*amgr*/)
     {
-      adiar_debug(false, "should never be called");
-      return keep_node(n, amgr);
+      adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
     static substitute_rec fix_true(const node_t &n, zdd_subset_act &amgr)
