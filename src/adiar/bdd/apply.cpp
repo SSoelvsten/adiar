@@ -65,7 +65,7 @@ namespace adiar
           return bdd_not(bdd_1);
         }
       }
-      adiar_unreachable();
+      adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
   private:
