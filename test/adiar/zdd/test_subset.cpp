@@ -592,149 +592,318 @@ go_bandit([]() {
           AssertThat(meta_arcs.can_pull(), Is().False());
         });
 
+      it("should return { { 0 } } when given { Ø, { 0 } } for (0)", [&]() {
+        node_file in;
+
+        const node_t n = create_node(0, MAX_ID, sink_T, sink_T);
+
+        { // Garbage collect writer to free write-lock
+          node_writer w(in);
+          w << n;
+        }
+
+        label_file labels;
+
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 0;
+        }
+
+        __zdd out = zdd_onset(in, labels);
+
+        node_arc_test_stream node_arcs(out);
+        AssertThat(node_arcs.can_pull(), Is().False());
+
+        sink_arc_test_stream sink_arcs(out);
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n.uid, sink_F }));
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n.uid), sink_T }));
+
+        AssertThat(sink_arcs.can_pull(), Is().False());
+
+        level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
+
+      it("should return Ø when given { Ø, { 0 } } for (0,1)", [&]() {
+        node_file in;
+
+        { // Garbage collect writer to free write-lock
+          node_writer w(in);
+          w << create_node(0, MAX_ID, sink_T, sink_T);
+        }
+
+        label_file labels;
+
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 0 << 1;
+        }
+
+        __zdd out = zdd_onset(in, labels);
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t, NODE_FILE_COUNT> meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
+
+      it("should return { Ø } in [2] for (0,2,3)", [&]() {
+        // One would normally expect this to return { Ø }, but for zdd_onset
+        // this is not the case!
+        label_file labels;
+
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 0 << 2 << 3;
+        }
+
+        __zdd out = zdd_onset(zdd_2, labels);
+
+        node_arc_test_stream node_arcs(out);
+        AssertThat(node_arcs.can_pull(), Is().True());
+
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_1.uid), n2_3.uid }));
+
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), n2_4.uid }));
+
+        AssertThat(node_arcs.can_pull(), Is().False());
+
+        sink_arc_test_stream sink_arcs(out);
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_1.uid, sink_F }));
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_F }));
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_4.uid, sink_F }));
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_4.uid), sink_T }));
+
+        AssertThat(sink_arcs.can_pull(), Is().False());
+
+        level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
+
+      it("should return Ø in [2] for (0,2,3,4)", [&]() {
+        // Similar to above, while it inevitably will be Ø, the top-down nature
+        // of zdd_onset cannot know this before having output nodes. The later
+        // Reduce will put it to this.
+        //
+        // Yet, it can still skip the bottom-most node (4) as it has not yet
+        // output in-going arcs.
+
+        label_file labels;
+
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 0 << 2 << 3 << 4;
+        }
+
+        __zdd out = zdd_onset(zdd_2, labels);
+
+        node_arc_test_stream node_arcs(out);
+        AssertThat(node_arcs.can_pull(), Is().True());
+
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_1.uid), n2_3.uid }));
+
+        AssertThat(node_arcs.can_pull(), Is().False());
+
+        sink_arc_test_stream sink_arcs(out);
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_1.uid, sink_F }));
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_F }));
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), sink_F }));
+
+        AssertThat(sink_arcs.can_pull(), Is().False());
+
+        level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
+
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
+
       it("should keep root of [1] but shortcut its low for (0)", [&]() {
-          label_file labels;
+        label_file labels;
 
-          { // Garbage collect writer to free write-lock
-            label_writer lw(labels);
-            lw << 0;
-          }
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 0;
+        }
 
-          __zdd out = zdd_onset(zdd_1, labels);
+        __zdd out = zdd_onset(zdd_1, labels);
 
-          node_arc_test_stream node_arcs(out);
-          AssertThat(node_arcs.can_pull(), Is().True());
+        node_arc_test_stream node_arcs(out);
+        AssertThat(node_arcs.can_pull(), Is().True());
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_2.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_2.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_2.uid, n1_4.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_2.uid, n1_4.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_3.uid, n1_4.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_3.uid, n1_4.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_5.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_5.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_5.uid, n1_6.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_5.uid, n1_6.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().False());
+        AssertThat(node_arcs.can_pull(), Is().False());
 
-          sink_arc_test_stream sink_arcs(out);
+        sink_arc_test_stream sink_arcs(out);
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_1.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_1.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_4.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_4.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_5.uid), sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_5.uid), sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(sink_arcs.can_pull(), Is().False());
 
-          level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
+        level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,2u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,2u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(4,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(4,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().False());
-        });
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
 
       it("should skip 'dead' nodes of [1] for (1,2)", [&]() {
-          label_file labels;
+        label_file labels;
 
-          { // Garbage collect writer to free write-lock
-            label_writer lw(labels);
-            lw << 1 << 2;
-          }
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 1 << 2;
+        }
 
-          __zdd out = zdd_onset(zdd_1, labels);
+        __zdd out = zdd_onset(zdd_1, labels);
 
-          node_arc_test_stream node_arcs(out);
-          AssertThat(node_arcs.can_pull(), Is().True());
+        node_arc_test_stream node_arcs(out);
+        AssertThat(node_arcs.can_pull(), Is().True());
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_1.uid, n1_2.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_1.uid, n1_2.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_2.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_2.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_5.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_5.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_5.uid, n1_6.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_5.uid, n1_6.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().False());
+        AssertThat(node_arcs.can_pull(), Is().False());
 
-          sink_arc_test_stream sink_arcs(out);
+        sink_arc_test_stream sink_arcs(out);
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_2.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_2.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_3.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_3.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_5.uid), sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_5.uid), sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(sink_arcs.can_pull(), Is().False());
 
-          level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
+        level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(4,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(4,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().False());
-        });
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
 
       it("should return Ø in { Ø, {0}, {0,2} } for (1)", [&]() {
           /*
@@ -746,32 +915,32 @@ go_bandit([]() {
              / \
              T T
           */
-          node_file in;
+        node_file in;
 
-          { // Garbage collect writer to free write-lock
-            node_writer w(in);
-            w << create_node(2, MAX_ID, sink_T, sink_T)
-              << create_node(0, MAX_ID, sink_T, create_node_ptr(2, MAX_ID));
-          }
+        { // Garbage collect writer to free write-lock
+          node_writer w(in);
+          w << create_node(2, MAX_ID, sink_T, sink_T)
+            << create_node(0, MAX_ID, sink_T, create_node_ptr(2, MAX_ID));
+        }
 
-          label_file labels;
+        label_file labels;
 
-          { // Garbage collect writer to free write-lock
-            label_writer lw(labels);
-            lw << 1;
-          }
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 1;
+        }
 
-          __zdd out = zdd_onset(in, labels);
+        __zdd out = zdd_onset(in, labels);
 
-          node_test_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
-          AssertThat(out_nodes.can_pull(), Is().False());
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream<node_t, NODE_FILE_COUNT> meta_arcs(out);
-          AssertThat(meta_arcs.can_pull(), Is().False());
-        });
+        level_info_test_stream<node_t, NODE_FILE_COUNT> meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
 
       it("should cut edge going across onset label in { {2}, {0,1}, {0,2}, {0,1,2} } for (1)", [&]() {
           /*
@@ -783,69 +952,69 @@ go_bandit([]() {
               / \
               F T
           */
-          node_file in;
+        node_file in;
 
-          const node_t n3 = create_node(2, MAX_ID, sink_F, sink_T);
-          const node_t n2 = create_node(1, MAX_ID, n3.uid, n3.uid);
-          const node_t n1 = create_node(0, MAX_ID, n3.uid, n2.uid);
+        const node_t n3 = create_node(2, MAX_ID, sink_F, sink_T);
+        const node_t n2 = create_node(1, MAX_ID, n3.uid, n3.uid);
+        const node_t n1 = create_node(0, MAX_ID, n3.uid, n2.uid);
 
-          { // Garbage collect writer to free write-lock
-            node_writer w(in);
-            w << n3 << n2 << n1;
-          }
+        { // Garbage collect writer to free write-lock
+          node_writer w(in);
+          w << n3 << n2 << n1;
+        }
 
-          label_file labels;
+        label_file labels;
 
-          { // Garbage collect writer to free write-lock
-            label_writer lw(labels);
-            lw << 1;
-          }
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 1;
+        }
 
-          __zdd out = zdd_onset(in, labels);
+        __zdd out = zdd_onset(in, labels);
 
-          node_arc_test_stream node_arcs(out);
-          AssertThat(node_arcs.can_pull(), Is().True());
+        node_arc_test_stream node_arcs(out);
+        AssertThat(node_arcs.can_pull(), Is().True());
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid), n2.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid), n2.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2.uid), n3.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2.uid), n3.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().False());
+        AssertThat(node_arcs.can_pull(), Is().False());
 
-          sink_arc_test_stream sink_arcs(out);
+        sink_arc_test_stream sink_arcs(out);
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n3.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n3.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n3.uid), sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n3.uid), sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(sink_arcs.can_pull(), Is().False());
 
-          level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
+        level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().False());
-        });
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
 
       it("should cut edge and ignore 'dead' node in { {2}, {0,1}, {0,2} } for (1)", [&]() {
-          /*
+        /*
                1       ---- x0
               / \
               |  2     ---- x1
@@ -853,238 +1022,238 @@ go_bandit([]() {
                3  T    ---- x2
               / \
               F T
-          */
-          node_file in;
+        */
+        node_file in;
 
-          const node_t n3 = create_node(2, MAX_ID, sink_F, sink_T);
-          const node_t n2 = create_node(1, MAX_ID, n3.uid, sink_T);
-          const node_t n1 = create_node(0, MAX_ID, n3.uid, n2.uid);
+        const node_t n3 = create_node(2, MAX_ID, sink_F, sink_T);
+        const node_t n2 = create_node(1, MAX_ID, n3.uid, sink_T);
+        const node_t n1 = create_node(0, MAX_ID, n3.uid, n2.uid);
 
-          { // Garbage collect writer to free write-lock
-            node_writer w(in);
-            w << n3 << n2 << n1;
-          }
+        { // Garbage collect writer to free write-lock
+          node_writer w(in);
+          w << n3 << n2 << n1;
+        }
 
-          label_file labels;
+        label_file labels;
 
-          { // Garbage collect writer to free write-lock
-            label_writer lw(labels);
-            lw << 1;
-          }
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 1;
+        }
 
-          __zdd out = zdd_onset(in, labels);
+        __zdd out = zdd_onset(in, labels);
 
-          node_arc_test_stream node_arcs(out);
-          AssertThat(node_arcs.can_pull(), Is().True());
+        node_arc_test_stream node_arcs(out);
+        AssertThat(node_arcs.can_pull(), Is().True());
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid), n2.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid), n2.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().False());
+        AssertThat(node_arcs.can_pull(), Is().False());
 
-          sink_arc_test_stream sink_arcs(out);
+        sink_arc_test_stream sink_arcs(out);
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2.uid), sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2.uid), sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(sink_arcs.can_pull(), Is().False());
 
-          level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
+        level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().False());
-        });
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
 
       it("should falsify early sinks in [2] for (3)", [&]() {
-          label_file labels;
+        label_file labels;
 
-          { // Garbage collect writer to free write-lock
-            label_writer lw(labels);
-            lw << 3;
-          }
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 3;
+        }
 
-          __zdd out = zdd_onset(zdd_2, labels);
+        __zdd out = zdd_onset(zdd_2, labels);
 
-          node_arc_test_stream node_arcs(out);
-          AssertThat(node_arcs.can_pull(), Is().True());
+        node_arc_test_stream node_arcs(out);
+        AssertThat(node_arcs.can_pull(), Is().True());
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n2_1.uid, n2_2.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { n2_1.uid, n2_2.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_1.uid), n2_3.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_1.uid), n2_3.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_2.uid), n2_3.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_2.uid), n2_3.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), n2_4.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), n2_4.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().False());
+        AssertThat(node_arcs.can_pull(), Is().False());
 
-          sink_arc_test_stream sink_arcs(out);
+        sink_arc_test_stream sink_arcs(out);
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_2.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_2.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_4.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_4.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_4.uid), sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_4.uid), sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(sink_arcs.can_pull(), Is().False());
 
-          level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
+        level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().False());
-        });
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
 
       it("should skip root in [2] due to cut on high edge for (1,3)", [&]() {
-          label_file labels;
+        label_file labels;
 
-          { // Garbage collect writer to free write-lock
-            label_writer lw(labels);
-            lw << 1;
-          }
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 1;
+        }
 
-          __zdd out = zdd_onset(zdd_2, labels);
+        __zdd out = zdd_onset(zdd_2, labels);
 
-          node_arc_test_stream node_arcs(out);
-          AssertThat(node_arcs.can_pull(), Is().True());
+        node_arc_test_stream node_arcs(out);
+        AssertThat(node_arcs.can_pull(), Is().True());
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_2.uid), n2_3.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_2.uid), n2_3.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), n2_4.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), n2_4.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().False());
+        AssertThat(node_arcs.can_pull(), Is().False());
 
-          sink_arc_test_stream sink_arcs(out);
+        sink_arc_test_stream sink_arcs(out);
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_2.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_2.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_4.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_4.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_4.uid), sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_4.uid), sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(sink_arcs.can_pull(), Is().False());
 
-          level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
+        level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().False());
-        });
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
 
       it("should falsify early sink and bridge over removed node in [1] for (4)", [&]() {
-          label_file labels;
+        label_file labels;
 
-          { // Garbage collect writer to free write-lock
-            label_writer lw(labels);
-            lw << 4;
-          }
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 4;
+        }
 
-          __zdd out = zdd_onset(zdd_1, labels);
+        __zdd out = zdd_onset(zdd_1, labels);
 
-          node_arc_test_stream node_arcs(out);
-          AssertThat(node_arcs.can_pull(), Is().True());
+        node_arc_test_stream node_arcs(out);
+        AssertThat(node_arcs.can_pull(), Is().True());
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_1.uid, n1_2.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_1.uid, n1_2.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_2.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_2.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_2.uid, n1_4.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_2.uid, n1_4.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_3.uid, n1_4.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_3.uid, n1_4.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().True());
-          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_6.uid }));
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_6.uid }));
 
-          AssertThat(node_arcs.can_pull(), Is().False());
+        AssertThat(node_arcs.can_pull(), Is().False());
 
-          sink_arc_test_stream sink_arcs(out);
+        sink_arc_test_stream sink_arcs(out);
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_4.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_4.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_F }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_F }));
 
-          AssertThat(sink_arcs.can_pull(), Is().True());
-          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
 
-          AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(sink_arcs.can_pull(), Is().False());
 
-          level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
+        level_info_test_stream<arc_t, ARC_FILE_COUNT> meta_arcs(out);
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(0,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(1,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(2,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(3,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().True());
-          AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(4,1u)));
+        AssertThat(meta_arcs.can_pull(), Is().True());
+        AssertThat(meta_arcs.pull(), Is().EqualTo(create_meta(4,1u)));
 
-          AssertThat(meta_arcs.can_pull(), Is().False());
-        });
+        AssertThat(meta_arcs.can_pull(), Is().False());
+      });
 
       it("should cut high edge on restricted node, if it goes past the next label", [&]() {
         /*
@@ -1097,7 +1266,7 @@ go_bandit([]() {
                      5  6    ---- x3
                     / \/ \
                     F T  T
-         */
+        */
         node_file in;
 
         node_t n6 = create_node(3, MAX_ID,   sink_T, sink_T);
