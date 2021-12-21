@@ -306,7 +306,7 @@ namespace adiar {
 
   typedef level_info level_info_t;
 
-  level_info_t create_meta(label_t label, size_t size);
+  level_info_t create_level_info(label_t label, size_t size);
 
   label_t label_of(const level_info_t &m);
   size_t size_of(const level_info_t &m);

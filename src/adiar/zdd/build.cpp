@@ -33,7 +33,7 @@ namespace adiar
     nw.unsafe_push(create_node(label, MAX_ID,
                                create_sink_ptr(false),
                                create_sink_ptr(true)));
-    nw.unsafe_push(create_meta(label,1u));
+    nw.unsafe_push(create_level_info(label,1u));
     return nf;
   }
 

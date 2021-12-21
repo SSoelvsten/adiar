@@ -95,8 +95,8 @@ go_bandit([]() {
               aw.unsafe_push_sink(arc {create_node_ptr(1,0), create_sink_ptr(true)});
               aw.unsafe_push_sink(arc {flag(create_node_ptr(1,0)), create_sink_ptr(true)});
 
-              aw.unsafe_push(create_meta(0,1u));
-              aw.unsafe_push(create_meta(1,1u));
+              aw.unsafe_push(create_level_info(0,1u));
+              aw.unsafe_push(create_level_info(1,1u));
             }
 
             it("should copy-construct values from arc_file", [&]() {

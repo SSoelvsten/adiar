@@ -162,7 +162,7 @@ namespace adiar
 
       aw.unsafe_push_sink({ out_uid, create_sink_ptr(false) });
       aw.unsafe_push_node({ flag(out_uid), create_node_uid(next_label, 0) });
-      aw.unsafe_push(create_meta(out_label, 1));
+      aw.unsafe_push(create_level_info(out_label, 1));
     }
 
     out_label = label_of(n);
@@ -198,7 +198,7 @@ namespace adiar
 
     // Process nodes of ZDD in topological order
     while (change_pq_1.has_next_level() || !change_pq_2.empty()) {
-      if (out_id > 0) { aw.unsafe_push(create_meta(out_label, out_id)); }
+      if (out_id > 0) { aw.unsafe_push(create_level_info(out_label, out_id)); }
 
       if (change_pq_1.has_next_level()) {
         if (!change_pq_2.empty()) {
@@ -285,7 +285,7 @@ namespace adiar
 
     // Push the level of the very last iteration
     if (out_id > 0) {
-      aw.unsafe_push(create_meta(out_label, out_id));
+      aw.unsafe_push(create_level_info(out_label, out_id));
     }
 
     return out_arcs;

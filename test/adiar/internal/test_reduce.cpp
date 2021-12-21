@@ -54,10 +54,10 @@ go_bandit([]() {
             level_info_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -97,10 +97,10 @@ go_bandit([]() {
             level_info_test_stream<node_t, 1> out_meta(out);
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
             AssertThat(out_meta.can_pull(), Is().True());
-            AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+            AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
             AssertThat(out_meta.can_pull(), Is().False());
           });
@@ -137,9 +137,9 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n4,sink_F });
                   aw.unsafe_push_sink({ flag(n4),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
-                  aw.unsafe_push(create_meta(2,2u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
+                  aw.unsafe_push(create_level_info(2,2u));
                 }
 
                 // Reduce it
@@ -174,13 +174,13 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -221,9 +221,9 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n5, sink_F });
                   aw.unsafe_push_sink({ flag(n5), sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(2,2u));
-                  aw.unsafe_push(create_meta(3,2u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(2,2u));
+                  aw.unsafe_push(create_level_info(3,2u));
                 }
 
                 // Reduce it
@@ -258,13 +258,13 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(3,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,2u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -308,10 +308,10 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n6,sink_T });
                   aw.unsafe_push_sink({ flag(n6),sink_F });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
-                  aw.unsafe_push(create_meta(2,2u));
-                  aw.unsafe_push(create_meta(3,2u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
+                  aw.unsafe_push(create_level_info(2,2u));
+                  aw.unsafe_push(create_level_info(3,2u));
                 }
 
                 // Reduce it
@@ -354,16 +354,16 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(3,2u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,2u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -404,10 +404,10 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n5,sink_F });
                   aw.unsafe_push_sink({ flag(n5),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
-                  aw.unsafe_push(create_meta(2,2u));
-                  aw.unsafe_push(create_meta(3,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
+                  aw.unsafe_push(create_level_info(2,2u));
+                  aw.unsafe_push(create_level_info(3,1u));
                 }
 
                 // Reduce it
@@ -445,16 +445,16 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(3,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -502,10 +502,10 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n7,sink_F });
                   aw.unsafe_push_sink({ flag(n7),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,2u));
-                  aw.unsafe_push(create_meta(2,3u));
-                  aw.unsafe_push(create_meta(3,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,2u));
+                  aw.unsafe_push(create_level_info(2,3u));
+                  aw.unsafe_push(create_level_info(3,1u));
                 }
 
 
@@ -558,16 +558,16 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(3,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,2u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,2u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,2u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -609,9 +609,9 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n6,sink_T });
                   aw.unsafe_push_sink({ flag(n6),sink_F });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,2u));
-                  aw.unsafe_push(create_meta(2,3u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,2u));
+                  aw.unsafe_push(create_level_info(2,3u));
                 }
 
                 // Reduce it
@@ -647,13 +647,13 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,2u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -695,9 +695,9 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n6,sink_F });
                   aw.unsafe_push_sink({ flag(n6),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,2u));
-                  aw.unsafe_push(create_meta(2,3u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,2u));
+                  aw.unsafe_push(create_level_info(2,3u));
                 }
 
                 // Reduce it
@@ -733,13 +733,13 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,2u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -777,9 +777,9 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n4,sink_T });
                   aw.unsafe_push_sink({ flag(n4),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
-                  aw.unsafe_push(create_meta(2,2u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
+                  aw.unsafe_push(create_level_info(2,2u));
                 }
 
                 // Reduce it
@@ -814,13 +814,13 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -861,10 +861,10 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n5,sink_F });
                   aw.unsafe_push_sink({ flag(n5),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
-                  aw.unsafe_push(create_meta(2,2u));
-                  aw.unsafe_push(create_meta(3,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
+                  aw.unsafe_push(create_level_info(2,2u));
+                  aw.unsafe_push(create_level_info(3,1u));
                 }
 
                 // Reduce it
@@ -901,16 +901,16 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(3,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -946,9 +946,9 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n4,sink_F });
                   aw.unsafe_push_sink({ flag(n4),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
-                  aw.unsafe_push(create_meta(2,2u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
+                  aw.unsafe_push(create_level_info(2,2u));
                 }
 
                 // Reduce it
@@ -976,10 +976,10 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -1015,9 +1015,9 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n4,sink_F });
                   aw.unsafe_push_sink({ flag(n4),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
-                  aw.unsafe_push(create_meta(2,2u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
+                  aw.unsafe_push(create_level_info(2,2u));
                 }
 
                 // Reduce it
@@ -1037,7 +1037,7 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -1059,7 +1059,7 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n1,sink_F });
                   aw.unsafe_push_sink({ flag(n1),sink_F });
 
-                  aw.unsafe_push(create_meta(0,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
                 }
 
                 // Reduce it
@@ -1103,8 +1103,8 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n2,sink_T });
                   aw.unsafe_push_sink({ flag(n2),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
                 }
 
                 // Reduce it
@@ -1140,7 +1140,7 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n1,sink_F });
                   aw.unsafe_push_sink({ flag(n1),sink_T });
 
-                  aw.unsafe_push(create_meta(0u,1u));
+                  aw.unsafe_push(create_level_info(0u,1u));
                 }
 
                 // Reduce it
@@ -1158,7 +1158,7 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0u,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0u,1u)));
                 AssertThat(out_meta.can_pull(), Is().False());
               });
           });
@@ -1187,8 +1187,8 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n2,sink_T });
                   aw.unsafe_push_sink({ flag(n2),sink_F });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
                 }
 
                 // Reduce it
@@ -1207,7 +1207,7 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -1248,10 +1248,10 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n5,sink_F });
                   aw.unsafe_push_sink({ flag(n5),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
-                  aw.unsafe_push(create_meta(2,2u));
-                  aw.unsafe_push(create_meta(3,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
+                  aw.unsafe_push(create_level_info(2,2u));
+                  aw.unsafe_push(create_level_info(3,1u));
                 }
 
                 // Reduce it
@@ -1288,16 +1288,16 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(3,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -1333,9 +1333,9 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n4,sink_T });
                   aw.unsafe_push_sink({ flag(n4),sink_F });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,2u));
-                  aw.unsafe_push(create_meta(2,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,2u));
+                  aw.unsafe_push(create_level_info(2,1u));
                 }
 
                 // Reduce it
@@ -1363,10 +1363,10 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -1388,7 +1388,7 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n1,sink_T });
                   aw.unsafe_push_sink({ flag(n1),sink_F });
 
-                  aw.unsafe_push(create_meta(0,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
                 }
 
                 // Reduce it
@@ -1432,8 +1432,8 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n2,sink_F });
                   aw.unsafe_push_sink({ flag(n2),sink_T });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
                 }
 
                 // Reduce it
@@ -1453,7 +1453,7 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(out_meta.can_pull(), Is().False());
               });
@@ -1481,8 +1481,8 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n2,sink_F });
                   aw.unsafe_push_sink({ flag(n2),sink_F });
 
-                  aw.unsafe_push(create_meta(0,1u));
-                  aw.unsafe_push(create_meta(1,1u));
+                  aw.unsafe_push(create_level_info(0,1u));
+                  aw.unsafe_push(create_level_info(1,1u));
                 }
 
                 // Reduce it
@@ -1518,7 +1518,7 @@ go_bandit([]() {
                   aw.unsafe_push_sink({ n1,sink_F });
                   aw.unsafe_push_sink({ flag(n1),sink_T });
 
-                  aw.unsafe_push(create_meta(42,1u));
+                  aw.unsafe_push(create_level_info(42,1u));
                 }
 
                 // Reduce it
@@ -1536,7 +1536,7 @@ go_bandit([]() {
                 level_info_test_stream<node_t, 1> out_meta(out);
 
                 AssertThat(out_meta.can_pull(), Is().True());
-                AssertThat(out_meta.pull(), Is().EqualTo(create_meta(42u,1u)));
+                AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(42u,1u)));
                 AssertThat(out_meta.can_pull(), Is().False());
               });
           });

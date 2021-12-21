@@ -239,7 +239,7 @@ namespace adiar
     // Process all nodes in topological order of both BDDs
     while (ite_pq_1.can_pull() || ite_pq_1.has_next_level() || !ite_pq_2.empty() || !ite_pq_3.empty()) {
       if (!ite_pq_1.can_pull() && ite_pq_2.empty() && ite_pq_3.empty()) {
-        aw.unsafe_push(create_meta(out_label, out_id));
+        aw.unsafe_push(create_level_info(out_label, out_id));
 
         ite_pq_1.setup_next_level();
         out_label = ite_pq_1.current_level();
@@ -448,7 +448,7 @@ namespace adiar
     }
 
     // Push the level of the very last iteration
-    aw.unsafe_push(create_meta(out_label, out_id));
+    aw.unsafe_push(create_level_info(out_label, out_id));
 
     return out_arcs;
   }

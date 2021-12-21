@@ -24,7 +24,7 @@ namespace adiar
     node_file nf;
     node_writer nw(nf);
     nw.unsafe_push(create_node(label, 0, create_sink_ptr(false), create_sink_ptr(true)));
-    nw.unsafe_push(create_meta(label,1u));
+    nw.unsafe_push(create_level_info(label,1u));
     return nf;
   }
 
@@ -60,7 +60,7 @@ namespace adiar
         }
 
       nw.unsafe_push(next_node);
-      nw.unsafe_push(create_meta(next_label,1u));
+      nw.unsafe_push(create_level_info(next_label,1u));
     }
 
     return nf;
