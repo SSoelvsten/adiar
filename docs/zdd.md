@@ -92,6 +92,13 @@ and/or _B_. Some operators are also provided with an alias function:
   
   Same as `zdd_binop(A, B, diff_op)` and computes _A \ B_.
 
+### `zdd zdd_change(zdd A, label_file is)`
+{: .no_toc }
+
+Constructs the ZDD for _{ is Δ a | a ∈ A }_, where Δ is the symmetric difference
+between the two sets of variables _a_ and _is_. In other words, for each set in
+_A_ the value of each variable _i_ from _is_ is flipped.
+
 ### `zdd zdd_offset(zdd A, label_file is)`
 {: .no_toc }
 
