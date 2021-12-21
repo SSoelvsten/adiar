@@ -55,19 +55,19 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-# define multi_quantify_macro(bdd_var, labels, op)                             \
-  if (labels.size() == 0) { return bdd_var; }                                  \
-  label_stream<> ls(labels);                                                   \
-  while(true) {                                                                \
-    if (is_sink(bdd_var, is_any)) { return bdd_var; }                          \
-                                                                               \
-    label_t label = ls.pull();                                                 \
-    if (!ls.can_pull()) {                                                      \
-      return quantify<bdd_quantify_policy>(bdd_var, label, op);                \
-    } else {                                                                   \
-      bdd_var = quantify<bdd_quantify_policy>(bdd_var, label, op);             \
-    }                                                                          \
- }                                                                             \
+# define multi_quantify_macro(bdd_var, labels, op)                  \
+  if (labels.size() == 0) { return bdd_var; }                       \
+  label_stream<> ls(labels);                                        \
+  while(true) {                                                     \
+    if (is_sink(bdd_var, is_any)) { return bdd_var; }               \
+                                                                    \
+    label_t label = ls.pull();                                      \
+    if (!ls.can_pull()) {                                           \
+      return quantify<bdd_quantify_policy>(bdd_var, label, op);     \
+    } else {                                                        \
+      bdd_var = quantify<bdd_quantify_policy>(bdd_var, label, op);  \
+    }                                                               \
+  }                                                                 \
 
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_exists(const bdd &in_bdd, const label_t &label)

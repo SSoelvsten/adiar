@@ -57,7 +57,7 @@ namespace adiar {
     bool can_pull()
     {
       adiar_debug(_files_given == MetaStreams,
-                 "Cannot check existence of next element before being attached to all level_info streams");
+                  "Cannot check existence of next element before being attached to all level_info streams");
 
       for (size_t idx = 0u; idx < MetaStreams; idx++) {
         if (_meta_streams[idx] -> can_pull()) {
@@ -70,9 +70,9 @@ namespace adiar {
     label_t peek()
     {
       adiar_debug(_files_given == MetaStreams,
-                 "Peeking element before being attached to all expected level_info streams");
+                  "Peeking element before being attached to all expected level_info streams");
       adiar_debug(can_pull(),
-                 "Cannot peek past end of all streams");
+                  "Cannot peek past end of all streams");
 
       bool has_min_label = false;
       label_t min_label = 0u;
@@ -90,9 +90,9 @@ namespace adiar {
     label_t pull()
     {
       adiar_debug(_files_given == MetaStreams,
-                 "Pulling element before being attached to all expected level_info streams");
+                  "Pulling element before being attached to all expected level_info streams");
       adiar_debug(can_pull(),
-                 "Cannot pull past end of all streams");
+                  "Cannot pull past end of all streams");
 
       label_t min_label = peek();
 
@@ -236,7 +236,7 @@ namespace adiar {
     : levelized_priority_queue(files, tpie::get_memory_manager().available()) { }
 
     levelized_priority_queue(const decision_diagram (& dds) [MetaStreams])
-    : levelized_priority_queue(dds, tpie::get_memory_manager().available()) { }
+      : levelized_priority_queue(dds, tpie::get_memory_manager().available()) { }
 
     ////////////////////////////////////////////////////////////////////////////
     // Private constructor methods
@@ -284,7 +284,7 @@ namespace adiar {
       label_t label = LabelExt::label_of(t);
 
       adiar_debug(_label_comparator(front_bucket_label(), label),
-                 "Element pushed prior to currently active bucket");
+                  "Element pushed prior to currently active bucket");
 
       for (size_t bucket = 1; bucket <= Buckets && bucket <= active_buckets(); bucket++) {
         size_t bucket_idx = (_front_bucket_idx + bucket) % (Buckets + 1);
@@ -336,16 +336,16 @@ namespace adiar {
       bool has_stop_label = stop_label <= MAX_LABEL;
 
       adiar_debug(!has_stop_label || _label_comparator(front_bucket_label(), stop_label),
-                 "Stop label should be past the current front bucket");
+                  "Stop label should be past the current front bucket");
 
       adiar_debug(!can_pull(),
-                 "Level should be emptied before moving on");
+                  "Level should be emptied before moving on");
 
       adiar_debug(has_next_level(),
-                 "Has no next level to go to");
+                  "Has no next level to go to");
 
       adiar_debug(_label_comparator(front_bucket_label(), back_bucket_label()),
-                 "Front bucket run ahead of back bucket");
+                  "Front bucket run ahead of back bucket");
 
       // Sort active buckets until we find one with some content
       for (size_t b = 0;
@@ -397,9 +397,9 @@ namespace adiar {
       }
 
       adiar_debug(!has_next_bucket() || _label_comparator(front_bucket_label(), back_bucket_label()),
-                 "Inconsistency in has_next_bucket predicate");
+                  "Inconsistency in has_next_bucket predicate");
       adiar_debug(has_next_bucket() || front_bucket_label() == back_bucket_label(),
-                 "Inconsistency in has_next_bucket predicate");
+                  "Inconsistency in has_next_bucket predicate");
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -527,7 +527,7 @@ namespace adiar {
     void setup_next_bucket()
     {
       adiar_debug(has_next_bucket() && _label_comparator(front_bucket_label(), back_bucket_label()),
-                 "Inconsistency in has_next_bucket predicate");
+                  "Inconsistency in has_next_bucket predicate");
 
       if (label_mgr::can_pull()) {
         label_t next_label = label_mgr::pull();
@@ -537,9 +537,9 @@ namespace adiar {
       _front_bucket_idx = (_front_bucket_idx + 1) % (Buckets + 1);
 
       adiar_debug(!has_next_bucket() || _label_comparator(front_bucket_label(), back_bucket_label()),
-                 "Inconsistency in has_next_bucket predicate");
+                  "Inconsistency in has_next_bucket predicate");
       adiar_debug(has_next_bucket() || front_bucket_label() == back_bucket_label(),
-                 "Inconsistency in has_next_bucket predicate");
+                  "Inconsistency in has_next_bucket predicate");
     }
 
     void sort_front_bucket()

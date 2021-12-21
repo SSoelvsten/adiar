@@ -135,8 +135,8 @@ namespace adiar
       } else {
         label_t label = label_of(e_low.source);
         out_writer.unsafe_push(create_node(label, MAX_ID,
-                                            e_low.target,
-                                            e_high.target));
+                                           e_low.target,
+                                           e_high.target));
 
         out_writer.unsafe_push(create_level_info(label,1u));
       }
@@ -246,7 +246,7 @@ namespace adiar
         mapping current_map = is_red1_current ? next_red1 : next_red2;
 
         adiar_invariant(!node_arcs.can_pull() || current_map.old_uid == node_arcs.peek().target,
-                       "Mapping forwarded in sync with node_arcs");
+                        "Mapping forwarded in sync with node_arcs");
 
         // Find all arcs that have sources that match the current mapping's old_uid
         while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target) {
@@ -281,7 +281,7 @@ namespace adiar
         label = reduce_pq.current_level();
       } else if (!out_writer.has_pushed()) {
         adiar_debug(!node_arcs.can_pull() && !sink_arcs.can_pull(),
-                   "Nodes are still left to be processed");
+                    "Nodes are still left to be processed");
         out_writer.unsafe_push({ next_red1.new_uid, NIL, NIL });
 
         return out_file;

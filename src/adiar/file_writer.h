@@ -136,7 +136,7 @@ namespace adiar {
 
       // Check is sorted input
       adiar_assert(!_has_latest || _comp(_latest, t),
-                  "The given element must be provided in order");
+                   "The given element must be provided in order");
 
       unsafe_push(t);
     }
@@ -304,18 +304,18 @@ namespace adiar {
 
         // Check it is topologically sorted
         adiar_assert(n.uid < _latest_node.uid,
-                    "Pushed node is required to be prior to the existing nodes");
+                     "Pushed node is required to be prior to the existing nodes");
         adiar_assert(!is_node(n.low) || label_of(n.uid) < label_of(n.low),
-                    "Low child must point to a node with a higher label");
+                     "Low child must point to a node with a higher label");
         adiar_assert(!is_node(n.high) || label_of(n.uid) < label_of(n.high),
-                    "High child must point to a node with a higher label");
+                     "High child must point to a node with a higher label");
 
         // Check it is canonically sorted
         if (_canonical) {
           if (label_of(_latest_node) == label_of(n)) {
             bool id_diff = id_of(n.uid) == id_of(_latest_node) - 1u;
             bool children_ordered = n.high < _latest_node.high
-                                    || (n.high == _latest_node.high && n.low < _latest_node.low);
+              || (n.high == _latest_node.high && n.low < _latest_node.low);
 
             _canonical = id_diff && children_ordered;
           } else {
@@ -327,7 +327,7 @@ namespace adiar {
         // Check if the level_info file has to be updated
         if (label_of(n) != label_of(_latest_node)) {
           meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
-                                                    _level_size));
+                                                          _level_size));
           _level_size = 0u;
         }
       } else {
@@ -365,7 +365,7 @@ namespace adiar {
 
       if (!is_nil(_latest_node.uid) && !is_sink(_latest_node)) {
         meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
-                                                  _level_size));
+                                                        _level_size));
         _level_size = 0u; // move to attach...
       }
       return meta_file_writer::detach();

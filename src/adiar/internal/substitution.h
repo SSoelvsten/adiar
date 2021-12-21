@@ -72,8 +72,8 @@ namespace adiar
   }
 
   inline void substitute_resolve_request(const arc_t &request,
-                                       substitute_priority_queue_t &pq,
-                                       arc_writer &aw)
+                                         substitute_priority_queue_t &pq,
+                                         arc_writer &aw)
   {
     if(is_sink(request.target)) {
       aw.unsafe_push_sink(request);

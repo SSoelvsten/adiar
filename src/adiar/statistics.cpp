@@ -10,9 +10,9 @@ namespace adiar
   stats_t adiar_stats()
   {
     return {
-             stats_equality,
-             stats_priority_queue,
-             stats_reduce,
+      stats_equality,
+      stats_priority_queue,
+      stats_reduce,
     };
   }
 

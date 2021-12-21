@@ -56,7 +56,7 @@ namespace adiar
   bdd bdd_counter(label_t min_label, label_t max_label, label_t threshold)
   {
     adiar_assert(min_label <= max_label,
-                "The given min_label should be smaller than the given max_label");
+                 "The given min_label should be smaller than the given max_label");
 
     ptr_t gt_sink = create_sink_ptr(false); // create_sink(comparator(threshold + 1, threshold));
     ptr_t eq_sink = create_sink_ptr(true);  // create_sink(comparator(threshold, threshold));

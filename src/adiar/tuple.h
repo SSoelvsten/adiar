@@ -121,8 +121,8 @@ namespace adiar {
     bool operator()(const triple &a, const triple &b)
     {
       return fst(a) < fst(b)
-         // If they are tied, sort them coordinate-wise
-         || (fst(a) == fst(b) && triple_lt()(a,b));
+        // If they are tied, sort them coordinate-wise
+        || (fst(a) == fst(b) && triple_lt()(a,b));
     }
   };
 
@@ -131,8 +131,8 @@ namespace adiar {
     bool operator()(const triple &a, const triple &b)
     {
       return snd(a) < snd(b)
-         // If they are tied, sort them coordinate-wise
-         || (snd(a) == snd(b) && triple_lt()(a,b));
+        // If they are tied, sort them coordinate-wise
+        || (snd(a) == snd(b) && triple_lt()(a,b));
     }
   };
 
@@ -141,8 +141,8 @@ namespace adiar {
     bool operator()(const triple &a, const triple &b)
     {
       return trd(a) < trd(b)
-         // If they are tied, sort them coordinate-wise
-         || (trd(a) == trd(b) && triple_lt()(a,b));
+        // If they are tied, sort them coordinate-wise
+        || (trd(a) == trd(b) && triple_lt()(a,b));
     }
   };
 }

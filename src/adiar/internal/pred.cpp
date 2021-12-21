@@ -64,7 +64,7 @@ namespace adiar
     {
       ret_value = is_sink(v1) && is_sink(v2) && value_of(v1) == value_of(v2);
 #ifdef ADIAR_STATS
-        stats_equality.slow_check.exit_on_root++;
+      stats_equality.slow_check.exit_on_root++;
 #endif
       return true;
     }
