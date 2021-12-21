@@ -13,11 +13,11 @@ namespace adiar
   // Based on the assert with messages as described here:
   // https://stackoverflow.com/a/37264642
 
-#   define adiar_assert(Expr, Msg)                     \
+#   define adiar_assert(Expr, Msg)                      \
   __adiar_assert(#Expr, Expr, __FILE__, __LINE__, Msg)
 
 #ifndef NDEBUG
-#   define adiar_debug(Expr, Msg)                      \
+#   define adiar_debug(Expr, Msg)                       \
   __adiar_assert(#Expr, Expr, __FILE__, __LINE__, Msg)
 #else
 #   define adiar_debug(Expr, Msg) ;
@@ -37,7 +37,7 @@ namespace adiar
   }
 
 #ifndef NDEBUG
-#   define adiar_invariant(Expr, Name)                  \
+#   define adiar_invariant(Expr, Name)                      \
   __adiar_invariant(#Expr, Expr, __FILE__, __LINE__, Name)
 #else
 #   define adiar_invariant(Expr, Name) ;

@@ -21,11 +21,11 @@ namespace adiar
     while (true) {
       while(label_of(current_node) > label_of(a)) {
         adiar_assert(as.can_pull(),
-                    "Given assignment insufficient to traverse BDD");
+                     "Given assignment insufficient to traverse BDD");
         a = as.pull();
       }
       adiar_assert(label_of(current_node) == label_of(a),
-                  "Missing assignment for node visited in BDD");
+                   "Missing assignment for node visited in BDD");
 
       ptr_t next_ptr = unflag(value_of(a) ? current_node.high : current_node.low);
 
