@@ -97,50 +97,50 @@ go_bandit([]() {
       });
 
       it("can pull from merge of two level_info streams, where one is empty [1]", [&]() {
-         pq_test_file f1;
-         pq_test_file f2;
+        pq_test_file f1;
+        pq_test_file f2;
 
-         { // Garbage collect the writer
-           pq_test_writer fw1(f1);
+        { // Garbage collect the writer
+          pq_test_writer fw1(f1);
 
-           fw1.unsafe_push(create_level_info(1,1u));
-         }
+          fw1.unsafe_push(create_level_info(1,1u));
+        }
 
-         pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
+        pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
 
-         AssertThat(mgr.hook_meta_stream(f1), Is().False());
-         AssertThat(mgr.hook_meta_stream(f2), Is().True());
+        AssertThat(mgr.hook_meta_stream(f1), Is().False());
+        AssertThat(mgr.hook_meta_stream(f2), Is().True());
 
-         AssertThat(mgr.can_pull(), Is().True());
-         AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(mgr.can_pull(), Is().True());
+        AssertThat(mgr.pull(), Is().EqualTo(1u));
 
-         AssertThat(mgr.can_pull(), Is().False());
+        AssertThat(mgr.can_pull(), Is().False());
       });
 
 
       it("can pull from merge of two level_info streams, where one is empty [2]", [&]() {
-         pq_test_file f1;
-         pq_test_file f2;
+        pq_test_file f1;
+        pq_test_file f2;
 
-         { // Garbage collect the writer
-           pq_test_writer fw1(f1);
+        { // Garbage collect the writer
+          pq_test_writer fw1(f1);
 
-           fw1.unsafe_push(create_level_info(1,1u));
-           fw1.unsafe_push(create_level_info(2,1u));
-         }
+          fw1.unsafe_push(create_level_info(1,1u));
+          fw1.unsafe_push(create_level_info(2,1u));
+        }
 
-         pq_label_mgr<pq_test_data, 1u, std::greater<>, 2> mgr;
+        pq_label_mgr<pq_test_data, 1u, std::greater<>, 2> mgr;
 
-         AssertThat(mgr.hook_meta_stream(f1), Is().False());
-         AssertThat(mgr.hook_meta_stream(f2), Is().True());
+        AssertThat(mgr.hook_meta_stream(f1), Is().False());
+        AssertThat(mgr.hook_meta_stream(f2), Is().True());
 
-         AssertThat(mgr.can_pull(), Is().True());
-         AssertThat(mgr.pull(), Is().EqualTo(2u));
+        AssertThat(mgr.can_pull(), Is().True());
+        AssertThat(mgr.pull(), Is().EqualTo(2u));
 
-         AssertThat(mgr.can_pull(), Is().True());
-         AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(mgr.can_pull(), Is().True());
+        AssertThat(mgr.pull(), Is().EqualTo(1u));
 
-         AssertThat(mgr.can_pull(), Is().False());
+        AssertThat(mgr.can_pull(), Is().False());
       });
 
       it("can pull from merge of two level_info streams [1]", [&]() {
@@ -209,30 +209,30 @@ go_bandit([]() {
       });
 
       it("can pull from merge of two level_info streams [2] (std::greater)", [&]() {
-         pq_test_file f1;
-         pq_test_file f2;
+        pq_test_file f1;
+        pq_test_file f2;
 
-         { // Garbage collect the writers
-           pq_test_writer fw1(f1);
+        { // Garbage collect the writers
+          pq_test_writer fw1(f1);
 
-           fw1.unsafe_push(create_level_info(2,1u));
-           pq_test_writer fw2(f2);
+          fw1.unsafe_push(create_level_info(2,1u));
+          pq_test_writer fw2(f2);
 
-           fw2.unsafe_push(create_level_info(1,1u));
-         }
+          fw2.unsafe_push(create_level_info(1,1u));
+        }
 
-         pq_label_mgr<pq_test_data, 1u, std::greater<>, 2> mgr;
+        pq_label_mgr<pq_test_data, 1u, std::greater<>, 2> mgr;
 
-         AssertThat(mgr.hook_meta_stream(f1), Is().False());
-         AssertThat(mgr.hook_meta_stream(f2), Is().True());
+        AssertThat(mgr.hook_meta_stream(f1), Is().False());
+        AssertThat(mgr.hook_meta_stream(f2), Is().True());
 
-         AssertThat(mgr.can_pull(), Is().True());
-         AssertThat(mgr.pull(), Is().EqualTo(2u));
+        AssertThat(mgr.can_pull(), Is().True());
+        AssertThat(mgr.pull(), Is().EqualTo(2u));
 
-         AssertThat(mgr.can_pull(), Is().True());
-         AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(mgr.can_pull(), Is().True());
+        AssertThat(mgr.pull(), Is().EqualTo(1u));
 
-         AssertThat(mgr.can_pull(), Is().False());
+        AssertThat(mgr.can_pull(), Is().False());
       });
 
       it("can peek merge of two level_info stream", [&]() {
@@ -301,21 +301,21 @@ go_bandit([]() {
 
     describe("with 1 Bucket", [&]() {
       it("can set up priority queue with more levels than buckets", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw(f);
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
 
-           fw.unsafe_push(create_level_info(5,2u));
-           fw.unsafe_push(create_level_info(4,3u));
-           fw.unsafe_push(create_level_info(3,2u));
-           fw.unsafe_push(create_level_info(1,1u));
-         }
+          fw.unsafe_push(create_level_info(5,2u));
+          fw.unsafe_push(create_level_info(4,3u));
+          fw.unsafe_push(create_level_info(3,2u));
+          fw.unsafe_push(create_level_info(1,1u));
+        }
 
-         test_priority_queue<1,1> pq({f});
+        test_priority_queue<1,1> pq({f});
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_level(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can set up priority queue with fewer levels than buckets", [&]() {
@@ -334,47 +334,47 @@ go_bandit([]() {
       });
 
       it("can set up priority queue with empty level_info stream", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         test_priority_queue<1,1> pq({f});
+        test_priority_queue<1,1> pq({f});
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_level(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can set up priority queue for two level_info streams, where one is empty", [&]() {
-         pq_test_file f1;
+        pq_test_file f1;
 
-         {
-           pq_test_writer fw1(f1);
+        {
+          pq_test_writer fw1(f1);
 
-           fw1.unsafe_push(create_level_info(1,1u));
-         }
+          fw1.unsafe_push(create_level_info(1,1u));
+        }
 
-         pq_test_file f2;
+        pq_test_file f2;
 
-         test_priority_queue<2,1> pq({f1,f2});
+        test_priority_queue<2,1> pq({f1,f2});
 
-         AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
       });
 
       it("can set up priority queue for two level_info streams", [&]() {
-         pq_test_file f1;
-         pq_test_file f2;
+        pq_test_file f1;
+        pq_test_file f2;
 
-         { // Garbage collect the writers early
-           pq_test_writer fw1(f1);
+        { // Garbage collect the writers early
+          pq_test_writer fw1(f1);
 
-           fw1.unsafe_push(create_level_info(1,1u));
+          fw1.unsafe_push(create_level_info(1,1u));
 
-           pq_test_writer fw2(f2);
+          pq_test_writer fw2(f2);
 
-           fw2.unsafe_push(create_level_info(2,1u));
-         }
+          fw2.unsafe_push(create_level_info(2,1u));
+        }
 
-         test_priority_queue<2,1> pq({f1,f2});
+        test_priority_queue<2,1> pq({f1,f2});
 
-         AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
       });
 
       it("can push into and pull from bucket", [&]() {
@@ -694,77 +694,77 @@ go_bandit([]() {
       });
 
       it("can pull after a peek in bucket", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw(f);
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
 
-           fw.unsafe_push(create_level_info(6,2u));
-           fw.unsafe_push(create_level_info(5,4u));
-           fw.unsafe_push(create_level_info(4,5u));
-           fw.unsafe_push(create_level_info(3,4u));
-           fw.unsafe_push(create_level_info(2,2u));
-           fw.unsafe_push(create_level_info(1,1u));
-         }
+          fw.unsafe_push(create_level_info(6,2u));
+          fw.unsafe_push(create_level_info(5,4u));
+          fw.unsafe_push(create_level_info(4,5u));
+          fw.unsafe_push(create_level_info(3,4u));
+          fw.unsafe_push(create_level_info(2,2u));
+          fw.unsafe_push(create_level_info(1,1u));
+        }
 
-         test_priority_queue<1,1> pq({f});
+        test_priority_queue<1,1> pq({f});
 
-         AssertThat(pq.size(), Is().EqualTo(0u));
+        AssertThat(pq.size(), Is().EqualTo(0u));
 
-         pq.push(pq_test_data {2, 42}); // bucket
-         AssertThat(pq.size(), Is().EqualTo(1u));
+        pq.push(pq_test_data {2, 42}); // bucket
+        AssertThat(pq.size(), Is().EqualTo(1u));
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level();
-         AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.peek(), Is().EqualTo(pq_test_data {2, 42}));
-         AssertThat(pq.size(), Is().EqualTo(1u));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.peek(), Is().EqualTo(pq_test_data {2, 42}));
+        AssertThat(pq.size(), Is().EqualTo(1u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 42}));
-         AssertThat(pq.size(), Is().EqualTo(0u));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 42}));
+        AssertThat(pq.size(), Is().EqualTo(0u));
 
-         AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
       });
 
       it("can pull after a peek in overflow", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw(f);
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
 
-           fw.unsafe_push(create_level_info(6,2u));
-           fw.unsafe_push(create_level_info(5,2u));
-           fw.unsafe_push(create_level_info(4,3u));
-           fw.unsafe_push(create_level_info(3,2u));
-           fw.unsafe_push(create_level_info(2,2u));
-           fw.unsafe_push(create_level_info(1,1u));
-         }
+          fw.unsafe_push(create_level_info(6,2u));
+          fw.unsafe_push(create_level_info(5,2u));
+          fw.unsafe_push(create_level_info(4,3u));
+          fw.unsafe_push(create_level_info(3,2u));
+          fw.unsafe_push(create_level_info(2,2u));
+          fw.unsafe_push(create_level_info(1,1u));
+        }
 
-         test_priority_queue<1,1> pq({f});
+        test_priority_queue<1,1> pq({f});
 
-         pq.push(pq_test_data {5, 3});  // overflow
-         AssertThat(pq.size(), Is().EqualTo(1u));
+        pq.push(pq_test_data {5, 3});  // overflow
+        AssertThat(pq.size(), Is().EqualTo(1u));
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level();
-         AssertThat(pq.current_level(), Is().EqualTo(5u));
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(5u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.peek(), Is().EqualTo(pq_test_data {5, 3}));
-         AssertThat(pq.size(), Is().EqualTo(1u));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.peek(), Is().EqualTo(pq_test_data {5, 3}));
+        AssertThat(pq.size(), Is().EqualTo(1u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {5, 3}));
-         AssertThat(pq.size(), Is().EqualTo(0u));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {5, 3}));
+        AssertThat(pq.size(), Is().EqualTo(0u));
 
-         AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
       });
 
       it("can push into buckets after bucket level rewrite", [&]() {
@@ -860,93 +860,93 @@ go_bandit([]() {
       });
 
       it("can set up priority queue with fewer levels than buckets [1]", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw(f);
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
 
-           fw.unsafe_push(create_level_info(4,1u));
-           fw.unsafe_push(create_level_info(3,2u));
-           fw.unsafe_push(create_level_info(1,1u));
-         }
+          fw.unsafe_push(create_level_info(4,1u));
+          fw.unsafe_push(create_level_info(3,2u));
+          fw.unsafe_push(create_level_info(1,1u));
+        }
 
-         test_priority_queue<1,4> pq({f});
-       });
+        test_priority_queue<1,4> pq({f});
+      });
 
       it("can set up priority queue with fewer levels than buckets [2]", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw(f);
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
 
-           fw.unsafe_push(create_level_info(2,1u));
-           fw.unsafe_push(create_level_info(1,1u));
-         }
+          fw.unsafe_push(create_level_info(2,1u));
+          fw.unsafe_push(create_level_info(1,1u));
+        }
 
-         test_priority_queue<1,4> pq({f});
-       });
+        test_priority_queue<1,4> pq({f});
+      });
 
       it("can set up priority queue with empty level_info stream", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         test_priority_queue<1,4> pq({f});
+        test_priority_queue<1,4> pq({f});
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_level(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
 
       it("can set up priority queue for two level_info streams, where one is empty [1]", [&]() {
-         pq_test_file f1;
-         pq_test_file f2;
+        pq_test_file f1;
+        pq_test_file f2;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw1(f1);
+        { // Garbage collect the writer early
+          pq_test_writer fw1(f1);
 
-           fw1.unsafe_push(create_level_info(1,1u));
-         }
+          fw1.unsafe_push(create_level_info(1,1u));
+        }
 
-         test_priority_queue<2,4> pq({f1,f2});
+        test_priority_queue<2,4> pq({f1,f2});
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_level(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can set up priority queue for two level_info streams, where one is empty [2]", [&]() {
-         pq_test_file f1;
-         pq_test_file f2;
+        pq_test_file f1;
+        pq_test_file f2;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw1(f1);
+        { // Garbage collect the writer early
+          pq_test_writer fw1(f1);
 
-           fw1.unsafe_push(create_level_info(2,2u));
-           fw1.unsafe_push(create_level_info(1,1u));
-         }
+          fw1.unsafe_push(create_level_info(2,2u));
+          fw1.unsafe_push(create_level_info(1,1u));
+        }
 
-         test_priority_queue<2,4> pq({f1,f2});
+        test_priority_queue<2,4> pq({f1,f2});
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_level(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can set up priority queue for two level_info streams", [&]() {
-         pq_test_file f1;
-         pq_test_file f2;
+        pq_test_file f1;
+        pq_test_file f2;
 
-         { // Garbage collect the writers early
-           pq_test_writer fw1(f1);
+        { // Garbage collect the writers early
+          pq_test_writer fw1(f1);
 
-           fw1.unsafe_push(create_level_info(1,1u));
+          fw1.unsafe_push(create_level_info(1,1u));
 
-           pq_test_writer fw2(f2);
+          pq_test_writer fw2(f2);
 
-           fw2.unsafe_push(create_level_info(12,1u));
-         }
+          fw2.unsafe_push(create_level_info(12,1u));
+        }
 
-         test_priority_queue<2,4> pq({f1,f2});
+        test_priority_queue<2,4> pq({f1,f2});
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_level(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can push into and pull from buckets", [&]() {
@@ -1639,238 +1639,238 @@ go_bandit([]() {
       });
 
       it("can pull after a peek in bucket", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw(f);
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
 
-           fw.unsafe_push(create_level_info(6,1u)); // overflow
-           fw.unsafe_push(create_level_info(5,2u)); // write bucket
-           fw.unsafe_push(create_level_info(4,4u)); // write bucket
-           fw.unsafe_push(create_level_info(3,4u)); // write bucket
-           fw.unsafe_push(create_level_info(2,2u)); // write bucket
-           fw.unsafe_push(create_level_info(1,1u)); // read bucket
-         }
+          fw.unsafe_push(create_level_info(6,1u)); // overflow
+          fw.unsafe_push(create_level_info(5,2u)); // write bucket
+          fw.unsafe_push(create_level_info(4,4u)); // write bucket
+          fw.unsafe_push(create_level_info(3,4u)); // write bucket
+          fw.unsafe_push(create_level_info(2,2u)); // write bucket
+          fw.unsafe_push(create_level_info(1,1u)); // read bucket
+        }
 
-         test_priority_queue<1,4> pq({f});
+        test_priority_queue<1,4> pq({f});
 
-         pq.push(pq_test_data {3, 42}); // bucket
+        pq.push(pq_test_data {3, 42}); // bucket
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level();
-         AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.peek(), Is().EqualTo(pq_test_data {3, 42}));
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 42}));
-         AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.peek(), Is().EqualTo(pq_test_data {3, 42}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 42}));
+        AssertThat(pq.can_pull(), Is().False());
       });
 
       it("can pull after a peek in overflow", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw(f);
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
 
-           fw.unsafe_push(create_level_info(8,1u)); // overflow
-           fw.unsafe_push(create_level_info(7,2u)); // overflow
-           fw.unsafe_push(create_level_info(6,4u)); // overflow
-           fw.unsafe_push(create_level_info(5,8u)); // write bucket
-           fw.unsafe_push(create_level_info(4,4u)); // write bucket
-           fw.unsafe_push(create_level_info(3,2u)); // write bucket
-           fw.unsafe_push(create_level_info(2,2u)); // write bucket
-           fw.unsafe_push(create_level_info(1,1u)); // read bucket
-         }
+          fw.unsafe_push(create_level_info(8,1u)); // overflow
+          fw.unsafe_push(create_level_info(7,2u)); // overflow
+          fw.unsafe_push(create_level_info(6,4u)); // overflow
+          fw.unsafe_push(create_level_info(5,8u)); // write bucket
+          fw.unsafe_push(create_level_info(4,4u)); // write bucket
+          fw.unsafe_push(create_level_info(3,2u)); // write bucket
+          fw.unsafe_push(create_level_info(2,2u)); // write bucket
+          fw.unsafe_push(create_level_info(1,1u)); // read bucket
+        }
 
-         test_priority_queue<1,4> pq({f});
+        test_priority_queue<1,4> pq({f});
 
-         pq.push(pq_test_data {7, 3});  // overflow
+        pq.push(pq_test_data {7, 3});  // overflow
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level();
-         AssertThat(pq.current_level(), Is().EqualTo(7u));
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(7u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.peek(), Is().EqualTo(pq_test_data {7, 3}));
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {7, 3}));
-         AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.peek(), Is().EqualTo(pq_test_data {7, 3}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {7, 3}));
+        AssertThat(pq.can_pull(), Is().False());
       });
 
       it("can deal with exactly as many levels as buckets", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw(f);
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
 
-           fw.unsafe_push(create_level_info(4,2u)); // write bucket
-           fw.unsafe_push(create_level_info(3,3u)); // write bucket
-           fw.unsafe_push(create_level_info(2,4u)); // write bucket
-           fw.unsafe_push(create_level_info(1,2u)); // write bucket
-           fw.unsafe_push(create_level_info(0,1u)); // read bucket
-         }
+          fw.unsafe_push(create_level_info(4,2u)); // write bucket
+          fw.unsafe_push(create_level_info(3,3u)); // write bucket
+          fw.unsafe_push(create_level_info(2,4u)); // write bucket
+          fw.unsafe_push(create_level_info(1,2u)); // write bucket
+          fw.unsafe_push(create_level_info(0,1u)); // read bucket
+        }
 
-         test_priority_queue<1,4> pq({f});
+        test_priority_queue<1,4> pq({f});
 
-         pq.push(pq_test_data {4, 3});
-         pq.push(pq_test_data {2, 1});
+        pq.push(pq_test_data {4, 3});
+        pq.push(pq_test_data {2, 1});
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(0u));
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level();
-         AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(0u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
 
-         pq.push(pq_test_data {3, 2});
-         pq.push(pq_test_data {3, 1});
+        pq.push(pq_test_data {3, 2});
+        pq.push(pq_test_data {3, 1});
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(2u));
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level();
-         AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
 
-         pq.push(pq_test_data {4, 1});
+        pq.push(pq_test_data {4, 1});
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 2}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 2}));
 
-         pq.push(pq_test_data {4, 2});
+        pq.push(pq_test_data {4, 2});
 
-         AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(3u));
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level();
-         AssertThat(pq.current_level(), Is().EqualTo(4u));
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(4u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 2}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 2}));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 3}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 3}));
 
-         AssertThat(pq.has_next_level(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can deal with fewer levels as buckets", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw(f);
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
 
-           fw.unsafe_push(create_level_info(2,2u)); // write bucket
-           fw.unsafe_push(create_level_info(1,2u)); // write bucket
-           fw.unsafe_push(create_level_info(0,1u)); // read bucket
-         }
+          fw.unsafe_push(create_level_info(2,2u)); // write bucket
+          fw.unsafe_push(create_level_info(1,2u)); // write bucket
+          fw.unsafe_push(create_level_info(0,1u)); // read bucket
+        }
 
-         test_priority_queue<1,4> pq({f});
+        test_priority_queue<1,4> pq({f});
 
-         pq.push(pq_test_data {2, 1});
-         pq.push(pq_test_data {1, 1});
+        pq.push(pq_test_data {2, 1});
+        pq.push(pq_test_data {1, 1});
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(0u));
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level();
-         AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(0u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {1, 1}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {1, 1}));
 
-         pq.push(pq_test_data {2, 2});
+        pq.push(pq_test_data {2, 2});
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(1u));
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level();
-         AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(1u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level();
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 2}));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 2}));
 
-         AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
 
-         AssertThat(pq.has_next_level(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can forward to stop_label with an empty overflow queue", [&]() {
-         pq_test_file f;
+        pq_test_file f;
 
-         { // Garbage collect the writer early
-           pq_test_writer fw(f);
+        { // Garbage collect the writer early
+          pq_test_writer fw(f);
 
-           fw.unsafe_push(create_level_info(8,2u)); // overflow
-           fw.unsafe_push(create_level_info(7,4u)); // overflow
-           fw.unsafe_push(create_level_info(6,2u)); // overflow
-           fw.unsafe_push(create_level_info(5,6u)); // write bucket
-           fw.unsafe_push(create_level_info(4,8u)); // write bucket
-           fw.unsafe_push(create_level_info(3,4u)); // write bucket
-           fw.unsafe_push(create_level_info(2,2u)); // write bucket
-           fw.unsafe_push(create_level_info(0,1u)); // read bucket
-         }
+          fw.unsafe_push(create_level_info(8,2u)); // overflow
+          fw.unsafe_push(create_level_info(7,4u)); // overflow
+          fw.unsafe_push(create_level_info(6,2u)); // overflow
+          fw.unsafe_push(create_level_info(5,6u)); // write bucket
+          fw.unsafe_push(create_level_info(4,8u)); // write bucket
+          fw.unsafe_push(create_level_info(3,4u)); // write bucket
+          fw.unsafe_push(create_level_info(2,2u)); // write bucket
+          fw.unsafe_push(create_level_info(0,1u)); // read bucket
+        }
 
-         test_priority_queue<1,4> pq({f});
+        test_priority_queue<1,4> pq({f});
 
-         AssertThat(pq.size(), Is().EqualTo(0u));
+        AssertThat(pq.size(), Is().EqualTo(0u));
 
-         pq.push(pq_test_data {3, 3});
-         AssertThat(pq.size(), Is().EqualTo(1u));
+        pq.push(pq_test_data {3, 3});
+        AssertThat(pq.size(), Is().EqualTo(1u));
 
-         pq.push(pq_test_data {3, 1});
-         AssertThat(pq.size(), Is().EqualTo(2u));
+        pq.push(pq_test_data {3, 1});
+        AssertThat(pq.size(), Is().EqualTo(2u));
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(0u));
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level(2u);
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(0u));
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level(2u);
 
-         AssertThat(pq.current_level(), Is().EqualTo(2u));
-         AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.can_pull(), Is().False());
 
-         pq.push(pq_test_data {3, 2});
-         AssertThat(pq.size(), Is().EqualTo(3u));
+        pq.push(pq_test_data {3, 2});
+        AssertThat(pq.size(), Is().EqualTo(3u));
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.current_level(), Is().EqualTo(2u));
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.current_level(), Is().EqualTo(2u));
 
-         AssertThat(pq.has_next_level(), Is().True());
-         pq.setup_next_level(4u);
+        AssertThat(pq.has_next_level(), Is().True());
+        pq.setup_next_level(4u);
 
-         AssertThat(pq.current_level(), Is().EqualTo(3u));
+        AssertThat(pq.current_level(), Is().EqualTo(3u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
-         AssertThat(pq.size(), Is().EqualTo(2u));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
+        AssertThat(pq.size(), Is().EqualTo(2u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 2}));
-         AssertThat(pq.size(), Is().EqualTo(1u));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 2}));
+        AssertThat(pq.size(), Is().EqualTo(1u));
 
-         AssertThat(pq.can_pull(), Is().True());
-         AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 3}));
-         AssertThat(pq.size(), Is().EqualTo(0u));
+        AssertThat(pq.can_pull(), Is().True());
+        AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 3}));
+        AssertThat(pq.size(), Is().EqualTo(0u));
 
-         AssertThat(pq.can_pull(), Is().False());
-         AssertThat(pq.has_next_level(), Is().False());
+        AssertThat(pq.can_pull(), Is().False());
+        AssertThat(pq.has_next_level(), Is().False());
       });
 
       it("can push into buckets after bucket level rewrite", [&]() {
