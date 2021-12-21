@@ -138,7 +138,7 @@ namespace adiar
                                             e_low.target,
                                             e_high.target));
 
-        out_writer.unsafe_push(create_meta(label,1u));
+        out_writer.unsafe_push(create_level_info(label,1u));
       }
 
       return out_file;
@@ -218,7 +218,7 @@ namespace adiar
           }
         }
 
-        out_writer.unsafe_push(create_meta(label, MAX_ID - out_id));
+        out_writer.unsafe_push(create_level_info(label, MAX_ID - out_id));
       }
 
       // Sort mappings for Reduction rule 2 back in order of node_arcs

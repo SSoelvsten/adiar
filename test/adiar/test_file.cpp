@@ -94,7 +94,7 @@ go_bandit([]() {
                   fw.unsafe_push(21);
                   fw.unsafe_push(42);
 
-                  fw.unsafe_push(create_meta(0,2u));
+                  fw.unsafe_push(create_level_info(0,2u));
 
                   AssertThat(test_file_meta_1.is_read_only(), Is().False());
                 });
@@ -103,8 +103,8 @@ go_bandit([]() {
                 it("can hook into and write to test_file_meta_2", [&]() {
                   meta_file_writer<int,2> fw(test_file_meta_2);
 
-                  fw.unsafe_push(create_meta(5,1u));
-                  fw.unsafe_push(create_meta(4,1u));
+                  fw.unsafe_push(create_level_info(5,1u));
+                  fw.unsafe_push(create_level_info(4,1u));
 
                   fw.unsafe_push(1); // Check idx argument is defaulted to 0
                   fw.unsafe_push(2, 0);
@@ -124,7 +124,7 @@ go_bandit([]() {
                   delete f;
 
                   fw.unsafe_push(42);
-                  fw.unsafe_push(create_meta(0,1u));
+                  fw.unsafe_push(create_level_info(0,1u));
                 });
 
                 describe("node_writer", [&]() {
@@ -216,8 +216,8 @@ go_bandit([]() {
                     });
 
                     it("can hook into arc_test_file and write level_info", [&]() {
-                        aw.unsafe_push(create_meta(0,1u));
-                        aw.unsafe_push(create_meta(1,1u));
+                        aw.unsafe_push(create_level_info(0,1u));
+                        aw.unsafe_push(create_level_info(1,1u));
                       });
 
                     it("can hook into arc_test_file and  write sink arcs out of order", [&]() {
@@ -430,7 +430,7 @@ go_bandit([]() {
                        level_info_stream ms(test_file_meta_1);
 
                        AssertThat(ms.can_pull(), Is().True());
-                       AssertThat(ms.pull(), Is().EqualTo(create_meta(0,2u)));
+                       AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,2u)));
                        AssertThat(ms.can_pull(), Is().False());
                      });
 
@@ -438,9 +438,9 @@ go_bandit([]() {
                        level_info_stream ms(node_test_file);
 
                        AssertThat(ms.can_pull(), Is().True());
-                       AssertThat(ms.pull(), Is().EqualTo(create_meta(0,1u)));
+                       AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
                        AssertThat(ms.can_pull(), Is().True());
-                       AssertThat(ms.pull(), Is().EqualTo(create_meta(1,2u)));
+                       AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,2u)));
                        AssertThat(ms.can_pull(), Is().False());
                      });
                 });

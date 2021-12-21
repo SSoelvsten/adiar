@@ -65,7 +65,7 @@ go_bandit([]() {
                 level_info_test_stream<node_t, NODE_FILE_COUNT> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
                 AssertThat(ms.can_pull(), Is().False());
               });
 
@@ -80,7 +80,7 @@ go_bandit([]() {
                 level_info_test_stream<node_t, NODE_FILE_COUNT> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(42,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
                 AssertThat(ms.can_pull(), Is().False());
               });
           });
@@ -97,7 +97,7 @@ go_bandit([]() {
                 level_info_test_stream<node_t, NODE_FILE_COUNT> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
                 AssertThat(ms.can_pull(), Is().False());
               });
 
@@ -112,7 +112,7 @@ go_bandit([]() {
                 level_info_test_stream<node_t, NODE_FILE_COUNT> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(3,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,1u)));
                 AssertThat(ms.can_pull(), Is().False());
               });
           });
@@ -149,13 +149,13 @@ go_bandit([]() {
                 level_info_test_stream<node_t, NODE_FILE_COUNT> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(5,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(ms.can_pull(), Is().False());
               });
@@ -207,13 +207,13 @@ go_bandit([]() {
                 level_info_test_stream<node_t, NODE_FILE_COUNT> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(5,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(ms.can_pull(), Is().False());
               });
@@ -294,19 +294,19 @@ go_bandit([]() {
                 level_info_test_stream<node_t, NODE_FILE_COUNT> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(5,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(4,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,1u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(3,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,1u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(1,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
 
                 AssertThat(ms.can_pull(), Is().False());
               });
@@ -357,16 +357,16 @@ go_bandit([]() {
                 level_info_test_stream<node_t, NODE_FILE_COUNT> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(5,2u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,2u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(4,3u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,3u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(3,2u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,2u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(2,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
 
                 AssertThat(ms.can_pull(), Is().False());
               });
@@ -515,31 +515,31 @@ go_bandit([]() {
                 level_info_test_stream<node_t, NODE_FILE_COUNT> ms(res);
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(8,2u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(8,2u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(7,3u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(7,3u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(6,4u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(6,4u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(5,4u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,4u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(4,4u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,4u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(3,4u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,4u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(2,3u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,3u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(1,2u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,2u)));
 
                 AssertThat(ms.can_pull(), Is().True());
-                AssertThat(ms.pull(), Is().EqualTo(create_meta(0,1u)));
+                AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
 
                 AssertThat(ms.can_pull(), Is().False());
               });

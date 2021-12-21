@@ -103,7 +103,7 @@ namespace adiar
         nw.unsafe_push(adiar::create_node(curr_label, curr_id, low, high));
 
       } while (curr_id-- > min_id);
-      nw.unsafe_push(create_meta(curr_label, (max_id - min_id) + 1));
+      nw.unsafe_push(create_level_info(curr_label, (max_id - min_id) + 1));
     } while (curr_label-- > min_label);
 
     return nf;

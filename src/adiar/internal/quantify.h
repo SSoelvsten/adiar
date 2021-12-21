@@ -177,7 +177,7 @@ namespace adiar
     while(quantify_pq_1.can_pull() || quantify_pq_1.has_next_level() || !quantify_pq_2.empty()) {
       if (!quantify_pq_1.can_pull() && quantify_pq_2.empty()) {
         if (out_label != label) {
-          aw.unsafe_push(create_meta(out_label, out_id));
+          aw.unsafe_push(create_level_info(out_label, out_id));
         }
 
         quantify_pq_1.setup_next_level();
@@ -267,7 +267,7 @@ namespace adiar
 
     // Push the level of the very last iteration
     if (out_label != label) {
-      aw.unsafe_push(create_meta(out_label, out_id));
+      aw.unsafe_push(create_level_info(out_label, out_id));
     }
 
     return out_arcs;

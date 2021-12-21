@@ -437,7 +437,7 @@ namespace adiar {
     return m;
   }
 
-  level_info_t create_meta(label_t label, size_t level_size)
+  level_info_t create_level_info(label_t label, size_t level_size)
   {
     return { label, level_size };
   }

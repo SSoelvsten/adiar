@@ -326,7 +326,7 @@ namespace adiar {
 
         // Check if the level_info file has to be updated
         if (label_of(n) != label_of(_latest_node)) {
-          meta_file_writer::unsafe_push(create_meta(label_of(_latest_node),
+          meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
                                                     _level_size));
           _level_size = 0u;
         }
@@ -364,7 +364,7 @@ namespace adiar {
       _file_ptr -> canonical = _canonical;
 
       if (!is_nil(_latest_node.uid) && !is_sink(_latest_node)) {
-        meta_file_writer::unsafe_push(create_meta(label_of(_latest_node),
+        meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
                                                   _level_size));
         _level_size = 0u; // move to attach...
       }
