@@ -11,12 +11,12 @@ build:
 # ============================================================================ #
 #  clean
 # ============================================================================ #
-clean-files:
+clean/files:
 	@rm -rf *.tpie
 	@rm -rf *.adiar*
 	@rm -rf *.dot
 
-clean: | clean-files
+clean: | clean/files
 	@rm -r -f build/
 
 # ============================================================================ #
@@ -29,10 +29,10 @@ test:
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_FLAGS=$(TEST_C_FLAGS) -D CMAKE_CXX_FLAGS=$(TEST_C_FLAGS) ..
 	@cd build/ && make $(MAKE_FLAGS) test_unit
 
-	$(MAKE) clean-files
+	$(MAKE) clean/files
 
 	@./build/test/test_unit --reporter=info --colorizer=light
-	$(MAKE) clean-files
+	$(MAKE) clean/files
 
 COV_C_FLAGS = "-g -O0 -Wall -fprofile-arcs -ftest-coverage"
 COV_EXE_LINKER_FLAGS = "-fprofile-arcs -ftest-coverage"
@@ -43,10 +43,10 @@ coverage:
 	@cd build/ && make $(MAKE_FLAGS) test_unit
 
 	@lcov --directory build/src/adiar/ --zerocounters
-	$(MAKE) clean-files
+	$(MAKE) clean/files
 
 	@./build/test/test_unit
-	$(MAKE) clean-files
+	$(MAKE) clean/files
 
   # create report
 	@rm -rf test/report/
