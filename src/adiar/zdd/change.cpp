@@ -22,6 +22,8 @@ namespace adiar
       return zdd_sink(sink_value);
     }
 
+    static constexpr bool may_skip = true;
+
     static intercut_rec hit_existing(const node_t &n)
     {
       if (is_sink(n.low) && !value_of(n.low)) {

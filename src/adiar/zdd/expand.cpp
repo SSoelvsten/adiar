@@ -23,6 +23,8 @@ namespace adiar
       return zdd_sink(sink_value);
     }
 
+    static constexpr bool may_skip = false;
+
     static inline intercut_rec hit_existing(const node_t &/*n*/)
     {
       // The user should NOT have supplied a label that hits any existing nodes.
