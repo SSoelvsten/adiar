@@ -70,7 +70,6 @@ namespace adiar
   {
     if (is_sink(target)) {
       if (!value_of(target) || next_cut <= curr_level) {
-        // TODO: what is HERE the difference between curr_level and label_of(source)?
         aw.unsafe_push_sink({ source, target });
       } else { // value_of(target) && next_cut > curr_level
         pq_2.push({ source, target, next_cut });
