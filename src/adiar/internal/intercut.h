@@ -19,14 +19,14 @@ namespace adiar
   typedef levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt>
   intercut_priority_queue_1_t;
 
-  struct intercut_cut : arc
+  struct arc_cut : arc
   {
     label_t cut_at;
   };
 
-  struct intercut_cut_queue_lt
+  struct arc_cut_lt
   {
-    bool operator()(const intercut_cut &a, const intercut_cut &b)
+    bool operator()(const arc_cut &a, const arc_cut &b)
     {
       return a.cut_at < b.cut_at
         || (a.cut_at == b.cut_at && a.target < b.target);
@@ -37,7 +37,7 @@ namespace adiar
   // the end-user is changing EVERY level in the decision diagram. If we made it
   // into one, then it probably needs way larger a lookahead than just one
   // level.
-  typedef tpie::priority_queue<intercut_cut, intercut_cut_queue_lt>
+  typedef tpie::priority_queue<arc_cut, arc_cut_lt>
   intercut_priority_queue_2_t;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -50,6 +50,7 @@ namespace adiar
                                     const label_t curr_level, const label_t next_cut)
   {
     if (is_sink(target)) {
+      // TODO: allow policy to chose what sink values to cut on and which not to.
       if (!value_of(target) || next_cut <= curr_level) {
         aw.unsafe_push_sink({ source, target });
       } else { // value_of(target) && next_cut > curr_level
@@ -106,34 +107,36 @@ namespace adiar
     intercut_priority_queue_2_t intercut_pq_2(available_memory / 2);
 
     // Process root and create initial recursion requests
-    label_t out_label = MAX_LABEL+1;
+    label_t out_label;
     id_t out_id = 0;
 
+    // We need to insert nodes before the root. The levelized priority queue
+    // does not support pushing to the level of the root, so we'll manually
+    // deal with these.
     while (l < label_of(n)) {
-      // We need to insert nodes before the root. The levelized priority queue
-      // does not support pushing to the level of the root, so we'll manually
-      // deal with these.
-
-      // Already done with all labels?
-      if (out_label == l) { break; }
-
-      // TODO: Generalise
       out_label = l;
       const uid_t out_uid = create_node_uid(out_label, 0);
 
       const bool more_labels = ls.can_pull();
       if (more_labels) { l = ls.pull(); }
 
-      const label_t next_label = more_labels ? std::min(label_of(n), l) : label_of(n);
+      const intercut_rec_output r = intercut_policy::hit_cut(n.uid);
 
-      aw.unsafe_push_sink({ out_uid, create_sink_ptr(false) });
-      aw.unsafe_push_node({ flag(out_uid), create_node_uid(next_label, 0) });
+      // Cut the edge, if need be
+      const label_t next_label = more_labels ? std::min(label_of(n), l) : label_of(n);
+      const ptr_t next_node = create_node_ptr(next_label, 0);
+
+      aw.unsafe_push(arc { out_uid, is_sink(r.low) ? r.low : next_node });
+      aw.unsafe_push(arc { flag(out_uid), is_sink(r.high) ? r.high : next_node });
       aw.unsafe_push(create_level_info(out_label, 1));
+
+      // Already done with all labels?
+      if (out_label == l) { break; }
     }
 
     out_label = label_of(n);
 
-    if (l == label_of(n)) {
+    if (l == out_label) {
       // Let l be the next label to hit (if any)
       if (ls.can_pull()) { l = ls.pull(); }
 
@@ -196,6 +199,7 @@ namespace adiar
         if (std::holds_alternative<intercut_rec_skipto>(r)) {
           const intercut_rec_skipto rs = std::get<intercut_rec_skipto>(r);
 
+          // TODO: Add constexpr 'bool may_skip' in policy to kill dead branches
           // Will the hit kill the node?
           if (is_sink(rs.tgt) && is_nil(intercut_pq_1.top().source)) {
             return intercut_policy::sink(value_of(rs.tgt));
@@ -228,7 +232,7 @@ namespace adiar
         adiar_invariant(out_label <= l,
                         "the last iteration with this queue is for the very last label to cut on");
 
-        const intercut_cut request = intercut_pq_2.top();
+        const arc_cut request = intercut_pq_2.top();
         const intercut_rec_output ro = intercut_policy::hit_cut(request.target);
         const uid_t out_uid = create_node_uid(out_label, out_id++);
 
@@ -239,7 +243,7 @@ namespace adiar
         while (!intercut_pq_2.empty()
                && intercut_pq_2.top().cut_at == out_label
                && intercut_pq_2.top().target == request.target) {
-          const intercut_cut parent = intercut_pq_2.top();
+          const arc_cut parent = intercut_pq_2.top();
           intercut_pq_2.pop();
 
           if (!is_nil(parent.source)) {
