@@ -196,10 +196,9 @@ namespace adiar
           ? intercut_policy::hit_existing(n)
           : intercut_policy::miss_existing(n);
 
-        if (std::holds_alternative<intercut_rec_skipto>(r)) {
+        if (intercut_policy::may_skip && std::holds_alternative<intercut_rec_skipto>(r)) {
           const intercut_rec_skipto rs = std::get<intercut_rec_skipto>(r);
 
-          // TODO: Add constexpr 'bool may_skip' in policy to kill dead branches
           // Will the hit kill the node?
           if (is_sink(rs.tgt) && is_nil(intercut_pq_1.top().source)) {
             return intercut_policy::sink(value_of(rs.tgt));
