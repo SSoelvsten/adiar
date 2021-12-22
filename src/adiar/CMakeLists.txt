@@ -44,6 +44,7 @@ set(HEADERS
   internal/build.h
   internal/count.h
   internal/decision_diagram.h
+  internal/intercut.h
   internal/memory.h
   internal/pred.h
   internal/levelized_priority_queue.h
