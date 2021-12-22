@@ -14,24 +14,7 @@ namespace adiar
   public:
     static zdd on_sink_input(const bool sink_value, const zdd& dd, const label_file &labels)
     {
-      if (sink_value) {
-        label_stream<true> ls(labels);
-
-        const ptr_t low = create_sink_ptr(false);
-        ptr_t high = create_sink_ptr(true);
-
-        node_file out;
-        node_writer nw(out);
-
-        while (ls.can_pull()) {
-          const uid_t uid = create_node_uid(ls.pull(), MAX_ID);
-          nw << create_node(uid, low, high);
-          high = uid;
-        }
-        return out;
-      }
-
-      return dd;
+      return sink_value ? zdd_vars(labels) : dd;
     }
 
     static zdd sink(const bool sink_value)
