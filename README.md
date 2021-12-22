@@ -144,30 +144,39 @@ as [issues](https://github.com/SSoelvsten/adiar/issues).
 This project has been developed at the [Logic and Semantics](https://logsem.github.io/)
 group at [Aarhus University](https://cs.au.dk).
 
-- **[Steffan Sølvsten](https://github.com/SSoelvsten)**:
+- **[Steffan Sølvsten](https://ssoelvsten.github.io/)**:
   [soelvsten@cs.au.dk](mailto:soelvsten@cs.au.dk)
 
-- **[Jaco van de Pol](https://github.com/jacopol)**:
+- **[Jaco van de Pol](https://cs.au.dk/~jaco/)**:
   [jaco@cs.au.dk](mailto:jaco@cs.au.dk)
 
-Thank you, to the following wonderful people:
+Thank you, to all the contributors to this project
 
 - **[Anna Blume Jakobsen](https://github.com/AnnaBlume99)**:
-  Bachelor student, who during a summer project wrote the prototype
+  Bachelor student, who during the summer of 2020 wrote the prototype
   implementation of many core algorithms.
 
-- **[Asger Hautop Drewsen](https://github.com/Tyilo)**: Previous maintainer of
-  _TPIE_, who helped debug a few issues and gave general feedback on the
-  codebase.
-
-- **[Mathias Rav](https://github.com/Mortal)**:
-  Developer of _TPIE_, always helpful oracle about everything _TPIE_,
-  _I/O_ algorithms, and _C++_.
+- **[Asger Hautop Drewsen](https://github.com/Tyilo)**:
+  Previous maintainer of _TPIE_, who helped debug a few issues and gave general
+  feedback on the codebase.
 
 - **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
-  Bachelor student, who during a summer project wrote the prototype
+  Bachelor student, who during the summer of 2020 wrote the prototype
   implementation of many core algorithms.
 
+Also, thanks to the following wonderful people for their indirect contributions
+
+- **[Gerth Stølting brodal](https://cs.au.dk/~gerth/)**:
+  Professor, who helped on the theory of I/O-algorithms and has suggested
+  multiple algorithmic improvements.
+
+- **[Lars Arge](http://lars.arge.dk/)**:
+  Professor, who created the foundation in [[Arge96](#references)] and was glad
+  to give advice on how to pick up on his ideas.
+
+- **[Mathias Rav](https://github.com/Mortal)**:
+  Developer of _TPIE_ and always helpful oracle about everything _TPIE_, _I/O_
+  algorithms, and _C++_.
 
 ## License
 The software and documentation files in this repository are provided under the
