@@ -99,6 +99,13 @@ Constructs the ZDD for _{ is Δ a | a ∈ A }_, where Δ is the symmetric differ
 between the two sets of variables _a_ and _is_. In other words, for each set in
 _A_ the value of each variable _i_ from _is_ is flipped.
 
+### `zdd zdd_expand(zdd A, label_file is)`
+{: .no_toc }
+
+Expands the domain of A to also include the variables in _is_, i.e. it computes
+the set _U<sub>a ∈ A, i ∈ 2<sup>is</sup></sub> (a ∪ i)_. The variables in _is_
+are not allowed to be present in _A_.
+
 ### `zdd zdd_offset(zdd A, label_file is)`
 {: .no_toc }
 
