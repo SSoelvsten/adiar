@@ -25,8 +25,8 @@ given machine.
     - [Makefile targets](#makefile-targets)
     - [Examples](#examples)
 - [Contributions](#contributions)
-- [Credits](#credits)
 - [License](#license)
+- [Credits](#credits)
 - [References](#references)
 
 
@@ -139,6 +139,19 @@ as [future work](/FUTURE_WORK.md) and other possible things to contribute with
 as [issues](https://github.com/SSoelvsten/adiar/issues).
 
 
+## License
+The software and documentation files in this repository are provided under the
+[MIT License](/LICENSE.md).
+
+Using Adiar will indirectly use [TPIE](https://github.com/thomasmoelhave/tpie)
+underneath, which in turn is licensed under the _LGPL v3_ license. Hence, a
+binary of yours that is statically linked to Adiar will be affected by that
+license. That is, if you share that binary with others, then you will be obliged
+to make the source public. This can be resolved by using Adiar as a shared
+library or have it use an alternative to TPIE, such as
+[STXXL](https://github.com/stxxl/stxxl).
+
+
 ## Credits
 
 This project has been developed at the [Logic and Semantics](https://logsem.github.io/)
@@ -177,18 +190,6 @@ Also, thanks to the following wonderful people for their indirect contributions
 - **[Mathias Rav](https://github.com/Mortal)**:
   Developer of _TPIE_ and always helpful oracle about everything _TPIE_, _I/O_
   algorithms, and _C++_.
-
-## License
-The software and documentation files in this repository are provided under the
-[MIT License](/LICENSE.md).
-
-Using Adiar will indirectly use [TPIE](https://github.com/thomasmoelhave/tpie)
-underneath, which in turn is licensed under the _LGPL v3_ license. Hence, a
-binary of yours that is statically linked to Adiar will be affected by that
-license. That is, if you share that binary with others, then you will be obliged
-to make the source public. This can be resolved by using Adiar as a shared
-library or have it use an alternative to TPIE, such as
-[STXXL](https://github.com/stxxl/stxxl).
 
 
 ## References
