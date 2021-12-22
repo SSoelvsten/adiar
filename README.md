@@ -166,30 +166,26 @@ group at [Aarhus University](https://cs.au.dk).
 Thank you, to all the contributors to this project
 
 - **[Anna Blume Jakobsen](https://github.com/AnnaBlume99)**:
-  Bachelor student, who during the summer of 2020 wrote the prototype
-  implementation of many core algorithms.
+  Implemented the prototype of many core algorithms during the summer of 2020.
 
 - **[Asger Hautop Drewsen](https://github.com/Tyilo)**:
-  Previous maintainer of _TPIE_, who helped debug a few issues and gave general
-  feedback on the codebase.
+  Helped debug a few issues and gave general feedback on the codebase.
 
 - **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
-  Bachelor student, who during the summer of 2020 wrote the prototype
-  implementation of many core algorithms.
+  Implemented the prototype of many core algorithms during the summer of 2020.
 
 Also, thanks to the following wonderful people for their indirect contributions
 
 - **[Gerth Stølting brodal](https://cs.au.dk/~gerth/)**:
-  Professor, who helped on the theory of I/O-algorithms and has suggested
-  multiple algorithmic improvements.
+  Helped on the theory of I/O-algorithms and has suggested multiple algorithmic
+  improvements.
 
 - **[Lars Arge](http://lars.arge.dk/)**:
-  Professor, who created the foundation in [[Arge96](#references)] and was glad
-  to give advice on how to pick up on his ideas.
+  Created the foundation in [[Arge96](#references)] and was glad to give advice
+  on how to pick up on his ideas.
 
 - **[Mathias Rav](https://github.com/Mortal)**:
-  Developer of _TPIE_ and always helpful oracle about everything _TPIE_, _I/O_
-  algorithms, and _C++_.
+  Always helpful oracle about everything _TPIE_, _I/O_ algorithms, and _C++_.
 
 
 ## References
