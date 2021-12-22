@@ -404,6 +404,15 @@ namespace adiar {
       meta_file_writer::unsafe_push(m);
     }
 
+    void unsafe_push(const arc_t &a)
+    {
+      if (is_node(a.target)) {
+        unsafe_push_node(a);
+      } else { // is_sink(a.target)
+        unsafe_push_sink(a);
+      }
+    }
+
     void unsafe_push_node(const arc_t &a)
     {
       adiar_debug(is_node(a.target), "pushing non-node arc into node file");
