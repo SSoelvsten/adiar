@@ -1,7 +1,7 @@
 #ifndef ADIAR_ZDD_CHANGE_H
 #define ADIAR_ZDD_CHANGE_H
 
-#include <adiar/data.h>
+#include <adiar/file.h>
 #include <adiar/zdd/zdd.h>
 
 namespace adiar
