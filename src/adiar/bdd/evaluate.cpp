@@ -6,7 +6,7 @@
 
 namespace adiar
 {
-  bool bdd_eval(const bdd &bdd, const assignment_file &assignments)
+  bool bdd_eval(const bdd &bdd, const assignment_func &af)
   {
     node_stream<> ns(bdd);
     node_t current_node = ns.pull();
@@ -15,19 +15,8 @@ namespace adiar
       return value_of(current_node);
     }
 
-    assignment_stream<> as(assignments);
-    assignment_t a = as.pull();
-
     while (true) {
-      while(label_of(current_node) > label_of(a)) {
-        adiar_assert(as.can_pull(),
-                     "Given assignment insufficient to traverse BDD");
-        a = as.pull();
-      }
-      adiar_assert(label_of(current_node) == label_of(a),
-                   "Missing assignment for node visited in BDD");
-
-      ptr_t next_ptr = unflag(value_of(a) ? current_node.high : current_node.low);
+      ptr_t next_ptr = unflag(af(label_of(current_node)) ? current_node.high : current_node.low);
 
       if(is_sink(next_ptr)) {
         return value_of(next_ptr);
@@ -38,5 +27,25 @@ namespace adiar
         current_node = ns.pull();
       }
     }
+  }
+
+  bool bdd_eval(const bdd &bdd, const assignment_file &assignments)
+  {
+    assignment_stream<> as(assignments);
+    assignment_t a = as.pull();
+
+    const assignment_func af = [&as, &a](label_t l)
+    {
+      while (l > label_of(a)) {
+        adiar_assert(as.can_pull(), "Given assignment file is insufficient to traverse BDD");
+        a = as.pull();
+      }
+
+      adiar_assert(l == label_of(a), "Missing assignment for node visited in BDD");
+
+      return value_of(a);
+    };
+
+    return bdd_eval(bdd, af);
   }
 }
