@@ -158,6 +158,7 @@ namespace snowhouse
 #include "adiar/zdd/test_binop.cpp"
 #include "adiar/zdd/test_build.cpp"
 #include "adiar/zdd/test_change.cpp"
+#include "adiar/zdd/test_contains.cpp"
 #include "adiar/zdd/test_count.cpp"
 #include "adiar/zdd/test_pred.cpp"
 #include "adiar/zdd/test_project.cpp"
