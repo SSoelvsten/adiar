@@ -8,13 +8,20 @@
 
 namespace adiar
 {
+  typedef std::function<bool(label_t)> assignment_func;
+
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Evaluate an BDD according to an assignment
+  /// \brief Evaluate a BDD according to an assignment
   ///
-  /// \param nodes The node-based BDD graph in reverse topological order.
-  /// \return Sink-value after traversal according to the assignment.
+  /// The function `af` may assume/abuse that it is only called with the labels
+  /// in a strictly increasing order.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_eval(const bdd &bdd, const assignment_file &assignment);
+  bool bdd_eval(const bdd &bdd, const assignment_func &af);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Evaluate a BDD according to an assignment
+  //////////////////////////////////////////////////////////////////////////////
+  bool bdd_eval(const bdd &bdd, const assignment_file &as);
 }
 
 #endif // ADIAR_BDD_EVALUATE_H
