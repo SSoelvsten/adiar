@@ -29,6 +29,7 @@ set(HEADERS
   zdd/binop.h
   zdd/build.h
   zdd/change.h
+  zdd/contains.h
   zdd/count.h
   zdd/pred.h
   zdd/project.h
@@ -80,6 +81,7 @@ set(SOURCES
   zdd/binop.cpp
   zdd/build.cpp
   zdd/change.cpp
+  zdd/contains.cpp
   zdd/count.cpp
   zdd/pred.cpp
   zdd/project.cpp
