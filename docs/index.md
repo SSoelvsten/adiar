@@ -43,6 +43,10 @@ disk to delay recursion with Time-Forward Processing.
 
    Examples that cover the functionalities of _Adiar_.
 
+6. [Citing this project](cite)
+
+   Overview of the papers relevant for citing this project.
+
 ---
 
 ## About the project
