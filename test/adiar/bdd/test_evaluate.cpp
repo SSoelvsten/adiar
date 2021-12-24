@@ -266,6 +266,19 @@ go_bandit([]() {
       AssertThat(bdd_eval(bdd2, assignment), Is().False());
     });
 
+    it("should return F on F sink-only BDD with empty assignment", [&]() {
+      node_file bdd2;
+
+      { // Garbage collect writer to free write-lock
+        node_writer nw2(bdd2);
+        nw2 << create_sink(false);
+      }
+
+      assignment_file assignment;
+
+      AssertThat(bdd_eval(bdd2, assignment), Is().False());
+    });
+
     it("should return T on T sink-only BDD", [&]() {
       node_file bdd2;
 
@@ -284,6 +297,19 @@ go_bandit([]() {
            << create_assignment(2, false)
            << create_assignment(3, true);
       }
+
+      AssertThat(bdd_eval(bdd2, assignment), Is().True());
+    });
+
+    it("should return T on T sink-only BDD with empty assignment", [&]() {
+      node_file bdd2;
+
+      { // Garbage collect writer to free write-lock
+        node_writer nw2(bdd2);
+        nw2 << create_sink(true);
+      }
+
+      assignment_file assignment;
 
       AssertThat(bdd_eval(bdd2, assignment), Is().True());
     });

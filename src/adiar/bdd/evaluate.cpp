@@ -31,6 +31,10 @@ namespace adiar
 
   bool bdd_eval(const bdd &bdd, const assignment_file &assignments)
   {
+    if (is_sink(bdd)) {
+      return is_sink(bdd, is_true);
+    }
+
     assignment_stream<> as(assignments);
     assignment_t a = as.pull();
 
