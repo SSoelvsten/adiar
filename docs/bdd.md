@@ -196,11 +196,12 @@ variables within the BDD for _f_, i.e. `bdd_varcount(f)`.
 
 ## Other Functions
 
-### `bool bdd_eval(bdd f, assignment_file x)`
+### `bool bdd_eval(bdd f, T x)`
 {: .no_toc }
 
 Return _f(x)_, i.e. the evaluation of the given BDD for _f_ according to the
-assignment _x_.
+assignment _x_. The type _T_ of _x_ can either be any function _label_t → bool_
+(e.g. a lambda function) or an *assignment_file*.
 
 ### `assignment_file bdd_satmin(bdd f)`
 {: .no_toc }
