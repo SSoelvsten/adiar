@@ -29,6 +29,7 @@ group at [Aarhus University](https://cs.au.dk).
     - [Examples](#examples)
 - [Contributions](#contributions)
 - [License](#license)
+- [Citing this project](#citing-this-project)
 - [References](#references)
 
 
@@ -153,6 +154,12 @@ license. That is, if you share that binary with others, then you will be obliged
 to make the source public. This can be resolved by using Adiar as a shared
 library or have it use an alternative to TPIE, such as
 [STXXL](https://github.com/stxxl/stxxl).
+
+
+## Citing this project
+
+If you use Adiar in some of your academic work, then please consider to cite one
+or more of the papers in [docs/cite.md](https://ssoelvsten.github.io/adiar/cite).
 
 
 ## References
