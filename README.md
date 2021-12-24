@@ -17,6 +17,9 @@ to improve the I/O complexity of BDD manipulation. This makes it able to achieve
 efficient manipulation of BDDs, even when they outgrow the memory limit of the
 given machine.
 
+This project has been developed at the [Logic and Semantics](https://logsem.github.io/)
+group at [Aarhus University](https://cs.au.dk).
+
 **Table of Contents**
 
 - [Documentation](#documentation)
@@ -26,7 +29,6 @@ given machine.
     - [Examples](#examples)
 - [Contributions](#contributions)
 - [License](#license)
-- [Credits](#credits)
 - [References](#references)
 
 
@@ -131,6 +133,7 @@ The value **T** can either be _all_ or _closed_.
 | _N_      | Board size (default: 8)                          |
 | _M_      | Memory in MiB (default: 1024)                    |
 
+
 ## Contributions
 
 Adiar is not yet feature complete, and there are still many interesting things
@@ -150,48 +153,6 @@ license. That is, if you share that binary with others, then you will be obliged
 to make the source public. This can be resolved by using Adiar as a shared
 library or have it use an alternative to TPIE, such as
 [STXXL](https://github.com/stxxl/stxxl).
-
-
-## Credits
-
-This project has been developed at the [Logic and Semantics](https://logsem.github.io/)
-group at [Aarhus University](https://cs.au.dk).
-
-- **[Steffan Sølvsten](https://ssoelvsten.github.io/)**:
-  [soelvsten@cs.au.dk](mailto:soelvsten@cs.au.dk)
-
-- **[Jaco van de Pol](https://cs.au.dk/~jaco/)**:
-  [jaco@cs.au.dk](mailto:jaco@cs.au.dk)
-
-Thank you, to all the contributors to this project
-
-- **[Anna Blume Jakobsen](https://github.com/AnnaBlume99)**:
-
-  Implemented the prototype of many core algorithms during the summer of 2020.
-
-- **[Asger Hautop Drewsen](https://github.com/Tyilo)**:
-
-  Helped debug a few issues and gave general feedback on the codebase.
-
-- **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
-
-  Implemented the prototype of many core algorithms during the summer of 2020.
-
-Also, thanks to the following wonderful people for their indirect contributions
-
-- **[Gerth Stølting brodal](https://cs.au.dk/~gerth/)**:
-
-  Helped on the theory of I/O-algorithms and has suggested multiple algorithmic
-  improvements.
-
-- **[Lars Arge](http://lars.arge.dk/)**:
-
-  Created the foundation in [[Arge96](#references)] and was glad to give advice
-  on how to pick up on his ideas.
-
-- **[Mathias Rav](https://github.com/Mortal)**:
-
-  Always helpful oracle about everything _TPIE_, _I/O_ algorithms, and _C++_.
 
 
 ## References
