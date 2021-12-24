@@ -165,6 +165,11 @@ Return whether _A ∩ B = Ø_.
 
 ## Other Functions
 
+### `bool zdd_contains(zdd A, label_file a)`
+{: .no_toc }
+
+Return whether _a ∈ A_.
+
 ### `bool is_sink(zdd A, sink_pred)`
 {: .no_toc }
 
