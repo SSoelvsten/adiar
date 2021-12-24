@@ -12,8 +12,8 @@
 [![examples](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/examples/main?label=examples&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/examples.yml)
 
 Based on the work of Lars Arge [[Arge96](#references)], Adiar<sup>[1](#footnotes)</sup>
-is a BDD package [[Bryant86](#references)] that makes use of _Time-Forward Processing_
-to improve the I/O complexity of BDD Manipulation. This makes it able to achieve
+is a BDD package [[Bryant86](#references)] that makes use of time-forward processing
+to improve the I/O complexity of BDD manipulation. This makes it able to achieve
 efficient manipulation of BDDs, even when they outgrow the memory limit of the
 given machine.
 
@@ -124,7 +124,7 @@ follow the `make <target>` with `N=<value>`.
 
 **example/knights-tour/[T]** 
 
-The value **T** can either be _all_or _closed_.
+The value **T** can either be _all_ or _closed_.
 
 | variable | description                                      |
 |----------|--------------------------------------------------|
