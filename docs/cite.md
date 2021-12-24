@@ -106,7 +106,7 @@ in practice.
     year          = {2021},
     eprint        = {2104.12101},
     archivePrefix = {arXiv},
-    primaryClass  = {cs.DS}
+    primaryClass  = {cs.DS},
     numpages      = {36},
   }
   ```
