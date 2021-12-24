@@ -1,7 +1,24 @@
+---
+layout: default
+title: Citing this project
+nav_order: 6
+description: "Citations"
+permalink: /cite
+---
+
 # Citing Adiar
+{: .no_toc }
 
 Please consider to cite one or more of the following papers, if you use Adiar in
 some of your academic work.
+{: .fs-6 .fw-300 }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
 
 ## Lars Arge
 
@@ -42,13 +59,14 @@ Adiar is based on the theoretical work of Lars Arge back in the 90s.
   }
   ```
 
+
 ## Adiar
 
 We have, for your convenience, grouped all papers based on the semantic version
 of Adiar. Depending on what feature of Adiar that you are referring to, then
 pick the most relevant paper(s) to cite.
 
-### Adiar [1.0](https://github.com/SSoelvsten/adiar/releases/tag/v1.0.0)
+### v1.0
 
 With [v1.0.0](https://github.com/SSoelvsten/adiar/releases/tag/v1.0.0) (and its
 patch [v1.0.1](https://github.com/SSoelvsten/adiar/releases/tag/v1.0.1)) we
