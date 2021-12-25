@@ -10,7 +10,7 @@ namespace adiar
   class bdd_eval_func_visitor
   {
     const assignment_func &af;
-    bool result;
+    bool result = false;;
 
   public:
     bdd_eval_func_visitor(const assignment_func& f) : af(f)
@@ -41,7 +41,7 @@ namespace adiar
     assignment_stream<> as;
     assignment_t a;
 
-    bool result;
+    bool result = false;
 
   public:
     bdd_eval_file_visitor(const assignment_file& af) : as(af)
