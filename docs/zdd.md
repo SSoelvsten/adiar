@@ -163,12 +163,26 @@ Return whether _A ⊂ B_.
 
 Return whether _A ∩ B = Ø_.
 
-## Other Functions
+## Set elements
 
 ### `bool zdd_contains(zdd A, label_file a)`
 {: .no_toc }
 
 Return whether _a ∈ A_.
+
+### `std::optional<label_file> zdd_minelem(zdd A)`
+{: .no_toc }
+
+Finds the _a ∈ A_ (if any) that is lexicographically smallest when interpreting
+_a_ as a binary number with 0 being the most significant bit.
+
+### `std::optional<label_file> zdd_maxelem(zdd A)`
+{: .no_toc }
+
+Finds the _a ∈ A_ (if any) that is lexicographically largest when interpreting
+_a_ as a binary number with 0 being the most significant bit.
+
+## Other Functions
 
 ### `bool is_sink(zdd A, sink_pred)`
 {: .no_toc }
