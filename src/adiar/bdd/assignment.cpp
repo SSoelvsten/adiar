@@ -37,15 +37,10 @@ namespace adiar
     return out;
   }
 
-  class bdd_satmin_policy : public bdd_policy
+  class bdd_satmin_policy : public bdd_policy, public sat_trav_min_policy
   {
   public:
     static constexpr bool skipped_value = false;
-
-    static bool go_high(const node_t &n) {
-      // Only pick high, if low is the false sink
-      return is_sink(n.low) && !value_of(n.low);
-    }
   };
 
   assignment_file bdd_satmin(const bdd &f)
@@ -54,15 +49,10 @@ namespace adiar
     return bdd_satX<bdd_satmin_policy>(f);
   }
 
-  class bdd_satmax_policy : public bdd_policy
+  class bdd_satmax_policy : public bdd_policy, public sat_trav_max_policy
   {
   public:
     static constexpr bool skipped_value = true;
-
-    static bool go_high(const node_t &n) {
-      // Pick high as long it is not the false sink
-      return is_node(n.high) || value_of(n.high);
-    }
   };
 
   assignment_file bdd_satmax(const bdd &f)

@@ -31,6 +31,24 @@ namespace adiar
       n_next = go_high ? n_curr.high : n_curr.low;
     }
   }
+
+  class sat_trav_min_policy
+  {
+  public:
+    inline static bool go_high(const node_t &n) {
+      // Only pick high, if low is the false sink
+      return is_sink(n.low) && !value_of(n.low);
+    }
+  };
+
+  class sat_trav_max_policy
+  {
+  public:
+    inline static bool go_high(const node_t &n) {
+      // Pick high as long it is not the false sink
+      return is_node(n.high) || value_of(n.high);
+    }
+  };
 }
 
 #endif // ADIAR_INTERNAL_SAT_TRAV_H
