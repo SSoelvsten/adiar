@@ -112,7 +112,7 @@ go_bandit([]() {
         AssertThat(ls.can_pull(), Is().False());
       });
 
-      it("finds {0,2} on [1]", [&]() {
+      it("finds {1} on [1]", [&]() {
         std::optional<label_file> result = zdd_minelem(zdd_1);
         AssertThat(result.has_value(), Is().True());
 
