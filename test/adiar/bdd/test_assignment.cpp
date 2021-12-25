@@ -76,6 +76,52 @@ go_bandit([]() {
       nw << n4 << n3 << n2 << n1;
     }
 
+
+    it("should retrieve minimal assignment from true sink", [&]() {
+      node_file T;
+      {
+        node_writer nw(T);
+        nw << create_sink(true);
+      }
+
+      assignment_file result = bdd_satmin(T);
+
+      assignment_stream<> out_assignment(result);
+      AssertThat(out_assignment.can_pull(), Is().False());
+    });
+
+    it("should retrieve minimal assignment from false sink", [&]() {
+      node_file F;
+      {
+        node_writer nw(F);
+        nw << create_sink(false);
+      }
+
+      assignment_file result = bdd_satmin(false);
+
+      assignment_stream<> out_assignment(result);
+      AssertThat(out_assignment.can_pull(), Is().False());
+    });
+
+    it("should retrieve minimal assignment [1]", [&]() {
+      assignment_file result = bdd_satmin(bdd_1);
+      assignment_stream<> out_assignment(result);
+
+      AssertThat(out_assignment.can_pull(), Is().True());
+      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+
+      AssertThat(out_assignment.can_pull(), Is().True());
+      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+
+      AssertThat(out_assignment.can_pull(), Is().True());
+      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+
+      AssertThat(out_assignment.can_pull(), Is().True());
+      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+
+      AssertThat(out_assignment.can_pull(), Is().False());
+    });
+
     it("should retrieve minimal assignment [1]", [&]() {
       assignment_file result = bdd_satmin(bdd_1);
       assignment_stream<> out_assignment(result);

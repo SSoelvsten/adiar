@@ -9,8 +9,6 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Retrieves the lexicographically smallest x such that f(x) = 1.
   ///
-  /// \param f A non-sink BDD.
-  ///
   /// \return An assignment_file containing the lexicographically smallest
   /// assignment for the variables with a populated level in the BDD.
   //////////////////////////////////////////////////////////////////////////////

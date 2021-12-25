@@ -11,9 +11,6 @@ namespace adiar
   template<typename policy>
   inline assignment_file bdd_satX(const bdd &f)
   {
-    adiar_assert(!is_sink(f),
-                 "Cannot extract an assignment from a sink file");
-
     assignment_file out;
     assignment_writer aw(out);
 
