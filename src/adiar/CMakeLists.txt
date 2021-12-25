@@ -31,6 +31,7 @@ set(HEADERS
   zdd/change.h
   zdd/contains.h
   zdd/count.h
+  zdd/elem.h
   zdd/pred.h
   zdd/project.h
   zdd/subset.h
@@ -84,6 +85,7 @@ set(SOURCES
   zdd/change.cpp
   zdd/contains.cpp
   zdd/count.cpp
+  zdd/elem.cpp
   zdd/pred.cpp
   zdd/project.cpp
   zdd/subset.cpp

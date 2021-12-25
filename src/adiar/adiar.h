@@ -45,6 +45,7 @@
 
 // Other operations
 #include <adiar/zdd/count.h>
+#include <adiar/zdd/elem.h>
 
 // Predicates
 #include <adiar/zdd/pred.h>
