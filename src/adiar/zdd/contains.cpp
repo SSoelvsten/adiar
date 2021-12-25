@@ -20,11 +20,11 @@ namespace adiar
     bool has_l = ls.can_pull();
     label_t l = has_l ? ls.pull() : 0;
 
-    while (true) {
-      while (ls.can_pull() && l < label_of(n)) {
-        l = ls.pull();
-      }
+    if (has_l && l < label_of(n)) {
+      return false;
+    }
 
+    while (true) {
       const ptr_t next_ptr = has_l && l == label_of(n) ? n.high : n.low;
 
       // Found sink
