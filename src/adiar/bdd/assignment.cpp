@@ -1,13 +1,15 @@
 #include <adiar/data.h>
+
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
+#include <adiar/internal/sat_trav.h>
+
 namespace adiar
 {
-  assignment_file assignment_find(const bdd &f,
-                                  bool default_for_skipped_var,
-                                  const std::function<bool(node_t)>& pick_next)
+  template<typename policy>
+  inline assignment_file bdd_satX(const bdd &f)
   {
     adiar_assert(!is_sink(f),
                  "Cannot extract an assignment from a sink file");
@@ -15,57 +17,58 @@ namespace adiar
     assignment_file out;
     assignment_writer aw(out);
 
-    node_stream<> in_nodes(f);
-    node_t v_curr = in_nodes.pull();
+    level_info_stream<node_t,1> ms(f);
 
-    level_info_stream<node_t,1> in_meta(f);
-
-    bool pick_high = pick_next(v_curr);
-    aw << create_assignment(label_of(in_meta.pull()), pick_high);
-
-    ptr_t v_next = pick_high ? v_curr.high : v_curr.low;
-
-    while (!is_sink(v_next)) {
-      // forward to v_next
-      while (v_curr.uid < v_next) { v_curr = in_nodes.pull(); }
-
+    const sat_trav_callback_t callback = [&aw, &ms](const label_t label, const bool value) {
       // set default to all skipped levels
-      while (label_of(in_meta.peek()) < label_of(v_next)) {
-        aw << create_assignment(label_of(in_meta.pull()), default_for_skipped_var);
+      while (label_of(ms.peek()) < label) {
+        aw << create_assignment(label_of(ms.pull()), policy::skipped_value);
       }
+      adiar_debug(label_of(ms.peek()) == label,
+                  "level given should exist in BDD");
 
-      pick_high = pick_next(v_curr);
-      aw << create_assignment(label_of(in_meta.pull()), pick_high);
+      aw << create_assignment(label_of(ms.pull()), value);
+    };
 
-      v_next = pick_high ? v_curr.high : v_curr.low;
+    sat_trav<policy>(f, callback);
+
+    while (ms.can_pull()) {
+      aw << create_assignment(label_of(ms.pull()), policy::skipped_value);
     }
 
-    // Set the remaining levels to the default value
-    while (in_meta.can_pull()) {
-      aw << create_assignment(label_of(in_meta.pull()), default_for_skipped_var);
-    }
     return out;
   }
 
-  const auto pick_low = [](node_t v) -> bool
+  class bdd_satmin_policy : public bdd_policy
   {
-    // Only pick high, if low is the false sink
-    return is_sink(v.low) && !value_of(v.low);
+  public:
+    static constexpr bool skipped_value = false;
+
+    static bool go_high(const node_t &n) {
+      // Only pick high, if low is the false sink
+      return is_sink(n.low) && !value_of(n.low);
+    }
   };
 
   assignment_file bdd_satmin(const bdd &f)
   {
-    return assignment_find(f, false, pick_low);
+
+    return bdd_satX<bdd_satmin_policy>(f);
   }
 
-  const auto pick_high = [](node_t v) -> bool
+  class bdd_satmax_policy : public bdd_policy
   {
-    // Pick high as long it is not the false sink
-    return is_node(v.high) || value_of(v.high);
+  public:
+    static constexpr bool skipped_value = true;
+
+    static bool go_high(const node_t &n) {
+      // Pick high as long it is not the false sink
+      return is_node(n.high) || value_of(n.high);
+    }
   };
 
   assignment_file bdd_satmax(const bdd &f)
   {
-    return assignment_find(f, true, pick_high);
+    return bdd_satX<bdd_satmax_policy>(f);
   }
 }
