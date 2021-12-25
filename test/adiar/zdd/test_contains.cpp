@@ -300,6 +300,26 @@ go_bandit([]() {
       AssertThat(zdd_contains(zdd_2, labels), Is().False());
     });
 
-    // TODO: reaching sink with yet unseen labels
+    it("fails on label before root for [2] on { 0, 2, 4 }", [&]() {
+      label_file labels;
+
+      {
+        label_writer w(labels);
+        w << 0 << 2 << 4;
+      }
+
+      AssertThat(zdd_contains(zdd_2, labels), Is().False());
+    });
+
+    it("fails on labels before root for [2] on { 0, 1, 2, 4 }", [&]() {
+      label_file labels;
+
+      {
+        label_writer w(labels);
+        w << 0 << 1 << 2 << 4;
+      }
+
+      AssertThat(zdd_contains(zdd_2, labels), Is().False());
+    });
   });
  });
