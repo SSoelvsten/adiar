@@ -12,10 +12,10 @@
 
 namespace adiar
 {
-  template<typename visitor>
+  template<typename visitor_t>
   class zdd_sat_label_writer_visitor
   {
-    visitor __visitor;
+    visitor_t visitor;
 
     bool has_elem = false;
 
@@ -25,20 +25,20 @@ namespace adiar
   public:
     zdd_sat_label_writer_visitor() : lw(lf) { }
 
-    bool visit(const node_t &n)
+    ptr_t visit(const node_t &n)
     {
-      const bool go_high = __visitor.visit(n);
+      const ptr_t next_ptr = visitor.visit(n);
 
-      if (go_high) {
+      if (next_ptr == n.high && (next_ptr != n.low || visitor_t::keep_dont_cares)) {
         lw << label_of(n);
       }
 
-      return go_high;
+      return next_ptr;
     }
 
     void visit(const bool s)
     {
-      __visitor.visit(s);
+      visitor.visit(s);
       has_elem = s;
     }
 
@@ -48,9 +48,15 @@ namespace adiar
     }
   };
 
+  class zdd_satmin_visitor : public traverse_satmin_visitor
+  {
+  public:
+    static constexpr bool keep_dont_cares = false;
+  };
+
   std::optional<label_file> zdd_minelem(const zdd &A)
   {
-    zdd_sat_label_writer_visitor<traverse_satmin_visitor> v;
+    zdd_sat_label_writer_visitor<zdd_satmin_visitor> v;
     traverse(A, v);
     return v.get_result();
   }
@@ -58,9 +64,11 @@ namespace adiar
   class zdd_satmax_visitor
   {
   public:
-    inline bool visit(const node_t &n) {
+    static constexpr bool keep_dont_cares = true;
+
+    inline ptr_t visit(const node_t &n) {
       adiar_debug(!is_sink(n.high) || value_of(n.high), "high sinks are never false");
-      return true;
+      return n.high;
     }
 
     inline void visit(const bool /*s*/)

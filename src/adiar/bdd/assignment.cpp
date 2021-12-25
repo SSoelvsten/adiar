@@ -22,9 +22,9 @@ namespace adiar
   public:
     bdd_sat_assignment_writer_visitor(const bdd& f) : aw(af), ms(f) { }
 
-    bool visit(const node_t &n)
+    ptr_t visit(const node_t &n)
     {
-      const bool go_high = __visitor.visit(n);
+      const ptr_t next_ptr = __visitor.visit(n);
       const label_t label = label_of(n);
 
       // set default to all skipped levels
@@ -34,8 +34,8 @@ namespace adiar
       adiar_debug(label_of(ms.peek()) == label,
                   "level given should exist in BDD");
 
-      aw << create_assignment(label_of(ms.pull()), go_high);
-      return go_high;
+      aw << create_assignment(label_of(ms.pull()), next_ptr == n.high);
+      return next_ptr;
     }
 
     void visit(const bool s)

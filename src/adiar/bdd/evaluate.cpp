@@ -16,9 +16,9 @@ namespace adiar
     bdd_eval_func_visitor(const assignment_func& f) : af(f)
     { }
 
-    inline bool visit(const node_t &n)
+    inline ptr_t visit(const node_t &n)
     {
-      return af(label_of(n));
+      return af(label_of(n)) ? n.high : n.low;
     }
 
     inline void visit(const bool s)
@@ -47,7 +47,7 @@ namespace adiar
     bdd_eval_file_visitor(const assignment_file& af) : as(af)
     { if (as.can_pull()) { a = as.pull(); } }
 
-    inline bool visit(const node_t &n)
+    inline ptr_t visit(const node_t &n)
     {
       const label_t label = label_of(n);
       while (label_of(a) < label) {
@@ -56,7 +56,7 @@ namespace adiar
       }
       adiar_assert(label_of(a) == label, "Missing assignment for node visited in BDD");
 
-      return value_of(a);
+      return value_of(a) ? n.high : n.low;
     }
 
     inline void visit(const bool s)
