@@ -14,8 +14,6 @@ namespace adiar
   void sat_trav(const typename sat_trav_policy::reduced_t &dd,
                 const sat_trav_callback_t &callback)
   {
-    // TODO: unit test sink
-
     node_stream<> in_nodes(dd);
     node_t n_curr = in_nodes.pull();
     ptr_t  n_next = n_curr.uid;
