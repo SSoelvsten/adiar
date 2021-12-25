@@ -6,50 +6,71 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
-#include <adiar/internal/sat_trav.h>
+#include <adiar/internal/traverse.h>
 
 #include <adiar/zdd/zdd.h>
 
 namespace adiar
 {
-  template<typename policy>
-  inline std::optional<label_file> zdd_Xelem(const zdd &A)
+  template<typename visitor>
+  class zdd_sat_label_writer_visitor
   {
-    if (is_sink(A, is_false)) {
-      return std::nullopt;
+    visitor __visitor;
+
+    bool has_elem = false;
+
+    label_file lf;
+    label_writer lw;
+
+  public:
+    zdd_sat_label_writer_visitor() : lw(lf) { }
+
+    bool visit(const node_t &n)
+    {
+      const bool go_high = __visitor.visit(n);
+
+      if (go_high) {
+        lw << label_of(n);
+      }
+
+      return go_high;
     }
 
-    label_file out;
-    label_writer lw(out);
+    void visit(const bool s)
+    {
+      __visitor.visit(s);
+      has_elem = s;
+    }
 
-    const sat_trav_callback_t callback = [&lw](const label_t label, const bool value) {
-      if (value) { lw << label; }
-    };
-
-    sat_trav<policy>(A, callback);
-
-    return out;
-  }
-
-  class zdd_minelem_policy : public zdd_policy, public sat_trav_min_policy
-  { };
+    const std::optional<label_file> get_result() const
+    {
+      if (has_elem) { return lf; } else { return std::nullopt; }
+    }
+  };
 
   std::optional<label_file> zdd_minelem(const zdd &A)
   {
-    return zdd_Xelem<zdd_minelem_policy>(A);
+    zdd_sat_label_writer_visitor<traverse_satmin_visitor> v;
+    traverse(A, v);
+    return v.get_result();
   }
 
-  class zdd_maxelem_policy : public zdd_policy
+  class zdd_satmax_visitor
   {
   public:
-    inline static bool go_high(const node_t &n) {
+    inline bool visit(const node_t &n) {
       adiar_debug(!is_sink(n.high) || value_of(n.high), "high sinks are never false");
       return true;
     }
+
+    inline void visit(const bool /*s*/)
+    { }
   };
 
   std::optional<label_file> zdd_maxelem(const zdd &A)
   {
-    return zdd_Xelem<zdd_maxelem_policy>(A);
+    zdd_sat_label_writer_visitor<zdd_satmax_visitor> v;
+    traverse(A, v);
+    return v.get_result();
   }
 }

@@ -50,9 +50,9 @@ set(HEADERS
   internal/product_construction.h
   internal/quantify.h
   internal/reduce.h
-  internal/sat_trav.h
   internal/sorter.h
   internal/substitution.h
+  internal/traverse.h
   internal/util.h
 
   # statistics
