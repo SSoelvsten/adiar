@@ -5,58 +5,65 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
-#include <adiar/internal/sat_trav.h>
+#include <adiar/internal/traverse.h>
 
 namespace adiar
 {
-  template<typename policy>
-  inline assignment_file bdd_satX(const bdd &f)
+  template<typename visitor, bool skipped_value>
+  class bdd_sat_assignment_writer_visitor
   {
-    assignment_file out;
-    assignment_writer aw(out);
+    visitor __visitor;
 
-    level_info_stream<node_t,1> ms(f);
+    assignment_file af;
+    assignment_writer aw;
 
-    const sat_trav_callback_t callback = [&aw, &ms](const label_t label, const bool value) {
+    level_info_stream<node_t,1> ms;
+
+  public:
+    bdd_sat_assignment_writer_visitor(const bdd& f) : aw(af), ms(f) { }
+
+    bool visit(const node_t &n)
+    {
+      const bool go_high = __visitor.visit(n);
+      const label_t label = label_of(n);
+
       // set default to all skipped levels
       while (label_of(ms.peek()) < label) {
-        aw << create_assignment(label_of(ms.pull()), policy::skipped_value);
+        aw << create_assignment(label_of(ms.pull()), skipped_value);
       }
       adiar_debug(label_of(ms.peek()) == label,
                   "level given should exist in BDD");
 
-      aw << create_assignment(label_of(ms.pull()), value);
-    };
-
-    sat_trav<policy>(f, callback);
-
-    while (ms.can_pull()) {
-      aw << create_assignment(label_of(ms.pull()), policy::skipped_value);
+      aw << create_assignment(label_of(ms.pull()), go_high);
+      return go_high;
     }
 
-    return out;
-  }
+    void visit(const bool s)
+    {
+      __visitor.visit(s);
 
-  class bdd_satmin_policy : public bdd_policy, public sat_trav_min_policy
-  {
-  public:
-    static constexpr bool skipped_value = false;
+      while (ms.can_pull()) {
+        aw << create_assignment(label_of(ms.pull()), skipped_value);
+      }
+    }
+
+    const assignment_file get_result() const
+    {
+      return af;
+    }
   };
 
   assignment_file bdd_satmin(const bdd &f)
   {
-
-    return bdd_satX<bdd_satmin_policy>(f);
+    bdd_sat_assignment_writer_visitor<traverse_satmin_visitor, false> v(f);
+    traverse(f,v);
+    return v.get_result();
   }
-
-  class bdd_satmax_policy : public bdd_policy, public sat_trav_max_policy
-  {
-  public:
-    static constexpr bool skipped_value = true;
-  };
 
   assignment_file bdd_satmax(const bdd &f)
   {
-    return bdd_satX<bdd_satmax_policy>(f);
+    bdd_sat_assignment_writer_visitor<traverse_satmax_visitor, true> v(f);
+    traverse(f,v);
+    return v.get_result();
   }
 }

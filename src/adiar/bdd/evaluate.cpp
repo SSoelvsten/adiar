@@ -1,55 +1,75 @@
 #include "evaluate.h"
 
 #include <adiar/file_stream.h>
+#include <adiar/internal/traverse.h>
 
 #include <adiar/assert.h>
 
 namespace adiar
 {
+  class bdd_eval_func_visitor
+  {
+    const assignment_func &af;
+    bool result;
+
+  public:
+    bdd_eval_func_visitor(const assignment_func& f) : af(f)
+    { }
+
+    inline bool visit(const node_t &n)
+    {
+      return af(label_of(n));
+    }
+
+    inline void visit(const bool s)
+    { result = s; }
+
+    inline bool get_result()
+    { return result; }
+  };
+
   bool bdd_eval(const bdd &bdd, const assignment_func &af)
   {
-    node_stream<> ns(bdd);
-    node_t current_node = ns.pull();
-
-    if(is_sink(current_node)) {
-      return value_of(current_node);
-    }
-
-    while (true) {
-      ptr_t next_ptr = unflag(af(label_of(current_node)) ? current_node.high : current_node.low);
-
-      if(is_sink(next_ptr)) {
-        return value_of(next_ptr);
-      }
-
-      while(current_node.uid < next_ptr) {
-        adiar_debug(ns.can_pull(), "Invalid uid chasing; fell out of BDD");
-        current_node = ns.pull();
-      }
-    }
+    bdd_eval_func_visitor v(af);
+    traverse(bdd, v);
+    return v.get_result();
   }
 
-  bool bdd_eval(const bdd &bdd, const assignment_file &assignments)
+  //////////////////////////////////////////////////////////////////////////////
+  class bdd_eval_file_visitor
   {
-    if (is_sink(bdd)) {
-      return is_sink(bdd, is_true);
-    }
+    assignment_stream<> as;
+    assignment_t a;
 
-    assignment_stream<> as(assignments);
-    assignment_t a = as.pull();
+    bool result;
 
-    const assignment_func af = [&as, &a](label_t l)
+  public:
+    bdd_eval_file_visitor(const assignment_file& af) : as(af)
+    { if (as.can_pull()) { a = as.pull(); } }
+
+    inline bool visit(const node_t &n)
     {
-      while (l > label_of(a)) {
+      const label_t label = label_of(n);
+      while (label_of(a) < label) {
         adiar_assert(as.can_pull(), "Given assignment file is insufficient to traverse BDD");
         a = as.pull();
       }
-
-      adiar_assert(l == label_of(a), "Missing assignment for node visited in BDD");
+      adiar_assert(label_of(a) == label, "Missing assignment for node visited in BDD");
 
       return value_of(a);
-    };
+    }
 
-    return bdd_eval(bdd, af);
+    inline void visit(const bool s)
+    { result = s; }
+
+    inline bool get_result()
+    { return result; }
+  };
+
+  bool bdd_eval(const bdd &bdd, const assignment_file &af)
+  {
+    bdd_eval_file_visitor v(af);
+    traverse(bdd, v);
+    return v.get_result();
   }
 }
