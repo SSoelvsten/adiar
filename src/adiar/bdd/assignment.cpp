@@ -1,6 +1,7 @@
+#include "assignment.h"
+
 #include <adiar/data.h>
 
-#include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
