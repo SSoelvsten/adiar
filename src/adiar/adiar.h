@@ -39,6 +39,7 @@
 // Manipulation operations
 #include <adiar/zdd/binop.h>
 #include <adiar/zdd/change.h>
+#include <adiar/zdd/complement.h>
 #include <adiar/zdd/contains.h>
 #include <adiar/zdd/expand.h>
 #include <adiar/zdd/project.h>

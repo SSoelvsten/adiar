@@ -12,19 +12,23 @@ namespace adiar
   class zdd_expand_policy : public zdd_policy
   {
   public:
+    static constexpr bool may_skip = false;
+
+    static constexpr bool cut_true_sink = true;
+    static constexpr bool cut_false_sink = false;
+
+  public:
     static zdd on_sink_input(const bool sink_value, const zdd& dd, const label_file &labels)
     {
       return sink_value ? zdd_powerset(labels) : dd;
     }
 
     // LCOV_EXCL_START
-    static zdd sink(const bool sink_value)
+    static zdd sink(const bool /*sink_value*/)
     {
       adiar_unreachable();
     }
     // LCOV_EXCL_END
-
-    static constexpr bool may_skip = false;
 
     static inline intercut_rec hit_existing(const node_t &/*n*/)
     {
