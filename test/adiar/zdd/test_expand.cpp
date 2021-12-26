@@ -369,21 +369,17 @@ go_bandit([]() {
       AssertThat(node_arcs.can_pull(), Is().True());
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), create_node_ptr(4,0) }));
 
-      // TODO: why are the arcs output in a valid but unexpected order?
-      //
-      // We would expect the next four arcs to be low, high, low, high, since
-      // the tpie::priority_queue has until now been stable?
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(4,0)), create_node_ptr(5,0) }));
-
       AssertThat(node_arcs.can_pull(), Is().True());
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(4,0), create_node_ptr(5,0) }));
 
       AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(5,0)), create_node_ptr(6,0) }));
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(4,0)), create_node_ptr(5,0) }));
 
       AssertThat(node_arcs.can_pull(), Is().True());
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(5,0), create_node_ptr(6,0) }));
+
+      AssertThat(node_arcs.can_pull(), Is().True());
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(5,0)), create_node_ptr(6,0) }));
 
       AssertThat(node_arcs.can_pull(), Is().False());
 
@@ -689,12 +685,11 @@ go_bandit([]() {
       AssertThat(node_arcs.can_pull(), Is().True());
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(6,0)), create_node_ptr(7,1) }));
 
-      // TODO: Again, why are these nodes swapped in their order?
-      AssertThat(node_arcs.can_pull(), Is().True()); // T chain
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(5,1)), create_node_ptr(7,2) }));
-
       AssertThat(node_arcs.can_pull(), Is().True()); // T chain
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(5,1), create_node_ptr(7,2) }));
+
+      AssertThat(node_arcs.can_pull(), Is().True()); // T chain
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(5,1)), create_node_ptr(7,2) }));
 
       // (5) and (6) and their x9 cuts
       AssertThat(node_arcs.can_pull(), Is().True());
@@ -713,20 +708,19 @@ go_bandit([]() {
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(8,0), create_node_ptr(9,0) }));
 
       AssertThat(node_arcs.can_pull(), Is().True()); // T chain
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(7,2), create_node_ptr(9,1) }));
+
+      AssertThat(node_arcs.can_pull(), Is().True()); // T chain
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(7,2)), create_node_ptr(9,1) }));
 
-      // TODO: Another unstable ordering of four arcs...
       AssertThat(node_arcs.can_pull(), Is().True()); // T chain
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(8,1)), create_node_ptr(9,1) }));
-
-      AssertThat(node_arcs.can_pull(), Is().True()); // T chain
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(7,2), create_node_ptr(9,1) }));
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(8,0)), create_node_ptr(9,1) }));
 
       AssertThat(node_arcs.can_pull(), Is().True()); // T chain
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(8,1), create_node_ptr(9,1) }));
 
       AssertThat(node_arcs.can_pull(), Is().True()); // T chain
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(8,0)), create_node_ptr(9,1) }));
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(8,1)), create_node_ptr(9,1) }));
 
       // (7) and the x11 cuts
       AssertThat(node_arcs.can_pull(), Is().True());
@@ -735,12 +729,11 @@ go_bandit([]() {
       AssertThat(node_arcs.can_pull(), Is().True());
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(9,0)), create_node_ptr(10,0) }));
 
-      // TODO: ...
-      AssertThat(node_arcs.can_pull(), Is().True()); // T chain
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(9,1)), create_node_ptr(11,0) }));
-
       AssertThat(node_arcs.can_pull(), Is().True()); // T chain
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(9,1), create_node_ptr(11,0) }));
+
+      AssertThat(node_arcs.can_pull(), Is().True()); // T chain
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(9,1)), create_node_ptr(11,0) }));
 
       AssertThat(node_arcs.can_pull(), Is().True()); // T chain
       AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(10,0)), create_node_ptr(11,0) }));

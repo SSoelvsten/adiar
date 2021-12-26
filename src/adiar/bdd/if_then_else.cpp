@@ -25,27 +25,70 @@ namespace adiar
   // the placement of the else-BDD on whether any element from the if-BDD or
   // then-BDD has been forwarded.
 
-  struct ite_triple : triple
+  struct ite_triple_1 : triple
   {
     ptr_t source;
   };
 
-  struct ite_triple_data_1 : ite_triple
+#ifndef NDEBUG
+  struct ite_triple_1_lt : public std::binary_function<ite_triple_1, ite_triple_1, bool>
+  {
+    bool operator()(const ite_triple_1 &a, const ite_triple_1 &b)
+    {
+      return triple_fst_lt()(a,b)
+        || (!triple_fst_lt()(b,a) && a.source < b.source);
+    }
+  };
+#else
+  typedef triple_fst_lt ite_triple_1_lt;
+#endif
+
+  typedef levelized_node_priority_queue<ite_triple_1, triple_label, ite_triple_1_lt, std::less<>, 3>
+  ite_priority_queue_1_t;
+
+  struct ite_triple_2 : ite_triple_1
   {
     ptr_t data_1_low;
     ptr_t data_1_high;
   };
 
-  struct ite_triple_data_2 : ite_triple_data_1
+#ifndef NDEBUG
+  struct ite_triple_2_lt : public std::binary_function<ite_triple_2, ite_triple_2, bool>
+  {
+    bool operator()(const ite_triple_2 &a, const ite_triple_2 &b)
+    {
+      return triple_snd_lt()(a,b)
+        || (!triple_snd_lt()(b,a) && a.source < b.source);
+    }
+  };
+#else
+  typedef triple_snd_lt ite_triple_2_lt;
+#endif
+
+  typedef tpie::priority_queue<ite_triple_2, ite_triple_2_lt>
+  ite_priority_queue_2_t;
+
+  struct ite_triple_3 : ite_triple_2
   {
     ptr_t data_2_low;
     ptr_t data_2_high;
   };
 
+#ifndef NDEBUG
+  struct ite_triple_3_lt : public std::binary_function<ite_triple_3, ite_triple_3, bool>
+  {
+    bool operator()(const ite_triple_3 &a, const ite_triple_3 &b)
+    {
+      return triple_trd_lt()(a,b)
+        || (!triple_trd_lt()(b,a) && a.source < b.source);
+    }
+  };
+#else
+  typedef triple_trd_lt ite_triple_3_lt;
+#endif
 
-  typedef levelized_node_priority_queue<ite_triple, triple_label, triple_fst_lt, std::less<>, 3> ite_priority_queue_1_t;
-  typedef tpie::priority_queue<ite_triple_data_1, triple_snd_lt> ite_priority_queue_2_t;
-  typedef tpie::priority_queue<ite_triple_data_2, triple_trd_lt> ite_priority_queue_3_t;
+  typedef tpie::priority_queue<ite_triple_3, ite_triple_3_lt>
+  ite_priority_queue_3_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -254,7 +297,7 @@ namespace adiar
       if (ite_pq_1.can_pull()
           && (ite_pq_2.empty() || fst(ite_pq_1.top()) < snd(ite_pq_2.top()))
           && (ite_pq_3.empty() || fst(ite_pq_1.top()) < trd(ite_pq_3.top()))) {
-        ite_triple r = ite_pq_1.top();
+        ite_triple_1 r = ite_pq_1.top();
         ite_pq_1.pop();
 
         source = r.source;
@@ -263,7 +306,7 @@ namespace adiar
         t_else = r.t3;
       } else if (!ite_pq_2.empty()
                  && (ite_pq_3.empty() || snd(ite_pq_2.top()) < trd(ite_pq_3.top()))) {
-        ite_triple_data_1 r = ite_pq_2.top();
+        ite_triple_2 r = ite_pq_2.top();
         ite_pq_2.pop();
 
         source = r.source;
@@ -275,7 +318,7 @@ namespace adiar
         data_1_low = r.data_1_low;
         data_1_high = r.data_1_high;
       } else {
-        ite_triple_data_2 r = ite_pq_3.top();
+        ite_triple_3 r = ite_pq_3.top();
         ite_pq_3.pop();
 
         source = r.source;

@@ -23,15 +23,43 @@ namespace adiar
     ptr_t source;
   };
 
+#ifndef NDEBUG
+  struct prod_tuple_1_lt : public std::binary_function<tuple, tuple, bool>
+  {
+    bool operator()(const prod_tuple_1 &a, const prod_tuple_1 &b)
+    {
+      return tuple_fst_lt()(a,b)
+        || (!tuple_fst_lt()(b,a) && a.source < b.source)
+        ;
+    }
+  };
+#else
+  typedef tuple_fst_lt prod_tuple_1_lt;
+#endif
+
+  typedef levelized_node_priority_queue<prod_tuple_1, tuple_label, prod_tuple_1_lt, std::less<>, 2>
+  prod_priority_queue_1_t;
+
   struct prod_tuple_2 : tuple_data
   {
     ptr_t source;
   };
 
-  typedef levelized_node_priority_queue<prod_tuple_1, tuple_label, tuple_fst_lt, std::less<>, 2>
-  prod_priority_queue_1_t;
+#ifndef NDEBUG
+  struct prod_tuple_2_lt : public std::binary_function<tuple, tuple, bool>
+  {
+    bool operator()(const prod_tuple_2 &a, const prod_tuple_2 &b)
+    {
+      return tuple_snd_lt()(a,b)
+        || (!tuple_snd_lt()(b,a) && a.source < b.source)
+        ;
+    }
+  };
+#else
+  typedef tuple_snd_lt prod_tuple_2_lt;
+#endif
 
-  typedef tpie::priority_queue<prod_tuple_2, tuple_snd_lt>
+  typedef tpie::priority_queue<prod_tuple_2, prod_tuple_2_lt>
   prod_priority_queue_2_t;
 
   struct prod_rec_output {
