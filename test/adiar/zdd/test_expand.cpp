@@ -1,7 +1,5 @@
 go_bandit([]() {
-  describe("ZDD: Expand", [&]() {
-    // == CREATE SINK-ONLY BDD FOR UNIT TESTS ==
-    //                  START
+  describe("adiar/zdd/expand.h", [&]() {
     node_file zdd_F;
     node_file zdd_T;
 

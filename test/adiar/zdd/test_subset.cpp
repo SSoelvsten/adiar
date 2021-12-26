@@ -1,7 +1,5 @@
 go_bandit([]() {
-  describe("ZDD: Subset derivation", [&]() {
-    // == CREATE SINK-ONLY ZDD FOR UNIT TESTS ==
-    //                  START
+  describe("adiar/zdd/subset.h", [&]() {
     node_file zdd_F;
     node_file zdd_T;
 

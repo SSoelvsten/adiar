@@ -1,7 +1,6 @@
 go_bandit([]() {
-  describe("ZDD: ZDD Class", [&]() {
+  describe("adiar/zdd/zdd.h", [&]() {
     node_file x0_nf;
-
     {
       node_writer nw_0(x0_nf);
       nw_0 << create_node(0,MAX_ID,
@@ -12,7 +11,6 @@ go_bandit([]() {
     zdd x0(x0_nf);
 
     node_file x1_nf;
-
     {
       node_writer nw_1(x1_nf);
       nw_1 << create_node(1,MAX_ID,
@@ -23,7 +21,6 @@ go_bandit([]() {
     zdd x1(x1_nf);
 
     node_file x0_or_x1_nf;
-
     {
       node_writer nw_01(x0_or_x1_nf);
 
@@ -39,7 +36,6 @@ go_bandit([]() {
     zdd x0_or_x1(x0_or_x1_nf);
 
     node_file sink_T_nf;
-
     {
       node_writer nw_T(sink_T_nf);
       nw_T << create_sink(true);
@@ -48,7 +44,6 @@ go_bandit([]() {
     zdd sink_T(sink_T_nf);
 
     node_file sink_F_nf;
-
     {
       node_writer nw_F(sink_F_nf);
       nw_F << create_sink(false);
@@ -105,16 +100,6 @@ go_bandit([]() {
         AssertThat(out, Is().EqualTo(x0_or_x1));
       });
     });
-
-    it("should copy-construct node_file and negation back to zdd", [&]() {
-      // Since we know the __zdd copy constructor works, then we can use
-      // it to peek into the 'zdd' class
-      __zdd t2 = __zdd(zdd(__zdd(x0_or_x1)));
-      AssertThat(t2.has<node_file>(), Is().True());
-      AssertThat(t2.get<node_file>()._file_ptr, Is().EqualTo(x0_or_x1_nf._file_ptr));
-      AssertThat(t2.negate, Is().False());
-    });
-
 
     describe("operators", [&]() {
       it("should reject Ø == {Ø}", [&]() {

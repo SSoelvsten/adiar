@@ -36,9 +36,9 @@ using test_priority_queue = levelized_priority_queue<pq_test_data, 1u,
                                                      MetaStreams, Buckets>;
 
 go_bandit([]() {
-  describe("INTERNAL: Levelized Priority Queue", []() {
+  describe("adiar/internal/levelized_priority_queue.h", []() {
 
-    describe("Label Manager", [&]() {
+    describe("pq_label_mgr", [&]() {
       it("can pull from one level_info stream", [&]() {
         pq_test_file f;
         { // Garbage collect the writer
@@ -299,7 +299,7 @@ go_bandit([]() {
       });
     });
 
-    describe("with 1 Bucket", [&]() {
+    describe("levelized_priority_queue<..., Buckets=1>", [&]() {
       it("can set up priority queue with more levels than buckets", [&]() {
         pq_test_file f;
 
@@ -839,7 +839,9 @@ go_bandit([]() {
       });
     });
 
-    describe("with 4 Bucket", [&]() {
+    describe("levelized_priority_queue<..., Buckets=4>", [&]() {
+      // TODO: decrease Buckets = 3 (Issue #164)
+
       it("can set up priority queue with more levels than buckets", [&]() {
         pq_test_file f;
 

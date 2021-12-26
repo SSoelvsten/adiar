@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("BDD: Count", [&]() {
+  describe("adiar/bdd/count.h", []() {
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 
@@ -123,7 +123,7 @@ go_bandit([]() {
       nw_root_1 << create_node(1,0, sink_F, sink_T);
     }
 
-    describe("nodecount", [&]() {
+    describe("bdd_nodecount", [&]() {
       it("can count number of nodes", [&]() {
         AssertThat(bdd_nodecount(bdd_1), Is().EqualTo(4u));
         AssertThat(bdd_nodecount(bdd_2), Is().EqualTo(2u));
@@ -135,7 +135,7 @@ go_bandit([]() {
       });
     });
 
-    describe("varcount", [&]() {
+    describe("bdd_varcount", [&]() {
       it("can count number of variables", [&]() {
         AssertThat(bdd_varcount(bdd_1), Is().EqualTo(4u));
         AssertThat(bdd_varcount(bdd_2), Is().EqualTo(2u));
@@ -147,7 +147,7 @@ go_bandit([]() {
       });
     });
 
-    describe("pathcount", [&]() {
+    describe("bdd_pathcount", [&]() {
       it("can count paths leading to T sinks [1]", [&]() {
         AssertThat(bdd_pathcount(bdd_1), Is().EqualTo(3u));
       });
@@ -185,89 +185,87 @@ go_bandit([]() {
       });
     });
 
-    describe("satcount", [&]() {
-      describe("with varcount", [&]() {
-        it("can count assignments leading to T sinks [1]", [&]() {
-          AssertThat(bdd_satcount(bdd_1, 4), Is().EqualTo(5u));
-          AssertThat(bdd_satcount(bdd_1, 5), Is().EqualTo(2 * 5u));
-          AssertThat(bdd_satcount(bdd_1, 6), Is().EqualTo(2 * 2 * 5u));
-        });
-
-        it("can count assignments leading to T sinks [2]", [&]() {
-          AssertThat(bdd_satcount(bdd_2, 2), Is().EqualTo(3u));
-          AssertThat(bdd_satcount(bdd_2, 3), Is().EqualTo(2 * 3u));
-          AssertThat(bdd_satcount(bdd_2, 5), Is().EqualTo(2 * 2 * 2 * 3u));
-        });
-
-        it("can count assignments leading to T sinks [3]", [&]() {
-          AssertThat(bdd_satcount(bdd_3, 2), Is().EqualTo(2u));
-          AssertThat(bdd_satcount(bdd_3, 3), Is().EqualTo(2 * 2u));
-          AssertThat(bdd_satcount(bdd_3, 5), Is().EqualTo(2 * 2 * 2 * 2u));
-        });
-
-        it("can count assignments leading to T sinks [4]", [&]() {
-          AssertThat(bdd_satcount(bdd_4, 4), Is().EqualTo(8u));
-          AssertThat(bdd_satcount(bdd_4, 5), Is().EqualTo(2 * 8u));
-          AssertThat(bdd_satcount(bdd_4, 8), Is().EqualTo(2 * 2 * 2 * 2 * 8u));
-        });
-
-        it("can count assignments leading to F sinks [1]", [&]() {
-          AssertThat(bdd_satcount(bdd_not(bdd_1), 4), Is().EqualTo(11u));
-          AssertThat(bdd_satcount(bdd_not(bdd_1), 5), Is().EqualTo(2 * 11u));
-          AssertThat(bdd_satcount(bdd_not(bdd_1), 6), Is().EqualTo(2 * 2 * 11u));
-        });
-
-        it("can count assignments leading to F sinks [2]", [&]() {
-          AssertThat(bdd_satcount(bdd_not(bdd_2), 2), Is().EqualTo(1u));
-          AssertThat(bdd_satcount(bdd_not(bdd_2), 3), Is().EqualTo(2 * 1u));
-          AssertThat(bdd_satcount(bdd_not(bdd_2), 5), Is().EqualTo(2 * 2 * 2 * 1u));
-        });
-
-        it("should count no assignments to the wrong sink-only BDD", [&]() {
-          AssertThat(bdd_satcount(bdd_not(bdd_T), 5), Is().EqualTo(0u));
-          AssertThat(bdd_satcount(bdd_not(bdd_T), 4), Is().EqualTo(0u));
-          AssertThat(bdd_satcount(bdd_F, 3), Is().EqualTo(0u));
-          AssertThat(bdd_satcount(bdd_F, 2), Is().EqualTo(0u));
-        });
-
-        it("should count all assignments to the desired sink-only BDD", [&]() {
-          AssertThat(bdd_satcount(bdd_T, 5), Is().EqualTo(32u));
-          AssertThat(bdd_satcount(bdd_T, 4), Is().EqualTo(16u));
-          AssertThat(bdd_satcount(bdd_not(bdd_F), 3), Is().EqualTo(8u));
-          AssertThat(bdd_satcount(bdd_not(bdd_F), 2), Is().EqualTo(4u));
-        });
+    describe("bdd_satcount(f, varcount)", [&]() {
+      it("can count assignments leading to T sinks [1]", [&]() {
+        AssertThat(bdd_satcount(bdd_1, 4), Is().EqualTo(5u));
+        AssertThat(bdd_satcount(bdd_1, 5), Is().EqualTo(2 * 5u));
+        AssertThat(bdd_satcount(bdd_1, 6), Is().EqualTo(2 * 2 * 5u));
       });
 
-      describe("without varcount", [&]() {
-        it("can count assignments leading to T sinks [1]", [&]() {
-          AssertThat(bdd_satcount(bdd_1), Is().EqualTo(5u));
-        });
+      it("can count assignments leading to T sinks [2]", [&]() {
+        AssertThat(bdd_satcount(bdd_2, 2), Is().EqualTo(3u));
+        AssertThat(bdd_satcount(bdd_2, 3), Is().EqualTo(2 * 3u));
+        AssertThat(bdd_satcount(bdd_2, 5), Is().EqualTo(2 * 2 * 2 * 3u));
+      });
 
-        it("can count assignments leading to T sinks [2]", [&]() {
-          AssertThat(bdd_satcount(bdd_2), Is().EqualTo(3u));
-        });
+      it("can count assignments leading to T sinks [3]", [&]() {
+        AssertThat(bdd_satcount(bdd_3, 2), Is().EqualTo(2u));
+        AssertThat(bdd_satcount(bdd_3, 3), Is().EqualTo(2 * 2u));
+        AssertThat(bdd_satcount(bdd_3, 5), Is().EqualTo(2 * 2 * 2 * 2u));
+      });
 
-        it("can count assignments leading to F sinks [1]", [&]() {
-          AssertThat(bdd_satcount(bdd_not(bdd_1)), Is().EqualTo(11u));
-        });
+      it("can count assignments leading to T sinks [4]", [&]() {
+        AssertThat(bdd_satcount(bdd_4, 4), Is().EqualTo(8u));
+        AssertThat(bdd_satcount(bdd_4, 5), Is().EqualTo(2 * 8u));
+        AssertThat(bdd_satcount(bdd_4, 8), Is().EqualTo(2 * 2 * 2 * 2 * 8u));
+      });
 
-        it("can count assignments leading to F sinks [2]", [&]() {
-          AssertThat(bdd_satcount(bdd_not(bdd_2)), Is().EqualTo(1u));
-        });
+      it("can count assignments leading to F sinks [1]", [&]() {
+        AssertThat(bdd_satcount(bdd_not(bdd_1), 4), Is().EqualTo(11u));
+        AssertThat(bdd_satcount(bdd_not(bdd_1), 5), Is().EqualTo(2 * 11u));
+        AssertThat(bdd_satcount(bdd_not(bdd_1), 6), Is().EqualTo(2 * 2 * 11u));
+      });
 
-        it("should count no assignments to the true sink-only BDD", [&]() {
-          AssertThat(bdd_satcount(bdd_T), Is().EqualTo(0u));
-        });
+      it("can count assignments leading to F sinks [2]", [&]() {
+        AssertThat(bdd_satcount(bdd_not(bdd_2), 2), Is().EqualTo(1u));
+        AssertThat(bdd_satcount(bdd_not(bdd_2), 3), Is().EqualTo(2 * 1u));
+        AssertThat(bdd_satcount(bdd_not(bdd_2), 5), Is().EqualTo(2 * 2 * 2 * 1u));
+      });
 
-        it("should count no assignments in a false sink-only BDD", [&]() {
-          AssertThat(bdd_satcount(bdd_not(bdd_F)), Is().EqualTo(0u));
-          AssertThat(bdd_satcount(bdd_F), Is().EqualTo(0u));
-        });
+      it("should count no assignments to the wrong sink-only BDD", [&]() {
+        AssertThat(bdd_satcount(bdd_not(bdd_T), 5), Is().EqualTo(0u));
+        AssertThat(bdd_satcount(bdd_not(bdd_T), 4), Is().EqualTo(0u));
+        AssertThat(bdd_satcount(bdd_F, 3), Is().EqualTo(0u));
+        AssertThat(bdd_satcount(bdd_F, 2), Is().EqualTo(0u));
+      });
 
-        it("should count assignments of a root-only BDD [1]", [&]() {
-          AssertThat(bdd_satcount(bdd_not(bdd_root_1)), Is().EqualTo(1u));
-          AssertThat(bdd_satcount(bdd_root_1), Is().EqualTo(1u));
-        });
+      it("should count all assignments to the desired sink-only BDD", [&]() {
+        AssertThat(bdd_satcount(bdd_T, 5), Is().EqualTo(32u));
+        AssertThat(bdd_satcount(bdd_T, 4), Is().EqualTo(16u));
+        AssertThat(bdd_satcount(bdd_not(bdd_F), 3), Is().EqualTo(8u));
+        AssertThat(bdd_satcount(bdd_not(bdd_F), 2), Is().EqualTo(4u));
+      });
+    });
+
+    describe("bdd_satcount(f)", [&]() {
+      it("can count assignments leading to T sinks [1]", [&]() {
+        AssertThat(bdd_satcount(bdd_1), Is().EqualTo(5u));
+      });
+
+      it("can count assignments leading to T sinks [2]", [&]() {
+        AssertThat(bdd_satcount(bdd_2), Is().EqualTo(3u));
+      });
+
+      it("can count assignments leading to F sinks [1]", [&]() {
+        AssertThat(bdd_satcount(bdd_not(bdd_1)), Is().EqualTo(11u));
+      });
+
+      it("can count assignments leading to F sinks [2]", [&]() {
+        AssertThat(bdd_satcount(bdd_not(bdd_2)), Is().EqualTo(1u));
+      });
+
+      it("should count no assignments to the true sink-only BDD", [&]() {
+        AssertThat(bdd_satcount(bdd_T), Is().EqualTo(0u));
+      });
+
+      it("should count no assignments in a false sink-only BDD", [&]() {
+        AssertThat(bdd_satcount(bdd_not(bdd_F)), Is().EqualTo(0u));
+        AssertThat(bdd_satcount(bdd_F), Is().EqualTo(0u));
+      });
+
+      it("should count assignments of a root-only BDD [1]", [&]() {
+        AssertThat(bdd_satcount(bdd_not(bdd_root_1)), Is().EqualTo(1u));
+        AssertThat(bdd_satcount(bdd_root_1), Is().EqualTo(1u));
       });
     });
   });
