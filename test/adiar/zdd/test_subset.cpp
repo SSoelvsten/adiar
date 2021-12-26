@@ -1215,10 +1215,10 @@ go_bandit([]() {
         AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_3.uid, n1_4.uid }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_6.uid }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_6.uid }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 

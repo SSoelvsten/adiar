@@ -29,7 +29,11 @@ namespace adiar
     bool operator()(const arc_cut &a, const arc_cut &b)
     {
       return a.cut_at < b.cut_at
-        || (a.cut_at == b.cut_at && a.target < b.target);
+        || (a.cut_at == b.cut_at && a.target < b.target)
+#ifndef NDEBUG
+        || (a.cut_at == b.cut_at && a.target == b.target && a.source < b.source)
+#endif
+           ;
     }
   };
 

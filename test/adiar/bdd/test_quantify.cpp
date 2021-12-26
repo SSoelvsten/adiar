@@ -713,14 +713,13 @@ go_bandit([]() {
 
         node_arc_test_stream node_arcs(out);
 
-        // The high arc is forwarded first, since (2) was resolved before (3)
-
         AssertThat(node_arcs.can_pull(), Is().True()); // (4,5)
         AssertThat(node_arcs.pull(),
-                   Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,0) }));
+                   Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
         AssertThat(node_arcs.can_pull(), Is().True());
         AssertThat(node_arcs.pull(),
-                   Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+                   Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
