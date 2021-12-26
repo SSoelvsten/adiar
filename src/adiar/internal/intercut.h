@@ -71,12 +71,14 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
 
-  struct intercut_rec_output {
+  struct intercut_rec_output
+  {
     ptr_t low;
     ptr_t high;
   };
 
-  struct intercut_rec_skipto {
+  struct intercut_rec_skipto
+  {
     ptr_t tgt;
   };
 

@@ -31,7 +31,7 @@ namespace adiar
   template<bool on_empty, bool link_low, bool link_high,
     bool init_low = false,
     bool init_high = true>
-    inline node_file build_chain(const label_file &labels)
+  inline node_file build_chain(const label_file &labels)
     {
       if (labels.size() == 0) {
         return build_sink(on_empty);
