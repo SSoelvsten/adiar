@@ -12,6 +12,12 @@ namespace adiar
   class zdd_change_policy : public zdd_policy
   {
   public:
+    static constexpr bool may_skip = true;
+
+    static constexpr bool cut_true_sink = true;
+    static constexpr bool cut_false_sink = false;
+
+  public:
     static zdd on_sink_input(const bool sink_value, const zdd& dd, const label_file &labels)
     {
       return sink_value ? zdd_vars(labels) : dd;
@@ -21,8 +27,6 @@ namespace adiar
     {
       return zdd_sink(sink_value);
     }
-
-    static constexpr bool may_skip = true;
 
     static intercut_rec hit_existing(const node_t &n)
     {

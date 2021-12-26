@@ -45,31 +45,6 @@ namespace adiar
   intercut_priority_queue_2_t;
 
   //////////////////////////////////////////////////////////////////////////////
-  // Helper functions
-
-  inline void intercut_forward_edge(arc_writer &aw,
-                                    intercut_priority_queue_1_t &pq_1,
-                                    intercut_priority_queue_2_t &pq_2,
-                                    const ptr_t source, const ptr_t target,
-                                    const label_t curr_level, const label_t next_cut)
-  {
-    if (is_sink(target)) {
-      // TODO: allow policy to chose what sink values to cut on and which not to.
-      if (!value_of(target) || next_cut <= curr_level) {
-        aw.unsafe_push_sink({ source, target });
-      } else { // value_of(target) && next_cut > curr_level
-        pq_2.push({ source, target, next_cut });
-      }
-    } else { // is_node(target)
-      if (curr_level < next_cut && next_cut < label_of(target)) {
-        pq_2.push({ source, target, next_cut });
-      } else {
-        pq_1.push({ source, target });
-      }
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
 
   struct intercut_rec_output
   {
@@ -83,6 +58,148 @@ namespace adiar
   };
 
   typedef std::variant<intercut_rec_output, intercut_rec_skipto> intercut_rec;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Helper functions
+
+  template<typename intercut_policy>
+  class intercut_out__pre_root
+  {
+  public:
+    static constexpr bool ignore_nil = false;
+
+    static inline void forward(arc_writer &aw,
+                               intercut_priority_queue_1_t &/*pq_1*/,
+                               intercut_priority_queue_2_t &pq_2,
+                               const ptr_t source, const ptr_t target,
+                               const label_t curr_level, const label_t next_cut)
+    {
+      if (is_sink(target) && (next_cut <= curr_level
+                              || (value_of(target) && !intercut_policy::cut_true_sink)
+                              || (!value_of(target) && !intercut_policy::cut_false_sink))) {
+        aw.unsafe_push_sink({ source, target });
+      } else {
+        const label_t __next_cut = (next_cut <= curr_level || next_cut > label_of(target))
+          ? label_of(target) : next_cut;
+
+        pq_2.push({ source, target, __next_cut });
+      }
+    }
+  };
+
+  template<typename intercut_policy>
+  class intercut_out__post_root
+  {
+  public:
+    static constexpr bool ignore_nil = false;
+
+    static inline void forward(arc_writer &aw,
+                               intercut_priority_queue_1_t &pq_1,
+                               intercut_priority_queue_2_t &pq_2,
+                               const ptr_t source, const ptr_t target,
+                               const label_t curr_level, const label_t next_cut)
+    {
+      if (is_sink(target)) {
+        if (next_cut <= curr_level
+            || (value_of(target) && !intercut_policy::cut_true_sink)
+            || (!value_of(target) && !intercut_policy::cut_false_sink)) {
+          aw.unsafe_push_sink({ source, target });
+        } else {
+          pq_2.push({ source, target, next_cut });
+        }
+      } else { // is_node(target)
+        if (curr_level < next_cut && next_cut < label_of(target)) {
+          pq_2.push({ source, target, next_cut });
+        } else {
+          pq_1.push({ source, target });
+        }
+      }
+    }
+  };
+
+  class intercut_out__arc_writer
+  {
+  public:
+    static constexpr bool ignore_nil = true;
+
+    static inline void forward(arc_writer &aw,
+                               intercut_priority_queue_1_t &/*pq_1*/,
+                               intercut_priority_queue_2_t &/*pq_2*/,
+                               const ptr_t source, const ptr_t target,
+                               const label_t /*curr_level*/, const label_t /*next_cut*/)
+    {
+      aw.unsafe_push_node({ source, target });
+    }
+  };
+
+  template<typename intercut_policy, typename in_policy>
+  inline void intercut_in__pq_1(arc_writer &aw,
+                                intercut_priority_queue_1_t &pq_1,
+                                intercut_priority_queue_2_t &pq_2,
+                                const label_t out_label,
+                                const ptr_t pq_target,
+                                const ptr_t out_target,
+                                const label_t l)
+  {
+    adiar_debug(out_label <= label_of(out_target),
+                "should forward/output a node on this level or ahead.");
+
+    while (pq_1.can_pull() && pq_1.top().target == pq_target) {
+      const arc_t parent = pq_1.pull();
+
+      if (in_policy::ignore_nil && is_nil(parent.source)) { continue; }
+      in_policy::forward(aw, pq_1, pq_2, parent.source, out_target, out_label, l);
+    }
+  }
+
+  template<typename intercut_policy, typename in_policy>
+  inline void intercut_in__pq_2(arc_writer &aw,
+                                intercut_priority_queue_1_t &pq_1,
+                                intercut_priority_queue_2_t &pq_2,
+                                const label_t out_label,
+                                const ptr_t pq_target,
+                                const ptr_t out_target,
+                                const label_t l)
+  {
+    adiar_debug(out_label <= label_of(out_target),
+                "should forward/output a node on this level or ahead.");
+
+    while (!pq_2.empty()
+           && pq_2.top().cut_at == out_label
+           && pq_2.top().target == pq_target) {
+      const arc_cut parent = pq_2.top();
+      pq_2.pop();
+
+      if (in_policy::ignore_nil && is_nil(parent.source)) { continue; }
+      in_policy::forward(aw, pq_1, pq_2, parent.source, out_target, out_label, l);
+    }
+  }
+
+  template<typename intercut_policy, typename out_policy>
+  inline void intercut_resolve_hit_arcs(arc_writer &aw,
+                                        intercut_priority_queue_1_t &pq_1,
+                                        intercut_priority_queue_2_t &pq_2,
+                                        const label_t out_label, size_t &out_id,
+                                        const label_t l)
+  {
+    while (!pq_2.empty() && pq_2.top().cut_at == out_label) {
+      adiar_invariant(out_label <= l,
+                      "the last iteration with this queue is for the very last label to cut on");
+
+      const arc_cut request = pq_2.top();
+      const intercut_rec_output ro = intercut_policy::hit_cut(request.target);
+      const uid_t out_uid = create_node_uid(out_label, out_id++);
+
+      out_policy::forward
+        (aw, pq_1, pq_2, out_uid, ro.low, out_label, l);
+
+      out_policy::forward
+        (aw, pq_1, pq_2, flag(out_uid), ro.high, out_label, l);
+
+      intercut_in__pq_2<intercut_policy, intercut_out__arc_writer>
+        (aw, pq_1, pq_2, out_label, request.target, out_uid, l);
+    }
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -116,31 +233,37 @@ namespace adiar
     label_t out_label;
     id_t out_id = 0;
 
-    // We need to insert nodes before the root. The levelized priority queue
-    // does not support pushing to the level of the root, so we'll manually
-    // deal with these.
+    // The levelized_priority_queue does not do well with pushing to a level
+    // above or to the root level. Yet, we need to insert nodes before the root,
+    // i.e. cutting the in-going arc to the root. So, we will deal with them
+    // ourselves (using the secondary priority queue exclusively)
+
+    intercut_pq_2.push({ NIL, n.uid, std::min(l, label_of(n)) });
+
     while (l < label_of(n)) {
       out_label = l;
-      const uid_t out_uid = create_node_uid(out_label, 0);
+      out_id = 0;
 
       const bool more_labels = ls.can_pull();
       if (more_labels) { l = ls.pull(); }
 
-      const intercut_rec_output r = intercut_policy::hit_cut(n.uid);
+      intercut_resolve_hit_arcs<intercut_policy, intercut_out__pre_root<intercut_policy>>
+        (aw, intercut_pq_1, intercut_pq_2, out_label, out_id, l);
 
-      // Cut the edge, if need be
-      const label_t next_label = more_labels ? std::min(label_of(n), l) : label_of(n);
-      const ptr_t next_node = create_node_ptr(next_label, 0);
+      if (out_id > 0) { aw.unsafe_push(create_level_info(out_label, out_id)); }
 
-      aw.unsafe_push(arc { out_uid, is_sink(r.low) ? r.low : next_node });
-      aw.unsafe_push(arc { flag(out_uid), is_sink(r.high) ? r.high : next_node });
-      aw.unsafe_push(create_level_info(out_label, 1));
+      adiar_invariant(!intercut_pq_2.empty(),
+                      "intercut_pq_2 should never be empty (at least root request)");
 
       // Already done with all labels?
-      if (out_label == l) { break; }
+      if (!more_labels) { break; }
     }
 
+    adiar_debug(intercut_pq_2.top().target == n.uid && intercut_pq_2.top().cut_at == label_of(n),
+                "The top-most request should be for the root");
+
     out_label = label_of(n);
+    out_id = 0;
 
     if (l == out_label) {
       // Let l be the next label to hit (if any)
@@ -155,20 +278,38 @@ namespace adiar
         // 'high' value (and hence cannot be false).
         if (is_sink(rs.tgt)) { return intercut_policy::sink(value_of(rs.tgt)); }
 
-        intercut_forward_edge(aw, intercut_pq_1, intercut_pq_2, NIL, rs.tgt, out_label, l);
+        intercut_in__pq_2<intercut_policy, intercut_out__post_root<intercut_policy>>
+          (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, rs.tgt, l);
+
       } else { // std::holds_alternative<intercut_rec_output>(n)
         const intercut_rec_output ro = std::get<intercut_rec_output>(r);
         const uid_t out_uid = create_node_uid(out_label, out_id++);
 
-        intercut_forward_edge(aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
-        intercut_forward_edge(aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
+        intercut_out__post_root<intercut_policy>::forward
+          (aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
+
+        intercut_out__post_root<intercut_policy>::forward
+          (aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
+
+        intercut_in__pq_2<intercut_policy, intercut_out__arc_writer>
+          (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, out_uid, l);
       }
+
+      intercut_resolve_hit_arcs<intercut_policy, intercut_out__post_root<intercut_policy>>
+        (aw, intercut_pq_1, intercut_pq_2, out_label, out_id, l);
+
     } else { // l > label_of(n)
       const intercut_rec_output ro = intercut_policy::miss_existing(n);
       const uid_t out_uid = create_node_uid(out_label, out_id++);
 
-      intercut_forward_edge(aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
-      intercut_forward_edge(aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
+      intercut_out__post_root<intercut_policy>::forward
+        (aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
+
+      intercut_out__post_root<intercut_policy>::forward
+        (aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
+
+      intercut_in__pq_2<intercut_policy, intercut_out__arc_writer>
+        (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, out_uid, l);
     }
 
     // Process nodes of the decision diagram in topological order
@@ -210,52 +351,26 @@ namespace adiar
             return intercut_policy::sink(value_of(rs.tgt));
           }
 
-          while (intercut_pq_1.can_pull() && intercut_pq_1.top().target == n.uid) {
-            intercut_forward_edge(aw, intercut_pq_1, intercut_pq_2,
-                                    intercut_pq_1.pull().source, rs.tgt,
-                                    out_label, l);
-          }
+          intercut_in__pq_1<intercut_policy, intercut_out__post_root<intercut_policy>>
+            (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, rs.tgt, l);
         } else {
           const intercut_rec_output ro = std::get<intercut_rec_output>(r);
           const uid_t out_uid = create_node_uid(out_label, out_id++);
 
-          intercut_forward_edge(aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
-          intercut_forward_edge(aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
+          intercut_out__post_root<intercut_policy>::forward
+            (aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
 
-          // Output ingoing arcs
-          while (intercut_pq_1.can_pull() && intercut_pq_1.top().target == n.uid) {
-            const arc_t parent_arc = intercut_pq_1.pull();
-            if (!is_nil(parent_arc.source)) {
-              aw.unsafe_push_node({ parent_arc.source, out_uid });
-            }
-          }
+          intercut_out__post_root<intercut_policy>::forward
+            (aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
+
+          intercut_in__pq_1<intercut_policy, intercut_out__arc_writer>
+            (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, out_uid, l);
         }
       }
 
       // Resolve requests in intercut_pq_2 to cut arcs on this level
-      while (!intercut_pq_2.empty() && intercut_pq_2.top().cut_at == out_label) {
-        adiar_invariant(out_label <= l,
-                        "the last iteration with this queue is for the very last label to cut on");
-
-        const arc_cut request = intercut_pq_2.top();
-        const intercut_rec_output ro = intercut_policy::hit_cut(request.target);
-        const uid_t out_uid = create_node_uid(out_label, out_id++);
-
-        intercut_forward_edge(aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
-        intercut_forward_edge(aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
-
-        // Output ingoing arcs
-        while (!intercut_pq_2.empty()
-               && intercut_pq_2.top().cut_at == out_label
-               && intercut_pq_2.top().target == request.target) {
-          const arc_cut parent = intercut_pq_2.top();
-          intercut_pq_2.pop();
-
-          if (!is_nil(parent.source)) {
-            aw.unsafe_push_node({ parent.source, out_uid });
-          }
-        }
-      }
+      intercut_resolve_hit_arcs<intercut_policy, intercut_out__post_root<intercut_policy>>
+        (aw, intercut_pq_1, intercut_pq_2, out_label, out_id, l);
     }
 
     // Push the level of the very last iteration
