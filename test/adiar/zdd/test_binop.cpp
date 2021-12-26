@@ -14,8 +14,6 @@ go_bandit([]() {
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 
-    // == CREATE SINGLE VARIABLE BDDs FOR UNIT TESTS ==
-    //                    START
     node_file zdd_x0;
     node_file zdd_x1;
 
@@ -26,9 +24,6 @@ go_bandit([]() {
       node_writer nw_x1(zdd_x1);
       nw_x1 << create_node(1,MAX_ID, sink_F, sink_T);
     }
-
-    //                     END
-    // == CREATE SINGLE VARIABLE FOR UNIT TESTS ==
 
     describe("zdd_union", [&]() {
       it("should shortcut Ø on same file", [&]() {

@@ -17,11 +17,12 @@ namespace adiar
       return sink_value ? zdd_powerset(labels) : dd;
     }
 
+    // LCOV_EXCL_START
     static zdd sink(const bool sink_value)
     {
       adiar_unreachable();
-      return zdd_sink(sink_value);
     }
+    // LCOV_EXCL_END
 
     static constexpr bool may_skip = false;
 
