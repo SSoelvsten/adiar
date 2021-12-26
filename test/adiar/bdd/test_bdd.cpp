@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("BDD: BDD Class", [&]() {
+  describe("src/adiar/bdd.h", []() {
     node_file x0_nf;
 
     {
@@ -57,7 +57,7 @@ go_bandit([]() {
 
     bdd sink_F(sink_F_nf);
 
-    describe("__bdd class", [&]() {
+    describe("__bdd", [&]() {
       it("should copy-construct values from bdd", [&]() {
         __bdd t1 = x0_and_x1;
         AssertThat(t1.has<node_file>(), Is().True());

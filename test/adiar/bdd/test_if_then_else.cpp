@@ -1,7 +1,5 @@
 go_bandit([]() {
-  describe("BDD: If-Then-Else", [&]() {
-    // == CREATE BDDs FOR UNIT TESTS ==
-    //             START
+  describe("adiar/bdd/if_then_else.h", []() {
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 
@@ -48,8 +46,212 @@ go_bandit([]() {
                    << create_node(0,0,create_node_uid(2,0),create_node_uid(2,1));
     }
 
-    //              END
-    // == CREATE BDD FOR UNIT TESTS ==
+    node_file bdd_1;
+    /*
+                            _1_              ---- x0
+                           /   \
+                           2   3             ---- x1
+                          / \ / \
+                          6  5  4            ---- x2
+                         / \/ \/ \
+                         F T  7  T           ---- x3
+                             / \
+                             F T
+    */
+
+    { // Garbage collect writers to free write-lock
+      node_writer nw_1(bdd_1);
+      nw_1 << create_node(3,0,sink_F,sink_T)                             // 7
+           << create_node(2,2,sink_F,sink_T)                             // 6
+           << create_node(2,1,sink_T,create_node_ptr(3,0))               // 5
+           << create_node(2,0,create_node_ptr(3,0),sink_T)               // 4
+           << create_node(1,1,create_node_ptr(2,1),create_node_ptr(2,0)) // 3
+           << create_node(1,0,create_node_ptr(2,2),create_node_ptr(2,1)) // 2
+           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(1,1)) // 1
+        ;
+    }
+
+    node_file bdd_2;
+    /*
+                               __1__         ---- x0
+                              /     \
+                            _2_     _3_      ---- x1
+                           /   \   /   \
+                           4   5   6   7     ---- x2
+                          / \ / \ / \ / \
+                          F 8 F 9 T F F T    ---- x3
+                           / \ / \
+                           T F F T
+    */
+
+    { // Garbage collect writers to free write-lock
+      node_writer nw_2(bdd_2);
+      nw_2 << create_node(3,1,sink_F,sink_T)                              // 9
+           << create_node(3,0,sink_T,sink_F)                              // 8
+           << create_node(2,3,sink_F,sink_T)                              // 7
+           << create_node(2,2,sink_T,sink_F)                              // 6
+           << create_node(2,1,sink_F,create_node_ptr(3,1))                // 5
+           << create_node(2,0,sink_F,create_node_ptr(3,0))                // 4
+           << create_node(1,1,create_node_ptr(2,2),create_node_ptr(2,3))  // 3
+           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))  // 2
+           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(1,1))  // 1
+        ;
+    }
+
+    node_file bdd_3;
+    /*
+                              __1__         ---- x0
+                             /     \
+                           _2_      \       ---- x1
+                          /   \      \
+                          3   4      5      ---- x2
+                         / \ / \    / \
+                         T F F 6    F T     ---- x3
+                              / \
+                              F T
+    */
+
+    { // Garbage collect writers to free write-lock
+      node_writer nw_3(bdd_3);
+      nw_3 << create_node(3,0,sink_F,sink_T)                             // 6
+           << create_node(2,2,sink_F,sink_T)                             // 5
+           << create_node(2,1,sink_F,create_node_ptr(3,0))               // 4
+           << create_node(2,0,sink_T,sink_F)                             // 3
+           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
+           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,2)) // 1
+        ;
+    }
+
+    node_file bdd_4;
+    /*
+                               __1__         ---- x0
+                              /     \
+                            _2_      \       ---- x1
+                           /   \      \
+                           4   5      3      ---- x2
+                          / \ / \    / \
+                          6 T F 7    T F     ---- x3
+                         / \   / \
+                         T F   F T
+    */
+    { // Garbage collect writers to free write-lock
+      node_writer nw_4(bdd_4);
+      nw_4 << create_node(3,1,sink_F,sink_T)                             // 7
+           << create_node(3,0,sink_T,sink_F)                             // 6
+           << create_node(2,2,sink_F,create_node_ptr(3,1))               // 5
+           << create_node(2,1,create_node_ptr(3,0),sink_T)               // 4
+           << create_node(2,0,sink_T,sink_F)                             // 3
+           << create_node(1,0,create_node_ptr(2,1),create_node_ptr(2,2)) // 2
+           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,0)) // 1
+        ;
+    }
+
+    node_file bdd_5;
+    /*
+                               __1__         ---- x0
+                              /     \
+                            _2_      \       ---- x1
+                           /   \      \
+                           5   3      4      ---- x2
+                          / \ / \    / \
+                          F 6 T F    F T     ---- x3
+                           / \
+                           T F
+    */
+    { // Garbage collect writers to free write-lock
+      node_writer nw_5(bdd_5);
+      nw_5 << create_node(3,0,sink_T,sink_F)                             // 6
+           << create_node(2,2,sink_F,create_node_ptr(3,0))               // 5
+           << create_node(2,1,sink_F,sink_T)                             // 4
+           << create_node(2,0,sink_T,sink_F)                             // 3
+           << create_node(1,0,create_node_ptr(2,2),create_node_ptr(2,0)) // 2
+           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
+        ;
+    }
+
+    node_file bdd_6;
+    /*
+                                    1         ---- x0
+                                   / \
+                                   F _2_      ---- x1
+                                    /   \
+                                    3   4     ---- x2
+                                   / \ / \
+                                   F T T F
+
+    */
+    { // Garbage collect writers to free write-lock
+      node_writer nw_6(bdd_6);
+      nw_6 << create_node(2,1,sink_T,sink_F)
+           << create_node(2,0,sink_F,sink_T)
+           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))
+           << create_node(0,0,sink_F,create_node_ptr(1,0))
+        ;
+    }
+
+    node_file bdd_not_6;
+    /*
+                                    1         ---- x0
+                                   / \
+                                   T _2_      ---- x1
+                                    /   \
+                                    3   4     ---- x2
+                                   / \ / \
+                                   T F F T
+
+    */
+    { // Garbage collect writers to free write-lock
+      node_writer nw_not_6(bdd_not_6);
+      nw_not_6 << create_node(2,1,sink_F,sink_T)
+               << create_node(2,0,sink_T,sink_F)
+               << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))
+               << create_node(0,0,sink_T,create_node_ptr(1,0))
+        ;
+    }
+
+    node_file bdd_7;
+    /*
+                                     1         ---- x0
+                                    / \
+                                    2__\       ---- x1
+                                   /   |
+                                   3   4       ---- x2
+                                  / \ / \
+                                  F  5  T      ---- x3
+                                    / \
+                                    F T
+    */
+
+    {
+      node_writer nw_7(bdd_7);
+      nw_7 << create_node(3,0,sink_F,sink_T)                             // 5
+           << create_node(2,1,create_node_ptr(3,0),sink_T)               // 4
+           << create_node(2,0,sink_F,create_node_ptr(3,0))               // 3
+           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
+           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
+        ;
+    }
+
+    node_file bdd_8;
+    /*
+                                   1         ---- x0
+                                  / \
+                                  2 |        ---- x1
+                                 / \|
+                                 3  |        ---- x2
+                                / \/
+                                T 4          ---- x3
+                                 / \
+                                 T F
+    */
+    {
+      node_writer nw_8(bdd_8);
+      nw_8 << create_node(3,0,sink_T,sink_F)                             // 4
+           << create_node(2,0,sink_T,create_node_ptr(3,0))               // 3
+           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(3,0)) // 2
+           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(3,0)) // 1
+        ;
+    }
 
     // Trivial evaluation by given a sink
     it("should give back first file on if-true (true ? x0 : x1)", [&]() {
@@ -673,219 +875,6 @@ go_bandit([]() {
 
       AssertThat(level_info.can_pull(), Is().False());
     });
-
-    // == CREATE BIG OBDDs FOR UNIT TESTS ==
-    //                START
-
-    node_file bdd_1;
-    /*
-                            _1_              ---- x0
-                           /   \
-                           2   3             ---- x1
-                          / \ / \
-                          6  5  4            ---- x2
-                         / \/ \/ \
-                         F T  7  T           ---- x3
-                             / \
-                             F T
-    */
-
-    { // Garbage collect writers to free write-lock
-      node_writer nw_1(bdd_1);
-      nw_1 << create_node(3,0,sink_F,sink_T)                             // 7
-           << create_node(2,2,sink_F,sink_T)                             // 6
-           << create_node(2,1,sink_T,create_node_ptr(3,0))               // 5
-           << create_node(2,0,create_node_ptr(3,0),sink_T)               // 4
-           << create_node(1,1,create_node_ptr(2,1),create_node_ptr(2,0)) // 3
-           << create_node(1,0,create_node_ptr(2,2),create_node_ptr(2,1)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(1,1)) // 1
-        ;
-    }
-
-    node_file bdd_2;
-    /*
-                               __1__         ---- x0
-                              /     \
-                            _2_     _3_      ---- x1
-                           /   \   /   \
-                           4   5   6   7     ---- x2
-                          / \ / \ / \ / \
-                          F 8 F 9 T F F T    ---- x3
-                           / \ / \
-                           T F F T
-    */
-
-    { // Garbage collect writers to free write-lock
-      node_writer nw_2(bdd_2);
-      nw_2 << create_node(3,1,sink_F,sink_T)                              // 9
-           << create_node(3,0,sink_T,sink_F)                              // 8
-           << create_node(2,3,sink_F,sink_T)                              // 7
-           << create_node(2,2,sink_T,sink_F)                              // 6
-           << create_node(2,1,sink_F,create_node_ptr(3,1))                // 5
-           << create_node(2,0,sink_F,create_node_ptr(3,0))                // 4
-           << create_node(1,1,create_node_ptr(2,2),create_node_ptr(2,3))  // 3
-           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))  // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(1,1))  // 1
-        ;
-    }
-
-    node_file bdd_3;
-    /*
-                              __1__         ---- x0
-                             /     \
-                           _2_      \       ---- x1
-                          /   \      \
-                          3   4      5      ---- x2
-                         / \ / \    / \
-                         T F F 6    F T     ---- x3
-                              / \
-                              F T
-    */
-
-    { // Garbage collect writers to free write-lock
-      node_writer nw_3(bdd_3);
-      nw_3 << create_node(3,0,sink_F,sink_T)                             // 6
-           << create_node(2,2,sink_F,sink_T)                             // 5
-           << create_node(2,1,sink_F,create_node_ptr(3,0))               // 4
-           << create_node(2,0,sink_T,sink_F)                             // 3
-           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,2)) // 1
-        ;
-    }
-
-    node_file bdd_4;
-    /*
-                               __1__         ---- x0
-                              /     \
-                            _2_      \       ---- x1
-                           /   \      \
-                           4   5      3      ---- x2
-                          / \ / \    / \
-                          6 T F 7    T F     ---- x3
-                         / \   / \
-                         T F   F T
-    */
-    { // Garbage collect writers to free write-lock
-      node_writer nw_4(bdd_4);
-      nw_4 << create_node(3,1,sink_F,sink_T)                             // 7
-           << create_node(3,0,sink_T,sink_F)                             // 6
-           << create_node(2,2,sink_F,create_node_ptr(3,1))               // 5
-           << create_node(2,1,create_node_ptr(3,0),sink_T)               // 4
-           << create_node(2,0,sink_T,sink_F)                             // 3
-           << create_node(1,0,create_node_ptr(2,1),create_node_ptr(2,2)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,0)) // 1
-        ;
-    }
-
-    node_file bdd_5;
-    /*
-                               __1__         ---- x0
-                              /     \
-                            _2_      \       ---- x1
-                           /   \      \
-                           5   3      4      ---- x2
-                          / \ / \    / \
-                          F 6 T F    F T     ---- x3
-                           / \
-                           T F
-    */
-    { // Garbage collect writers to free write-lock
-      node_writer nw_5(bdd_5);
-      nw_5 << create_node(3,0,sink_T,sink_F)                             // 6
-           << create_node(2,2,sink_F,create_node_ptr(3,0))               // 5
-           << create_node(2,1,sink_F,sink_T)                             // 4
-           << create_node(2,0,sink_T,sink_F)                             // 3
-           << create_node(1,0,create_node_ptr(2,2),create_node_ptr(2,0)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
-        ;
-    }
-
-    node_file bdd_6;
-    /*
-                                    1         ---- x0
-                                   / \
-                                   F _2_      ---- x1
-                                    /   \
-                                    3   4     ---- x2
-                                   / \ / \
-                                   F T T F
-
-    */
-    { // Garbage collect writers to free write-lock
-      node_writer nw_6(bdd_6);
-      nw_6 << create_node(2,1,sink_T,sink_F)
-           << create_node(2,0,sink_F,sink_T)
-           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))
-           << create_node(0,0,sink_F,create_node_ptr(1,0))
-        ;
-    }
-
-    node_file bdd_not_6;
-    /*
-                                    1         ---- x0
-                                   / \
-                                   T _2_      ---- x1
-                                    /   \
-                                    3   4     ---- x2
-                                   / \ / \
-                                   T F F T
-
-    */
-    { // Garbage collect writers to free write-lock
-      node_writer nw_not_6(bdd_not_6);
-      nw_not_6 << create_node(2,1,sink_F,sink_T)
-               << create_node(2,0,sink_T,sink_F)
-               << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))
-               << create_node(0,0,sink_T,create_node_ptr(1,0))
-        ;
-    }
-
-    node_file bdd_7;
-    /*
-                                     1         ---- x0
-                                    / \
-                                    2__\       ---- x1
-                                   /   |
-                                   3   4       ---- x2
-                                  / \ / \
-                                  F  5  T      ---- x3
-                                    / \
-                                    F T
-    */
-
-    {
-      node_writer nw_7(bdd_7);
-      nw_7 << create_node(3,0,sink_F,sink_T)                             // 5
-           << create_node(2,1,create_node_ptr(3,0),sink_T)               // 4
-           << create_node(2,0,sink_F,create_node_ptr(3,0))               // 3
-           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
-        ;
-    }
-
-    node_file bdd_8;
-    /*
-                                   1         ---- x0
-                                  / \
-                                  2 |        ---- x1
-                                 / \|
-                                 3  |        ---- x2
-                                / \/
-                                T 4          ---- x3
-                                 / \
-                                 T F
-    */
-    {
-      node_writer nw_8(bdd_8);
-      nw_8 << create_node(3,0,sink_T,sink_F)                             // 4
-           << create_node(2,0,sink_T,create_node_ptr(3,0))               // 3
-           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(3,0)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(3,0)) // 1
-        ;
-    }
-
-    //                 END
-    // == CREATE BIG OBDDs FOR UNIT TESTS ==
 
     it("should compute x3 ? (x1 & x2) : bdd_1", [&]() {
       node_file bdd_x3;

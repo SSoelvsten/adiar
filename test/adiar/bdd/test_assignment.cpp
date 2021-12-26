@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("BDD: Assignment", []() {
+  describe("adiar/bdd/assignment.h", []() {
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 
@@ -76,247 +76,250 @@ go_bandit([]() {
       nw << n4 << n3 << n2 << n1;
     }
 
+    describe("bdd_satmin(f)", [&]() {
+      it("should retrieve assignment from true sink", [&]() {
+        node_file T;
+        {
+          node_writer nw(T);
+          nw << create_sink(true);
+        }
 
-    it("should retrieve minimal assignment from true sink", [&]() {
-      node_file T;
-      {
-        node_writer nw(T);
-        nw << create_sink(true);
-      }
+        assignment_file result = bdd_satmin(T);
 
-      assignment_file result = bdd_satmin(T);
+        assignment_stream<> out_assignment(result);
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
 
-      assignment_stream<> out_assignment(result);
-      AssertThat(out_assignment.can_pull(), Is().False());
+      it("should retrieve assignment from false sink", [&]() {
+        node_file F;
+        {
+          node_writer nw(F);
+          nw << create_sink(false);
+        }
+
+        assignment_file result = bdd_satmin(false);
+
+        assignment_stream<> out_assignment(result);
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
+
+      it("should retrieve assignment [1]", [&]() {
+        assignment_file result = bdd_satmin(bdd_1);
+        assignment_stream<> out_assignment(result);
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
+
+      it("should retrieve assignment [1]", [&]() {
+        assignment_file result = bdd_satmin(bdd_1);
+        assignment_stream<> out_assignment(result);
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
+
+      it("should retrieve assignment [~1]", [&]() {
+        assignment_file result = bdd_satmin(bdd_not(bdd_1));
+        assignment_stream<> out_assignment(result);
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
+
+      it("should retrieve assignment [2]", [&]() {
+        assignment_file result = bdd_satmin(bdd_2);
+        assignment_stream<> out_assignment(result);
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
+
+      it("should retrieve assignment [3]", [&]() {
+        assignment_file result = bdd_satmin(bdd_3);
+        assignment_stream<> out_assignment(result);
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
+
+      it("should retrieve assignment [3]", [&]() {
+        assignment_file result = bdd_satmin(bdd_not(bdd_3));
+        assignment_stream<> out_assignment(result);
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, true)));
+
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
     });
 
-    it("should retrieve minimal assignment from false sink", [&]() {
-      node_file F;
-      {
-        node_writer nw(F);
-        nw << create_sink(false);
-      }
+    describe("bdd_satmax", [&]() {
+      it("should retrieve maximal assignment [1]", [&]() {
+        assignment_file result = bdd_satmax(bdd_1);
+        assignment_stream<> out_assignment(result);
 
-      assignment_file result = bdd_satmin(false);
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
 
-      assignment_stream<> out_assignment(result);
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
 
-    it("should retrieve minimal assignment [1]", [&]() {
-      assignment_file result = bdd_satmin(bdd_1);
-      assignment_stream<> out_assignment(result);
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, false)));
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+      it("should retrieve maximal assignment [~1]", [&]() {
+        assignment_file result = bdd_satmax(bdd_not(bdd_1));
+        assignment_stream<> out_assignment(result);
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
 
-    it("should retrieve minimal assignment [1]", [&]() {
-      assignment_file result = bdd_satmin(bdd_1);
-      assignment_stream<> out_assignment(result);
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+      it("should retrieve maximal assignment [2]", [&]() {
+        assignment_file result = bdd_satmax(bdd_2);
+        assignment_stream<> out_assignment(result);
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
 
-    it("should retrieve minimal assignment [~1]", [&]() {
-      assignment_file result = bdd_satmin(bdd_not(bdd_1));
-      assignment_stream<> out_assignment(result);
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, false)));
+      it("should retrieve maximal assignment [~2]", [&]() {
+        assignment_file result = bdd_satmax(bdd_not(bdd_2));
+        assignment_stream<> out_assignment(result);
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
 
-    it("should retrieve minimal assignment [2]", [&]() {
-      assignment_file result = bdd_satmin(bdd_2);
-      assignment_stream<> out_assignment(result);
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, false)));
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+      it("should retrieve maximal assignment [3]", [&]() {
+        assignment_file result = bdd_satmax(bdd_3);
+        assignment_stream<> out_assignment(result);
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
 
-    it("should retrieve minimal assignment [3]", [&]() {
-      assignment_file result = bdd_satmin(bdd_3);
-      assignment_stream<> out_assignment(result);
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+      it("should retrieve maximal assignment [3]", [&]() {
+        assignment_file result = bdd_satmax(bdd_not(bdd_3));
+        assignment_stream<> out_assignment(result);
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, false)));
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
 
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
 
-    it("should retrieve minimal assignment [3]", [&]() {
-      assignment_file result = bdd_satmin(bdd_not(bdd_3));
-      assignment_stream<> out_assignment(result);
+        AssertThat(out_assignment.can_pull(), Is().True());
+        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, false)));
 
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
-
-    it("should retrieve maximal assignment [1]", [&]() {
-      assignment_file result = bdd_satmax(bdd_1);
-      assignment_stream<> out_assignment(result);
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, false)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
-
-    it("should retrieve maximal assignment [~1]", [&]() {
-      assignment_file result = bdd_satmax(bdd_not(bdd_1));
-      assignment_stream<> out_assignment(result);
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
-
-    it("should retrieve maximal assignment [2]", [&]() {
-      assignment_file result = bdd_satmax(bdd_2);
-      assignment_stream<> out_assignment(result);
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
-
-    it("should retrieve maximal assignment [~2]", [&]() {
-      assignment_file result = bdd_satmax(bdd_not(bdd_2));
-      assignment_stream<> out_assignment(result);
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, false)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
-
-    it("should retrieve maximal assignment [3]", [&]() {
-      assignment_file result = bdd_satmax(bdd_3);
-      assignment_stream<> out_assignment(result);
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().False());
-    });
-
-    it("should retrieve maximal assignment [3]", [&]() {
-      assignment_file result = bdd_satmax(bdd_not(bdd_3));
-      assignment_stream<> out_assignment(result);
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
-
-      AssertThat(out_assignment.can_pull(), Is().True());
-      AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, false)));
-
-      AssertThat(out_assignment.can_pull(), Is().False());
+        AssertThat(out_assignment.can_pull(), Is().False());
+      });
     });
   });
  });

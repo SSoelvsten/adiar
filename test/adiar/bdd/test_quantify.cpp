@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("BDD: Quantify", [&]() {
+  describe("adiar/bdd/quantify.h", []() {
     ////////////////////////////////////////////////////////////////////////
     // Sink only BDDs
     node_file sink_F;
@@ -231,7 +231,7 @@ go_bandit([]() {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    describe("Exists", [&]() {
+    describe("bdd_exists", [&]() {
       it("should quantify T sink-only BDD as itself", [&]() {
         __bdd out = bdd_exists(sink_T, 42);
 
@@ -1160,7 +1160,7 @@ go_bandit([]() {
     ////////////////////////////////////////////////////////////////////////////
     // We will not test the Forall operator as much, since it is the same
     // underlying algorithm, but just with the AND operator.
-    describe("Forall", [&]() {
+    describe("bdd_forall", [&]() {
       it("should quantify T sink-only BDD as itself", [&]() {
         __bdd out = bdd_forall(sink_T, 42);
 

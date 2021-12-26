@@ -1,13 +1,13 @@
 go_bandit([]() {
-  describe("CORE: Data types", []() {
+  describe("adiar/data.h", []() {
 
-    describe("Nil", [&](){
-      it("should recognise Nil (unflagged)", [&]() {
+    describe("NIL", [&](){
+      it("should recognise NIL (unflagged)", [&]() {
         auto some_value = NIL;
         AssertThat(is_nil(some_value), Is().True());
       });
 
-      it("should recognise Nil (flagged)", [&]() {
+      it("should recognise NIL (flagged)", [&]() {
         auto some_value = flag(NIL);
         AssertThat(is_nil(some_value), Is().True());
       });
@@ -22,7 +22,7 @@ go_bandit([]() {
       });
     });
 
-    describe("Sink Ptr", [&](){
+    describe("ptr_t (sinks)", [&](){
       it("should store and retrieve value", [&]() {
         ptr_t p = create_sink_ptr(true);
         AssertThat(value_of(p), Is().True());
@@ -129,8 +129,8 @@ go_bandit([]() {
         });
       });
 
-      describe("operators", [&]() {
-        it("AND", [&]() {
+      describe("bool_op", []() {
+        it("and_op", []() {
           AssertThat(and_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(true)));
           AssertThat(and_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -141,7 +141,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(false)));
         });
 
-        it("NAND", [&]() {
+        it("nand_op", []() {
           AssertThat(nand_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(false)));
           AssertThat(nand_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -152,7 +152,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(true)));
         });
 
-        it("OR", [&]() {
+        it("or_op", []() {
           AssertThat(or_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(true)));
           AssertThat(or_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -163,7 +163,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(false)));
         });
 
-        it("NOR", [&]() {
+        it("nor_op", []() {
           AssertThat(nor_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(false)));
           AssertThat(nor_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -174,7 +174,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(true)));
         });
 
-        it("XOR", [&]() {
+        it("xor_op", []() {
           AssertThat(xor_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(false)));
           AssertThat(xor_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -185,7 +185,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(false)));
         });
 
-        it("XNOR", [&]() {
+        it("xnor_op", []() {
           AssertThat(xnor_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(true)));
           AssertThat(xnor_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -196,7 +196,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(true)));
         });
 
-        it("IMP", [&]() {
+        it("imp_op", []() {
           AssertThat(imp_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(true)));
           AssertThat(imp_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -207,7 +207,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(true)));
         });
 
-        it("INVIMP", [&]() {
+        it("invimp_op", []() {
           AssertThat(invimp_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(true)));
           AssertThat(invimp_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -218,7 +218,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(true)));
         });
 
-        it("EQUIV", [&]() {
+        it("equiv_op", []() {
           AssertThat(equiv_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(true)));
           AssertThat(equiv_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -229,7 +229,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(true)));
         });
 
-        it("EQUIV (flags)", [&]() {
+        it("equiv_op (flags)", []() {
           AssertThat(equiv_op(flag(create_sink_ptr(true)), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(true)));
           AssertThat(equiv_op(create_sink_ptr(true), flag(create_sink_ptr(false))),
@@ -240,7 +240,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(true)));
         });
 
-        it("DIFF", [&]() {
+        it("diff_op", []() {
           AssertThat(diff_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(false)));
           AssertThat(diff_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -251,7 +251,7 @@ go_bandit([]() {
                      Is().EqualTo(create_sink_ptr(false)));
         });
 
-        it("LESS", [&]() {
+        it("less_op", []() {
           AssertThat(less_op(create_sink_ptr(true), create_sink_ptr(true)),
                      Is().EqualTo(create_sink_ptr(false)));
           AssertThat(less_op(create_sink_ptr(true), create_sink_ptr(false)),
@@ -261,9 +261,7 @@ go_bandit([]() {
           AssertThat(less_op(create_sink_ptr(false), create_sink_ptr(false)),
                      Is().EqualTo(create_sink_ptr(false)));
         });
-      });
 
-      describe("operator predicates", []() {
         describe("can_shortcut", []() {
           it("can check on T sink on the left", [&]() {
             AssertThat(can_left_shortcut(and_op, create_sink_ptr(true)), Is().False());
@@ -369,7 +367,7 @@ go_bandit([]() {
       });
     });
 
-    describe("Node Ptr", [&]() {
+    describe("ptr_t (nodes)", [&]() {
       it("should store and retrieve label for Ptr with maximal id (unflagged)", [&]() {
         ptr_t p = create_node_ptr(12,MAX_ID);
         AssertThat(label_of(p), Is().EqualTo(12u));
@@ -539,7 +537,7 @@ go_bandit([]() {
       });
     });
 
-    describe("Nodes", [&]() {
+    describe("node_t", [&]() {
       it("should create node", [&]() {
         auto sink_f = create_sink_ptr(false);
         auto sink_t = create_sink_ptr(true);
@@ -683,7 +681,7 @@ go_bandit([]() {
         AssertThat(sizeof(node), Is().EqualTo(3u * 8u));
       });
 
-      describe("Sink nodes", [&]() {
+      describe("sink nodes", [&]() {
         it("should recognise sink nodes as such", [&]() {
           node_t sink_node_T = create_sink(true);
           AssertThat(is_sink(sink_node_T), Is().True());
@@ -714,7 +712,7 @@ go_bandit([]() {
       });
     });
 
-    describe("Arcs", [&]() {
+    describe("arc_t", [&]() {
       it("should be equal by their content", [&]() {
         ptr_t source = create_node_ptr(4,2);
         ptr_t target = create_node_ptr(42,3);
@@ -794,7 +792,7 @@ go_bandit([]() {
       });
     });
 
-    describe("Converters", [&]() {
+    describe("low_arc_of, high_arc_of, node_of", [&]() {
       it("should extract low arc from node", [&]() {
         node_t node = create_node(7,42,
                                   create_node_ptr(8,21),
@@ -838,7 +836,7 @@ go_bandit([]() {
       });
     });
 
-    describe("Assignment", [&]() {
+    describe("assignment_t", [&]() {
       assignment_t a1 = create_assignment(2, false);
       assignment_t a2 = create_assignment(2, true);
       assignment_t a3 = create_assignment(3, false);

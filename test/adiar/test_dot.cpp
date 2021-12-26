@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("DEBUG: DOT Files", [&]() {
+  describe("adiar/dot.h", [&]() {
     it("can output .dot for a sink-only BDD", [&]() {
       bdd sink_T = bdd_sink(true);
       output_dot(sink_T, "dot_test_sink.dot");

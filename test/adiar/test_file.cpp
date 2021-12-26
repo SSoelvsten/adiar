@@ -1,8 +1,8 @@
 #include <filesystem>
 
 go_bandit([]() {
-  describe("CORE: Files, writers, and streams", [&]() {
-    describe("file", [&]() {
+  describe("adiar/file.h, adiar/file_stream.h, adiar/file_writer.h", [&]() {
+    describe("adiar/file.h", [&]() {
       it("can construct fresh file<T> and make it read-only", [&]() {
         file<int> f;
 
@@ -44,7 +44,7 @@ go_bandit([]() {
     arc_t sink_arc_2 = { create_node_ptr(1,0), create_sink_ptr(true) };
     arc_t sink_arc_3 = { flag(create_node_ptr(1,0)), create_sink_ptr(false) };
 
-    describe("file_writer", [&]() {
+    describe("adiar/file_writer", [&]() {
       describe("simple_file_writer", [&]() {
         it("can hook into and write to test_file_simple", [&]() {
           AssertThat(test_file_simple.is_read_only(), Is().False());
@@ -229,7 +229,7 @@ go_bandit([]() {
       });
     });
 
-    describe("file_stream", [&]() {
+    describe("adiar/file_stream.h", [&]() {
       describe("simple_file_stream", [&]() {
         it("locks the file to be read-only on attachment", [&]() {
           AssertThat(test_file_simple.is_read_only(), Is().False());

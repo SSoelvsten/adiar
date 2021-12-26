@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("ZDD: Count", [&]() {
+  describe("adiar/zdd/count.h", [&]() {
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 
@@ -78,7 +78,7 @@ go_bandit([]() {
       nw_root_1 << create_node(1,0, sink_F, sink_T);
     }
 
-    describe("nodecount", [&]() {
+    describe("zdd_nodecount", [&]() {
       it("can count number of nodes", [&]() {
         AssertThat(zdd_nodecount(zdd_1), Is().EqualTo(4u));
         AssertThat(zdd_nodecount(zdd_2), Is().EqualTo(2u));
@@ -88,7 +88,7 @@ go_bandit([]() {
       });
     });
 
-    describe("varcount", [&]() {
+    describe("zdd_varcount", [&]() {
       it("can count number of variables", [&]() {
         AssertThat(zdd_varcount(zdd_1), Is().EqualTo(4u));
         AssertThat(zdd_varcount(zdd_2), Is().EqualTo(2u));
@@ -98,7 +98,7 @@ go_bandit([]() {
       });
     });
 
-    describe("size", [&]() {
+    describe("zdd_size", [&]() {
       it("can count family { {x2, x3}, {x0, x2, x3}, {x0, x1, x3} } [1]", [&]() {
         AssertThat(zdd_size(zdd_1), Is().EqualTo(3u));
       });

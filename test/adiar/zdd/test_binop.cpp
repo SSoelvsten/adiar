@@ -1,7 +1,5 @@
 go_bandit([]() {
-  describe("ZDD: Binary operators on set", [&]() {
-    // == CREATE SINK-ONLY BDD FOR UNIT TESTS ==
-    //                  START
+  describe("adiar/zdd/binop.h", []() {
     node_file zdd_F;
     node_file zdd_T;
 
@@ -417,7 +415,7 @@ go_bandit([]() {
         AssertThat(out_2.get<node_file>()._file_ptr, Is().EqualTo(zdd_x1._file_ptr));
       });
 
-      it("computes Ø /\\ { {Ø} }", [&]() {
+      it("computes Ø ∩ { {Ø} }", [&]() {
         __zdd out = zdd_intsec(zdd_F, zdd_T);
 
         node_test_stream out_nodes(out);
@@ -429,7 +427,7 @@ go_bandit([]() {
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
       });
 
-      it("computes { Ø } /\\ Ø", [&]() {
+      it("computes { Ø } ∩ Ø", [&]() {
         __zdd out = zdd_intsec(zdd_T, zdd_F);
 
         node_test_stream out_nodes(out);
@@ -441,7 +439,7 @@ go_bandit([]() {
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
       });
 
-      it("computes (and shortcut) { {0} } /\\ Ø", [&]() {
+      it("computes (and shortcut) { {0} } ∩ Ø", [&]() {
         /*
                    1       F              F          ---- x0
                   / \           ==>
@@ -460,7 +458,7 @@ go_bandit([]() {
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
       });
 
-      it("computes (and shortcut) Ø /\\ { {0} }", [&]() {
+      it("computes (and shortcut) Ø ∩ { {0} }", [&]() {
         __zdd out = zdd_intsec(zdd_F, zdd_x0);
 
         node_test_stream out_nodes(out);
@@ -473,7 +471,7 @@ go_bandit([]() {
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
       });
 
-      it("computes { {0} } /\\ { Ø }", [&]() {
+      it("computes { {0} } ∩ { Ø }", [&]() {
         /*
                    1       T              F       ---- x0
                   / \           ==>
@@ -492,7 +490,7 @@ go_bandit([]() {
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
       });
 
-      it("computes { Ø, {0} } /\\ { Ø }", [&]() {
+      it("computes { Ø, {0} } ∩ { Ø }", [&]() {
         /*
                    1       T              T       ---- x0
                   / \           ==>
@@ -517,7 +515,7 @@ go_bandit([]() {
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
       });
 
-      it("computes { {0}, {1} } /\\ { Ø }", [&]() {
+      it("computes { {0}, {1} } ∩ { Ø }", [&]() {
         /*
                        1        T             F          ---- x0
                       / \
@@ -547,7 +545,7 @@ go_bandit([]() {
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
       });
 
-      it("computes (and shortcut) { {0,1}, {1} } /\\ { {0,1} }", [&]() {
+      it("computes (and shortcut) { {0,1}, {1} } ∩ { {0,1} }", [&]() {
         /*
                     _1_        1            1        ---- x0
                    /   \      / \          / \
@@ -604,7 +602,7 @@ go_bandit([]() {
         AssertThat(level_info.can_pull(), Is().False());
       });
 
-      it("computes (and skip to sink) { {0}, {1}, {0,1} } /\\ { Ø }", [&]() {
+      it("computes (and skip to sink) { {0}, {1}, {0,1} } ∩ { Ø }", [&]() {
         /*
                     1        T          F     ---- x0
                    / \
@@ -683,7 +681,7 @@ go_bandit([]() {
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
       });
 
-      it("computes (and skips in) { {0,1,2}, {0,2}, {0}, {2} } } /\\ { {0,2}, {0}, {1}, {2} }", [&]() {
+      it("computes (and skips in) { {0,1,2}, {0,2}, {0}, {2} } } ∩ { {0,2}, {0}, {1}, {2} }", [&]() {
         /*
                         1             1                 (1,1)      ---- x0
                        / \           / \                /   \
@@ -758,7 +756,7 @@ go_bandit([]() {
         AssertThat(level_info.can_pull(), Is().False());
       });
 
-      it("computes { {0}, {1} } /\\ { {0,1} }", [&]() {
+      it("computes { {0}, {1} } ∩ { {0,1} }", [&]() {
         /*
                     1          1                  (1,1)         ---- x0
                    / \        / \                 /   \
@@ -805,7 +803,7 @@ go_bandit([]() {
         AssertThat(level_info.can_pull(), Is().False());
       });
 
-      it("computes (and skip) { {0}, {1}, {2}, {1,2}, {0,2} } /\\ { {0}, {2}, {0,2}, {0,1,2} }", [&]() {
+      it("computes (and skip) { {0}, {1}, {2}, {1,2}, {0,2} } ∩ { {0}, {2}, {0,2}, {0,1,2} }", [&]() {
         /*
                       1          1                 (1,1)         ---- x0
                      / \        / \                /   \
@@ -874,7 +872,7 @@ go_bandit([]() {
         AssertThat(level_info.can_pull(), Is().False());
       });
 
-      it("computes (and skip) { {0}, {1} } /\\ { {1}, {0,2} }", [&]() {
+      it("computes (and skip) { {0}, {1} } ∩ { {1}, {0,2} }", [&]() {
         /*
                      1         1                (1,1)      ---- x0
                     / \       / \               /   \
@@ -934,7 +932,7 @@ go_bandit([]() {
         AssertThat(level_info.can_pull(), Is().False());
       });
 
-      it("computes (and skip) { {0,2}, {1,2}, Ø } /\\ { {0,1}, {0}, {1} }", [&]() {
+      it("computes (and skip) { {0,2}, {1,2}, Ø } ∩ { {0,1}, {0}, {1} }", [&]() {
         /*
                      1         1                    (1,1)    ---- x0
                     / \       / \                   /   \
@@ -996,7 +994,7 @@ go_bandit([]() {
         AssertThat(level_info.can_pull(), Is().False());
       });
 
-      it("computes (and shortcut) { {0,2}, {1,2}, Ø } /\\ { {0,2}, {0} }", [&]() {
+      it("computes (and shortcut) { {0,2}, {1,2}, Ø } ∩ { {0,2}, {0} }", [&]() {
         /*
                      1            1               (1,1)     ---- x0
                     / \          / \               / \

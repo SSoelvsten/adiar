@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("ZDD: Projection", [&]() {
+  describe("adiar/zdd/project.h", [&]() {
     //////////////////////
     // Sink cases
 

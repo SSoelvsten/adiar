@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("BDD: Build", [&]() {
+  describe("adiar/bdd/build.h", []() {
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 
@@ -234,7 +234,7 @@ go_bandit([]() {
     });
 
     describe("bdd_counter", [&]() {
-      it("creates trivially do counting to 10 in [0,8]", [&]() {
+      it("creates trivial counting to 10 in [0,8]", [&]() {
         bdd res = bdd_counter(0, 8, 10);
 
         node_test_stream ns(res);
@@ -247,7 +247,7 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
       });
 
-      it("creates trivially do counting to 10 in [10,18]", [&]() {
+      it("creates trivial counting to 10 in [10,18]", [&]() {
         bdd res = bdd_counter(10, 18, 10);
 
         node_test_stream ns(res);

@@ -1,8 +1,5 @@
 go_bandit([]() {
-  describe("BDD: Restrict", [&]() {
-    // == CREATE BDD FOR UNIT TESTS ==
-    //               START
-
+  describe("adiar/bdd/restrict.h", []() {
     /*
              1         ---- x0
             / \
@@ -31,10 +28,7 @@ go_bandit([]() {
       bdd_w << n5 << n4 << n3 << n2 << n1;
     }
 
-    //                END
-    // == CREATE BDD FOR UNIT TESTS ==
-
-    it("should bridge level [1]. Assignment: (_,_,T,_)", [&]() {
+    it("should bridge level [1] Assignment: (_,_,T,_)", [&]() {
       /*
                  1      ---- x0
                 / \
@@ -94,7 +88,7 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
     });
 
-    it("should bridge levels. [2]. Assignment: (_,F,_,_)", [&]() {
+    it("should bridge levels [2]. Assignment: (_,F,_,_)", [&]() {
       /*
                  1      ---- x0
                 / \
