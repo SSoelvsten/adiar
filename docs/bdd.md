@@ -194,7 +194,7 @@ _f(x) = 1_), given the total number of expected variables. The given _varcount_
 should be greater or equal to its default value, which is the number of
 variables within the BDD for _f_, i.e. `bdd_varcount(f)`.
 
-## Other Functions
+## Input variables
 
 ### `bool bdd_eval(bdd f, T x)`
 {: .no_toc }
@@ -215,22 +215,26 @@ mentioned in _x_ are for all levels in the given BDD.
 Return the _lexicographically largest_ _x_ such that _f(x) = 1_. The variables
 mentioned in _x_ are for all levels in the given BDD.
 
+### `label_t min_label(bdd f)`
+{: .no_toc }
+
+Return the smallest label in the BDD for _f_, i.e. the label of the root. This
+is the smallest input variable that has an effect on the output of _f_.
+
+### `label_t max_label(bdd f)`
+{: .no_toc }
+
+Return the largest label in the BDD for _f_, i.e. the label of the deepest node.
+This is the largest input variable that has an effect on the output of _f_.
+
+## Other Functions
+
 ### `bool is_sink(bdd f, sink_pred)`
 {: .no_toc }
 
 Whether the BDD for _f_ only consists of a sink satisfying the given sink
 predicate, i.e. _f_ is a constant function. By default the predicate for _any_
 kind of sink is used.
-
-### `label_t min_label(bdd f)`
-{: .no_toc }
-
-Return the smallest label in the BDD for _f_, i.e. the label of the root.
-
-### `label_t max_label(bdd f)`
-{: .no_toc }
-
-Return the largest label in the BDD for _f_, i.e. the label of the deepest node.
 
 ## DOT Output
 
