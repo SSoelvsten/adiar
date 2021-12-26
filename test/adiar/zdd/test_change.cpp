@@ -1,7 +1,5 @@
 go_bandit([]() {
   describe("adiar/zdd/change.h", [&]() {
-    // == CREATE SINK-ONLY BDD FOR UNIT TESTS ==
-    //                  START
     node_file zdd_F;
     node_file zdd_T;
 
@@ -1232,5 +1230,63 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
     });
 
+    it("correctly connects pre-root chain with skipped root for { { 1 }, { 1,2 } } on (0,1)", [&]() {
+      node_file in;
+      /*
+                1     ---- x1
+               / \
+               F 2    ---- x2
+                / \
+                T T
+
+       */
+
+      const node_t n2 = create_node(2, MAX_ID, sink_T, sink_T);
+      const node_t n1 = create_node(1, MAX_ID, sink_F, n2.uid);
+
+      {
+        node_writer nw(in);
+        nw << n2 << n1;
+      }
+
+      label_file labels;
+
+      { // Garbage collect writer to free write-lock
+        label_writer w(labels);
+        w << 0 << 1;
+      }
+
+      __zdd out = zdd_change(in, labels);
+
+      node_arc_test_stream node_arcs(out);
+
+      AssertThat(node_arcs.can_pull(), Is().True());
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,0) }));
+
+      AssertThat(node_arcs.can_pull(), Is().False());
+
+      sink_arc_test_stream sink_arcs(out);
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), sink_F }));
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), sink_T }));
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), sink_T }));
+
+      AssertThat(sink_arcs.can_pull(), Is().False());
+
+      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+
+      AssertThat(level_info.can_pull(), Is().True());
+      AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+      AssertThat(level_info.can_pull(), Is().True());
+      AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+      AssertThat(level_info.can_pull(), Is().False());
+    });
   });
  });
