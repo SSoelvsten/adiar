@@ -182,6 +182,18 @@ _a_ as a binary number with 0 being the most significant bit.
 Finds the _a ∈ A_ (if any) that is lexicographically largest when interpreting
 _a_ as a binary number with 0 being the most significant bit.
 
+### `label_t min_label(zdd A)`
+{: .no_toc }
+
+Return the smallest element that exists in some set _a_ in _A_, i.e. the label
+of the root of the DAG in the ZDD.
+
+### `label_t max_label(zdd A)`
+{: .no_toc }
+
+Return the largest element that exists in some set _a_ in _A_, i.e. the label of 
+the deepest node of the DAG in the ZDD.
+
 ## Other Functions
 
 ### `bool is_sink(zdd A, sink_pred)`
@@ -189,18 +201,6 @@ _a_ as a binary number with 0 being the most significant bit.
 
 Whether the ZDD for _A_ only consists of a sink satisfying the given sink
 predicate. By default the predicate for _any_ kind of sink is used.
-
-### `label_t min_label(zdd A)`
-{: .no_toc }
-
-Return the smallest element that exists in some set in _A_, i.e. the label of
-the root of the DAG in the ZDD.
-
-### `label_t max_label(zdd A)`
-{: .no_toc }
-
-Return the largest element that exists in some set in _A_, i.e. the label of the
-deepest node of the DAG in the ZDD.
 
 ## DOT Output
 
