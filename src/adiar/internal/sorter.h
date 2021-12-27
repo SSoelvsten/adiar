@@ -66,16 +66,6 @@ namespace adiar {
       const tpie::memory_size_type phase3 =
         phase1;
 
-      // Sanity checks
-      adiar_debug(_sorter.minimum_memory_phase_1() <= phase1,
-                  "Not enough memory for phase 1");
-
-      adiar_debug(_sorter.minimum_memory_phase_2() <= phase2,
-                  "Not enough memory for phase 2");
-
-      adiar_debug(_sorter.minimum_memory_phase_3() <= phase3,
-                  "Not enough memory for phase 1");
-
       // Set the available memory and start the sorter
       _sorter.set_available_memory(phase1, phase2, phase3);
       _sorter.begin();
