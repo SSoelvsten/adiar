@@ -62,7 +62,7 @@ Create a ZDD representing the family _{ {is<sub>1</sub>}, {is<sub>2</sub>}, ...,
 ### `zdd zdd_powerset(label_file is)`
 {: .no_toc }
 
-Create a ZDD representing the family _{ {is<sub>1</sub>}, {is<sub>2</sub>}, ..., {is<sub>1</sub>, is<sub>2</sub>}, {is<sub>1</sub>, is<sub>3</sub>}, ..., {is<sub>1</sub>, ..., is<sub>k</sub>} }_.
+Create a ZDD representing the family _2<sup>is</sup> = pow(is) = { {is<sub>1</sub>}, {is<sub>2</sub>}, ..., {is<sub>1</sub>, is<sub>2</sub>}, {is<sub>1</sub>, is<sub>3</sub>}, ..., {is<sub>1</sub>, ..., is<sub>k</sub>} }_.
 
 ### `zdd zdd_sized_set<pred_t>(label_file is, k, pred)`
 {: .no_toc }
@@ -88,9 +88,9 @@ and/or _B_. Some operators are also provided with an alias function:
   
   Same as `zdd_binop(A, B, and_op)` and computes _A ∩ B_.
 
-- `zdd zdd_diff(zdd A, zdd B)` (operator `&`)
+- `zdd zdd_diff(zdd A, zdd B)` (operator `-`)
   
-  Same as `zdd_binop(A, B, diff_op)` and computes _A \ B_.
+  Same as `zdd_binop(A, B, diff_op)` and computes _A_ \ _B_.
 
 ### `zdd zdd_change(zdd A, label_file is)`
 {: .no_toc }
@@ -98,6 +98,12 @@ and/or _B_. Some operators are also provided with an alias function:
 Constructs the ZDD for _{ is Δ a | a ∈ A }_, where Δ is the symmetric difference
 between the two sets of variables _a_ and _is_. In other words, for each set in
 _A_ the value of each variable _i_ from _is_ is flipped.
+
+### `zdd zdd_complement(zdd A, label_file U)`
+{: .no_toc }
+
+Constructs the ZDD for _2<sup>U</sup>_ \ _A_, i.e. the complement of _A_ with
+respect to the universe _U_. The variables in _A_ have to exist in _U_ too.
 
 ### `zdd zdd_expand(zdd A, label_file is)`
 {: .no_toc }
