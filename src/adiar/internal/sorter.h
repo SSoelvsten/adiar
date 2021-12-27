@@ -37,31 +37,28 @@ namespace adiar {
       // We intend to have the memory divided between all the sorters, such that
       // one can be in phase 2 while everyone else is in phase 1 or 3.
       //
-      // | p1 | p1 | p1 |       . . . p2 . . .         |
+      // | p1 | p1 | p1 | p3 |                      p2                      |
       //
-      // Phase two is the one that makes the most out of a lot of memory. So, we
-      // want to have phase 2 have the largest share. For simplicity, we
-      // currently have all the p1 sorters have 1/16 of the entire memory.
+      // Currently, we have phase 1 and 3 be the smallest they can be (~5 MB).
+      // At some point, we would like to make them vary in size, depending on
+      // the amount of memory given - assuming this will increase performance on
+      // average.
+      //
+      // TODO: Intuitively 2*p1 <= p3, but the tpie::merge_sorter does not seem
+      //       to complain with only p3 = 1*p1. Should we change this?
       //
       // TODO: It would be better to make p2 'exponentially' larger than p1 for
       //       some notion of 'exponentiality'.
       //
       // TODO: phase 1 should be upper bounded by the number of elements
       //       possibly placed in this queue. See Issue #189 on ssoelvsten/adiar
-      //       as to why. I would suggest for to upper bound the 1/16th by
-      //       slightly more than the amount of memory necessary to hold all
-      //       values simultaneously.
-
-      // Quickfix: Issue #250 of thomasmoelhave/tpie
-      const tpie::memory_size_type minimum_phase1 = std::max(_sorter.minimum_memory_phase_1(),
-                                                             sizeof(T) * 128 * 1024 + 5 * 1024 * 1024);
+      //       as to why.
 
       const tpie::memory_size_type phase1 =
-        std::max(std::max(minimum_phase1, _sorter.minimum_memory_phase_3()),
-                 (memory_bytes >> 4) / (number_of_sorters - 1));
+        sizeof(T) * 128 * 1024 + 5 * 1024 * 1024;
 
       const tpie::memory_size_type phase2 =
-        memory_bytes - phase1 * (number_of_sorters - 1);
+        memory_bytes - phase1 * (number_of_sorters-1);
 
       const tpie::memory_size_type phase3 =
         phase1;
