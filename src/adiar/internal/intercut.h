@@ -265,11 +265,15 @@ namespace adiar
     out_label = label_of(n);
     out_id = 0;
 
-    if (l == out_label) {
-      // Let l be the next label to hit (if any)
-      if (ls.can_pull()) { l = ls.pull(); }
+    { // Deal with the root
+      const bool hit_level = l == out_label;
 
-      intercut_rec r = intercut_policy::hit_existing(n);
+      // Let l be the next label to hit (if any)
+      if (hit_level && ls.can_pull()) { l = ls.pull(); }
+
+      intercut_rec r = hit_level
+        ? intercut_policy::hit_existing(n)
+        : intercut_policy::miss_existing(n);;
 
       if (std::holds_alternative<intercut_rec_skipto>(r)) {
         const intercut_rec_skipto rs = std::get<intercut_rec_skipto>(r);
@@ -297,19 +301,6 @@ namespace adiar
 
       intercut_resolve_hit_arcs<intercut_policy, intercut_out__post_root<intercut_policy>>
         (aw, intercut_pq_1, intercut_pq_2, out_label, out_id, l);
-
-    } else { // l > label_of(n)
-      const intercut_rec_output ro = intercut_policy::miss_existing(n);
-      const uid_t out_uid = create_node_uid(out_label, out_id++);
-
-      intercut_out__post_root<intercut_policy>::forward
-        (aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
-
-      intercut_out__post_root<intercut_policy>::forward
-        (aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
-
-      intercut_in__pq_2<intercut_policy, intercut_out__arc_writer>
-        (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, out_uid, l);
     }
 
     // Process nodes of the decision diagram in topological order
