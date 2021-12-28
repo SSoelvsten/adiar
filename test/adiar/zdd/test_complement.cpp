@@ -33,20 +33,50 @@ go_bandit([]() {
       nw << n2 << n1;
     }
 
-    label_file U0123;
+    label_file dom_0123;
     {
-      label_writer w(U0123);
+      label_writer w(dom_0123);
       w << 0 << 1 << 2 << 3;
     }
 
-    label_file U1234;
+    label_file dom_1234;
     {
-      label_writer w(U1234);
+      label_writer w(dom_1234);
       w << 1 << 2 << 3 << 4;
     }
 
+    it("produces Ø on Ø and U = Ø", [&]() {
+      label_file dom_empty;
+      __zdd out = zdd_complement(zdd_F, dom_empty);
+
+      node_test_stream ns(out);
+
+      AssertThat(ns.can_pull(), Is().True());
+      AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+
+      AssertThat(ns.can_pull(), Is().False());
+
+      level_info_test_stream<node_t, NODE_FILE_COUNT> level_info(out);
+      AssertThat(level_info.can_pull(), Is().False());
+    });
+
+    it("produces { Ø } on { Ø } and U = Ø", [&]() {
+      label_file dom_empty;
+      __zdd out = zdd_complement(zdd_F, dom_empty);
+
+      node_test_stream ns(out);
+
+      AssertThat(ns.can_pull(), Is().True());
+      AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+
+      AssertThat(ns.can_pull(), Is().False());
+
+      level_info_test_stream<node_t, NODE_FILE_COUNT> level_info(out);
+      AssertThat(level_info.can_pull(), Is().False());
+    });
+
     it("produces pow(U) on F sink and U = { 0, 1, 2, 3 }", [&]() {
-      __zdd out = zdd_complement(zdd_F, U0123);
+      __zdd out = zdd_complement(zdd_F, dom_0123);
 
       node_test_stream ns(out);
 
@@ -90,7 +120,7 @@ go_bandit([]() {
     });
 
     it("produces pow(U) on F sink and U = { 1, 2, 3, 4 }", [&]() {
-      __zdd out = zdd_complement(zdd_F, U1234);
+      __zdd out = zdd_complement(zdd_F, dom_1234);
 
       node_test_stream ns(out);
 
@@ -169,7 +199,7 @@ go_bandit([]() {
     });
 
     it("produces pow(U) \\ Ø on T sink and U = { 1, 2, 3, 4 }", [&]() {
-      __zdd out = zdd_complement(zdd_T, U1234);
+      __zdd out = zdd_complement(zdd_T, dom_1234);
 
       node_test_stream ns(out);
 
@@ -219,7 +249,7 @@ go_bandit([]() {
         nw << create_node(3, MAX_ID, sink_F, sink_T);
       }
 
-      __zdd out = zdd_complement(zdd_x3, U0123);
+      __zdd out = zdd_complement(zdd_x3, dom_0123);
 
       node_arc_test_stream node_arcs(out);
 
@@ -295,7 +325,7 @@ go_bandit([]() {
         nw << create_node(2, MAX_ID, sink_F, sink_T);
       }
 
-      __zdd out = zdd_complement(zdd_x2, U0123);
+      __zdd out = zdd_complement(zdd_x2, dom_0123);
 
       node_arc_test_stream node_arcs(out);
 
@@ -376,7 +406,7 @@ go_bandit([]() {
         nw << create_node(1, MAX_ID, sink_T, sink_T);
       }
 
-      __zdd out = zdd_complement(zdd_x1_null, U0123);
+      __zdd out = zdd_complement(zdd_x1_null, dom_0123);
       /*
                1        ---- x0
               / \
@@ -479,7 +509,7 @@ go_bandit([]() {
         nw << n4 << n3 << n2 << n1;
       }
 
-      __zdd out = zdd_complement(in, U1234);
+      __zdd out = zdd_complement(in, dom_1234);
       /*
                  _1_      ---- x1
                 /   \
@@ -595,7 +625,7 @@ go_bandit([]() {
         nw << n7 << n6 << n5 << n4 << n3 << n2 << n1;
       }
 
-      __zdd out = zdd_complement(in, U1234);
+      __zdd out = zdd_complement(in, dom_1234);
       /*
                  _1_                ---- x1
                 /   \
@@ -754,7 +784,7 @@ go_bandit([]() {
     });
 
    it("computes pow(U) \\ pow({ 2, 4 }) with U = { 1, 2, 3, 4 }", [&]() {
-      __zdd out = zdd_complement(zdd_pow_24, U1234);
+      __zdd out = zdd_complement(zdd_pow_24, dom_1234);
       /*
             _1_       ---- x1
            /   \
