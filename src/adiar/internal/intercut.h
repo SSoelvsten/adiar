@@ -206,13 +206,15 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  // TODO: If nothing changes (no new nodes are added and the current are left
+  //       as-is) then one can return the input once more.
 
   template<typename intercut_policy>
   typename intercut_policy::unreduced_t intercut(const typename intercut_policy::reduced_t &dd,
                                                  const label_file &labels)
   {
     if (labels.size() == 0) {
-      return dd;
+      return intercut_policy::on_empty_labels(dd);
     }
 
     node_stream<> in_nodes(dd);
