@@ -105,6 +105,9 @@ namespace adiar
     friend label_t min_label(const decision_diagram &dd);
     friend label_t max_label(const decision_diagram &dd);
 
+    template<typename to_policy, typename from_policy>
+    friend class convert_decision_diagram_policy;
+
     ////////////////////////////////////////////////////////////////////////////
     // Internal state
   protected:
@@ -135,9 +138,9 @@ namespace adiar
   ///
   /// - Identifiers are from MAX_ID and down (when read bottom-up)
   ///
-  /// If this is true, then equality checking (see 'pred.h') can be done in a
-  /// single cheap linear scan rather than with an O(N log N) time-forwarding
-  /// algorithm.
+  /// If this is true, then equality checking (see 'internal/pred.h') can be
+  /// done in a single cheap linear scan rather than with an O(N log N)
+  /// time-forwarding algorithm.
   //////////////////////////////////////////////////////////////////////////////
   bool is_canonical(const decision_diagram &dd);
 

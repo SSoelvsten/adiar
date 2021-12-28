@@ -1,8 +1,10 @@
 #ifndef ADIAR_ZDD_ZDD_H
 #define ADIAR_ZDD_ZDD_H
 
-#include <adiar/internal/decision_diagram.h>
+#include <adiar/data.h>
+#include <adiar/tuple.h>
 #include <adiar/file.h>
+#include <adiar/internal/decision_diagram.h>
 
 namespace adiar {
   // Class declarations to be able to reference it
@@ -80,6 +82,8 @@ namespace adiar {
     zdd(const node_file &f, bool negate = false);
 
     zdd();
+    zdd(bool v);
+
     zdd(const zdd &o);
     zdd(zdd &&o);
 
@@ -126,6 +130,11 @@ namespace adiar {
     {
       if (is_sink(n.high) && !value_of(n.high)) { return n.low; }
       return n.uid;
+    }
+
+    static inline tuple reduction_rule_inv(const ptr_t &child)
+    {
+      return { child, create_sink_ptr(false) };
     }
 
   public:

@@ -1,8 +1,13 @@
 #ifndef ADIAR_BDD_BDD_H
 #define ADIAR_BDD_BDD_H
 
+#include <adiar/data.h>
+#include <adiar/tuple.h>
+
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/file.h>
+
+#include <adiar/zdd/zdd.h>
 
 namespace adiar {
   // Class declarations to be able to reference it
@@ -113,6 +118,11 @@ namespace adiar {
     {
       if (n.low == n.high) { return n.low; }
       return n.uid;
+    }
+
+    static inline tuple reduction_rule_inv(const ptr_t &child)
+    {
+      return { child, child };
     }
 
   public:

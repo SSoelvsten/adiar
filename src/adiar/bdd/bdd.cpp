@@ -5,6 +5,8 @@
 #include <adiar/data.h>
 #include <adiar/file_stream.h>
 
+#include <adiar/internal/convert.h>
+#include <adiar/internal/intercut.h>
 #include <adiar/internal/pred.h>
 #include <adiar/internal/reduce.h>
 

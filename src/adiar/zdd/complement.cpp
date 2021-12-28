@@ -18,6 +18,11 @@ namespace adiar
     static constexpr bool cut_false_sink = true;
 
   public:
+    static zdd on_empty_labels(const zdd& dd)
+    {
+      return dd;
+    }
+
     static zdd on_sink_input(const bool sink_value, const zdd& /*dd*/, const label_file &universe)
     {
       return sink_value

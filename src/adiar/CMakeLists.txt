@@ -39,11 +39,15 @@ set(HEADERS
   zdd/subset.h
   zdd/zdd.h
 
+  # conversion
+  convert.h
+
   # debug files
   dot.h
 
   # internal
   internal/build.h
+  internal/convert.h
   internal/count.h
   internal/decision_diagram.h
   internal/intercut.h
@@ -95,6 +99,9 @@ set(SOURCES
   zdd/project.cpp
   zdd/subset.cpp
   zdd/zdd.cpp
+
+  # conversion
+  convert.cpp
 
   # debug files
   dot.cpp
