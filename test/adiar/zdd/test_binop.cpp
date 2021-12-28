@@ -55,7 +55,8 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+        level_info_test_stream<node_t, NODE_FILE_COUNT> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
       });
 
       it("computes { Ø } U Ø", [&]() {
@@ -67,7 +68,8 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+        level_info_test_stream<node_t, NODE_FILE_COUNT> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
       });
 
       it("should shortcut on irrelevance for { {0} } U Ø", [&]() {
