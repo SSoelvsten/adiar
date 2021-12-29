@@ -282,8 +282,9 @@ namespace adiar
       if (std::holds_alternative<intercut_rec_skipto>(r)) {
         const intercut_rec_skipto rs = std::get<intercut_rec_skipto>(r);
 
-        // TODO: nil value on source?
-        if (is_sink(rs.tgt) && !cut_sink<intercut_policy>(out_label, l, value_of(rs.tgt))) {
+        if (is_sink(rs.tgt)
+            && is_nil(intercut_pq_2.top().source)
+            && !cut_sink<intercut_policy>(out_label, l, value_of(rs.tgt))) {
           return intercut_policy::sink(value_of(rs.tgt));
         }
         // TODO: The 'is_sink(rs.tgt) && cut_sink(...)' case can be handled even
