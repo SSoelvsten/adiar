@@ -61,6 +61,13 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
+  template<typename intercut_policy>
+  bool cut_sink(const label_t curr_level, const label_t cut_level, const bool sink_value)
+  {
+    return curr_level < cut_level
+      && (!sink_value || intercut_policy::cut_true_sink)
+      && (sink_value || intercut_policy::cut_false_sink);
+  }
 
   template<typename intercut_policy>
   class intercut_out__pre_root
@@ -74,9 +81,8 @@ namespace adiar
                                const ptr_t source, const ptr_t target,
                                const label_t curr_level, const label_t next_cut)
     {
-      if (is_sink(target) && (next_cut <= curr_level
-                              || (value_of(target) && !intercut_policy::cut_true_sink)
-                              || (!value_of(target) && !intercut_policy::cut_false_sink))) {
+      if (is_sink(target)
+          && !cut_sink<intercut_policy>(curr_level, next_cut, value_of(target))) {
         aw.unsafe_push_sink({ source, target });
       } else {
         const label_t __next_cut = (next_cut <= curr_level || next_cut > label_of(target))
@@ -100,9 +106,7 @@ namespace adiar
                                const label_t curr_level, const label_t next_cut)
     {
       if (is_sink(target)) {
-        if (next_cut <= curr_level
-            || (value_of(target) && !intercut_policy::cut_true_sink)
-            || (!value_of(target) && !intercut_policy::cut_false_sink)) {
+        if (!cut_sink<intercut_policy>(curr_level, next_cut, value_of(target))) {
           aw.unsafe_push_sink({ source, target });
         } else {
           pq_2.push({ source, target, next_cut });
@@ -278,9 +282,13 @@ namespace adiar
       if (std::holds_alternative<intercut_rec_skipto>(r)) {
         const intercut_rec_skipto rs = std::get<intercut_rec_skipto>(r);
 
-        // We don't need to check the sink value here, since rs.tgt is the old
-        // 'high' value (and hence cannot be false).
-        if (is_sink(rs.tgt)) { return intercut_policy::sink(value_of(rs.tgt)); }
+        // TODO: nil value on source?
+        if (is_sink(rs.tgt) && !cut_sink<intercut_policy>(out_label, l, value_of(rs.tgt))) {
+          return intercut_policy::sink(value_of(rs.tgt));
+        }
+        // TODO: The 'is_sink(rs.tgt) && cut_sink(...)' case can be handled even
+        //       better with 'intercut_policy::on_sink_input' but where the
+        //       label file are only of the remaining labels.
 
         intercut_in__pq_2<intercut_policy, intercut_out__post_root<intercut_policy>>
           (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, rs.tgt, l);
@@ -337,10 +345,14 @@ namespace adiar
         if (intercut_policy::may_skip && std::holds_alternative<intercut_rec_skipto>(r)) {
           const intercut_rec_skipto rs = std::get<intercut_rec_skipto>(r);
 
-          // Will the hit kill the node?
-          if (is_sink(rs.tgt) && is_nil(intercut_pq_1.top().source)) {
+          if (is_sink(rs.tgt)
+              && is_nil(intercut_pq_1.top().source)
+              && !cut_sink<intercut_policy>(out_label, l, value_of(rs.tgt))) {
             return intercut_policy::sink(value_of(rs.tgt));
           }
+          // TODO: The 'is_sink(rs.tgt) && cut_sink(...)' case can be handled even
+          //       better with 'intercut_policy::on_sink_input' but where the
+          //       label file are only of the remaining labels.
 
           intercut_in__pq_1<intercut_policy, intercut_out__post_root<intercut_policy>>
             (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, rs.tgt, l);

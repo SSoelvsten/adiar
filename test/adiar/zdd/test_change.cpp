@@ -1288,5 +1288,92 @@ go_bandit([]() {
 
       AssertThat(level_info.can_pull(), Is().False());
     });
+
+    it("cuts collapse of root to a sink for { { 0 } } on (0,1)", [&]() {
+      node_file in;
+      /*
+                1     ---- x0
+               / \
+               F T
+      */
+      { // Garbage collect writer to free write-lock
+        node_writer nw(in);
+        nw << create_node(0, MAX_ID, sink_F, sink_T);
+      }
+
+      label_file labels;
+      { // Garbage collect writer to free write-lock
+        label_writer w(labels);
+        w << 0 << 1;
+      }
+
+      __zdd out = zdd_change(in, labels);
+
+      node_arc_test_stream node_arcs(out);
+
+      AssertThat(node_arcs.can_pull(), Is().False());
+
+      sink_arc_test_stream sink_arcs(out);
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), sink_F }));
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), sink_T }));
+
+      AssertThat(sink_arcs.can_pull(), Is().False());
+
+      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+
+      AssertThat(level_info.can_pull(), Is().True());
+      AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+      AssertThat(level_info.can_pull(), Is().False());
+    });
+
+    it("cuts collapse to a sink for { { 0,1 } } on (0,1,2)", [&]() {
+      node_file in;
+      /*
+                1     ---- x0
+               / \
+               F 2    ---- x1
+                / \
+                F T
+      */
+      { // Garbage collect writer to free write-lock
+        node_writer nw(in);
+        nw << create_node(1, MAX_ID, sink_F, sink_T)
+           << create_node(0, MAX_ID, sink_F, create_node_ptr(1, MAX_ID));
+      }
+
+      label_file labels;
+      { // Garbage collect writer to free write-lock
+        label_writer w(labels);
+        w << 0 << 1 << 2;
+      }
+
+      __zdd out = zdd_change(in, labels);
+
+      node_arc_test_stream node_arcs(out);
+
+      AssertThat(node_arcs.can_pull(), Is().False());
+
+      sink_arc_test_stream sink_arcs(out);
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), sink_F }));
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), sink_T }));
+
+      AssertThat(sink_arcs.can_pull(), Is().False());
+
+      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+
+      AssertThat(level_info.can_pull(), Is().True());
+      AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+      AssertThat(level_info.can_pull(), Is().False());
+    });
   });
  });
