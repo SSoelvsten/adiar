@@ -17,6 +17,7 @@ may constitute interesting undergraduate and graduate projects.
         - [Proof Logging](#proof-logging)
         - [Dynamic Variable Reordering](#dynamic-variable-reordering)
     - [Other Decision Diagrams](#other-decision-diagrams)
+        - [Chained Decision Diagrams](#chained-decision-diagrams)
         - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
         - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
         - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
@@ -266,6 +267,54 @@ the worst-case guarantees.
 
 ## Other Decision Diagrams
 
+### Chained Decision Diagrams
+
+Decision diagrams achieve their practical performance by also encoding
+information inside of their arcs. Specifically, _Binary_ and _Zero-suppressed_
+Decision Diagrams encode the information inside of skipping a level; in the
+former skipped levels represent a _don't care_ chain while in the latter they
+represent an _or_ chain. This makes each of them good at solving a problem,
+depending on the nature of said problem. Yet, for _n_ variables a BDD can be
+_n/2_ times larger than the same ZDD and vica versa [[Bryant18](#references)].
+
+Independently Van Dijk [[Dijk17](#references)] and Bryant [[Bryant18](#references)]
+came up with ideas of how to get the best of both worlds.
+
+- **Tagged Decision Diagrams** [[Dijk17](#references)]
+
+  Every outgoing arc of a node _n_ does not only identify the next node _m_,
+  but also a variable _x_ in between _n.label_ and _m.label_ (inclusive). All
+  nodes before _x_ are treated by one rule (e.g. the BDD rule) and all others
+  afterwards with a second rule (e.g. the ZDD rule).
+  
+  - This works with [complement edges](#attributed-edges)
+
+  - One of the reduction rules replaces it with a (possibly new) node that is
+    not one of its children. It seems unlikely we can get this to work in Adiar.
+
+- **Chained Decision Diagrams** [[Bryant18](#references)]
+
+  No extra information is encoded inside of an edge, but instead every node now
+  has a _begin_ variable _t_ (top) and _end_ variable _b_ (bottom). That is,
+  every node now can be writtes as (_t_ : _b_, _low_, _high_). To encode all of
+  this we probably need to switch to 128 bit numbers instead of 64 bit.
+  
+  - This does not change anything about how the _Reduce_ algorithm needs to work!
+
+  - Most algorithms have already been generalised to work for BDDs and ZDDs by
+    use of some hooks, e.g. the _cofactor_ function which they also modify. One
+    should be able to build on top of this to 
+
+  - They did not use complement edges for the sake of the experiment. But, there
+    is no reason why they are not applicable to CZDDs. How they can be used with
+    CBDDs without conflicting with the _or_ chain within a node may require some
+    extra thought.
+
+Yet, in both of their experiments, they had a hard time finding any cases where
+ZDDs did not outperform BDDs, CBDDs. CZDDs are on-par (or better) than ZDDs. So,
+currently the only motivation we have for this (except for: "because we can")
+is to remove the need for the user to think about what representation to use.
+
 ### Multi-Terminal Binary Decision Diagrams
 One can extend the proposed representation of sink nodes to encompass non-boolean
 values, such as integers or floats. To this end, one should template all structs
@@ -357,7 +406,6 @@ For example, consider a `bdd_apply(bdd_apply(...), ...)`. The outer Apply can
 already start processing nodes on level _i_ when the inner one is at a level
 _j_>_i_. This puts all Applys (and all other single-sweep BDD operations!) in a
 _levelized lockstep_
-
 
 **Levelized Pipe**
 
@@ -461,6 +509,11 @@ keep the disk usage close to what otherwise would be used.
   implementation of a BDD package_”. In: _Information Processing Letters 10.2_.
   (1980)
 
+- [[Bryant18](https://link.springer.com/chapter/10.1007/978-3-319-89960-2_5)]
+  Randal E. Bryant. “_Chain Reduction for Binary and Zero-Suppressed Decision
+  Diagrams_”. In: _Tools and Algorithms for the Construction and Analysis of
+  Systems_. (2018)
+
 - [[Bryant21](https://arxiv.org/abs/2105.00885)]
   Randal E. Bryant, Marijn J. H. Heule. “_Generating Extended Resolution Proofs
   with a BDD-Based SAT Solver (Extended Paper)_”. In: _arXiv_. (2021)
@@ -484,6 +537,11 @@ keep the disk usage close to what otherwise would be used.
   Tom van Dijk, Jaco van de Pol. “_Sylvan: multi-core framework for decision
   diagrams_”. In: _International Journal on Software Tools for Technology
   Transfer_. (2016)
+
+- [[Dijk17](https://ieeexplore.ieee.org/abstract/document/8102248)]
+  Tom van Dijk, Robert Wille, Robert Meolic. “_Tagged BDDs: Combining reduction
+  rules from different decision diagram types_”. In: _Formal Methods in Computer
+  Aided Design_. (2017)
 
 - [[Drechsler01](https://ieeexplore.ieee.org/document/905674)]
   Rolf Drechsler Wolfgang Günther. “_Using lower bounds during dynamic BDD
