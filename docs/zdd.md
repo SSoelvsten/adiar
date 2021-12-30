@@ -99,11 +99,12 @@ Constructs the ZDD for _{ is Δ a | a ∈ A }_, where Δ is the symmetric differ
 between the two sets of variables _a_ and _is_. In other words, for each set in
 _A_ the value of each variable _i_ from _is_ is flipped.
 
-### `zdd zdd_complement(zdd A, label_file U)`
+### `zdd zdd_complement(zdd A, label_file dom)`
 {: .no_toc }
 
-Constructs the ZDD for _2<sup>U</sup>_ \ _A_, i.e. the complement of _A_ with
-respect to the universe _U_. The variables in _A_ have to exist in _U_ too.
+Constructs the ZDD for _2<sup>dom</sup>_ \ _A_, i.e. the complement of _A_ with
+respect to the variable domain, _dom_. The variables in _A_ have to exist in
+_dom_ too.
 
 ### `zdd zdd_expand(zdd A, label_file is)`
 {: .no_toc }
@@ -214,6 +215,12 @@ the deepest node of the DAG in the ZDD.
 
 Whether the ZDD for _A_ only consists of a sink satisfying the given sink
 predicate. By default the predicate for _any_ kind of sink is used.
+
+### `zdd zdd_from(bdd f, label_file dom)`
+{: .no_toc }
+
+Converts a [BDD](./bdd) into a ZDD given the variable domain in _dom_. The
+domain should be a superset of the variables in the given BDD.
 
 ## DOT Output
 

@@ -236,6 +236,13 @@ Whether the BDD for _f_ only consists of a sink satisfying the given sink
 predicate, i.e. _f_ is a constant function. By default the predicate for _any_
 kind of sink is used.
 
+### `bdd bdd_from(zdd A, label_file dom)`
+{: .no_toc }
+
+Converts a [ZDD](./zdd) into a BDD with the variable domain in _dom_. The
+domain should be a superset of the variables in the given ZDD.
+
+
 ## DOT Output
 
 ### `void output_dot(bdd f, std::string filename)`
