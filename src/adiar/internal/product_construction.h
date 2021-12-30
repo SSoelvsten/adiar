@@ -88,25 +88,25 @@ namespace adiar
     }
   }
 
-  template<typename on_source, typename extra_arg>
+  template<typename out_policy, typename extra_arg>
   inline void prod_recurse_in(prod_priority_queue_1_t &prod_pq_1, prod_priority_queue_2_t &prod_pq_2,
                               arc_writer &aw,
                               const extra_arg &ea, ptr_t t1, ptr_t t2)
   {
     while (prod_pq_1.can_pull() && prod_pq_1.top().t1 == t1 && prod_pq_1.top().t2 == t2) {
-      on_source()(prod_pq_1, aw, ea, prod_pq_1.pull().source);
+      out_policy::go(prod_pq_1, aw, ea, prod_pq_1.pull().source);
     }
 
     while (!prod_pq_2.empty() && prod_pq_2.top().t1 == t1 && prod_pq_2.top().t2 == t2) {
-      on_source()(prod_pq_1, aw, ea, prod_pq_2.top().source);
+      out_policy::go(prod_pq_1, aw, ea, prod_pq_2.top().source);
       prod_pq_2.pop();
     }
   }
 
   struct prod_recurse_in__output_node
   {
-    inline void operator()(prod_priority_queue_1_t&, arc_writer &aw,
-                           uid_t out_uid, ptr_t source)
+    static inline void go(prod_priority_queue_1_t&, arc_writer &aw,
+                          uid_t out_uid, ptr_t source)
     {
       if (!is_nil(source)) {
         aw.unsafe_push_node({ source, out_uid });
@@ -116,8 +116,8 @@ namespace adiar
 
   struct prod_recurse_in__output_sink
   {
-    inline void operator()(prod_priority_queue_1_t&, arc_writer &aw,
-                           ptr_t out_sink, ptr_t source)
+    static inline void go(prod_priority_queue_1_t&, arc_writer &aw,
+                          ptr_t out_sink, ptr_t source)
     {
       aw.unsafe_push_sink({ source, out_sink });
     }
@@ -125,8 +125,8 @@ namespace adiar
 
   struct prod_recurse_in__forward
   {
-    inline void operator()(prod_priority_queue_1_t &prod_pq_1, arc_writer&,
-                           const prod_rec_skipto &r, ptr_t source)
+    static inline void go(prod_priority_queue_1_t &prod_pq_1, arc_writer&,
+                          const prod_rec_skipto &r, ptr_t source)
     {
       prod_pq_1.push({ r.t1, r.t2, source });
     }
