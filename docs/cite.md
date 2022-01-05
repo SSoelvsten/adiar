@@ -6,7 +6,7 @@ description: "Citations"
 permalink: /cite
 ---
 
-# Citing Adiar
+# Citing this project
 {: .no_toc }
 
 Please consider to cite one or more of the following papers, if you use Adiar in
@@ -40,8 +40,11 @@ Adiar is based on the theoretical work of Lars Arge back in the 90s.
     year      = {1995},
     publisher = {Springer Berlin Heidelberg},
     address   = {Berlin, Heidelberg},
+    series    = {Lecture Notes in Computer Science},
+    volume    = {1004},
     pages     = {82--91},
-    isbn      = {978-3-540-47766-2}
+    isbn      = {978-3-540-47766-2},
+    doi       = {10.1007/BFb0015411},
   }
   ```
 
@@ -54,8 +57,10 @@ Adiar is based on the theoretical work of Lars Arge back in the 90s.
     author    = {Arge, Lars},
     title     = {The I/O-Complexity of Ordered Binary-Decision Diagram},
     booktitle = {BRICS RS preprint series},
+    volume    = {29},
     year      = {1996},
     publisher = {Department of Computer Science, University of Aarhus},
+    doi       = {10.7146/brics.v3i29.20010},
   }
   ```
 
@@ -81,15 +86,16 @@ in practice.
   ```bibtex
   @InProceedings{soelvsten2022:TACAS,
     title         = {Adiar: Binary Decision Diagrams in External Memory},
-    author        = {S{\o}lvstxen, Steffan Christ
+    author        = {S{\o}lvsten, Steffan Christ
                  and van de Pol, Jaco
                  and Jakobsen, Anna Blume
                  and Thomasen, Mathias Weller Berg},
     year          = {2022},
     booktitle     = {Tools and Algorithms for the Construction and Analysis of Systems},
-    numpages      = {20},
-    publisher     = {Springer Berlin Heidelberg},
-    address       = {Berlin, Heidelberg},
+    numPages      = {20},
+    publisher     = {Springer},
+    address       = {Berlin, Heidelberg},  
+    series        = {Lecture Notes in Computer Science},
   }
   ```
 
@@ -104,9 +110,11 @@ in practice.
                  and Jakobsen, Anna Blume
                  and Thomasen, Mathias Weller Berg},
     year          = {2021},
-    eprint        = {2104.12101},
     archivePrefix = {arXiv},
+    eprint        = {2104.12101},
     primaryClass  = {cs.DS},
-    numpages      = {36},
+    numPages      = {38},  
+    howPublished  = {arXiv},
+    url           = {https://arxiv.org/abs/2104.12101},
   }
   ```
