@@ -7,8 +7,6 @@
 
 namespace adiar
 {
-  //////////////////////////////////////////////////////////////////////////////
-  // Class declarations to be able to reference it
   class decision_diagram;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -18,13 +16,18 @@ namespace adiar
   typedef std::monostate no_file;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// An algorithm may return a node-based decision diagram in a node_file or a
-  /// yet to-be reduced decision diagram in an arc_file. So, we use a
-  /// std::variant to hold the the node_file or arc_file without having to pay
-  /// for the expensive constructors and use a lot of space.
+  /// \warning You should never explicitly be dealing with this class or have it
+  /// be an l-value. Implicit conversion from an unreduced to the reduced type
+  /// will call the correct reduce algorithm.
   ///
-  /// We also include a std::monostate to allow an algorithm to return None,
-  /// though that will lead to an exception in most cases.
+  /// An algorithm may return a node-based decision diagram in a
+  /// <tt>node_file</tt> or a yet to-be reduced decision diagram in an
+  /// <tt>arc_file</tt>. So, we use a <tt>std::variant</tt> to hold the the
+  /// <tt>node_file</tt> or <tt>arc_file</tt> without having to pay for the
+  /// expensive constructors and use a lot of space. The implicit
+  ///
+  /// We also include a <tt>std::monostate</tt> to allow an algorithm to return
+  /// None, though that will lead to an exception in most cases.
   //////////////////////////////////////////////////////////////////////////////
   class __decision_diagram
   {
@@ -68,8 +71,9 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// A decision diagram (as used by the user) is the reduced node-based
-  /// representation.
+  /// Container for the files that represent a Decision Diagram. To ensure the
+  /// most disk-space is available, try to garbage collect objects of this type
+  /// as quickly as possible and/or minimise the number of lvalues of this type.
   //////////////////////////////////////////////////////////////////////////////
   class decision_diagram
   {

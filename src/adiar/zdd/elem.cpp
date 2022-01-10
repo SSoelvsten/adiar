@@ -1,4 +1,4 @@
-#include "elem.h"
+#include <adiar/zdd.h>
 
 #include <adiar/data.h>
 
@@ -7,8 +7,6 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/traverse.h>
-
-#include <adiar/zdd/zdd.h>
 
 namespace adiar
 {

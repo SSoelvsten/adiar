@@ -1,18 +1,13 @@
 #include "bdd.h"
 
+#include <adiar/bdd.h>
+
 #include <memory>
 
 #include <adiar/data.h>
 #include <adiar/file_stream.h>
 
-#include <adiar/internal/convert.h>
-#include <adiar/internal/intercut.h>
-#include <adiar/internal/pred.h>
 #include <adiar/internal/reduce.h>
-
-#include <adiar/bdd/apply.h>
-#include <adiar/bdd/build.h>
-#include <adiar/bdd/negate.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
@@ -56,7 +51,6 @@ namespace adiar {
   __bdd_oper(bool, ==)
   __bdd_oper(bool, !=)
 
-  //////////////////////////////////////////////////////////////////////////////
   bdd& bdd::operator= (const bdd &other)
   {
     this -> negate = other.negate;
@@ -113,10 +107,18 @@ namespace adiar {
 
   bool operator!= (const bdd &lhs, const bdd &rhs) { return !(lhs == rhs); }
 
-  bdd operator~ (const bdd &in_bdd) { return bdd_not(in_bdd); }
-  bdd operator~ (bdd &&in_bdd) { return bdd_not(std::forward<bdd>(in_bdd)); }
+  bdd operator~ (const bdd &f)
+  { return bdd_not(f); }
 
-  __bdd operator& (const bdd &lhs, const bdd &rhs) { return bdd_and(lhs, rhs); }
-  __bdd operator| (const bdd &lhs, const bdd &rhs) { return bdd_or(lhs, rhs); }
-  __bdd operator^ (const bdd &lhs, const bdd &rhs) { return bdd_xor(lhs, rhs); }
+  bdd operator~ (bdd &&f)
+  { return bdd_not(std::forward<bdd>(f)); }
+
+  __bdd operator& (const bdd &lhs, const bdd &rhs)
+  { return bdd_and(lhs, rhs); }
+
+  __bdd operator| (const bdd &lhs, const bdd &rhs)
+  { return bdd_or(lhs, rhs); }
+
+  __bdd operator^ (const bdd &lhs, const bdd &rhs)
+  { return bdd_xor(lhs, rhs); }
 }

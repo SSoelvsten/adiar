@@ -1,4 +1,4 @@
-#include "restrict.h"
+#include <adiar/bdd.h>
 
 #include <adiar/data.h>
 
@@ -8,9 +8,6 @@
 
 #include <adiar/internal/substitution.h>
 #include <adiar/internal/util.h>
-
-#include <adiar/bdd/bdd.h>
-#include <adiar/bdd/build.h>
 
 namespace adiar
 {

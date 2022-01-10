@@ -1,4 +1,4 @@
-#include "assignment.h"
+#include <adiar/bdd.h>
 
 #include <adiar/data.h>
 

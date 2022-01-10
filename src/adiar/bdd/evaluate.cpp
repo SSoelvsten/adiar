@@ -1,4 +1,4 @@
-#include "evaluate.h"
+#include <adiar/bdd.h>
 
 #include <adiar/file_stream.h>
 #include <adiar/internal/traverse.h>

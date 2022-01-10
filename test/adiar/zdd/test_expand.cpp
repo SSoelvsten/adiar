@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("adiar/zdd/expand.h", [&]() {
+  describe("adiar/zdd/expand.cpp", [&]() {
     node_file zdd_F;
     node_file zdd_T;
 

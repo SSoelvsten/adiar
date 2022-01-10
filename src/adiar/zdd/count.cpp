@@ -1,4 +1,4 @@
-#include "count.h"
+#include <adiar/zdd.h>
 
 #include <adiar/data.h>
 #include <adiar/internal/count.h>

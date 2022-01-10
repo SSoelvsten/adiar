@@ -1,4 +1,4 @@
-#include "if_then_else.h"
+#include <adiar/bdd.h>
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
@@ -6,10 +6,6 @@
 
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/util.h>
-
-#include <adiar/bdd/build.h>
-#include <adiar/bdd/apply.h>
-#include <adiar/bdd/negate.h>
 
 #include <adiar/assert.h>
 

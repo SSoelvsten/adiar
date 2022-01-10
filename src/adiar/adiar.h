@@ -11,46 +11,9 @@
 #include <adiar/file_writer.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-/// BDD
-#include <adiar/bdd/bdd.h>
-
-// Simple constructors
-#include <adiar/bdd/build.h>
-
-// Manipulation operations
-#include <adiar/bdd/apply.h>
-#include <adiar/bdd/count.h>
-#include <adiar/bdd/if_then_else.h>
-#include <adiar/bdd/negate.h>
-#include <adiar/bdd/restrict.h>
-#include <adiar/bdd/quantify.h>
-
-// Other operations
-#include <adiar/bdd/assignment.h>
-#include <adiar/bdd/evaluate.h>
-
-////////////////////////////////////////////////////////////////////////////////
-/// ZDD
-#include <adiar/zdd/zdd.h>
-
-// Simple constructors
-#include <adiar/zdd/build.h>
-
-// Manipulation operations
-#include <adiar/zdd/binop.h>
-#include <adiar/zdd/change.h>
-#include <adiar/zdd/complement.h>
-#include <adiar/zdd/contains.h>
-#include <adiar/zdd/expand.h>
-#include <adiar/zdd/project.h>
-#include <adiar/zdd/subset.h>
-
-// Other operations
-#include <adiar/zdd/count.h>
-#include <adiar/zdd/elem.h>
-
-// Predicates
-#include <adiar/zdd/pred.h>
+/// Decision Diagrams
+#include <adiar/bdd.h>
+#include <adiar/zdd.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Conversion between decision diagrams
@@ -69,9 +32,13 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Initiates Adiar with the given amount of memory (given in bytes)
   ///
-  /// TODO: Should we provide an option to change the maximum variable number?
-  ///       What about opening files by others? Should we store that somehow in
-  ///       the first element of the meta stream?
+  /// \param memory_limit_bytes
+  /// The number of bytes to allocate for Adiar to use as internal memory. This
+  /// has to be at least 128 MiB.
+  ///
+  /// \param temp_dir
+  /// The directory to use for all temporary external memory files. By default
+  /// on Unix, this is the '/tmp' folder.
   //////////////////////////////////////////////////////////////////////////////
   void adiar_init(size_t memory_limit_bytes, std::string temp_dir = "");
 

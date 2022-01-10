@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("adiar/bdd/if_then_else.h", []() {
+  describe("adiar/bdd/if_then_else.cpp", []() {
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 

@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("adiar/bdd/negate.h", []() {
+  describe("adiar/bdd/negate.cpp", []() {
     node_file sink_T_nf;
 
     { // Garbage collect writer to free write-lock

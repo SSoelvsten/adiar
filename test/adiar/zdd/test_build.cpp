@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("adiar/zdd/build.h", [&]() {
+  describe("adiar/zdd/build.cpp", [&]() {
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 

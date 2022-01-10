@@ -1,12 +1,9 @@
-#include "subset.h"
+#include <adiar/zdd.h>
 
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/substitution.h>
 #include <adiar/internal/util.h>
-
-#include <adiar/zdd/zdd.h>
-#include <adiar/zdd/build.h>
 
 #include <adiar/assert.h>
 
