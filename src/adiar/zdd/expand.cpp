@@ -1,11 +1,8 @@
-#include "expand.h"
+#include <adiar/zdd.h>
 
 #include <adiar/data.h>
 
 #include <adiar/internal/intercut.h>
-
-#include <adiar/zdd/zdd.h>
-#include <adiar/zdd/build.h>
 
 namespace adiar
 {

@@ -1,4 +1,4 @@
-#include "apply.h"
+#include <adiar/bdd.h>
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
@@ -7,16 +7,10 @@
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/product_construction.h>
 
-#include <adiar/bdd/bdd.h>
-#include <adiar/bdd/build.h>
-#include <adiar/bdd/negate.h>
-
 #include <adiar/assert.h>
 
 namespace adiar
 {
-  //////////////////////////////////////////////////////////////////////////////
-  // Apply policy for product construction.
   class apply_prod_policy : public bdd_policy, public prod_mixed_level_merger
   {
   public:
@@ -93,65 +87,8 @@ namespace adiar
     static constexpr bool no_skip = false;
   };
 
-  //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_apply(const bdd &bdd_1, const bdd &bdd_2, const bool_op &op)
   {
     return product_construction<apply_prod_policy>(bdd_1, bdd_2, op);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_and(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, and_op);
-  }
-
-  __bdd bdd_nand(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, nand_op);
-  }
-
-  __bdd bdd_or(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, or_op);
-  }
-
-  __bdd bdd_nor(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, nor_op);
-  }
-
-  __bdd bdd_xor(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, xor_op);
-  }
-
-  __bdd bdd_xnor(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, xnor_op);
-  }
-
-  __bdd bdd_imp(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, imp_op);
-  }
-
-  __bdd bdd_invimp(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, invimp_op);
-  }
-
-  __bdd bdd_equiv(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, equiv_op);
-  }
-
-  __bdd bdd_diff(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, diff_op);
-  }
-
-  __bdd bdd_less(const bdd &bdd_1, const bdd &bdd_2)
-  {
-    return bdd_apply(bdd_1, bdd_2, less_op);
   }
 }

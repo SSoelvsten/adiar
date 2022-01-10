@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("adiar/bdd/quantify.h", []() {
+  describe("adiar/bdd/quantify.cpp", []() {
     ////////////////////////////////////////////////////////////////////////
     // Sink only BDDs
     node_file sink_F;

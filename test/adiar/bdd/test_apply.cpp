@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("adiar/bdd/apply.h", []() {
+  describe("adiar/bdd/apply.cpp", []() {
     node_file bdd_F;
     node_file bdd_T;
 

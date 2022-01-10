@@ -1,13 +1,10 @@
-#include "project.h"
+#include <adiar/zdd.h>
 
 #include <adiar/data.h>
 
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/quantify.h>
-
-#include <adiar/zdd/zdd.h>
-#include <adiar/zdd/build.h>
 
 namespace adiar
 {

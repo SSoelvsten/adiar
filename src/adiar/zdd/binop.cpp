@@ -1,12 +1,9 @@
-#include "binop.h"
+#include <adiar/zdd.h>
 
 #include <adiar/file_stream.h>
 #include <adiar/tuple.h>
 
 #include <adiar/internal/product_construction.h>
-
-#include <adiar/zdd/zdd.h>
-#include <adiar/zdd/build.h>
 
 #include <adiar/assert.h>
 
@@ -123,24 +120,8 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_binop(const zdd &zdd_1, const zdd &zdd_2, const bool_op &op)
+  __zdd zdd_binop(const zdd &A, const zdd &B, const bool_op &op)
   {
-    return product_construction<zdd_prod_policy>(zdd_1, zdd_2, op);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_union(const zdd &zdd_1, const zdd &zdd_2)
-  {
-    return zdd_binop(zdd_1, zdd_2, or_op);
-  }
-
-  __zdd zdd_intsec(const zdd &zdd_1, const zdd &zdd_2)
-  {
-    return zdd_binop(zdd_1, zdd_2, and_op);
-  }
-
-  __zdd zdd_diff(const zdd &zdd_1, const zdd &zdd_2)
-  {
-    return zdd_binop(zdd_1, zdd_2, diff_op);
+    return product_construction<zdd_prod_policy>(A, B, op);
   }
 }

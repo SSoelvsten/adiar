@@ -1,11 +1,9 @@
-#include "complement.h"
+#include <adiar/zdd.h>
 
 #include <adiar/data.h>
 
 #include <adiar/internal/build.h>
 #include <adiar/internal/intercut.h>
-
-#include <adiar/zdd/zdd.h>
 
 namespace adiar
 {

@@ -1,4 +1,4 @@
-#include "contains.h"
+#include <adiar/zdd.h>
 
 #include <adiar/data.h>
 #include <adiar/file_stream.h>

@@ -1,4 +1,4 @@
-#include "negate.h"
+#include <adiar/bdd.h>
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>

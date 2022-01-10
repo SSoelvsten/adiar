@@ -1,4 +1,4 @@
-#include "pred.h"
+#include <adiar/zdd.h>
 
 #include <adiar/internal/pred.h>
 #include <adiar/internal/product_construction.h>
@@ -7,11 +7,6 @@ namespace adiar {
   bool zdd_equal(const zdd &s1, const zdd &s2)
   {
     return is_isomorphic(s2, s1);
-  }
-
-  bool zdd_unequal(const zdd &s1, const zdd &s2)
-  {
-    return !zdd_equal(s1,s2);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -96,11 +91,6 @@ namespace adiar {
     }
 
     return comparison_check<zdd_subseteq_policy>(s1, s2);
-  }
-
-  bool zdd_subset(const zdd &s1, const zdd &s2)
-  {
-    return zdd_subseteq(s1,s2) && zdd_unequal(s1,s2);
   }
 
   //////////////////////////////////////////////////////////////////////////////

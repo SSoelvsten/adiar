@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("adiar/zdd/project.h", [&]() {
+  describe("adiar/zdd/project.cpp", [&]() {
     //////////////////////
     // Sink cases
 

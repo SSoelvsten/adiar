@@ -11,8 +11,14 @@ namespace adiar {
   class zdd;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// An algorithm may return a node-based ZDD in a node_file or a yet to-be
-  /// reduced ZDD in an arc_file.
+  /// \internal \brief A (possibly non-reduced) Ordered Zero-suppressed Decision
+  /// Diagram.
+  ///
+  /// \relates zdd
+  ///
+  /// \extends __decision_diagram
+  ///
+  /// \copydoc __decision_diagram
   //////////////////////////////////////////////////////////////////////////////
   class __zdd : public __decision_diagram {
   public:
@@ -22,45 +28,12 @@ namespace adiar {
     __zdd(const zdd &zdd);
   };
 
-  // operators to allow __zdd&& arguments on one or two sides of an expression
-  bool operator== (__zdd &&, __zdd &&);
-  bool operator== (const zdd &, __zdd &&);
-  bool operator== (__zdd &&, const zdd &);
-
-  bool operator!= (__zdd &&, __zdd &&);
-  bool operator!= (const zdd &, __zdd &&);
-  bool operator!= (__zdd &&, const zdd &);
-
-  bool operator<= (__zdd &&, __zdd &&);
-  bool operator<= (const zdd &, __zdd &&);
-  bool operator<= (__zdd &&, const zdd &);
-
-  bool operator>= (__zdd &&, __zdd &&);
-  bool operator>= (const zdd &, __zdd &&);
-  bool operator>= (__zdd &&, const zdd &);
-
-  bool operator< (__zdd &&, __zdd &&);
-  bool operator< (const zdd &, __zdd &&);
-  bool operator< (__zdd &&, const zdd &);
-
-  bool operator> (__zdd &&, __zdd &&);
-  bool operator> (const zdd &, __zdd &&);
-  bool operator> (__zdd &&, const zdd &);
-
-  __zdd operator& (__zdd &&, __zdd &&);
-  __zdd operator& (const zdd &, __zdd &&);
-  __zdd operator& (__zdd &&, const __zdd &);
-
-  __zdd operator| (__zdd &&, __zdd &&);
-  __zdd operator| (const zdd &, __zdd &&);
-  __zdd operator| (__zdd &&, const zdd &);
-
-  __zdd operator- (__zdd &&, __zdd &&);
-  __zdd operator- (const zdd &, __zdd &&);
-  __zdd operator- (__zdd &&, const zdd &);
-
   //////////////////////////////////////////////////////////////////////////////
-  /// A ZDD is the reduced node-based representation of a decision diagram.
+  /// \brief Reduced Ordered Zero-suppressed Decision Diagram.
+  ///
+  /// \extends decision_diagram
+  ///
+  /// \copydoc decision_diagram
   //////////////////////////////////////////////////////////////////////////////
   class zdd : public decision_diagram
   {
@@ -104,19 +77,6 @@ namespace adiar {
     zdd& operator-= (const zdd &other);
     zdd& operator-= (zdd &&other);
   };
-
-  bool operator== (const zdd& lhs, const zdd& rhs);
-  bool operator!= (const zdd& lhs, const zdd& rhs);
-
-  bool operator<= (const zdd& lhs, const zdd& rhs);
-  bool operator>= (const zdd& lhs, const zdd& rhs);
-
-  bool operator< (const zdd& lhs, const zdd& rhs);
-  bool operator> (const zdd& lhs, const zdd& rhs);
-
-  __zdd operator& (const zdd &lhs, const zdd &rhs);
-  __zdd operator| (const zdd &lhs, const zdd &rhs);
-  __zdd operator- (const zdd &lhs, const zdd &rhs);
 
   //////////////////////////////////////////////////////////////////////////////
   class zdd_policy

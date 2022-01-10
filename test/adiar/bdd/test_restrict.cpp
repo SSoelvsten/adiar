@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("adiar/bdd/restrict.h", []() {
+  describe("adiar/bdd/restrict.cpp", []() {
     /*
              1         ---- x0
             / \

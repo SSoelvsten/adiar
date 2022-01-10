@@ -14,30 +14,13 @@ set(HEADERS
   tuple.h
 
   # bdd files
-  bdd/apply.h
-  bdd/assignment.h
+  bdd.h
   bdd/bdd.h
-  bdd/build.h
-  bdd/count.h
-  bdd/evaluate.h
-  bdd/if_then_else.h
-  bdd/negate.h
-  bdd/quantify.h
-  bdd/restrict.h
 
   # zdd files
-  zdd/binop.h
-  zdd/build.h
-  zdd/change.h
-  zdd/complement.h
-  zdd/contains.h
-  zdd/count.h
-  zdd/elem.h
-  zdd/expand.h
-  zdd/pred.h
-  zdd/project.h
-  zdd/subset.h
+  zdd.h
   zdd/zdd.h
+  zdd/build.h
 
   # conversion
   convert.h

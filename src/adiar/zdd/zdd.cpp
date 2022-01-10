@@ -1,15 +1,13 @@
 #include "zdd.h"
 
+#include <adiar/zdd.h>
+
 #include <memory>
 
 #include <adiar/data.h>
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/reduce.h>
-
-#include <adiar/zdd/binop.h>
-#include <adiar/zdd/build.h>
-#include <adiar/zdd/pred.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
@@ -57,7 +55,6 @@ namespace adiar {
   __zdd_oper(bool, <)
   __zdd_oper(bool, >)
 
-  //////////////////////////////////////////////////////////////////////////////
   zdd& zdd::operator= (const zdd &other)
   {
     this -> negate = other.negate;
@@ -69,6 +66,11 @@ namespace adiar {
   {
     free();
     return (*this = reduce<zdd_policy>(std::forward<__zdd>(other)));
+  }
+
+  __zdd operator& (const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_intsec(lhs, rhs);
   }
 
   zdd& zdd::operator&= (const zdd &other)
@@ -83,6 +85,11 @@ namespace adiar {
     return (*this = std::move(temp));
   }
 
+  __zdd operator| (const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_union(lhs, rhs);
+  }
+
   zdd& zdd::operator|= (const zdd &other)
   {
     return (*this = zdd_union(*this, other));
@@ -93,6 +100,11 @@ namespace adiar {
     __zdd&& temp = zdd_union(*this, other);
     other.free();
     return (*this = std::move(temp));
+  }
+
+  __zdd operator- (const zdd& lhs, const zdd& rhs)
+  {
+    return zdd_diff(lhs, rhs);
   }
 
   zdd& zdd::operator-= (const zdd &other)
@@ -133,8 +145,4 @@ namespace adiar {
   bool operator> (const zdd& lhs, const zdd& rhs) {
     return zdd_subset(rhs, lhs);
   }
-
-  __zdd operator& (const zdd& lhs, const zdd& rhs) { return zdd_intsec(lhs, rhs); }
-  __zdd operator| (const zdd& lhs, const zdd& rhs) { return zdd_union(lhs, rhs); }
-  __zdd operator- (const zdd& lhs, const zdd& rhs) { return zdd_diff(lhs, rhs); }
 }

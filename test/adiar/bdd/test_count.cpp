@@ -1,5 +1,5 @@
 go_bandit([]() {
-  describe("adiar/bdd/count.h", []() {
+  describe("adiar/bdd/count.cpp", []() {
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 

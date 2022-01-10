@@ -1,4 +1,4 @@
-#include "quantify.h"
+#include <adiar/bdd.h>
 
 #include <adiar/data.h>
 #include <adiar/tuple.h>
@@ -7,8 +7,6 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/quantify.h>
-
-#include <adiar/bdd/bdd.h>
 
 #include <adiar/assert.h>
 
@@ -70,7 +68,7 @@ namespace adiar
   }                                                                 \
 
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &in_bdd, const label_t &label)
+  __bdd bdd_exists(const bdd &in_bdd, label_t label)
   {
     return quantify<bdd_quantify_policy>(in_bdd, label, or_op);
   }
@@ -86,7 +84,7 @@ namespace adiar
     multi_quantify_macro(in_bdd, labels, or_op);
   }
 
-  __bdd bdd_forall(const bdd &in_bdd, const label_t &label)
+  __bdd bdd_forall(const bdd &in_bdd, label_t label)
   {
     return quantify<bdd_quantify_policy>(in_bdd, label, and_op);
   }
