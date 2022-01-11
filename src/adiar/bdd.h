@@ -5,6 +5,7 @@
 #include <adiar/file.h>
 
 #include <adiar/bdd/bdd.h>
+#include <adiar/zdd/zdd.h>
 
 namespace adiar
 {
@@ -417,6 +418,21 @@ namespace adiar
   /// \param xs A list of tuples<tt>(i,v)</tt> in ascending order
   //////////////////////////////////////////////////////////////////////////////
   bool bdd_eval(const bdd &f, const assignment_file &xs);
+
+  /* ============================== CONVERSION ============================== */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Obtains the BDD that represents the same function/set as the
+  ///            given ZDD within the given domain.
+  ///
+  /// \param A   Family of a set (within the given domain)
+  ///
+  /// \param dom Domain of all variables (in ascending order)
+  ///
+  /// \returns   BDD that is true for the exact same assignments to variables in
+  ///            the given domain.
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_from(const zdd &A, const label_file &dom);
 }
 
 #endif // ADIAR_BDD_H

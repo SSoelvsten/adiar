@@ -22,9 +22,6 @@ set(HEADERS
   zdd/zdd.h
   zdd/build.h
 
-  # conversion
-  convert.h
-
   # debug files
   dot.h
 
@@ -82,9 +79,6 @@ set(SOURCES
   zdd/project.cpp
   zdd/subset.cpp
   zdd/zdd.cpp
-
-  # conversion
-  convert.cpp
 
   # debug files
   dot.cpp

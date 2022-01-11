@@ -7,6 +7,7 @@
 #include <adiar/file.h>
 
 #include <adiar/zdd/zdd.h>
+#include <adiar/bdd/bdd.h>
 
 namespace adiar
 {
@@ -319,6 +320,21 @@ namespace adiar
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   //////////////////////////////////////////////////////////////////////////////
   std::optional<label_file> zdd_maxelem(const zdd &A);
+
+  /* ============================== CONVERSION ============================== */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Obtains the ZDD that represents the same function/set as the
+  ///            given BDD within the given domain.
+  ///
+  /// \param f   Boolean function with the given domain
+  ///
+  /// \param dom Domain of all variables (in ascending order)
+  ///
+  /// \returns   ZDD that is true for the exact same assignments to variables in
+  ///            the given domain.
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_from(const bdd &f, const label_file &dom);
 }
 
 #include <adiar/zdd/build.h>
