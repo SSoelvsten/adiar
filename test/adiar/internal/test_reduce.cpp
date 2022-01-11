@@ -2,8 +2,8 @@
 #include <adiar/internal/reduce.h>
 
 // Import Decision Diagram policies
-#include <adiar/bdd/bdd.h>
-#include <adiar/zdd/zdd.h>
+#include <adiar/bdd/bdd_policy.h>
+#include <adiar/zdd/zdd_policy.h>
 
 go_bandit([]() {
   describe("adiar/internal/reduce.h", [&]() {

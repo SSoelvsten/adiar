@@ -1,4 +1,5 @@
 #include <adiar/zdd.h>
+#include <adiar/zdd/zdd_policy.h>
 
 #include <adiar/data.h>
 

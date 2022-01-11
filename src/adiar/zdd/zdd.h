@@ -5,7 +5,6 @@
 #include <adiar/file.h>
 
 #include <adiar/internal/decision_diagram.h>
-#include <adiar/internal/tuple.h>
 
 namespace adiar {
   // Class declarations to be able to reference it
@@ -77,32 +76,6 @@ namespace adiar {
 
     zdd& operator-= (const zdd &other);
     zdd& operator-= (zdd &&other);
-  };
-
-  //////////////////////////////////////////////////////////////////////////////
-  class zdd_policy
-  {
-  public:
-    typedef zdd reduced_t;
-    typedef __zdd unreduced_t;
-
-  public:
-    static inline ptr_t reduction_rule(const node_t &n)
-    {
-      if (is_sink(n.high) && !value_of(n.high)) { return n.low; }
-      return n.uid;
-    }
-
-    static inline tuple reduction_rule_inv(const ptr_t &child)
-    {
-      return { child, create_sink_ptr(false) };
-    }
-
-  public:
-    static inline void compute_cofactor(bool on_curr_level, ptr_t &, ptr_t &high)
-    {
-      if (!on_curr_level) { high = create_sink_ptr(false); }
-    }
   };
 }
 

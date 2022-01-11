@@ -11,6 +11,9 @@
 #include <adiar/internal/intercut.h>
 #include <adiar/internal/reduce.h>
 
+#include <adiar/zdd/zdd_policy.h>
+#include <adiar/bdd/bdd_policy.h>
+
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   // Constructors

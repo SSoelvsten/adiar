@@ -15,11 +15,13 @@ set(HEADERS
   # bdd files
   bdd.h
   bdd/bdd.h
+  bdd/bdd_policy.h
 
   # zdd files
   zdd.h
-  zdd/zdd.h
   zdd/build.h
+  zdd/zdd.h
+  zdd/zdd_policy.h
 
   # debug files
   dot.h
