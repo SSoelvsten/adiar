@@ -1,4 +1,5 @@
 #include <adiar/bdd.h>
+#include <adiar/bdd/bdd_policy.h>
 
 #include <adiar/data.h>
 
