@@ -8,170 +8,290 @@
 #include <tpie/file_stream.h>
 
 namespace adiar {
-  //////////////////////////////////////////////////////////////////////////////
-  /// To condense almost everything down to mere integer comparisons we reserve
-  /// specific parts of a single 64 bit unsigned integer to different variables.
-  ///
-  ///   | S | ???????????????????????????????????????????????????? | F |
-  ///
-  /// Where these three parts represent the following variables:
-  ///
-  ///  - S : the is_sink flag. If the sink flag is set, the L and I areas differ
-  ///        (see below for the sink type description).
-  ///
-  ///  - ? : Changes based on whether is_sink flag is set. We guarantee, that
-  ///        the ? area will uniquely identify a single element of each type.
-  ///
-  ///  - F : A boolean flag. This is currently only used in arcs to identify
-  ///        high and low arcs (see below).
-  ///
-  /// An important fact is, that the typedef of ptr and uid below merely are
-  /// aliases for the unsigned 64 bit integer. They are merely supposed to
-  /// support code readability, but the type checker does actually not care.
-  ///
-  /// We ensure, that the S and ? areas combined uniquely identify all sinks and
-  /// nodes. We also notice, that sorting these pointers directly enforce sink
-  /// pointers are sorted after nodes. Finally, two pointers for the same uid
-  /// will finally be sorted by the flag.
-  //////////////////////////////////////////////////////////////////////////////
-  typedef uint64_t ptr_t; // F is possibly set true and/or NIL
-  typedef uint64_t uid_t; // F is guaranteed false and never NIL
+  /* =============================== POINTERS =============================== */
 
-  bool is_sink(ptr_t p);
-  bool is_node(ptr_t p);
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief A (possibly flagged) identifier of a sink, an internal node
+  ///        (uid_t), or nothing (NIL).
+  ///
+  /// \remark The layout of a pointer is such, that unique identifiers precede
+  ///         sinks which in turn precede NIL. The ordering on unique
+  ///         identifiers and sinks are lifted to pointers.
+  ///
+  /// \remark A pointer may be flagged. For an arc's source this marks the arc
+  ///         being a 'high' rather than a 'low' arc.
+  //////////////////////////////////////////////////////////////////////////////
+  typedef uint64_t ptr_t;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief  Whether the pointer is flagged.
+  //////////////////////////////////////////////////////////////////////////////
   bool is_flagged(ptr_t p);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The pointer with its flag set to true.
+  //////////////////////////////////////////////////////////////////////////////
   ptr_t flag(ptr_t p);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The pointer with its flag set to false.
+  //////////////////////////////////////////////////////////////////////////////
   ptr_t unflag(ptr_t p);
 
+  /* ================================== NIL ================================= */
+
   //////////////////////////////////////////////////////////////////////////////
-  /// Due to how we create the identifiers for all nodes and sinks, we cannot
-  /// use the common null with value 0. Instead we provide a special value that
-  /// works with this specific setup.
+  /// \brief   A pointer to nothing.
+  ///
+  /// \details Due to how we create the identifiers for all nodes and sinks, we
+  ///          cannot use the common null with value 0. So, instead we provide a
+  ///          special value that works with this specific setup.
+  ///
+  /// \remark  A NIL value always comes after all other types of pointers.
   //////////////////////////////////////////////////////////////////////////////
   extern const ptr_t NIL;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a pointer is NIL.
+  //////////////////////////////////////////////////////////////////////////////
   bool is_nil(ptr_t p);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// When the is_sink flag is false, then it is a pointer to a node, which is
-  /// identifiable by two variables:
+  /// \brief Whether a pointer is for an internal node, uid = (label, id).
+  //////////////////////////////////////////////////////////////////////////////
+  bool is_node(ptr_t p);
+
+  /* ================ UNIQUE IDENTIFIERS : INTERNAL NODES =================== */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   A unique identifier (label, id) of an internal node.
   ///
-  ///  - L : the variable label. For nodes n1 and n2 with n1.label < n2.label,
-  ///        we guarantee that n1 comes before n2 in the stream reading order.
+  /// \details An internal node is identified by the tuple (label, id) where
+  ///          unique identifiers are first sorted by their label and
+  ///          secondarily by their level-identifier.
   ///
-  ///  - I : a unique identifier for the nodes on the same level. For nodes n1
-  ///        and n2 with n1.label == n2.label but n1.id < n2.id, we guarantee
-  ///        that n1 comes before n2 in the stream reading order.
-  ///
-  /// These are spaced out in the middle area as follows
-  ///
-  ///   | S | LLLLLLLLLLLLLLLLLLLL | IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII | F |
-  ///
-  /// That means that nodes are to be sorted first by their label, and then by
-  /// their level-identifier.
+  /// \remark  If anything has this type rather than <tt>ptr_t</tt> then it is a
+  ///          guarantee that (a) it is \em never NIL, and (b) is \em not
+  ///          flagged.
+  //////////////////////////////////////////////////////////////////////////////
+  typedef uint64_t uid_t;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The maximal possible value for a unique identifier's label.
   //////////////////////////////////////////////////////////////////////////////
   extern const uint64_t MAX_LABEL;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The maximal possible value for a unique identifier's id.
+  //////////////////////////////////////////////////////////////////////////////
   extern const uint64_t MAX_ID;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Variable label.
+  //////////////////////////////////////////////////////////////////////////////
   typedef uint32_t label_t;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Level identifier.
+  //////////////////////////////////////////////////////////////////////////////
   typedef uint64_t id_t;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create the uid = (label, id).
+  //////////////////////////////////////////////////////////////////////////////
   uid_t create_node_uid(label_t label, id_t id);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a pointer to the uid = (label, id).
+  //////////////////////////////////////////////////////////////////////////////
   ptr_t create_node_ptr(label_t label, id_t id);
   ptr_t create_node_ptr(uid_t uid_t);
 
-  label_t label_of(ptr_t p);
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the label from a uid = (label, id).
+  //////////////////////////////////////////////////////////////////////////////
   label_t label_of(uid_t u);
-  id_t id_of(ptr_t p);
-  id_t id_of(uid_t u);
+  label_t label_of(ptr_t p);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// When the sink flag is set, then we interpret the middle bits as the value
-  /// of the sink.
-  ///
-  ///     | S | VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV | F |
-  ///
-  /// Notice, that this means we will never have to actually visit to retrieve
-  /// its value. That is, the only time a sink has to be explicitly represented
-  /// as a node is when the BDD only consists of said sink.
+  /// \brief Extract the level identifier from a uid = (label, id).
+  //////////////////////////////////////////////////////////////////////////////
+  id_t id_of(uid_t u);
+  id_t id_of(ptr_t p);
+
+  /* ================== UNIQUE IDENTIFIERS : SINK NODES ===================== */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a pointer is for a sink.
+  //////////////////////////////////////////////////////////////////////////////
+  bool is_sink(ptr_t p);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create the unique identifier for a sink with the given value.
   //////////////////////////////////////////////////////////////////////////////
   uid_t create_sink_uid(bool v);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a pointer to a sink with the given value.
+  //////////////////////////////////////////////////////////////////////////////
   ptr_t create_sink_ptr(bool v);
 
-  bool value_of(ptr_t p);
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the value from a sink.
+  //////////////////////////////////////////////////////////////////////////////
   bool value_of(uid_t u);
+  bool value_of(ptr_t p);
 
-  ptr_t negate(ptr_t p);
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Negate the value of a sink.
+  //////////////////////////////////////////////////////////////////////////////
   uid_t negate(uid_t u);
+  ptr_t negate(ptr_t p);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief A predicate function on sinks.
+  //////////////////////////////////////////////////////////////////////////////
   typedef std::function<bool(ptr_t)> sink_pred;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Predicate that accepts any type of sink.
+  //////////////////////////////////////////////////////////////////////////////
   extern const sink_pred is_any;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a sink contains the true value.
+  //////////////////////////////////////////////////////////////////////////////
   extern const sink_pred is_true;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a sink contains the false value.
+  //////////////////////////////////////////////////////////////////////////////
   extern const sink_pred is_false;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Using the above functions, we can define all the common binary operators
-  /// as functions working on pointers to sinks. These functions will always
-  /// return a sink pointer, where the flag bit is set to false.
+  /// \brief   Computes the unique identifier of the resulting sink based on the
+  ///          pointers to two sinks.
   ///
-  /// Using the knowledge of the bit layout, the following operators are
-  /// implemented in three or four fast bit operations:
+  /// \details By abusing our knowledge of the bit-layout, we can implement all
+  ///          common operations merely as a few fast bit operations.
   ///
-  ///                          and, nand, or, nor, xor
-  ///
-  /// Whereas the rest do their computation using the value_of function defined
-  /// above, which are then going to be marginally slower.
+  /// \remark  For each operator, we provide the truth table
+  ///          [(1,1), (1,0), (0,1), (0,0)].
   //////////////////////////////////////////////////////////////////////////////
-  typedef std::function<ptr_t(ptr_t,ptr_t)> bool_op;
+  typedef std::function<uid_t(ptr_t,ptr_t)> bool_op;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'and' operator, i.e. the truth table: [1,0,0,0].
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op and_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'not and' operator, i.e. the truth table: [0,1,1,1].
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op nand_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'or' operator, i.e. the truth table: [1,1,1,0].
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op or_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'not or' operator, i.e. the truth table: [0,0,0,1].
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op nor_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'xor' operator, i.e. the truth table: [0,1,1,0].
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op xor_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'xor' operator, i.e. the truth table: [1,0,0,1].
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op xnor_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'implication' operator, i.e. the truth table: [1,0,1,1].
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op imp_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'implication' operator, i.e. the truth table: [1,1,0,1].
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op invimp_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'equivalence' operator, i.e. the 'xnor' operator
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op equiv_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'set difference' operator, i.e. the truth table [0,1,0,0].
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op diff_op;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Logical 'less' operator, i.e. the truth table [0,0,1,0].
+  //////////////////////////////////////////////////////////////////////////////
   extern const bool_op less_op;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// At which point we can provide the following predicates for the operators
-  ///
-  /// - can_right_shortcut:      is op(T, sink) = op(F, sink) ?
-  ///
-  /// - can_left_shortcut:       is op(sink, T) = op(sink, F) ?
-  ///
-  /// - is_right_irrelevant:     is op(X, sink) = X ?
-  ///
-  /// - is_left_irrelevant:      is op(sink, X) = X ?
-  ///
-  /// - is_right_negating:       is op(X, sink) = ~X ?
-  ///
-  /// - is_left_negating:        is op(sink, X) = ~X ?
-  ///
-  /// - is_commutative:          is op(x,y) = op(y,x) ?
+  /// \brief Whether the sink shortcuts the operator from the right,
+  ///        i.e. op(T,sink) = op(F,sink).
   //////////////////////////////////////////////////////////////////////////////
   bool can_right_shortcut(const bool_op &op, const ptr_t sink);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the sink shortcuts the operator from the left,
+  ///        i.e. op(sink, T) = op(sink, F).
+  //////////////////////////////////////////////////////////////////////////////
   bool can_left_shortcut(const bool_op &op, const ptr_t sink);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the sink is irrelevant for the operator from the right,
+  ///        i.e. op(X, sink) = X.
+  //////////////////////////////////////////////////////////////////////////////
   bool is_right_irrelevant(const bool_op &op, const ptr_t sink);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the sink is irrelevant for the operator from the left,
+  ///        i.e. op(sink, X) = X.
+  //////////////////////////////////////////////////////////////////////////////
   bool is_left_irrelevant(const bool_op &op, const ptr_t sink);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the sink for this operator negates the value of the other
+  ///        from the right, i.e. op(X, sink) = ~X.
+  //////////////////////////////////////////////////////////////////////////////
   bool is_right_negating(const bool_op &op, const ptr_t sink);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the sink for this operator negates the value of the other
+  ///        from the left, i.e. op(sink, X) = ~X
+  //////////////////////////////////////////////////////////////////////////////
   bool is_left_negating(const bool_op &op, const ptr_t sink);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether an operator is commutative, op(X, Y) = op(Y, X).
+  //////////////////////////////////////////////////////////////////////////////
   bool is_commutative(const bool_op &op);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a pointer is for a node on a given level.
+  //////////////////////////////////////////////////////////////////////////////
   bool on_level(ptr_t p, label_t level);
 
+  /* ================================ NODES ================================= */
+
   //////////////////////////////////////////////////////////////////////////////
-  /// A node then contains a unique identifier for said node in n.uid_t together
-  /// with pointers to its children in n.low and n.high.
+  /// \brief A Decision Diagram node triple (uid, low, high).
+  ///
+  /// \remark A node contains a unique identifier for said node in <tt>uid</tt>
+  ///         together with pointers to its children in <tt>low</tt> and
+  ///         <tt>high</tt>.
+  ///
+  /// \remark If a node is a sink, then <tt>low</tt> and <tt>high</tt> are NIL.
+  ///         Otherwise, they are always \em not NIL.
   //////////////////////////////////////////////////////////////////////////////
   struct node
   {
@@ -180,6 +300,9 @@ namespace adiar {
     ptr_t high;
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \copydoc
+  //////////////////////////////////////////////////////////////////////////////
   typedef node node_t;
 
   node_t create_node(uid_t uid_t, ptr_t low, ptr_t high);
@@ -206,16 +329,21 @@ namespace adiar {
   bool operator== (const node &a, const node &b);
   bool operator!= (const node &a, const node &b);
 
+  /* ================================= ARCS ================================= */
 
   //////////////////////////////////////////////////////////////////////////////
-  /// An arc contains a value for the source and one for the target. Notice,
-  /// that we don't specifically have a member for is_high. The reason for this
-  /// choice is that the C++ compiler makes everything word-aligned. That means
-  /// with an explicit is_high member it would take up 3 x 64 bits rather than
-  /// only 2 x 64 bits.
+  /// \brief An arc from some source to a target.
   ///
-  /// This is finally where the flag above becomes important. The flag is used
-  /// on `source` to mark whether the arc is a high or a low arc.
+  /// \details An arc contains a value for the source and one for the target.
+  ///          Notice, that we don't specifically have a member for is_high. The
+  ///          reason for this choice is that the C++ compiler makes everything
+  ///          word-aligned. That means with an explicit is_high member it would
+  ///          take up 3 x 64 bits rather than only 2 x 64 bits.
+  ///
+  /// \remark  If <tt>source</tt> is flagged, then this is a high arc rather than
+  ///          a low arc.
+  ///
+  /// \remark  <tt>source</tt> may be NIL
   //////////////////////////////////////////////////////////////////////////////
   struct arc
   {
@@ -223,18 +351,30 @@ namespace adiar {
     ptr_t target;
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \copydoc
+  //////////////////////////////////////////////////////////////////////////////
   typedef arc arc_t;
 
-  // TODO: Create constructor for assert checks on being sorted?
-
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether an arc is marked as the high from its source.
+  //////////////////////////////////////////////////////////////////////////////
   bool is_high(const arc_t &a);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Negates the target value, if it is a sink.
+  //////////////////////////////////////////////////////////////////////////////
   arc_t negate(const arc_t& a);
+
   arc operator! (const arc& a);
 
   bool operator== (const arc &a, const arc &b);
   bool operator!= (const arc &a, const arc &b);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Sorting predicate: First on unique identifier of the source, and
+  ///        secondly on whether it is the high arc.
+  //////////////////////////////////////////////////////////////////////////////
   struct arc_source_lt : public std::binary_function<arc_t, arc_t, bool>
   {
     bool operator ()(const arc_t& a, const arc_t& b) const {
@@ -242,6 +382,9 @@ namespace adiar {
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Sorting predicate on the target.
+  //////////////////////////////////////////////////////////////////////////////
   struct arc_target_lt : public std::binary_function<arc_t, arc_t, bool>
   {
     bool operator ()(const arc_t& a, const arc_t& b) const {
@@ -253,6 +396,9 @@ namespace adiar {
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extracts the label from the target of an arc
+  //////////////////////////////////////////////////////////////////////////////
   struct arc_target_label
   {
     label_t label_of(const arc_t& a) const {
@@ -261,33 +407,58 @@ namespace adiar {
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Finally, we can create some converters back and forth
+  /// \brief Extract the arc from a node
   //////////////////////////////////////////////////////////////////////////////
   arc_t low_arc_of(const node_t& n);
-  arc_t high_arc_of(const node_t& n);
-
-  node_t node_of(const arc_t &low, const arc_t &high);
-
 
   //////////////////////////////////////////////////////////////////////////////
-  /// An assignment to a variable consists of its label and the value of its
-  /// assignment.
+  /// \brief Extract the high arc from a node
+  //////////////////////////////////////////////////////////////////////////////
+  arc_t high_arc_of(const node_t& n);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Combine two arcs with the same source into a node.
   ///
-  /// TODO: We know that the label is only 24 out of 32 bits, so we could place
-  /// the boolean value inside of the label.
+  /// \param low  The low arc
+  ///
+  /// \param high The high arc
+  //////////////////////////////////////////////////////////////////////////////
+  node_t node_of(const arc_t &low, const arc_t &high);
+
+  /* ============================== ASSIGNMENTS ============================= */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief An assignment [label -> value] to a variable with the given label to
+  ///        which is assigned the given value.
   //////////////////////////////////////////////////////////////////////////////
   struct assignment {
     label_t label;
     bool value;
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \copydoc assignment
+  //////////////////////////////////////////////////////////////////////////////
   typedef assignment assignment_t;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create an assignment [label -> value].
+  //////////////////////////////////////////////////////////////////////////////
   assignment_t create_assignment(label_t label, bool value);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the label from an assignment [label -> value].
+  //////////////////////////////////////////////////////////////////////////////
   label_t label_of(const assignment_t& a);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the value from an assignment [label -> value].
+  //////////////////////////////////////////////////////////////////////////////
   bool value_of(const assignment_t& a);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Negate the value of an assignment [label -> value].
+  //////////////////////////////////////////////////////////////////////////////
   assignment operator! (const assignment& a);
 
   bool operator< (const assignment& a, const assignment& b);
@@ -295,12 +466,13 @@ namespace adiar {
   bool operator== (const assignment& a, const assignment& b);
   bool operator!= (const assignment& a, const assignment& b);
 
+  /* ======================== LEVEL META INFORMATION ======================== */
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Our level-aware priority queue needs to manage which bucket corresponds to
-  /// which label to place things correctly or in an internal priority queue for
-  /// bucket overflows. To make things more efficient, we require the use of
-  /// meta information about the input BDD streams.
+  /// \brief Meta information on a single level in a decision diagram.
+  ///
+  /// \details Several of our algorithms and data structures exploit some meta
+  ///          information to improve their performance.
   //////////////////////////////////////////////////////////////////////////////
   struct level_info
   {
@@ -308,13 +480,30 @@ namespace adiar {
     size_t size;
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \copydoc
+  //////////////////////////////////////////////////////////////////////////////
   typedef level_info level_info_t;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Combine all the meta information for a single level
+  //////////////////////////////////////////////////////////////////////////////
   level_info_t create_level_info(label_t label, size_t size);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Get the variable label of a specific level.
+  //////////////////////////////////////////////////////////////////////////////
   label_t label_of(const level_info_t &m);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Get the number of nodes on a specific level.
+  //////////////////////////////////////////////////////////////////////////////
   size_t size_of(const level_info_t &m);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \internal This is only due to some file_stream requires the existence of a
+  /// ! operator.
+  //////////////////////////////////////////////////////////////////////////////
   level_info operator! (const level_info& m);
 
   bool operator== (const level_info &a, const level_info &b);
