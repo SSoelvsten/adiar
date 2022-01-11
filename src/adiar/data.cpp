@@ -7,7 +7,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   ///  NIL PTR
   //////////////////////////////////////////////////////////////////////////////
-  const ptr_t NIL = UINT64_MAX - 1;
+  const ptr_t NIL = UINT64_MAX - 1; // e.g. unflag(UINT64_MAX);
 
   bool is_nil(ptr_t p)
   {
@@ -18,12 +18,68 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   ///  COMMON VARIABLES AND GENERAL PTR
   //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// To condense almost everything down to mere integer comparisons we reserve
+  /// specific parts of a single 64 bit unsigned integer to different variables.
+  ///
+  ///   | S | ???????????????????????????????????????????????????? | F |
+  ///
+  /// Where these three parts represent the following variables:
+  ///
+  ///  - S : the is_sink flag. If the sink flag is set, the L and I areas differ
+  ///        (see below for the sink type description).
+  ///
+  ///  - ? : The layout of these 62 bits change based on whether it describes a
+  ///        sink, an internal node, or NIL.
+  ///
+  ///  - F : A boolean flag. This is currently only used in arcs to identify
+  ///        high and low arcs (see below).
+  ///
+  /// An important fact is, that the typedef of ptr and uid below merely are
+  /// aliases for the unsigned 64 bit integer. They are merely supposed to
+  /// support code readability, but the type checker does actually not care.
+  ///
+  /// We ensure, that the S and ? areas combined uniquely identify all sinks and
+  /// nodes. We also notice, that sorting these pointers directly enforce sink
+  /// pointers are sorted after nodes. Finally, two pointers for the same uid
+  /// will finally be sorted by the flag.
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// When the <tt>is_node</tt> flag is true, then it is a pointer to a node,
+  /// which is identifiable by two variables:
+  ///
+  ///  - L : the variable label. For nodes n1 and n2 with n1.label < n2.label,
+  ///        we guarantee that n1 comes before n2 in the stream reading order.
+  ///
+  ///  - I : a unique identifier for the nodes on the same level. For nodes n1
+  ///        and n2 with n1.label == n2.label but n1.id < n2.id, we guarantee
+  ///        that n1 comes before n2 in the stream reading order.
+  ///
+  /// These are spaced out in the middle area as follows
+  ///
+  ///   | S | LLLLLLLLLLLLLLLLLLLL | IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII | F |
+  ///
+  /// That means that nodes are to be sorted first by their label, and then by
+  /// their level-identifier.
+  //////////////////////////////////////////////////////////////////////////////
   const uint8_t  LABEL_BITS = 24;
   const uint64_t MAX_LABEL  = (1ull << LABEL_BITS) - 1;
 
   const uint8_t  ID_BITS = 64 - 2 - LABEL_BITS;
   const uint64_t MAX_ID  = (1ull << ID_BITS) - 1;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// When the sink flag is set, then we interpret the middle bits as the value
+  /// of the sink.
+  ///
+  ///     | S | VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV | F |
+  ///
+  /// Notice, that this means we will never have to actually visit to retrieve
+  /// its value. That is, the only time a sink has to be explicitly represented
+  /// as a node is when the BDD only consists of said sink.
+  //////////////////////////////////////////////////////////////////////////////
   const uint64_t SINK_BIT = 0x8000000000000000ull;
   const uint64_t FLAG_BIT = 0x0000000000000001ull;
 
