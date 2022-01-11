@@ -7,6 +7,8 @@
 #include <adiar/data.h>
 #include <adiar/file_stream.h>
 
+#include <adiar/internal/convert.h>
+#include <adiar/internal/intercut.h>
 #include <adiar/internal/reduce.h>
 
 namespace adiar {
@@ -121,4 +123,11 @@ namespace adiar {
 
   __bdd operator^ (const bdd &lhs, const bdd &rhs)
   { return bdd_xor(lhs, rhs); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Conversion
+  __bdd bdd_from(const zdd &dd, const label_file &dom)
+  {
+    return intercut<convert_decision_diagram_policy<bdd_policy, zdd_policy>>(dd,dom);
+  }
 }
