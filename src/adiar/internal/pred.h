@@ -2,7 +2,6 @@
 #define ADIAR_INTERNAL_PRED_H
 
 #include <adiar/data.h>
-#include <adiar/tuple.h>
 
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
@@ -10,6 +9,7 @@
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/product_construction.h>
+#include <adiar/internal/tuple.h>
 
 namespace adiar
 {

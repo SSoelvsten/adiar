@@ -1,12 +1,12 @@
 #include <adiar/bdd.h>
 
 #include <adiar/data.h>
-#include <adiar/tuple.h>
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/quantify.h>
+#include <adiar/internal/tuple.h>
 
 #include <adiar/assert.h>
 

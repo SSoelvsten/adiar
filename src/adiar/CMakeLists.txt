@@ -11,7 +11,6 @@ set(HEADERS
   file.h
   file_stream.h
   file_writer.h
-  tuple.h
 
   # bdd files
   bdd.h
@@ -40,6 +39,7 @@ set(HEADERS
   internal/sorter.h
   internal/substitution.h
   internal/traverse.h
+  internal/tuple.h
   internal/util.h
 
   # statistics

@@ -1,9 +1,9 @@
 #include <adiar/zdd.h>
 
 #include <adiar/file_stream.h>
-#include <adiar/tuple.h>
 
 #include <adiar/internal/product_construction.h>
+#include <adiar/internal/tuple.h>
 
 #include <adiar/assert.h>
 

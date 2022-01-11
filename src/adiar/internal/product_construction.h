@@ -4,7 +4,6 @@
 #include <variant>
 
 #include <adiar/data.h>
-#include <adiar/tuple.h>
 
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
@@ -13,6 +12,7 @@
 #include <adiar/bdd/bdd.h>
 
 #include <adiar/internal/levelized_priority_queue.h>
+#include <adiar/internal/tuple.h>
 
 namespace adiar
 {

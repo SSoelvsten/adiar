@@ -2,9 +2,10 @@
 #define ADIAR_ZDD_ZDD_H
 
 #include <adiar/data.h>
-#include <adiar/tuple.h>
 #include <adiar/file.h>
+
 #include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/tuple.h>
 
 namespace adiar {
   // Class declarations to be able to reference it
