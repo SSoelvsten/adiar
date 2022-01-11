@@ -1,5 +1,5 @@
-#ifndef ADIAR_TUPLE_H
-#define ADIAR_TUPLE_H
+#ifndef ADIAR_INTERNAL_TUPLE_H
+#define ADIAR_INTERNAL_TUPLE_H
 
 #include <functional>
 
@@ -148,4 +148,4 @@ namespace adiar {
     }
   };
 }
-#endif // ADIAR_TUPLE_H
+#endif // ADIAR_INTERNAL_TUPLE_H
