@@ -2,6 +2,7 @@
 #define ADIAR_ZDD_H
 
 #include <optional>
+#include <string>
 
 #include <adiar/data.h>
 #include <adiar/file.h>
@@ -335,6 +336,14 @@ namespace adiar
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_from(const bdd &f, const label_file &dom);
+
+  /* ================================= DEBUG ================================ */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Output a DOT drawing a decision diagram to an output stream or a
+  ///        file with the given file name.
+  //////////////////////////////////////////////////////////////////////////////
+  void output_dot(const zdd &A, const std::string &file_name);
 }
 
 #include <adiar/zdd/build.h>
