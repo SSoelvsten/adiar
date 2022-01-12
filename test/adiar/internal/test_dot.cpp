@@ -1,3 +1,5 @@
+#include <adiar/internal/dot.h>
+
 go_bandit([]() {
   describe("adiar/dot.h", [&]() {
     it("can output .dot for a sink-only BDD", [&]() {

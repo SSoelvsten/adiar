@@ -23,14 +23,12 @@ set(HEADERS
   zdd/zdd.h
   zdd/zdd_policy.h
 
-  # debug files
-  dot.h
-
   # internal
   internal/build.h
   internal/convert.h
   internal/count.h
   internal/decision_diagram.h
+  internal/dot.h
   internal/intercut.h
   internal/memory.h
   internal/pred.h
@@ -81,9 +79,6 @@ set(SOURCES
   zdd/project.cpp
   zdd/subset.cpp
   zdd/zdd.cpp
-
-  # debug files
-  dot.cpp
 
   # internal
   internal/decision_diagram.cpp

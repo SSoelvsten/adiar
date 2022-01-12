@@ -8,6 +8,7 @@
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/convert.h>
+#include <adiar/internal/dot.h>
 #include <adiar/internal/intercut.h>
 #include <adiar/internal/reduce.h>
 
@@ -153,8 +154,15 @@ namespace adiar {
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __zdd zdd_from(const bdd &dd, const label_file &dom)
+  __zdd zdd_from(const bdd &f, const label_file &dom)
   {
-    return intercut<convert_decision_diagram_policy<zdd_policy, bdd_policy>>(dd,dom);
+    return intercut<convert_decision_diagram_policy<zdd_policy, bdd_policy>>(f, dom);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Debug
+  void output_dot(const zdd &A, const std::string &file_name)
+  {
+    output_dot<zdd>(A, file_name);
   }
 }

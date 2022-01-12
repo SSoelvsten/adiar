@@ -1,6 +1,8 @@
 #ifndef ADIAR_BDD_H
 #define ADIAR_BDD_H
 
+#include <string>
+
 #include <adiar/data.h>
 #include <adiar/file.h>
 
@@ -433,6 +435,14 @@ namespace adiar
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_from(const zdd &A, const label_file &dom);
+
+  /* ================================= DEBUG ================================ */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Output a DOT drawing a decision diagram to an output stream or a
+  ///        file with the given file name.
+  //////////////////////////////////////////////////////////////////////////////
+  void output_dot(const bdd &f, const std::string &file_name);
 }
 
 #endif // ADIAR_BDD_H
