@@ -7,10 +7,8 @@
 #include <adiar/data.h>
 #include <adiar/file.h>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/decision_diagram.h>
-#include <adiar/bdd/bdd.h>
-
-#include <adiar/assert.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////

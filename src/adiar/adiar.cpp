@@ -2,9 +2,8 @@
 
 #include <tpie/tpie.h>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
-
-#include <adiar/assert.h>
 
 namespace adiar
 {

@@ -4,9 +4,8 @@
 #include <adiar/data.h>
 #include <adiar/file_stream.h>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/levelized_priority_queue.h>
-
-#include <adiar/assert.h>
 
 namespace adiar
 {

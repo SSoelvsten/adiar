@@ -1,8 +1,8 @@
 #include "file.h"
 
-#include <adiar/assert.h>
-
 #include <adiar/file_stream.h>
+
+#include <adiar/internal/assert.h>
 
 namespace adiar
 {

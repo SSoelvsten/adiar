@@ -5,7 +5,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 
 set(HEADERS
   # core files
-  assert.h
   adiar.h
   data.h
   file.h
@@ -24,6 +23,7 @@ set(HEADERS
   zdd/zdd_policy.h
 
   # internal
+  internal/assert.h
   internal/build.h
   internal/convert.h
   internal/count.h

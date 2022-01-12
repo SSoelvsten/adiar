@@ -3,10 +3,9 @@
 
 #include <adiar/file_stream.h>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/product_construction.h>
 #include <adiar/internal/tuple.h>
-
-#include <adiar/assert.h>
 
 namespace adiar
 {

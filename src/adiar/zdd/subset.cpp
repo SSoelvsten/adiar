@@ -3,10 +3,9 @@
 
 #include <adiar/file_stream.h>
 
+#include <adiar/internal/assert.h>
 #include <adiar/internal/substitution.h>
 #include <adiar/internal/util.h>
-
-#include <adiar/assert.h>
 
 namespace adiar
 {

@@ -12,10 +12,8 @@
 #include <tpie/sort.h>
 
 // ADIAR imports
-// - foundational data structure and the union class.
 #include <adiar/data.h>
-// - assertions
-#include <adiar/assert.h>
+#include <adiar/internal/assert.h>
 
 namespace adiar
 {
