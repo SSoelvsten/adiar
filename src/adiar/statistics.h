@@ -6,6 +6,17 @@
 
 namespace adiar
 {
+  //////////////////////////////////////////////////////////////////////////////
+  /// These numbers are always available, but they are only populated with
+  /// actual statistics if Adiar is compiled with certain CMake variables set.
+  /// Statistics can be gathered on two levels of detail:
+  ///
+  /// - If <tt>ADIAR_STATS=ON</tt> then only the low-overhead O(1) statistics
+  ///   are gathered.
+  ///
+  /// - If <tt>ADIAR_STATS_RXTRA=ON</tt> then also the more detailed statistics
+  ///   requiring a linear time overhead is gathered.
+  //////////////////////////////////////////////////////////////////////////////
   struct stats_t
   {
     // Equality Checking statistics  (ADIAR_STATS)
@@ -54,12 +65,16 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtain statistics
+  /// \brief Obtain a copy of all statistics gathered.
+  ///
+  /// \copydoc stats_t
   //////////////////////////////////////////////////////////////////////////////
   stats_t adiar_stats();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Print statistics to an output stream (default std::cout)
+  /// \brief Print statistics to an output stream (default std::cout).
+  ///
+  /// \copydoc stats_t
   //////////////////////////////////////////////////////////////////////////////
   void adiar_printstat(std::ostream &o = std::cout);
 }
