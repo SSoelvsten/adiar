@@ -44,12 +44,12 @@ namespace adiar
     struct reduce_t
     {
       // (ADIAR_STATS)
-      size_t sum_node_arcs;
-      size_t sum_sink_arcs;
+      size_t sum_node_arcs = 0;
+      size_t sum_sink_arcs = 0;
 
       // (ADIAR_STATS_EXTRA)
-      size_t removed_by_rule_1;
-      size_t removed_by_rule_2;
+      size_t removed_by_rule_1 = 0;
+      size_t removed_by_rule_2 = 0;
     } reduce;
   };
 
