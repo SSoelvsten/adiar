@@ -10,26 +10,40 @@
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
-  /// Provides write-only access to a simple file including a consistency check
-  /// on the given input.
+  /// \brief   Write-only access to a simple file including a consistency check
+  ///          on the given input.
   ///
-  /// The consistency check answers, whether something is allowed to come after
-  /// something else. In all our current use-cases, the check induces a total
-  /// ordering.
+  /// \details The consistency check verifies, whether something is allowed to
+  ///          come after something else. In all our current use-cases, the
+  ///          check induces a total ordering.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T>
   struct no_ordering : public std::binary_function<T, T, bool>
   {
-    bool
-    operator()(const T&, const T&) const
+    bool operator()(const T&, const T&) const
     { return true; }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   Write-only access to a simple file including a consistency check
+  ///          on the given input.
+  ///
+  /// \param T    Type of the file's content
+  ///
+  /// \param Comp The logic to check for consistency (usually a comparator)
+  ///
+  /// \details The consistency check verifies, whether something is allowed to
+  ///          come after something else. In all our current use-cases, the
+  ///          check induces a total ordering.
+  //////////////////////////////////////////////////////////////////////////////
   template <typename T, typename Comp = no_ordering<T>>
   class simple_file_writer
   {
   protected:
-    // Keep a local shared_ptr to be in on the reference counting
+    ////////////////////////////////////////////////////////////////////////////
+    /// The file stream includes a shared pointer to hook into the reference
+    /// counting and garbage collection of the file.
+    ////////////////////////////////////////////////////////////////////////////
     std::shared_ptr<file<T>> _file_ptr;
 
     tpie::file_stream<T> _stream;
@@ -46,7 +60,7 @@ namespace adiar {
     ~simple_file_writer() { detach(); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Attach to a file
+    /// \brief Attach to a file
     ////////////////////////////////////////////////////////////////////////////
     void attach(const simple_file<T> &f)
     {
@@ -67,8 +81,7 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Whether the file currently is attached. Needs to be true for any of the
-    /// push functions to work.
+    /// \brief Whether the writer currently is attached to any file.
     ////////////////////////////////////////////////////////////////////////////
     bool attached() const
     {
@@ -76,7 +89,7 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Detach from a file (if need be)
+    /// \brief Detach from a file (if need be).
     ////////////////////////////////////////////////////////////////////////////
     void detach()
     {
@@ -87,20 +100,16 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Write the next T to the file (without any checks)
+    /// \brief Write an element to the file (without any checks).
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const T &t)
     {
       _stream.write(t);
     }
 
-    // protected:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Sort the current content of files based on the given comparator.
-    /// Default is the validity check.
-    ///
-    /// Sorts the current pushed content based on the validity checker. This
-    /// assumes, that the provided check induces a partial ordering.
+    /// \brief   Sort the current content of file based on the given comparator.
+    ///          Default sorting predicate is the validity checking logic.
     ////////////////////////////////////////////////////////////////////////////
     template<typename sorting_pred_t>
     void sort(sorting_pred_t pred = sorting_pred_t())
@@ -119,16 +128,16 @@ namespace adiar {
     }
 
   public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Sort the current content of file based on the validity checker.
+    ////////////////////////////////////////////////////////////////////////////
     void sort()
     {
       sort<Comp>(_comp);
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Write the next T to the file.
-    ///
-    /// Writes the given node to the end of the file, while it also checks it is
-    /// provided in the desired order.
+    /// \brief Write the element to the file (with consistency checks).
     ////////////////////////////////////////////////////////////////////////////
     void push(const T &t)
     {
@@ -152,16 +161,19 @@ namespace adiar {
   typedef simple_file_writer<label_t, no_ordering<label_t>> label_writer;
 
 
-
   //////////////////////////////////////////////////////////////////////////////
-  /// Provides write-only access to a file. Public usage is only relevant by use
-  /// of the node_writer below and its safe `write` method.
+  /// \brief Writer to a set of file(s) with 'meta' information.
+  ///
+  /// \sa node_writer arc_writer
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, size_t Files>
   class meta_file_writer
   {
   protected:
-    // Keep a local shared_ptr to be in on the reference counting
+    ////////////////////////////////////////////////////////////////////////////
+    /// The file stream includes a shared pointer to hook into the reference
+    /// counting and garbage collection of the file.
+    ////////////////////////////////////////////////////////////////////////////
     std::shared_ptr<__meta_file<T, Files>> _file_ptr;
 
     tpie::file_stream<level_info_t> _meta_stream;
@@ -178,7 +190,7 @@ namespace adiar {
     ~meta_file_writer() { detach(); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Attach to a file
+    /// \brief Attach to a file
     ////////////////////////////////////////////////////////////////////////////
     void attach(const meta_file<T, Files> &f)
     {
@@ -201,8 +213,7 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Whether the file currently is attached. Needs to be true for any of the
-    /// push functions to work.
+    /// \brief Whether the writer currently is attached.
     ////////////////////////////////////////////////////////////////////////////
     bool attached() const
     {
@@ -210,7 +221,7 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Detach from a file (if need be)
+    /// \brief Detach from a file (if need be)
     ////////////////////////////////////////////////////////////////////////////
     void detach()
     {
@@ -222,7 +233,10 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Write directly (and solely) to the level_info file without any checks
+    /// \brief   Write directly (and solely) to the level_info file without any
+    ///          checks for consistency.
+    ///
+    /// \param m Level information to push
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const level_info_t &m)
     {
@@ -230,7 +244,13 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Write directly (and solely) to the nodes file without any checks
+    /// \brief     Write directly (and solely) to some file without any checks
+    ///            for consistency.
+    ///
+    /// \param t   Element to push
+    ///
+    /// \param idx Index for which file to place \c t into. This value has to be
+    ///            smaller than the templated value \c Files.
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const T &t, size_t idx = 0)
     {
@@ -238,6 +258,9 @@ namespace adiar {
       _streams[idx].write(t);
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether anything has been pushed to any of the underlying files.
+    ////////////////////////////////////////////////////////////////////////////
     bool has_pushed()
     {
       for (size_t idx = 0; idx < Files; idx++) {
@@ -249,12 +272,20 @@ namespace adiar {
       return _meta_stream.size() > 0;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the underlying file is empty.
+    ////////////////////////////////////////////////////////////////////////////
     bool empty()
     {
       return !has_pushed();
     }
 
   protected:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief     Whether anything was pushed to a specific file of type \c T .
+    ///
+    /// \param idx Index for the file to check for any elements
+    ////////////////////////////////////////////////////////////////////////////
     bool has_pushed(const size_t idx)
     {
       adiar_debug(idx < Files, "Invalid index");
@@ -263,9 +294,10 @@ namespace adiar {
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Provides write-only access to a file of nodes; hiding all details about
-  /// the meta file and providing sanity checks on the input on user-created
-  /// BDDs.
+  /// \brief Writer for nodes, hiding derivation of all meta information and
+  /// applying sanity checks on the validity of the input.
+  ///
+  /// \sa node_file
   //////////////////////////////////////////////////////////////////////////////
   class node_writer: public meta_file_writer<node_t, NODE_FILE_COUNT>
   {
@@ -284,12 +316,13 @@ namespace adiar {
     ~node_writer() { detach(); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Write the next node to the file.
+    /// \brief   Write the next node to the file (and check consistency).
     ///
-    /// Writes the given node to the end of the file and also writes to the level_info
-    /// file if necessary. The given node must have valid children (not
-    /// checked), no duplicate nodes created (not properly checked), and must be
-    /// topologically prior to any nodes already written to the file (checked).
+    /// \details Writes the given node to the end of the file and also writes to
+    ///          the level_info file if necessary. The given node must have
+    ///          valid children (not checked), no duplicate nodes created (not
+    ///          properly checked), and must be topologically prior to any nodes
+    ///          already written to the file (checked).
     ////////////////////////////////////////////////////////////////////////////
     void push(const node_t &n)
     {
@@ -344,22 +377,32 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Write directly (and solely) to level_info file without any checks
+    /// \brief Write directly to level information file without any checks.
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const level_info_t &m) { meta_file_writer::unsafe_push(m); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Write directly (and solely) to nodes file without any checks
+    /// \brief Write directly to the underlying node file without any checks.
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const node_t &n) { meta_file_writer::unsafe_push(n, 0); }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a file
     ////////////////////////////////////////////////////////////////////////////
     void attach(const node_file &f) {
       // TODO: set _latest_node etc. when opening file
       meta_file_writer::attach(f);
     }
-    bool attached() const { return meta_file_writer::attached(); }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the writer currently is attached.
+    ////////////////////////////////////////////////////////////////////////////
+    bool attached() const
+    { return meta_file_writer::attached(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Detach from a file (if need be)
+    ////////////////////////////////////////////////////////////////////////////
     void detach() {
       _file_ptr -> canonical = _canonical;
 
@@ -371,15 +414,26 @@ namespace adiar {
       return meta_file_writer::detach();
     }
 
-    bool has_pushed() { return meta_file_writer::has_pushed(); }
-    bool empty() { return meta_file_writer::empty(); }
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether anything has been pushed to any of the underlying files.
+    ////////////////////////////////////////////////////////////////////////////
+    bool has_pushed()
+    { return meta_file_writer::has_pushed(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the underlying file is empty.
+    ////////////////////////////////////////////////////////////////////////////
+    bool empty()
+    { return meta_file_writer::empty(); }
   };
 
   node_writer& operator<< (node_writer& nw, const node_t& n);
 
 
   //////////////////////////////////////////////////////////////////////////////
-  /// FOR INTERNAL USE ONLY.
+  /// \brief Writer for a set of arcs.
+  ///
+  /// \sa arc_file
   //////////////////////////////////////////////////////////////////////////////
   class arc_writer: public meta_file_writer<arc_t, ARC_FILE_COUNT>
   {
@@ -398,12 +452,19 @@ namespace adiar {
       detach();
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Write directly to level information file without any checks.
+    //////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const level_info_t &m)
     {
       meta_file_writer::unsafe_push(m);
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Write an arc to the relevant underlying file without any checks
+    ///
+    /// \sa unsafe_push_node unsafe_push_sink
+    //////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const arc_t &a)
     {
       if (is_node(a.target)) {
@@ -413,12 +474,18 @@ namespace adiar {
       }
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Write an internal arc to its file, i.e. where the target is a node.
+    //////////////////////////////////////////////////////////////////////////////
     void unsafe_push_node(const arc_t &a)
     {
       adiar_debug(is_node(a.target), "pushing non-node arc into node file");
       meta_file_writer::unsafe_push(a, 0);
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Write a sink arc to its file, i.e. where the target is a sink.
+    //////////////////////////////////////////////////////////////////////////////
     void unsafe_push_sink(const arc_t &a)
     {
       adiar_debug(is_sink(a.target), "pushing non-sink into sink file");
@@ -432,14 +499,24 @@ namespace adiar {
       }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a file
+    //////////////////////////////////////////////////////////////////////////////
     void attach(const arc_file &af) {
       meta_file_writer::attach(af);
       adiar_debug(meta_file_writer::empty(), "Attached to non-empty arc_file");
     }
 
-    bool attached() const { return meta_file_writer::attached(); }
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the writer currently is attached.
+    //////////////////////////////////////////////////////////////////////////////
+    bool attached() const
+    { return meta_file_writer::attached(); }
 
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Sort the out-of-order sink arcs and then detach from a file (if
+    ///        need be).
+    //////////////////////////////////////////////////////////////////////////////
     void detach() {
       if (attached() && _streams[2].size() > 0) {
         tpie::progress_indicator_null pi;
