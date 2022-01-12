@@ -1,5 +1,5 @@
-#ifndef ADIAR_ASSERT_H
-#define ADIAR_ASSERT_H
+#ifndef ADIAR_INTERNAL_ASSERT_H
+#define ADIAR_INTERNAL_ASSERT_H
 
 #include <tpie/tpie.h>
 #include <tpie/file_stream.h>
@@ -62,4 +62,4 @@ namespace adiar
   // LCOV_EXCL_STOP
 }
 
-#endif // ADIAR_ASSERT_H
+#endif // ADIAR_INTERNAL_ASSERT_H

@@ -1,7 +1,6 @@
 #include "data.h"
 
-#include <assert.h>
-#include <adiar/assert.h>
+#include <adiar/internal/assert.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////

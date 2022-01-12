@@ -5,7 +5,7 @@
 #include <tpie/memory.h>
 #include <tpie/tempname.h>
 
-#include <adiar/assert.h>
+#include <adiar/internal/assert.h>
 
 namespace adiar
 {

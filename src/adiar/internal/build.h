@@ -5,7 +5,7 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
-#include <adiar/assert.h>
+#include <adiar/internal/assert.h>
 
 namespace adiar
 {

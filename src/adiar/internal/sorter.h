@@ -7,7 +7,7 @@
 #include <tpie/tpie.h>
 #include <tpie/sort.h>
 
-#include <adiar/assert.h>
+#include <adiar/internal/assert.h>
 
 namespace adiar {
   extern tpie::dummy_progress_indicator external_sorter_tpie_progress_indicator;

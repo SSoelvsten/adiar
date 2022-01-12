@@ -1,9 +1,9 @@
 #include <adiar/bdd.h>
 
 #include <adiar/data.h>
-#include <adiar/internal/count.h>
 
-#include <adiar/assert.h>
+#include <adiar/internal/assert.h>
+#include <adiar/internal/count.h>
 
 namespace adiar
 {

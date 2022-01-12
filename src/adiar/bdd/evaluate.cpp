@@ -1,9 +1,9 @@
 #include <adiar/bdd.h>
 
 #include <adiar/file_stream.h>
-#include <adiar/internal/traverse.h>
 
-#include <adiar/assert.h>
+#include <adiar/internal/assert.h>
+#include <adiar/internal/traverse.h>
 
 namespace adiar
 {

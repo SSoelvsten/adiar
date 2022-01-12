@@ -6,7 +6,7 @@
 #include <adiar/data.h>
 #include <adiar/file.h>
 
-#include <adiar/assert.h>
+#include <adiar/internal/assert.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
