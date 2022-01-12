@@ -12,8 +12,13 @@
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
-  /// Provides a read-only access to a file. Here we internalise the logic to
-  /// hook into the file in question.
+  /// \brief Stream to a file with a one-way reading direction.
+  ///
+  /// \param T           The type of the file's elements
+  ///
+  /// \param REVERSE     Whether the reading direction should be reversed
+  ///
+  /// \param SharedPtr_T The type of the shared poitner to a file
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, bool REVERSE = false, typename SharedPtr_T = file<T>>
   class file_stream
@@ -23,13 +28,14 @@ namespace adiar {
     T _peeked;
     bool _negate = false;
 
-    // Use a stream on the shared_access_file to allow simultaneous reads
     typename tpie::file_stream<T> _stream;
 
-    // Keep a local shared_ptr to be in on the reference counting
+    ////////////////////////////////////////////////////////////////////////////
+    /// The file stream includes a shared pointer to hook into the reference
+    /// counting and garbage collection of the file.
+    ////////////////////////////////////////////////////////////////////////////
     std::shared_ptr<SharedPtr_T> _file_ptr;
 
-    ////////////////////////////////////////////////////////////////////////////
   protected:
     file_stream() { }
 
@@ -55,7 +61,6 @@ namespace adiar {
       reset();
     }
 
-    ////////////////////////////////////////////////////////////////////////////
   public:
     file_stream(const std::shared_ptr<file<T>> &f, bool negate = false)
     {
@@ -70,6 +75,9 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Reset the read head back to the beginning (relatively to the
+    /// reading direction).
+    ////////////////////////////////////////////////////////////////////////////
     void reset()
     {
       if constexpr (REVERSE) {
@@ -79,12 +87,18 @@ namespace adiar {
       }
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the stream contains more elements.
+    ////////////////////////////////////////////////////////////////////////////
     bool can_pull()
     {
       return _has_peeked
         || (REVERSE ? _stream.can_read_back() : _stream.can_read());
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the next element (and move the read head)
+    ////////////////////////////////////////////////////////////////////////////
     const T pull()
     {
       if (_has_peeked) {
@@ -95,6 +109,9 @@ namespace adiar {
       return _negate ? !t : t;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the next element (but do not move the read head)
+    ////////////////////////////////////////////////////////////////////////////
     const T peek()
     {
       if (!_has_peeked) {
@@ -105,16 +122,24 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a file
+    ////////////////////////////////////////////////////////////////////////////
     void attach(const simple_file<T> &f, bool negate = false)
     {
       attach(f, f._file_ptr, negate);
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the reader is currently attached.
+    ////////////////////////////////////////////////////////////////////////////
     bool attached()
     {
       return _stream.is_open();
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Detach from the file, i.e. close the stream.
+    ////////////////////////////////////////////////////////////////////////////
     void detach()
     {
       _stream.close();
@@ -123,28 +148,36 @@ namespace adiar {
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// File streams for 'simple' files.
+  /// \brief File streams for assignments (label, value).
+  ///
+  /// \param REVERSE Whether the reading direction should be reversed
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
   using assignment_stream = file_stream<assignment_t, REVERSE>;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief File streams for variable labels.
+  ///
+  /// \param REVERSE Whether the reading direction should be reversed
+  //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
   using label_stream = file_stream<label_t, REVERSE>;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// For file streams of the elements of a file with meta information, we
-  /// create one stream type, per underlying file.
+  /// \brief         File stream of files with meta information.
   ///
-  ///  - TODO: Could we need an abstracted file_stream merger, like the
-  ///          pq_label_mgr we have made for the priority_queue?
+  /// \param T       The type of the file(s)'s elements
   ///
-  /// Since all files with meta information are written to in reverse, then
-  /// 'reversing' the stream (from the point of sorting) is equivalent to not
-  /// reversing the underlying stream.
+  /// \param Files   The number of files of type \c T
   ///
-  /// Default will be to read in-order of the elements. We may change the hidden
-  /// flip of the REVERSE value, but you can always rely on the default value
-  /// will result in the same behaviour.
+  /// \param File    Index for the file to read from
+  ///
+  /// \param REVERSE Whether the reading direction should be reversed
+  ///
+  /// \remark Since all files are written to in reverse of the desired reading
+  ///         order, then 'reversing' the reversed input is equivalent to not
+  ///         reversing the underlying stream. Hence, we do hide a a negation of
+  ///         the \c REVERSE parameter.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, size_t Files, size_t File, bool REVERSE = false>
   class meta_file_stream : public file_stream<T, REVERSE, __meta_file<T, Files>>
@@ -159,6 +192,14 @@ namespace adiar {
     // TODO: 'attach', 'attached', and 'detach'
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief         Stream of nodes from a node file.
+  ///
+  /// \param REVERSE Whether the reading direction should be reversed
+  ///                (relatively to the ordering of nodes within the file).
+  ///
+  /// \sa node_file
+  //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
   class node_stream : public meta_file_stream<node_t, NODE_FILE_COUNT, 0, !REVERSE>
   {
@@ -172,15 +213,27 @@ namespace adiar {
     { }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Stream for internal (reversed) arcs of an arc file.
+  ///
+  /// \sa arc_file
+  //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
   using node_arc_stream = meta_file_stream<arc_t, ARC_FILE_COUNT, 0, !REVERSE>;
 
+  // TODO: Move inside of sink_arc_stream below ?
   template<bool REVERSE = false>
   using in_order_arc_stream = meta_file_stream<arc_t, ARC_FILE_COUNT, 1, !REVERSE>;
 
+  // TODO: Move inside of sink_arc_stream below ?
   template<bool REVERSE = false>
   using out_of_order_arc_stream = meta_file_stream<arc_t, ARC_FILE_COUNT, 2, !REVERSE>;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Stream for sink arcs of an arc file.
+  ///
+  /// \sa arc_file
+  //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
   class sink_arc_stream
     : private in_order_arc_stream<REVERSE>, private out_of_order_arc_stream<REVERSE>
@@ -192,7 +245,7 @@ namespace adiar {
     { }
 
   private:
-    bool pull_from_in_order()
+    bool pull_in_order()
     {
       bool in_order_pull = in_order_arc_stream<REVERSE>::can_pull();
       bool out_of_order_pull = out_of_order_arc_stream<REVERSE>::can_pull();
@@ -210,36 +263,47 @@ namespace adiar {
 
   public:
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Reset the read head back to the beginning (relatively to the
+    /// reading direction).
+    ////////////////////////////////////////////////////////////////////////////
     void reset()
     {
       in_order_arc_stream<REVERSE>::reset();
       out_of_order_arc_stream<REVERSE>::reset();
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the stream contains more arcs.
+    ////////////////////////////////////////////////////////////////////////////
     bool can_pull()
     {
       return in_order_arc_stream<REVERSE>::can_pull()
         || out_of_order_arc_stream<REVERSE>::can_pull();
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the next arc (and move the read head)
+    ////////////////////////////////////////////////////////////////////////////
     const arc_t pull()
     {
-      return pull_from_in_order()
+      return pull_in_order()
         ? in_order_arc_stream<REVERSE>::pull()
         : out_of_order_arc_stream<REVERSE>::pull();
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the next arc (but do not move the read head)
+    ////////////////////////////////////////////////////////////////////////////
     const arc_t peek()
     {
-      return pull_from_in_order()
+      return pull_in_order()
         ? in_order_arc_stream<REVERSE>::peek()
         : out_of_order_arc_stream<REVERSE>::peek();
     }
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// For file streams of elements of a file with meta information, we also
-  /// provide a stream to read content of the underlying level_info file.
+  /// \brief Stream for the levelized meta information.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, size_t Files, bool REVERSE = false>
   class level_info_stream : public file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>

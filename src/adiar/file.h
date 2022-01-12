@@ -21,22 +21,9 @@ namespace adiar
 #define ADIAR_WRITE_ACCESS tpie::access_type::access_write
 
   //////////////////////////////////////////////////////////////////////////////
-  /// TPIE has many different ways to open a file
+  /// \brief   Wrapper for TPIE's <tt>temp_file</tt>.
   ///
-  /// - Opening through a `tpie::file<T>` allows multiple streams reading and
-  ///   writing the same file simultaneously. This is slow for writing, since it
-  ///   has to be synchronised across all streams.
-  ///
-  /// - Opening through `tpie::file_stream<T>` claims a single file on a single
-  ///   stream, which means there is no cost for writing
-  ///
-  /// We need the first to ensure multi-access to the same BDD's, but we need
-  /// the latter to not incur any performance loss in writing the output.
-  ///
-  /// For this we will make use of `tpie::temp_file<T>` on which we can hook the
-  /// `tpie::file<T>` or the `tpie::file_stream<T>` respectively. The only thing
-  /// is, that we have to be sure, that only one of the two are active at a
-  /// time.
+  /// \param T Type of the file's content
   //////////////////////////////////////////////////////////////////////////////
   template <typename T>
   class file
@@ -90,7 +77,7 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// The number of elements in the file
+    /// \brief Number of elements in the file.
     ////////////////////////////////////////////////////////////////////////////
     size_t size()
     {
@@ -100,7 +87,7 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Same as size() == 0
+    /// \brief Whether the file is empty.
     ////////////////////////////////////////////////////////////////////////////
     bool empty()
     {
@@ -108,7 +95,7 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// The size of the file in bytes
+    /// \brief Size of the file in bytes.
     ////////////////////////////////////////////////////////////////////////////
     size_t file_size()
     {
@@ -117,10 +104,18 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// The core entities of ADIAR that represents DAGs also contain a 'meta' file,
-  /// in which information is stored for the adiar::priority_queue to work
-  /// optimally. These entities then also store one or more files of elements of
-  /// type T.
+  /// \brief       File(s) with meta information.
+  ///
+  /// \param T     Type of the file's content
+  ///
+  /// \param Files Number of files of type T
+  ///
+  /// \details     The entities of Adiar that represents DAGs, which are
+  ///              represented by one or more files of type <tt>T</tt>. To
+  ///              optimise several algorithms, these files also carry around
+  ///              'meta' information. This information is stored in the
+  ///              variables and in a levelized fashion depending on the
+  ///              granularity of the information.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, size_t Files>
   class __meta_file
@@ -128,26 +123,35 @@ namespace adiar
     static_assert(0 < Files, "The number of files must be positive");
 
   public:
-    // Boolean flag primarily used for __meta_file<node_t,1> to recognise the
-    // easy cases to check for isomorphism.
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Boolean flag whether a set of nodes are well-formed with respect
+    ///        to the stricter ordering required by the fast equality check.
+    ////////////////////////////////////////////////////////////////////////////
     bool canonical = false;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Meta information on a level by level granularity.
+    ////////////////////////////////////////////////////////////////////////////
     file<level_info> _level_info_file;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Files describing the directed acyclic graph.
+    ////////////////////////////////////////////////////////////////////////////
     file<T> _files [Files];
 
     __meta_file() {
-      adiar_debug(!is_read_only(), "Created read-only");
+      adiar_debug(!is_read_only(), "Should be writable on creation");
     }
 
     // TODO: Opening a persistent file with meta information given a path.
     // __meta_file(const std::string& filename) : ? { ? }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Make file read-only, allowing multiple access via the
-    /// `shared_access_file` variable in the _level_info_file or any of the _files.
+    /// \brief  Make the file read-only. This disallows use of any writers but
+    ///         (multiple) access by several readers.
     ///
-    /// This assumes, that no `tpie::file_stream<T>` (that is, no
-    /// `adiar::file_writer`) currently is attached to this file.
+    /// \remark Any writer should be detached from this object before making it
+    ///         read only.
     ////////////////////////////////////////////////////////////////////////////
     void make_read_only() const
     {
@@ -158,7 +162,7 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the file is currently in read-only mode.
+    /// \brief Whether the file is read-only.
     ////////////////////////////////////////////////////////////////////////////
     bool is_read_only() const
     {
@@ -171,7 +175,7 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// The number of elements in the file
+    /// \brief The number of elements in the file(s)
     ////////////////////////////////////////////////////////////////////////////
     size_t size()
     {
@@ -188,7 +192,7 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// The number of elements in the level_info file
+    /// \brief The number of elements in the levelized meta information file
     ////////////////////////////////////////////////////////////////////////////
     size_t meta_size()
     {
@@ -196,7 +200,7 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// The size of the file in bytes
+    /// \brief The size of the file(s) in bytes.
     ////////////////////////////////////////////////////////////////////////////
     size_t file_size()
     {
@@ -208,8 +212,8 @@ namespace adiar
   /// We want to be able to construct files like the ones above and return them
   /// out of a function. For that, we cannot place them on the stack, but have
   /// to place them on the heap. Yet, placing things on the heap brings with it
-  /// a whole new set of problems with it. Furthermore, the user may reuse the
-  /// same result in multiple places.
+  /// a whole new set of problems. Furthermore, the user may reuse the same
+  /// result in multiple places.
   ///
   /// So, we use a std::shared_ptr to be able to:
   ///
@@ -222,6 +226,8 @@ namespace adiar
   ///
   /// - It is thread-safe in the reference counting, so we now have ADIAR to be
   ///   thread-safe for free!
+  ///
+  /// \param T The type of the underlying file
   //////////////////////////////////////////////////////////////////////////////
   template <typename T>
   class __shared_file
@@ -231,12 +237,12 @@ namespace adiar
     std::shared_ptr<T> _file_ptr;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Construct a temporary shared file
+    /// \brief Construct a temporary shared file
     ////////////////////////////////////////////////////////////////////////////
     __shared_file() : _file_ptr(std::make_shared<T>()) { }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Construct a persistent shared file given a specific filename
+    /// \brief Construct a persistent shared file given a specific filename
     ////////////////////////////////////////////////////////////////////////////
     __shared_file(const std::string &filename) : _file_ptr(std::make_shared<T>(filename)) { }
 
@@ -247,35 +253,49 @@ namespace adiar
     __shared_file(__shared_file<T> &&other) : _file_ptr(other._file_ptr) { }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Notice, that while some of the functions below are not `const` for the
-    /// pointed to underlying file, it is const with respect to this very
-    /// object.
+    /// \brief  Make the file read-only. This disallows use of any writers but
+    ///         (multiple) access by several readers.
+    ///
+    /// \remark Any writer should be detached from this object before making it
+    ///         read only.
+    ////////////////////////////////////////////////////////////////////////////
     void make_read_only() const
     {
       _file_ptr -> make_read_only();
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the file is read-only.
+    ////////////////////////////////////////////////////////////////////////////
     bool is_read_only() const
     {
       return _file_ptr -> is_read_only();
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The number of elements in the file
+    ////////////////////////////////////////////////////////////////////////////
     size_t size() const
     {
       return _file_ptr -> size();
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether there are no elements in the file
+    ////////////////////////////////////////////////////////////////////////////
     bool empty() const
     {
       return _file_ptr -> empty();
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The size of the file in bytes.
+    ////////////////////////////////////////////////////////////////////////////
     size_t file_size() const
     {
       return _file_ptr -> file_size();
     }
 
-    ////////////////////////////////////////////////////////////////////////////
     __shared_file<T>& operator= (const __shared_file<T> &o)
     {
       _file_ptr = o._file_ptr;
@@ -289,16 +309,21 @@ namespace adiar
     }
   };
 
-  // All actual files we deal with are then actually a `__shared_file<x_file<T>>`
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// The <tt>file</tt> and <tt>__meta_file</tt> classes are hidden behind a
+  /// shared pointer, such that we can parse it around. That is, all actual
+  /// files we are going to deal with are a <tt>__shared_file<x_file<T>></tt>.
+  ///
+  /// \param T Type of the file's content
+  ////////////////////////////////////////////////////////////////////////////
   template<typename T>
   using simple_file = __shared_file<file<T>>;
 
-  typedef simple_file<assignment_t> assignment_file;
-  typedef simple_file<label_t> label_file;
-
-  template<typename T, size_t Files>
-  using meta_file = __shared_file<__meta_file<T,Files>>;
-
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Sorts the content of a <tt>simple_file</tt> given some sorting
+  /// predicate.
+  ////////////////////////////////////////////////////////////////////////////
   template<typename T, typename sorting_pred_t = std::less<>>
   void sort(simple_file<T> f, sorting_pred_t pred = sorting_pred_t())
   {
@@ -311,15 +336,38 @@ namespace adiar
     tpie::sort(fs, pred, pi);
   }
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief A file of assignments (label, value)
+  ////////////////////////////////////////////////////////////////////////////
+  typedef simple_file<assignment_t> assignment_file;
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief A file of variable labels
+  ////////////////////////////////////////////////////////////////////////////
+  typedef simple_file<label_t> label_file;
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief File(s) with 'meta' information
+  ///
+  /// \param T     Type of the file's content
+  ///
+  /// \param Files The number of files with type T
+  ////////////////////////////////////////////////////////////////////////////
+  template<typename T, size_t Files>
+  using meta_file = __shared_file<__meta_file<T,Files>>;
+
   //////////////////////////////////////////////////////////////////////////////
   /// An unreduced Decision Diagram is given by a three files of arcs:
   ///
-  /// - [0] : node-to-node arcs (in reverse topological order)
-  /// - [1] : node-to-sink arcs (in topological order).
-  /// - [2] : node-to-sink arcs (out-of order of the ones in [1])
+  /// - [0] : node-to-node arcs (sorted by <tt>target</tt>)
+  /// - [1] : node-to-sink arcs (sorted by <tt>source</tt>).
+  /// - [2] : node-to-sink arcs (not sorted)
   //////////////////////////////////////////////////////////////////////////////
   constexpr size_t ARC_FILE_COUNT = 3u;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Files of arcs to represent an unreduced decision diagram.
+  //////////////////////////////////////////////////////////////////////////////
   typedef meta_file<arc_t, ARC_FILE_COUNT> arc_file;
 
 
@@ -328,6 +376,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   constexpr size_t NODE_FILE_COUNT = 1u;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief File of nodes to represent a reduced decision diagram.
+  //////////////////////////////////////////////////////////////////////////////
   class node_file : public meta_file<node_t, NODE_FILE_COUNT>
   {
   public:
@@ -346,7 +397,9 @@ namespace adiar
     // Move constructor
     node_file(node_file &&o) : __shared_file(o) { }
 
-    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Size of the meta file
+    //////////////////////////////////////////////////////////////////////////////
     size_t meta_size() const
     {
       return _file_ptr -> meta_size();
@@ -369,23 +422,40 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Check whether a given node_file is sink-only and satisfies the
-  /// given sink_pred.
+  /// \brief      Check whether a given node_file is sink-only and satisfies the
+  ///             given sink_pred.
   ///
-  /// \param file   The node_file to check its content
+  /// \param file The node_file to check its content
   ///
-  /// \param pred   If the given node_file only contains a sink node, then
-  ///               secondly the sink is checked with the given sink predicate.
-  ///               Default is any type sink.
+  /// \param pred If the given node_file only contains a sink node, then
+  ///             secondly the sink is checked with the given sink predicate.
+  ///             Default is any type sink.
   //////////////////////////////////////////////////////////////////////////////
   bool is_sink(const node_file &file, const sink_pred &pred = is_any);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The minimal label, i.e. the label of the root.
+  //////////////////////////////////////////////////////////////////////////////
   label_t min_label(const node_file &file);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The maximal label, i.e. the label of the deepest node.
+  //////////////////////////////////////////////////////////////////////////////
   label_t max_label(const node_file &file);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Number of nodes in the DAG.
+  //////////////////////////////////////////////////////////////////////////////
   uint64_t nodecount(const node_file &nodes);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Number of nodes in the DAG.
+  //////////////////////////////////////////////////////////////////////////////
   uint64_t nodecount(const arc_file &arcs);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Number of levels (i.e. number of unique labels) in the DAG.
+  //////////////////////////////////////////////////////////////////////////////
   uint64_t varcount(const node_file &nodes);
 }
 
