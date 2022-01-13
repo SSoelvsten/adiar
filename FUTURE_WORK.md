@@ -16,6 +16,7 @@ may constitute interesting undergraduate and graduate projects.
         - [Hash Values](#hash-values)
         - [Proof Logging](#proof-logging)
         - [Dynamic Variable Reordering](#dynamic-variable-reordering)
+        - [Boolean Vectors](#boolean-vectors)
     - [Other Decision Diagrams](#other-decision-diagrams)
         - [Chained Decision Diagrams](#chained-decision-diagrams)
         - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
@@ -264,6 +265,66 @@ should be sorted to make it _canonical_). Yet, I wonder whether it in practice
 is not better to leave it to the current Reduce implementation to remove
 duplicate subtrees (which skips most of the work in _2._) even though it breaks
 the worst-case guarantees.
+
+### Boolean Vectors
+
+By placing BDDs (or ZDDs) in a _vector_ of length _b_ we can represent a *b*-bit
+binary integer. These can be used to implement the logic for boolean vectors in
+an SMT solver. The following description is based off the implementation for
+_unsigned_ boolean vectors in the BDD library BuDDy; it would also be of interest
+to have _signed_ boolean vectors with two's complement.
+
+We can allow the user to choose whether to use BDDs or ZDDs to represent each bit
+by templating the _bvec_ class and all the functions. If they choose to use ZDDs,
+then we do need to have the domain defined to make bitwise negation make any
+sense. It might make sense to start with BDDs only and then template it later.
+
+**Constructors**
+
+We want to be able to construct a _bvec_ in a few ways
+
+- `bvec_true()`, and `bvec_false()` for the all-1 and all-0 vectors.
+- `bvec_const(i)` to construct a _bvec_ that represents the constant integer *i*
+- `bvec_vars(vs)` to construct a _bvec_ where the *i*th bit is the *i*th variable
+  in *vs*. Alternatively, *vs* can be a function *index -> variable label*.
+
+**Operators**
+
+The following functions return a new _bvec_.
+
+- Bit-wise operations such as bit-wise AND, OR, and XOR are quite easy to
+  implement, since one merely needs to apply that operator per index.
+ 
+  `bvec_and(x,y)` (`x & y`), `bvec_or(x,y)` (`x | y`), `bvec_xor(x,y)` (`x ^ y`), `bvec_not(x)` (`x ~ y`)
+  
+- Much more intersting are arithmetic operations, since the output bits are
+  dependant on multiple input bits.
+  
+  - With Decision Diagrams on either side:
+  
+    `bvec_add(x,y)` (`x + y`), `bvec_sub(x,y)` (`x - y`), `bvec_mul(x,y)` (`x * y`), `bvec_div(x,y)` (`x / y`),
+    
+    `bvec_shr(x,y)` (`x >> y`), `bvec_shl(x,y)` (`x << y`)
+  
+  - Where the latter value *i* is a fixed *b*-bit number:
+  
+    `bvec_mulfixed(x,i)` (`x * i` and `i * x`), `bvec_divfixed(x,i)` (`x / i`)
+    
+    `bvec_shrfixed(x,i)` (`x >> i`), `bvec_shlfixed(x,i)` (`x << i`)
+
+- We would also want some extra functions:
+
+  - `bvec_truncate(x,b)` or `bdd_coerce(x,b)` to change *x* to be *b* bits. If it
+    is made longer, then it is padded with extra *zeros*.
+
+**Comparators**
+
+The following functions return a single decision diagram (not a vector of
+decision diagrams) which contains the desired result of a comparison of two
+_bvec_s. The type is either a  _bdd_ or _zdd_ depending on what was the
+templated value underneath.
+
+`bdd_eq(x,y)`, `bdd_neq(x,y)` `bdd_lt(x,y)`, `bdd_le(x,y)`, `bdd_gt(x,y)`, `bdd_ge(x,y)`
 
 ## Other Decision Diagrams
 
