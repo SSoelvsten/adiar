@@ -523,7 +523,7 @@ keep the disk usage close to what otherwise would be used.
   binary decision diagrams_”. In: _Proceedings of the
   1994 IEEE/ACM International Conference on Computer-Aided Design_. (1994)
 
-- [[Coudert90](http://www.ocoudert.com/papers/pdf/iccad90.pdf)]
+- [[Coudert90](https://link.springer.com/chapter/10.1007/978-1-4615-0292-0_4)]
   Olivier Coudert and Jean Christophe Madre. “_A Unified Framework for the
   Formal verification of sequential circuits_”. In: _Computer-Aided Design /
   IEEE International Conference_. (1990)
