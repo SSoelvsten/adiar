@@ -88,12 +88,8 @@ namespace adiar
     template <bool REVERSE>
     friend class node_stream;
 
-    template <typename File_T,
-              typename T,
-              typename LabelExt,
-              typename TComparator, typename LabelComparator,
-              size_t MetaStreams, size_t Buckets>
-    friend class levelized_priority_queue;
+    template <typename file_t, typename comp_t, size_t FILES>
+    friend class label_merger;
 
     friend bool is_canonical(const decision_diagram &dd);
     friend bool is_isomorphic(const decision_diagram&, const decision_diagram&);

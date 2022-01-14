@@ -22,7 +22,7 @@ bool operator== (const pq_test_data &a, const pq_test_data &b)
 }
 
 struct pq_test_label_ext {
-  label_t label_of(const pq_test_data &d) const
+  static label_t label_of(const pq_test_data &d)
   {
     return d.label;
   }
@@ -38,16 +38,15 @@ struct pq_test_lt {
 typedef meta_file<pq_test_data> pq_test_file;
 typedef meta_file_writer<pq_test_data> pq_test_writer;
 
-template <size_t MetaStreams, size_t Buckets>
-using test_priority_queue = levelized_priority_queue<pq_test_data,
-                                                     pq_test_data, pq_test_label_ext,
-                                                     pq_test_lt, std::less<label_t>,
-                                                     MetaStreams, Buckets>;
+template <size_t FILES, size_t LOOK_AHEAD>
+using test_priority_queue = levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt,
+                                                     pq_test_file, FILES, std::less<label_t>,
+                                                     LOOK_AHEAD>;
 
 go_bandit([]() {
   describe("adiar/internal/levelized_priority_queue.h", []() {
 
-    describe("pq_label_mgr", [&]() {
+    describe("label_merger", [&]() {
       it("can pull from one level_info stream", [&]() {
         pq_test_file f;
         { // Garbage collect the writer
@@ -59,23 +58,23 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, std::less<>, 1u> mgr;
+        label_merger<pq_test_file, std::less<>, 1u> merger;
 
-        AssertThat(mgr.hook_meta_stream(f), Is().True());
+        merger.hook({f});
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(2u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(3u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(3u));
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(4u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(4u));
 
-        AssertThat(mgr.can_pull(), Is().False());
+        AssertThat(merger.can_pull(), Is().False());
       });
 
       it("can peek from one level_info streams", [&]() {
@@ -90,19 +89,19 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, std::less<>, 1> mgr;
+        label_merger<pq_test_file, std::less<>, 1> merger;
 
-        AssertThat(mgr.hook_meta_stream(f), Is().True());
+        merger.hook({f});
 
-        AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(merger.pull(), Is().EqualTo(1u));
 
-        AssertThat(mgr.peek(), Is().EqualTo(2u));
-        AssertThat(mgr.pull(), Is().EqualTo(2u));
+        AssertThat(merger.peek(), Is().EqualTo(2u));
+        AssertThat(merger.pull(), Is().EqualTo(2u));
 
-        AssertThat(mgr.peek(), Is().EqualTo(3u));
-        AssertThat(mgr.pull(), Is().EqualTo(3u));
+        AssertThat(merger.peek(), Is().EqualTo(3u));
+        AssertThat(merger.pull(), Is().EqualTo(3u));
 
-        AssertThat(mgr.pull(), Is().EqualTo(4u));
+        AssertThat(merger.pull(), Is().EqualTo(4u));
       });
 
       it("can pull from merge of two level_info streams, where one is empty [1]", [&]() {
@@ -115,15 +114,14 @@ go_bandit([]() {
           fw1.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, std::less<>, 2> mgr;
+        label_merger<pq_test_file, std::less<>, 2> merger;
 
-        AssertThat(mgr.hook_meta_stream(f1), Is().False());
-        AssertThat(mgr.hook_meta_stream(f2), Is().True());
+        merger.hook({f1, f2});
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
 
-        AssertThat(mgr.can_pull(), Is().False());
+        AssertThat(merger.can_pull(), Is().False());
       });
 
 
@@ -138,18 +136,17 @@ go_bandit([]() {
           fw1.unsafe_push(create_level_info(2,1u));
         }
 
-        pq_label_mgr<pq_test_data, std::greater<>, 2> mgr;
+        label_merger<pq_test_file, std::greater<>, 2> merger;
 
-        AssertThat(mgr.hook_meta_stream(f1), Is().False());
-        AssertThat(mgr.hook_meta_stream(f2), Is().True());
+        merger.hook({f1, f2});
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(2u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
 
-        AssertThat(mgr.can_pull(), Is().False());
+        AssertThat(merger.can_pull(), Is().False());
       });
 
       it("can pull from merge of two level_info streams [1]", [&]() {
@@ -169,24 +166,23 @@ go_bandit([]() {
           fw2.unsafe_push(create_level_info(3,1u));
         }
 
-        pq_label_mgr<pq_test_data, std::less<>, 2> mgr;
+        label_merger<pq_test_file, std::less<>, 2> merger;
 
-        AssertThat(mgr.hook_meta_stream(f1), Is().False());
-        AssertThat(mgr.hook_meta_stream(f2), Is().True());
+        merger.hook({f1, f2});
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(2u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(3u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(3u));
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(4u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(4u));
 
-        AssertThat(mgr.can_pull(), Is().False());
+        AssertThat(merger.can_pull(), Is().False());
       });
 
       it("can pull from merge of two level_info streams [2] (std::less)", [&]() {
@@ -203,18 +199,17 @@ go_bandit([]() {
           fw2.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, std::less<>, 2> mgr;
+        label_merger<pq_test_file, std::less<>, 2> merger;
 
-        AssertThat(mgr.hook_meta_stream(f1), Is().False());
-        AssertThat(mgr.hook_meta_stream(f2), Is().True());
+        merger.hook({f1, f2});
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(2u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
 
-        AssertThat(mgr.can_pull(), Is().False());
+        AssertThat(merger.can_pull(), Is().False());
       });
 
       it("can pull from merge of two level_info streams [2] (std::greater)", [&]() {
@@ -230,18 +225,17 @@ go_bandit([]() {
           fw2.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, std::greater<>, 2> mgr;
+        label_merger<pq_test_file, std::greater<>, 2> merger;
 
-        AssertThat(mgr.hook_meta_stream(f1), Is().False());
-        AssertThat(mgr.hook_meta_stream(f2), Is().True());
+        merger.hook({f1, f2});
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(2u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(2u));
 
-        AssertThat(mgr.can_pull(), Is().True());
-        AssertThat(mgr.pull(), Is().EqualTo(1u));
+        AssertThat(merger.can_pull(), Is().True());
+        AssertThat(merger.pull(), Is().EqualTo(1u));
 
-        AssertThat(mgr.can_pull(), Is().False());
+        AssertThat(merger.can_pull(), Is().False());
       });
 
       it("can peek merge of two level_info stream", [&]() {
@@ -261,19 +255,18 @@ go_bandit([]() {
           fw2.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, std::less<>, 2> mgr;
+        label_merger<pq_test_file, std::less<>, 2> merger;
 
-        AssertThat(mgr.hook_meta_stream(f1), Is().False());
-        AssertThat(mgr.hook_meta_stream(f2), Is().True());
+        merger.hook({f1, f2});
 
-        AssertThat(mgr.peek(), Is().EqualTo(1u));
-        AssertThat(mgr.pull(), Is().EqualTo(1u));
-        AssertThat(mgr.peek(), Is().EqualTo(2u));
-        AssertThat(mgr.pull(), Is().EqualTo(2u));
-        AssertThat(mgr.peek(), Is().EqualTo(3u));
-        AssertThat(mgr.pull(), Is().EqualTo(3u));
-        AssertThat(mgr.peek(), Is().EqualTo(4u));
-        AssertThat(mgr.pull(), Is().EqualTo(4u));
+        AssertThat(merger.peek(), Is().EqualTo(1u));
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+        AssertThat(merger.peek(), Is().EqualTo(2u));
+        AssertThat(merger.pull(), Is().EqualTo(2u));
+        AssertThat(merger.peek(), Is().EqualTo(3u));
+        AssertThat(merger.pull(), Is().EqualTo(3u));
+        AssertThat(merger.peek(), Is().EqualTo(4u));
+        AssertThat(merger.pull(), Is().EqualTo(4u));
       });
 
       it("can pull, even after the original files have been deleted", [&]() {
@@ -293,22 +286,21 @@ go_bandit([]() {
           fw2.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, std::less<>, 2> mgr;
+        label_merger<pq_test_file, std::less<>, 2> merger;
 
-        AssertThat(mgr.hook_meta_stream(*f1), Is().False());
-        AssertThat(mgr.hook_meta_stream(*f2), Is().True());
+        merger.hook({*f1, *f2});
 
         delete f1;
         delete f2;
 
-        AssertThat(mgr.pull(), Is().EqualTo(1u));
-        AssertThat(mgr.pull(), Is().EqualTo(2u));
-        AssertThat(mgr.pull(), Is().EqualTo(3u));
-        AssertThat(mgr.pull(), Is().EqualTo(4u));
+        AssertThat(merger.pull(), Is().EqualTo(1u));
+        AssertThat(merger.pull(), Is().EqualTo(2u));
+        AssertThat(merger.pull(), Is().EqualTo(3u));
+        AssertThat(merger.pull(), Is().EqualTo(4u));
       });
     });
 
-    describe("levelized_priority_queue<..., Buckets=1>", [&]() {
+    describe("levelized_priority_queue<..., LOOK_AHEAD=1>", [&]() {
       it("can set up priority queue with more levels than buckets", [&]() {
         pq_test_file f;
 
@@ -848,8 +840,8 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_priority_queue<..., Buckets=4>", [&]() {
-      // TODO: decrease Buckets = 3 (Issue #164)
+    describe("levelized_priority_queue<..., LOOK_AHEAD=4>", [&]() {
+      // TODO: decrease LOOK_AHEAD to be 3 (Issue #164)
 
       it("can set up priority queue with more levels than buckets", [&]() {
         pq_test_file f;

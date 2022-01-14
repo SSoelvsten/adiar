@@ -24,7 +24,7 @@ namespace adiar
 
   struct count_queue_label
   {
-    label_t label_of(const path_sum &s)
+    inline static label_t label_of(const path_sum &s)
     {
       return adiar::label_of(s.uid);
     }
