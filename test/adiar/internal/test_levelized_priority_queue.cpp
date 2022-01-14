@@ -298,6 +298,61 @@ go_bandit([]() {
         AssertThat(merger.pull(), Is().EqualTo(3u));
         AssertThat(merger.pull(), Is().EqualTo(4u));
       });
+
+      it("can use a single label_file", [&]() {
+          label_file f;
+
+          { // Garbage collect the writers
+            label_writer w(f);
+            w << 0 << 2 << 3;
+          }
+
+          label_merger<label_file, std::less<>, 1> merger;
+
+          merger.hook({f});
+
+          AssertThat(merger.can_pull(), Is().True());
+          AssertThat(merger.pull(), Is().EqualTo(0u));
+
+          AssertThat(merger.can_pull(), Is().True());
+          AssertThat(merger.pull(), Is().EqualTo(2u));
+
+          AssertThat(merger.can_pull(), Is().True());
+          AssertThat(merger.pull(), Is().EqualTo(3u));
+
+          AssertThat(merger.can_pull(), Is().False());
+        });
+
+      it("can merge two label_files", [&]() {
+          label_file f1;
+          label_file f2;
+
+          { // Garbage collect the writers
+            label_writer w1(f1);
+            w1 << 0 << 2 << 3;
+
+            label_writer w2(f2);
+            w2 << 0 << 1 << 3;
+          }
+
+          label_merger<label_file, std::less<>, 2> merger;
+
+          merger.hook({f1, f2});
+
+          AssertThat(merger.can_pull(), Is().True());
+          AssertThat(merger.pull(), Is().EqualTo(0u));
+
+          AssertThat(merger.can_pull(), Is().True());
+          AssertThat(merger.pull(), Is().EqualTo(1u));
+
+          AssertThat(merger.can_pull(), Is().True());
+          AssertThat(merger.pull(), Is().EqualTo(2u));
+
+          AssertThat(merger.can_pull(), Is().True());
+          AssertThat(merger.pull(), Is().EqualTo(3u));
+
+          AssertThat(merger.can_pull(), Is().False());
+        });
     });
 
     describe("levelized_priority_queue<..., LOOK_AHEAD=1>", [&]() {
