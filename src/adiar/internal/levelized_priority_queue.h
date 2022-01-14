@@ -14,10 +14,27 @@
 
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/sorter.h>
+#include <adiar/internal/util.h>
 
 #include <adiar/statistics.h>
 
 namespace adiar {
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Defines at compile time the type of the file_stream to use read the
+  ///        levels from some file(s).
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename file_t>
+  struct label_stream_t
+  {
+    typedef level_info_stream<typename file_t::elem_t> stream_t;
+  };
+
+  template <>
+  struct label_stream_t<label_file>
+  {
+    typedef label_stream<> stream_t;
+  };
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Merges the labels from one or more files.
   ///
@@ -36,7 +53,7 @@ namespace adiar {
   private:
     comp_t _comparator = comp_t();
 
-    typedef level_info_stream<typename file_t::elem_t> stream_t;
+    typedef typename label_stream_t<file_t>::stream_t stream_t;
     std::unique_ptr<stream_t> _label_streams [FILES];
 
   public:
@@ -73,9 +90,9 @@ namespace adiar {
       label_t min_label = 0u;
       for (size_t idx = 0u; idx < FILES; idx++) {
         if (_label_streams[idx] -> can_pull()
-            && (!has_min_label || _comparator(label_of(_label_streams[idx] -> peek()), min_label))) {
+            && (!has_min_label || _comparator(__label_of<>(_label_streams[idx] -> peek()), min_label))) {
           has_min_label = true;
-          min_label = label_of(_label_streams[idx] -> peek());
+          min_label = __label_of<>(_label_streams[idx] -> peek());
         }
       }
 
@@ -91,7 +108,7 @@ namespace adiar {
 
       // pull from all with min_label
       for (const std::unique_ptr<stream_t> &level_info_stream : _label_streams) {
-        if (level_info_stream -> can_pull() && label_of(level_info_stream -> peek()) == min_label) {
+        if (level_info_stream -> can_pull() && __label_of<>(level_info_stream -> peek()) == min_label) {
           level_info_stream -> pull();
         }
       }
