@@ -1,5 +1,14 @@
 #include <filesystem>
 
+namespace adiar
+{
+  template <>
+  struct FILE_CONSTANTS<int>
+  {
+    static constexpr size_t files = 2u;
+  };
+}
+
 go_bandit([]() {
   describe("adiar/file.h, adiar/file_stream.h, adiar/file_writer.h", [&]() {
     describe("adiar/file.h", [&]() {
@@ -14,7 +23,7 @@ go_bandit([]() {
       });
 
       it("can construct fresh __meta_file<T> and make it read-only", [&]() {
-        __meta_file<int, 1> f;
+        __meta_file<int> f;
 
         AssertThat(f.is_read_only(), Is().False());
 
@@ -27,8 +36,8 @@ go_bandit([]() {
     simple_file<int> test_file_simple;
     simple_file<int> test_file_simple_sorted;
 
-    meta_file<int,1> test_file_meta_1;
-    meta_file<int,2> test_file_meta_2;
+    meta_file<int> test_file_meta_1;
+    meta_file<int> test_file_meta_2;
 
     node_file node_test_file;
 
@@ -89,7 +98,7 @@ go_bandit([]() {
         it("can hook into and write to test_file_meta_1", [&]() {
           AssertThat(test_file_meta_1.is_read_only(), Is().False());
 
-          meta_file_writer<int,1> fw(test_file_meta_1);
+          meta_file_writer<int> fw(test_file_meta_1);
 
           fw.unsafe_push(21);
           fw.unsafe_push(42);
@@ -101,7 +110,7 @@ go_bandit([]() {
 
 
         it("can hook into and write to test_file_meta_2", [&]() {
-          meta_file_writer<int,2> fw(test_file_meta_2);
+          meta_file_writer<int> fw(test_file_meta_2);
 
           fw.unsafe_push(create_level_info(5,1u));
           fw.unsafe_push(create_level_info(4,1u));
@@ -116,7 +125,7 @@ go_bandit([]() {
         });
 
         it("does not break when source file is destructed early [simple_file]", [&]() {
-          meta_file<int, 1>* f = new meta_file<int, 1>();
+          meta_file<int>* f = new meta_file<int>();
           meta_file_writer fw(*f);
 
           fw.unsafe_push(21);
@@ -299,18 +308,18 @@ go_bandit([]() {
       describe("meta_file_stream", [&]() {
         it("locks the file to be read-only on attachment", [&]() {
           AssertThat(test_file_meta_1.is_read_only(), Is().False());
-          meta_file_stream<int, 1, 0, false> fs1(test_file_meta_1);
+          meta_file_stream<int, 0, false> fs1(test_file_meta_1);
 
           AssertThat(test_file_meta_1.is_read_only(), Is().True());
 
           AssertThat(test_file_meta_2.is_read_only(), Is().False());
-          meta_file_stream<int, 2, 0, false> fs2(test_file_meta_2);
+          meta_file_stream<int, 0, false> fs2(test_file_meta_2);
 
           AssertThat(test_file_meta_2.is_read_only(), Is().True());
         });
 
         it("can read test_file_meta_1 [forwards]", [&]() {
-          meta_file_stream<int, 1, 0, false> fs(test_file_meta_1);
+          meta_file_stream<int, 0, false> fs(test_file_meta_1);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(21));
@@ -320,7 +329,7 @@ go_bandit([]() {
         });
 
         it("can peek test_file_meta_1 [forwards]", [&]() {
-          meta_file_stream<int, 1, 0, false> fs(test_file_meta_1);
+          meta_file_stream<int, 0, false> fs(test_file_meta_1);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.peek(), Is().EqualTo(21));
@@ -332,7 +341,7 @@ go_bandit([]() {
         });
 
         it("can read test_file_meta_1 [reverse]", [&]() {
-          meta_file_stream<int, 1, 0, true> fs(test_file_meta_1);
+          meta_file_stream<int, 0, true> fs(test_file_meta_1);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(42));
@@ -342,7 +351,7 @@ go_bandit([]() {
         });
 
         it("can peek test_file_1 [reverse]", [&]() {
-          meta_file_stream<int, 1, 0, true> fs(test_file_meta_1);
+          meta_file_stream<int, 0, true> fs(test_file_meta_1);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.peek(), Is().EqualTo(42));
@@ -354,7 +363,7 @@ go_bandit([]() {
         });
 
         it("can read test_file_meta_2 [forwards]", [&]() {
-          meta_file_stream<int, 2, 0, false> fs1(test_file_meta_2);
+          meta_file_stream<int, 0, false> fs1(test_file_meta_2);
 
           AssertThat(fs1.can_pull(), Is().True());
           AssertThat(fs1.pull(), Is().EqualTo(1));
@@ -364,7 +373,7 @@ go_bandit([]() {
           AssertThat(fs1.pull(), Is().EqualTo(3));
           AssertThat(fs1.can_pull(), Is().False());
 
-          meta_file_stream<int, 2, 1, false> fs2(test_file_meta_2);
+          meta_file_stream<int, 1, false> fs2(test_file_meta_2);
 
           AssertThat(fs2.can_pull(), Is().True());
           AssertThat(fs2.pull(), Is().EqualTo(4));
@@ -374,7 +383,7 @@ go_bandit([]() {
         });
 
         it("can peek test_file_meta_2 [forwards]", [&]() {
-          meta_file_stream<int, 2, 0, false> fs1(test_file_meta_2);
+          meta_file_stream<int, 0, false> fs1(test_file_meta_2);
 
           AssertThat(fs1.can_pull(), Is().True());
           AssertThat(fs1.peek(), Is().EqualTo(1));
@@ -387,7 +396,7 @@ go_bandit([]() {
           AssertThat(fs1.pull(), Is().EqualTo(3));
           AssertThat(fs1.can_pull(), Is().False());
 
-          meta_file_stream<int, 2, 1, false> fs2(test_file_meta_2);
+          meta_file_stream<int, 1, false> fs2(test_file_meta_2);
 
           AssertThat(fs2.can_pull(), Is().True());
           AssertThat(fs2.peek(), Is().EqualTo(4));
@@ -399,8 +408,8 @@ go_bandit([]() {
         });
 
         it("can read test_file_1 forwards via fresh proxy object", [&]() {
-          meta_file<int, 1> proxy(test_file_meta_1);
-          meta_file_stream<int, 1, 0, false> fs(proxy);
+          meta_file<int> proxy(test_file_meta_1);
+          meta_file_stream<int, 0, false> fs(proxy);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(21));
@@ -410,14 +419,14 @@ go_bandit([]() {
         });
 
         it("does not break when source meta_file is destructed early", [&]() {
-          meta_file<int,1>* f = new meta_file<int, 1>();
+          meta_file<int>* f = new meta_file<int>();
 
           { // Garbage collect the writer early, releasing it's reference counter
-            meta_file_writer<int,1> fw(*f);
+            meta_file_writer<int> fw(*f);
             fw.unsafe_push(21, 0);
           }
 
-          meta_file_stream<int, 1, 0, false> fs(*f);
+          meta_file_stream<int, 0, false> fs(*f);
 
           delete f;
 
@@ -609,17 +618,17 @@ go_bandit([]() {
       describe("meta_file", [&]() {
         it("can return a written to meta_file, that then can be read", [&]() {
           auto t = []() {
-            meta_file<int, 1> f;
+            meta_file<int> f;
 
-            meta_file_writer<int, 1> fw(f);
+            meta_file_writer<int> fw(f);
             fw.unsafe_push(42);
             fw.unsafe_push(7);
 
             return f;
           };
 
-          meta_file<int, 1> f = t();
-          meta_file_stream<int, 1, 0, false> fs(f);
+          meta_file<int> f = t();
+          meta_file_stream<int, 0, false> fs(f);
 
           AssertThat(fs.can_pull(), Is().True());
           AssertThat(fs.pull(), Is().EqualTo(42));
@@ -629,23 +638,23 @@ go_bandit([]() {
         });
 
         it("should have two temporary meta_files be two different files", [&]() {
-          meta_file<int, 1> file1;
-          meta_file<int, 1> file2;
+          meta_file<int> file1;
+          meta_file<int> file2;
 
           AssertThat(file1._file_ptr, Is().Not().EqualTo(file2._file_ptr));
         });
 
         it("can construct a copy of a meta_file", [&]() {
-          meta_file<int,1> file1;
+          meta_file<int> file1;
 
           { // Garbage collect the writer to detach it before the reader
-            meta_file_writer<int, 1> fw(file1);
+            meta_file_writer<int> fw(file1);
             fw.unsafe_push(42);
           }
 
-          meta_file<int,1> file2(file1);
+          meta_file<int> file2(file1);
 
-          meta_file_stream<int, 1, 0, false> fs(file2);
+          meta_file_stream<int, 0, false> fs(file2);
           AssertThat(fs.pull(), Is().EqualTo(42));
           AssertThat(fs.can_pull(), Is().False());
         });

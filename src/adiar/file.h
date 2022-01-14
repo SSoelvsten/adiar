@@ -104,11 +104,42 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  /// We also provide not-so simple files for some type of elements 'T'. These
+  /// files include meta information and split the file content into one or more
+  /// files. All of these constants are provided as \c static and \c constexpr.
+  ///
+  /// \param T Element type in the file
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename T>
+  struct FILE_CONSTANTS;
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// A reduced Decision Diagram is given by a single sorted file by nodes.
+  //////////////////////////////////////////////////////////////////////////////
+  template <>
+  struct FILE_CONSTANTS<node_t>
+  {
+    static constexpr size_t files = 1u;
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// An unreduced Decision Diagram is given by a three files of arcs:
+  ///
+  /// - [0] : node-to-node arcs (sorted by <tt>target</tt>)
+  /// - [1] : node-to-sink arcs (sorted by <tt>source</tt>).
+  /// - [2] : node-to-sink arcs (not sorted)
+  //////////////////////////////////////////////////////////////////////////////
+  template <>
+  struct FILE_CONSTANTS<arc_t>
+  {
+    static constexpr size_t files = 3u;
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief       File(s) with meta information.
   ///
   /// \param T     Type of the file's content
-  ///
-  /// \param Files Number of files of type T
   ///
   /// \details     The entities of Adiar that represents DAGs, which are
   ///              represented by one or more files of type <tt>T</tt>. To
@@ -117,10 +148,11 @@ namespace adiar
   ///              variables and in a levelized fashion depending on the
   ///              granularity of the information.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, size_t Files>
+  template <typename T>
   class __meta_file
   {
-    static_assert(0 < Files, "The number of files must be positive");
+    static_assert(0 < FILE_CONSTANTS<T>::files,
+                  "The number of files must be positive");
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -137,7 +169,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Files describing the directed acyclic graph.
     ////////////////////////////////////////////////////////////////////////////
-    file<T> _files [Files];
+    file<T> _files [FILE_CONSTANTS<T>::files];
 
     __meta_file() {
       adiar_debug(!is_read_only(), "Should be writable on creation");
@@ -156,7 +188,7 @@ namespace adiar
     void make_read_only() const
     {
       _level_info_file.make_read_only();
-      for (size_t idx = 0u; idx < Files; idx++) {
+      for (size_t idx = 0u; idx < FILE_CONSTANTS<T>::files; idx++) {
         _files[idx].make_read_only();
       }
     }
@@ -166,7 +198,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     bool is_read_only() const
     {
-      for (size_t idx = 0u; idx < Files; idx++) {
+      for (size_t idx = 0u; idx < FILE_CONSTANTS<T>::files; idx++) {
         if (!_files[idx].is_read_only()) {
           return false;
         };
@@ -180,7 +212,7 @@ namespace adiar
     size_t size()
     {
       size_t sum_size = 0u;
-      for(size_t idx = 0; idx < Files; idx++) {
+      for(size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
         sum_size += _files[idx].size();
       }
       return sum_size;
@@ -341,36 +373,19 @@ namespace adiar
   /// \brief File(s) with 'meta' information
   ///
   /// \param T     Type of the file's content
-  ///
-  /// \param Files The number of files with type T
   ////////////////////////////////////////////////////////////////////////////
-  template<typename T, size_t Files>
-  using meta_file = __shared_file<__meta_file<T,Files>>;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// An unreduced Decision Diagram is given by a three files of arcs:
-  ///
-  /// - [0] : node-to-node arcs (sorted by <tt>target</tt>)
-  /// - [1] : node-to-sink arcs (sorted by <tt>source</tt>).
-  /// - [2] : node-to-sink arcs (not sorted)
-  //////////////////////////////////////////////////////////////////////////////
-  constexpr size_t ARC_FILE_COUNT = 3u;
+  template<typename T>
+  using meta_file = __shared_file<__meta_file<T>>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Files of arcs to represent an unreduced decision diagram.
   //////////////////////////////////////////////////////////////////////////////
-  typedef meta_file<arc_t, ARC_FILE_COUNT> arc_file;
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// A reduced Decision Diagram is given by a single sorted file by nodes.
-  //////////////////////////////////////////////////////////////////////////////
-  constexpr size_t NODE_FILE_COUNT = 1u;
+  typedef meta_file<arc_t> arc_file;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief File of nodes to represent a reduced decision diagram.
   //////////////////////////////////////////////////////////////////////////////
-  class node_file : public meta_file<node_t, NODE_FILE_COUNT>
+  class node_file : public meta_file<node_t>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////

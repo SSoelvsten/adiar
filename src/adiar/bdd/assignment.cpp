@@ -17,7 +17,7 @@ namespace adiar
     assignment_file af;
     assignment_writer aw;
 
-    level_info_stream<node_t,1> ms;
+    level_info_stream<node_t> ms;
 
   public:
     bdd_sat_assignment_writer_visitor(const bdd& f) : aw(af), ms(f) { }

@@ -34,7 +34,7 @@ namespace adiar
   public:
     ////////////////////////////////////////////////////////////////////////////
     // Friends
-    template <typename T, size_t Files, bool REVERSE>
+    template <typename T, bool REVERSE>
     friend class level_info_stream;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -82,13 +82,13 @@ namespace adiar
     // |- classes
     friend class __decision_diagram;
 
-    template <typename T, size_t Files, bool REVERSE>
+    template <typename T, bool REVERSE>
     friend class level_info_stream;
 
     template <bool REVERSE>
     friend class node_stream;
 
-    template <typename File_T, size_t Files,
+    template <typename File_T,
               typename T,
               typename LabelExt,
               typename TComparator, typename LabelComparator,

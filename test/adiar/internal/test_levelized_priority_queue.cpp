@@ -7,6 +7,15 @@ struct pq_test_data {
   uint64_t nonce;
 };
 
+namespace adiar
+{
+  template <>
+  struct FILE_CONSTANTS<pq_test_data>
+  {
+    static constexpr size_t files = 1u;
+  };
+}
+
 bool operator== (const pq_test_data &a, const pq_test_data &b)
 {
   return a.label == b.label && a.nonce == b.nonce;
@@ -26,11 +35,11 @@ struct pq_test_lt {
   }
 };
 
-typedef meta_file<pq_test_data, 1u> pq_test_file;
-typedef meta_file_writer<pq_test_data, 1u> pq_test_writer;
+typedef meta_file<pq_test_data> pq_test_file;
+typedef meta_file_writer<pq_test_data> pq_test_writer;
 
 template <size_t MetaStreams, size_t Buckets>
-using test_priority_queue = levelized_priority_queue<pq_test_data, 1u,
+using test_priority_queue = levelized_priority_queue<pq_test_data,
                                                      pq_test_data, pq_test_label_ext,
                                                      pq_test_lt, std::less<label_t>,
                                                      MetaStreams, Buckets>;
@@ -50,7 +59,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, 1u, std::less<>, 1u> mgr;
+        pq_label_mgr<pq_test_data, std::less<>, 1u> mgr;
 
         AssertThat(mgr.hook_meta_stream(f), Is().True());
 
@@ -81,7 +90,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, 1u, std::less<>, 1> mgr;
+        pq_label_mgr<pq_test_data, std::less<>, 1> mgr;
 
         AssertThat(mgr.hook_meta_stream(f), Is().True());
 
@@ -106,7 +115,7 @@ go_bandit([]() {
           fw1.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
+        pq_label_mgr<pq_test_data, std::less<>, 2> mgr;
 
         AssertThat(mgr.hook_meta_stream(f1), Is().False());
         AssertThat(mgr.hook_meta_stream(f2), Is().True());
@@ -129,7 +138,7 @@ go_bandit([]() {
           fw1.unsafe_push(create_level_info(2,1u));
         }
 
-        pq_label_mgr<pq_test_data, 1u, std::greater<>, 2> mgr;
+        pq_label_mgr<pq_test_data, std::greater<>, 2> mgr;
 
         AssertThat(mgr.hook_meta_stream(f1), Is().False());
         AssertThat(mgr.hook_meta_stream(f2), Is().True());
@@ -160,7 +169,7 @@ go_bandit([]() {
           fw2.unsafe_push(create_level_info(3,1u));
         }
 
-        pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
+        pq_label_mgr<pq_test_data, std::less<>, 2> mgr;
 
         AssertThat(mgr.hook_meta_stream(f1), Is().False());
         AssertThat(mgr.hook_meta_stream(f2), Is().True());
@@ -194,7 +203,7 @@ go_bandit([]() {
           fw2.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
+        pq_label_mgr<pq_test_data, std::less<>, 2> mgr;
 
         AssertThat(mgr.hook_meta_stream(f1), Is().False());
         AssertThat(mgr.hook_meta_stream(f2), Is().True());
@@ -221,7 +230,7 @@ go_bandit([]() {
           fw2.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, 1u, std::greater<>, 2> mgr;
+        pq_label_mgr<pq_test_data, std::greater<>, 2> mgr;
 
         AssertThat(mgr.hook_meta_stream(f1), Is().False());
         AssertThat(mgr.hook_meta_stream(f2), Is().True());
@@ -252,7 +261,7 @@ go_bandit([]() {
           fw2.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
+        pq_label_mgr<pq_test_data, std::less<>, 2> mgr;
 
         AssertThat(mgr.hook_meta_stream(f1), Is().False());
         AssertThat(mgr.hook_meta_stream(f2), Is().True());
@@ -284,7 +293,7 @@ go_bandit([]() {
           fw2.unsafe_push(create_level_info(1,1u));
         }
 
-        pq_label_mgr<pq_test_data, 1u, std::less<>, 2> mgr;
+        pq_label_mgr<pq_test_data, std::less<>, 2> mgr;
 
         AssertThat(mgr.hook_meta_stream(*f1), Is().False());
         AssertThat(mgr.hook_meta_stream(*f2), Is().True());
