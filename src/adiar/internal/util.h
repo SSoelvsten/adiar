@@ -17,8 +17,8 @@ namespace adiar {
   inline label_t __label_of(const label_t& l)
   { return l; }
 
-  template<typename in1_t = decision_diagram, typename stream1_t = level_info_stream<node_t, NODE_FILE_COUNT>,
-           typename in2_t = decision_diagram, typename stream2_t = level_info_stream<node_t, NODE_FILE_COUNT>>
+  template<typename in1_t = decision_diagram, typename stream1_t = level_info_stream<node_t>,
+           typename in2_t = decision_diagram, typename stream2_t = level_info_stream<node_t>>
   bool disjoint_labels(const in1_t &in1, const in2_t &in2)
   {
     stream1_t s1(in1);

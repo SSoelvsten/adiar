@@ -102,7 +102,7 @@ go_bandit([]() {
 
       AssertThat(ns.can_pull(), Is().False());
 
-      level_info_test_stream<node_t, NODE_FILE_COUNT> level_info(out);
+      level_info_test_stream<node_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -143,7 +143,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -197,7 +197,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -247,7 +247,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
@@ -297,7 +297,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -353,7 +353,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -421,7 +421,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
@@ -452,7 +452,7 @@ go_bandit([]() {
 
       AssertThat(ns.can_pull(), Is().False());
 
-      level_info_test_stream<node_t, NODE_FILE_COUNT> level_info(out);
+      level_info_test_stream<node_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().False());
     });
@@ -474,7 +474,7 @@ go_bandit([]() {
 
       AssertThat(ns.can_pull(), Is().False());
 
-      level_info_test_stream<node_t, NODE_FILE_COUNT> level_info(out);
+      level_info_test_stream<node_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().False());
     });
@@ -511,7 +511,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
@@ -557,7 +557,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
@@ -601,7 +601,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -640,7 +640,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -686,7 +686,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -745,7 +745,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -813,7 +813,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -881,7 +881,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -923,7 +923,7 @@ go_bandit([]() {
 
       AssertThat(ns.can_pull(), Is().False());
 
-      level_info_test_stream<node_t, NODE_FILE_COUNT> level_info(out);
+      level_info_test_stream<node_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().False());
     });
@@ -968,7 +968,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -1019,7 +1019,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -1075,7 +1075,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -1140,7 +1140,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -1213,7 +1213,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -1278,7 +1278,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -1323,7 +1323,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
@@ -1368,7 +1368,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -1410,7 +1410,7 @@ go_bandit([]() {
 
       AssertThat(sink_arcs.can_pull(), Is().False());
 
-      level_info_test_stream<arc_t, ARC_FILE_COUNT> level_info(out);
+      level_info_test_stream<arc_t> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));

@@ -168,8 +168,6 @@ namespace adiar {
   ///
   /// \param T       The type of the file(s)'s elements
   ///
-  /// \param Files   The number of files of type \c T
-  ///
   /// \param File    Index for the file to read from
   ///
   /// \param REVERSE Whether the reading direction should be reversed
@@ -179,14 +177,14 @@ namespace adiar {
   ///         reversing the underlying stream. Hence, we do hide a a negation of
   ///         the \c REVERSE parameter.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, size_t Files, size_t File, bool REVERSE = false>
-  class meta_file_stream : public file_stream<T, REVERSE, __meta_file<T, Files>>
+  template <typename T, size_t File, bool REVERSE = false>
+  class meta_file_stream : public file_stream<T, REVERSE, __meta_file<T>>
   {
-    static_assert(File < Files, "The file to pick must be a valid index");
+    static_assert(File < FILE_CONSTANTS<T>::files, "The file to pick must be a valid index");
 
   public:
-    meta_file_stream(const meta_file<T, Files> &file, bool negate = false)
-      : file_stream<T, REVERSE, __meta_file<T, Files>>(file._file_ptr -> _files[File], file._file_ptr, negate)
+    meta_file_stream(const meta_file<T> &file, bool negate = false)
+      : file_stream<T, REVERSE, __meta_file<T>>(file._file_ptr -> _files[File], file._file_ptr, negate)
     { }
 
     // TODO: 'attach', 'attached', and 'detach'
@@ -201,15 +199,15 @@ namespace adiar {
   /// \sa node_file
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  class node_stream : public meta_file_stream<node_t, NODE_FILE_COUNT, 0, !REVERSE>
+  class node_stream : public meta_file_stream<node_t, 0, !REVERSE>
   {
   public:
     node_stream(const node_file &file, bool negate = false)
-      : meta_file_stream<node_t, 1, 0, !REVERSE>(file, negate)
+      : meta_file_stream<node_t, 0, !REVERSE>(file, negate)
     { }
 
     node_stream(const decision_diagram &dd)
-      : meta_file_stream<node_t, 1, 0, !REVERSE>(dd.file, dd.negate)
+      : meta_file_stream<node_t, 0, !REVERSE>(dd.file, dd.negate)
     { }
   };
 
@@ -219,15 +217,15 @@ namespace adiar {
   /// \sa arc_file
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  using node_arc_stream = meta_file_stream<arc_t, ARC_FILE_COUNT, 0, !REVERSE>;
+  using node_arc_stream = meta_file_stream<arc_t, 0, !REVERSE>;
 
   // TODO: Move inside of sink_arc_stream below ?
   template<bool REVERSE = false>
-  using in_order_arc_stream = meta_file_stream<arc_t, ARC_FILE_COUNT, 1, !REVERSE>;
+  using in_order_arc_stream = meta_file_stream<arc_t, 1, !REVERSE>;
 
   // TODO: Move inside of sink_arc_stream below ?
   template<bool REVERSE = false>
-  using out_of_order_arc_stream = meta_file_stream<arc_t, ARC_FILE_COUNT, 2, !REVERSE>;
+  using out_of_order_arc_stream = meta_file_stream<arc_t, 2, !REVERSE>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream for sink arcs of an arc file.
@@ -305,15 +303,15 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream for the levelized meta information.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, size_t Files, bool REVERSE = false>
-  class level_info_stream : public file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>
+  template <typename T, bool REVERSE = false>
+  class level_info_stream : public file_stream<level_info_t, !REVERSE, __meta_file<T>>
   {
   public:
     //////////////////////////////////////////////////////////////////////////////
     /// Access the level information of a file with meta information.
     //////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const meta_file<T,Files> &f)
-      : file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>(f._file_ptr -> _level_info_file, f._file_ptr)
+    level_info_stream(const meta_file<T> &f)
+      : file_stream<level_info_t, !REVERSE, __meta_file<T>>(f._file_ptr -> _level_info_file, f._file_ptr)
     { }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -327,7 +325,7 @@ namespace adiar {
     //////////////////////////////////////////////////////////////////////////////
     /// For unit testing only!
     //////////////////////////////////////////////////////////////////////////////
-    meta_file<T, Files> __obtain_file(const __decision_diagram &dd)
+    meta_file<T> __obtain_file(const __decision_diagram &dd)
     {
       if constexpr (std::is_same<node_t, T>::value) {
         return dd.get<node_file>();

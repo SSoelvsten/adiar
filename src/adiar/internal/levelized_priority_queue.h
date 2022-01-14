@@ -30,7 +30,7 @@ namespace adiar {
   /// Currently these always are to be read in reverse, so let us merely
   /// implement a manager for just that.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename File_T, size_t Files,
+  template <typename File_T,
             typename Comparator = std::less<label_t>, size_t MetaStreams = 1u>
   class pq_label_mgr
   {
@@ -42,14 +42,14 @@ namespace adiar {
     // Notice, that this will break, if the original file is garbage collected
     // before the priority queue. But, currently the original file always is an
     // argument to the function, in which this pq_label_mgr lives within.
-    std::unique_ptr<level_info_stream<File_T, Files>> _meta_streams [MetaStreams];
+    std::unique_ptr<level_info_stream<File_T>> _meta_streams [MetaStreams];
 
   public:
-    bool hook_meta_stream(const meta_file<File_T, Files> &f)
+    bool hook_meta_stream(const meta_file<File_T> &f)
     {
       adiar_debug(_files_given < MetaStreams, "Given more files than was expected");
 
-      _meta_streams[_files_given] = std::make_unique<level_info_stream<File_T, Files>>(f);
+      _meta_streams[_files_given] = std::make_unique<level_info_stream<File_T>>(f);
 
       return ++_files_given == MetaStreams;
     }
@@ -97,7 +97,7 @@ namespace adiar {
       label_t min_label = peek();
 
       // pull from all with min_label
-      for (const std::unique_ptr<level_info_stream<File_T, Files>> &level_info_stream : _meta_streams) {
+      for (const std::unique_ptr<level_info_stream<File_T>> &level_info_stream : _meta_streams) {
         if (level_info_stream -> can_pull() && label_of(level_info_stream -> peek()) == min_label) {
           level_info_stream -> pull();
         }
@@ -127,7 +127,6 @@ namespace adiar {
   /// then be merged with the current bucket.
   ///
   /// \param T          The type of items to store.
-  /// \param Files      The number of files used in the adiar::file for T
   ///
   /// \param LabelExt   Struct, that provides a .label_of(T& t) function to
   ///                   determine in which bucket to place it.
@@ -148,18 +147,18 @@ namespace adiar {
   /// This makes use of two policies to manage and place elements in the
   /// buckets.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename File_T, size_t Files,
+  template <typename File_T,
             typename T,
             typename LabelExt,
             typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
             size_t MetaStreams = 1u, size_t Buckets = ADIAR_PQ_BUCKETS>
   class levelized_priority_queue
-    : private LabelExt, private pq_label_mgr<File_T, Files, LabelComparator, MetaStreams>
+    : private LabelExt, private pq_label_mgr<File_T, LabelComparator, MetaStreams>
   {
     static_assert(0 < MetaStreams, "At least one level_info stream should be provided");
     static_assert(0 < Buckets, "Bucketized levelized priority queue requires at least one bucket");
 
-    typedef pq_label_mgr<File_T, Files, LabelComparator, MetaStreams> label_mgr;
+    typedef pq_label_mgr<File_T, LabelComparator, MetaStreams> label_mgr;
 
     ////////////////////////////////////////////////////////////////////////////
     // Internal state
@@ -213,11 +212,11 @@ namespace adiar {
     /// \param memory_given    Total amount of memory the priority queue should
     ///                        take.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const meta_file<File_T, Files> (& files) [MetaStreams],
+    levelized_priority_queue(const meta_file<File_T> (& files) [MetaStreams],
                              tpie::memory_size_type memory_given)
       : levelized_priority_queue(memory_given)
     {
-      for (const meta_file<File_T, Files> &f : files) {
+      for (const meta_file<File_T> &f : files) {
         label_mgr::hook_meta_stream(f);
       }
       init_buckets();
@@ -232,7 +231,7 @@ namespace adiar {
       init_buckets();
     }
 
-    levelized_priority_queue(const meta_file<File_T, Files> (& files) [MetaStreams])
+    levelized_priority_queue(const meta_file<File_T> (& files) [MetaStreams])
     : levelized_priority_queue(files, tpie::get_memory_manager().available()) { }
 
     levelized_priority_queue(const decision_diagram (& dds) [MetaStreams])
@@ -573,12 +572,12 @@ namespace adiar {
   template <typename T, typename LabelExt,
             typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
             size_t MetaStreams = 1u, size_t Buckets = ADIAR_PQ_BUCKETS>
-  using levelized_node_priority_queue = levelized_priority_queue<node_t, NODE_FILE_COUNT, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
+  using levelized_node_priority_queue = levelized_priority_queue<node_t, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
 
   template <typename T, typename LabelExt,
             typename TComparator = std::less<T>, typename LabelComparator = std::less<label_t>,
             size_t MetaStreams = 1u, size_t Buckets = ADIAR_PQ_BUCKETS>
-  using levelized_arc_priority_queue = levelized_priority_queue<arc_t, ARC_FILE_COUNT, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
+  using levelized_arc_priority_queue = levelized_priority_queue<arc_t, T, LabelExt, TComparator, LabelComparator, MetaStreams, Buckets>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// TODO: Make a levelized_priority_queue that does not have any buckets

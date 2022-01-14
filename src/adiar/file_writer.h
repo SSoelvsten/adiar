@@ -166,7 +166,7 @@ namespace adiar {
   ///
   /// \sa node_writer arc_writer
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, size_t Files>
+  template <typename T>
   class meta_file_writer
   {
   protected:
@@ -174,15 +174,15 @@ namespace adiar {
     /// The file stream includes a shared pointer to hook into the reference
     /// counting and garbage collection of the file.
     ////////////////////////////////////////////////////////////////////////////
-    std::shared_ptr<__meta_file<T, Files>> _file_ptr;
+    std::shared_ptr<__meta_file<T>> _file_ptr;
 
     tpie::file_stream<level_info_t> _meta_stream;
-    tpie::file_stream<T> _streams [Files];
+    tpie::file_stream<T> _streams [FILE_CONSTANTS<T>::files];
 
   public:
     meta_file_writer() { }
 
-    meta_file_writer(const meta_file<T, Files> &f)
+    meta_file_writer(const meta_file<T> &f)
     {
       attach(f);
     }
@@ -192,7 +192,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a file
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const meta_file<T, Files> &f)
+    void attach(const meta_file<T> &f)
     {
       if (attached()) { detach(); }
       _file_ptr = f._file_ptr;
@@ -203,7 +203,7 @@ namespace adiar {
       _meta_stream.open(f._file_ptr -> _level_info_file.__base_file);
       _meta_stream.seek(0, tpie::file_stream_base::end);
 
-      for (size_t idx = 0; idx < Files; idx++) {
+      for (size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
         adiar_assert(!(_file_ptr -> _files[idx].is_read_only()),
                      "Cannot attach a writer onto a read-only content file");
 
@@ -226,7 +226,7 @@ namespace adiar {
     void detach()
     {
       _meta_stream.close();
-      for (size_t idx = 0; idx < Files; idx++) {
+      for (size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
         _streams[idx].close();
       }
       // if (_file_ptr) { _file_ptr.reset(); }
@@ -248,13 +248,10 @@ namespace adiar {
     ///            for consistency.
     ///
     /// \param t   Element to push
-    ///
-    /// \param idx Index for which file to place \c t into. This value has to be
-    ///            smaller than the templated value \c Files.
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const T &t, size_t idx = 0)
     {
-      adiar_debug(idx < Files, "Invalid index");
+      adiar_debug(idx < FILE_CONSTANTS<T>::files, "Invalid index");
       _streams[idx].write(t);
     }
 
@@ -263,7 +260,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     bool has_pushed()
     {
-      for (size_t idx = 0; idx < Files; idx++) {
+      for (size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
         if (has_pushed(idx)) {
           return true;
         }
@@ -288,7 +285,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     bool has_pushed(const size_t idx)
     {
-      adiar_debug(idx < Files, "Invalid index");
+      adiar_debug(idx < FILE_CONSTANTS<T>::files, "Invalid index");
       return _streams[idx].size() > 0;
     }
   };
@@ -299,7 +296,7 @@ namespace adiar {
   ///
   /// \sa node_file
   //////////////////////////////////////////////////////////////////////////////
-  class node_writer: public meta_file_writer<node_t, NODE_FILE_COUNT>
+  class node_writer: public meta_file_writer<node_t>
   {
   private:
     node_t _latest_node = { NIL, NIL, NIL };
@@ -438,7 +435,7 @@ namespace adiar {
   ///
   /// \sa arc_file
   //////////////////////////////////////////////////////////////////////////////
-  class arc_writer: public meta_file_writer<arc_t, ARC_FILE_COUNT>
+  class arc_writer: public meta_file_writer<arc_t>
   {
   private:
     bool __has_latest_sink = false;
