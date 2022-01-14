@@ -309,14 +309,42 @@ namespace adiar {
   class level_info_stream : public file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>
   {
   public:
+    //////////////////////////////////////////////////////////////////////////////
+    /// Access the level information of a file with meta information.
+    //////////////////////////////////////////////////////////////////////////////
     level_info_stream(const meta_file<T,Files> &f)
       : file_stream<level_info_t, !REVERSE, __meta_file<T, Files>>(f._file_ptr -> _level_info_file, f._file_ptr)
     { }
 
-    level_info_stream(const decision_diagram &dd) : level_info_stream(dd.file) { }
+    //////////////////////////////////////////////////////////////////////////////
+    /// Access the level information stream of a decision diagram.
+    //////////////////////////////////////////////////////////////////////////////
+    level_info_stream(const decision_diagram &dd)
+      : level_info_stream(dd.file)
+    { }
 
-    // Only used for testing...
-    level_info_stream(const __decision_diagram &dd);
+  private:
+    //////////////////////////////////////////////////////////////////////////////
+    /// For unit testing only!
+    //////////////////////////////////////////////////////////////////////////////
+    meta_file<T, Files> __obtain_file(const __decision_diagram &dd)
+    {
+      if constexpr (std::is_same<node_t, T>::value) {
+        return dd.get<node_file>();
+      } else {
+        return dd.get<arc_file>();
+      }
+    }
+
+  public:
+    //////////////////////////////////////////////////////////////////////////////
+    /// For unit testing only!
+    ///
+    /// Access to level information of an unreduced decision diagram.
+    //////////////////////////////////////////////////////////////////////////////
+    level_info_stream(const __decision_diagram &dd)
+      : level_info_stream(__obtain_file(dd))
+    { }
 
     // TODO: 'attach', 'attached', and 'detach'
   };

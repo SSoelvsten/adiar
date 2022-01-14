@@ -51,7 +51,6 @@ set(SOURCES
   adiar.cpp
   data.cpp
   file.cpp
-  file_stream.cpp
 
   # bdd files
   bdd/apply.cpp
