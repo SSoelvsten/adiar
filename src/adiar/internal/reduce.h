@@ -39,13 +39,14 @@ namespace adiar
 
   struct reduce_queue_label
   {
-    label_t label_of(const arc_t &a)
+    static label_t label_of(const arc_t &a)
     {
       return adiar::label_of(a.source);
     }
   };
 
-  typedef levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt, std::greater<label_t>> reduce_priority_queue_t;
+  typedef levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt>
+  reduce_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // For sorting for Reduction Rule 2 (and back again)

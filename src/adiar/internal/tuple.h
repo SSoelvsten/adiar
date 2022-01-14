@@ -64,7 +64,7 @@ namespace adiar {
   // Priority queue functions
   struct tuple_label
   {
-    label_t label_of(const tuple &t)
+    static inline label_t label_of(const tuple &t)
     {
       return adiar::label_of(std::min(t.t1, t.t2));
     }
@@ -102,7 +102,7 @@ namespace adiar {
 
   struct triple_label
   {
-    label_t label_of(const triple &t)
+    static inline label_t label_of(const triple &t)
     {
       return adiar::label_of(fst(t));
     }

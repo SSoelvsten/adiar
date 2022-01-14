@@ -401,7 +401,8 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   struct arc_target_label
   {
-    label_t label_of(const arc_t& a) const {
+    static inline label_t label_of(const arc_t& a)
+    {
       return adiar::label_of(a.target);
     }
   };
