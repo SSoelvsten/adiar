@@ -52,7 +52,6 @@ set(SOURCES
   data.cpp
   file.cpp
   file_stream.cpp
-  file_writer.cpp
 
   # bdd files
   bdd/apply.cpp

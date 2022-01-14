@@ -376,6 +376,12 @@ namespace adiar {
       meta_file_writer::unsafe_push(n, 0);
     }
 
+    node_writer& operator<< (const node_t& n)
+    {
+      this -> push(n);
+      return *this;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to level information file without any checks.
     ////////////////////////////////////////////////////////////////////////////
@@ -426,9 +432,6 @@ namespace adiar {
     bool empty()
     { return meta_file_writer::empty(); }
   };
-
-  node_writer& operator<< (node_writer& nw, const node_t& n);
-
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Writer for a set of arcs.
