@@ -149,7 +149,8 @@ namespace adiar
 
     // Process bottom-up each level
     while (sink_arcs.can_pull() || reduce_pq.can_pull()) {
-      adiar_invariant(label == reduce_pq.current_level(), "label and priority queue should be in sync");
+      adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
+                      "label and priority queue should be in sync");
 
       // Temporary file for Reduction Rule 1 mappings (opened later if need be)
       tpie::file_stream<mapping> red1_mapping;
