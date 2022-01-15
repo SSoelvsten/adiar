@@ -1,6 +1,8 @@
 #ifndef ADIAR_INTERNAL_LEVELIZED_PRIORITY_QUEUE_H
 #define ADIAR_INTERNAL_LEVELIZED_PRIORITY_QUEUE_H
 
+#include <limits>
+
 #include <tpie/tpie.h>
 
 #include <tpie/file.h>
@@ -194,8 +196,8 @@ namespace adiar {
     static constexpr size_t BUCKETS = LOOK_AHEAD + 1;
     label_t _buckets_label [BUCKETS];
 
-    size_t _front_bucket_idx = 0;
-    size_t _back_bucket_idx = 0;
+    label_t _front_bucket_idx = 0;
+    label_t _back_bucket_idx  = static_cast<label_t>(-1);
 
     typedef external_sorter<elem_t, elem_comp_t> sorter_t;
     std::unique_ptr<sorter_t> _buckets_sorter [BUCKETS];
@@ -295,23 +297,18 @@ namespace adiar {
                   "the amount of memory used should be within the given bounds");
 
       // Set up buckets until no levels are left or all buckets have been
-      // instantiated
-      if (_level_merger.can_pull()) {
+      // instantiated. Notice, that _back_bucket_idx was initialised to -1.
+      while(_back_bucket_idx + 1 < BUCKETS && _level_merger.can_pull()) {
         label_t label = _level_merger.pull();
-        setup_bucket(_front_bucket_idx, label);
 
-        while(_back_bucket_idx < LOOK_AHEAD /* = _back_bucket_idx + 1 < BUCKETS */
-              && _level_merger.can_pull()) {
-          label_t label = _level_merger.pull();
+        adiar_invariant(_front_bucket_idx == 0,
+                        "Front bucket not moved");
 
-          adiar_invariant(_level_comparator(_buckets_label[_back_bucket_idx], label), "");
-          adiar_invariant(_front_bucket_idx == 0, "Front bucket not moved");
-          adiar_invariant(_back_bucket_idx < LOOK_AHEAD, "Buckets only created up to given limit");
+        _back_bucket_idx++;
+        setup_bucket(_back_bucket_idx, label);
+      }
 
-          _back_bucket_idx++;
-          setup_bucket(_back_bucket_idx, label);
-        }
-
+      if (_back_bucket_idx != static_cast<label_t>(-1)) {
         sort_front_bucket();
       }
     }
@@ -557,7 +554,8 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     bool has_next_bucket()
     {
-      return _front_bucket_idx != _back_bucket_idx;
+      return _back_bucket_idx != static_cast<label_t>(-1)
+        && _front_bucket_idx != _back_bucket_idx;
     }
 
     ////////////////////////////////////////////////////////////////////////////
