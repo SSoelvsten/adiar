@@ -385,6 +385,14 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief The label of the next level.
+    ////////////////////////////////////////////////////////////////////////////
+    bool next_level()
+    {
+      return next_bucket_label();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief            Set up the next nonempty level to which some requests
     ///                   have been pushed before the given stop_label.
     ///
@@ -400,6 +408,9 @@ namespace adiar {
     void setup_next_level(label_t stop_label = MAX_LABEL+1)
     {
       const bool has_stop_label = stop_label <= MAX_LABEL;
+
+      // TODO: Have no front bucket if given a stop_label that is not part of
+      //       the current levels.
 
       adiar_debug(has_next_level(),
                   "Has no next level to go to");
@@ -421,33 +432,41 @@ namespace adiar {
            b < BUCKETS
            // Is the bucket for this level empty?
            && !_has_next_from_bucket
-           // Is the overflow queue without any elements for this level either?
-           && (_overflow_queue.empty() || !has_front_bucket()
-               || elem_level_t::label_of(_overflow_queue.top()) != front_bucket_label())
-           // We have no stop-label that would stop us here?
-           && (!has_stop_label || !has_front_bucket()
-               || stop_label != front_bucket_label())
-           // Do we have more levels to use?
+           // Is the overflow queue only with elements after the current level?
+           && (_overflow_queue.empty()
+               || (!has_front_bucket()
+                   || front_bucket_label() < elem_level_t::label_of(_overflow_queue.top())))
+           // Do we have a stop-label...
+           && (!has_stop_label
+               // ... that is after the current level?
+               || ((!has_front_bucket() || front_bucket_label() < stop_label)
+                   // and where the next level is not too far ahead?
+                   && (!has_next_bucket() || next_bucket_label() <= stop_label)))
+           // Do we have more levels to take from?
            && has_next_bucket();
            b++) {
         setup_next_bucket();
         sort_front_bucket();
       }
 
-      // Are we still at an empty bucket and behind the overflow queue and the
-      // stop_label? Notice, that we have now instantiated 'BUCKETS-1' number of
-      // new merge_sorters ready to place content into them. So, there is no
-      // reason for us to not just keep the merge_sorter and merely fast-forward
-      // on the levels.
-      //
-      // The most elegant is to reinitialise all 'BUCKETS' akin to init_buckets.
+      // Are we still at an empty bucket? Then all elements must have been in
+      // the overflow queue. Forward further until the overflow priority queue
+      // or the stop_label?
       if (!_has_next_from_bucket && has_next_bucket()
-          // && (_overflow_queue.empty() || elem_level_t::label_of(_overflow_queue.top()) != front_bucket_label())
-          && (!has_stop_label || stop_label != front_bucket_label())) {
+          && (!has_stop_label || ((!has_front_bucket() || front_bucket_label() < stop_label)
+                                  && next_bucket_label() <= stop_label))) {
+
+        // Notice, that we have now instantiated 'BUCKETS-1' number of new
+        // sorters ready to place content into them. So, there is no reason for
+        // us to not just keep the sorters and merely fast-forward on the
+        // levels.
+        //
+        // We do so by reinitialising all 'BUCKETS' akin to init_buckets.
 
         // TODO: complete rewrite!
 
-        adiar_debug(!has_stop_label || _level_comparator(front_bucket_label(), stop_label),
+        adiar_debug(!has_stop_label
+                    || _level_comparator(front_bucket_label(), stop_label),
                     "stop label should be strictly ahead of current level");
         adiar_debug(!_overflow_queue.empty(),
                     "'has_next_level()' implied non-empty queue, all buckets turned out to be empty, yet overflow queue is also.");
@@ -457,9 +476,12 @@ namespace adiar {
           ? stop_label
           : pq_label;
 
-        if (_level_comparator(front_bucket_label(), stop_label)) {
+        if (_level_comparator(front_bucket_label(), stop_label)
+            && (_level_comparator(next_bucket_label(), stop_label) || next_bucket_label() == stop_label)) {
           setup_next_bucket();
-          while (has_next_bucket() && _level_comparator(front_bucket_label(), stop_label)) {
+          while (has_next_bucket()
+                 && (_level_comparator(next_bucket_label(), stop_label) || next_bucket_label() == stop_label)
+                 && _level_comparator(front_bucket_label(), stop_label)) {
             if (_level_merger.can_pull()) {
               _buckets_label[_front_bucket_idx] = _level_merger.pull();
               _back_bucket_idx = _front_bucket_idx;
@@ -471,10 +493,10 @@ namespace adiar {
         }
       }
 
-      adiar_debug(!has_next_bucket() || _level_comparator(front_bucket_label(), back_bucket_label()),
-                  "Inconsistency in has_next_bucket predicate");
-      adiar_debug(has_next_bucket() || front_bucket_label() == back_bucket_label(),
-                  "Inconsistency in has_next_bucket predicate");
+      adiar_debug(!has_front_bucket()
+                  || _level_comparator(front_bucket_label(), back_bucket_label())
+                  || front_bucket_label() == back_bucket_label(),
+                  "Inconsistency in the levels");
     }
 
     ////////////////////////////////////////////////////////////////////////////
