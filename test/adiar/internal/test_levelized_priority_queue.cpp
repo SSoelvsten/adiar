@@ -38,9 +38,9 @@ struct pq_test_lt {
 typedef meta_file<pq_test_data> pq_test_file;
 typedef meta_file_writer<pq_test_data> pq_test_writer;
 
-template <size_t LOOK_AHEAD>
+template <typename file_t, size_t LOOK_AHEAD>
 using test_priority_queue = levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt,
-                                                     pq_test_file, 1u, std::less<label_t>,
+                                                     file_t, 1u, std::less<label_t>,
                                                      1u,
                                                      LOOK_AHEAD>;
 
@@ -379,7 +379,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_next_level(), Is().False());
@@ -395,7 +395,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_next_level(), Is().False());
@@ -404,7 +404,7 @@ go_bandit([]() {
       it("can set up priority queue with no levels", [&]() {
         pq_test_file f;
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_next_level(), Is().False());
@@ -422,7 +422,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.has_current_level(), Is().False());
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -505,7 +505,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.has_current_level(), Is().False());
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -555,7 +555,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.has_current_level(), Is().False());
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -589,7 +589,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1));
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.has_current_level(), Is().False());
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -631,7 +631,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.has_current_level(), Is().False());
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -661,6 +661,203 @@ go_bandit([]() {
         AssertThat(pq.has_next_level(), Is().False());
       });
 
+      it("can skip levels with a stop_label for a non-provided level < bucket[0]", [&]() {
+          label_file f;
+
+          { // Garbage collect the writer early
+            label_writer w(f);
+            w << 0 // Skipped
+              << 2 // Bucket
+              << 3 // Bucket
+              << 4 // Overflow
+            ;
+          }
+
+          test_priority_queue<label_file, 1> pq({f});
+
+          AssertThat(pq.has_current_level(), Is().False());
+          AssertThat(pq.size(), Is().EqualTo(0u));
+          AssertThat(pq.can_pull(), Is().False());
+
+          pq.push(pq_test_data {2, 1});
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          AssertThat(pq.has_current_level(), Is().False());
+          AssertThat(pq.has_next_level(), Is().True());
+          pq.setup_next_level(1u);
+          AssertThat(pq.has_current_level(), Is().False());
+
+          AssertThat(pq.can_pull(), Is().False());
+
+          pq.push(pq_test_data {2, 2});
+          AssertThat(pq.size(), Is().EqualTo(2u));
+
+          AssertThat(pq.has_next_level(), Is().True());
+          pq.setup_next_level();
+          AssertThat(pq.has_current_level(), Is().True());
+          AssertThat(pq.current_level(), Is().EqualTo(2u));
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 2}));
+          AssertThat(pq.size(), Is().EqualTo(0u));
+
+          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_next_level(), Is().False());
+        });
+
+      it("can skip levels with a stop_label for a non-provided level < bucket[1]", [&]() {
+          label_file f;
+
+          { // Garbage collect the writer early
+            label_writer w(f);
+            w << 0 // Skipped
+              << 1 // Bucket
+              << 3 // Bucket
+              << 4 // Overflow
+            ;
+          }
+
+          test_priority_queue<label_file, 1> pq({f});
+
+          AssertThat(pq.has_current_level(), Is().False());
+          AssertThat(pq.size(), Is().EqualTo(0u));
+          AssertThat(pq.can_pull(), Is().False());
+
+          pq.push(pq_test_data {3, 1});
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          AssertThat(pq.has_current_level(), Is().False());
+          AssertThat(pq.has_next_level(), Is().True());
+          pq.setup_next_level(2u);
+
+          AssertThat(pq.has_current_level(), Is().True());
+          AssertThat(pq.current_level(), Is().EqualTo(1u));
+
+          AssertThat(pq.can_pull(), Is().False());
+
+          pq.push(pq_test_data {3, 2});
+          AssertThat(pq.size(), Is().EqualTo(2u));
+
+          AssertThat(pq.has_next_level(), Is().True());
+          pq.setup_next_level();
+          AssertThat(pq.has_current_level(), Is().True());
+          AssertThat(pq.current_level(), Is().EqualTo(3u));
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 1}));
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 2}));
+          AssertThat(pq.size(), Is().EqualTo(0u));
+
+          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_next_level(), Is().False());
+        });
+
+      it("can skip levels with a stop_label for a non-provided level < overflow.top()", [&]() {
+          label_file f;
+
+          { // Garbage collect the writer early
+            label_writer w(f);
+            w << 0 // Skipped
+              << 1 // Bucket
+              << 2 // Bucket
+              << 4 // Overflow
+              << 5 // .
+            ;
+          }
+
+          test_priority_queue<label_file, 1> pq({f});
+
+          AssertThat(pq.has_current_level(), Is().False());
+          AssertThat(pq.size(), Is().EqualTo(0u));
+          AssertThat(pq.can_pull(), Is().False());
+
+          pq.push(pq_test_data {4, 1});
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          AssertThat(pq.has_current_level(), Is().False());
+          AssertThat(pq.has_next_level(), Is().True());
+          pq.setup_next_level(3u);
+
+          AssertThat(pq.has_current_level(), Is().True());
+          AssertThat(pq.current_level(), Is().EqualTo(2u));
+
+          AssertThat(pq.can_pull(), Is().False());
+
+          pq.push(pq_test_data {4, 2});
+          AssertThat(pq.size(), Is().EqualTo(2u));
+
+          AssertThat(pq.has_next_level(), Is().True());
+          pq.setup_next_level();
+          AssertThat(pq.has_current_level(), Is().True());
+          AssertThat(pq.current_level(), Is().EqualTo(4u));
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 1}));
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {4, 2}));
+          AssertThat(pq.size(), Is().EqualTo(0u));
+
+          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_next_level(), Is().False());
+        });
+
+      it("can relabel buckets with a stop_label for a non-provided level", [&]() {
+          label_file f;
+
+          { // Garbage collect the writer early
+            label_writer w(f);
+            w << 0 // Skipped
+              << 1 // Bucket
+              << 2 // Bucket
+              << 3 // Overflow
+              << 5 // .
+              << 6 // .
+            ;
+          }
+
+          test_priority_queue<label_file, 1> pq({f});
+
+          AssertThat(pq.has_current_level(), Is().False());
+          AssertThat(pq.size(), Is().EqualTo(0u));
+          AssertThat(pq.can_pull(), Is().False());
+
+          pq.push(pq_test_data {5, 1});
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          AssertThat(pq.has_current_level(), Is().False());
+          AssertThat(pq.has_next_level(), Is().True());
+          pq.setup_next_level(4u);
+
+          AssertThat(pq.has_current_level(), Is().True());
+          AssertThat(pq.current_level(), Is().EqualTo(3u));
+
+          AssertThat(pq.can_pull(), Is().False());
+
+          pq.push(pq_test_data {5, 2});
+          AssertThat(pq.size(), Is().EqualTo(2u));
+
+          AssertThat(pq.has_next_level(), Is().True());
+          pq.setup_next_level();
+          AssertThat(pq.has_current_level(), Is().True());
+          AssertThat(pq.current_level(), Is().EqualTo(5u));
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {5, 1}));
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {5, 2}));
+          AssertThat(pq.size(), Is().EqualTo(0u));
+
+          AssertThat(pq.can_pull(), Is().False());
+          AssertThat(pq.has_next_level(), Is().False());
+        });
+
       it("can merge content of bucket with overflow queue", [&]() {
         pq_test_file f;
 
@@ -674,7 +871,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.size(), Is().EqualTo(0u));
         AssertThat(pq.has_current_level(), Is().False());
@@ -759,7 +956,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -798,7 +995,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         pq.push(pq_test_data {5, 3});  // overflow
         AssertThat(pq.size(), Is().EqualTo(1u));
@@ -840,7 +1037,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));  // skipped
         }
 
-        test_priority_queue<1> pq({f});
+        test_priority_queue<pq_test_file, 1> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -1032,7 +1229,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
       });
 
       it("can set up priority queue with fewer bucketed levels than buckets [1]", [&]() {
@@ -1046,7 +1243,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
       });
 
       it("can set up priority queue with fewer levels than buckets [2]", [&]() {
@@ -1059,13 +1256,13 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
       });
 
       it("can set up priority queue with no levels", [&]() {
         pq_test_file f;
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_next_level(), Is().False());
@@ -1086,7 +1283,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         AssertThat(pq.has_current_level(), Is().False());
         AssertThat(pq.size(), Is().EqualTo(0u));
@@ -1306,7 +1503,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));  // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -1361,7 +1558,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -1406,7 +1603,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));  // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -1465,7 +1662,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -1514,7 +1711,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -1563,7 +1760,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
@@ -1809,7 +2006,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         pq.push(pq_test_data {3, 42}); // bucket
 
@@ -1843,7 +2040,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         pq.push(pq_test_data {7, 3});  // overflow
 
@@ -1874,7 +2071,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(0,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         pq.push(pq_test_data {4, 3});
         pq.push(pq_test_data {2, 1});
@@ -1943,7 +2140,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(0,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         pq.push(pq_test_data {2, 1});
         pq.push(pq_test_data {1, 1});
@@ -1995,7 +2192,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(0,1u)); // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -2069,7 +2266,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u));   // skipped
         }
 
-        test_priority_queue<3> pq({f});
+        test_priority_queue<pq_test_file, 3> pq({f});
 
         AssertThat(pq.can_pull(), Is().False());
         AssertThat(pq.has_current_level(), Is().False());
