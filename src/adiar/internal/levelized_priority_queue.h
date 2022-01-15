@@ -161,21 +161,36 @@ namespace adiar {
   ///                     the files together (std::less = top-down, while
   ///                     std::greater = bottom-up)
   ///
+  /// \param INIT_LEVEL   The index for the first level one can push to. In other
+  ///                     words, the number of levels to 'skip'.
+  ///
   /// \param LOOK_AHEAD   The number of levels (ahead of the current)
   ///                     explicitly handle with a sorting algorithm
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t,
             typename elem_level_t,
-            typename elem_comp_t = std::less<elem_t>,
-            typename file_t = meta_file<elem_t>,
-            size_t FILES = 1u,
+            typename elem_comp_t  = std::less<elem_t>,
+            typename file_t       = meta_file<elem_t>,
+            size_t   FILES        = 1u,
             typename level_comp_t = std::less<label_t>,
-            size_t LOOK_AHEAD = ADIAR_LPQ_LOOKAHEAD
+            label_t  INIT_LEVEL   = 1u,
+            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD
             >
   class levelized_priority_queue
   {
     static_assert(0 < LOOK_AHEAD,
-                  "Bucketized levelized priority queue requires a LOOK_AHEAD of least one level");
+                  "LOOK_AHEAD must at least be of one level");
+
+    // TODO: LOOK_AHEAD must be strictly smaller than MAX_LABEL (but we need to
+    //       close #164 first to do this check at compile time)
+
+    static constexpr label_t OUT_OF_BUCKETS_IDX = static_cast<label_t>(-1);
+
+    static_assert(LOOK_AHEAD < OUT_OF_BUCKETS_IDX,
+                  "LOOK_AHEAD must not be so large to also include '-1'.");
+
+    static_assert(OUT_OF_BUCKETS_IDX + 1 == 0,
+                  "Overflow to '0' necessary.");
 
   private:
     size_t _size = 0;
@@ -196,8 +211,8 @@ namespace adiar {
     static constexpr size_t BUCKETS = LOOK_AHEAD + 1;
     label_t _buckets_label [BUCKETS];
 
-    label_t _front_bucket_idx = 0;
-    label_t _back_bucket_idx  = static_cast<label_t>(-1);
+    label_t _front_bucket_idx = OUT_OF_BUCKETS_IDX;
+    label_t _back_bucket_idx  = OUT_OF_BUCKETS_IDX;
 
     typedef external_sorter<elem_t, elem_comp_t> sorter_t;
     std::unique_ptr<sorter_t> _buckets_sorter [BUCKETS];
@@ -296,38 +311,38 @@ namespace adiar {
       adiar_debug(_memory_occupied_by_merger + _memory_occupied_by_overflow <= _memory_given,
                   "the amount of memory used should be within the given bounds");
 
+      // Initially skip the number of levels
+      for (label_t idx = 0; _level_merger.can_pull() && idx < INIT_LEVEL; idx++) {
+        _level_merger.pull();
+      }
+
       // Set up buckets until no levels are left or all buckets have been
       // instantiated. Notice, that _back_bucket_idx was initialised to -1.
       while(_back_bucket_idx + 1 < BUCKETS && _level_merger.can_pull()) {
         label_t label = _level_merger.pull();
 
-        adiar_invariant(_front_bucket_idx == 0,
+        adiar_invariant(_front_bucket_idx == OUT_OF_BUCKETS_IDX,
                         "Front bucket not moved");
 
         _back_bucket_idx++;
         setup_bucket(_back_bucket_idx, label);
-      }
-
-      if (_back_bucket_idx != static_cast<label_t>(-1)) {
-        sort_front_bucket();
       }
     }
 
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Push an element into the stream
+    /// \brief Push an element into the priority queue.
     ////////////////////////////////////////////////////////////////////////////
     void push(const elem_t &e)
     {
       _size++;
-      label_t label = elem_level_t::label_of(e);
+      const label_t label = elem_level_t::label_of(e);
 
-      adiar_debug(_level_comparator(front_bucket_label(), label),
-                  "Element pushed prior to currently active bucket");
-
-      for (size_t bucket = 1; bucket < BUCKETS && bucket <= active_buckets(); bucket++) {
-        size_t bucket_idx = (_front_bucket_idx + bucket) % BUCKETS;
+      for (label_t bucket = 1u;
+           bucket < active_buckets() + has_front_bucket();
+           bucket++) {
+        const label_t bucket_idx = (_front_bucket_idx + bucket) % BUCKETS;
         if (_buckets_label[bucket_idx] == label) {
           _buckets_sorter[bucket_idx] -> push(e);
 #ifdef ADIAR_STATS_EXTRA
@@ -343,15 +358,26 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief The label of the current level
+    /// \brief Whether there is any current level to pull elements from.
+    ////////////////////////////////////////////////////////////////////////////
+    bool has_current_level() const
+    {
+      return has_front_bucket();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The label of the current level.
     ////////////////////////////////////////////////////////////////////////////
     label_t current_level() const
     {
+      adiar_debug(has_current_level(),
+                  "Needs to have a 'current' level to read the level from");
+
       return front_bucket_label();
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Is there any non-empty level?
+    /// \brief Whether there is any non-empty level.
     ////////////////////////////////////////////////////////////////////////////
     bool has_next_level()
     {
@@ -375,16 +401,18 @@ namespace adiar {
     {
       const bool has_stop_label = stop_label <= MAX_LABEL;
 
-      adiar_debug(!has_stop_label || _level_comparator(front_bucket_label(), stop_label),
-                  "Stop label should be past the current front bucket");
+      adiar_debug(has_next_level(),
+                  "Has no next level to go to");
 
       adiar_debug(!can_pull(),
                   "Level should be emptied before moving on");
 
-      adiar_debug(has_next_level(),
-                  "Has no next level to go to");
+      adiar_debug(!has_stop_label || !has_front_bucket()
+                  || _level_comparator(front_bucket_label(), stop_label),
+                  "Stop label should be past the current front bucket (if it exists)");
 
-      adiar_debug(_level_comparator(front_bucket_label(), back_bucket_label()),
+      adiar_debug(!has_front_bucket() ||
+                  _level_comparator(front_bucket_label(), back_bucket_label()),
                   "Front bucket run ahead of back bucket");
 
       // Sort active buckets until we find one with some content
@@ -394,10 +422,12 @@ namespace adiar {
            // Is the bucket for this level empty?
            && !_has_next_from_bucket
            // Is the overflow queue without any elements for this level either?
-           && (_overflow_queue.empty() || elem_level_t::label_of(_overflow_queue.top()) != front_bucket_label())
+           && (_overflow_queue.empty() || !has_front_bucket()
+               || elem_level_t::label_of(_overflow_queue.top()) != front_bucket_label())
            // We have no stop-label that would stop us here?
-           && (!has_stop_label || stop_label != front_bucket_label())
-           // Do we have more levels to go to?
+           && (!has_stop_label || !has_front_bucket()
+               || stop_label != front_bucket_label())
+           // Do we have more levels to use?
            && has_next_bucket();
            b++) {
         setup_next_bucket();
@@ -405,13 +435,18 @@ namespace adiar {
       }
 
       // Are we still at an empty bucket and behind the overflow queue and the
-      // stop_label? Notice, that we have now instantiated 'BUCKETS' number of
+      // stop_label? Notice, that we have now instantiated 'BUCKETS-1' number of
       // new merge_sorters ready to place content into them. So, there is no
       // reason for us to not just keep the merge_sorter and merely fast-forward
       // on the levels.
+      //
+      // The most elegant is to reinitialise all 'BUCKETS' akin to init_buckets.
       if (!_has_next_from_bucket && has_next_bucket()
           // && (_overflow_queue.empty() || elem_level_t::label_of(_overflow_queue.top()) != front_bucket_label())
           && (!has_stop_label || stop_label != front_bucket_label())) {
+
+        // TODO: complete rewrite!
+
         adiar_debug(!has_stop_label || _level_comparator(front_bucket_label(), stop_label),
                     "stop label should be strictly ahead of current level");
         adiar_debug(!_overflow_queue.empty(),
@@ -447,13 +482,13 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     bool can_pull()
     {
-      return
-        _has_top_elem
-        // Is the current bucket non-empty?
-        || _has_next_from_bucket
-        // Is the priority queue non-empty and not ahead?
-        || (!_overflow_queue.empty()
-            && front_bucket_label() == elem_level_t::label_of(_overflow_queue.top()) );
+      return has_front_bucket() &&
+        (_has_top_elem
+         // Is the current bucket non-empty?
+         || _has_next_from_bucket
+         // Is the priority queue non-empty and not ahead?
+         || (!_overflow_queue.empty()
+             && front_bucket_label() == elem_level_t::label_of(_overflow_queue.top()) ));
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -550,12 +585,26 @@ namespace adiar {
 
   private:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether more buckets are available
+    /// \brief The number of active buckets, incl. the (potential) read-only
+    ///        bucket.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t active_buckets() const
+    {
+      if (_front_bucket_idx == OUT_OF_BUCKETS_IDX) {
+        return _back_bucket_idx + 1;
+      }
+
+      return _front_bucket_idx <= _back_bucket_idx
+        ? (_back_bucket_idx - _front_bucket_idx) + 1
+        : (BUCKETS - _front_bucket_idx) + _back_bucket_idx + 1;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether more buckets are available.
     ////////////////////////////////////////////////////////////////////////////
     bool has_next_bucket()
     {
-      return _back_bucket_idx != static_cast<label_t>(-1)
-        && _front_bucket_idx != _back_bucket_idx;
+      return _front_bucket_idx != _back_bucket_idx;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -592,20 +641,34 @@ namespace adiar {
       adiar_debug(has_next_bucket(),
                   "Cannot create buckets beyond last level");
 
-      adiar_invariant(_level_comparator(front_bucket_label(), back_bucket_label()),
+      adiar_invariant(!has_front_bucket()
+                      || _level_comparator(front_bucket_label(), back_bucket_label()),
                       "Inconsistency in has_next_bucket predicate");
 
-      if (_level_merger.can_pull()) {
+      // Replace the current read-only bucket, if there is one
+      if (_level_merger.can_pull() && has_front_bucket()) {
         label_t next_label = _level_merger.pull();
         setup_bucket(_front_bucket_idx, next_label);
         _back_bucket_idx = _front_bucket_idx;
       }
       _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
 
-      adiar_debug(!has_next_bucket() || _level_comparator(front_bucket_label(), back_bucket_label()),
+      adiar_debug(!has_next_bucket() || !has_front_bucket()
+                  || _level_comparator(front_bucket_label(), back_bucket_label()),
                   "Inconsistency in has_next_bucket predicate");
-      adiar_debug(has_next_bucket() || front_bucket_label() == back_bucket_label(),
+
+      adiar_debug(has_next_bucket() || !has_front_bucket()
+                  || front_bucket_label() == back_bucket_label(),
                   "Inconsistency in has_next_bucket predicate");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether there is an 'active' bucket from which ca be pulled
+    ///        (though it may need to be sorted).
+    ////////////////////////////////////////////////////////////////////////////
+    bool has_front_bucket() const
+    {
+      return _front_bucket_idx != OUT_OF_BUCKETS_IDX;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -619,16 +682,6 @@ namespace adiar {
       if (_has_next_from_bucket) {
         _next_from_bucket = _buckets_sorter[_front_bucket_idx] -> pull();
       }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief The number of active buckets
-    ////////////////////////////////////////////////////////////////////////////
-    size_t active_buckets() const
-    {
-      return _front_bucket_idx <= _back_bucket_idx
-        ? _back_bucket_idx - _front_bucket_idx
-        : (BUCKETS - _front_bucket_idx) + _back_bucket_idx;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -651,19 +704,23 @@ namespace adiar {
   template <typename elem_t,
             typename elem_level_t,
             typename elem_comp_t = std::less<elem_t>,
-            size_t FILES = 1u,
-            size_t LOOK_AHEAD = ADIAR_LPQ_LOOKAHEAD>
+            size_t   FILES       = 1u,
+            label_t  INIT_LEVEL  = 1u,
+            label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD>
   using levelized_node_priority_queue = levelized_priority_queue<elem_t, elem_level_t, elem_comp_t,
                                                                  node_file, FILES, std::less<label_t>,
+                                                                 INIT_LEVEL,
                                                                  LOOK_AHEAD>;
 
   template <typename elem_t,
             typename elem_level_t,
-            typename elem_comp_t = std::less<elem_t>,
-            size_t FILES = 1u,
-            size_t LOOK_AHEAD = ADIAR_LPQ_LOOKAHEAD>
+            typename elem_comp_t  = std::less<elem_t>,
+            size_t   FILES        = 1u,
+            label_t  INIT_LEVEL   = 1u,
+            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD>
   using levelized_arc_priority_queue = levelized_priority_queue<elem_t, elem_level_t, elem_comp_t,
                                                                 arc_file, FILES, std::greater<label_t>,
+                                                                INIT_LEVEL,
                                                                 LOOK_AHEAD>;
 
   //////////////////////////////////////////////////////////////////////////////

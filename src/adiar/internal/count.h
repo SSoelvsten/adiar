@@ -96,7 +96,7 @@ namespace adiar
     while (ns.can_pull()) {
       node_t n = ns.pull();
 
-      if (count_pq.current_level() != label_of(n)) {
+      if (!count_pq.has_current_level() || count_pq.current_level() != label_of(n)) {
         count_pq.setup_next_level();
       }
       adiar_debug(count_pq.current_level() == label_of(n),
