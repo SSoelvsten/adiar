@@ -75,7 +75,8 @@ namespace adiar
   inline arc_t reduce_get_next(reduce_priority_queue_t &reduce_pq,
                                sink_arc_stream<false> &sink_arcs)
   {
-    if (!reduce_pq.can_pull() || (sink_arcs.can_pull() && sink_arcs.peek().source > reduce_pq.top().source)) {
+    if (!reduce_pq.can_pull()
+        || (sink_arcs.can_pull() && sink_arcs.peek().source > reduce_pq.top().source)) {
       return sink_arcs.pull();
     } else {
       return reduce_pq.pull();
@@ -148,7 +149,7 @@ namespace adiar
     label_t label = label_of(sink_arcs.peek().source);
 
     // Process bottom-up each level
-    while (sink_arcs.can_pull() || reduce_pq.can_pull()) {
+    while (sink_arcs.can_pull() || !reduce_pq.empty()) {
       adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
                       "label and priority queue should be in sync");
 
@@ -160,7 +161,8 @@ namespace adiar
         child_grouping(available_memory / 2, 2);
 
       // Pull out all nodes from reduce_pq and sink_arcs for this level
-      while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label) || reduce_pq.can_pull()) {
+      while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label)
+             || reduce_pq.can_pull()) {
         arc_t e_high = reduce_get_next(reduce_pq, sink_arcs);
         arc_t e_low = reduce_get_next(reduce_pq, sink_arcs);
 
@@ -273,16 +275,36 @@ namespace adiar
       // Move on to the next level
       red1_mapping.close();
 
-      if (reduce_pq.has_next_level()) {
+      if (!reduce_pq.empty()) {
+        adiar_debug(!sink_arcs.can_pull() || label_of(sink_arcs.peek().source) < label,
+                    "All sink arcs for 'label' should be processed");
+
+        adiar_debug(!node_arcs.can_pull() || label_of(node_arcs.peek().target) < label,
+                    "All node arcs for 'label' should be processed");
+
+        adiar_debug(reduce_pq.empty() || !reduce_pq.can_pull(),
+                    "All forwarded arcs for 'label' should be processed");
+
         if (sink_arcs.can_pull()) {
           reduce_pq.setup_next_level(label_of(sink_arcs.peek().source));
         } else {
           reduce_pq.setup_next_level();
         }
-        label = reduce_pq.current_level();
+
+        label = !reduce_pq.empty_level()
+          ? reduce_pq.current_level()
+          : label_of(sink_arcs.peek().source);
+
       } else if (!out_writer.has_pushed()) {
         adiar_debug(!node_arcs.can_pull() && !sink_arcs.can_pull(),
                     "Nodes are still left to be processed");
+
+        adiar_debug(reduce_pq.empty(),
+                    "Nothing has been pushed to a 'parent'");
+
+        adiar_debug(!out_writer.has_pushed(),
+                    "No nodes are pushed when it collapses to a sink");
+
         out_writer.unsafe_push({ next_red1.new_uid, NIL, NIL });
 
         return out_file;

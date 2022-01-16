@@ -111,8 +111,8 @@ namespace adiar
 
     comparison_data_priority_queue_t comparison_pq_2(available_memory / 4);
 
-    while (comparison_pq_1.can_pull() || comparison_pq_1.has_next_level() || !comparison_pq_2.empty()) {
-      if (!comparison_pq_1.can_pull() && comparison_pq_2.empty()) {
+    while (!comparison_pq_1.empty() || !comparison_pq_2.empty()) {
+      if (comparison_pq_1.empty_level() && comparison_pq_2.empty()) {
         comparison_pq_1.setup_next_level();
 
         level_checker.next_level(comparison_pq_1.current_level());

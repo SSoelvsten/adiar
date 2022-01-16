@@ -314,7 +314,7 @@ namespace adiar
     }
 
     // Process nodes of the decision diagram in topological order
-    while (intercut_pq_1.has_next_level() || !intercut_pq_2.empty()) {
+    while (!intercut_pq_1.empty() || !intercut_pq_2.empty()) {
       if (out_id > 0) { aw.unsafe_push(create_level_info(out_label, out_id)); }
 
       if (intercut_pq_1.has_next_level()) {
@@ -323,7 +323,11 @@ namespace adiar
         } else {
           intercut_pq_1.setup_next_level();
         }
-        out_label = intercut_pq_1.current_level();
+
+        out_label = !intercut_pq_1.empty_level()
+          ? intercut_pq_1.current_level()
+          : intercut_pq_2.top().cut_at;
+
       } else {
         out_label = intercut_pq_2.top().cut_at;
       }

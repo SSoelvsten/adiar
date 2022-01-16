@@ -275,8 +275,8 @@ namespace adiar
     ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
 
     // Process all nodes in topological order of both BDDs
-    while (ite_pq_1.can_pull() || ite_pq_1.has_next_level() || !ite_pq_2.empty() || !ite_pq_3.empty()) {
-      if (!ite_pq_1.can_pull() && ite_pq_2.empty() && ite_pq_3.empty()) {
+    while (!ite_pq_1.empty() || !ite_pq_2.empty() || !ite_pq_3.empty()) {
+      if (ite_pq_1.empty_level() && ite_pq_2.empty() && ite_pq_3.empty()) {
         aw.unsafe_push(create_level_info(out_label, out_id));
 
         ite_pq_1.setup_next_level();
