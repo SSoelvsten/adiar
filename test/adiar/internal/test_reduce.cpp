@@ -915,7 +915,7 @@ go_bandit([]() {
         AssertThat(out_meta.can_pull(), Is().False());
       });
 
-      it("can be applied together with reduction rule 2", [&]() {
+      it("can be applied together with reduction rule 2 [1]", [&]() {
         /*
                     1                  1     ---- x0
                    / \                / \
@@ -983,6 +983,100 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
       });
+
+      it("can be applied together with reduction rule 2 [2]", [&]() {
+          /*
+                   1                   1
+                  / \                 / \
+                 2   3               2  |
+                / \ / \     =>      / \ /
+               /   4   5           /   4
+              6   / \ / \         6   / \
+             / \  F T F T        / \  F T
+             F T                 F T
+          */
+
+          ptr_t n1 = create_node_ptr(0,0);
+          ptr_t n2 = create_node_ptr(1,0);
+          ptr_t n3 = create_node_ptr(1,1);
+          ptr_t n4 = create_node_ptr(2,0);
+          ptr_t n5 = create_node_ptr(2,1);
+          ptr_t n6 = create_node_ptr(3,0);
+
+          arc_file in;
+
+          { // Garbage collect writer to free write-lock
+            arc_writer aw(in);
+
+            aw.unsafe_push_node({ n1, n2 });
+            aw.unsafe_push_node({ flag(n1), n3 });
+            aw.unsafe_push_node({ flag(n2), n4 });
+            aw.unsafe_push_node({ n3, n4 });
+            aw.unsafe_push_node({ flag(n3), n5 });
+            aw.unsafe_push_node({ n2, n6 });
+
+            aw.unsafe_push_sink({ n4, sink_F });
+            aw.unsafe_push_sink({ flag(n4), sink_T });
+            aw.unsafe_push_sink({ n5, sink_F });
+            aw.unsafe_push_sink({ flag(n5), sink_T });
+            aw.unsafe_push_sink({ n6, sink_F });
+            aw.unsafe_push_sink({ flag(n6), sink_T });
+
+            aw.unsafe_push(create_level_info(0,1u));
+            aw.unsafe_push(create_level_info(1,2u));
+            aw.unsafe_push(create_level_info(2,2u));
+            aw.unsafe_push(create_level_info(3,1u));
+          }
+
+          // Reduce it
+          bdd out = reduce<bdd_policy>(in);
+
+          AssertThat(is_canonical(out), Is().True());
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          // n6
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID,
+                                                                sink_F,
+                                                                sink_T)));
+
+          // n4
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+                                                                sink_F,
+                                                                sink_T)));
+
+          // n2
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                                create_node_ptr(3, MAX_ID),
+                                                                create_node_ptr(2, MAX_ID))));
+
+          // n1
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                                create_node_ptr(1,MAX_ID),
+                                                                create_node_ptr(2, MAX_ID))));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
 
       it("can reduce the root", [&]() {
         /*

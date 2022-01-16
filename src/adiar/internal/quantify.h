@@ -182,8 +182,8 @@ namespace adiar
       }
     }
 
-    while(quantify_pq_1.can_pull() || quantify_pq_1.has_next_level() || !quantify_pq_2.empty()) {
-      if (!quantify_pq_1.can_pull() && quantify_pq_2.empty()) {
+    while(!quantify_pq_1.empty() || !quantify_pq_2.empty()) {
+      if (quantify_pq_1.empty_level() && quantify_pq_2.empty()) {
         if (out_label != label) {
           aw.unsafe_push(create_level_info(out_label, out_id));
         }
