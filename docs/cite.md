@@ -92,7 +92,9 @@ in practice.
                  and Thomasen, Mathias Weller Berg},
     year          = {2022},
     booktitle     = {Tools and Algorithms for the Construction and Analysis of Systems},
-    numPages      = {20},
+    editor        = {Dana Fisman
+                 and Grigore Rosu},
+    numPages      = {19},
     publisher     = {Springer},
     address       = {Berlin, Heidelberg},  
     series        = {Lecture Notes in Computer Science},
