@@ -15,12 +15,22 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // Priority queues
 
-  typedef levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt>
+  typedef levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt,
+                                        1u,
+                                        0u>
   intercut_priority_queue_1_t;
 
   struct arc_cut : arc
   {
     label_t cut_at;
+  };
+
+  struct arc_cut_label
+  {
+    static label_t label_of(const arc_cut& a)
+    {
+      return a.cut_at;
+    }
   };
 
   struct arc_cut_lt
@@ -36,11 +46,9 @@ namespace adiar
     }
   };
 
-  // TODO: Should this be a levelized_priority queue? This only makes sense, if
-  // the end-user is changing EVERY level in the decision diagram. If we made it
-  // into one, then it probably needs way larger a lookahead than just one
-  // level.
-  typedef tpie::priority_queue<arc_cut, arc_cut_lt>
+  typedef levelized_priority_queue<arc_cut, arc_cut_label, arc_cut_lt,
+                                   label_file, 1u, std::less<label_t>,
+                                   0u>
   intercut_priority_queue_2_t;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -69,31 +77,7 @@ namespace adiar
   }
 
   template<typename intercut_policy>
-  class intercut_out__pre_root
-  {
-  public:
-    static constexpr bool ignore_nil = false;
-
-    static inline void forward(arc_writer &aw,
-                               intercut_priority_queue_1_t &/*pq_1*/,
-                               intercut_priority_queue_2_t &pq_2,
-                               const ptr_t source, const ptr_t target,
-                               const label_t curr_level, const label_t next_cut)
-    {
-      if (is_sink(target)
-          && !cut_sink<intercut_policy>(curr_level, next_cut, value_of(target))) {
-        aw.unsafe_push_sink({ source, target });
-      } else {
-        const label_t __next_cut = (next_cut <= curr_level || next_cut > label_of(target))
-          ? label_of(target) : next_cut;
-
-        pq_2.push({ source, target, __next_cut });
-      }
-    }
-  };
-
-  template<typename intercut_policy>
-  class intercut_out__post_root
+  class intercut_out__pq
   {
   public:
     static constexpr bool ignore_nil = false;
@@ -120,7 +104,7 @@ namespace adiar
     }
   };
 
-  class intercut_out__arc_writer
+  class intercut_out__writer
   {
   public:
     static constexpr bool ignore_nil = true;
@@ -167,7 +151,7 @@ namespace adiar
     adiar_debug(out_label <= label_of(out_target),
                 "should forward/output a node on this level or ahead.");
 
-    while (!pq_2.empty()
+    while (pq_2.can_pull()
            && pq_2.top().cut_at == out_label
            && pq_2.top().target == pq_target) {
       const arc_cut parent = pq_2.top();
@@ -175,32 +159,6 @@ namespace adiar
 
       if (in_policy::ignore_nil && is_nil(parent.source)) { continue; }
       in_policy::forward(aw, pq_1, pq_2, parent.source, out_target, out_label, l);
-    }
-  }
-
-  template<typename intercut_policy, typename out_policy>
-  inline void intercut_resolve_hit_arcs(arc_writer &aw,
-                                        intercut_priority_queue_1_t &pq_1,
-                                        intercut_priority_queue_2_t &pq_2,
-                                        const label_t out_label, size_t &out_id,
-                                        const label_t l)
-  {
-    while (!pq_2.empty() && pq_2.top().cut_at == out_label) {
-      adiar_invariant(out_label <= l,
-                      "the last iteration with this queue is for the very last label to cut on");
-
-      const arc_cut request = pq_2.top();
-      const intercut_rec_output ro = intercut_policy::hit_cut(request.target);
-      const uid_t out_uid = create_node_uid(out_label, out_id++);
-
-      out_policy::forward
-        (aw, pq_1, pq_2, out_uid, ro.low, out_label, l);
-
-      out_policy::forward
-        (aw, pq_1, pq_2, flag(out_uid), ro.high, out_label, l);
-
-      intercut_in__pq_2<intercut_policy, intercut_out__arc_writer>
-        (aw, pq_1, pq_2, out_label, request.target, out_uid, l);
     }
   }
 
@@ -232,105 +190,34 @@ namespace adiar
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
     intercut_priority_queue_1_t intercut_pq_1({dd}, available_memory / 2);
-    intercut_priority_queue_2_t intercut_pq_2(available_memory / 2);
+    intercut_priority_queue_2_t intercut_pq_2({labels}, available_memory / 2);
 
-    // Process root and create initial recursion requests
-    label_t out_label;
+    // Add request for root in the relevant queue
+    label_t out_label = std::min(l, label_of(n));
     id_t out_id = 0;
 
-    // The levelized_priority_queue does not do well with pushing to a level
-    // above or to the root level. Yet, we need to insert nodes before the root,
-    // i.e. cutting the in-going arc to the root. So, we will deal with them
-    // ourselves (using the secondary priority queue exclusively)
-
-    intercut_pq_2.push({ NIL, n.uid, std::min(l, label_of(n)) });
-
-    while (l < label_of(n)) {
-      out_label = l;
-      out_id = 0;
-
-      const bool more_labels = ls.can_pull();
-      if (more_labels) { l = ls.pull(); }
-
-      intercut_resolve_hit_arcs<intercut_policy, intercut_out__pre_root<intercut_policy>>
-        (aw, intercut_pq_1, intercut_pq_2, out_label, out_id, l);
-
-      if (out_id > 0) { aw.unsafe_push(create_level_info(out_label, out_id)); }
-
-      adiar_invariant(!intercut_pq_2.empty(),
-                      "intercut_pq_2 should never be empty (at least root request)");
-
-      // Already done with all labels?
-      if (!more_labels) { break; }
-    }
-
-    adiar_debug(intercut_pq_2.top().target == n.uid && intercut_pq_2.top().cut_at == label_of(n),
-                "The top-most request should be for the root");
-
-    out_label = label_of(n);
-    out_id = 0;
-
-    { // Deal with the root
-      const bool hit_level = l == out_label;
-
-      // Let l be the next label to hit (if any)
-      if (hit_level && ls.can_pull()) { l = ls.pull(); }
-
-      intercut_rec r = hit_level
-        ? intercut_policy::hit_existing(n)
-        : intercut_policy::miss_existing(n);;
-
-      if (std::holds_alternative<intercut_rec_skipto>(r)) {
-        const intercut_rec_skipto rs = std::get<intercut_rec_skipto>(r);
-
-        if (is_sink(rs.tgt)
-            && is_nil(intercut_pq_2.top().source)
-            && !cut_sink<intercut_policy>(out_label, l, value_of(rs.tgt))) {
-          return intercut_policy::sink(value_of(rs.tgt));
-        }
-        // TODO: The 'is_sink(rs.tgt) && cut_sink(...)' case can be handled even
-        //       better with 'intercut_policy::on_sink_input' but where the
-        //       label file are only of the remaining labels.
-
-        intercut_in__pq_2<intercut_policy, intercut_out__post_root<intercut_policy>>
-          (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, rs.tgt, l);
-
-      } else { // std::holds_alternative<intercut_rec_output>(n)
-        const intercut_rec_output ro = std::get<intercut_rec_output>(r);
-        const uid_t out_uid = create_node_uid(out_label, out_id++);
-
-        intercut_out__post_root<intercut_policy>::forward
-          (aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
-
-        intercut_out__post_root<intercut_policy>::forward
-          (aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
-
-        intercut_in__pq_2<intercut_policy, intercut_out__arc_writer>
-          (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, out_uid, l);
-      }
-
-      intercut_resolve_hit_arcs<intercut_policy, intercut_out__post_root<intercut_policy>>
-        (aw, intercut_pq_1, intercut_pq_2, out_label, out_id, l);
+    if (l < label_of(n)) {
+      intercut_pq_2.push({ NIL, n.uid, out_label });
+    } else {
+      intercut_pq_1.push({ NIL, n.uid });
     }
 
     // Process nodes of the decision diagram in topological order
     while (!intercut_pq_1.empty() || !intercut_pq_2.empty()) {
       if (out_id > 0) { aw.unsafe_push(create_level_info(out_label, out_id)); }
 
+      out_label = std::min(intercut_pq_1.has_next_level() ? intercut_pq_1.next_level() : MAX_LABEL,
+                           intercut_pq_2.has_next_level() ? intercut_pq_2.next_level() : MAX_LABEL);
+
       if (intercut_pq_1.has_next_level()) {
-        if (!intercut_pq_2.empty()) {
-          intercut_pq_1.setup_next_level(intercut_pq_2.top().cut_at);
-        } else {
-          intercut_pq_1.setup_next_level();
-        }
-
-        out_label = !intercut_pq_1.empty_level()
-          ? intercut_pq_1.current_level()
-          : intercut_pq_2.top().cut_at;
-
-      } else {
-        out_label = intercut_pq_2.top().cut_at;
+        intercut_pq_1.setup_next_level(out_label);
       }
+      if (intercut_pq_2.has_next_level()) {
+        intercut_pq_2.setup_next_level(out_label);
+      }
+
+      adiar_debug(intercut_pq_1.can_pull() || intercut_pq_2.can_pull(),
+                  "should be at a level of at least one of the two queues.");
 
       out_id = 0;
 
@@ -341,6 +228,9 @@ namespace adiar
 
       // Resolve requests in intercut_pq_1 for this level
       while (intercut_pq_1.can_pull()) {
+        adiar_invariant(intercut_pq_1.current_level() == out_label,
+                        "first priority queue should be at current level");
+
         while (n.uid < intercut_pq_1.top().target) { n = in_nodes.pull(); }
         adiar_debug(n.uid == intercut_pq_1.top().target, "should always find desired node");
 
@@ -360,26 +250,45 @@ namespace adiar
           //       better with 'intercut_policy::on_sink_input' but where the
           //       label file are only of the remaining labels.
 
-          intercut_in__pq_1<intercut_policy, intercut_out__post_root<intercut_policy>>
+          intercut_in__pq_1<intercut_policy, intercut_out__pq<intercut_policy>>
             (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, rs.tgt, l);
         } else {
           const intercut_rec_output ro = std::get<intercut_rec_output>(r);
           const uid_t out_uid = create_node_uid(out_label, out_id++);
 
-          intercut_out__post_root<intercut_policy>::forward
+          intercut_out__pq<intercut_policy>::forward
             (aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
 
-          intercut_out__post_root<intercut_policy>::forward
+          intercut_out__pq<intercut_policy>::forward
             (aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
 
-          intercut_in__pq_1<intercut_policy, intercut_out__arc_writer>
+          intercut_in__pq_1<intercut_policy, intercut_out__writer>
             (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, out_uid, l);
         }
       }
 
       // Resolve requests in intercut_pq_2 to cut arcs on this level
-      intercut_resolve_hit_arcs<intercut_policy, intercut_out__post_root<intercut_policy>>
-        (aw, intercut_pq_1, intercut_pq_2, out_label, out_id, l);
+      while (intercut_pq_2.can_pull()) {
+        adiar_invariant(out_label <= l,
+                        "the last iteration with this queue is for the very last label to cut on");
+
+        adiar_invariant(intercut_pq_2.current_level() == out_label
+                        && intercut_pq_2.top().cut_at == out_label,
+                        "second priority queue should be at current level");
+
+        const arc_cut request = intercut_pq_2.top();
+        const intercut_rec_output ro = intercut_policy::hit_cut(request.target);
+        const uid_t out_uid = create_node_uid(out_label, out_id++);
+
+        intercut_out__pq<intercut_policy>::forward
+          (aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
+
+        intercut_out__pq<intercut_policy>::forward
+          (aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
+
+        intercut_in__pq_2<intercut_policy, intercut_out__writer>
+          (aw, intercut_pq_1, intercut_pq_2, out_label, request.target, out_uid, l);
+      }
     }
 
     // Push the level of the very last iteration
