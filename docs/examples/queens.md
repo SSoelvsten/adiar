@@ -17,11 +17,10 @@ The N-Queens problem is the following combinatorial problem
 > without threatening each other?
 {: .fs-6 .fw-300 }
 
-We will solve this problem using BDDs. The final program is available in
-[example/queens.cpp](//github.com/SSoelvsten/adiar/blob/main/example/queens.cpp).
+We will solve this problem using BDDs.
 {: .fs-6 .fw-300 }
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta }
 
 1. TOC
@@ -61,7 +60,7 @@ conflicting positions.
 
 We could construct the BDD with the builders and algorithms of _Adiar_. But, we
 can do even better than that, because the resulting BDD is well structured. So,
-we can explicitly construct in one go with a [node stream](../core/files#node-stream)!
+we can explicitly construct in one go with a [node stream](../core/files.md#node-stream)!
 Remember that nodes are to be written bottom-up and in reverse. By the ordering
 of variables in `label_of_position` we have to deal with (1) queens on the row
 _i_ and (2) queens on other rows. For (1) we have to check all variables,

@@ -2,7 +2,7 @@
 layout: default
 title: ZDD
 nav_order: 3
-description: "The ZDD data structure and the functions provided to manipulate it"
+description: "Zero-suppressed Decision Diagrams"
 permalink: /zdd
 ---
 
@@ -17,11 +17,11 @@ A Zero-suppressed Decision Diagram (ZDD) represents a family of set of numbers
 </p>
 
 The `zdd` class takes care of reference counting and optimal garbage collection
-of the underlying files (cf. [Core/Files](./core/files#nodes)). To ensure the
+of the underlying files (cf. [Core/Files](core/files.md#nodes)). To ensure the
 most disk-space is available, try to garbage collect the `zdd` objects as
 quickly as possible and/or minimise the number of lvalues of said type.
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta }
 
 1. TOC
@@ -32,42 +32,45 @@ quickly as possible and/or minimise the number of lvalues of said type.
 ## Basic Constructors
 
 To construct a more complex but well-structured `zdd` than what follows below,
-create a [`node_file`](./core/files#nodes) and write the nodes bottom-up with
-the [`node_writer`](./core/files#node-writer). The `zdd` object can then be
+create a [`node_file`](core/files.md#nodes) and write the nodes bottom-up with
+the [`node_writer`](core/files.md#node-writer). The `zdd` object can then be
 copy-constructed from the `node_file`.
 
 ### `zdd zdd_sink(bool v)`
 {: .no_toc }
 
-Create a sink-only ZDD with the provided boolean value _v_. More meaningful
+Create a sink-only ZDD with the provided boolean value *v*. More meaningful
 alternatives are:
 - `zdd_empty()` to create Ø
 - `zdd_null()` to create {Ø}
 
-### `zdd zdd_ithvar(label_t i)`
+### `zdd zdd_ithvar(label_t var)`
 {: .no_toc }
 
-Create a ZDD representing the family _{ {i} }_.
+Create a ZDD representing the family *{ {var} }*.
 
-### `zdd zdd_vars(label_file is)`
+### `zdd zdd_vars(label_file vars)`
 {: .no_toc }
 
-Create a ZDD representing the family _{ {is<sub>1</sub>, is<sub>2</sub>, ..., is<sub>k</sub>} }_.
+Create a ZDD representing the family *{ {vars<sub>1</sub>, vars<sub>2</sub>, ..., vars<sub>k</sub>} }*.
+The labels in *vars* must be sorted in increasing order.
 
-### `zdd zdd_singletons(label_file is)`
+### `zdd zdd_singletons(label_file vars)`
 {: .no_toc }
 
-Create a ZDD representing the family _{ {is<sub>1</sub>}, {is<sub>2</sub>}, ..., {is<sub>k</sub>} }_.
+Create a ZDD representing the family *{ {vars<sub>1</sub>}, {vars<sub>2</sub>}, ..., {vars<sub>k</sub>} }*.
+The labels in *vars* must be sorted in increasing order.
 
-### `zdd zdd_powerset(label_file is)`
+### `zdd zdd_powerset(label_file vars)`
 {: .no_toc }
 
-Create a ZDD representing the family _2<sup>is</sup> = pow(is) = { {is<sub>1</sub>}, {is<sub>2</sub>}, ..., {is<sub>1</sub>, is<sub>2</sub>}, {is<sub>1</sub>, is<sub>3</sub>}, ..., {is<sub>1</sub>, ..., is<sub>k</sub>} }_.
+Create a ZDD representing the family *pow(vars) = 2<sup>vars</sup>*. The labels
+in *vars* must be sorted in increasing order.
 
-### `zdd zdd_sized_set<pred_t>(label_file is, k, pred)`
+### `zdd zdd_sized_set<pred_t>(label_file vars, k, pred)`
 {: .no_toc }
 
-Create a ZDD representing the family _{ s ∈ 2<sup>vars</sup> | pred(|s|, k) }_, where pred
+Create a ZDD representing the family *{ s ∈ pow(vars) | pred(|s|, k) }*, where pred
 is a comparison predicate such as `std::less`, `std::greater`, and
 `std::equal_to`.
 
@@ -76,136 +79,135 @@ is a comparison predicate such as `std::less`, `std::greater`, and
 ### `zdd zdd_binop(zdd A, zdd B, bool_op op)`
 {: .no_toc }
 
-Construct the ZDD for _{ s ∈ A ∪ B | op(s ∈ A, s ∈ B) }_, where *op* is a binary
-operator whether to include a set _s_ based on whether they are included in _A_
-and/or _B_. Some operators are also provided with an alias function:
+Construct the ZDD for *{ s ∈ A ∪ B | op(s ∈ A, s ∈ B) }*, where *op* is a binary
+operator whether to include a set *s* based on whether they are included in *A*
+and/or *B*. Some operators are also provided with an alias function:
 
 - `zdd zdd_union(zdd A, zdd B)` (operator `|`)
   
-  Same as `zdd_binop(A, B, or_op)` and computes _A ∪ B_.
+  Same as `zdd_binop(A, B, or_op)` and computes *A ∪ B*.
 
 - `zdd zdd_intsec(zdd A, zdd B)` (operator `&`)
   
-  Same as `zdd_binop(A, B, and_op)` and computes _A ∩ B_.
+  Same as `zdd_binop(A, B, and_op)` and computes *A ∩ B*.
 
 - `zdd zdd_diff(zdd A, zdd B)` (operator `-`)
   
-  Same as `zdd_binop(A, B, diff_op)` and computes _A_ \ _B_.
+  Same as `zdd_binop(A, B, diff_op)` and computes *A* \ *B*.
 
-### `zdd zdd_change(zdd A, label_file is)`
+### `zdd zdd_change(zdd A, label_file vars)`
 {: .no_toc }
 
-Constructs the ZDD for _{ is Δ a | a ∈ A }_, where Δ is the symmetric difference
-between the two sets of variables _a_ and _is_. In other words, for each set in
-_A_ the value of each variable _i_ from _is_ is flipped.
+Constructs the ZDD for *{ vars Δ a | a ∈ A }*, where Δ is the symmetric
+difference between the two sets of variables *a* and *vars*. In other words, for
+each set in *A* the value of each variable *i* from *vars* is flipped.
 
 ### `zdd zdd_complement(zdd A, label_file dom)`
 {: .no_toc }
 
-Constructs the ZDD for _2<sup>dom</sup>_ \ _A_, i.e. the complement of _A_ with
-respect to the variable domain, _dom_. The variables in _A_ have to exist in
-_dom_ too.
+Constructs the ZDD for *pow(dom)* \ *A*, i.e. the complement of *A* with respect
+to the variable domain, *dom*. The variables in *A* have to exist in *dom* too.
 
-### `zdd zdd_expand(zdd A, label_file is)`
+### `zdd zdd_expand(zdd A, label_file vars)`
 {: .no_toc }
 
-Expands the domain of A to also include the variables in _is_, i.e. it computes
-the set _U<sub>a ∈ A, i ∈ 2<sup>is</sup></sub> (a ∪ i)_. The variables in _is_
-are not allowed to be present in _A_.
+Expands the domain of A to also include the variables in *vars*, i.e. it
+computes the set *U<sub>a ∈ A, i ∈ pow(vars)</sub> (a ∪ i)*. The variables in
+*vars* are not allowed to be present in *A*.
 
-### `zdd zdd_offset(zdd A, label_file is)`
+### `zdd zdd_offset(zdd A, label_file vars)`
 {: .no_toc }
 
-Computes the ZDD for _{ a ∈ A | ∀i ∈ is : i ∉ a }_, i.e. where the variables _i_
-in _is_ are set to 0.
+Computes the ZDD for the subset *{ a ∈ A | ∀i ∈ vars : i ∉ a }*, i.e. where the
+variables *i* in *vars* are set to 0.
 
-### `zdd zdd_onset(zdd A, label_file is)`
+### `zdd zdd_onset(zdd A, label_file vars)`
 {: .no_toc }
 
-Computes the ZDD for _{ a ∈ A | ∀i ∈ is : i ∈ a }_, i.e. where the variables _i_
-in _is_ are set to 1.
+Computes the ZDD for the subset *{ a ∈ A | ∀i ∈ vars : i ∈ a }*, i.e. where the
+variables *i* in *vars* are set to 1.
 
-### `zdd zdd_project(zdd A, label_file is)`
+### `zdd zdd_project(zdd A, label_file dom)`
 {: .no_toc }
 
 Construct the ZDD for π<sub>i<sub>1</sub>, ..., i<sub>k</sub></sub>(A) = { s \ {
 i<sub>1</sub>, ..., i<sub>k</sub> }<sup>c</sup> | s ∈ A }, where i<sub>1</sub>,
-..., i<sub>k</sub> are the elements in _is_. That is, this constructs a ZDD
-of the same sets, but where only the elements in _is_ are kept.
+..., i<sub>k</sub> are the elements in *vars*. That is, this constructs a ZDD of
+the same sets, but where only the elements in the new domain *dom* are kept.
 
 ## Counting Operations
 
 ### `uint64_t zdd_nodecount(zdd A)`
 {: .no_toc }
 
-Return the number of nodes (not counting sink nodes) in the ZDD for _A_.
+Return the number of nodes (not counting sink nodes) in the ZDD for *A*.
 
 ### `uint64_t zdd_varcount(zdd A)`
 {: .no_toc }
 
-Return the number of variables present in the ZDD for _A_.
+Return the number of variables present in the ZDD for *A*.
 
-### `uint64_t bdd_size(bdd A)`
+### `uint64_t zdd_size(zdd A)`
 {: .no_toc }
 
-Return _\|A\|_, i.e. the number of sets of elements in the family of sets _A_.
+Return \|*A*\|, i.e. the number of sets of elements in the family of sets *A*.
 
 ## Predicates
 
 ### `bool zdd_equal(zdd A, zdd B)` (operator `==`)
 {: .no_toc }
 
-Return whether _A = B_.
+Return whether *A = B*.
 
 ### `bool zdd_unequal(zdd A, zdd B)` (operator `!=`)
 {: .no_toc }
 
-Return whether _A ≠ B_.
+Return whether *A ≠ B*.
 
 ### `bool zdd_subseteq(zdd A, zdd B)` (operator `<=`)
 {: .no_toc }
 
-Return whether _A ⊆ B_.
+Return whether *A ⊆ B*.
 
 ### `bool zdd_subset(zdd A, zdd B)` (operator `<`)
 {: .no_toc }
 
-Return whether _A ⊂ B_.
+Return whether *A ⊂ B*.
 
 ### `bool zdd_disjoint(zdd A, zdd B)`
 {: .no_toc }
 
-Return whether _A ∩ B = Ø_.
+Return whether *A ∩ B = Ø*.
 
 ## Set elements
 
 ### `bool zdd_contains(zdd A, label_file a)`
 {: .no_toc }
 
-Return whether _a ∈ A_.
+Return whether *a ∈ A*.
 
 ### `std::optional<label_file> zdd_minelem(zdd A)`
 {: .no_toc }
 
-Finds the _a ∈ A_ (if any) that is lexicographically smallest when interpreting
-_a_ as a binary number with 0 being the most significant bit.
+Finds the *a ∈ A* (if any) that is lexicographically smallest when interpreting
+*a* as a binary number with 0 being the most significant bit.
 
 ### `std::optional<label_file> zdd_maxelem(zdd A)`
 {: .no_toc }
 
-Finds the _a ∈ A_ (if any) that is lexicographically largest when interpreting
-_a_ as a binary number with 0 being the most significant bit.
+Finds the *a ∈ A* (if any) that is lexicographically largest when interpreting
+*a as a binary number with 0 being the most significant bit.
 
 ### `label_t min_label(zdd A)`
 {: .no_toc }
 
-Return the smallest element that exists in some set _a_ in _A_, i.e. the label
+Return the smallest element that exists in some set *a* in *A*, i.e. the label
 of the root of the DAG in the ZDD.
 
 ### `label_t max_label(zdd A)`
 {: .no_toc }
 
-Return the largest element that exists in some set _a_ in _A_, i.e. the label of 
+Return the largest element that exists in some set *a* in *A*, i.e. the label of
 the deepest node of the DAG in the ZDD.
 
 ## Other Functions
@@ -214,17 +216,17 @@ the deepest node of the DAG in the ZDD.
 {: .no_toc }
 
 Whether the ZDD for _A_ only consists of a sink satisfying the given sink
-predicate. By default the predicate for _any_ kind of sink is used.
+predicate. By default the predicate for *any* kind of sink is used.
 
 ### `zdd zdd_from(bdd f, label_file dom)`
 {: .no_toc }
 
-Converts a [BDD](./bdd) into a ZDD given the variable domain in _dom_. The
-domain should be a superset of the variables in the given BDD.
+Converts a [BDD](bdd.md) into a ZDD interpreted within the variable domain
+*dom*. The domain should be a superset of the variables in the given BDD.
 
 ## DOT Output
 
 ### `void output_dot(zdd A, std::string filename)`
 {: .no_toc }
 
-Prints the ZDD _A_ to a _.dot_ file with the given _filename_.
+Prints the ZDD *A* to a *.dot* file with the given *filename*.

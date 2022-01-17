@@ -2,18 +2,18 @@
 layout: default
 title: Home
 nav_order: 1
-description: "An External Memory Decision Diagram Library"
+description: "An External Memory Decision Diagram Package"
 permalink: /
 ---
 
 # Adiar
 {: .fs-9 }
 
-_Adiar_ is a library for manipulating Decision Diagrams even when these grow
+*Adiar* is a library for manipulating Decision Diagrams even when these grow
 bigger than the memory one has available. To achieve this, all operations are
 not implemented recursively with a shared unique node table, but instead they
-are created as streaming algorithms that exploit the sorting of the graph on
-disk to delay recursion with Time-Forward Processing.
+are created as streaming algorithms that exploit a specific sorting of diagram
+nodes on disk to delay recursion.
 {: .fs-6 .fw-300 }
 
 [View it on GitHub](https://github.com/ssoelvsten/adiar){: .btn .fs-5 .mb-4 .mb-md-0 }
@@ -21,29 +21,33 @@ disk to delay recursion with Time-Forward Processing.
 ## Table of Content
 {: .text-delta }
 
-1. [Getting started](getting_started)
+1. [Getting started](getting_started.md)
 
-   Dependencies and installation of _Adiar_ and how to initialise it in your C++
-   program.
+   Dependencies and installation of *Adiar* and how to initialise it in your C++
+   application.
 
-2. [BDD](bdd)
+2. [BDD](bdd.md)
 
-   The _BDD_ data structure and the functions provided to manipulate it.
+   Binary Decision Diagrams and its supported functions.
 
-3. [ZDD](zdd)
+3. [ZDD](zdd.md)
 
-   The _ZDD_ data structure and the functions provided to manipulate it.
+   Zero-suppressed Decision Diagrams and its supported functions.
 
-4. [Core](core)
+4. [Statistics](statistics.md)
 
-   The underlying _data types_ and _files_ that you would use to construct
-   larger decision diagrams programmatically.
+   Statistics on the internal algorithms and data structures.
+
+5. [Core](core.md)
+
+   The underlying *data types* and *files* that you can use to construct larger
+   decision diagrams programmatically.
    
-5. [Examples](examples)
+6. [Examples](examples.md)
 
-   Examples that cover the functionalities of _Adiar_.
+   Examples that cover the functionalities of *Adiar*.
 
-6. [Citing this project](cite)
+7. [Citing this project](cite.md)
 
    Overview of the papers relevant for citing this project.
 

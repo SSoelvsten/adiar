@@ -10,7 +10,7 @@ permalink: core/files
 # Files
 {: .no_toc }
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta }
 
 1. TOC
@@ -21,7 +21,7 @@ permalink: core/files
 ## Nodes
 
 BDDs are stored on disk with the specific ordering mentioned in Section
-[Core/Data types](./data_types#identifiers-and-ordering). If you want to
+[Core/Data types](data_types.md#identifiers-and-ordering). If you want to
 construct a BDD by hand then you have to explicitly follow this ordering;
 otherwise the algorithms will have _undefined behaviour_. Yet, that is not the
 whole story: In _Adiar_ a set of nodes are stored in a `node_file` in which all
@@ -33,7 +33,7 @@ these nodes are stored in _reverse_ of the ordering.
 One can then read from a `node_file` by use of the `node_stream<bool>` class,
 where the boolean template argument specifies whether the content should be
 reversed (default is an in-order traversal of the nodes). This class attaches to
-the `node_file` (and the [BDD](../bdd) wrapping class) on construction and
+the `node_file` (and the [BDD](../bdd.md) wrapping class) on construction and
 detaches again on deconstruction. The class provides the following member
 functions
 
@@ -95,7 +95,7 @@ before anything can be read from the `node_file` or that the algorithms of
 _Adiar_ can process on them. So, remember to either detach it explicitly or have
 the `node_writer` destructed before calling any such functions.
 
-#### A note on equality checking
+#### A Note on Equality Checking
 
 The _equality checking_ algorithm (`==`) of _Adiar_ exploits multiple
 characteristics of decision diagrams to speed up its computation. If you want to
@@ -118,8 +118,8 @@ satisfies the following two constraints.
 2. The nodes within each level are lexicographically ordered by their children
   (_high_ first then _low_). That is, a node _n_ written to the file after
   already having written node _m_ on the same level must not only satisfy _n <
-  m_ from Section [Core/Data types](./data_types#identifiers-and-ordering) but
-  also the following extended constraint
+  m_ from Section [Core/Data types](data_types.md#identifiers-and-ordering)
+  but also the following extended constraint
 
 <p style="text-align: center;">
   n.id < m.id ≡ n.high < m.high || (n.high = m.high && n.low < m.low)
@@ -127,10 +127,10 @@ satisfies the following two constraints.
 
 ## Assignments and Labels
 
-Some functions take a list of assignments (cf. [Core/Data types](./data_types#assignments)))
+Some functions take a list of assignments (cf. [Core/Data types](data_types.md#assignments)))
 as input or return them as an output. To create such input, resp. traverse such
 output, one can use the `assignment_writer`, resp. `assignment_stream`. Other
-functions work on lists of labels (cf. [Core/Data types](./data_types#identifiers-and-ordering))
+functions work on lists of labels (cf. [Core/Data types](data_types.md#identifiers-and-ordering))
 for which we provide the `label_writer` and `label_stream`.
 
 These writers provide the same interface as the `node_writer`. They also have
