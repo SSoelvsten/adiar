@@ -1,3 +1,54 @@
+# v1.1.0
+
+**Date: 25th of January, 2022**
+
+## Zero-suppressed Decision Diagrams
+
+Adds support for *zero-suppressed* decision diagrams with the `zdd` class. All operations on *ZDD*s are based on the family of sets semantics as in the original paper by Minato.
+
+### Constructors
+- `zdd zdd_sink(bool v)` (and `zdd_empty()` and `zdd_null()` as alternatives)
+- `zdd zdd_ithvar(label_t i)`
+- `zdd zdd_vars(label_file vars)`,  `zdd zdd_singletons(label_file vars)`, and `zdd zdd_powerset(label_file vars)` to respectively construct an *and*, *or*, and the *don't care* chain.
+- `zdd zdd_sized_set<pred_t>(label_file vars, k, pred)` to construct the sets of variables in *vars* whose size satisfies the given predicate in relation to *k*.
+
+### Basic Manipulation
+- `zdd zdd_binop(zdd A, zdd B, bool_op op)` to apply a binary operator to two families of sets (also includes aliases for the _or_, _and_, and _diff_ operators).
+- `zdd zdd_change(zdd A, label_file vars)` to compute the symmetric difference.
+- `zdd zdd_complement(zdd A, label_file dom)` to construct the complement.
+- `zdd zdd_expand(zdd A, label_file vars)` to expand the domain with new variables.
+- `zdd zdd_offset(zdd A, label_file vars)` to compute the subset without the given variables.
+- `zdd zdd_onset(zdd A, label_file vars)`  to compute the subset with the given variables.
+- `zdd zdd_project(zdd A, label_file is)` to project onto a (smaller) domain.
+
+### Counting Operations
+- `uint64_t zdd_nodecount(zdd A)` the number of (non-leaf) nodes.
+- `uint64_t zdd_varcount(zdd A)` the number of levels present (i.e. variables).
+- `uint64_t bdd_size(bdd A)` the number of elements in the family of sets.
+
+### Predicates
+- `bool zdd_equal(zdd A, zdd B)` to check for set equality.
+- `bool zdd_unequal(zdd A, zdd B)` to check set inequality.
+- `bool zdd_subseteq(zdd A, zdd B)` to check for weak subset inclusion.
+- `bool zdd_subset(zdd A, zdd B)` to check for strict subset inclusion.
+- `bool zdd_disjoint(zdd A, zdd B)` to check for the sets being disjoint.
+
+### Set Elements
+- `bool zdd_contains(zdd A, label_file a)`
+- `std::optional<label_file> zdd_minelem(zdd A)`
+- `std::optional<label_file> zdd_maxelem(zdd A)`
+
+### Other Functions
+- `output_dot(bdd f, std::string filename)` to output a visualizable _*.dot* file.
+- `zdd zdd_from(bdd f, label_file dom)` and `bdd bdd_from(zdd f, label_file dom)` to convert between *BDD*s and *ZDD*s interpreted in the given domain.
+
+## Statistics
+
+Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics about the execution of the internal algorithms. With `ADIAR_STATS` you only gathers statistics that introduce a small constant time overhead to every operation. `ADIAR_STATS_EXTRA` also gathers much more detailed information, such as the bucket-hits of the levelized priority queue, which does introduce a linear-time overhead to every operation.
+
+- `stats_t adiar_stats()` to obtain a copy of the raw data values.
+- `void adiar_printstat(std::ostream)` to print all statistics to an output stream.
+
 # v1.0.1
 
 **Date: 6th of September, 2021**
