@@ -44,20 +44,20 @@ go_bandit([]() {
       node_writer nw(nf_x1);
       nw << create_node(1, MAX_ID, sink_F, sink_T);
     }
-    zdd zdd_x1(nf_x1);
 
     node_file nf_x2;
     {
       node_writer nw(nf_x2);
       nw << create_node(2, MAX_ID, sink_F, sink_T);
     }
-    zdd zdd_x2(nf_x2);
 
     describe("bdd_from(const zdd&)", [&]() {
       zdd zdd_F(nf_F);
       zdd zdd_T(nf_T);
 
       zdd zdd_x0(nf_x0);
+      zdd zdd_x1(nf_x1);
+      zdd zdd_x2(nf_x2);
 
       node_file nf_x0_null;
       {
