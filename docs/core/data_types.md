@@ -10,7 +10,7 @@ permalink: core/data_types
 # Data types
 {: .no_toc }
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta }
 
 1. TOC
@@ -20,7 +20,7 @@ permalink: core/data_types
 
 ## Nodes
 
-### Identifiers and ordering
+### Identifiers and Ordering
 A non-sink node is uniquely identified by two values: its _label_ and its _id_.
 The prior is the variable it represents, whereas _id_ is a unique number
 specific to the number's _label_. Together they create a unique identifier _uid_
@@ -74,7 +74,7 @@ the following two predicates.
 
 - `bool is_sink(uid_t p)`
 
-### The Node struct
+### The Node Struct
 
 With the above a node in _Adiar_ is the following combination of 3 unsigned
 64-bit numbers

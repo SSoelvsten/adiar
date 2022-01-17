@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Examples
-nav_order: 5
+nav_order: 6
 description: "Complete examples that cover how to use Adiar"
 has_children: true
 ---

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Citing this project
-nav_order: 6
+nav_order: 7
 description: "Citations"
 permalink: /cite
 ---
@@ -13,7 +13,7 @@ Please consider to cite one or more of the following papers, if you use Adiar in
 some of your academic work.
 {: .fs-6 .fw-300 }
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta }
 
 1. TOC
@@ -25,8 +25,8 @@ some of your academic work.
 Adiar is based on the theoretical work of Lars Arge back in the 90s.
 
 - Lars Arge.
-  “[_The I/O-complexity of Ordered Binary-Decision Diagram Manipulation_](https://link.springer.com/chapter/10.1007/BFb0015411)”.
-  In: _International Symposium on Algorithms and Computation_ (ISAAC). (1995)
+  “[*The I/O-complexity of Ordered Binary-Decision Diagram Manipulation*](https://link.springer.com/chapter/10.1007/BFb0015411)”.
+  In: *International Symposium on Algorithms and Computation* (ISAAC). (1995)
 
   ```bibtex
   @InProceedings{arge1995:ISAAC,
@@ -49,8 +49,8 @@ Adiar is based on the theoretical work of Lars Arge back in the 90s.
   ```
 
 - Lars Arge.
-  “[_The I/O-complexity of Ordered Binary-Decision Diagram Manipulation_](https://tidsskrift.dk/brics/issue/view/2576)”.
-  In: _BRICS RS Preprint_. (1996)
+  “[*The I/O-complexity of Ordered Binary-Decision Diagram Manipulation*](https://tidsskrift.dk/brics/issue/view/2576)”.
+  In: *BRICS RS Preprint*. (1996)
 
   ```bibtex
   @InProceedings{arge1996:BRICS,
@@ -80,8 +80,8 @@ optimisations, extensions, and new theoretical contributions to make it usable
 in practice.
 
 - Steffan Christ Sølvsten, Jaco van de Pol, Anna Blume Jakobsen, Mathias Weller Berg Thomasen.
-  “_Adiar: Binary Decision Diagrams in External Memory_”.
-  In: _Tools and Algorithms for the Construction and Analysis of Systems_ (TACAS). (2022)
+  “*Adiar: Binary Decision Diagrams in External Memory*”.
+  In: *Tools and Algorithms for the Construction and Analysis of Systems* (TACAS). (2022)
   
   ```bibtex
   @InProceedings{soelvsten2022:TACAS,
@@ -102,8 +102,8 @@ in practice.
   ```
 
 - Steffan Christ Sølvsten, Jaco van de Pol, Anna Blume Jakobsen, Mathias Weller Berg Thomasen.
-  “_[Efficient Binary Decision Diagram Manipulation in External Memory](https://arxiv.org/abs/2104.12101)_”.
-  In: _arXiv preprint_. (2021)
+  “[*Efficient Binary Decision Diagram Manipulation in External Memory*](https://arxiv.org/abs/2104.12101)”.
+  In: *arXiv preprint*. (2021)
   ```bibtex
   @Misc{soelvsten2021:arXiv,
     title         = {Efficient Binary Decision Diagram Manipulation in External Memory}, 
