@@ -90,15 +90,74 @@ are:
 ## Additional features
 
 ### Attributed edges
-Currently, we do not support complement edges, though one can expect about a 7%
-factor decrease in the size of the OBDD from using said technique. In the
-recursive algorithms, one can even expect a factor two decrease in the
-algorithms execution time [[Brace90](#references)].
+The primary goal of using a decision diagram is to represent a complicated
+boolean formula / set of elements in very little space. This is done by
+removing as many "redundant" nodes and by sharing as many subtrees as possible.
+By encoding information inside of the arcs one can further increase the
+possibility to share subtrees. With *attributed edges* we add a single boolean
+value inside of each arc which has different semantics for BDDs and ZDDs. For
+BDDs we can expect on average a 7% factor decrease in the size of the BDD, and
+also potentially up to a factor two speedup in the algorithms execution time
+[[Brace90](#references)]!
+
+**Semantics and Attributed-Edge Rule**
+
+In other implementations with this optimisation only the *false* terminal exists;
+the *true* terminal is the attribution flag set on the *false* sink. 
+
+- **Binary Decision Diagrams**:
+
+  The subtree for a function *f* is treated as *¬f*, i.e. flip the values of
+  all its sinks. The bottom of page 42 in [[Brace90](#references)] shows how
+  the attributed edge can be flipped on a single node. By convetion, one
+  always picks the left member of each equivalent pair.
+
+- **Zero-suppressed Decision Diagrams**:
+ 
+  A subtree for the set *A* is treated as also including the empty set Ø
+  (i.e. null combination vector "00...0"). Figure 10 in
+  [[Minato93](#references),[Minato01](#references)] shows how to flip the
+  attributed edge on a single node.
+
+**Encoding Attributed Edges**
 
 Our bit representation of _unique identifiers_ already has a single bit-flag,
 which is currently unused in a _node_ and on the _target_ of an _arc_. These are
-currently reserved for implementation of this very feature, meaning we primarily
-are lacking the additional logic in all of the algorithms.
+currently reserved for implementation of this very feature. The main question
+about the encoding is whether the "only false sink" idea benefits our
+representation? If we do choose to use it, then all binary operators in
+*adiar/data.h* need to **not** unflag the sink but rather manipulate the flag
+itself.
+
+**Adding Attributed Edges to Reduce**
+
+- When outputting nodes for a level: Identify what case applies and whether
+  in-going arcs should be flipped. This boolean value is sent through the second
+  sorter to the forwarding phase.
+  
+- During the forwarding phase: The *attribute* flag of the forwarded edge is set
+  based on (a) whether it should be flipped and (b) what is its value in the
+  internal arcs stream.
+
+- If the root should have its in-going arc flipped then place that value in the
+  *negate* flag  of the resulting *node_file*.
+
+One also need to look at whether this addition breaks the idea of the *canonical*
+flag on the *node_file*. That is, either find a counter-example or prove that the
+same linear-scan equality checking algorithm still works.
+
+**Adding Attributed Edges to all other Algorithms**
+
+All other algorithms now also need to take this flag into account.
+
+- *Substitute*: Keep the flag as it was forwarded from the parent
+
+- *Traverse*: Allow the visitor to know the flag on the in-going arc (at first,
+  this is the negation flag of the *BDD* and then whether the flag was set on the
+  chosen out-going arc in the prior step).
+
+I have not figured out the rest of the functions, but one may be able to look at
+the Sylvan implementation [[Dijk16](#references)] as a guide.
 
 
 ### Hash Values
