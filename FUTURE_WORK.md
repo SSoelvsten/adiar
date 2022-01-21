@@ -144,7 +144,9 @@ itself.
 
 One also need to look at whether this addition breaks the idea of the *canonical*
 flag on the *node_file*. That is, either find a counter-example or prove that the
-same linear-scan equality checking algorithm still works.
+same linear-scan equality checking algorithm still works. In fact, if the
+linear-scan still works then this will asymptotically improve our equality checking
+to be O(N/B) in all cases!
 
 **Adding Attributed Edges to all other Algorithms**
 
