@@ -41,7 +41,7 @@ or memory compute it.
 
 ## Knight's Tours
 
-**Files:** `knights_tour_bryant.cpp**
+**Files:** `knights_tour.cpp**
 
 **Target:** `make example/knights_tour/<?> N=<?>`
 
