@@ -55,7 +55,7 @@ The following code recognises whether a coordinate *i* and *j* is one of these
 squares.
 
 ```cpp
-const int closed_squares [3][2] = {{0,0}, {1,2}, {2,1}};
+const int closed_squares [3][2] = { {0,0}, {1,2}, {2,1} };
 
 bool is_closed_square(int i, int j)
 {
@@ -67,8 +67,9 @@ bool is_closed_square(int i, int j)
 
 To encode the constraint for time step *t* = 0, *t* = 1, and *t* =
 N<sup>2</sup>-1 we need to add a long "don't care" chain in between. Inside of
-this chain can also immediately add the [hamiltonian
-constraint](#hamiltonian-constraint) to not visit any of these squares again.
+this chain can also immediately add the
+[hamiltonian constraint](#hamiltonian-constraint) to not visit any of these
+squares again.
 
 ```cpp
 template<bool filter_closed_squares = false>
@@ -216,9 +217,9 @@ adiar::ptr_t ptr_to_next(int N, int i_from, int j_from, int i_to, int j_to, int 
 
 The transition function only encodes the time step *t* to *t+1*. That is, it
 needs to allow anything to happen at all other time steps. Hence, it also needs
-a somewhat similar "don't care" chain as the one for the [closed
-constraint](#closed-constraint) above but for some other time limits *min_t* to
-some *max_t* (inclusive).
+a somewhat similar "don't care" chain as the one for the
+[closed constraint](#closed-constraint) above but for some other time limits
+*min_t* to some *max_t* (inclusive).
 
 Combining everything above, we can create the transition function as follows.
 
