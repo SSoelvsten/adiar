@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Queens
+title: Knight's Tour
 nav_order: 2
 parent: Examples
 description: "Knight's Tour example"
