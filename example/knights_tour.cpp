@@ -3,6 +3,13 @@
 #include <optional>
 
 /*******************************************************************************
+ * This entire example is based off of the encoding by Randal Bryant for the
+ * same problem that you can find here:
+ *
+ * https://github.com/rebryant/Cloud-BDD/blob/conjunction_streamlined/hamiltonian/hpath.py
+ */
+
+/*******************************************************************************
  * We'd find it interesting to output the size of the largest ZDD and the final
  * ZDD.
  */
@@ -12,18 +19,129 @@ size_t largest_nodes = 1;
  *                             Variable ordering
  *
  *                          (N^2 * t) + (N * i) + j.
+ *
+ * That is, we encode the entire information about position and time-step into
+ * the very variable label. This ordering is first by row, second by column, and
+ * finally by time. Most importantly, this means that any "snapshot" of the
+ * board at a specific time-step are grouped together.
  */
 inline adiar::label_t label_of_position(int N, int i, int j, int t)
 {
   return (N * N * t) + (N * i) + j;
 }
 
-// TODO: There must be a better way then enumerating all 8 moves?
-//       Yet, these bases cases are really small...
-const int row_moves[8]    = { -2, -2, -1, -1,  1,  1,  2,  2 };
-const int column_moves[8] = { -1,  1, -2,  2, -2,  2, -1,  1 };
+/*******************************************************************************
+ *                            Closed Tour Constraint
+ *
+ * To only look at the closed tours, i.e. hamiltonian cycles and not hamiltonian
+ * paths, we merely fix it to start in the top-left corner. Since we are
+ * counting unoriented paths, then we can fix one of the two possible next
+ * squares to be the one used at t = 1.
+ *
+ * The following array includes these very squares. The predicate below tests
+ * whether the argument is in one of the three squares.
+ */
+const int closed_squares [3][2] = {{0,0}, {1,2}, {2,1}};
 
-bool is_move(int N, int i_from, int j_from, int i_to, int j_to)
+bool is_closed_square(int i, int j)
+{
+  return (i == closed_squares[0][0] && j == closed_squares[0][1])
+      || (i == closed_squares[1][0] && j == closed_squares[1][1])
+      || (i == closed_squares[2][0] && j == closed_squares[2][1]);
+}
+
+/*******************************************************************************
+ * Creates a long "don't care" chain for all the positions and times, that we do
+ * not care about. If we are working with the closed tour, then we can safely
+ * skip these to make the intermediate ZDDs smaller.
+ */
+template<bool filter_closed_squares = false>
+void constraint_dont_care(adiar::node_writer &out_writer, adiar::ptr_t &curr_root,
+                          int N, int max_t, int min_t)
+{
+  for (int curr_t = max_t; curr_t >= min_t; curr_t--) {
+    for (int i = N - 1; i >= 0; i--) {
+      for (int j = N - 1; j >= 0; j--) {
+        if (filter_closed_squares && is_closed_square(i,j)) {
+          continue;
+        }
+
+        adiar::node_t out_node = adiar::create_node(label_of_position(N,i,j,curr_t),
+                                                    0,
+                                                    curr_root,
+                                                    curr_root);
+
+        out_writer << out_node;
+        curr_root = out_node.uid;
+      }
+    }
+  }
+}
+
+/*******************************************************************************
+ * Combining the above, we can construct the ZDD that fixes the initial
+ * position, the second position, and the final position.
+ */
+adiar::zdd constraint_closed(uint64_t N)
+{
+  adiar::node_file out;
+
+  { adiar::node_writer out_writer(out);
+
+    // Set final time step to (2,1)
+    adiar::node_t n_t_end = adiar::create_node(label_of_position(N,
+                                                                 closed_squares[2][0],
+                                                                 closed_squares[2][1],
+                                                                 N*N-1),
+                                               adiar::MAX_ID,
+                                               adiar::create_sink_ptr(false),
+                                               adiar::create_sink_ptr(true));
+    out_writer << n_t_end;
+
+    // Create don't care on all intermediate steps
+    adiar::ptr_t curr_root = n_t_end.uid;
+    constraint_dont_care<true>(out_writer, curr_root, N, N*N-2, 2);
+
+    // Set t = 1 to (1,2)
+    adiar::node_t n_t_1 = adiar::create_node(label_of_position(N,
+                                                               closed_squares[1][0],
+                                                               closed_squares[1][1],
+                                                               1),
+                                             adiar::MAX_ID,
+                                             adiar::create_sink_ptr(false),
+                                             curr_root);
+    out_writer << n_t_1;
+
+    // Set t = 0 to (0,0)
+    adiar::node_t n_t_0 = adiar::create_node(label_of_position(N,
+                                                               closed_squares[0][0],
+                                                               closed_squares[0][1],
+                                                               0),
+                                             adiar::MAX_ID,
+                                             adiar::create_sink_ptr(false),
+                                             n_t_1.uid);
+    out_writer << n_t_0;
+  }
+
+  largest_nodes = std::max(largest_nodes, out.size());
+  return out;
+}
+
+
+/*******************************************************************************
+ *                      Move Logic for Transition Function
+ *
+ * We need a little bit of logic to compute the different parts of a move. This
+ * is not the bottleneck, so we will do something somewhat easily comprehensible
+ * rather than fast.
+ *
+ * The following two arrays encode (starting from 'north west' and going
+ * clockwise) the i and j coordinates of all the moves.
+ */
+constexpr int row_moves[8]    = { -2, -2, -1, -1,  1,  1,  2,  2 };
+constexpr int column_moves[8] = { -1,  1, -2,  2, -2,  2, -1,  1 };
+
+bool is_move(int i_from, int j_from, int i_to, int j_to)
 {
   for (int idx = 0; idx < 8; idx++) {
     if (i_from + row_moves[idx] == i_to &&
@@ -49,6 +167,9 @@ adiar::ptr_t ptr_to_first(int N, int i_from, int j_from, int t)
   return adiar::create_sink_ptr(false);
 }
 
+/* When we have the latest 'legal' move we then also want to obtain the next
+   'legal' move, or 'false' if there is none.
+ */
 adiar::ptr_t ptr_to_next(int N, int i_from, int j_from, int i_to, int j_to, int t)
 {
   bool seen_move = false;
@@ -70,49 +191,8 @@ adiar::ptr_t ptr_to_next(int N, int i_from, int j_from, int i_to, int j_to, int 
   return adiar::create_sink_ptr(false);
 }
 
-/*****************************************************************************
- * To only look at the closed tours, i.e. hamiltonian cycles and not hamiltonian
- * paths, we merely fix it to start in the top-left corner. Since we are
- * counting unoriented paths, then we can fix one of the two possible next
- * squares to be the one used at t = 1.
- *
- * The following array includes these very squares.
- */
-const int closed_squares [3][2] = {{0,0}, {1,2}, {2,1}};
-
-bool is_closed_square(int i, int j)
-{
-  return (i == closed_squares[0][0] && j == closed_squares[0][1])
-      || (i == closed_squares[1][0] && j == closed_squares[1][1])
-      || (i == closed_squares[2][0] && j == closed_squares[2][1]);
-}
-
-/******************************************************************************/
-template<bool filter_closed_squares = false>
-void constraint_dont_care(adiar::node_writer &out_writer, adiar::ptr_t &curr_root,
-                          int N, int max_t, int min_t)
-{
-  for (int curr_t = max_t; curr_t >= min_t; curr_t--) {
-    for (int i = N - 1; i >= 0; i--) {
-      for (int j = N - 1; j >= 0; j--) {
-        if (filter_closed_squares && is_closed_square(i,j)) {
-          continue;
-        }
-
-        adiar::node_t out_node = adiar::create_node(label_of_position(N,i,j,curr_t),
-                                                    0,
-                                                    curr_root,
-                                                    curr_root);
-
-        out_writer << out_node;
-        curr_root = out_node.uid;
-      }
-    }
-  }
-}
-
 /*******************************************************************************
- * Constraint: transition system
+ *                            Transition System
  */
 adiar::zdd constraint_transition(int N, int t)
 {
@@ -139,11 +219,14 @@ adiar::zdd constraint_transition(int N, int t)
           for (int j_t = N-1; j_t >= 0; j_t--) {
 
             // Is (i',j') reachable from (i,j)?
-            if (is_move(N, i_t, j_t, i_t1, j_t1)) {
+            if (is_move(i_t, j_t, i_t1, j_t1)) {
               adiar::label_t curr_pos = label_of_position(N, i_t, j_t, t);
               adiar::ptr_t low = ptr_to_next(N, i_t, j_t, i_t1, j_t1, t);
 
-              adiar::node_t out_node = adiar::create_node(next_pos, curr_pos, low, curr_root);
+              adiar::node_t out_node = adiar::create_node(next_pos,
+                                                          curr_pos,
+                                                          low,
+                                                          curr_root);
               out_writer << out_node;
             }
           }
@@ -167,7 +250,7 @@ adiar::zdd constraint_transition(int N, int t)
       }
     }
 
-    // "Don't care" Previous time steps
+    // "Don't care" for previous time steps
     constraint_dont_care<>(out_writer, curr_root, N, t-1, 0);
   }
 
@@ -177,7 +260,14 @@ adiar::zdd constraint_transition(int N, int t)
 
 
 /*******************************************************************************
- * Constraint: Visit every square exactly once
+ *                           Hamiltonian Constraint
+ *
+ * Finally, for each position on the board, we want to add the constraint, that
+ * you can only be there once.
+ *
+ * This essentially is an automaton with two states 'not seen' and 'seen'. If
+ * the position is 'seen' as taken then one goes to a second chain of nodes,
+ * where it may not be seen again.
  */
 adiar::zdd constraint_exactly_once(uint64_t N, uint64_t i, uint64_t j)
 {
@@ -211,47 +301,6 @@ adiar::zdd constraint_exactly_once(uint64_t N, uint64_t i, uint64_t j)
         }
       }
     }
-  }
-
-  largest_nodes = std::max(largest_nodes, out.size());
-  return out;
-}
-
-/*******************************************************************************
- * For only the closed tours (i.e. hamiltonian cycles) we start in (0,0) (i.e.
- * the top left), go to (1,2) and then end in (2,1). These numbers are placed in
- * the array closed_squares above.
- */
-adiar::zdd constraint_closed(uint64_t N)
-{
-  adiar::node_file out;
-
-  { adiar::node_writer out_writer(out);
-
-    // Set final time step to (2,1)
-    adiar::node_t n_t_end = adiar::create_node(label_of_position(N, closed_squares[2][0],closed_squares[2][1], N*N-1),
-                                               adiar::MAX_ID,
-                                               adiar::create_sink_ptr(false),
-                                               adiar::create_sink_ptr(true));
-    out_writer << n_t_end;
-
-    // Create don't care on all intermediate steps
-    adiar::ptr_t curr_root = n_t_end.uid;
-    constraint_dont_care<true>(out_writer, curr_root, N, N*N-2, 2);
-
-    // Set t = 1 to (1,2)
-    adiar::node_t n_t_1 = adiar::create_node(label_of_position(N, closed_squares[1][0],closed_squares[1][1], 1),
-                                             adiar::MAX_ID,
-                                             adiar::create_sink_ptr(false),
-                                             curr_root);
-    out_writer << n_t_1;
-
-    // Set t = 0 to (0,0)
-    adiar::node_t n_t_0 = adiar::create_node(label_of_position(N, closed_squares[0][0],closed_squares[0][1], 0),
-                                             adiar::MAX_ID,
-                                             adiar::create_sink_ptr(false),
-                                             n_t_1.uid);
-    out_writer << n_t_0;
   }
 
   largest_nodes = std::max(largest_nodes, out.size());
@@ -317,13 +366,14 @@ int main(int argc, char* argv[])
 
   // ===== ADIAR =====
   // Initialize
-  adiar::adiar_init(M);
+  adiar::adiar_init(M * 1024 * 1024);
   std::cout << "| Initialized Adiar with " << M << " MiB of memory"  << std::endl
             << "|" << std::endl;
 
   // ===== Knight's Tour =====
 
-  std::cout << "| " << N << "x" << N << " Knight's Tour (" << (only_closed ? "Closed" : "Open and Closed") << ")" << std::endl
+  std::cout << "| " << N << "x" << N << " Knight's Tour "
+            << "(" << (only_closed ? "Closed" : "Open and Closed") << ")" << std::endl
             << "|" << std::endl;;
 
   adiar::zdd paths;
