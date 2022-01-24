@@ -33,14 +33,17 @@ when one or more of the following *CMake* variables are set to *ON*.
 ## Obtaining Statistics
 
 ### `stats_t adiar_stats()`
+{: .no_toc }
 
 Obtain a copy of the raw data values. To see all available values in *stats_t*,
 please consult its declaration in *<adiar/statistics.h>*.
 
 ### `void adiar_printstat(std::ostream os)`
+{: .no_toc }
 
 Pretty prints the statistics in `adiar_stats()` to the output stream *os*.
 
 ### `void adiar_printstat()`
+{: .no_toc }
 
 Pretty prints the statistics in `adiar_stats()` to the standard output.
