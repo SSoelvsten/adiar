@@ -19,7 +19,8 @@ namespace adiar {
   ///
   /// \copydoc __decision_diagram
   //////////////////////////////////////////////////////////////////////////////
-  class __bdd : public __decision_diagram {
+  class __bdd : public __decision_diagram
+  {
   public:
     __bdd();
     __bdd(const node_file &f);

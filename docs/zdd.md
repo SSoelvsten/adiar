@@ -210,6 +210,11 @@ of the root of the DAG in the ZDD.
 Return the largest element that exists in some set *a* in *A*, i.e. the label of
 the deepest node of the DAG in the ZDD.
 
+### `label_file zdd_varprofile(zdd A)`
+{: .no_toc }
+
+Return a file with the labels of the existing levels in *A*.
+
 ## Other Functions
 
 ### `bool is_sink(zdd A, sink_pred)`

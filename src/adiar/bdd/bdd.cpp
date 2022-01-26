@@ -11,6 +11,7 @@
 #include <adiar/internal/dot.h>
 #include <adiar/internal/intercut.h>
 #include <adiar/internal/reduce.h>
+#include <adiar/internal/util.h>
 
 #include <adiar/bdd/bdd_policy.h>
 #include <adiar/zdd/zdd_policy.h>
@@ -127,6 +128,13 @@ namespace adiar {
 
   __bdd operator^ (const bdd &lhs, const bdd &rhs)
   { return bdd_xor(lhs, rhs); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Input variables
+  label_file bdd_varprofile(const bdd &f)
+  {
+    return varprofile(f);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
