@@ -241,6 +241,11 @@ is the smallest input variable that has an effect on the output of *f*.
 Return the largest label in the BDD for *f*, i.e. the label of the deepest node.
 This is the largest input variable that has an effect on the output of *f*.
 
+### `label_file bdd_varprofile(bdd f)`
+{: .no_toc }
+
+Return a file with the labels of the existing levels in *f*.
+
 ## Other Functions
 
 ### `bool is_sink(bdd f, sink_pred)`

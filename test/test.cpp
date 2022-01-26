@@ -134,6 +134,7 @@ namespace snowhouse
 #include "adiar/internal/test_dot.cpp"
 #include "adiar/internal/test_isomorphism.cpp"
 #include "adiar/internal/test_reduce.cpp"
+#include "adiar/internal/test_util.cpp"
 
 // ////////////////////////////////////////////////////////////////////////////////
 // // ADIAR BDD unit tests

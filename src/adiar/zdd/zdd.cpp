@@ -11,6 +11,7 @@
 #include <adiar/internal/dot.h>
 #include <adiar/internal/intercut.h>
 #include <adiar/internal/reduce.h>
+#include <adiar/internal/util.h>
 
 #include <adiar/zdd/zdd_policy.h>
 #include <adiar/bdd/bdd_policy.h>
@@ -150,6 +151,13 @@ namespace adiar {
 
   bool operator> (const zdd& lhs, const zdd& rhs) {
     return zdd_subset(rhs, lhs);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Input variables
+  label_file zdd_varprofile(const zdd &A)
+  {
+    return varprofile(A);
   }
 
   //////////////////////////////////////////////////////////////////////////////

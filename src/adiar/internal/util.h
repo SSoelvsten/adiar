@@ -5,10 +5,12 @@
 
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
+#include <adiar/file_writer.h>
 
 #include <adiar/internal/decision_diagram.h>
 
-namespace adiar {
+namespace adiar
+{
   template<typename T>
   inline label_t __label_of(const T& t)
   { return label_of(t); }
@@ -35,6 +37,19 @@ namespace adiar {
     }
     return true;
   }
+
+  inline label_file varprofile(const decision_diagram &dd)
+  {
+    label_file vars;
+    label_writer writer(vars);
+    level_info_stream<node_t> info_stream(dd);
+    while(info_stream.can_pull())
+    {
+      writer << label_of(info_stream.pull());
+    }
+    return vars;
+  }
+
 }
 
 #endif // ADIAR_INTERNAL_UTIL_H
