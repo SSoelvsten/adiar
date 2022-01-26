@@ -15,7 +15,7 @@ permalink: /statistics
 1. TOC
 {:toc}
 
-## Activating Gathering of Statistics
+## Activate Gathering of Statistics
 Statistics are by default **not** gathered due to a concern of the performance
 of *Adiar*. That is, the logic related to updating the statistics is only run
 when one or more of the following *CMake* variables are set to *ON*.
@@ -47,3 +47,8 @@ Pretty prints the statistics in `adiar_stats()` to the output stream *os*.
 {: .no_toc }
 
 Pretty prints the statistics in `adiar_stats()` to the standard output.
+
+### `void adiar_statsreset()`
+{: .no_toc }
+
+Resets all gathered statistics back to their default values.
