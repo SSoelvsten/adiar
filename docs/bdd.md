@@ -196,6 +196,18 @@ Count the number of satisfying assignments (i.e. the number of *x* such that
 should be greater or equal to its default value, which is the number of
 variables within the BDD for *f*, i.e. `bdd_varcount(f)`.
 
+## Predicates
+
+### `bool bdd_equal(bdd f, bdd g)` (operator: `==`)
+{: .no_toc }
+
+Returns whether *f* ≡ *g*.
+
+### `bool bdd_unequal(bdd f, bdd g)` (operator: `!=`)
+{: .no_toc }
+
+Returns whether *f* and *g* are different functions.
+
 ## Input variables
 
 ### `bool bdd_eval(bdd f, T x)`
