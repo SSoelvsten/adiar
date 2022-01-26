@@ -61,6 +61,7 @@ set(SOURCES
   bdd/evaluate.cpp
   bdd/if_then_else.cpp
   bdd/negate.cpp
+  bdd/pred.cpp
   bdd/quantify.cpp
   bdd/restrict.cpp
 
