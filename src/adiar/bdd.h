@@ -319,10 +319,21 @@ namespace adiar
 
   /* ============================ BDD PREDICATES ============================ */
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether f and g represent the same function.
+  //////////////////////////////////////////////////////////////////////////////
+  bool bdd_equal(const bdd& f, const bdd& g);
+
   bool operator== (const bdd& f, const bdd& g);
   bool operator== (__bdd &&f, const bdd &g);
   bool operator== (const bdd &f, __bdd &&g);
   bool operator== (__bdd &&f, __bdd &&g);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether f and g represent different functions.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool bdd_unequal(const bdd& f, const bdd& g) 
+    { return !bdd_equal(f, g); }
 
   bool operator!= (const bdd& f, const bdd& g);
   bool operator!= (const bdd &f, __bdd &&g);

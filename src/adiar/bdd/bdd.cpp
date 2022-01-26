@@ -108,10 +108,11 @@ namespace adiar {
 
   bool operator== (const bdd &lhs, const bdd &rhs)
   {
-    return is_isomorphic(lhs, rhs);
+    return bdd_equal(lhs, rhs);
   }
 
-  bool operator!= (const bdd &lhs, const bdd &rhs) { return !(lhs == rhs); }
+  bool operator!= (const bdd &lhs, const bdd &rhs) 
+  { return bdd_unequal(lhs, rhs); }
 
   bdd operator~ (const bdd &f)
   { return bdd_not(f); }
