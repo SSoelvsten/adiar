@@ -17,6 +17,8 @@ namespace adiar
     }
     _adiar_initialized = true;
 
+    adiar_statsreset();
+
     tpie::tpie_init();
 
     // Memory management
