@@ -83,10 +83,18 @@ def git_checkout(remote, branch):
 
 # ------------------------------------------------------------------------------
 # Running benchmarks
-QUEENS_N = 14
+def repetitions_for(n):
+    if n <= 12:
+        return 16
+    elif n == 13:
+        return 8
+    elif n == 14:
+        return 4
+    else:
+        return 1
 
-def run_queens():
-    out_txt = capture_subprocess_output(['make', 'example/queens', 'N='+str(QUEENS_N), 'M=8096'])[1]
+def run_queens(n):
+    out_txt = capture_subprocess_output(['make', 'example/queens', 'N='+str(n), 'M=8096'])[1]
 
     matches = re.findall("time:\s*([0-9\.]+)\s*s", out_txt)
     timing = sum([float(t) for t in matches])
@@ -121,25 +129,25 @@ def spoiler(txt, summary):
                    '</details>').replace('\n', '\n> ')
 
 
-def performance_report(args, timings):
+def performance_report(n, args, timings):
     output_txt = (f'# Benchmark Report `{args[0]}/{args[1]}`\n' +
-                  f'Minimum running time for {QUEENS_N}-Queens: {min(timings[args[0][1]])}s\n\n' +
-                  spoiler(f'Running times (s) for {QUEENS_N}-Queens:\n' +
+                  f'Minimum running time for {n}-Queens: {min(timings[args[0][1]])}s\n\n' +
+                  spoiler(f'Running times (s) for {n}-Queens:\n' +
                           ', '.join([str(t) for t in timings[args[0][1]]]), 'Raw Data'))
 
     return (0, output_txt)
 
 
-def comparison_report(args, timings):
+def comparison_report(n, args, timings):
     # Create table of raw data
-    raw_data_txt = spoiler(f'Running times (s) for {QUEENS_N}-Queens:\n' + markdown_table(args, timings),
+    raw_data_txt = spoiler(f'Running times (s) for {n}-Queens:\n' + markdown_table(args, timings),
                            'Raw Data')
 
     # Compute minimum
     for (r,b) in args:
         timings[r][b] = [min(timings[r][b])]
 
-    minimum_data_txt = (f'Minimum running time (s) for {QUEENS_N}-Queens:\n' +
+    minimum_data_txt = (f'Minimum running time (s) for {n}-Queens:\n' +
                         markdown_table(args, timings) + '\n')
 
     output_txt = ''
@@ -179,65 +187,81 @@ def comparison_report(args, timings):
 
 # ------------------------------------------------------------------------------
 # Main
-REPETITIONS = 4
+def main_current(n):
+    timings = []
 
-if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        timings = []
+    print('Queens', end='', flush=True)
 
-        print('Queens', end='', flush=True)
+    for run in range(0, repetitions_for(n)):
+        print(' .', end='', flush=True)
+        timings.append(run_queens(n))
 
-        for run in range(0, REPETITIONS):
-            print(' .', end='', flush=True)
-            timings.append(run_queens())
+    print('\n  time: ', min(timings), ' s')
 
-        print('\n  time: ', min(timings), ' s')
+def main_compare(n, remote_branch_pairs):
+    for remote in list(set([r for (r,b) in remote_branch_pairs])):
+        git_add_remote(remote)
 
-    elif len(sys.argv) > 1:
-        if sys.argv == 2:
-            sys.argv = [sys.argv[0], 'origin', sys.argv[1]]
+    git_fetch()
 
-        if len(sys.argv) % 2 != 1:
+    # Initialise results data
+    timings  = {  }
+
+    for (remote, branch) in remote_branch_pairs:
+        timings[remote] = {}
+
+    for (remote, branch) in remote_branch_pairs:
+        timings[remote][branch] = []
+
+    # Run benchmarks on all branches as fairly as possible
+    for run in range(0, repetitions_for(n)):
+        for (remote, branch) in remote_branch_pairs:
+            git_checkout(remote, branch)
+            timings[remote][branch].append(run_queens(n))
+
+    for remote in list(set([r for (r,b) in remote_branch_pairs])):
+        git_remove_remote(remote)
+
+    exit_code = 0
+    with open('benchmark.out', 'w') as file:
+        report = (comparison_report(n, remote_branch_pairs, timings)
+                  if len(remote_branch_pairs) > 1
+                  else performance_report(n, remote_branch_pairs, timings))
+
+        exit_code = report[0]
+
+        print(report[1])
+        file.write(report[1])
+
+    return exit_code
+
+
+def main(cmd_args):
+    if len(cmd_args) < 2:
+        print("Please provide the 'N' as the first argument")
+        exit(-1)
+
+    cmd_program = cmd_args[0]
+    cmd_N = int(cmd_args[1])
+    cmd_branches = cmd_args[2::1]
+
+    exit_code = 0
+
+    if len(cmd_branches) == 0:
+        main_current(cmd_N)
+
+    else:
+        if cmd_branches == 1:
+            cmd_branches = ['origin', cmd_branches[1]]
+
+        if len(cmd_branches) % 2 != 0:
             print('Please provide pairs of remote , branch')
             exit(-1)
 
-        args = list(zip(*[iter(sys.argv[1::])]*2))
+        exit_code = main_compare(cmd_N,
+                                 list(zip(*[iter(cmd_branches[0::])]*2)))
 
-        for remote in list(set([r for (r,b) in args])):
-            git_add_remote(remote)
+    exit(exit_code)
 
-        git_fetch()
-
-        # Initialise results data
-        timings  = {  }
-
-        for (remote, branch) in args:
-            timings[remote] = {}
-
-        for (remote, branch) in args:
-            timings[remote][branch] = []
-
-        # Run benchmarks on all branches as fairly as possible
-        for run in range(0, REPETITIONS):
-            for (remote, branch) in args:
-                git_checkout(remote, branch)
-                timings[remote][branch].append(run_queens())
-
-        for remote in list(set([r for (r,b) in args])):
-            git_remove_remote(remote)
-
-        exit_code = 0
-        with open('benchmark.out', 'w') as file:
-            report = (comparison_report(args, timings)
-                      if len(args) > 1
-                      else performance_report(args, timings))
-
-            exit_code = report[0]
-
-            print(report[1])
-            file.write(report[1])
-
-        exit(exit_code)
-    else:
-        print('bad state: len(sys.argv) == 0')
-        exit(-1)
+if __name__ == '__main__':
+    main(sys.argv)

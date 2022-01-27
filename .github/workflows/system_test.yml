@@ -31,7 +31,7 @@ jobs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
 
   run-benchmark:
-    name: 'Benchmark: ${{ matrix.name }}'
+    name: 'System Test: ${{ matrix.name }}'
     runs-on: ubuntu-latest
 
     needs: [fetch-branch, skip_duplicate]
