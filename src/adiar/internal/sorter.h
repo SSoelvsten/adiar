@@ -3,6 +3,7 @@
 
 #include <string>
 #include <math.h>
+#include <algorithm>
 
 #include <tpie/tpie.h>
 #include <tpie/sort.h>
@@ -28,7 +29,7 @@ namespace adiar {
     tpie::merge_sorter<T, false, pred_t> _sorter;
 
   public:
-    external_sorter(size_t memory_bytes, size_t number_of_sorters, pred_t pred = pred_t())
+    external_sorter(size_t memory_bytes, size_t /*no_elements*/, size_t number_of_sorters, pred_t pred = pred_t())
       : _sorter(pred)
     {
       adiar_debug(number_of_sorters > 0, "Number of sorters should be positive");
@@ -90,6 +91,58 @@ namespace adiar {
     T pull()
     {
       return _sorter.pull();
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Wrapper for TPIE's internal vector with standard quick-sort.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename T, typename pred_t = std::less<T>>
+  class internal_sorter {
+  private:
+    tpie::internal_vector<T> _vector;
+    typename tpie::array<T>::iterator _begin;
+    typename tpie::array<T>::iterator _end;
+    pred_t _pred;
+
+  public:
+    static constexpr tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
+    {
+      return tpie::internal_vector<T>::memory_usage(no_elements);
+    }
+
+    static constexpr tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
+    {
+      return tpie::internal_vector<T>::memory_fits(memory_bytes);
+    }
+
+  public:
+    internal_sorter(size_t /*memory_bytes*/, size_t no_elements, size_t /*no_sorters*/, pred_t pred = pred_t())
+      : _vector(no_elements), _pred(pred)
+    { }
+
+    void push(const T& t)
+    {
+      _vector.push_back(t);
+    }
+
+    void sort()
+    {
+      std::sort(_vector.begin(), _vector.end(), _pred);
+      _begin = _vector.begin();
+      _end = _vector.end();
+    }
+
+    bool can_pull()
+    {
+      return _begin != _end;
+    }
+
+    T pull()
+    {
+      const T ret_value = *_begin;
+      _begin++;
+      return ret_value;
     }
   };
 }

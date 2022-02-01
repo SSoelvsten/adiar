@@ -767,7 +767,7 @@ namespace adiar {
     void setup_bucket(size_t idx, label_t level)
     {
       _buckets_level[idx] = level;
-      _buckets_sorter[idx] = std::make_unique<sorter_t>(_memory_for_buckets, BUCKETS);
+      _buckets_sorter[idx] = std::make_unique<sorter_t>(_memory_for_buckets, std::numeric_limits<size_t>::max(), BUCKETS);
     }
 
     ////////////////////////////////////////////////////////////////////////////
