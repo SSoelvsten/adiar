@@ -83,23 +83,24 @@ namespace adiar
     }
   }
 
-  template <typename dd_policy>
+  template <typename dd_policy, template<typename, typename> typename sorter_t>
   void reduce_level(sink_arc_stream<> &sink_arcs,
                     node_arc_stream<> &node_arcs,
                     reduce_priority_queue_t &reduce_pq,
                     label_t &label,
                     node_writer &out_writer,
-                    const tpie::memory_size_type available_memory)
+                    const tpie::memory_size_type available_memory,
+                    const size_t level_width)
   {
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
     tpie::file_stream<mapping> red1_mapping;
 
     // Sorter to find Reduction Rule 2 mappings
-    external_sorter<node_t, reduce_node_children_lt>
-      child_grouping(available_memory, 2);
+    sorter_t<node_t, reduce_node_children_lt>
+      child_grouping(available_memory, level_width, 2);
 
-    external_sorter<mapping, reduce_uid_lt>
-      red2_mapping(available_memory, 2);
+    sorter_t<mapping, reduce_uid_lt>
+      red2_mapping(available_memory, level_width, 2);
 
     // Pull out all nodes from reduce_pq and sink_arcs for this level
     while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label)
@@ -279,6 +280,7 @@ namespace adiar
 
     node_arc_stream<> node_arcs(in_file);
     sink_arc_stream<> sink_arcs(in_file);
+    level_info_stream<arc_t> level_info(in_file);
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
@@ -309,6 +311,7 @@ namespace adiar
     }
 
     // Find the first label
+    // TODO take from level info instead
     label_t label = label_of(sink_arcs.peek().source);
 
     // Process bottom-up each level
@@ -316,7 +319,19 @@ namespace adiar
       adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
                       "label and priority queue should be in sync");
 
-      reduce_level<dd_policy>(sink_arcs, node_arcs, reduce_pq, label, out_writer, available_memory / 2);
+      const level_info_t current_level_info = level_info.pull();
+      const size_t level_width = size_of(current_level_info);
+      const size_t level_memory = available_memory / 2;
+      const size_t internal_sorter_needs = internal_sorter<node_t>::memory_usage(level_width) +
+                                            internal_sorter<mapping>::memory_usage(level_width);
+
+      if(internal_sorter_needs <= level_memory) {
+        reduce_level<dd_policy, internal_sorter>
+          (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
+      } else {
+        reduce_level<dd_policy, external_sorter>
+          (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
+      }
 
     }
     return out_file;
