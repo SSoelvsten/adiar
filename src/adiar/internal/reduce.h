@@ -83,6 +83,169 @@ namespace adiar
     }
   }
 
+  template <typename dd_policy>
+  void reduce_level(sink_arc_stream<> &sink_arcs,
+                    node_arc_stream<> &node_arcs,
+                    reduce_priority_queue_t &reduce_pq,
+                    label_t &label,
+                    node_writer &out_writer,
+                    const tpie::memory_size_type available_memory)
+  {
+    // Temporary file for Reduction Rule 1 mappings (opened later if need be)
+    tpie::file_stream<mapping> red1_mapping;
+
+    // Sorter to find Reduction Rule 2 mappings
+    external_sorter<node_t, reduce_node_children_lt>
+      child_grouping(available_memory, 2);
+
+    external_sorter<mapping, reduce_uid_lt>
+      red2_mapping(available_memory, 2);
+
+    // Pull out all nodes from reduce_pq and sink_arcs for this level
+    while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label)
+            || reduce_pq.can_pull()) {
+      const arc_t e_high = reduce_get_next(reduce_pq, sink_arcs);
+      const arc_t e_low = reduce_get_next(reduce_pq, sink_arcs);
+
+      node_t n = node_of(e_low, e_high);
+
+      // Apply Reduction rule 1
+      ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
+      if (reduction_rule_ret != n.uid) {
+        // Open red1_mapping first (and create file on disk) when at least one
+        // element is written to it.
+        if (!red1_mapping.is_open()) { red1_mapping.open(); }
+#ifdef ADIAR_STATS_EXTRA
+        stats_reduce.removed_by_rule_1++;
+#endif
+        red1_mapping.write({ n.uid, reduction_rule_ret });
+      } else {
+        child_grouping.push(n);
+      }
+    }
+    // Sort and apply Reduction rule 2
+    child_grouping.sort();
+
+    if (child_grouping.can_pull()) {
+      // Set up for remapping, keeping the very first node seen
+      id_t out_id = MAX_ID;
+      node_t current_node = child_grouping.pull();
+
+      adiar_debug(out_id > 0, "Has run out of ids");
+
+      node_t out_node = create_node(label, out_id--, current_node.low, current_node.high);
+      out_writer.unsafe_push(out_node);
+
+      red2_mapping.push({ current_node.uid, out_node.uid });
+
+      // Keep the first node with different children than prior, and remap all
+      // the later that match its children.
+      while (child_grouping.can_pull()) {
+        node_t next_node = child_grouping.pull();
+        if (current_node.low == next_node.low && current_node.high == next_node.high) {
+#ifdef ADIAR_STATS_EXTRA
+          stats_reduce.removed_by_rule_2++;
+#endif
+          red2_mapping.push({ next_node.uid, out_node.uid });
+        } else {
+          current_node = next_node;
+
+          out_node = create_node(label, out_id, current_node.low, current_node.high);
+          out_writer.unsafe_push(out_node);
+          out_id--;
+
+          red2_mapping.push({current_node.uid, out_node.uid});
+        }
+      }
+
+      out_writer.unsafe_push(create_level_info(label, MAX_ID - out_id));
+    }
+
+    // Sort mappings for Reduction rule 2 back in order of node_arcs
+    red2_mapping.sort();
+
+    // Merging of red1_mapping and red2_mapping
+    mapping next_red1 = {0, 0};
+    bool has_next_red1 = red1_mapping.is_open() && red1_mapping.size() > 0;
+    if (has_next_red1) {
+      red1_mapping.seek(0);
+      next_red1 = red1_mapping.read();
+    }
+
+    mapping next_red2 = {0, 0};
+    bool has_next_red2 = red2_mapping.can_pull();
+    if (has_next_red2) {
+      next_red2 = red2_mapping.pull();
+    }
+
+    // Pass all the mappings to Q
+    while (has_next_red1 || has_next_red2) {
+      // Find the mapping with largest old_uid
+      bool is_red1_current = !has_next_red2 ||
+                              (has_next_red1 && next_red1.old_uid > next_red2.old_uid);
+      mapping current_map = is_red1_current ? next_red1 : next_red2;
+
+      adiar_invariant(!node_arcs.can_pull() || current_map.old_uid == node_arcs.peek().target,
+                      "Mapping forwarded in sync with node_arcs");
+
+      // Find all arcs that have sources that match the current mapping's old_uid
+      while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target) {
+        // The is_high flag is included in arc_t..source
+        arc_t new_arc = { node_arcs.pull().source, current_map.new_uid };
+        reduce_pq.push(new_arc);
+      }
+
+      // Update the mapping that was used
+      if (is_red1_current) {
+        has_next_red1 = red1_mapping.can_read();
+        if (has_next_red1) {
+          next_red1 = red1_mapping.read();
+        }
+      } else {
+        has_next_red2 = red2_mapping.can_pull();
+        if (has_next_red2) {
+          next_red2 = red2_mapping.pull();
+        }
+      }
+    }
+
+    // Move on to the next level
+    red1_mapping.close();
+
+    if (!reduce_pq.empty()) {
+      adiar_debug(!sink_arcs.can_pull() || label_of(sink_arcs.peek().source) < label,
+                  "All sink arcs for 'label' should be processed");
+
+      adiar_debug(!node_arcs.can_pull() || label_of(node_arcs.peek().target) < label,
+                  "All node arcs for 'label' should be processed");
+
+      adiar_debug(reduce_pq.empty() || !reduce_pq.can_pull(),
+                  "All forwarded arcs for 'label' should be processed");
+
+      if (sink_arcs.can_pull()) {
+        reduce_pq.setup_next_level(label_of(sink_arcs.peek().source));
+      } else {
+        reduce_pq.setup_next_level();
+      }
+
+      label = !reduce_pq.empty_level()
+        ? reduce_pq.current_level()
+        : label_of(sink_arcs.peek().source);
+
+    } else if (!out_writer.has_pushed()) {
+      adiar_debug(!node_arcs.can_pull() && !sink_arcs.can_pull(),
+                  "Nodes are still left to be processed");
+
+      adiar_debug(reduce_pq.empty(),
+                  "Nothing has been pushed to a 'parent'");
+
+      adiar_debug(!out_writer.has_pushed(),
+                  "No nodes are pushed when it collapses to a sink");
+
+      out_writer.unsafe_push({ next_red1.new_uid, NIL, NIL });
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Reduce a given edge-based decision diagram.
   ///
@@ -123,8 +286,8 @@ namespace adiar
 
     // Check to see if node_arcs is empty
     if (!node_arcs.can_pull()) {
-      arc_t e_high = sink_arcs.pull();
-      arc_t e_low = sink_arcs.pull();
+      const arc_t e_high = sink_arcs.pull();
+      const arc_t e_low = sink_arcs.pull();
 
       // Apply reduction rule 1, if applicable
       ptr_t reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
@@ -153,162 +316,8 @@ namespace adiar
       adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
                       "label and priority queue should be in sync");
 
-      // Temporary file for Reduction Rule 1 mappings (opened later if need be)
-      tpie::file_stream<mapping> red1_mapping;
+      reduce_level<dd_policy>(sink_arcs, node_arcs, reduce_pq, label, out_writer, available_memory / 2);
 
-      // Sorter to find Reduction Rule 2 mappings
-      external_sorter<node_t, reduce_node_children_lt>
-        child_grouping(available_memory / 2, 2);
-
-      // Pull out all nodes from reduce_pq and sink_arcs for this level
-      while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label)
-             || reduce_pq.can_pull()) {
-        arc_t e_high = reduce_get_next(reduce_pq, sink_arcs);
-        arc_t e_low = reduce_get_next(reduce_pq, sink_arcs);
-
-        node_t n = node_of(e_low, e_high);
-
-        // Apply Reduction rule 1
-        ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
-        if (reduction_rule_ret != n.uid) {
-          // Open red1_mapping first (and create file on disk) when at least one
-          // element is written to it.
-          if (!red1_mapping.is_open()) { red1_mapping.open(); }
-#ifdef ADIAR_STATS_EXTRA
-          stats_reduce.removed_by_rule_1++;
-#endif
-          red1_mapping.write({ n.uid, reduction_rule_ret });
-        } else {
-          child_grouping.push(n);
-        }
-      }
-
-      // Sort and apply Reduction rule 2
-      child_grouping.sort();
-
-      external_sorter<mapping, reduce_uid_lt>
-        red2_mapping(available_memory / 2, 2);
-
-      if (child_grouping.can_pull()) {
-        // Set up for remapping, keeping the very first node seen
-        id_t out_id = MAX_ID;
-        node_t current_node = child_grouping.pull();
-
-        adiar_debug(out_id > 0, "Has run out of ids");
-
-        node_t out_node = create_node(label, out_id--, current_node.low, current_node.high);
-        out_writer.unsafe_push(out_node);
-
-        red2_mapping.push({ current_node.uid, out_node.uid });
-
-        // Keep the first node with different children than prior, and remap all
-        // the later that match its children.
-        while (child_grouping.can_pull()) {
-          node_t next_node = child_grouping.pull();
-          if (current_node.low == next_node.low && current_node.high == next_node.high) {
-#ifdef ADIAR_STATS_EXTRA
-            stats_reduce.removed_by_rule_2++;
-#endif
-            red2_mapping.push({ next_node.uid, out_node.uid });
-          } else {
-            current_node = next_node;
-
-            out_node = create_node(label, out_id, current_node.low, current_node.high);
-            out_writer.unsafe_push(out_node);
-            out_id--;
-
-            red2_mapping.push({current_node.uid, out_node.uid});
-          }
-        }
-
-        out_writer.unsafe_push(create_level_info(label, MAX_ID - out_id));
-      }
-
-      // Sort mappings for Reduction rule 2 back in order of node_arcs
-      red2_mapping.sort();
-
-      // Merging of red1_mapping and red2_mapping
-      mapping next_red1 = {0, 0};
-      bool has_next_red1 = red1_mapping.is_open() && red1_mapping.size() > 0;
-      if (has_next_red1) {
-        red1_mapping.seek(0);
-        next_red1 = red1_mapping.read();
-      }
-
-      mapping next_red2 = {0, 0};
-      bool has_next_red2 = red2_mapping.can_pull();
-      if (has_next_red2) {
-        next_red2 = red2_mapping.pull();
-      }
-
-      // Pass all the mappings to Q
-      while (has_next_red1 || has_next_red2) {
-        // Find the mapping with largest old_uid
-        bool is_red1_current = !has_next_red2 ||
-                               (has_next_red1 && next_red1.old_uid > next_red2.old_uid);
-        mapping current_map = is_red1_current ? next_red1 : next_red2;
-
-        adiar_invariant(!node_arcs.can_pull() || current_map.old_uid == node_arcs.peek().target,
-                        "Mapping forwarded in sync with node_arcs");
-
-        // Find all arcs that have sources that match the current mapping's old_uid
-        while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target) {
-          // The is_high flag is included in arc_t..source
-          arc_t new_arc = { node_arcs.pull().source, current_map.new_uid };
-          reduce_pq.push(new_arc);
-        }
-
-        // Update the mapping that was used
-        if (is_red1_current) {
-          has_next_red1 = red1_mapping.can_read();
-          if (has_next_red1) {
-            next_red1 = red1_mapping.read();
-          }
-        } else {
-          has_next_red2 = red2_mapping.can_pull();
-          if (has_next_red2) {
-            next_red2 = red2_mapping.pull();
-          }
-        }
-      }
-
-      // Move on to the next level
-      red1_mapping.close();
-
-      if (!reduce_pq.empty()) {
-        adiar_debug(!sink_arcs.can_pull() || label_of(sink_arcs.peek().source) < label,
-                    "All sink arcs for 'label' should be processed");
-
-        adiar_debug(!node_arcs.can_pull() || label_of(node_arcs.peek().target) < label,
-                    "All node arcs for 'label' should be processed");
-
-        adiar_debug(reduce_pq.empty() || !reduce_pq.can_pull(),
-                    "All forwarded arcs for 'label' should be processed");
-
-        if (sink_arcs.can_pull()) {
-          reduce_pq.setup_next_level(label_of(sink_arcs.peek().source));
-        } else {
-          reduce_pq.setup_next_level();
-        }
-
-        label = !reduce_pq.empty_level()
-          ? reduce_pq.current_level()
-          : label_of(sink_arcs.peek().source);
-
-      } else if (!out_writer.has_pushed()) {
-        adiar_debug(!node_arcs.can_pull() && !sink_arcs.can_pull(),
-                    "Nodes are still left to be processed");
-
-        adiar_debug(reduce_pq.empty(),
-                    "Nothing has been pushed to a 'parent'");
-
-        adiar_debug(!out_writer.has_pushed(),
-                    "No nodes are pushed when it collapses to a sink");
-
-        out_writer.unsafe_push({ next_red1.new_uid, NIL, NIL });
-
-        return out_file;
-      }
     }
     return out_file;
   }
