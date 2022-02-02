@@ -128,7 +128,7 @@ namespace adiar {
 
     void sort()
     {
-      std::sort(_vector.begin(), _vector.end(), _pred);
+      tpie::parallel_sort(_vector.begin(), _vector.end(), _pred);
       _begin = _vector.begin();
       _end = _vector.end();
     }
