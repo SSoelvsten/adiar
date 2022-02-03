@@ -103,7 +103,7 @@ namespace snowhouse
     static std::string ToString(const level_info_t& m)
     {
       std::stringstream stream;
-      stream << "level_info: (x" << label_of(m) << ", #nodes = " << size_of(m) << ")";
+      stream << "level_info: (x" << label_of(m) << ", #nodes = " << width_of(m) << ")";
       return stream.str();
     }
   };

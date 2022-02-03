@@ -492,9 +492,9 @@ namespace adiar {
     return m;
   }
 
-  level_info_t create_level_info(label_t label, size_t level_size)
+  level_info_t create_level_info(label_t label, size_t level_width)
   {
-    return { label, level_size };
+    return { label, level_width };
   }
 
   label_t label_of(const level_info_t& m)
@@ -502,14 +502,14 @@ namespace adiar {
     return m.label;
   }
 
-  size_t size_of(const level_info_t& m)
+  size_t width_of(const level_info_t& m)
   {
-    return m.size;
+    return m.width;
   }
 
   bool operator== (const level_info& a, const level_info& b)
   {
-    return a.label == b.label && a.size == b.size;
+    return a.label == b.label && a.width == b.width;
   }
 
   bool operator!= (const level_info& a, const level_info& b)
