@@ -26,13 +26,13 @@ namespace adiar
   public:
     input_bound_levels(const node_file &f1, const node_file &/*f2*/)
       : in_meta_1(f1),
-        curr_level_size(size_of(in_meta_1.pull())),
+        curr_level_size(width_of(in_meta_1.pull())),
         curr_level_processed(1)
     { }
 
     void next_level(label_t /* level */)
     { // Ignore input, since only used with the isomorphism_policy below.
-      curr_level_size = size_of(in_meta_1.pull());
+      curr_level_size = width_of(in_meta_1.pull());
       curr_level_processed = 0;
     }
 

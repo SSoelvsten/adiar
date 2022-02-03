@@ -320,7 +320,7 @@ namespace adiar
                       "label and priority queue should be in sync");
 
       const level_info_t current_level_info = level_info.pull();
-      const size_t level_width = size_of(current_level_info);
+      const size_t level_width = width_of(current_level_info);
       const size_t level_memory = available_memory / 2;
       const size_t internal_sorter_needs = internal_sorter<node_t>::memory_usage(level_width) +
                                             internal_sorter<mapping>::memory_usage(level_width);
