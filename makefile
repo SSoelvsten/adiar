@@ -22,11 +22,11 @@ clean: | clean/files
 # ============================================================================ #
 #  TEST
 # ============================================================================ #
-TEST_C_FLAGS = "-g -O2"
+O2_FLAGS = "-g -O2"
 
 test:
 	@mkdir -p build/
-	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_FLAGS=$(TEST_C_FLAGS) -D CMAKE_CXX_FLAGS=$(TEST_C_FLAGS) ..
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_FLAGS=$(O2_FLAGS) -D CMAKE_CXX_FLAGS=$(O2_FLAGS) ADIAR_STATS_EXTRA=ON ..
 	@cd build/ && make $(MAKE_FLAGS) test_unit
 
 	$(MAKE) clean/files
@@ -64,7 +64,7 @@ M = 1024
 
 main:
 	@mkdir -p build/
-	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug -D ADIAR_STATS_EXTRA=ON ..
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_FLAGS=$(O2_FLAGS) -D CMAKE_CXX_FLAGS=$(O2_FLAGS) ADIAR_STATS_EXTRA=ON ..
 	@cd build/ && make $(MAKE_FLAGS) adiar_main
 	@echo "" && echo ""
 	@./build/src/adiar_main ${M}
