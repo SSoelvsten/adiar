@@ -177,6 +177,9 @@ int main(int argc, char* argv[]) {
   // Run tests
   auto bandit_ret = bandit::run(argc, argv);
 
+  // Output statistics
+  adiar::adiar_printstat();
+
   // Close all of TPIE down again
   adiar_deinit();
 
