@@ -102,6 +102,8 @@ namespace adiar
     size_t processed_levels = 0;
     label_t prior_label = MAX_LABEL; // <-- dummy value to squelch the compiler
 
+    nf._file_ptr->max_1level_cut = 0;
+
     do {
       label_t curr_label = ls.pull();
       size_t level_size = 0;
@@ -165,6 +167,7 @@ namespace adiar
 
       adiar_debug(level_size > 0, "Should have output a node");
       nw.unsafe_push(create_level_info(curr_label, level_size));
+      nf._file_ptr->max_1level_cut = std::max(nf._file_ptr->max_1level_cut, 2 * level_size);
 
       prior_label = curr_label;
       prior_min_id = curr_id + 1;

@@ -1,3 +1,5 @@
+#include <adiar/adiar.h>
+
 go_bandit([]() {
   describe("adiar/zdd/binop.cpp", []() {
     node_file zdd_F;
@@ -57,6 +59,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(out);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { Ø } U Ø", [&]() {
@@ -70,6 +74,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(out);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("should shortcut on irrelevance for { {0} } U Ø", [&]() {
@@ -114,6 +120,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { {0} } U { {1} }", [&]() {
@@ -156,6 +164,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("computes { {0,1}, {0,3} } U { {0,2}, {2} }", [&]() {
@@ -241,6 +251,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("computes { {0,1}, {1} } U { {0,2}, {2} }", [&]() {
@@ -308,6 +320,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("computes { {0}, {1,3}, {2,3}, {1} } U { {0,3}, {3} }", [&]() {
@@ -400,6 +414,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,3u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(4u));
       });
     });
 
@@ -422,6 +438,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { Ø } ∩ Ø", [&]() {
@@ -434,6 +452,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes (and shortcut) { {0} } ∩ Ø", [&]() {
@@ -453,6 +473,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes (and shortcut) Ø ∩ { {0} }", [&]() {
@@ -466,6 +488,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { {0} } ∩ { Ø }", [&]() {
@@ -485,6 +509,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { Ø, {0} } ∩ { Ø }", [&]() {
@@ -510,6 +536,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { {0}, {1} } ∩ { Ø }", [&]() {
@@ -540,6 +568,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes (and shortcut) { {0,1}, {1} } ∩ { {0,1} }", [&]() {
@@ -597,6 +627,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("computes (and skip to sink) { {0}, {1}, {0,1} } ∩ { Ø }", [&]() {
@@ -628,6 +660,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes (and skip to sink) { {0,2}, {0}, {2} } \\ { {1}, {2}, Ø }", [&]() {
@@ -676,6 +710,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes (and skips in) { {0,1,2}, {0,2}, {0}, {2} } } ∩ { {0,2}, {0}, {1}, {2} }", [&]() {
@@ -751,6 +787,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("computes { {0}, {1} } ∩ { {0,1} }", [&]() {
@@ -798,6 +836,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("computes (and skip) { {0}, {1}, {2}, {1,2}, {0,2} } ∩ { {0}, {2}, {0,2}, {0,1,2} }", [&]() {
@@ -867,6 +907,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("computes (and skip) { {0}, {1} } ∩ { {1}, {0,2} }", [&]() {
@@ -927,6 +969,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("computes (and skip) { {0,2}, {1,2}, Ø } ∩ { {0,1}, {0}, {1} }", [&]() {
@@ -989,6 +1033,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("computes (and shortcut) { {0,2}, {1,2}, Ø } ∩ { {0,2}, {0} }", [&]() {
@@ -1050,6 +1096,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
     });
 
@@ -1064,6 +1112,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("should shortcut to Ø on same file for { {x1} }", [&]() {
@@ -1076,6 +1126,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { Ø } \\ Ø", [&]() {
@@ -1088,6 +1140,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes Ø \\ { Ø }", [&]() {
@@ -1100,6 +1154,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("should shortcut on irrelevance on { {x0} } \\ Ø", [&]() {
@@ -1123,6 +1179,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { {Ø} } \\ { {0} }", [&]() {
@@ -1136,6 +1194,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { {0} } \\ { Ø }", [&]() {
@@ -1165,6 +1225,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { {0}, Ø } \\ { Ø }", [&]() {
@@ -1201,6 +1263,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("computes { {0,1}, {1} } \\ { {1}, Ø }", [&]() {
@@ -1254,6 +1318,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("computes { {0,1}, {1,2}, {1} } \\ { {1}, Ø }", [&]() {
@@ -1325,6 +1391,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
     });
   });
