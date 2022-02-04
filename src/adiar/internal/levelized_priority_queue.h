@@ -222,7 +222,10 @@ namespace adiar {
 
     static constexpr tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
-      adiar_unreachable(); // TODO
+      // HACK: the 'internal_priority_queue' can take (two) fewer elements than
+      // the 'internal_sorter'. So, this is a slight under-approximation of what
+      // we could do with this amount of memory.
+      return internal_priority_queue<elem_t, elem_comp_t>::memory_fits(memory_bytes / (BUCKETS + 1));
     }
 
   private:
