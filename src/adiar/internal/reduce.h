@@ -284,7 +284,9 @@ namespace adiar
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
-    reduce_priority_queue_t reduce_pq({in_file}, available_memory / 2);
+    reduce_priority_queue_t reduce_pq({in_file},
+                                      available_memory / 2,
+                                      in_file._file_ptr->max_1level_cut);
 
     // Check to see if node_arcs is empty
     if (!node_arcs.can_pull()) {

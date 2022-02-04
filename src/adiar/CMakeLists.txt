@@ -33,6 +33,7 @@ set(HEADERS
   internal/memory.h
   internal/pred.h
   internal/levelized_priority_queue.h
+  internal/priority_queue.h
   internal/product_construction.h
   internal/quantify.h
   internal/reduce.h

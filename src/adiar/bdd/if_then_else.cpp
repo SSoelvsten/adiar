@@ -257,7 +257,9 @@ namespace adiar
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
-    ite_priority_queue_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, available_memory / 3);
+    ite_priority_queue_1_t ite_pq_1({bdd_if, bdd_then, bdd_else},
+                                    available_memory / 3,
+                                    std::numeric_limits<size_t>::max());
     ite_priority_queue_2_t ite_pq_2(available_memory / 3);
     ite_priority_queue_3_t ite_pq_3(available_memory / 3);
 
