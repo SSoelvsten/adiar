@@ -90,7 +90,9 @@ namespace adiar
     // Set up priority queue for recursion
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
-    comparison_priority_queue_t comparison_pq_1({f1,f2},(available_memory * 3) / 4);
+    comparison_priority_queue_t comparison_pq_1({f1, f2},
+                                                (available_memory * 3) / 4,
+                                                std::numeric_limits<size_t>::max());
 
     // Check for violation on root children, or 'recurse' otherwise
     label_t level = label_of(fst(v1.uid, v2.uid));

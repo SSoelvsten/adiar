@@ -47,6 +47,7 @@ namespace adiar
   };
 
   typedef levelized_priority_queue<arc_cut, arc_cut_label, arc_cut_lt,
+                                   external_sorter, external_priority_queue,
                                    label_file, 1u, std::less<label_t>,
                                    0u>
   intercut_priority_queue_2_t;
@@ -189,8 +190,12 @@ namespace adiar
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
-    intercut_priority_queue_1_t intercut_pq_1({dd}, available_memory / 2);
-    intercut_priority_queue_2_t intercut_pq_2({labels}, available_memory / 2);
+    intercut_priority_queue_1_t intercut_pq_1({dd},
+                                              available_memory / 2,
+                                              std::numeric_limits<size_t>::max());
+    intercut_priority_queue_2_t intercut_pq_2({labels},
+                                              available_memory / 2,
+                                              std::numeric_limits<size_t>::max());
 
     // Add request for root in the relevant queue
     label_t out_label = std::min(l, label_of(n));

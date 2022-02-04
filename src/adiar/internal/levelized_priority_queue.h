@@ -7,7 +7,6 @@
 
 #include <tpie/file.h>
 #include <tpie/file_stream.h>
-#include <tpie/priority_queue.h>
 #include <tpie/sort.h>
 
 #include <adiar/data.h>
@@ -15,6 +14,7 @@
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/priority_queue.h>
 #include <adiar/internal/sorter.h>
 #include <adiar/internal/util.h>
 
@@ -173,6 +173,8 @@ namespace adiar {
   template <typename elem_t,
             typename elem_level_t,
             typename elem_comp_t  = std::less<elem_t>,
+            template<typename, typename> typename sorter_template = external_sorter,
+            template<typename, typename> typename priority_queue_template = external_priority_queue,
             typename file_t       = meta_file<elem_t>,
             size_t   FILES        = 1u,
             typename level_comp_t = std::less<label_t>,
@@ -194,6 +196,34 @@ namespace adiar {
 
     static_assert(OUT_OF_BUCKETS_IDX + 1 == 0,
                   "Overflow to '0' is necessary for internal logic to work");
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the sorter for each bucket.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef sorter_template<elem_t, elem_comp_t> sorter_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the overflow priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef priority_queue_template<elem_t, elem_comp_t> priority_queue_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of buckets.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr size_t BUCKETS = LOOK_AHEAD + 1;
+
+  public:
+    static constexpr tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
+    {
+      return internal_priority_queue<elem_t, elem_comp_t>::memory_usage(no_elements)
+        + BUCKETS * internal_sorter<elem_t, elem_comp_t>::memory_usage(no_elements);
+    }
+
+    static constexpr tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
+    {
+      adiar_unreachable(); // TODO
+    }
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -224,6 +254,11 @@ namespace adiar {
     elem_comp_t _e_comparator = elem_comp_t();
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Maximum size of levelized priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t _max_size;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Total memory given in constructor.
     ////////////////////////////////////////////////////////////////////////////
     tpie::memory_size_type _memory_given;
@@ -249,19 +284,9 @@ namespace adiar {
     label_merger<file_t, level_comp_t, FILES> _level_merger;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of buckets.
-    ////////////////////////////////////////////////////////////////////////////
-    static constexpr size_t BUCKETS = LOOK_AHEAD + 1;
-
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief Level of each bucket.
     ////////////////////////////////////////////////////////////////////////////
     label_t _buckets_level [BUCKETS];
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of the sorter for each bucket.
-    ////////////////////////////////////////////////////////////////////////////
-    typedef external_sorter<elem_t, elem_comp_t> sorter_t;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Sorter for each bucker.
@@ -291,16 +316,10 @@ namespace adiar {
     bool _has_next_from_bucket = false;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of the overflow priority queue.
-    ////////////////////////////////////////////////////////////////////////////
-    typedef tpie::priority_queue<elem_t, elem_comp_t> priority_queue_t;
-
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief Overflow priority queue used for elements pushed to a level where
     ///        a bucket is (yet) not created.
     ////////////////////////////////////////////////////////////////////////////
     priority_queue_t _overflow_queue;
-
 
   private:
     static tpie::memory_size_type m_overflow_queue(tpie::memory_size_type memory_given)
@@ -311,11 +330,12 @@ namespace adiar {
       return std::max(eight_MiB, weighted_share);
     }
 
-    levelized_priority_queue(tpie::memory_size_type memory_given)
-      : _memory_given(memory_given),
+    levelized_priority_queue(tpie::memory_size_type memory_given, size_t max_size)
+      : _max_size(max_size),
+        _memory_given(memory_given),
         _memory_occupied_by_merger(tpie::get_memory_manager().available()),
         _memory_occupied_by_overflow(m_overflow_queue(memory_given)),
-        _overflow_queue(m_overflow_queue(memory_given))
+        _overflow_queue(m_overflow_queue(memory_given), max_size)
     { }
 
 
@@ -328,8 +348,9 @@ namespace adiar {
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const file_t (& files) [FILES],
-                             tpie::memory_size_type memory_given)
-      : levelized_priority_queue(memory_given)
+                             tpie::memory_size_type memory_given,
+                             size_t max_size)
+      : levelized_priority_queue(memory_given, max_size)
     {
       _level_merger.hook(files);
       init_buckets();
@@ -343,8 +364,9 @@ namespace adiar {
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const decision_diagram (& dds) [FILES],
-                             tpie::memory_size_type memory_given)
-      : levelized_priority_queue(memory_given)
+                             tpie::memory_size_type memory_given,
+                             size_t max_size)
+      : levelized_priority_queue(memory_given, max_size)
     {
       _level_merger.hook(dds);
       init_buckets();
@@ -355,8 +377,10 @@ namespace adiar {
     ///
     /// \param files Files to follow the levels of
     ////////////////////////////////////////////////////////////////////////////
+    [[ deprecated ]]
     levelized_priority_queue(const file_t (& files) [FILES])
-      : levelized_priority_queue(files, tpie::get_memory_manager().available())
+      : levelized_priority_queue(files, tpie::get_memory_manager().available(),
+                                 std::numeric_limits<size_t>::max())
     { }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -364,10 +388,11 @@ namespace adiar {
     ///
     /// \param dds Decision Diagrams to follow the levels of
     ////////////////////////////////////////////////////////////////////////////
+    [[ deprecated ]]
     levelized_priority_queue(const decision_diagram (& dds) [FILES])
-      : levelized_priority_queue(dds, tpie::get_memory_manager().available())
+      : levelized_priority_queue(dds, tpie::get_memory_manager().available(),
+                                 std::numeric_limits<size_t>::max())
     { }
-
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -767,7 +792,7 @@ namespace adiar {
     void setup_bucket(size_t idx, label_t level)
     {
       _buckets_level[idx] = level;
-      _buckets_sorter[idx] = std::make_unique<sorter_t>(_memory_for_buckets, std::numeric_limits<size_t>::max(), BUCKETS);
+      _buckets_sorter[idx] = std::make_unique<sorter_t>(_memory_for_buckets, _max_size, BUCKETS);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -845,6 +870,7 @@ namespace adiar {
             label_t  INIT_LEVEL  = 1u,
             label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD>
   using levelized_node_priority_queue = levelized_priority_queue<elem_t, elem_level_t, elem_comp_t,
+                                                                 external_sorter, external_priority_queue,
                                                                  node_file, FILES, std::less<label_t>,
                                                                  INIT_LEVEL,
                                                                  LOOK_AHEAD>;
@@ -856,6 +882,7 @@ namespace adiar {
             label_t  INIT_LEVEL   = 1u,
             label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD>
   using levelized_arc_priority_queue = levelized_priority_queue<elem_t, elem_level_t, elem_comp_t,
+                                                                external_sorter, external_priority_queue,
                                                                 arc_file, FILES, std::greater<label_t>,
                                                                 INIT_LEVEL,
                                                                 LOOK_AHEAD>;

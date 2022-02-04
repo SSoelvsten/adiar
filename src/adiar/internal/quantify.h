@@ -158,7 +158,9 @@ namespace adiar
     arc_writer aw(out_arcs);
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-    quantify_priority_queue_t quantify_pq_1({in}, available_memory / 2);
+    quantify_priority_queue_t quantify_pq_1({in},
+                                            available_memory / 2,
+                                            std::numeric_limits<size_t>::max());
     quantify_data_priority_queue_t quantify_pq_2(available_memory / 2);
 
     label_t out_label = label_of(v.uid);

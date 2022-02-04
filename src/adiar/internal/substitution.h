@@ -92,7 +92,9 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    substitute_priority_queue_t substitute_pq({dd});
+    substitute_priority_queue_t substitute_pq({dd},
+                                              tpie::get_memory_manager().available(),
+                                              std::numeric_limits<size_t>::max());
 
     label_t level = label_of(n);
     size_t level_size = 0;

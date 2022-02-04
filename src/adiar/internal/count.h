@@ -82,7 +82,9 @@ namespace adiar
 
     node_stream<> ns(dd);
 
-    count_priority_queue_t<queue_t> count_pq({dd});
+    count_priority_queue_t<queue_t> count_pq({dd},
+                                             tpie::get_memory_manager().available(),
+                                             std::numeric_limits<size_t>::max());
 
     {
       node_t root = ns.pull();

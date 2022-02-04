@@ -297,7 +297,9 @@ namespace adiar
 
     tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
-    prod_priority_queue_1_t prod_pq_1({in_1,in_2}, available_memory / 2);
+    prod_priority_queue_1_t prod_pq_1({in_1, in_2},
+                                      available_memory / 2,
+                                      std::numeric_limits<size_t>::max());
     prod_priority_queue_2_t prod_pq_2(available_memory / 2);
 
     // Process root and create initial recursion requests
