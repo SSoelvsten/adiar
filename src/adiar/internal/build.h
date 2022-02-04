@@ -14,6 +14,7 @@ namespace adiar
     node_file nf;
     node_writer nw(nf);
     nw.unsafe_push(create_sink(value));
+    nf._file_ptr->max_1level_cut = 0;
     return nf;
   }
 
@@ -25,6 +26,7 @@ namespace adiar
     node_writer nw(nf);
     nw.unsafe_push(create_node(label, 0, create_sink_ptr(false), create_sink_ptr(true)));
     nw.unsafe_push(create_level_info(label,1u));
+    nf._file_ptr->max_1level_cut = 0;
     return nf;
   }
 
@@ -63,6 +65,7 @@ namespace adiar
         nw.unsafe_push(create_level_info(next_label,1u));
       }
 
+      nf._file_ptr->max_1level_cut = (link_low + link_high) * (labels.size() > 1);
       return nf;
     }
 

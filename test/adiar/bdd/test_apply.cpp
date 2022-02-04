@@ -1,3 +1,5 @@
+#include <adiar/adiar.h>
+
 go_bandit([]() {
   describe("adiar/bdd/apply.cpp", []() {
     node_file bdd_F;
@@ -144,10 +146,18 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should resolve T /\\ T sink-only BDDs", [&]() {
-        __bdd out = bdd_and(bdd_T, bdd_T);
+        node_file bdd_T2;
+        {
+          node_writer w(bdd_T2);
+          w << create_sink(true);
+        }
+
+        __bdd out = bdd_and(bdd_T, bdd_T2);
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -156,6 +166,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should shortcut on irrelevance on x0 /\\ T", [&]() {
@@ -176,6 +188,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should x0 and !x0", [&]() {
@@ -207,6 +221,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should shortcut F /\\ [2]", [&]() {
@@ -220,6 +236,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should compute (and shortcut) BBD 1 /\\ [2]", [&]() {
@@ -305,6 +323,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(4u));
       });
 
       it("should return input on being given the same BDD twice", [&]() {
@@ -406,6 +426,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(3u));
       });
     });
 
@@ -435,6 +457,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
     });
 
@@ -449,10 +473,19 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
-      it("should resolve T \\/ F sink-only BDDs", [&]() {
-        __bdd out = bdd_or(bdd_F, bdd_F);
+      it("should resolve F \\/ F sink-only BDDs", [&]() {
+        node_file bdd_F2;
+
+        {
+          node_writer w(bdd_F2);
+          w << create_sink(false);
+        }
+
+        __bdd out = bdd_or(bdd_F, bdd_F2);
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -461,6 +494,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should shortcut on irrelevance on x0 \\/ F", [&]() {
@@ -519,6 +554,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(1u));
       });
 
       it("should shortcut [1] \\/ T", [&]() {
@@ -532,6 +569,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should compute (and shortcut) [2] \\/ T", [&]() {
@@ -545,6 +584,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should compute (and shortcut) [1] \\/ [2]", [&]() {
@@ -617,6 +658,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(2u));
       });
 
     });
@@ -633,6 +676,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
     });
 
@@ -648,6 +693,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should resolve T ^ T sink-only BDDs", [&]() {
@@ -660,6 +707,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should shortcut on negating on x0 ^ T", [&]() {
@@ -724,6 +773,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(2u));
       });
 
       it("should compute [2] ^ x2", [&]() {
@@ -791,6 +842,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(2u));
       });
 
       it("should compute [1] ^ [2]", [&]() {
@@ -876,6 +929,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,3u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(4u));
       });
 
       it("should compute [3] ^ [1]", [&]() {
@@ -984,6 +1039,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(4u));
       });
 
       it("should collapse on the same BDD twice", [&]() {
@@ -997,6 +1054,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should collapse on the same BDD twice to a sink, when both are negated", [&]() {
@@ -1010,6 +1069,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
 
@@ -1030,6 +1091,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should resolve T -> F sink-only BDDs", [&]() {
@@ -1042,6 +1105,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should resolve T -> T sink-only BDDs", [&]() {
@@ -1054,6 +1119,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should shortcut on irrelevance on T -> x0", [&]() {
@@ -1105,6 +1172,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(1u));
       });
 
       it("should shortcut F -> [1]", [&]() {
@@ -1118,6 +1187,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should return the input when given the same BDD twice, where one is negated [1]", [&]() {

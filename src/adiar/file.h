@@ -4,6 +4,7 @@
 // STD imports for memory management, strings etc.
 #include <string.h>
 #include <memory>
+#include <limits>
 
 // TPIE imports
 #include <tpie/tpie.h>
@@ -172,6 +173,11 @@ namespace adiar
     ///        to the stricter ordering required by the fast equality check.
     ////////////////////////////////////////////////////////////////////////////
     bool canonical = false;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief An upper bound for the maximum one-level cut of the DAG.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t max_1level_cut = std::numeric_limits<size_t>::max();
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Meta information on a level by level granularity.

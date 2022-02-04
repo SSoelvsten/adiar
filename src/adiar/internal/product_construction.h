@@ -331,6 +331,8 @@ namespace adiar
       }
     }
 
+    size_t max_1level_cut = 0;
+
     // Process nodes in topological order of both BDDs
     while (!prod_pq_1.empty() || !prod_pq_2.empty()) {
       if (prod_pq_1.empty_level() && prod_pq_2.empty()) {
@@ -341,6 +343,8 @@ namespace adiar
         prod_pq_1.setup_next_level();
         out_label = prod_pq_1.current_level();
         out_id = 0;
+
+        max_1level_cut = std::max(max_1level_cut, prod_pq_1.size());
       }
 
       ptr_t source, t1, t2;
@@ -433,6 +437,7 @@ namespace adiar
       aw.unsafe_push(create_level_info(out_label, out_id));
     }
 
+    out_arcs._file_ptr->max_1level_cut = max_1level_cut;
     return out_arcs;
   }
 }

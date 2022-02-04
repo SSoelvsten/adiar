@@ -68,6 +68,8 @@ namespace adiar
 
     label_t curr_label = max_label;
 
+    nf._file_ptr->max_1level_cut = 0;
+
     do {
       // Start with the maximal number the accumulated value can be at
       // up to this label.
@@ -101,6 +103,7 @@ namespace adiar
 
       } while (curr_id-- > min_id);
       nw.unsafe_push(create_level_info(curr_label, (max_id - min_id) + 1));
+      nf._file_ptr->max_1level_cut = std::max(nf._file_ptr->max_1level_cut, 2 * ((max_id - min_id) + 1));
     } while (curr_label-- > min_label);
 
     return nf;
