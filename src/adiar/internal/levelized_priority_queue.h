@@ -859,11 +859,13 @@ namespace adiar {
   template <typename elem_t,
             typename elem_level_t,
             typename elem_comp_t  = std::less<elem_t>,
+            template<typename, typename> typename sorter_template = external_sorter,
+            template<typename, typename> typename priority_queue_template = external_priority_queue,
             size_t   FILES        = 1u,
             label_t  INIT_LEVEL   = 1u,
             label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD>
   using levelized_arc_priority_queue = levelized_priority_queue<elem_t, elem_level_t, elem_comp_t,
-                                                                external_sorter, external_priority_queue,
+                                                                sorter_template, priority_queue_template,
                                                                 arc_file, FILES, std::greater<label_t>,
                                                                 INIT_LEVEL,
                                                                 LOOK_AHEAD>;

@@ -142,6 +142,8 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(2,2u));
         }
 
+        in._file_ptr->max_1level_cut = 2;
+
         // Reduce it
 
         bdd out = reduce<bdd_policy>(in);

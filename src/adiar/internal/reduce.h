@@ -45,8 +45,11 @@ namespace adiar
     }
   };
 
-  typedef levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt>
-  reduce_priority_queue_t;
+  template<template<typename, typename> typename sorter_template,
+           template<typename, typename> typename priority_queue_template>
+  using reduce_priority_queue_t =
+    levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt,
+                                 sorter_template, priority_queue_template>;
 
   //////////////////////////////////////////////////////////////////////////////
   // For sorting for Reduction Rule 2 (and back again)
@@ -72,8 +75,8 @@ namespace adiar
   // Helper functions
 
   // Merging priority queue with sink_arc stream
-  inline arc_t reduce_get_next(reduce_priority_queue_t &reduce_pq,
-                               sink_arc_stream<false> &sink_arcs)
+  template <typename pq_t>
+  inline arc_t __reduce_get_next(pq_t &reduce_pq, sink_arc_stream<false> &sink_arcs)
   {
     if (!reduce_pq.can_pull()
         || (sink_arcs.can_pull() && sink_arcs.peek().source > reduce_pq.top().source)) {
@@ -83,14 +86,14 @@ namespace adiar
     }
   }
 
-  template <typename dd_policy, template<typename, typename> typename sorter_t>
-  void reduce_level(sink_arc_stream<> &sink_arcs,
-                    node_arc_stream<> &node_arcs,
-                    reduce_priority_queue_t &reduce_pq,
-                    label_t &label,
-                    node_writer &out_writer,
-                    const tpie::memory_size_type available_memory,
-                    const size_t level_width)
+  template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
+  void __reduce_level(sink_arc_stream<> &sink_arcs,
+                      node_arc_stream<> &node_arcs,
+                      pq_t &reduce_pq,
+                      label_t &label,
+                      node_writer &out_writer,
+                      const tpie::memory_size_type available_memory,
+                      const size_t level_width)
   {
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
     tpie::file_stream<mapping> red1_mapping;
@@ -105,8 +108,8 @@ namespace adiar
     // Pull out all nodes from reduce_pq and sink_arcs for this level
     while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label)
             || reduce_pq.can_pull()) {
-      const arc_t e_high = reduce_get_next(reduce_pq, sink_arcs);
-      const arc_t e_low = reduce_get_next(reduce_pq, sink_arcs);
+      const arc_t e_high = __reduce_get_next(reduce_pq, sink_arcs);
+      const arc_t e_low = __reduce_get_next(reduce_pq, sink_arcs);
 
       node_t n = node_of(e_low, e_high);
 
@@ -247,6 +250,43 @@ namespace adiar
     }
   }
 
+  template<typename dd_policy, typename pq_t>
+  void __reduce(const arc_file &in_file,
+                node_arc_stream<> &node_arcs,
+                sink_arc_stream<> &sink_arcs,
+                level_info_stream<arc_t> &level_info,
+                node_writer &out_writer,
+                const tpie::memory_size_type available_memory)
+  {
+    pq_t reduce_pq({in_file}, available_memory / 2, in_file._file_ptr->max_1level_cut);
+
+    // Find the first label
+    // TODO take from level info instead
+    label_t label = label_of(sink_arcs.peek().source);
+
+    // Process bottom-up each level
+    while (sink_arcs.can_pull() || !reduce_pq.empty()) {
+      adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
+                      "label and priority queue should be in sync");
+
+      const level_info_t current_level_info = level_info.pull();
+      const size_t level_width = width_of(current_level_info);
+      const size_t level_memory = available_memory / 2;
+
+      const size_t internal_sorter_needs = internal_sorter<node_t>::memory_usage(level_width)
+                                         + internal_sorter<mapping>::memory_usage(level_width);
+
+      if(internal_sorter_needs <= level_memory) {
+        __reduce_level<dd_policy, pq_t, internal_sorter>
+          (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
+      } else {
+        __reduce_level<dd_policy, pq_t, external_sorter>
+          (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
+      }
+
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Reduce a given edge-based decision diagram.
   ///
@@ -265,12 +305,7 @@ namespace adiar
       return typename dd_policy::reduced_t(input.template get<node_file>(), input.negate);
     }
 
-    node_file out_file;
-    out_file._file_ptr -> canonical = true;
-
-    node_writer out_writer(out_file);
-
-    // Set up
+    // Get unreduced input
     const arc_file in_file = input.template get<arc_file>();
 
 #ifdef ADIAR_STATS
@@ -282,13 +317,13 @@ namespace adiar
     sink_arc_stream<> sink_arcs(in_file);
     level_info_stream<arc_t> level_info(in_file);
 
-    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    // Set up output
+    node_file out_file;
+    out_file._file_ptr -> canonical = true;
 
-    reduce_priority_queue_t reduce_pq({in_file},
-                                      available_memory / 2,
-                                      in_file._file_ptr->max_1level_cut);
+    node_writer out_writer(out_file);
 
-    // Check to see if node_arcs is empty
+    // Trivial single-node case
     if (!node_arcs.can_pull()) {
       const arc_t e_high = sink_arcs.pull();
       const arc_t e_low = sink_arcs.pull();
@@ -308,34 +343,24 @@ namespace adiar
 
         out_writer.unsafe_push(create_level_info(label,1u));
       }
-
       return out_file;
     }
 
-    // Find the first label
-    // TODO take from level info instead
-    label_t label = label_of(sink_arcs.peek().source);
+    // Obtain available memory for data structures and settle on their type.
+    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
-    // Process bottom-up each level
-    while (sink_arcs.can_pull() || !reduce_pq.empty()) {
-      adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
-                      "label and priority queue should be in sync");
+    const size_t max_cut = in_file._file_ptr->max_1level_cut;
+    const tpie::memory_size_type lpq_memory_fits =
+      reduce_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(available_memory / 2);
 
-      const level_info_t current_level_info = level_info.pull();
-      const size_t level_width = width_of(current_level_info);
-      const size_t level_memory = available_memory / 2;
-      const size_t internal_sorter_needs = internal_sorter<node_t>::memory_usage(level_width) +
-                                            internal_sorter<mapping>::memory_usage(level_width);
-
-      if(internal_sorter_needs <= level_memory) {
-        reduce_level<dd_policy, internal_sorter>
-          (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
-      } else {
-        reduce_level<dd_policy, external_sorter>
-          (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
-      }
-
+    if(max_cut <= lpq_memory_fits) {
+      __reduce<dd_policy, reduce_priority_queue_t<internal_sorter, internal_priority_queue>>
+        (in_file, node_arcs, sink_arcs, level_info, out_writer, available_memory);
+    } else {
+      __reduce<dd_policy, reduce_priority_queue_t<external_sorter, external_priority_queue>>
+        (in_file, node_arcs, sink_arcs, level_info, out_writer, available_memory);
     }
+
     return out_file;
   }
 }
