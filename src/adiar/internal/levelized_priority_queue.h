@@ -375,28 +375,6 @@ namespace adiar {
       init_buckets();
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief       Instantiate with as much memory as is available.
-    ///
-    /// \param files Files to follow the levels of
-    ////////////////////////////////////////////////////////////////////////////
-    [[ deprecated ]]
-    levelized_priority_queue(const file_t (& files) [FILES])
-      : levelized_priority_queue(files, tpie::get_memory_manager().available(),
-                                 std::numeric_limits<size_t>::max())
-    { }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief     Instantiate with as much memory as is available.
-    ///
-    /// \param dds Decision Diagrams to follow the levels of
-    ////////////////////////////////////////////////////////////////////////////
-    [[ deprecated ]]
-    levelized_priority_queue(const decision_diagram (& dds) [FILES])
-      : levelized_priority_queue(dds, tpie::get_memory_manager().available(),
-                                 std::numeric_limits<size_t>::max())
-    { }
-
   private:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief  Computes final memory usage of internal data structures to then
