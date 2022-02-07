@@ -22,9 +22,9 @@ class node_test_stream: public node_stream<true>
 public:
   node_test_stream(node_file &f): node_stream<true>(f) { }
   node_test_stream(bdd &f): node_stream<true>(f) { }
-  node_test_stream(__bdd &f): node_stream<true>(f.get<node_file>()) { }
+  node_test_stream(__bdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
   node_test_stream(zdd &f): node_stream<true>(f) { }
-  node_test_stream(__zdd &f): node_stream<true>(f.get<node_file>()) { }
+  node_test_stream(__zdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
 };
 
 class node_arc_test_stream: public node_arc_stream<true>

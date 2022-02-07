@@ -235,25 +235,15 @@ go_bandit([]() {
       it("should quantify T sink-only BDD as itself", [&]() {
         __bdd out = bdd_exists(sink_T, 42);
 
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+        AssertThat(out.negate, Is().False());
       });
 
       it("should quantify F sink-only BDD as itself", [&]() {
         __bdd out = bdd_exists(sink_F, 21);
 
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_F._file_ptr));
+        AssertThat(out.negate, Is().False());
       });
 
       it("should shortcut quantification of root into T sink [BDD 1]", [&]() {
@@ -266,6 +256,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should shortcut quantification of root into T sink [x2]", [&]() {
@@ -278,30 +270,15 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+        AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("should shortcut quantification on non-existent label in input [BDD 1]", [&]() {
         __bdd out = bdd_exists(bdd_1, 42);
 
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(n1_2));
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(n1_1));
-
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream<node_t> out_meta(out);
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1)));
-
-        AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1)));
-
-        AssertThat(out_meta.can_pull(), Is().False());
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_1._file_ptr));
+        AssertThat(out.negate, Is().False());
       });
 
       it("should quantify bottom-most nodes [BDD 1]", [&]() {
@@ -329,6 +306,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("should quantify root without sink arcs [BDD 2]", [&]() {
@@ -375,6 +354,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("should quantify nodes with sink or nodes as children [BDD 2]", [&]() {
@@ -421,6 +402,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("should output sink arcs in order, despite the order of resolvement [BDD 2]", [&]() {
@@ -467,6 +450,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("should keep nodes as is when skipping quantified level [BDD 3]", [&]() {
@@ -515,6 +500,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("should output sink arcs in order, despite the order of resolvement [BDD 3]", [&]() {
@@ -555,6 +542,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("should resolve sink-sink requests in [BDD 5]", [&]() {
@@ -595,6 +584,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
@@ -644,6 +635,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -706,6 +699,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("can forward multiple arcs to the same node across a level [BDD 7]", [&]() {
@@ -742,6 +737,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -790,6 +787,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8b]", [&]() {
@@ -838,6 +837,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("can quantify list [x1, x2] in sink-only BDD [&&bdd]", [&]() {
@@ -850,14 +851,8 @@ go_bandit([]() {
 
         __bdd out = bdd_exists(sink_T, labels);
 
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream<node_t> ms(out);
-        AssertThat(ms.can_pull(), Is().False());
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+        AssertThat(out.negate, Is().False());
       });
 
       it("can quantify list [x1, x2] in sink-only BDD [const &bdd]", [&]() {
@@ -871,14 +866,8 @@ go_bandit([]() {
         bdd in_bdd = sink_T;
         __bdd out = bdd_exists(in_bdd, labels);
 
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream<node_t> ms(out);
-        AssertThat(ms.can_pull(), Is().False());
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+        AssertThat(out.negate, Is().False());
       });
 
       it("can quantify list [x1, x2] [BDD 4 : &&bdd]", [&]() {
@@ -1164,27 +1153,15 @@ go_bandit([]() {
       it("should quantify T sink-only BDD as itself", [&]() {
         __bdd out = bdd_forall(sink_T, 42);
 
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream<node_t> ms(out);
-        AssertThat(ms.can_pull(), Is().False());
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+        AssertThat(out.negate, Is().False());
       });
 
       it("should quantify F sink-only BDD as itself", [&]() {
         __bdd out = bdd_forall(sink_F, 21);
 
-        node_test_stream out_nodes(out);
-
-        AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
-        AssertThat(out_nodes.can_pull(), Is().False());
-
-        level_info_test_stream<node_t> ms(out);
-        AssertThat(ms.can_pull(), Is().False());
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_F._file_ptr));
+        AssertThat(out.negate, Is().False());
       });
 
       it("should quantify root with non-shortcutting sink [BDD 1]", [&]() {
@@ -1204,7 +1181,6 @@ go_bandit([]() {
         AssertThat(sink_arcs.pull(),
                    Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_sink_ptr(true) }));
 
-
         AssertThat(sink_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
@@ -1213,6 +1189,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("should quantify root of [BDD 3]", [&]() {
@@ -1259,6 +1237,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("should prune shortcuttable requests [BDD 4]", [&]() {
@@ -1308,6 +1288,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -1370,6 +1352,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,2u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -1418,6 +1402,8 @@ go_bandit([]() {
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,1u)));
 
         AssertThat(level_info.can_pull(), Is().False());
+
+        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("should quantify list [x0, x2, x1] [BDD 4 : &&bdd]", [&]() {
@@ -1490,7 +1476,6 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(out);
 
-
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(3u,1u)));
 
@@ -1530,7 +1515,6 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(out);
 
-
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(3u,1u)));
 
@@ -1545,7 +1529,9 @@ go_bandit([]() {
 
         // __bdd is used to access the node_file
         __bdd out = bdd_forall(bdd_3, labels);
+
         AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+        AssertThat(out.negate, Is().False());
       });
 
       it("should quantify list [] into the original file [BDD 3 : const &bdd]", [&]() {
@@ -1553,7 +1539,9 @@ go_bandit([]() {
 
         bdd in_bdd = bdd_3;
         __bdd out = bdd_forall(in_bdd, labels);
+
         AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+        AssertThat(out.negate, Is().False());
       });
     });
   });

@@ -5,7 +5,7 @@ go_bandit([]() {
 
     describe("zdd_sink", [&]() {
       it("can create { Ø } [zdd_sink]", [&]() {
-        zdd res = zdd_sink(true);
+        __zdd res = zdd_sink(true);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -14,10 +14,12 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("can create { Ø } [zdd_null]", [&]() {
-        zdd res = zdd_null();
+        __zdd res = zdd_null();
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -26,10 +28,12 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("can create Ø [zdd_sink]", [&]() {
-        zdd res = zdd_sink(false);
+        __zdd res = zdd_sink(false);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -38,10 +42,12 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("can create Ø [zdd_empty]", [&]() {
-        zdd res = zdd_empty();
+        __zdd res = zdd_empty();
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -50,16 +56,18 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
     });
 
     describe("zdd_ithvar", [&]() {
       it("can create { {0} }", [&]() {
-        zdd res = zdd_ithvar(0);
+        __zdd res = zdd_ithvar(0);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, MAX_ID, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0, sink_F, sink_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -67,14 +75,16 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("can create { {42} }", [&]() {
-        zdd res = zdd_ithvar(42);
+        __zdd res = zdd_ithvar(42);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(42, 0, sink_F, sink_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -82,6 +92,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
     });
 
@@ -89,7 +101,7 @@ go_bandit([]() {
       it("can create { Ø } on empty list", [&]() {
         label_file labels;
 
-        zdd res = zdd_vars(labels);
+        __zdd res = zdd_vars(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -98,6 +110,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("can create { {42} }", [&]() {
@@ -108,7 +122,7 @@ go_bandit([]() {
           lw << 42;
         }
 
-        zdd res = zdd_vars(labels);
+        __zdd res = zdd_vars(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -120,6 +134,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("can create { {1,2,5} }", [&]() {
@@ -130,7 +146,7 @@ go_bandit([]() {
           lw << 1 << 2 << 5;
         }
 
-        zdd res = zdd_vars(labels);
+        __zdd res = zdd_vars(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -151,6 +167,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
       });
     });
 
@@ -158,7 +176,7 @@ go_bandit([]() {
       it("can create Ø on empty list", [&]() {
         label_file labels;
 
-        zdd res = zdd_singletons(labels);
+        __zdd res = zdd_singletons(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -167,6 +185,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("can create { {42} }", [&]() {
@@ -177,7 +197,7 @@ go_bandit([]() {
           lw << 42;
         }
 
-        zdd res = zdd_singletons(labels);
+        __zdd res = zdd_singletons(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -189,6 +209,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("can create { {1}, {2}, {5} }", [&]() {
@@ -199,7 +221,7 @@ go_bandit([]() {
           lw << 1 << 2 << 5;
         }
 
-        zdd res = zdd_singletons(labels);
+        __zdd res = zdd_singletons(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -220,6 +242,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
       });
     });
 
@@ -227,7 +251,7 @@ go_bandit([]() {
       it("can create { Ø } on empty list", [&]() {
         label_file labels;
 
-        zdd res = zdd_powerset(labels);
+        __zdd res = zdd_powerset(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -236,6 +260,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("can create { Ø, {42} }", [&]() {
@@ -246,7 +272,7 @@ go_bandit([]() {
           lw << 42;
         }
 
-        zdd res = zdd_powerset(labels);
+        __zdd res = zdd_powerset(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -258,6 +284,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
       });
 
       it("can create { Ø, {1}, {2}, {5}, {1,2}, {1,5}, {2,5}, {1,2,5} }", [&]() {
@@ -268,7 +296,7 @@ go_bandit([]() {
           lw << 1 << 2 << 5;
         }
 
-        zdd res = zdd_powerset(labels);
+        __zdd res = zdd_powerset(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -293,6 +321,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
       });
     });
 
@@ -300,7 +330,7 @@ go_bandit([]() {
       // Edge cases
       it("can compute { s <= Ø | |s| <= 0 } to be { Ø }", [&]() {
         label_file labels;
-        zdd res = zdd_sized_sets(labels, 0, std::less_equal<label_t>());
+        __zdd res = zdd_sized_sets(labels, 0, std::less_equal<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -309,11 +339,13 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("can compute { s <= Ø | |s| > 0 } to be Ø", [&]() {
         label_file labels;
-        zdd res = zdd_sized_sets(labels, 0, std::greater<label_t>());
+        __zdd res = zdd_sized_sets(labels, 0, std::greater<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -322,6 +354,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("can compute { s <= {1,2,3} | |s| < 0 } to be Ø", [&]() {
@@ -332,7 +366,7 @@ go_bandit([]() {
           lw << 1 << 2 << 3;
         }
 
-        zdd res = zdd_sized_sets(labels, 0, std::less<label_t>());
+        __zdd res = zdd_sized_sets(labels, 0, std::less<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -341,6 +375,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("can compute { s <= {0,2,4,6} | |s| <= 0 } to be { Ø }", [&]() {
@@ -351,7 +387,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6;
         }
 
-        zdd res = zdd_sized_sets(labels, 0, std::less_equal<label_t>());
+        __zdd res = zdd_sized_sets(labels, 0, std::less_equal<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -360,6 +396,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("can compute { s <= {0,2,4,6} | |s| < 42 } to be the powerset", [&]() {
@@ -370,7 +408,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6;
         }
 
-        zdd res = zdd_sized_sets(labels, 42, std::less<label_t>());
+        __zdd res = zdd_sized_sets(labels, 42, std::less<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -404,6 +442,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("can compute { s <= {0,2,4,6} | |s| > 42 } to be Ø", [&]() {
@@ -414,7 +454,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6;
         }
 
-        zdd res = zdd_sized_sets(labels, 42, std::greater<label_t>());
+        __zdd res = zdd_sized_sets(labels, 42, std::greater<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -423,6 +463,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("can compute { s <= {0,1,2} | |s| <= 3 } to be the powerset", [&]() {
@@ -433,7 +475,7 @@ go_bandit([]() {
           lw << 0 << 1 << 2;
         }
 
-        zdd res = zdd_sized_sets(labels, 3, std::less_equal<label_t>());
+        __zdd res = zdd_sized_sets(labels, 3, std::less_equal<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -460,6 +502,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("can compute { s <= {0,1,2} | |s| == 3 } to be the { {0,1,2} }", [&]() {
@@ -470,7 +514,7 @@ go_bandit([]() {
           lw << 0 << 1 << 2;
         }
 
-        zdd res = zdd_sized_sets(labels, 3, std::equal_to<label_t>());
+        __zdd res = zdd_sized_sets(labels, 3, std::equal_to<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -497,6 +541,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("can compute { s <= {0,2,3} | |s| > 3 } to be Ø", [&]() {
@@ -507,7 +553,7 @@ go_bandit([]() {
           lw << 0 << 2 << 3;
         }
 
-        zdd res = zdd_sized_sets(labels, 3, std::greater<label_t>());
+        __zdd res = zdd_sized_sets(labels, 3, std::greater<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -516,6 +562,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       it("can compute { s <= {0,1,2} | |s| < 1 } to be { Ø }", [&]() {
@@ -526,7 +574,7 @@ go_bandit([]() {
           lw << 0 << 1 << 2;
         }
 
-        zdd res = zdd_sized_sets(labels, 1, std::less<label_t>());
+        __zdd res = zdd_sized_sets(labels, 1, std::less<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -535,6 +583,8 @@ go_bandit([]() {
 
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
       });
 
       // TODO: More edge cases
@@ -550,7 +600,7 @@ go_bandit([]() {
           lw << 1 << 3 << 5;
         }
 
-        zdd res = zdd_sized_sets(labels, 2, std::equal_to<label_t>());
+        __zdd res = zdd_sized_sets(labels, 2, std::equal_to<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -581,6 +631,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
       });
 
       it("can create { s <= {1,2,3,4,6} | |s| == 3 }", [&]() {
@@ -591,7 +643,7 @@ go_bandit([]() {
           lw << 1 << 2 << 3 << 4 << 6;
         }
 
-        zdd res = zdd_sized_sets(labels, 3, std::equal_to<label_t>());
+        __zdd res = zdd_sized_sets(labels, 3, std::equal_to<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -648,6 +700,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(4u));
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| >= 2 }", [&]() {
@@ -658,7 +712,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6 << 8;
         }
 
-        zdd res = zdd_sized_sets(labels, 2, std::greater_equal<label_t>());
+        __zdd res = zdd_sized_sets(labels, 2, std::greater_equal<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -721,6 +775,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(6u));
       });
 
       it("can create { s <= {0,1,2,3,4,5} | |s| > 0 }", [&]() {
@@ -731,7 +787,7 @@ go_bandit([]() {
           lw << 0 << 1 << 2 << 3 << 4 << 5;
         }
 
-        zdd res = zdd_sized_sets(labels, 0, std::greater<label_t>());
+        __zdd res = zdd_sized_sets(labels, 0, std::greater<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -797,6 +853,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(4u));
       });
 
       it("can create { s <= {0,1,2,3,5} | |s| > 1 }", [&]() {
@@ -807,7 +865,7 @@ go_bandit([]() {
           lw << 0 << 1 << 2 << 3 << 5;
         }
 
-        zdd res = zdd_sized_sets(labels, 1, std::greater<label_t>());
+        __zdd res = zdd_sized_sets(labels, 1, std::greater<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -870,6 +928,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(6u));
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| < 2 }", [&]() {
@@ -880,7 +940,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6 << 8;
         }
 
-        zdd res = zdd_sized_sets(labels, 2, std::less<label_t>());
+        __zdd res = zdd_sized_sets(labels, 2, std::less<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -923,6 +983,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
       });
 
       it("can create { s <= {0,2,4,6} | |s| < 3 }", [&]() {
@@ -933,7 +995,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6;
         }
 
-        zdd res = zdd_sized_sets(labels, 3, std::less<label_t>());
+        __zdd res = zdd_sized_sets(labels, 3, std::less<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -977,6 +1039,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
       });
 
       it("can create { s <= {1,2,3,4,5,6,7,8,9} | |s| < 5 }", [&]() {
@@ -987,7 +1051,7 @@ go_bandit([]() {
           lw << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
         }
 
-        zdd res = zdd_sized_sets(labels, 5, std::less<label_t>());
+        __zdd res = zdd_sized_sets(labels, 5, std::less<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1118,6 +1182,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(7u));
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| <= 2 }", [&]() {
@@ -1128,7 +1194,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6 << 8;
         }
 
-        zdd res = zdd_sized_sets(labels, 2, std::less_equal<label_t>());
+        __zdd res = zdd_sized_sets(labels, 2, std::less_equal<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1181,6 +1247,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| != 4 }", [&]() {
@@ -1191,7 +1259,7 @@ go_bandit([]() {
           lw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
         }
 
-        zdd res = zdd_sized_sets(labels, 4, std::not_equal_to<label_t>());
+        __zdd res = zdd_sized_sets(labels, 4, std::not_equal_to<label_t>());
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1377,6 +1445,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(12u));
       });
     });
   });

@@ -147,7 +147,7 @@ namespace adiar
     if (label_of(v) == label && (is_sink(v.low) || is_sink(v.high))) {
       typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_sink_root(v, op);
 
-      if (!(std::holds_alternative<no_file>(maybe_resolved._union))) {
+      if (!maybe_resolved.empty()) {
         return maybe_resolved;
       }
     }
@@ -184,6 +184,8 @@ namespace adiar
       }
     }
 
+    size_t max_1level_cut = 0;
+
     while(!quantify_pq_1.empty() || !quantify_pq_2.empty()) {
       if (quantify_pq_1.empty_level() && quantify_pq_2.empty()) {
         if (out_label != label) {
@@ -193,6 +195,8 @@ namespace adiar
         quantify_pq_1.setup_next_level();
         out_label = quantify_pq_1.current_level();
         out_id = 0;
+
+        max_1level_cut = std::max(max_1level_cut, quantify_pq_1.size());
       }
 
       ptr_t source, t1, t2;
@@ -280,6 +284,7 @@ namespace adiar
       aw.unsafe_push(create_level_info(out_label, out_id));
     }
 
+    out_arcs._file_ptr->max_1level_cut = max_1level_cut;
     return out_arcs;
   }
 }

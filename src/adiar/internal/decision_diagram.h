@@ -68,6 +68,11 @@ namespace adiar
     {
       return std::get<T>(_union);
     }
+
+    bool empty() const
+    {
+      return has<no_file>();
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////

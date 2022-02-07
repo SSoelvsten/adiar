@@ -297,7 +297,7 @@ namespace adiar
   template<typename dd_policy>
   typename dd_policy::reduced_t reduce(const typename dd_policy::unreduced_t &input)
   {
-    adiar_debug(!(input.template has<no_file>()), "Input for Reduce should always be non-empty");
+    adiar_debug(!input.empty(), "Input for Reduce should always be non-empty");
 
     // Is it already reduced?
     if (input.template has<node_file>()) {

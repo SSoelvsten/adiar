@@ -25,15 +25,7 @@ namespace adiar
 
   zdd zdd_ithvar(label_t label)
   {
-    adiar_assert(label <= MAX_LABEL, "Cannot represent that large a label");
-
-    node_file nf;
-    node_writer nw(nf);
-    nw.unsafe_push(create_node(label, MAX_ID,
-                               create_sink_ptr(false),
-                               create_sink_ptr(true)));
-    nw.unsafe_push(create_level_info(label,1u));
-    return nf;
+    return build_ithvar(label);
   }
 
   zdd zdd_vars(const label_file &labels)

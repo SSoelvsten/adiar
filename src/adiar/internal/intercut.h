@@ -207,6 +207,8 @@ namespace adiar
       intercut_pq_1.push({ NIL, n.uid });
     }
 
+    size_t max_1level_cut = 0;
+
     // Process nodes of the decision diagram in topological order
     while (!intercut_pq_1.empty() || !intercut_pq_2.empty()) {
       if (out_id > 0) { aw.unsafe_push(create_level_info(out_label, out_id)); }
@@ -220,6 +222,8 @@ namespace adiar
       if (intercut_pq_2.has_next_level()) {
         intercut_pq_2.setup_next_level(out_label);
       }
+
+      max_1level_cut = std::max(max_1level_cut, intercut_pq_1.size() + intercut_pq_2.size());
 
       adiar_debug(intercut_pq_1.can_pull() || intercut_pq_2.can_pull(),
                   "should be at a level of at least one of the two queues.");
@@ -301,6 +305,7 @@ namespace adiar
       aw.unsafe_push(create_level_info(out_label, out_id));
     }
 
+    out_arcs._file_ptr->max_1level_cut = max_1level_cut;
     return out_arcs;
   }
 }

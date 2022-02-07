@@ -93,6 +93,10 @@ namespace adiar
     // is a major difference, then we may want to "inline" the '<<' with its
     // _canonical check here.
 
+    // TODO: Add an approximation of maximum 1-level cut before returning.
+    // It can be approximated as:
+    // max(bdd_if.max_1level_cut, bdd_then.max_1level_cut + bdd_else.max_1level_cut)
+
     ptr_t root_then = NIL, root_else = NIL;
 
     node_file out_nodes;
@@ -276,6 +280,8 @@ namespace adiar
     ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
     ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
 
+    size_t max_1level_cut = 0;
+
     // Process all nodes in topological order of both BDDs
     while (!ite_pq_1.empty() || !ite_pq_2.empty() || !ite_pq_3.empty()) {
       if (ite_pq_1.empty_level() && ite_pq_2.empty() && ite_pq_3.empty()) {
@@ -284,6 +290,8 @@ namespace adiar
         ite_pq_1.setup_next_level();
         out_label = ite_pq_1.current_level();
         out_id = 0;
+
+        max_1level_cut = std::max(max_1level_cut, ite_pq_1.size());
       }
 
       ptr_t source, t_if, t_then, t_else;
@@ -490,6 +498,7 @@ namespace adiar
     // Push the level of the very last iteration
     aw.unsafe_push(create_level_info(out_label, out_id));
 
+    out_arcs._file_ptr->max_1level_cut = max_1level_cut;
     return out_arcs;
   }
 }

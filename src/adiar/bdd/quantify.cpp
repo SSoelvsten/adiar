@@ -17,22 +17,14 @@ namespace adiar
   public:
     static __bdd resolve_sink_root(const node_t v, const bool_op &op)
     {
-      ptr_t res_sink = NIL;
-
       if (is_sink(v.low) && can_left_shortcut(op, v.low)) {
-        res_sink = v.low;
+        return bdd_sink(value_of(v.low));
       }
 
       if (is_sink(v.high) && can_right_shortcut(op, v.high)) {
-        res_sink = v.high;
+        return bdd_sink(value_of(v.high));
       }
 
-      if (!is_nil(res_sink)) {
-        node_file out_nodes;
-        node_writer nw(out_nodes);
-        nw.unsafe_push(node_t { res_sink, NIL, NIL });
-        return out_nodes;
-      }
       return __bdd(); // return nothing
     }
 
