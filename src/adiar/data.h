@@ -691,9 +691,9 @@ namespace adiar {
   struct arc_target_lt : public std::binary_function<arc_t, arc_t, bool>
   {
     bool operator ()(const arc_t& a, const arc_t& b) const {
-      return a.target < b.target
+      return (a.target < b.target)
 #ifndef NDEBUG
-        || (a.target == b.target && a.source < b.source)
+        | ((a.target == b.target) & (a.source < b.source))
 #endif
         ;
     }

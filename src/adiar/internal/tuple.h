@@ -74,7 +74,7 @@ namespace adiar {
   {
     bool operator()(const tuple &a, const tuple &b)
     {
-      return a.t1 < b.t1 || (a.t1 == b.t1 && a.t2 < b.t2);
+      return (a.t1 < b.t1) | ((a.t1 == b.t1) & (a.t2 < b.t2));
     }
   };
 
@@ -83,9 +83,9 @@ namespace adiar {
     bool operator()(const tuple &a, const tuple &b)
     {
       // Sort primarily by the element to be encountered first
-      return fst(a) < fst(b) ||
+      return (fst(a) < fst(b)) |
         // Group requests to the same tuple together by sorting on the coordinates
-        (fst(a) == fst(b) && tuple_lt()(a,b));
+        ((fst(a) == fst(b)) & tuple_lt()(a,b));
     }
   };
 
@@ -94,9 +94,9 @@ namespace adiar {
     bool operator()(const tuple &a, const tuple &b)
     {
       // Sort primarily by the element to be encountered second
-      return snd(a) < snd(b) ||
+      return (snd(a) < snd(b)) |
         // Group requests to the same tuple together by sorting on the coordinates
-        (snd(a) == snd(b) && tuple_lt()(a,b));
+        ((snd(a) == snd(b)) & tuple_lt()(a,b));
     }
   };
 
@@ -112,9 +112,9 @@ namespace adiar {
   {
     bool operator()(const triple &a, const triple &b)
     {
-      return a.t1 < b.t1
-        || (a.t1 == b.t1 && a.t2 < b.t2)
-        || (a.t1 == b.t1 && a.t2 == b.t2 && a.t3 < b.t3);
+      return (a.t1 < b.t1)
+        | ((a.t1 == b.t1) & (a.t2 < b.t2))
+        | ((a.t1 == b.t1) & (a.t2 == b.t2) & (a.t3 < b.t3));
     }
   };
 
@@ -122,9 +122,9 @@ namespace adiar {
   {
     bool operator()(const triple &a, const triple &b)
     {
-      return fst(a) < fst(b)
+      return (fst(a) < fst(b))
         // If they are tied, sort them coordinate-wise
-        || (fst(a) == fst(b) && triple_lt()(a,b));
+        | ((fst(a) == fst(b)) & triple_lt()(a,b));
     }
   };
 
@@ -132,9 +132,9 @@ namespace adiar {
   {
     bool operator()(const triple &a, const triple &b)
     {
-      return snd(a) < snd(b)
+      return (snd(a) < snd(b))
         // If they are tied, sort them coordinate-wise
-        || (snd(a) == snd(b) && triple_lt()(a,b));
+        | ((snd(a) == snd(b)) & triple_lt()(a,b));
     }
   };
 
@@ -142,9 +142,9 @@ namespace adiar {
   {
     bool operator()(const triple &a, const triple &b)
     {
-      return trd(a) < trd(b)
+      return (trd(a) < trd(b))
         // If they are tied, sort them coordinate-wise
-        || (trd(a) == trd(b) && triple_lt()(a,b));
+        | ((trd(a) == trd(b)) & triple_lt()(a,b));
     }
   };
 }

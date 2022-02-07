@@ -40,9 +40,9 @@ namespace adiar
   {
     bool operator()(const quantify_tuple &a, const quantify_tuple &b)
     {
-      return a.t1 < b.t1 || (a.t1 == b.t1 && a.t2 < b.t2)
+      return (a.t1 < b.t1) | ((a.t1 == b.t1) & (a.t2 < b.t2))
 #ifndef NDEBUG
-        || (a.t1 == b.t1 && a.t2 == b.t2 && a.source < b.source)
+        | ((a.t1 == b.t1) & (a.t2 == b.t2) & (a.source < b.source))
 #endif
         ;
     }
@@ -52,9 +52,9 @@ namespace adiar
   {
     bool operator()(const quantify_tuple_data &a, const quantify_tuple_data &b)
     {
-      return a.t2 < b.t2 || (a.t2 == b.t2 && a.t1 < b.t1)
+      return (a.t2 < b.t2) | ((a.t2 == b.t2) & (a.t1 < b.t1))
 #ifndef NDEBUG
-        || (a.t1 == b.t1 && a.t2 == b.t2 && a.source < b.source)
+        | ((a.t1 == b.t1) & (a.t2 == b.t2) & (a.source < b.source))
 #endif
         ;
     }
