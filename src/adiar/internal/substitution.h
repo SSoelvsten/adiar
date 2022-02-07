@@ -123,6 +123,8 @@ namespace adiar
       }
     }
 
+    size_t max_1level_cut = 0;
+
     // process all to-be-visited nodes in topological order
     while(!substitute_pq.empty()) {
       if (substitute_pq.empty_level()) {
@@ -135,6 +137,8 @@ namespace adiar
         level = substitute_pq.current_level();
 
         action = amgr.action_for_level(level);
+
+        max_1level_cut = std::max(max_1level_cut, substitute_pq.size());
       }
 
       // seek requested node
@@ -184,6 +188,7 @@ namespace adiar
       aw.unsafe_push(create_level_info(level, level_size));
     }
 
+    out_arcs._file_ptr->max_1level_cut = max_1level_cut;
     return out_arcs;
   }
 }

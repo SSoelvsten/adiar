@@ -24,7 +24,7 @@ go_bandit([]() {
         lw << 2 << 4 << 6;
       }
 
-      zdd out = zdd_project(zdd_empty, dom);
+      __zdd out = zdd_project(zdd_empty, dom);
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
@@ -34,6 +34,8 @@ go_bandit([]() {
 
       level_info_test_stream<node_t> ms(out);
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
     });
 
     it("computes { Ø } with dom = {1,3,5} [&&]", [&](){
@@ -43,7 +45,7 @@ go_bandit([]() {
         lw << 1 << 3 << 5;
       }
 
-      zdd out = zdd_project(zdd(zdd_null), dom);
+      __zdd out = zdd_project(zdd(zdd_null), dom);
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
@@ -53,12 +55,14 @@ go_bandit([]() {
 
       level_info_test_stream<node_t> ms(out);
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
     });
 
     it("computes with dom = Ø to be Ø for Ø as input [&&]", [&](){
       label_file dom;
 
-      zdd out = zdd_project(zdd(zdd_empty), dom);
+      __zdd out = zdd_project(zdd(zdd_empty), dom);
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
@@ -68,12 +72,14 @@ go_bandit([]() {
 
       level_info_test_stream<node_t> ms(out);
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
     });
 
     it("computes with dom = Ø to be { Ø } for { Ø } as input [const &]", [&](){
       label_file dom;
 
-      zdd out = zdd_project(zdd_null, dom);
+      __zdd out = zdd_project(zdd_null, dom);
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
@@ -83,6 +89,8 @@ go_bandit([]() {
 
       level_info_test_stream<node_t> ms(out);
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
     });
 
     //////////////////////
@@ -183,7 +191,7 @@ go_bandit([]() {
     it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1] [const &]", [&](){
       label_file dom;
 
-      zdd out = zdd_project(zdd_1, dom);
+      __zdd out = zdd_project(zdd_1, dom);
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
@@ -193,12 +201,14 @@ go_bandit([]() {
 
       level_info_test_stream<node_t> ms(out);
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
     });
 
     it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2] [&&]", [&](){
       label_file dom;
 
-      zdd out = zdd_project(zdd(zdd_2), dom);
+      __zdd out = zdd_project(zdd(zdd_2), dom);
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
@@ -208,12 +218,14 @@ go_bandit([]() {
 
       level_info_test_stream<node_t> ms(out);
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
     });
 
     it("computes with dom = Ø to be { Ø } for non-empty input [zdd_3] [const &]", [&](){
       label_file dom;
 
-      zdd out = zdd_project(zdd_3, dom);
+      __zdd out = zdd_project(zdd_3, dom);
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
@@ -223,6 +235,8 @@ go_bandit([]() {
 
       level_info_test_stream<node_t> ms(out);
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
     });
 
     it("computes with disjoint dom to be { Ø } [zdd_2] [const &]", [&](){
@@ -231,7 +245,7 @@ go_bandit([]() {
         lw << 1;
       }
 
-      zdd out = zdd_project(zdd_2, dom);
+      __zdd out = zdd_project(zdd_2, dom);
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
@@ -241,6 +255,8 @@ go_bandit([]() {
 
       level_info_test_stream<node_t> ms(out);
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
     });
 
     it("computes with disjoint dom to be { Ø } [zdd_3] [&&]", [&](){
@@ -249,7 +265,7 @@ go_bandit([]() {
         lw << 3 << 4 << 5;
       }
 
-      zdd out = zdd_project(zdd(zdd_3), dom);
+      __zdd out = zdd_project(zdd(zdd_3), dom);
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
@@ -259,6 +275,8 @@ go_bandit([]() {
 
       level_info_test_stream<node_t> ms(out);
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
     });
 
     // TODO: Shortcut on nothing to doa
@@ -282,7 +300,7 @@ go_bandit([]() {
                           T T
       */
 
-      zdd out = zdd_project(zdd_1, dom);
+      __zdd out = zdd_project(zdd_1, dom);
 
       node_test_stream out_nodes(out);
 
@@ -316,6 +334,8 @@ go_bandit([]() {
       AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
 
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
     });
 
     it("computes zdd_2 with dom = {2,3,4} [&&]", [&](){
@@ -336,7 +356,7 @@ go_bandit([]() {
 
       */
 
-      zdd out = zdd_project(zdd_2, dom);
+      __zdd out = zdd_project(zdd_2, dom);
 
       node_test_stream out_nodes(out);
 
@@ -370,6 +390,8 @@ go_bandit([]() {
       AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
 
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
     });
 
     it("computes zdd_3 with dom = {0,2,4}", [&](){
@@ -389,7 +411,7 @@ go_bandit([]() {
                           T T
       */
 
-      zdd out = zdd_project(zdd_3, dom);
+      __zdd out = zdd_project(zdd_3, dom);
 
       node_test_stream out_nodes(out);
 
@@ -414,6 +436,8 @@ go_bandit([]() {
       AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
 
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
     });
 
     it("computes zdd_4 with dom = {0,4}", [&](){
@@ -433,7 +457,7 @@ go_bandit([]() {
                       F T T T
       */
 
-      zdd out = zdd_project(zdd_4, dom);
+      __zdd out = zdd_project(zdd_4, dom);
 
       node_test_stream out_nodes(out);
 
@@ -463,6 +487,8 @@ go_bandit([]() {
       AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
 
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
     });
 
     it("computes zdd_4 with dom = {2,4}", [&](){
@@ -480,7 +506,7 @@ go_bandit([]() {
                         F T
       */
 
-      zdd out = zdd_project(zdd_4, dom);
+      __zdd out = zdd_project(zdd_4, dom);
 
       node_test_stream out_nodes(out);
 
@@ -505,6 +531,8 @@ go_bandit([]() {
       AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
 
       AssertThat(ms.can_pull(), Is().False());
+
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
     });
   });
  });
