@@ -273,10 +273,9 @@ namespace adiar
       const size_t level_width = width_of(current_level_info);
       const size_t level_memory = available_memory / 2;
 
-      const size_t internal_sorter_needs = internal_sorter<node_t>::memory_usage(level_width)
-                                         + internal_sorter<mapping>::memory_usage(level_width);
+      const size_t internal_sorter_can_fit = internal_sorter<node_t>::memory_fits(level_memory / 2);
 
-      if(internal_sorter_needs <= level_memory) {
+      if(level_width <= internal_sorter_can_fit) {
         __reduce_level<dd_policy, pq_t, internal_sorter>
           (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
       } else {
