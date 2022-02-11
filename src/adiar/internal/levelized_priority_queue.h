@@ -197,6 +197,8 @@ namespace adiar {
     static_assert(OUT_OF_BUCKETS_IDX + 1 == 0,
                   "Overflow to '0' is necessary for internal logic to work");
 
+    static constexpr label_t NO_LABEL = MAX_LABEL+1;
+
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the sorter for each bucket.
@@ -249,6 +251,11 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Instantiation of the comparator between levels.
     ////////////////////////////////////////////////////////////////////////////
+    label_t _current_level = NO_LABEL;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Instantiation of the comparator between levels.
+    ////////////////////////////////////////////////////////////////////////////
     level_comp_t _level_comparator = level_comp_t();
 
     ////////////////////////////////////////////////////////////////////////////
@@ -259,12 +266,12 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Maximum size of levelized priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    size_t _max_size;
+    const size_t _max_size;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Total memory given in constructor.
     ////////////////////////////////////////////////////////////////////////////
-    tpie::memory_size_type _memory_given;
+    const tpie::memory_size_type _memory_given;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Memory used by the label merger.
@@ -307,7 +314,7 @@ namespace adiar {
     label_t _back_bucket_idx  = OUT_OF_BUCKETS_IDX;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Next element to take out of the (if any)
+    /// \brief Next element to take out of the bucket (if any)
     ///
     /// \sa    levelized_priority_queue::_has_next_from_bucket
     ///
@@ -420,18 +427,18 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     bool has_current_level() const
     {
-      return has_front_bucket();
+      return _current_level != NO_LABEL;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The label of the current level.
     ////////////////////////////////////////////////////////////////////////////
-    label_t current_level() const
+    label_t current_level()
     {
       adiar_debug(has_current_level(),
                   "Needs to have a 'current' level to read the level from");
 
-      return front_bucket_level();
+      return _current_level;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -496,35 +503,30 @@ namespace adiar {
     /// \brief            Set up the next nonempty level to which some requests
     ///                   have been pushed before the given stop_level.
     ///
-    /// Sets up the next level to pull elements from.
-    ///
-    /// \param stop_level The level that should be furthest forwarded to.
-    ///
-    ///                   If the given stop_level is larger than MAX_LABEL (i.e.
-    ///                   it is an 'illegal' value), then it is treated as not
-    ///                   given. In this (default) case it forwards to the first
-    ///                   non-empty level.
+    /// \param stop_level The level that should be furthest forwarded to. If no
+    ///                   stop level is given then the next level is based on
+    ///                   the next existing element in the priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    void setup_next_level(label_t stop_level = MAX_LABEL+1)
+    void setup_next_level(label_t stop_level = NO_LABEL)
     {
-      adiar_debug(has_current_level() || empty_level(),
+      adiar_debug(stop_level <= MAX_LABEL || stop_level == NO_LABEL,
+                  "The stop level should be a legal value (or not given)");
+
+      adiar_debug(!has_current_level() || empty_level(),
                   "Level is empty before moving on to the next");
 
-      adiar_debug(stop_level <= MAX_LABEL || !empty(),
+      adiar_debug(stop_level != NO_LABEL || !empty(),
                   "Either a stop level is given or we have some non-empty level to forward to");
 
       const label_t overflow_level = !_overflow_queue.empty()
         ? elem_level_t::label_of(_overflow_queue.top())
         : stop_level;
 
-      stop_level = stop_level > MAX_LABEL || _level_cmp_lt(overflow_level, stop_level)
+      stop_level = stop_level == NO_LABEL || _level_cmp_lt(overflow_level, stop_level)
         ? overflow_level
         : stop_level;
 
-      const bool has_stop_level = stop_level <= MAX_LABEL;
-
-      // TODO: Have no front bucket if given a stop_level that is not part of
-      //       the current levels.
+      const bool has_stop_level = stop_level != NO_LABEL;
 
       adiar_debug(has_next_level(),
                   "There should be a next level to go to");
@@ -537,71 +539,109 @@ namespace adiar {
                   _level_cmp_lt(front_bucket_level(), back_bucket_level()),
                   "Back bucket should be (strictly) ahead of the back bucket");
 
-      // Early termination when given level prior to the next bucket
+      // TODO: Add statistics on what case is hit.
+
+      // Edge Case: ---------------------------------------------------------- :
+      //   The given stop_level is prior to the next bucket
       if (has_stop_level && _level_cmp_lt(stop_level, next_bucket_level())) {
         return;
       }
 
-      // Sort active buckets until we find one with some content
-      for (size_t b = 0;
-           // At most BUCKETS-1 number of iterations
-           b < BUCKETS
-           // Is the bucket for this level empty?
-           && !_has_next_from_bucket
-           // Do we have a stop_level...
-           && (!has_stop_level
-               // ... that is after the current level?
-               || ((!has_front_bucket() || _level_cmp_lt(front_bucket_level(), stop_level))
-               // ... and the next level is not too far ahead?
-                   && (!has_next_bucket() || _level_cmp_le(next_bucket_level(), stop_level))))
-           // Do we have more levels to take from?
-           && has_next_bucket();
-           b++) {
-        setup_next_bucket();
-        sort_front_bucket();
-      }
+      // Edge Case: ---------------------------------------------------------- :
+      //   All buckets are empty, so we can merely relabel them and not pay for
+      //   any (re)initialisation. Furthermore, we can have one more bucket
+      //   ready to 'catch' the next elements.
+      if (size() == _overflow_queue.size()) {
+        adiar_debug(has_stop_level, "Must have a 'stop_level' to go to");
 
-      adiar_debug(_has_next_from_bucket || has_stop_level,
-                  "Either a non-empty bucket was found or a 'stop_level' is given (possibly from the overflow)");
+        // Backup of start and end of circular array
+        const size_t old_front_bucket_idx = _front_bucket_idx;
+        const size_t old_back_bucket_idx = _back_bucket_idx;
 
-      // Are we still at an empty bucket? Then all elements must have been in
-      // the overflow queue. Forward further until the overflow priority queue
-      // or the stop_level...
-      if (!_has_next_from_bucket
-          && has_next_bucket() && _level_cmp_le(next_bucket_level(), stop_level)) {
+        // Create a list of the new levels
+        label_t new_levels[BUCKETS];
+        _back_bucket_idx = OUT_OF_BUCKETS_IDX;
 
-        // Notice, that we have now instantiated 'BUCKETS-1' number of new
-        // sorters ready to place content into them. So, there is no reason for
-        // us to not just keep the sorters and merely fast-forward on the
-        // levels.
-        //
-        // We do so by reinitialising all 'BUCKETS' akin to init_buckets.
-
-        // TODO: complete rewrite!
-
-        adiar_debug(!_overflow_queue.empty(),
-                    "'has_next_level()' implied non-empty overflow priority queue");
-
-        setup_next_bucket();
-
-        while (has_next_bucket() && _level_cmp_le(next_bucket_level(), stop_level)) {
-          if (_level_merger.can_pull()) {
-            _buckets_level[_front_bucket_idx] = _level_merger.pull();
-            _back_bucket_idx = _front_bucket_idx;
-          }
+        // Copy over still relevant levels from current buckets
+        do {
           _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
+
+          adiar_debug(has_front_bucket(), "After increment the front bucket will 'exist'");
+
+          if (_level_cmp_le(front_bucket_level(), stop_level)) {
+            _current_level = front_bucket_level();
+          } else { // _level_cmp_lt(stop_level, front_bucket_level())
+            new_levels[++_back_bucket_idx] = front_bucket_level();
+          }
+        } while (_front_bucket_idx != old_back_bucket_idx);
+
+        _front_bucket_idx = OUT_OF_BUCKETS_IDX;
+
+        // Add as many levels from the level_merger as we can fit in
+        while (_level_merger.can_pull() && _level_cmp_le(_level_merger.peek(), stop_level)) {
+          _current_level = _level_merger.pull();
         }
 
-        sort_front_bucket();
+        while (_back_bucket_idx + 1 < BUCKETS && _level_merger.can_pull()) {
+          new_levels[++_back_bucket_idx] = _level_merger.pull();
+        }
+
+        adiar_debug(_back_bucket_idx == OUT_OF_BUCKETS_IDX || _back_bucket_idx < BUCKETS,
+                    "_back_bucket_idx is a valid index");
+
+        // Relabel all buckets
+        if (_back_bucket_idx != OUT_OF_BUCKETS_IDX) {
+          for (size_t idx = 0; idx <= _back_bucket_idx; idx++) {
+            _buckets_level[idx] = new_levels[idx];
+          }
+
+          // Reset the prior read-only bucket, if relevant
+          if (old_front_bucket_idx <= _back_bucket_idx) {
+            _buckets_sorter[old_front_bucket_idx] = std::make_unique<sorter_t>(_memory_for_buckets,
+                                                                               _max_size,
+                                                                               BUCKETS);
+          }
+
+          // We can clean up all the dead buckets with a '.reset()' on the
+          // unique_ptr, but we will leave that for the destructor to do.
+        }
+
+        return;
       }
 
-      adiar_debug(!has_front_bucket()
-                  || _level_cmp_le(front_bucket_level(), back_bucket_level()),
-                  "Constistent bucket levels");
+      // Primary Case: ------------------------------------------------------- :
+      //   At least one bucket contains an element. Let us go through each
+      //   bucket one-by-one until we find the one or hit the stop_level.
+      do {
+        adiar_invariant(has_next_bucket(),
+                        "Since 'has_next_level()' is true, then there must exist a next bucket");
+
+        // Is the next bucket past the 'stop_level'?
+        if (has_stop_level && _level_cmp_lt(stop_level, next_bucket_level())) {
+          break;
+        }
+
+        setup_next_bucket();
+        sort_front_bucket();
+      } while (!_has_next_from_bucket && has_next_bucket());
+
+      _current_level = front_bucket_level();
+
+      adiar_debug(has_front_bucket(), "Ends with a front bucket");
+
+      adiar_debug((has_stop_level
+                   && (_level_cmp_le(stop_level, front_bucket_level())
+                       || (!has_next_bucket() || _level_cmp_lt(stop_level, next_bucket_level()))) )
+                   || _has_next_from_bucket,
+                  "Either we stopped early or we found a non-bucket");
+
+      adiar_debug(_level_cmp_le(front_bucket_level(), back_bucket_level()),
+                  "Consistent bucket levels");
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the current level is empty.
+    /// \brief Whether the current level is empty. Is false, if there is no
+    ///       'current' level.
     ////////////////////////////////////////////////////////////////////////////
     bool empty_level()
     {
@@ -610,13 +650,13 @@ namespace adiar {
          !_has_top_elem
          // and the current bucket is empty?
          && !_has_next_from_bucket
-         // and the priority queue is empty or not for this level?
+         // and the priority queue has nothing for this level?
          && (_overflow_queue.empty()
-             || front_bucket_level() != elem_level_t::label_of(_overflow_queue.top()) ));
+             || current_level() != elem_level_t::label_of(_overflow_queue.top()) ) );
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether more elements can be pulled from the current level?
+    /// \brief Whether any elements can be pulled (from the current level).
     ///
     /// \sa    levelized_priority_queue::empty_level
     ////////////////////////////////////////////////////////////////////////////
