@@ -473,8 +473,10 @@ namespace adiar {
       adiar_debug(pushable_buckets > 0,
                   "There is at least one pushable bucket (i.e. level)");
 
-      for (label_t bucket_offset = 1u; bucket_offset <= pushable_buckets; bucket_offset++) {
-        const label_t bucket_idx = (_front_bucket_idx + bucket_offset) % BUCKETS;
+      label_t bucket_offset = 1u;
+      do {
+        const label_t bucket_idx = (_front_bucket_idx + bucket_offset++) % BUCKETS;
+
         if (_buckets_level[bucket_idx] == level) {
           _buckets_sorter[bucket_idx] -> push(e);
 #ifdef ADIAR_STATS_EXTRA
@@ -482,7 +484,7 @@ namespace adiar {
 #endif
           return;
         }
-      }
+      } while (bucket_offset <= pushable_buckets);
 
 #ifdef ADIAR_STATS_EXTRA
       stats_priority_queue.push_overflow++;
