@@ -402,7 +402,7 @@ namespace adiar {
 
       // Set up buckets until no levels are left or all buckets have been
       // instantiated. Notice, that _back_bucket_idx was initialised to -1.
-      while(_back_bucket_idx + 1 < BUCKETS && _level_merger.can_pull()) {
+      while (_back_bucket_idx + 1 < BUCKETS && _level_merger.can_pull()) {
         const label_t level = _level_merger.pull();
 
         adiar_invariant(_front_bucket_idx == OUT_OF_BUCKETS_IDX,
@@ -463,16 +463,18 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     void push(const elem_t &e)
     {
-      adiar_debug(can_push(), "Should not push beyond known levels");
-      // TODO: Make top() not have side effects
+      adiar_debug(can_push(),
+                  "Should only push when there is a yet unvisited level.");
 
       _size++;
       const label_t level = elem_level_t::label_of(e);
+      const size_t pushable_buckets = active_buckets() - has_front_bucket();
 
-      for (label_t bucket = 1u;
-           bucket < active_buckets() + has_front_bucket();
-           bucket++) {
-        const label_t bucket_idx = (_front_bucket_idx + bucket) % BUCKETS;
+      adiar_debug(pushable_buckets > 0,
+                  "There is at least one pushable bucket (i.e. level)");
+
+      for (label_t bucket_offset = 1u; bucket_offset <= pushable_buckets; bucket_offset++) {
+        const label_t bucket_idx = (_front_bucket_idx + bucket_offset) % BUCKETS;
         if (_buckets_level[bucket_idx] == level) {
           _buckets_sorter[bucket_idx] -> push(e);
 #ifdef ADIAR_STATS_EXTRA
@@ -481,6 +483,7 @@ namespace adiar {
           return;
         }
       }
+
 #ifdef ADIAR_STATS_EXTRA
       stats_priority_queue.push_overflow++;
 #endif
