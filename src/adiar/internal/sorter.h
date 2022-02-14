@@ -141,7 +141,7 @@ namespace adiar {
     T pull()
     {
       const T ret_value = *_begin;
-      _begin++;
+      ++_begin;
       return ret_value;
     }
   };
