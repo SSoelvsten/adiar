@@ -24,7 +24,10 @@ namespace adiar
 
     node_file nf;
     node_writer nw(nf);
-    nw.unsafe_push(create_node(label, 0, create_sink_ptr(false), create_sink_ptr(true)));
+    nw.unsafe_push(create_node(label, MAX_ID,
+                               create_sink_ptr(false),
+                               create_sink_ptr(true)));
+
     nw.unsafe_push(create_level_info(label,1u));
     nf._file_ptr->max_1level_cut = 0;
     return nf;
