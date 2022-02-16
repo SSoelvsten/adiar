@@ -50,7 +50,6 @@ set(HEADERS
 set(SOURCES
   # core files
   adiar.cpp
-  data.cpp
   file.cpp
 
   # bdd files
