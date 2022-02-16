@@ -4,8 +4,6 @@
 #include <tpie/tpie.h>
 #include <tpie/file_stream.h>
 
-#include <adiar/data.h>
-
 #include <iostream>
 
 namespace adiar
