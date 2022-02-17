@@ -38,6 +38,7 @@ namespace adiar
   {
     bool operator()(const arc_cut &a, const arc_cut &b)
     {
+      // Use of bit-operators to omit branching behaviour and so improve CPU pipelining
       return (a.cut_at < b.cut_at)
         | ((a.cut_at == b.cut_at) & (a.target < b.target))
 #ifndef NDEBUG

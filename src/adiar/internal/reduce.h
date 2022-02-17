@@ -57,6 +57,7 @@ namespace adiar
   {
     bool operator()(const node_t &a, const node_t &b)
     {
+      // Use of bit-operators to omit branching behaviour and so improve CPU pipelining
       return (a.high > b.high) |
         ((a.high == b.high) & (a.low > b.low)) |
         ((a.high == b.high) & (a.low == b.low) & (a.uid > b.uid));

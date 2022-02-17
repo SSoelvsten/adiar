@@ -30,6 +30,7 @@ namespace adiar
   {
     bool operator()(const ite_triple_1 &a, const ite_triple_1 &b)
     {
+      // Use of bit-operators to omit branching behaviour and so improve CPU pipelining
       return triple_fst_lt()(a,b)
         | ((!triple_fst_lt()(b,a)) & (a.source < b.source));
     }
@@ -54,6 +55,7 @@ namespace adiar
   {
     bool operator()(const ite_triple_2 &a, const ite_triple_2 &b)
     {
+      // Use of bit-operators to omit branching behaviour and so improve CPU pipelining
       return triple_snd_lt()(a,b)
         | ((!triple_snd_lt()(b,a)) & (a.source < b.source));
     }
@@ -76,6 +78,7 @@ namespace adiar
   {
     bool operator()(const ite_triple_3 &a, const ite_triple_3 &b)
     {
+      // Use of bit-operators to omit branching behaviour and so improve CPU pipelining
       return triple_trd_lt()(a,b)
         | ((!triple_trd_lt()(b,a)) & (a.source < b.source));
     }

@@ -40,6 +40,7 @@ namespace adiar
   {
     bool operator()(const quantify_tuple &a, const quantify_tuple &b)
     {
+      // Use of bit-operators to omit branching behaviour and so improve CPU pipelining
       return (a.t1 < b.t1) | ((a.t1 == b.t1) & (a.t2 < b.t2))
 #ifndef NDEBUG
         | ((a.t1 == b.t1) & (a.t2 == b.t2) & (a.source < b.source))
@@ -52,6 +53,7 @@ namespace adiar
   {
     bool operator()(const quantify_tuple_data &a, const quantify_tuple_data &b)
     {
+      // Use of bit-operators to omit branching behaviour and so improve CPU pipelining
       return (a.t2 < b.t2) | ((a.t2 == b.t2) & (a.t1 < b.t1))
 #ifndef NDEBUG
         | ((a.t1 == b.t1) & (a.t2 == b.t2) & (a.source < b.source))

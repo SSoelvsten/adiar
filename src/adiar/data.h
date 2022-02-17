@@ -690,6 +690,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   struct arc_target_lt : public std::binary_function<arc_t, arc_t, bool>
   {
+    // Use of bit-operators to omit branching behaviour and so improve CPU pipelining
     bool operator ()(const arc_t& a, const arc_t& b) const {
       return (a.target < b.target)
 #ifndef NDEBUG

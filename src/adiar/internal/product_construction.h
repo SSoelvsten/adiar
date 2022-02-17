@@ -28,6 +28,7 @@ namespace adiar
   {
     bool operator()(const prod_tuple_1 &a, const prod_tuple_1 &b)
     {
+      // Use of bit-operators to omit branching behaviour and so improve CPU pipelining
       return tuple_fst_lt()(a,b)
         | ((!tuple_fst_lt()(b,a)) & (a.source < b.source))
         ;
@@ -54,6 +55,7 @@ namespace adiar
   {
     bool operator()(const prod_tuple_2 &a, const prod_tuple_2 &b)
     {
+      // Use of bit-operators to omit branching behaviour and so improve CPU pipelining
       return tuple_snd_lt()(a,b)
         | ((!tuple_snd_lt()(b,a)) & (a.source < b.source))
         ;
