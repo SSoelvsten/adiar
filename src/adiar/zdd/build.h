@@ -162,6 +162,16 @@ namespace adiar
         adiar_debug(high != create_sink_ptr(false), "Should not create a reducible node");
 
         nw.unsafe_push(create_node(curr_label, curr_id, low, high));
+
+        if (is_sink(low)) {
+          nf._file_ptr->true_sinks += value_of(low);
+          nf._file_ptr->false_sinks += !value_of(low);
+        }
+        if (is_sink(high)) {
+          nf._file_ptr->true_sinks += value_of(high);
+          nf._file_ptr->false_sinks += !value_of(high);
+        }
+
         level_size++;
       } while (curr_id-- > min_id);
 

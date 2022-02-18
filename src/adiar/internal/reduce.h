@@ -86,12 +86,23 @@ namespace adiar
     }
   }
 
+  inline void add_no_sink_arcs(node_file &out_file, node_t n)
+  {
+    out_file._file_ptr->true_sinks += (is_sink(n.low) && value_of(n.low)) +
+                                      (is_sink(n.high) && value_of(n.high)) +
+                                      (is_sink(n.uid) && value_of(n.uid));
+    out_file._file_ptr->false_sinks +=  (is_sink(n.low) && !value_of(n.low)) +
+                                        (is_sink(n.high) && !value_of(n.high)) +
+                                        (is_sink(n.uid) && !value_of(n.uid));
+  }
+
   template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
   void __reduce_level(sink_arc_stream<> &sink_arcs,
                       node_arc_stream<> &node_arcs,
                       pq_t &reduce_pq,
                       label_t &label,
                       node_writer &out_writer,
+                      node_file &out_file,
                       const tpie::memory_size_type available_memory,
                       const size_t level_width)
   {
@@ -139,6 +150,7 @@ namespace adiar
 
       node_t out_node = create_node(label, out_id--, current_node.low, current_node.high);
       out_writer.unsafe_push(out_node);
+      add_no_sink_arcs(out_file, out_node);
 
       red2_mapping.push({ current_node.uid, out_node.uid });
 
@@ -156,6 +168,7 @@ namespace adiar
 
           out_node = create_node(label, out_id, current_node.low, current_node.high);
           out_writer.unsafe_push(out_node);
+          add_no_sink_arcs(out_file, out_node);
           out_id--;
 
           red2_mapping.push({current_node.uid, out_node.uid});
@@ -256,6 +269,7 @@ namespace adiar
                 sink_arc_stream<> &sink_arcs,
                 level_info_stream<arc_t> &level_info,
                 node_writer &out_writer,
+                node_file &out_file,
                 const tpie::memory_size_type available_memory)
   {
     pq_t reduce_pq({in_file}, available_memory / 2, in_file._file_ptr->max_1level_cut);
@@ -277,10 +291,10 @@ namespace adiar
 
       if(level_width <= internal_sorter_can_fit) {
         __reduce_level<dd_policy, pq_t, internal_sorter>
-          (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
+          (sink_arcs, node_arcs, reduce_pq, label, out_writer, out_file, level_memory, level_width);
       } else {
         __reduce_level<dd_policy, pq_t, external_sorter>
-          (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
+          (sink_arcs, node_arcs, reduce_pq, label, out_writer, out_file, level_memory, level_width);
       }
 
     }
@@ -333,12 +347,16 @@ namespace adiar
 #ifdef ADIAR_STATS_EXTRA
         stats_reduce.removed_by_rule_1++;
 #endif
-        out_writer.unsafe_push(create_sink(value_of(reduction_rule_ret)));
+        node_t out_node = create_sink(value_of(reduction_rule_ret));
+        out_writer.unsafe_push(out_node);
+        add_no_sink_arcs(out_file, out_node);
       } else {
         label_t label = label_of(e_low.source);
-        out_writer.unsafe_push(create_node(label, MAX_ID,
+        node_t out_node = create_node(label, MAX_ID,
                                            e_low.target,
-                                           e_high.target));
+                                           e_high.target);
+        out_writer.unsafe_push(out_node);
+        add_no_sink_arcs(out_file, out_node);
 
         out_writer.unsafe_push(create_level_info(label,1u));
       }
@@ -355,10 +373,10 @@ namespace adiar
 
     if(max_cut <= lpq_memory_fits) {
       __reduce<dd_policy, reduce_priority_queue_t<internal_sorter, internal_priority_queue>>
-        (in_file, node_arcs, sink_arcs, level_info, out_writer, available_memory);
+        (in_file, node_arcs, sink_arcs, level_info, out_writer, out_file, available_memory);
     } else {
       __reduce<dd_policy, reduce_priority_queue_t<external_sorter, external_priority_queue>>
-        (in_file, node_arcs, sink_arcs, level_info, out_writer, available_memory);
+        (in_file, node_arcs, sink_arcs, level_info, out_writer, out_file, available_memory);
     }
 
     return out_file;

@@ -15,8 +15,8 @@ namespace adiar
     node_writer nw(nf);
     nw.unsafe_push(create_sink(value));
     nf._file_ptr->max_1level_cut = 0;
-    nf._file_ptr->true_sinks = value;
-    nf._file_ptr->false_sinks = !value;
+    nf._file_ptr->true_sinks += value;
+    nf._file_ptr->false_sinks += !value;
     return nf;
   }
 
@@ -32,6 +32,8 @@ namespace adiar
 
     nw.unsafe_push(create_level_info(label,1u));
     nf._file_ptr->max_1level_cut = 0;
+    nf._file_ptr->true_sinks += 1;
+    nf._file_ptr->false_sinks += 1;
     return nf;
   }
 
@@ -60,11 +62,20 @@ namespace adiar
                      "Labels not given in increasing order");
 
         if constexpr(link_low) {
-            low = next_node.uid;
-          }
+          low = next_node.uid;
+        }
         if constexpr(link_high) {
-            high = next_node.uid;
-          }
+          high = next_node.uid;
+        }
+
+        if (is_sink(next_node.low)) {
+          nf._file_ptr->true_sinks += value_of(next_node.low);
+          nf._file_ptr->false_sinks += !value_of(next_node.low);
+        }
+        if (is_sink(next_node.high)) {
+          nf._file_ptr->true_sinks += value_of(next_node.high);
+          nf._file_ptr->false_sinks += !value_of(next_node.high);
+        }
 
         nw.unsafe_push(next_node);
         nw.unsafe_push(create_level_info(next_label,1u));

@@ -119,6 +119,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
+
+      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
     });
 
     it("returns don't care chain for { Ø } on (0,2)", [&]() {
@@ -152,6 +155,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
     });
 
     it("adds new root for { { 1 } } on (0)", [&]() {
@@ -202,6 +208,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("adds node chain for { { 3 }, { 3,4 } } on (0,2)", [&]() {
@@ -272,6 +281,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("adds nodes before and after for { Ø, { 3 } } on (0,2,4)", [&]() {
@@ -340,6 +352,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
     });
 
     it("adds nodes for T sink but not F sink for { { 1,2 }, { 1,3 } } on (4,5,6)", [&]() {
@@ -430,6 +445,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
     });
 
     it("adds node in between levels { { 0,2 } } on (1)", [&]() {
@@ -490,6 +508,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
     });
 
     it("adds nodes in between levels { { 0,3 } } on (1,2)", [&]() {
@@ -559,6 +580,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
     });
 
     it("adds different don't care nodes on different arcs cut for { {0}, {2}, { 0,2 } } on (1,2)", [&]() {
@@ -632,6 +656,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(4u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("adds don't care nodes before, in between, and after for [1] on (0,1,3,5,7,9,11)", [&]() {
@@ -813,6 +840,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(6u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
     });
   });
  });

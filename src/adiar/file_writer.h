@@ -366,8 +366,12 @@ namespace adiar {
         }
       }
 
-      _file_ptr->true_sinks += (is_sink(n.low) && value_of(n.low)) + (is_sink(n.high) && value_of(n.high)) + (is_sink(n.uid) && value_of(n.uid));
-      _file_ptr->false_sinks += (is_sink(n.low) && !value_of(n.low)) + (is_sink(n.high) && !value_of(n.high)) + (is_sink(n.uid) && !value_of(n.uid));
+      _file_ptr->true_sinks +=  (is_sink(n.low) && value_of(n.low)) +
+                                (is_sink(n.high) && value_of(n.high)) +
+                                (is_sink(n.uid) && value_of(n.uid));
+      _file_ptr->false_sinks += (is_sink(n.low) && !value_of(n.low)) +
+                                (is_sink(n.high) && !value_of(n.high)) +
+                                (is_sink(n.uid) && !value_of(n.uid));
 
       // Write node to file
       _latest_node = n;

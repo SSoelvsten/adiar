@@ -94,7 +94,7 @@ namespace adiar
 #endif
   }
 
-  void adiar_statsreset() 
+  void adiar_statsreset()
   {
     stats_equality = {};
     stats_priority_queue = {};
