@@ -15,6 +15,8 @@ namespace adiar
     node_writer nw(nf);
     nw.unsafe_push(create_sink(value));
     nf._file_ptr->max_1level_cut = 0;
+    nf._file_ptr->true_sinks = value;
+    nf._file_ptr->false_sinks = !value;
     return nf;
   }
 
