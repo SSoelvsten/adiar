@@ -120,6 +120,14 @@ namespace adiar {
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  /// Checks whether a number is a power of 2.
+  //////////////////////////////////////////////////////////////////////////////
+  constexpr bool is_pow2(uint32_t x)
+  {
+    return (x & (x-1)) == 0;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// The preprocessor variable ADIAR_PQ_LOOKAHEAD can be used to change the
   /// number of buckets used by the levelized priority queue.
   //////////////////////////////////////////////////////////////////////////////
@@ -212,6 +220,9 @@ namespace adiar {
     /// \brief Number of buckets.
     ////////////////////////////////////////////////////////////////////////////
     static constexpr size_t BUCKETS = LOOK_AHEAD + 1;
+
+    static_assert(is_pow2(BUCKETS),
+                  "BUCKETS must be a power of 2");
 
   public:
     static constexpr tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
@@ -475,7 +486,7 @@ namespace adiar {
 
       label_t bucket_offset = 1u;
       do {
-        const label_t bucket_idx = (_front_bucket_idx + bucket_offset++) % BUCKETS;
+        const label_t bucket_idx = (_front_bucket_idx + bucket_offset++) & LOOK_AHEAD;
 
         if (_buckets_level[bucket_idx] == level) {
           _buckets_sorter[bucket_idx] -> push(e);
@@ -589,7 +600,7 @@ namespace adiar {
             _buckets_level[_front_bucket_idx] = _level_merger.pull();
             _back_bucket_idx = _front_bucket_idx;
           }
-          _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
+          _front_bucket_idx = (_front_bucket_idx + 1) & LOOK_AHEAD;
         }
 
         sort_front_bucket();
@@ -764,7 +775,7 @@ namespace adiar {
       adiar_debug(has_next_bucket(),
                   "Cannot obtain level of non-existing next bucket");
 
-      const label_t next_idx   = (_front_bucket_idx + 1) % BUCKETS;
+      const label_t next_idx   = (_front_bucket_idx + 1) & LOOK_AHEAD;
       const label_t next_level = _buckets_level[next_idx];
       return next_level;
     }
@@ -800,7 +811,7 @@ namespace adiar {
         setup_bucket(_front_bucket_idx, next_level);
         _back_bucket_idx = _front_bucket_idx;
       }
-      _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
+      _front_bucket_idx = (_front_bucket_idx + 1) & LOOK_AHEAD;
 
       adiar_debug(!has_next_bucket() || !has_front_bucket()
                   || _level_cmp_lt(front_bucket_level(), back_bucket_level()),
