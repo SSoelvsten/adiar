@@ -366,6 +366,9 @@ namespace adiar {
         }
       }
 
+      _file_ptr->true_sinks += (is_sink(n.low) && value_of(n.low)) + (is_sink(n.high) && value_of(n.high));
+      _file_ptr->false_sinks += (is_sink(n.low) && !value_of(n.low)) + (is_sink(n.high) && !value_of(n.high));
+
       // Write node to file
       _latest_node = n;
       _level_size++;
@@ -496,6 +499,12 @@ namespace adiar {
         meta_file_writer::unsafe_push(a, 1);
       } else { // out-of-order
         meta_file_writer::unsafe_push(a, 2);
+      }
+
+      if(value_of(a.target)) {
+        _file_ptr->true_sinks += 1;
+      } else {
+        _file_ptr->false_sinks += 1;
       }
     }
 
