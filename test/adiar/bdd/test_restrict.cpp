@@ -88,6 +88,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(output.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+      AssertThat(output.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+      AssertThat(output.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("should bridge levels [2]. Assignment: (_,F,_,_)", [&]() {
@@ -139,6 +142,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(output.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+      AssertThat(output.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(output.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("should bridge levels [3]. Assignment: (_,T,_,_)", [&]() {
@@ -207,6 +213,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(output.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+      AssertThat(output.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+      AssertThat(output.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
     });
 
     it("should remove root. Assignment: (T,_,_,F)", [&]() {
@@ -264,6 +273,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(output.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+      AssertThat(output.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+      AssertThat(output.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
     });
 
     it("should ignore skipped variables. Assignment: (F,T,_,F)", [&]() {
@@ -304,6 +316,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(output.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+      AssertThat(output.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(output.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("should return F sink. Assignment: (F,_,F,_)", [&]() {
@@ -327,6 +342,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(output.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+      AssertThat(output.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
+      AssertThat(output.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("should return T sink. Assignment: (T,T,F,_)", [&]() {
@@ -351,6 +369,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(output.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+      AssertThat(output.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(output.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
     });
 
     it("should return input unchanged when given a T sink", [&]() {
@@ -495,6 +516,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(output.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+      AssertThat(output.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(output.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
     });
 
     it("should have sink arcs restricted to a sink sorted [2]", []() {
@@ -569,6 +593,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(output.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+      AssertThat(output.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(output.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
     });
 
     it("should skip 'dead' nodes", [&]() {
@@ -664,6 +691,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(output.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+      AssertThat(output.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+      AssertThat(output.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
     });
 
     it("should return sink-child of restricted root [assignment = T]", [&]() {
@@ -696,6 +726,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("should return sink-child of restricted root [assignment = F]", [&]() {
@@ -728,6 +761,9 @@ go_bandit([]() {
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
     });
   });
  });

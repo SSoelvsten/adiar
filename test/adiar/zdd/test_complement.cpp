@@ -105,6 +105,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
     });
 
     it("produces pow(U) on F sink and U = { 1, 2, 3, 4 }", [&]() {
@@ -151,6 +154,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
     });
 
     it("produces pow(U) \\ Ø on T sink and U = { 0, 2 }", [&]() {
@@ -188,6 +194,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("produces pow(U) \\ Ø on T sink and U = { 1, 2, 3, 4 }", [&]() {
@@ -234,6 +243,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("adds out-of-set chain above root on { { 3 } } and U = { 0, 1, 2, 3 }", [&]() {
@@ -312,6 +324,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(4u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("adds out-of-set chain above and below root on { { 2 } } and U = { 0, 1, 2, 3 }", [&]() {
@@ -390,6 +405,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(4u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("adds out-of-set chain above and below root on { Ø, { 1 } } and U = { 1, 2, 3, 4 }", [&]() {
@@ -485,6 +503,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(4u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
     });
 
     it("computes U \\ { { 2 }, { 3 }, { 4 }, { 2,4 }, { 3,4 } } with U = { 1, 2, 3, 4 }", [&]() {
@@ -599,6 +620,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(6u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
     });
 
     it("computes pow(U) \\ { Ø, { 1,2 }, { 2,3 }, { 2,4 }, { 1,2,3 }, { 1,2,4 } } with U = { 1, 2, 3, 4 }", [&]() {
@@ -735,6 +759,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(8u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(4u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(4u));
     });
 
    it("computes pow(U) \\ pow(U) with U = { 2, 4 }", [&]() {
@@ -787,6 +814,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
     });
 
    it("computes pow(U) \\ pow({ 2, 4 }) with U = { 1, 2, 3, 4 }", [&]() {
@@ -870,6 +900,9 @@ go_bandit([]() {
       AssertThat(level_info.can_pull(), Is().False());
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(4u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
     });
 
   });

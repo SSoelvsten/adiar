@@ -159,6 +159,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
       });
 
       it("should return { Ø, { 1 } } when given { Ø, { 1 }, { 2 }, { 1, 2 } } without (0,2)", [&]() {
@@ -202,6 +205,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
       });
 
       it("should return { Ø, { 2 } } when given { Ø, { 1 }, { 2 }, { 1, 2 } } without (1,3)", [&]() {
@@ -245,6 +251,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
       });
 
       it("should skip root of [1] without (0,42)", [&]() {
@@ -313,6 +322,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
       });
 
       it("should skip 'dead' nodes in [1] without (1)", [&]() {
@@ -366,6 +378,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
       });
 
       it("should restrict to a sink in [1] without (0,1,3)", [&]() {
@@ -388,6 +403,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
       });
 
       it("should restrict to a sink in { Ø, { 1 }, { 2, 3 } } without (1,2)", [&]() {
@@ -428,6 +446,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
       });
 
       it("should restrict to a sink from root", [&]() {
@@ -465,6 +486,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
       });
 
       it("should bridge levels in [2] on (3)", [&]() {
@@ -518,6 +542,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
       });
     });
 
@@ -568,6 +595,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
       });
 
       it("should return Ø when given { Ø } for (21,42)", [&]() {
@@ -590,6 +620,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
       });
 
       it("should return Ø when given disjoint labels", [&]() {
@@ -612,6 +645,9 @@ go_bandit([]() {
           AssertThat(meta_arcs.can_pull(), Is().False());
 
           AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+          AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
         });
 
       it("should return { { 0 } } when given { Ø, { 0 } } for (0)", [&]() {
@@ -654,6 +690,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
       });
 
       it("should return Ø when given { Ø, { 0 } } for (0,1)", [&]() {
@@ -683,6 +722,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
       });
 
       it("should return { Ø } in [2] for (0,2,3)", [&]() {
@@ -738,6 +780,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
       });
 
       it("should return Ø in [2] for (0,2,3,4)", [&]() {
@@ -789,6 +834,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
       });
 
       it("should keep root of [1] but shortcut its low for (0)", [&]() {
@@ -866,6 +914,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
       });
 
       it("should skip 'dead' nodes of [1] for (1,2)", [&]() {
@@ -937,6 +988,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
       });
 
       it("should return Ø in { Ø, {0}, {0,2} } for (1)", [&]() {
@@ -976,6 +1030,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
       });
 
       it("should cut edge going across onset label in { {2}, {0,1}, {0,2}, {0,1,2} } for (1)", [&]() {
@@ -1049,6 +1106,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
       });
 
       it("should cut edge and ignore 'dead' node in { {2}, {0,1}, {0,2} } for (1)", [&]() {
@@ -1112,6 +1172,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
       });
 
       it("should falsify early sinks in [2] for (3)", [&]() {
@@ -1174,6 +1237,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
       });
 
       it("should skip root in [2] due to cut on high edge for (1,3)", [&]() {
@@ -1227,6 +1293,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
       });
 
       it("should falsify early sink and bridge over removed node in [1] for (4)", [&]() {
@@ -1298,6 +1367,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
       });
 
       it("should cut high edge on restricted node, if it goes past the next label", [&]() {
@@ -1385,6 +1457,9 @@ go_bandit([]() {
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
       });
     });
   });
