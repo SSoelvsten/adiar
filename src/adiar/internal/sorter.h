@@ -17,15 +17,15 @@ namespace adiar {
   template <typename T, typename pred_t = std::less<T>>
   class internal_sorter {
   private:
-    tpie::internal_vector<T> _vector;
-    typename tpie::array<T>::iterator _begin;
-    typename tpie::array<T>::iterator _end;
+    tpie::array<T> _array;
     pred_t _pred;
+    size_t _size;
+    size_t _front_idx;
 
   public:
     static constexpr tpie::memory_size_type unsafe_memory_usage(tpie::memory_size_type no_elements)
     {
-      return tpie::internal_vector<T>::memory_usage(no_elements);
+      return tpie::array<T>::memory_usage(no_elements);
     }
 
     static constexpr tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
@@ -35,41 +35,39 @@ namespace adiar {
       if (no_elements > max_elem) {
         return max_value;
       }
-      return tpie::internal_vector<T>::memory_usage(no_elements);
+      return tpie::array<T>::memory_usage(no_elements);
     }
 
     static constexpr tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
-      return tpie::internal_vector<T>::memory_fits(memory_bytes);
+      return tpie::array<T>::memory_fits(memory_bytes);
     }
 
   public:
     internal_sorter(size_t /*memory_bytes*/, size_t no_elements, size_t /*no_sorters*/, pred_t pred = pred_t())
-      : _vector(no_elements), _pred(pred)
+      : _array(no_elements), _pred(pred), _size(0), _front_idx(0)
     { }
 
     void push(const T& t)
     {
-      _vector.push_back(t);
+      adiar_debug(_array.size() > _size, "Array in internal sorter is too small");
+      _array[_size++] = t;
     }
 
     void sort()
     {
-      tpie::parallel_sort(_vector.begin(), _vector.end(), _pred);
-      _begin = _vector.begin();
-      _end = _vector.end();
+      tpie::parallel_sort(_array.begin(), _array.begin() + _size, _pred);
+      _front_idx = 0;
     }
 
     bool can_pull()
     {
-      return _begin != _end;
+      return _size != _front_idx;
     }
 
     T pull()
     {
-      const T ret_value = *_begin;
-      ++_begin;
-      return ret_value;
+      return _array[_front_idx++];
     }
   };
 
