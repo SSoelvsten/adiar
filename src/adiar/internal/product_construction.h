@@ -144,7 +144,12 @@ namespace adiar
   {
     node_file sink_file;
     node_writer sink_writer(sink_file);
-    sink_writer.unsafe_push(create_sink(value_of(op(t1,t2))));
+
+    const bool value = value_of(op(t1,t2));
+    sink_file._file_ptr->true_sinks = value;
+    sink_file._file_ptr->false_sinks = !value;
+
+    sink_writer.unsafe_push(create_sink(value));
 
     return sink_file;
   }

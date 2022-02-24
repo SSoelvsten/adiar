@@ -26,6 +26,7 @@ namespace adiar
       size_t exit_on_same_file = 0;
       size_t exit_on_nodecount = 0;
       size_t exit_on_varcount = 0;
+      size_t exit_on_sinkcount = 0;
       size_t exit_on_levels_mismatch = 0;
 
       // Statistics on non-trivial cases
