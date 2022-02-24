@@ -260,6 +260,8 @@ namespace adiar
                   "No nodes are pushed when it collapses to a sink");
 
       out_writer.unsafe_push({ next_red1.new_uid, NIL, NIL });
+      out_file._file_ptr->true_sinks += value_of(next_red1.new_uid);
+      out_file._file_ptr->false_sinks += !value_of(next_red1.new_uid);
     }
   }
 
