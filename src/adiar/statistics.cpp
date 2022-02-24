@@ -9,6 +9,10 @@ namespace adiar
   // Define the available function
   stats_t adiar_stats()
   {
+    #ifndef ADIAR_STATS
+      std::cerr << "Statistics not gathered. Please compile with 'ADIAR_STATS' or 'ADIAR_STATS_EXTRA'";
+    #endif
+
     return {
       stats_equality,
       stats_priority_queue,
