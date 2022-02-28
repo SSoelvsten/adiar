@@ -69,6 +69,12 @@ namespace adiar {
     {
       return _array[_front_idx++];
     }
+
+    void reset()
+    {
+      _size = 0;
+      _front_idx = 0;
+    }
   };
 
   extern tpie::dummy_progress_indicator external_sorter_tpie_progress_indicator;
