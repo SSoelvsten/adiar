@@ -4,6 +4,7 @@
 #include <string>
 #include <math.h>
 #include <algorithm>
+#include <memory>
 
 #include <tpie/tpie.h>
 #include <tpie/sort.h>
@@ -41,6 +42,23 @@ namespace adiar {
     static constexpr tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
       return tpie::array<T>::memory_fits(memory_bytes);
+    }
+
+    static std::unique_ptr<internal_sorter<T, pred_t>> make_unique(size_t memory_bytes,
+                                                                   size_t no_elements,
+                                                                   size_t no_sorters,
+                                                                   pred_t pred = pred_t())
+    {
+      return std::make_unique<internal_sorter<T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
+    }
+
+    static void reset_unique(std::unique_ptr<internal_sorter<T, pred_t>> u_ptr,
+                             size_t /*memory_bytes*/,
+                             size_t /*no_elements*/,
+                             size_t /*no_sorters*/,
+                             pred_t /*pred*/)
+    {
+      u_ptr->reset();
     }
 
   public:
@@ -93,6 +111,24 @@ namespace adiar {
   class external_sorter {
   private:
     tpie::merge_sorter<T, false, pred_t> _sorter;
+
+  public:
+    static std::unique_ptr<external_sorter<T, pred_t>> make_unique(size_t memory_bytes,
+                                                                   size_t no_elements,
+                                                                   size_t no_sorters,
+                                                                   pred_t pred = pred_t())
+    {
+      return std::make_unique<external_sorter<T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
+    }
+
+    static void reset_unique(std::unique_ptr<external_sorter<T, pred_t>> u_ptr,
+                             size_t memory_bytes,
+                             size_t no_elements,
+                             size_t no_sorters,
+                             pred_t pred = pred_t())
+    {
+      u_ptr = make_unique(memory_bytes, no_elements, no_sorters, pred);
+    }
 
   public:
     external_sorter(size_t memory_bytes, size_t no_elements, size_t number_of_sorters, pred_t pred = pred_t())
