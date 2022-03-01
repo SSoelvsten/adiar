@@ -139,9 +139,6 @@ namespace adiar
   //  - The negation flags given for both node_files agree (breaks canonicity)
   bool fast_isomorphism_check(const node_file &f1, const node_file &f2)
   {
-#ifdef ADIAR_STATS
-    stats_equality.fast_check.runs++;
-#endif
     node_stream<> in_nodes_1(f1);
     node_stream<> in_nodes_2(f2);
 
@@ -209,8 +206,14 @@ namespace adiar
     // Compare their content to discern whether there exists an isomorphism
     // between them.
     if (f1._file_ptr -> canonical && f2._file_ptr -> canonical && negate1 == negate2) {
+#ifdef ADIAR_STATS
+      stats_equality.fast_check.runs++;
+#endif
       return fast_isomorphism_check(f1, f2);
     } else {
+#ifdef ADIAR_STATS
+      stats_equality.slow_check.runs++;
+#endif
       return comparison_check<isomorphism_policy>(f1, f2, negate1, negate2);
     }
   }
