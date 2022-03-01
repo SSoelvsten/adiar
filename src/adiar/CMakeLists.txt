@@ -91,6 +91,8 @@ set(SOURCES
   statistics.cpp
 )
 
+# ============================================================================ #
+# Settings
 if (ADIAR_SHARED)
   add_library(adiar SHARED ${HEADERS} ${SOURCES})
 else()
@@ -102,10 +104,6 @@ generate_export_header(adiar
   EXPORT_MACRO_NAME ADIAR_API
 )
 
-# ============================================================================ #
-# Link dependencies
-option(ADIAR_STATS "Collect statistics" OFF)
-option(ADIAR_STATS_EXTRA "Collect (a lot of) statistics" OFF)
 if (ADIAR_STATS_EXTRA)
   target_compile_definitions(adiar PRIVATE ADIAR_STATS ADIAR_STATS_EXTRA)
 elseif (ADIAR_STATS)
