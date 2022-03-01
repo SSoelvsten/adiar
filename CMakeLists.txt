@@ -18,13 +18,40 @@ project (adiar
 
 enable_language(CXX)
 
+# ============================================================================ #
+# Settings
+# ============================================================================ #
+
 message(STATUS "CMake build configuration for Adiar ${PROJECT_VERSION}")
 message(STATUS "  OS: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "  Compiler: ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "    C Flags: ${CMAKE_C_FLAGS}")
 message(STATUS "    CXX Flags: ${CMAKE_CXX_FLAGS}")
 message(STATUS "    EXE Linker Flags: ${CMAKE_EXE_LINKER_FLAGS}")
-message(STATUS "  Tests and Examples: ${MAIN_PROJECT}")
+
+option(ADIAR_SHARED "Build adiar as a shared library" OFF)
+message(STATUS "  Shared: ${ADIAR_SHARED}")
+
+message(STATUS "  Statistics:")
+
+option(ADIAR_STATS "Collect statistics" OFF)
+
+option(ADIAR_STATS_EXTRA "Collect (a lot of) statistics" ${ADIAR_STATS})
+if (ADIAR_STATS_EXTRA)
+  set(ADIAR_STATS ON)
+endif()
+
+message(STATUS "    Coarse: ${ADIAR_STATS}")
+message(STATUS "    Fine-grained: ${ADIAR_STATS_EXTRA}")
+
+message(STATUS "  Optional targets:")
+
+option(ADIAR_TEST "Build unit tests for adiar" ${MAIN_PROJECT})
+message(STATUS "    Unit Tests: ${MAIN_PROJECT}")
+
+option(ADIAR_EXAMPLES "Build examples for usage of adiar" ${MAIN_PROJECT})
+message(STATUS "    Examples: ${MAIN_PROJECT}")
+
 message(STATUS "")
 
 # ============================================================================ #
@@ -36,9 +63,6 @@ add_subdirectory (external/tpie tpie)
 # ============================================================================ #
 # Core project
 # ============================================================================ #
-option(ADIAR_SHARED "Build adiar as a shared library" OFF)
-message(STATUS "  Shared library: ${ADIAR_SHARED}")
-
 add_subdirectory (src)
 
 install(DIRECTORY src/adiar
@@ -48,7 +72,6 @@ install(DIRECTORY src/adiar
 # ============================================================================ #
 # Unit Tests
 # ============================================================================ #
-option(ADIAR_TEST "Build unit tests for adiar" ${MAIN_PROJECT})
 if (ADIAR_TEST)
   add_subdirectory (test)
 endif()
@@ -56,7 +79,6 @@ endif()
 # ============================================================================ #
 # Examples
 # ============================================================================ #
-option(ADIAR_EXAMPLES "Build examples for usage of adiar" ${MAIN_PROJECT})
 if (ADIAR_EXAMPLES)
   add_subdirectory (example)
 endif ()
