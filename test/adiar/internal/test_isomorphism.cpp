@@ -184,19 +184,19 @@ go_bandit([]() {
           << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
       }
 
-      // bdd_1 with child of (2) flipped in truth value
+      // bdd_1 with child of (2) and low child of (4) flipped in truth value
       node_file bdd_1_low_leaf;
       { node_writer w(bdd_1_low_leaf);
-        w << create_node(2,MAX_ID,   create_sink_ptr(false),       create_sink_ptr(true))
+        w << create_node(2,MAX_ID,   create_sink_ptr(true),       create_sink_ptr(true))
           << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_sink_ptr(false))
           << create_node(1,MAX_ID-1, create_sink_ptr(false),      create_node_ptr(2,MAX_ID))
           << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
       }
 
-      // bdd_1 with child of (3) flipped in truth value
+      // bdd_1 with child of (3) and high child of (4) flipped in truth value
       node_file bdd_1_high_leaf;
       { node_writer w(bdd_1_high_leaf);
-        w << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))
+        w << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(false))
           << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_sink_ptr(true))
           << create_node(1,MAX_ID-1, create_sink_ptr(true),       create_node_ptr(2,MAX_ID))
           << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
@@ -204,67 +204,70 @@ go_bandit([]() {
 
       node_file bdd_2;
       /*
-             1    ---- x0
+             1      ---- x0
             / \
-            2 |   ---- x1
-           / \/
-           3  4   ---- x2
-          / \/ \
-          T  F T
+           2   3    ---- x1
+          / \ / \
+          4  |  5   ---- x2
+         /  \|/  \
+         T   F   T
       */
       { node_writer w(bdd_2);
         w << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))
           << create_node(2,MAX_ID-1, create_sink_ptr(true),       create_sink_ptr(false))
-          << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
-          << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(2,MAX_ID));
+          << create_node(1,MAX_ID,   create_sink_ptr(false),      create_node_ptr(2,MAX_ID))
+          << create_node(1,MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_sink_ptr(false))
+          << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
       }
 
       node_file bdd_2n;
       /* bdd_2 negated */
       { node_writer w(bdd_2n);
-        w << create_node(2,MAX_ID,   create_sink_ptr(false),    create_sink_ptr(true))
-          << create_node(2,MAX_ID-1, create_sink_ptr(true),     create_sink_ptr(false))
-          << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
-          << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID-1));
+        w << create_node(2,MAX_ID,   create_sink_ptr(true),       create_sink_ptr(false))
+          << create_node(2,MAX_ID-1, create_sink_ptr(false),      create_sink_ptr(true))
+          << create_node(1,MAX_ID,   create_sink_ptr(true),       create_node_ptr(2,MAX_ID))
+          << create_node(1,MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_sink_ptr(true))
+          << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
       }
 
       node_file bdd_2_low_child;
       /*
-            1      ---- x0
-           / \
-           2 /     ---- x1
-          / X
-          T/ \
-           3  4    ---- x2
-          / \/ \
-          T  F T
+             1       ---- x0
+            / \
+           2   3     ---- x1
+          /  X  \
+          | 4 |  5   ---- x2
+          |/ \|/  \
+          T   F   T
 
-          which in traversal look similar to bdd_2 until (2) on level x1
+          which in traversal look similar to bdd_2 until (3) on level x1
       */
       { node_writer w(bdd_2_low_child);
-        w << create_node(2,MAX_ID,   create_sink_ptr(false),    create_sink_ptr(true))
-          << create_node(2,MAX_ID-1, create_sink_ptr(true),     create_sink_ptr(false))
-          << create_node(1,MAX_ID,   create_sink_ptr(true),     create_node_ptr(2,MAX_ID))
-          << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID-1));
+        w << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))
+          << create_node(2,MAX_ID-1, create_sink_ptr(true),       create_sink_ptr(false))
+          << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
+          << create_node(1,MAX_ID-1, create_sink_ptr(true),       create_sink_ptr(false))
+          << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
       }
 
       node_file bdd_2_high_child;
       /*
-             1      ---- x0
+             1     ---- x0
             / \
-            2  \    ---- x1
-           / \  \
-           3 F  4   ---- x2
-          / \  / \
-          T F  T T
+           2   3   ---- x1
+          /  X  \
+         4  | 5 |  ---- x2
+        /  \|/ \|
+        T   F   T
 
-          which in traversal look similar to bdd_2 until (2) on level x1
+          which in traversal look similar to bdd_2 until (3) on level x1
       */
       { node_writer w(bdd_2_high_child);
         w << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))
           << create_node(2,MAX_ID-1, create_sink_ptr(true),       create_sink_ptr(false))
-          << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_sink_ptr(false))
-          << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(2,MAX_ID));
+          << create_node(1,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))
+          << create_node(1,MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
+          << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
       }
 
       node_file bdd_3;
@@ -304,6 +307,48 @@ go_bandit([]() {
         w << create_node(3,MAX_ID, create_sink_ptr(true),     create_sink_ptr(false))
           << create_node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_sink_ptr(true))
           << create_node(1,MAX_ID, create_sink_ptr(false),    create_node_ptr(2,MAX_ID))
+          << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
+      }
+
+      node_file bdd_5;
+      /*
+             1     ---- x0
+            / \
+           2   |   ---- x1
+          / \  |
+          F T  3   ---- x2
+              / \
+              4 T  ---- x3
+             / \
+             F T
+
+          The same as bdd_4 but (2) goes to a sink instead of (3)
+      */
+      { node_writer w(bdd_5);
+        w << create_node(3,MAX_ID, create_sink_ptr(true),     create_sink_ptr(false))
+          << create_node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_sink_ptr(true))
+          << create_node(1,MAX_ID, create_sink_ptr(false),    create_sink_ptr(true))
+          << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
+      }
+
+      node_file bdd_6;
+      /*
+             1     ---- x0
+            / \
+           2   |   ---- x1
+          / \  |
+          F T  3   ---- x2
+              / \
+              4 F  ---- x3
+             / \
+             F T
+
+          The same as bdd_5 but (3) goes to a false sink instead of true
+      */
+      { node_writer w(bdd_5);
+        w << create_node(3,MAX_ID, create_sink_ptr(true),     create_sink_ptr(false))
+          << create_node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_sink_ptr(false))
+          << create_node(1,MAX_ID, create_sink_ptr(false),    create_sink_ptr(true))
           << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
       }
 
@@ -361,7 +406,6 @@ go_bandit([]() {
           AssertThat(is_isomorphic(bdd_2, bdd_2_low_child, true, true), Is().False());
         });
 
-
         it("rejects on low child mismatch (internal node labels) [3]", [&]() {
           node_file bdd_3_b;
           /* Same as bdd_3 but with (2) directly going to (4) on the low */
@@ -399,6 +443,18 @@ go_bandit([]() {
 
           AssertThat(is_isomorphic(bdd_4, bdd_4_b, false, false), Is().False());
           AssertThat(is_isomorphic(bdd_4, bdd_4_b, true, true), Is().False());
+        });
+
+        it("rejects on mismatch of total number of sinks", [&]() {
+          AssertThat(is_isomorphic(bdd_4, bdd_5, false, false), Is().False());
+          AssertThat(is_isomorphic(bdd_4, bdd_5, true, true), Is().False());
+          AssertThat(is_isomorphic(bdd_4, bdd_5, false, true), Is().False());
+          AssertThat(is_isomorphic(bdd_4, bdd_5, true, false), Is().False());
+        });
+
+        it("rejects on mismatch of number of one type of sink", [&]() {
+          AssertThat(is_isomorphic(bdd_5, bdd_6, false, false), Is().False());
+          AssertThat(is_isomorphic(bdd_5, bdd_6, true, true), Is().False());
         });
       });
 
@@ -459,14 +515,15 @@ go_bandit([]() {
         });
 
         it("accepts with nodes swapped [2]", [&]() {
-          // bdd_2 with nodes (3) and (4) swapped (and hence non-canonical)
+          // bdd_2 with nodes (4) and (5) swapped (and hence non-canonical)
           node_file bdd_2b;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_2b);
-            w << create_node(2,MAX_ID,   create_sink_ptr(true),     create_sink_ptr(false))
-              << create_node(2,MAX_ID-1, create_sink_ptr(false),    create_sink_ptr(true))
-              << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
-              << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID-1));
+            w << create_node(2,MAX_ID,   create_sink_ptr(true),       create_sink_ptr(false))
+              << create_node(2,MAX_ID-1, create_sink_ptr(false),      create_sink_ptr(true))
+              << create_node(1,MAX_ID,   create_sink_ptr(false),      create_node_ptr(2,MAX_ID-1))
+              << create_node(1,MAX_ID-1, create_node_ptr(2,MAX_ID),   create_sink_ptr(false))
+              << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
           }
 
           AssertThat(is_isomorphic(bdd_2, bdd_2b, false, false), Is().True());
