@@ -4,30 +4,25 @@ This project has been developed at the [Logic and Semantics](https://logsem.gith
 group at [Aarhus University](https://cs.au.dk).
 
 
-**Table of Contents**
-
-- [Primary authors](#primary-authors)
-- [Other authors](#other-authors)
-    - [Direct Contributors](#direct-contributors)
-    - [Indirect Contributors](#indirect-contributors)
-
-
 ## Primary authors
 
 - **[Steffan Sølvsten](https://ssoelvsten.github.io/)**:
   [soelvsten@cs.au.dk](mailto:soelvsten@cs.au.dk)
 
-  Main developer of Adiar.
-
-## Other authors
-
-### Direct Contributors
-
-Thank you, to all the contributors to this project's codebase.
+  Creator of Adiar.
 
 - **[Anna Blume Jakobsen](https://github.com/AnnaBlume99)**:
 
-  Implemented the prototype of many core algorithms during the summer of 2020.
+  Implemented the prototype of many core algorithms during a summer project in 2020 and
+  then added later in 2022 as a Student Programmer more features and optimisations. 
+
+- **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
+
+  Implemented the prototype of many core algorithms during a summer project in 2020.
+
+## Other authors
+
+Thank you, to all the other minor contributors to this project's codebase.
 
 - **[Asger Hautop Drewsen](https://github.com/Tyilo)**:
 
@@ -36,12 +31,6 @@ Thank you, to all the contributors to this project's codebase.
 - **[Jakob Schneider Villumsen](https://github.com/jaschdoc)**:
 
   Improved the setup of the git repository.
-
-- **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
-
-  Implemented the prototype of many core algorithms during the summer of 2020.
-
-### Indirect Contributors
 
 Also, thanks to the following wonderful people for their indirect contributions.
 
