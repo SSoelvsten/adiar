@@ -237,11 +237,13 @@ namespace adiar
                          const typename prod_policy::reduced_t &in_2, node_stream<> &in_nodes_2, node_t &v2,
                          const bool_op &op,
                          arc_file &out_arcs, arc_writer &aw,
-                         const tpie::memory_size_type available_memory, const size_t max_pq_size)
+                         const tpie::memory_size_type available_memory_lpq,
+                         const tpie::memory_size_type available_memory_pq,
+                         const size_t max_pq_size)
   {
-    pq_1_t prod_pq_1({in_1, in_2}, available_memory / 2, max_pq_size);
+    pq_1_t prod_pq_1({in_1, in_2}, available_memory_lpq, max_pq_size);
 
-    pq_2_t prod_pq_2(available_memory / 2);
+    pq_2_t prod_pq_2(available_memory_pq);
 
     // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v1.uid, v2.uid));
@@ -468,16 +470,15 @@ namespace adiar
     const size_t size_bound = __prod_size_based_upper_bound<prod_policy>(in_1, in_2);
 
     const tpie::memory_size_type lpq_memory_fits =
-      prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(available_memory / 2);
+      prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits((available_memory / 4) * 3);
 
     if(size_bound <= lpq_memory_fits) {
       return __product_construction<prod_policy, prod_priority_queue_1_t<internal_sorter, internal_priority_queue>, prod_priority_queue_2_t>
-        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw, available_memory, size_bound);
+        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw, (available_memory / 4) * 3, available_memory / 4, size_bound);
     } else {
       return __product_construction<prod_policy, prod_priority_queue_1_t<external_sorter, external_priority_queue>, prod_priority_queue_2_t>
-        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw, available_memory, size_bound);
+        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw, available_memory / 2, available_memory / 2, size_bound);
     }
-
   }
 }
 
