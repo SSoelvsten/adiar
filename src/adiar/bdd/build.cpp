@@ -101,15 +101,6 @@ namespace adiar
 
         nw.unsafe_push(adiar::create_node(curr_label, curr_id, low, high));
 
-        if (is_sink(low)) {
-          nf._file_ptr->true_sinks += value_of(low);
-          nf._file_ptr->false_sinks += !value_of(low);
-        }
-        if (is_sink(high)) {
-          nf._file_ptr->true_sinks += value_of(high);
-          nf._file_ptr->false_sinks += !value_of(high);
-        }
-
       } while (curr_id-- > min_id);
       nw.unsafe_push(create_level_info(curr_label, (max_id - min_id) + 1));
       nf._file_ptr->max_1level_cut = std::max(nf._file_ptr->max_1level_cut, 2 * ((max_id - min_id) + 1));

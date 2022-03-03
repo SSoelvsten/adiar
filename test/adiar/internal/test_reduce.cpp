@@ -32,37 +32,8 @@ go_bandit([]() {
       bdd in(x0x1_node_file, false);
       __bdd out = reduce<bdd_policy>(in);
 
-      AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
-
-      // Check it looks all right
-      node_test_stream out_nodes(out);
-
-      AssertThat(out_nodes.can_pull(), Is().True());
-
-      // n2
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
-                                                            sink_F,
-                                                            sink_T)));
-      AssertThat(out_nodes.can_pull(), Is().True());
-
-      // n1
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
-                                                            sink_F,
-                                                            create_node_ptr(1,MAX_ID))));
-      AssertThat(out_nodes.can_pull(), Is().False());
-
-      level_info_test_stream<node_t> out_meta(out);
-
-      AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
-
-      AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
-
-      AssertThat(out_meta.can_pull(), Is().False());
-
-      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(x0x1_node_file._file_ptr));
+      AssertThat(out.negate, Is().False());
     });
 
     it("preserves negation flag on reduced input [2]", [&]() {
@@ -78,37 +49,8 @@ go_bandit([]() {
       bdd in(x0x1_node_file, true);
       __bdd out = reduce<bdd_policy>(in);
 
-      AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
-
-      // Check it looks all right
-      node_test_stream out_nodes(out);
-
-      AssertThat(out_nodes.can_pull(), Is().True());
-
-      // n2
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
-                                                            sink_T,
-                                                            sink_F)));
-      AssertThat(out_nodes.can_pull(), Is().True());
-
-      // n1
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
-                                                            sink_T,
-                                                            create_node_ptr(1,MAX_ID))));
-      AssertThat(out_nodes.can_pull(), Is().False());
-
-      level_info_test_stream<node_t> out_meta(out);
-
-      AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
-
-      AssertThat(out_meta.can_pull(), Is().True());
-      AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
-
-      AssertThat(out_meta.can_pull(), Is().False());
-
-      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(x0x1_node_file._file_ptr));
+      AssertThat(out.negate, Is().True());
     });
 
     describe("Reduction Rule 2", [&]() {

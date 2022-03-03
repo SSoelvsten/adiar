@@ -43,6 +43,7 @@ namespace adiar
     o << indent << indent << "same file               " << indent << stats_equality.exit_on_same_file << endl;
     o << indent << indent << "node count              " << indent << stats_equality.exit_on_nodecount << endl;
     o << indent << indent << "var count               " << indent << stats_equality.exit_on_varcount << endl;
+    o << indent << indent << "sink count              " << indent << stats_equality.exit_on_sinkcount << endl;
     o << indent << indent << "levels mismatch         " << indent << stats_equality.exit_on_levels_mismatch << endl;
     o << endl;
     o << indent << indent << "O(sort(N)) algorithm    " << endl;

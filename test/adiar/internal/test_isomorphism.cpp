@@ -602,7 +602,7 @@ go_bandit([]() {
           node_file bdd_a;
           { node_writer w(bdd_a);
             w << create_node(2,MAX_ID, create_sink_ptr(false),    create_sink_ptr(true))
-              << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_sink_ptr(true))
+              << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_sink_ptr(false))
               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_sink_ptr(true));
           }
 

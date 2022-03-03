@@ -394,7 +394,14 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to the underlying node file without any checks.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const node_t &n) { meta_file_writer::unsafe_push(n, 0); }
+    void unsafe_push(const node_t &n)
+    {
+      meta_file_writer::unsafe_push(n, 0);
+      _file_ptr->true_sinks +=  (is_sink(n.low) && value_of(n.low)) +
+                                (is_sink(n.high) && value_of(n.high));
+      _file_ptr->false_sinks += (is_sink(n.low) && !value_of(n.low)) +
+                                (is_sink(n.high) && !value_of(n.high));
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a file
