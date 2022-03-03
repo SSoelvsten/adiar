@@ -237,9 +237,9 @@ namespace adiar
                          const typename prod_policy::reduced_t &in_2, node_stream<> &in_nodes_2, node_t &v2,
                          const bool_op &op,
                          arc_file &out_arcs, arc_writer &aw,
-                         const tpie::memory_size_type available_memory)
+                         const tpie::memory_size_type available_memory, const size_t max_pq_size)
   {
-    pq_1_t prod_pq_1({in_1, in_2}, available_memory / 2, std::numeric_limits<size_t>::max());
+    pq_1_t prod_pq_1({in_1, in_2}, available_memory / 2, max_pq_size);
 
     pq_2_t prod_pq_2(available_memory / 2);
 
@@ -385,6 +385,13 @@ namespace adiar
     return out_arcs;
   }
 
+  template<typename prod_policy>
+  size_t __prod_size_based_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                       const typename prod_policy::reduced_t &in_2)
+  {
+    return (in_1.file.size() + 2) * (in_2.file.size() + 2) + 2;
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   /// Creates the product construction of the given two DAGs.
   ///
@@ -457,10 +464,20 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    const size_t size_bound = __prod_size_based_upper_bound<prod_policy>(in_1, in_2);
 
-    return __product_construction<prod_policy, prod_priority_queue_1_t<external_sorter, external_priority_queue>, prod_priority_queue_2_t>
-      (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw, available_memory);
+    const tpie::memory_size_type lpq_memory_fits =
+      prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(available_memory / 2);
+
+    if(size_bound <= lpq_memory_fits) {
+      return __product_construction<prod_policy, prod_priority_queue_1_t<internal_sorter, internal_priority_queue>, prod_priority_queue_2_t>
+        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw, available_memory, size_bound);
+    } else {
+      return __product_construction<prod_policy, prod_priority_queue_1_t<external_sorter, external_priority_queue>, prod_priority_queue_2_t>
+        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw, available_memory, size_bound);
+    }
+
   }
 }
 

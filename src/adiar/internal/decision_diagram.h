@@ -107,6 +107,10 @@ namespace adiar
                                                                   const typename prod_policy::reduced_t &in_2,
                                                                   const bool_op &op);
 
+    template<typename prod_policy>
+    friend size_t __prod_size_based_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                                const typename prod_policy::reduced_t &in_2);
+
     friend label_t min_label(const decision_diagram &dd);
     friend label_t max_label(const decision_diagram &dd);
 
