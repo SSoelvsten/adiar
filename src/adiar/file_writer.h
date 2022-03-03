@@ -512,11 +512,8 @@ namespace adiar {
         meta_file_writer::unsafe_push(a, 2);
       }
 
-      if(value_of(a.target)) {
-        _file_ptr->true_sinks += 1;
-      } else {
-        _file_ptr->false_sinks += 1;
-      }
+      _file_ptr->true_sinks += value_of(a.target);
+      _file_ptr->false_sinks += !value_of(a.target);
     }
 
     //////////////////////////////////////////////////////////////////////////////
