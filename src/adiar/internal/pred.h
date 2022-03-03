@@ -37,7 +37,9 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt, 2>
+  typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt,
+                                        external_sorter, external_priority_queue,
+                                        2>
   comparison_priority_queue_t;
 
   typedef tpie::priority_queue<tuple_data, tuple_snd_lt>

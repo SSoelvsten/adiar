@@ -38,7 +38,9 @@ namespace adiar
   typedef triple_fst_lt ite_triple_1_lt;
 #endif
 
-  typedef levelized_node_priority_queue<ite_triple_1, triple_label, ite_triple_1_lt, 3>
+  typedef levelized_node_priority_queue<ite_triple_1, triple_label, ite_triple_1_lt,
+                                        external_sorter, external_priority_queue,
+                                        3>
   ite_priority_queue_1_t;
 
   struct ite_triple_2 : ite_triple_1

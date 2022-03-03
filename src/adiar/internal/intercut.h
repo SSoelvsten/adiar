@@ -16,6 +16,7 @@ namespace adiar
   // Priority queues
 
   typedef levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt,
+                                        external_sorter, external_priority_queue,
                                         1u,
                                         0u>
   intercut_priority_queue_1_t;
