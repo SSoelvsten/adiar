@@ -337,10 +337,8 @@ namespace adiar
         out_writer.push(out_node);
       } else {
         label_t label = label_of(e_low.source);
-        node_t out_node = create_node(label, MAX_ID,
-                                           e_low.target,
-                                           e_high.target);
-        out_writer.unsafe_push(out_node);
+
+        out_writer.unsafe_push(create_node(label, MAX_ID,e_low.target,e_high.target));
 
         out_writer.unsafe_push(create_level_info(label,1u));
       }
