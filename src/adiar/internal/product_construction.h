@@ -37,10 +37,12 @@ namespace adiar
   typedef tuple_fst_lt prod_tuple_1_lt;
 #endif
 
-  typedef levelized_node_priority_queue<prod_tuple_1, tuple_label, prod_tuple_1_lt,
-                                        external_sorter, external_priority_queue,
-                                        2>
-  prod_priority_queue_1_t;
+  template<template<typename, typename> typename sorter_template,
+           template<typename, typename> typename priority_queue_template>
+  using prod_priority_queue_1_t =
+    levelized_node_priority_queue<prod_tuple_1, tuple_label, prod_tuple_1_lt,
+                                  sorter_template, priority_queue_template,
+                                  2>;
 
   struct prod_tuple_2 : tuple_data
   {
@@ -75,7 +77,8 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  inline void prod_recurse_out(prod_priority_queue_1_t &prod_pq_1, arc_writer &aw,
+  template<typename pq_1_t>
+  inline void prod_recurse_out(pq_1_t &prod_pq_1, arc_writer &aw,
                                const bool_op &op,
                                ptr_t source, tuple target)
   {
@@ -90,8 +93,8 @@ namespace adiar
     }
   }
 
-  template<typename out_policy, typename extra_arg>
-  inline void prod_recurse_in(prod_priority_queue_1_t &prod_pq_1, prod_priority_queue_2_t &prod_pq_2,
+  template<typename out_policy, typename extra_arg, typename pq_1_t, typename pq_2_t>
+  inline void prod_recurse_in(pq_1_t &prod_pq_1, pq_2_t &prod_pq_2,
                               arc_writer &aw,
                               const extra_arg &ea, ptr_t t1, ptr_t t2)
   {
@@ -107,7 +110,8 @@ namespace adiar
 
   struct prod_recurse_in__output_node
   {
-    static inline void go(prod_priority_queue_1_t&, arc_writer &aw,
+    template<typename pq_1_t>
+    static inline void go(pq_1_t& /*prod_pq_1*/, arc_writer &aw,
                           uid_t out_uid, ptr_t source)
     {
       if (!is_nil(source)) {
@@ -118,7 +122,8 @@ namespace adiar
 
   struct prod_recurse_in__output_sink
   {
-    static inline void go(prod_priority_queue_1_t&, arc_writer &aw,
+    template<typename pq_1_t>
+    static inline void go(pq_1_t& /*prod_pq_1*/, arc_writer &aw,
                           ptr_t out_sink, ptr_t source)
     {
       aw.unsafe_push_sink({ source, out_sink });
@@ -127,7 +132,8 @@ namespace adiar
 
   struct prod_recurse_in__forward
   {
-    static inline void go(prod_priority_queue_1_t &prod_pq_1, arc_writer&,
+    template<typename pq_1_t>
+    static inline void go(pq_1_t &prod_pq_1, arc_writer&,
                           const prod_rec_skipto &r, ptr_t source)
     {
       prod_pq_1.push({ r.t1, r.t2, source });
@@ -225,84 +231,17 @@ namespace adiar
     }
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// Creates the product construction of the given two DAGs.
-  ///
-  /// Behaviour of the product construction is controlled with the 'prod_policy'
-  /// class, which exposes static void strategy functions.
-  ///
-  /// - resolve_same_file:
-  ///   Creates the output based on knowing both inputs refer to the same
-  ///   underlying file.
-  ///
-  /// - resolve_sink_root:
-  ///   Resolves (if possible) the cases for one of the two DAGs only being a
-  ///   sink. Uses the _union in the 'out_t' to trigger an early termination. If
-  ///   it holds an 'adiar::no_file', then the algorithm proceeds to the actual
-  ///   product construction.
-  ///
-  /// - resolve_request:
-  ///   Given all information collected for the two nodes (both children, if
-  ///   they are on the same level. Otherwise, only the first-seen node),
-  ///   returns whether (a) a node should be output and its two children to
-  ///   recurse to or (b) no node should be output (i.e. it is skipped) and what
-  ///   child to forward the request to.
-  ///
-  /// - no_skip:
-  ///   Constexpr boolean whether the strategy guarantees never to skip a level.
-  ///   This shortcuts some boolean conditions at compile-time.
-  ///
-  /// This 'prod_policy' also should inherit the general policy for the
-  /// decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in
-  /// zdd/zdd.h and so on). This provides the following functions
-  ///
-  /// - compute_cofactor:
-  ///   Used to change the low and high children retrieved from the input during
-  ///   the product construction.
-  ///
-  /// Other parameters are:
-  ///
-  /// \param in_i  DAGs to combine into one.
-  ///
-  /// \param op    Binary boolean operator to be applied. See data.h for the
-  ///              ones directly provided by Adiar.
-  ///
-  /// \return      A class that inherits from __decision_diagram and describes
-  ///              the product of the two given DAGs.
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename prod_policy>
-  typename prod_policy::unreduced_t product_construction(const typename prod_policy::reduced_t &in_1,
-                                                         const typename prod_policy::reduced_t &in_2,
-                                                         const bool_op &op)
+  template<typename prod_policy, typename pq_1_t, typename pq_2_t>
+  typename prod_policy::unreduced_t
+  __product_construction(const typename prod_policy::reduced_t &in_1, node_stream<> &in_nodes_1, node_t &v1,
+                         const typename prod_policy::reduced_t &in_2, node_stream<> &in_nodes_2, node_t &v2,
+                         const bool_op &op,
+                         arc_file &out_arcs, arc_writer &aw,
+                         const tpie::memory_size_type available_memory)
   {
-    if (in_1.file._file_ptr == in_2.file._file_ptr) {
-      return prod_policy::resolve_same_file(in_1, in_2, op);
-    }
+    pq_1_t prod_pq_1({in_1, in_2}, available_memory / 2, std::numeric_limits<size_t>::max());
 
-    node_stream<> in_nodes_1(in_1);
-    node_stream<> in_nodes_2(in_2);
-
-    node_t v1 = in_nodes_1.pull();
-    node_t v2 = in_nodes_2.pull();
-
-    if (is_sink(v1) || is_sink(v2)) {
-      typename prod_policy::unreduced_t maybe_resolved = prod_policy::resolve_sink_root(v1, in_1, v2, in_2, op);
-
-      if (!(std::holds_alternative<no_file>(maybe_resolved._union))) {
-        return maybe_resolved;
-      }
-    }
-
-    // Set-up for Product Construction Algorithm
-    arc_file out_arcs;
-    arc_writer aw(out_arcs);
-
-    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-
-    prod_priority_queue_1_t prod_pq_1({in_1, in_2},
-                                      available_memory / 2,
-                                      std::numeric_limits<size_t>::max());
-    prod_priority_queue_2_t prod_pq_2(available_memory / 2);
+    pq_2_t prod_pq_2(available_memory / 2);
 
     // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v1.uid, v2.uid));
@@ -442,7 +381,86 @@ namespace adiar
     }
 
     out_arcs._file_ptr->max_1level_cut = max_1level_cut;
+
     return out_arcs;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Creates the product construction of the given two DAGs.
+  ///
+  /// Behaviour of the product construction is controlled with the 'prod_policy'
+  /// class, which exposes static void strategy functions.
+  ///
+  /// - resolve_same_file:
+  ///   Creates the output based on knowing both inputs refer to the same
+  ///   underlying file.
+  ///
+  /// - resolve_sink_root:
+  ///   Resolves (if possible) the cases for one of the two DAGs only being a
+  ///   sink. Uses the _union in the 'out_t' to trigger an early termination. If
+  ///   it holds an 'adiar::no_file', then the algorithm proceeds to the actual
+  ///   product construction.
+  ///
+  /// - resolve_request:
+  ///   Given all information collected for the two nodes (both children, if
+  ///   they are on the same level. Otherwise, only the first-seen node),
+  ///   returns whether (a) a node should be output and its two children to
+  ///   recurse to or (b) no node should be output (i.e. it is skipped) and what
+  ///   child to forward the request to.
+  ///
+  /// - no_skip:
+  ///   Constexpr boolean whether the strategy guarantees never to skip a level.
+  ///   This shortcuts some boolean conditions at compile-time.
+  ///
+  /// This 'prod_policy' also should inherit the general policy for the
+  /// decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in
+  /// zdd/zdd.h and so on). This provides the following functions
+  ///
+  /// - compute_cofactor:
+  ///   Used to change the low and high children retrieved from the input during
+  ///   the product construction.
+  ///
+  /// Other parameters are:
+  ///
+  /// \param in_i  DAGs to combine into one.
+  ///
+  /// \param op    Binary boolean operator to be applied. See data.h for the
+  ///              ones directly provided by Adiar.
+  ///
+  /// \return      A class that inherits from __decision_diagram and describes
+  ///              the product of the two given DAGs.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename prod_policy>
+  typename prod_policy::unreduced_t product_construction(const typename prod_policy::reduced_t &in_1,
+                                                         const typename prod_policy::reduced_t &in_2,
+                                                         const bool_op &op)
+  {
+    if (in_1.file._file_ptr == in_2.file._file_ptr) {
+      return prod_policy::resolve_same_file(in_1, in_2, op);
+    }
+
+    node_stream<> in_nodes_1(in_1);
+    node_stream<> in_nodes_2(in_2);
+
+    node_t v1 = in_nodes_1.pull();
+    node_t v2 = in_nodes_2.pull();
+
+    if (is_sink(v1) || is_sink(v2)) {
+      typename prod_policy::unreduced_t maybe_resolved = prod_policy::resolve_sink_root(v1, in_1, v2, in_2, op);
+
+      if (!(std::holds_alternative<no_file>(maybe_resolved._union))) {
+        return maybe_resolved;
+      }
+    }
+
+    // Set-up for Product Construction Algorithm
+    arc_file out_arcs;
+    arc_writer aw(out_arcs);
+
+    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+
+    return __product_construction<prod_policy, prod_priority_queue_1_t<external_sorter, external_priority_queue>, prod_priority_queue_2_t>
+      (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw, available_memory);
   }
 }
 
