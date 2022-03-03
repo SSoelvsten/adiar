@@ -37,7 +37,9 @@ namespace adiar
   typedef tuple_fst_lt prod_tuple_1_lt;
 #endif
 
-  typedef levelized_node_priority_queue<prod_tuple_1, tuple_label, prod_tuple_1_lt, 2>
+  typedef levelized_node_priority_queue<prod_tuple_1, tuple_label, prod_tuple_1_lt,
+                                        external_sorter, external_priority_queue,
+                                        2>
   prod_priority_queue_1_t;
 
   struct prod_tuple_2 : tuple_data
