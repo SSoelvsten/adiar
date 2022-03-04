@@ -469,15 +469,23 @@ namespace adiar
     const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
     const size_t size_bound = __prod_size_based_upper_bound<prod_policy>(in_1, in_2);
 
+    constexpr size_t data_structures_in_lpq =
+      prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+
     const tpie::memory_size_type lpq_memory_fits =
-      prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits((available_memory / 4) * 3);
+      prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits
+        ((available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq);
 
     if(size_bound <= lpq_memory_fits) {
       return __product_construction<prod_policy, prod_priority_queue_1_t<internal_sorter, internal_priority_queue>, prod_priority_queue_2_t>
-        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw, (available_memory / 4) * 3, available_memory / 4, size_bound);
+        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw,
+         (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
+         available_memory / 4, size_bound);
     } else {
       return __product_construction<prod_policy, prod_priority_queue_1_t<external_sorter, external_priority_queue>, prod_priority_queue_2_t>
-        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw, available_memory / 2, available_memory / 2, size_bound);
+        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw,
+         available_memory / 2,
+         available_memory / 2, size_bound);
     }
   }
 }
