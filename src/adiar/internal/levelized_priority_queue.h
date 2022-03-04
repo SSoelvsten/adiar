@@ -232,7 +232,8 @@ namespace adiar {
 
   private:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of elements in the priority queue
+    /// \brief Number of elements in the levelized priority queue (excluding the
+    ///        one element possibly in '_top_elem').
     ////////////////////////////////////////////////////////////////////////////
     size_t _size = 0;
 
@@ -473,12 +474,17 @@ namespace adiar {
       adiar_debug(can_push(),
                   "Should only push when there is a yet unvisited level.");
 
-      _size++;
       const label_t level = elem_level_t::label_of(e);
+
+      adiar_debug(_level_cmp_le(next_bucket_level(), level),
+                  "Can only push element to next bucket or later.");
+
       const size_t pushable_buckets = active_buckets() - has_front_bucket();
 
       adiar_debug(pushable_buckets > 0,
                   "There is at least one pushable bucket (i.e. level)");
+
+      _size++;
 
       label_t bucket_offset = 1u;
       do {
@@ -596,10 +602,9 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     elem_t top()
     {
-      adiar_debug (can_pull(), "Cannot peek on empty level/queue");
+      adiar_debug (can_pull(), "Can only obtain top element on non-empty level");
 
       if (!_has_top_elem) {
-        _size++; // Compensate that pull() decrements the size
         _top_elem = pull();
         _has_top_elem = true;
       }
@@ -622,18 +627,20 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     elem_t pull()
     {
-      adiar_debug (can_pull(), "Cannot pull on empty level/queue");
+      adiar_debug (!empty_level(), "Can only pull on non-empty level");
 
-      _size--;
       if (_has_top_elem) {
         _has_top_elem = false;
         return _top_elem;
       }
 
+      adiar_debug (_size > 0, "pull on non-top element requires content");
+      _size--;
+
       // Merge bucket with overflow queue
       if (_overflow_queue.empty() || (_has_next_from_bucket
                                       && _e_comparator(_next_from_bucket, _overflow_queue.top()))) {
-        elem_t ret = _next_from_bucket;
+        const elem_t ret = _next_from_bucket;
         if (_buckets_sorter[_front_bucket_idx] -> can_pull()) {
           _next_from_bucket = _buckets_sorter[_front_bucket_idx] -> pull();
         } else {
@@ -641,7 +648,7 @@ namespace adiar {
         }
         return ret;
       } else {
-        elem_t ret = _overflow_queue.top();
+        const elem_t ret = _overflow_queue.top();
         _overflow_queue.pop();
         return ret;
       }
@@ -662,7 +669,8 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     size_t size() const
     {
-      return _size;
+      // TODO: also separate '_size' away from the overflow queue?
+      return _size + _has_top_elem;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -676,7 +684,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     bool empty() const
     {
-      return _size == 0;
+      return size() == 0;
     }
 
   private:

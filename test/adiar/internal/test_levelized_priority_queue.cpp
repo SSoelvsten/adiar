@@ -2179,7 +2179,77 @@ go_bandit([]() {
           AssertThat(pq.can_pull(), Is().False());
         });
 
-        // TODO: peek -> push -> peek
+        it("is the same after pushing an element", [&]() {
+          pq_test_file f;
+
+          { // Garbage collect the writer early
+            pq_test_writer fw(f);
+
+            fw.unsafe_push(create_level_info(6,2u)); // .
+            fw.unsafe_push(create_level_info(5,2u)); // .
+            fw.unsafe_push(create_level_info(4,3u)); // overflow
+            fw.unsafe_push(create_level_info(3,2u)); // bucket
+            fw.unsafe_push(create_level_info(2,2u)); // bucket
+            fw.unsafe_push(create_level_info(1,1u)); // skipped
+          }
+
+          test_priority_queue<pq_test_file, 1> pq({f}, tpie::get_memory_manager().available(), 32);
+
+          pq.push(pq_test_data {2, 1});  // bucket
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          pq.setup_next_level(); // 2
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.top(), Is().EqualTo(pq_test_data {2, 1}));
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          pq.push(pq_test_data {3, 1});  // bucket
+          AssertThat(pq.size(), Is().EqualTo(2u));
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.top(), Is().EqualTo(pq_test_data {2, 1}));
+          AssertThat(pq.size(), Is().EqualTo(2u));
+        });
+
+        it("can look into bucket, pop, and then look again", [&]() {
+          pq_test_file f;
+
+          { // Garbage collect the writer early
+            pq_test_writer fw(f);
+
+            fw.unsafe_push(create_level_info(6,2u)); // .
+            fw.unsafe_push(create_level_info(5,2u)); // .
+            fw.unsafe_push(create_level_info(4,3u)); // overflow
+            fw.unsafe_push(create_level_info(3,2u)); // bucket
+            fw.unsafe_push(create_level_info(2,2u)); // bucket
+            fw.unsafe_push(create_level_info(1,1u)); // skipped
+          }
+
+          test_priority_queue<pq_test_file, 1> pq({f}, tpie::get_memory_manager().available(), 32);
+
+          pq.push(pq_test_data {2, 1});  // bucket
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          pq.push(pq_test_data {2, 2});  // bucket
+          AssertThat(pq.size(), Is().EqualTo(2u));
+
+          pq.setup_next_level(); // 2
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.top(), Is().EqualTo(pq_test_data {2, 1}));
+          AssertThat(pq.size(), Is().EqualTo(2u));
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 1}));
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.top(), Is().EqualTo(pq_test_data {2, 2}));
+          AssertThat(pq.size(), Is().EqualTo(1u));
+
+          AssertThat(pq.can_pull(), Is().True());
+        });
       });
 
       describe(".size()", [&]{
