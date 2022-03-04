@@ -645,6 +645,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     bool empty_level()
     {
+      // TODO: change semantics to require 'has_current_level'
       return !has_current_level() ||
         (// Do we not have any cached element from top()?
          !_has_top_elem
