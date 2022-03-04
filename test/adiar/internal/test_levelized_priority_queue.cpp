@@ -1942,7 +1942,116 @@ go_bandit([]() {
       });
 
       describe(".pop()", [&]{
-        // TODO
+        it("can pop from bucket [1]", [&]() {
+          label_file f;
+
+          {
+            label_writer w(f);
+            w << 0         // skipped
+              << 1 << 2    // buckets
+              << 3;        // overflow
+          }
+
+          test_priority_queue<label_file, 1> pq({f}, tpie::get_memory_manager().available(), 32);
+
+          pq.push(pq_test_data {2,1});
+
+          pq.setup_next_level(); // 2
+
+          AssertThat(pq.can_pull(), Is().True());
+
+          pq.pop();
+
+          AssertThat(pq.can_pull(), Is().False());
+        });
+
+        it("can pop from bucket [2]", [&]() {
+          label_file f;
+
+          {
+            label_writer w(f);
+            w << 0         // skipped
+              << 1 << 2    // buckets
+              << 3;        // overflow
+          }
+
+          test_priority_queue<label_file, 1> pq({f}, tpie::get_memory_manager().available(), 32);
+
+          pq.push(pq_test_data {2,1});
+          pq.push(pq_test_data {2,2});
+
+          pq.setup_next_level(); // 2
+
+          AssertThat(pq.can_pull(), Is().True());
+
+          pq.pop();
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {2, 2}));
+
+          AssertThat(pq.can_pull(), Is().False());
+        });
+
+        it("can pop from overflow [1]", [&]() {
+          label_file f;
+
+          {
+            label_writer w(f);
+            w << 0         // skipped
+              << 1 << 2    // buckets
+              << 3 << 4;   // overflow
+          }
+
+          test_priority_queue<label_file, 1> pq({f}, tpie::get_memory_manager().available(), 32);
+
+          pq.push(pq_test_data {3,1}); // overflow
+
+          pq.setup_next_level(); // 3
+
+          AssertThat(pq.can_pull(), Is().True());
+
+          pq.pop();
+
+          AssertThat(pq.can_pull(), Is().False());
+        });
+
+        it("can pop from overflow [2]", [&]() {
+          label_file f;
+
+          {
+            label_writer w(f);
+            w << 0         // skipped
+              << 1 << 2    // buckets
+              << 3 << 4;   // overflow
+          }
+
+          test_priority_queue<label_file, 1> pq({f}, tpie::get_memory_manager().available(), 32);
+
+          pq.push(pq_test_data {3,1}); // overflow
+          pq.push(pq_test_data {2,1}); // bucket
+          pq.push(pq_test_data {3,3}); // overflow
+
+          pq.setup_next_level(); // 2
+
+          pq.pop(); // {2,1}
+
+          pq.push(pq_test_data {3,2}); // bucket
+
+          pq.setup_next_level(); // 3
+
+          AssertThat(pq.can_pull(), Is().True());
+
+          pq.pop();
+
+          AssertThat(pq.can_pull(), Is().True());
+          AssertThat(pq.pull(), Is().EqualTo(pq_test_data {3, 2}));
+
+          AssertThat(pq.can_pull(), Is().True());
+
+          pq.pop();
+
+          AssertThat(pq.can_pull(), Is().False());
+        });
       });
 
       //////////////////////////////////////////////////////////////////////////
