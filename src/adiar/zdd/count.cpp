@@ -21,6 +21,6 @@ namespace adiar
   {
     return is_sink(zdd)
       ? is_sink(zdd, is_true)
-      : count<path_count_policy, path_sum>(zdd, zdd_varcount(zdd));
+      : count<path_count_policy>(zdd, zdd_varcount(zdd));
   }
 }
