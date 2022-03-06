@@ -30,10 +30,13 @@ namespace adiar
   class sat_count_policy
   {
   public:
-    inline static uint64_t forward_request(count_priority_queue_t<sat_sum> &count_pq,
+    typedef sat_sum queue_t;
+
+    template<typename count_pq_t>
+    inline static uint64_t forward_request(count_pq_t &count_pq,
                                            const label_t varcount,
                                            const ptr_t child_to_resolve,
-                                           const sat_sum &request)
+                                           const queue_t &request)
     {
       adiar_debug(request.sum > 0, "No 'empty' request should be created");
 
@@ -52,7 +55,7 @@ namespace adiar
       }
     }
 
-    inline static sat_sum combine_requests(const sat_sum &acc, const sat_sum &next)
+    inline static queue_t combine_requests(const queue_t &acc, const queue_t &next)
     {
       adiar_debug(acc.uid == next.uid,
                   "Requests should be for the same node");
@@ -83,7 +86,7 @@ namespace adiar
   {
     return is_sink(bdd)
       ? 0
-      : count<path_count_policy, path_sum>(bdd, bdd_varcount(bdd));
+      : count<path_count_policy>(bdd, bdd_varcount(bdd));
   }
 
   uint64_t bdd_satcount(const bdd& bdd, label_t varcount)
@@ -95,6 +98,6 @@ namespace adiar
     adiar_assert(bdd_varcount(bdd) <= varcount,
                  "number of variables in domain should be greater than the ones present in the BDD.");
 
-    return count<sat_count_policy, sat_sum>(bdd, varcount);
+    return count<sat_count_policy>(bdd, varcount);
   }
 }

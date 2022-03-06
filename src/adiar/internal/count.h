@@ -47,10 +47,13 @@ namespace adiar
   class path_count_policy
   {
   public:
-    inline static uint64_t forward_request(count_priority_queue_t<path_sum> &count_pq,
+    typedef path_sum queue_t;
+
+    template<typename count_pq_t>
+    inline static uint64_t forward_request(count_pq_t &count_pq,
                                            const label_t /* varcount */,
                                            const ptr_t child_to_resolve,
-                                           const path_sum &request)
+                                           const queue_t &request)
     {
       adiar_debug(request.sum > 0, "No 'empty' request should be created");
 
@@ -62,7 +65,7 @@ namespace adiar
       }
     }
 
-    inline static path_sum combine_requests(const path_sum &acc, const path_sum &next)
+    inline static queue_t combine_requests(const queue_t &acc, const queue_t &next)
     {
       adiar_debug(acc.uid == next.uid,
                   "Requests should be for the same node");
@@ -72,7 +75,7 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename count_policy, typename queue_t>
+  template<typename count_policy>
   uint64_t count(const decision_diagram &dd, label_t varcount)
   {
     adiar_debug(!is_sink(dd),
@@ -82,13 +85,12 @@ namespace adiar
 
     node_stream<> ns(dd);
 
-    count_priority_queue_t<queue_t> count_pq({dd},
-                                             tpie::get_memory_manager().available(),
-                                             std::numeric_limits<size_t>::max());
+    count_priority_queue_t<typename count_policy::queue_t> count_pq
+      ({dd}, tpie::get_memory_manager().available(), std::numeric_limits<size_t>::max());
 
     {
       node_t root = ns.pull();
-      queue_t request = { root.uid, 1u };
+      typename count_policy::queue_t request = { root.uid, 1u };
 
       result += count_policy::forward_request(count_pq, varcount, root.low, request);
       result += count_policy::forward_request(count_pq, varcount, root.high, request);
@@ -107,7 +109,7 @@ namespace adiar
                   "Priority queue is out-of-sync with node stream");
 
       // Resolve requests
-      queue_t request = count_pq.pull();
+      typename count_policy::queue_t request = count_pq.pull();
 
       while (count_pq.can_pull() && count_pq.top().uid == n.uid) {
         request = count_policy::combine_requests(request, count_pq.pull());
