@@ -102,6 +102,8 @@ namespace adiar
     template<typename comp_policy>
     friend bool comparison_check(const decision_diagram &in_1, const decision_diagram &in_2);
 
+    friend size_t __count_size_based_upper_bound(const decision_diagram &dd);
+
     template<typename prod_policy>
     friend typename prod_policy::unreduced_t product_construction(const typename prod_policy::reduced_t &in_1,
                                                                   const typename prod_policy::reduced_t &in_2,
