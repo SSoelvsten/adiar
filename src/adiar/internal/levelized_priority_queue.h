@@ -522,7 +522,7 @@ namespace adiar {
         ? elem_level_t::label_of(_overflow_queue.top())
         : stop_level;
 
-      stop_level = stop_level == NO_LABEL || _level_cmp_lt(overflow_level, stop_level)
+      stop_level = stop_level == NO_LABEL || level_cmp_lt(overflow_level, stop_level)
         ? overflow_level
         : stop_level;
 
@@ -532,18 +532,18 @@ namespace adiar {
                   "There should be a next level to go to");
 
       adiar_debug(!has_stop_level || !has_front_bucket()
-                  || _level_cmp_lt(front_bucket_level(), stop_level),
+                  || level_cmp_lt(front_bucket_level(), stop_level),
                   "'stop_level' should be past the current front bucket (if it exists)");
 
       adiar_debug(!has_front_bucket() ||
-                  _level_cmp_lt(front_bucket_level(), back_bucket_level()),
+                  level_cmp_lt(front_bucket_level(), back_bucket_level()),
                   "Back bucket should be (strictly) ahead of the back bucket");
 
       // TODO: Add statistics on what case is hit.
 
       // Edge Case: ---------------------------------------------------------- :
       //   The given stop_level is prior to the next bucket
-      if (has_stop_level && _level_cmp_lt(stop_level, next_bucket_level())) {
+      if (has_stop_level && level_cmp_lt(stop_level, next_bucket_level())) {
         return;
       }
 
@@ -568,9 +568,9 @@ namespace adiar {
 
           adiar_debug(has_front_bucket(), "After increment the front bucket will 'exist'");
 
-          if (_level_cmp_le(front_bucket_level(), stop_level)) {
+          if (level_cmp_le(front_bucket_level(), stop_level)) {
             _current_level = front_bucket_level();
-          } else { // _level_cmp_lt(stop_level, front_bucket_level())
+          } else { // level_cmp_lt(stop_level, front_bucket_level())
             new_levels[++_back_bucket_idx] = front_bucket_level();
           }
         } while (_front_bucket_idx != old_back_bucket_idx);
@@ -578,7 +578,7 @@ namespace adiar {
         _front_bucket_idx = OUT_OF_BUCKETS_IDX;
 
         // Add as many levels from the level_merger as we can fit in
-        while (_level_merger.can_pull() && _level_cmp_le(_level_merger.peek(), stop_level)) {
+        while (_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), stop_level)) {
           _current_level = _level_merger.pull();
         }
 
@@ -617,7 +617,7 @@ namespace adiar {
                         "Since 'has_next_level()' is true, then there must exist a next bucket");
 
         // Is the next bucket past the 'stop_level'?
-        if (has_stop_level && _level_cmp_lt(stop_level, next_bucket_level())) {
+        if (has_stop_level && level_cmp_lt(stop_level, next_bucket_level())) {
           break;
         }
 
@@ -630,12 +630,12 @@ namespace adiar {
       adiar_debug(has_front_bucket(), "Ends with a front bucket");
 
       adiar_debug((has_stop_level
-                   && (_level_cmp_le(stop_level, front_bucket_level())
-                       || (!has_next_bucket() || _level_cmp_lt(stop_level, next_bucket_level()))) )
+                   && (level_cmp_le(stop_level, front_bucket_level())
+                       || (!has_next_bucket() || level_cmp_lt(stop_level, next_bucket_level()))) )
                    || _has_next_from_bucket,
                   "Either we stopped early or we found a non-bucket");
 
-      adiar_debug(_level_cmp_le(front_bucket_level(), back_bucket_level()),
+      adiar_debug(level_cmp_le(front_bucket_level(), back_bucket_level()),
                   "Consistent bucket levels");
     }
 
@@ -758,7 +758,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Strictly less ' < ' between two levels.
     ////////////////////////////////////////////////////////////////////////////
-    bool _level_cmp_lt(const label_t l1, const label_t l2)
+    bool level_cmp_lt(const label_t l1, const label_t l2)
     {
       return _level_comparator(l1, l2);
     }
@@ -766,7 +766,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Less or equal ' <= ' between two levels.
     ////////////////////////////////////////////////////////////////////////////
-    bool _level_cmp_le(const label_t l1, const label_t l2)
+    bool level_cmp_le(const label_t l1, const label_t l2)
     {
       return _level_comparator(l1, l2) || l1 == l2;
     }
@@ -832,7 +832,7 @@ namespace adiar {
                   "Cannot create buckets beyond last level");
 
       adiar_invariant(!has_front_bucket()
-                      || _level_cmp_lt(front_bucket_level(), back_bucket_level()),
+                      || level_cmp_lt(front_bucket_level(), back_bucket_level()),
                       "Inconsistency in has_next_bucket predicate");
 
       // Replace the current read-only bucket, if there is one
@@ -844,7 +844,7 @@ namespace adiar {
       _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
 
       adiar_debug(!has_next_bucket() || !has_front_bucket()
-                  || _level_cmp_lt(front_bucket_level(), back_bucket_level()),
+                  || level_cmp_lt(front_bucket_level(), back_bucket_level()),
                   "Inconsistency in has_next_bucket predicate");
 
       adiar_debug(has_next_bucket() || !has_front_bucket()
@@ -862,6 +862,14 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Level of the front bucket.
+    ////////////////////////////////////////////////////////////////////////////
+    label_t front_bucket_level() const
+    {
+      return _buckets_level[_front_bucket_idx];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Sort the content of the front bucket.
     ////////////////////////////////////////////////////////////////////////////
     void sort_front_bucket()
@@ -872,14 +880,6 @@ namespace adiar {
       if (_has_next_from_bucket) {
         _next_from_bucket = _buckets_sorter[_front_bucket_idx] -> pull();
       }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Level of the front bucket.
-    ////////////////////////////////////////////////////////////////////////////
-    label_t front_bucket_level() const
-    {
-      return _buckets_level[_front_bucket_idx];
     }
 
     ////////////////////////////////////////////////////////////////////////////
