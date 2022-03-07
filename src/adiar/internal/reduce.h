@@ -345,7 +345,8 @@ namespace adiar
       return out_file;
     }
 
-    // Obtain available memory for data structures and settle on their type.
+    // Derive an upper bound on the size of auxiliary data structures and check
+    // whether we can run them with a faster internal memory variant.
     const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
 
     const size_t max_cut = in_file._file_ptr->max_1level_cut;
