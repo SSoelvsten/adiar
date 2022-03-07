@@ -554,89 +554,14 @@ namespace adiar {
       if (size() == _overflow_queue.size()) {
         adiar_debug(has_stop_level, "Must have a 'stop_level' to go to");
 
-        // Backup of start and end of circular array
-        const size_t old_front_bucket_idx = _front_bucket_idx;
-        const size_t old_back_bucket_idx = _back_bucket_idx;
-
-        // Create a list of the new levels
-        label_t new_levels[BUCKETS];
-        _back_bucket_idx = OUT_OF_BUCKETS_IDX;
-
-        // Copy over still relevant levels from current buckets
-        do {
-          _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
-
-          adiar_debug(has_front_bucket(), "After increment the front bucket will 'exist'");
-
-          if (level_cmp_le(front_bucket_level(), stop_level)) {
-            _current_level = front_bucket_level();
-          } else { // level_cmp_lt(stop_level, front_bucket_level())
-            new_levels[++_back_bucket_idx] = front_bucket_level();
-          }
-        } while (_front_bucket_idx != old_back_bucket_idx);
-
-        _front_bucket_idx = OUT_OF_BUCKETS_IDX;
-
-        // Add as many levels from the level_merger as we can fit in
-        while (_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), stop_level)) {
-          _current_level = _level_merger.pull();
-        }
-
-        while (_back_bucket_idx + 1 < BUCKETS && _level_merger.can_pull()) {
-          new_levels[++_back_bucket_idx] = _level_merger.pull();
-        }
-
-        adiar_debug(_back_bucket_idx == OUT_OF_BUCKETS_IDX || _back_bucket_idx < BUCKETS,
-                    "_back_bucket_idx is a valid index");
-
-        // Relabel all buckets
-        if (_back_bucket_idx != OUT_OF_BUCKETS_IDX) {
-          for (size_t idx = 0; idx <= _back_bucket_idx; idx++) {
-            _buckets_level[idx] = new_levels[idx];
-          }
-
-          // Reset the prior read-only bucket, if relevant
-          if (old_front_bucket_idx <= _back_bucket_idx) {
-            _buckets_sorter[old_front_bucket_idx] = std::make_unique<sorter_t>(_memory_for_buckets,
-                                                                               _max_size,
-                                                                               BUCKETS);
-          }
-
-          // We can clean up all the dead buckets with a '.reset()' on the
-          // unique_ptr, but we will leave that for the destructor to do.
-        }
-
+        relabel_buckets(stop_level);
         return;
       }
 
       // Primary Case: ------------------------------------------------------- :
       //   At least one bucket contains an element. Let us go through each
       //   bucket one-by-one until we find the one or hit the stop_level.
-      do {
-        adiar_invariant(has_next_bucket(),
-                        "Since 'has_next_level()' is true, then there must exist a next bucket");
-
-        // Is the next bucket past the 'stop_level'?
-        if (has_stop_level && level_cmp_lt(stop_level, next_bucket_level())) {
-          break;
-        }
-
-        setup_next_bucket();
-        sort_front_bucket();
-      } while (!_has_next_from_bucket && has_next_bucket());
-
-      _current_level = front_bucket_level();
-
-      adiar_debug(has_front_bucket(), "Ends with a front bucket");
-
-      adiar_debug((has_stop_level
-                   && (level_cmp_le(stop_level, front_bucket_level())
-                       || (!has_next_bucket() || level_cmp_lt(stop_level, next_bucket_level()))) )
-                   || _has_next_from_bucket,
-                  "Either we stopped early or we found a non-bucket");
-
-      adiar_debug(level_cmp_le(front_bucket_level(), back_bucket_level()),
-                  "Consistent bucket levels");
+      forward_to_nonempty_bucket(stop_level, has_stop_level);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -824,35 +749,6 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Set up the next bucket.
-    ////////////////////////////////////////////////////////////////////////////
-    void setup_next_bucket()
-    {
-      adiar_debug(has_next_bucket(),
-                  "Cannot create buckets beyond last level");
-
-      adiar_invariant(!has_front_bucket()
-                      || level_cmp_lt(front_bucket_level(), back_bucket_level()),
-                      "Inconsistency in has_next_bucket predicate");
-
-      // Replace the current read-only bucket, if there is one
-      if (_level_merger.can_pull() && has_front_bucket()) {
-        const label_t next_level = _level_merger.pull();
-        setup_bucket(_front_bucket_idx, next_level);
-        _back_bucket_idx = _front_bucket_idx;
-      }
-      _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
-
-      adiar_debug(!has_next_bucket() || !has_front_bucket()
-                  || level_cmp_lt(front_bucket_level(), back_bucket_level()),
-                  "Inconsistency in has_next_bucket predicate");
-
-      adiar_debug(has_next_bucket() || !has_front_bucket()
-                  || front_bucket_level() == back_bucket_level(),
-                  "Inconsistency in has_next_bucket predicate");
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether there is an 'active' bucket from which ca be pulled
     ///        (though it may need to be sorted).
     ////////////////////////////////////////////////////////////////////////////
@@ -870,24 +766,142 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Sort the content of the front bucket.
-    ////////////////////////////////////////////////////////////////////////////
-    void sort_front_bucket()
-    {
-      _buckets_sorter[_front_bucket_idx] -> sort();
-
-      _has_next_from_bucket = _buckets_sorter[_front_bucket_idx] -> can_pull();
-      if (_has_next_from_bucket) {
-        _next_from_bucket = _buckets_sorter[_front_bucket_idx] -> pull();
-      }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief Level of the back bucket.
     ////////////////////////////////////////////////////////////////////////////
     label_t back_bucket_level() const
     {
       return _buckets_level[_back_bucket_idx];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Forwards to the first non-empty bucket or at the given
+    ///        'stop_level'.
+    ///
+    /// \param stop_level     The forwarding will stop early if reaching this
+    ///                       level.
+    ///
+    /// \param has_stop_level Whether to take the stop_level parameter into
+    ///                       account.
+    ///
+    /// \sa    levelized_priority_queue::setup_next_level
+    ////////////////////////////////////////////////////////////////////////////
+    inline void forward_to_nonempty_bucket(const label_t stop_level, const bool has_stop_level)
+    {
+      do {
+        adiar_invariant(has_next_bucket(),
+                        "At least one more bucket can be forwarded to");
+
+        // Is the next bucket past the 'stop_level'?
+        if (has_stop_level && level_cmp_lt(stop_level, next_bucket_level())) {
+          break;
+        }
+
+        adiar_invariant(!has_front_bucket()
+                        || level_cmp_lt(front_bucket_level(), back_bucket_level()),
+                        "Inconsistency in has_next_bucket predicate");
+
+        // Replace the current read-only bucket, if there is one
+        if (_level_merger.can_pull() && has_front_bucket()) {
+          const label_t next_level = _level_merger.pull();
+          setup_bucket(_front_bucket_idx, next_level);
+          _back_bucket_idx = _front_bucket_idx;
+        }
+        _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
+
+        adiar_debug(!has_next_bucket() || !has_front_bucket()
+                    || level_cmp_lt(front_bucket_level(), back_bucket_level()),
+                    "Inconsistency in has_next_bucket predicate");
+
+        adiar_debug(has_next_bucket() || !has_front_bucket()
+                    || front_bucket_level() == back_bucket_level(),
+                    "Inconsistency in has_next_bucket predicate");
+
+        // Sort front bucket
+        _buckets_sorter[_front_bucket_idx] -> sort();
+
+        _has_next_from_bucket = _buckets_sorter[_front_bucket_idx] -> can_pull();
+        if (_has_next_from_bucket) {
+          _next_from_bucket = _buckets_sorter[_front_bucket_idx] -> pull();
+        }
+      } while (!_has_next_from_bucket && has_next_bucket());
+
+      _current_level = front_bucket_level();
+
+      adiar_debug(has_front_bucket(), "Ends with a front bucket");
+
+      adiar_debug((has_stop_level
+                   && (level_cmp_le(stop_level, front_bucket_level())
+                       || (!has_next_bucket() || level_cmp_lt(stop_level, next_bucket_level()))) )
+                  || _has_next_from_bucket,
+                  "Either we stopped early or we found a non-bucket");
+
+      adiar_debug(level_cmp_le(front_bucket_level(), back_bucket_level()),
+                  "Consistent bucket levels");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Relabel all buckets to be a level at or past the stop_level. If
+    ///        the current read-only bucket is relabelled, then it is also reset
+    ///        to be pushable.
+    ///
+    /// \sa    levelized_priority_queue::setup_next_level
+    ////////////////////////////////////////////////////////////////////////////
+    inline void relabel_buckets(const label_t stop_level)
+    {
+      adiar_debug(stop_level != NO_LABEL,
+                  "Relabelling of buckets require a valid 'stop_level'");
+
+      // Backup of start and end of circular array
+      const size_t old_front_bucket_idx = _front_bucket_idx;
+      const size_t old_back_bucket_idx = _back_bucket_idx;
+
+      // Create a list of the new levels
+      label_t new_levels[BUCKETS];
+      _back_bucket_idx = OUT_OF_BUCKETS_IDX;
+
+      // Copy over still relevant levels from current buckets
+      do {
+        _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
+
+        adiar_debug(has_front_bucket(), "After increment the front bucket will 'exist'");
+
+        if (level_cmp_le(front_bucket_level(), stop_level)) {
+          _current_level = front_bucket_level();
+        } else { // level_cmp_lt(stop_level, front_bucket_level())
+          new_levels[++_back_bucket_idx] = front_bucket_level();
+        }
+      } while (_front_bucket_idx != old_back_bucket_idx);
+
+      _front_bucket_idx = OUT_OF_BUCKETS_IDX;
+
+      // Add as many levels from the level_merger as we can fit in
+      while (_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), stop_level)) {
+        _current_level = _level_merger.pull();
+      }
+
+      while (_back_bucket_idx + 1 < BUCKETS && _level_merger.can_pull()) {
+        new_levels[++_back_bucket_idx] = _level_merger.pull();
+      }
+
+      adiar_debug(_back_bucket_idx == OUT_OF_BUCKETS_IDX || _back_bucket_idx < BUCKETS,
+                  "_back_bucket_idx is a valid index");
+
+      // Relabel all buckets
+      if (_back_bucket_idx != OUT_OF_BUCKETS_IDX) {
+        for (size_t idx = 0; idx <= _back_bucket_idx; idx++) {
+          _buckets_level[idx] = new_levels[idx];
+        }
+
+        // Reset the prior read-only bucket, if relevant
+        if (old_front_bucket_idx <= _back_bucket_idx) {
+          _buckets_sorter[old_front_bucket_idx] = std::make_unique<sorter_t>(_memory_for_buckets,
+                                                                             _max_size,
+                                                                             BUCKETS);
+        }
+
+        // We can clean up all the dead buckets with a '.reset()' on the
+        // unique_ptr, but we will leave that for the destructor to do.
+      }
     }
   };
 
