@@ -180,14 +180,11 @@ namespace adiar
     size_t max_1level_cut = std::numeric_limits<size_t>::max();
 
     ///////////////////////////////////////////////////////////////////////////
-    /// \brief The number of true sinks in the file.
+    /// \brief The number of false and true sinks in the file.
+    ///        Index 0 gives the number of false sinks and index 1 gives the
+    ///        number of true sinks.
     ////////////////////////////////////////////////////////////////////////////
-    size_t true_sinks = 0;
-
-    ///////////////////////////////////////////////////////////////////////////
-    /// \brief The number of false sinks in the file.
-    ////////////////////////////////////////////////////////////////////////////
-    size_t false_sinks = 0;
+    size_t number_of_sinks[2] = { 0, 0 };
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Meta information on a level by level granularity.

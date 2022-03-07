@@ -21,8 +21,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can create true sink [bdd_true]", [&]() {
@@ -40,8 +40,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can create false sink [bdd_sink]", [&]() {
@@ -59,8 +59,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
       });
 
       it("can create false sink [bdd_false]", [&]() {
@@ -78,8 +78,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
       });
     });
 
@@ -102,8 +102,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can create x42", [&]() {
@@ -124,8 +124,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
     });
 
@@ -148,8 +148,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can create !x3", [&]() {
@@ -170,8 +170,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
     });
 
@@ -221,8 +221,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can create {} as trivially true", [&]() {
@@ -242,8 +242,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
     });
 
@@ -293,8 +293,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("can create {} as trivially false", [&]() {
@@ -314,8 +314,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
       });
     });
 
@@ -334,8 +334,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
       });
 
       it("creates trivial counting to 10 in [10,18]", [&]() {
@@ -352,8 +352,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
       });
 
       it("creates counting to 0 in [1,5]", [&]() {
@@ -408,8 +408,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(5u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(5u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("creates counting to 2 in [2,5]", [&]() {
@@ -473,8 +473,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(4u));
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(4u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(4u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("creates counting to 3 in [0,8]", [&]() {
@@ -651,8 +651,8 @@ go_bandit([]() {
 
         AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(7u));
 
-        AssertThat(res.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-        AssertThat(res.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(9u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(9u));
+        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
       });
     });
   });

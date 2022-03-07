@@ -114,8 +114,8 @@ go_bandit([]() {
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+      AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("adds new root for { {1} } on (0)", [&]() {
@@ -160,8 +160,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("adds new root chain for { {2} } on (0,1)", [&]() {
@@ -222,8 +222,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
     });
 
     it("adds new nodes after root for { {1} } on (2,3)", [&]() {
@@ -277,8 +277,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("adds a new node before and after root for { {1} } on (0,2)", [&]() {
@@ -332,8 +332,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("adds new nodes before and after root for { {1} } on (0,2,4)", [&]() {
@@ -396,8 +396,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(4u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(4u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("adds node between root and child for { {1}, {3} } on (2)", [&]() {
@@ -466,8 +466,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
     });
 
     it("returns { Ø } for { {0} } on (0)", [&]() {
@@ -493,8 +493,8 @@ go_bandit([]() {
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("returns { Ø } for { {1} } on (1)", [&]() {
@@ -520,8 +520,8 @@ go_bandit([]() {
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("shortcuts root for { {0,1} } on (0)", [&]() {
@@ -565,8 +565,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("shortcuts root for { {0,2} } on (0,1)", [&]() {
@@ -619,8 +619,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("shortcuts root and its child for { {0,2}, {0,2,3} } on (0,2)", [&]() {
@@ -665,8 +665,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
     });
 
     it("flips root for { Ø, {0} } on (0)", [&]() {
@@ -709,8 +709,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
     });
 
     it("flips root for { {0}, {1} } on (0)", [&]() {
@@ -763,8 +763,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
     });
 
     it("flips root for [1] on (0)", [&]() {
@@ -833,8 +833,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(4u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(4u));
     });
 
     it("flips node in the middle for { Ø, {0}, {1,2} } on (1)", [&]() {
@@ -903,8 +903,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
     });
 
     it("flips and adds a node for [1] on (1)", [&]() {
@@ -979,8 +979,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(4u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(4u));
     });
 
     it("collapses to a sink for { {0,1} } on (0,1)", [&]() {
@@ -1014,8 +1014,8 @@ go_bandit([]() {
 
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-      AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("bridges over a deleted node for { {0,1,2} } on (1)", [&]() {
@@ -1070,8 +1070,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("bridges over a deleted node for { {1,2}, {0,1,2} } on (1)", [&]() {
@@ -1126,8 +1126,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("only adds a one node when cutting arcs to the same node for { {2}, {0,2} } on (1)", [&]() {
@@ -1190,8 +1190,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("bridges node before the last label and a sink for { {0}, {1} } on (0,1)", [&]() {
@@ -1257,8 +1257,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
     });
 
     it("flips, adds and bridges nodes for [1] on (2,3)", [&]() {
@@ -1341,8 +1341,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
     });
 
     it("correctly connects pre-root chain with skipped root for { { 1 }, { 1,2 } } on (0,1)", [&]() {
@@ -1405,8 +1405,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
     });
 
     it("cuts collapse of root to a sink for { { 0 } } on (0,1)", [&]() {
@@ -1452,8 +1452,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("cuts collapse to a sink for { { 0,1 } } on (0,1,2)", [&]() {
@@ -1502,8 +1502,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
 
     it("keeps pre-root chain despite collapse to a sink of the root for { { 1 } } on (0,1)", [&]() {
@@ -1549,8 +1549,8 @@ go_bandit([]() {
 
       AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-      AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
     });
   });
  });
