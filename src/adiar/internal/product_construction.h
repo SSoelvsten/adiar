@@ -466,6 +466,8 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
+    // Derive an upper bound on the size of auxiliary data structures and check
+    // whether we can run them with a faster internal memory variant.
     const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
     const size_t size_bound = __prod_size_based_upper_bound<prod_policy>(in_1, in_2);
 

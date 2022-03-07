@@ -138,6 +138,8 @@ namespace adiar
 
     node_stream<> ns(dd);
 
+    // Derive an upper bound on the size of auxiliary data structures and check
+    // whether we can run them with a faster internal memory variant.
     const size_t size_upper_bound = __count_size_based_upper_bound(dd);
 
     const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
