@@ -259,8 +259,8 @@ go_bandit([]() {
 
         AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("should shortcut quantification of root into T sink [x2]", [&]() {
@@ -276,8 +276,8 @@ go_bandit([]() {
 
         AssertThat((std::get<node_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("should shortcut quantification on non-existent label in input [BDD 1]", [&]() {
@@ -315,8 +315,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should quantify root without sink arcs [BDD 2]", [&]() {
@@ -366,8 +366,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("should quantify nodes with sink or nodes as children [BDD 2]", [&]() {
@@ -417,8 +417,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("should output sink arcs in order, despite the order of resolvement [BDD 2]", [&]() {
@@ -468,8 +468,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("should keep nodes as is when skipping quantified level [BDD 3]", [&]() {
@@ -521,8 +521,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("should output sink arcs in order, despite the order of resolvement [BDD 3]", [&]() {
@@ -566,8 +566,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("should resolve sink-sink requests in [BDD 5]", [&]() {
@@ -611,8 +611,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
@@ -665,8 +665,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -732,8 +732,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(5u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(5u));
       });
 
       it("can forward multiple arcs to the same node across a level [BDD 7]", [&]() {
@@ -773,8 +773,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -826,8 +826,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8b]", [&]() {
@@ -879,8 +879,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("can quantify list [x1, x2] in sink-only BDD [&&bdd]", [&]() {
@@ -1234,8 +1234,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("should quantify root of [BDD 3]", [&]() {
@@ -1285,8 +1285,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("should prune shortcuttable requests [BDD 4]", [&]() {
@@ -1339,8 +1339,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -1406,8 +1406,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(5u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(5u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -1459,8 +1459,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->true_sinks, Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()._file_ptr->false_sinks, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("should quantify list [x0, x2, x1] [BDD 4 : &&bdd]", [&]() {
@@ -1482,8 +1482,8 @@ go_bandit([]() {
         level_info_test_stream<node_t> ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
       });
 
       it("should quantify list [x0, x2, x1] [BDD 4 : const &bdd]", [&]() {
@@ -1506,8 +1506,8 @@ go_bandit([]() {
         level_info_test_stream<node_t> ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->true_sinks, Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()._file_ptr->false_sinks, Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
       });
 
       it("should quantify list [x1] [BDD 4 : &&bdd]", [&]() {

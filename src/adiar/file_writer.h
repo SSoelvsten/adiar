@@ -366,12 +366,9 @@ namespace adiar {
         }
       }
 
-      _file_ptr->true_sinks +=  (is_sink(n.low) && value_of(n.low)) +
-                                (is_sink(n.high) && value_of(n.high)) +
-                                (is_sink(n.uid) && value_of(n.uid));
-      _file_ptr->false_sinks += (is_sink(n.low) && !value_of(n.low)) +
-                                (is_sink(n.high) && !value_of(n.high)) +
-                                (is_sink(n.uid) && !value_of(n.uid));
+      if (is_sink(n.low)) { _file_ptr->number_of_sinks[value_of(n.low)]++; }
+      if (is_sink(n.high)) { _file_ptr->number_of_sinks[value_of(n.high)]++; }
+      if (is_sink(n.uid)) { _file_ptr->number_of_sinks[value_of(n.uid)]++; }
 
       // Write node to file
       _latest_node = n;
@@ -397,10 +394,9 @@ namespace adiar {
     void unsafe_push(const node_t &n)
     {
       meta_file_writer::unsafe_push(n, 0);
-      _file_ptr->true_sinks +=  (is_sink(n.low) && value_of(n.low)) +
-                                (is_sink(n.high) && value_of(n.high));
-      _file_ptr->false_sinks += (is_sink(n.low) && !value_of(n.low)) +
-                                (is_sink(n.high) && !value_of(n.high));
+
+      if (is_sink(n.low)) { _file_ptr->number_of_sinks[value_of(n.low)]++; }
+      if (is_sink(n.high)) { _file_ptr->number_of_sinks[value_of(n.high)]++; }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -512,8 +508,7 @@ namespace adiar {
         meta_file_writer::unsafe_push(a, 2);
       }
 
-      _file_ptr->true_sinks += value_of(a.target);
-      _file_ptr->false_sinks += !value_of(a.target);
+      _file_ptr->number_of_sinks[value_of(a.target)]++;
     }
 
     //////////////////////////////////////////////////////////////////////////////

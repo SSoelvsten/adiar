@@ -186,14 +186,8 @@ namespace adiar
 
     // Are they trivially not the same, since they have different number of
     // sink arcs?
-    if  (
-         (negate1 == negate2 &&
-         (f1._file_ptr->true_sinks != f2._file_ptr->true_sinks ||
-          f1._file_ptr->false_sinks != f2._file_ptr->false_sinks)) ||
-         (negate1 != negate2 &&
-         (f1._file_ptr->true_sinks != f2._file_ptr->false_sinks ||
-          f1._file_ptr->false_sinks != f2._file_ptr->true_sinks))
-        ) {
+    if(f1._file_ptr->number_of_sinks[negate1] != f2._file_ptr->number_of_sinks[negate2] ||
+       f1._file_ptr->number_of_sinks[!negate1] != f2._file_ptr->number_of_sinks[!negate2]) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_sinkcount++;
 #endif
