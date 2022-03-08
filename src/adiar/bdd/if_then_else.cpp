@@ -38,10 +38,12 @@ namespace adiar
   typedef triple_fst_lt ite_triple_1_lt;
 #endif
 
-  typedef levelized_node_priority_queue<ite_triple_1, triple_label, ite_triple_1_lt,
-                                        external_sorter, external_priority_queue,
-                                        3>
-  ite_priority_queue_1_t;
+  template<template<typename, typename> typename sorter_template,
+           template<typename, typename> typename priority_queue_template>
+  using ite_priority_queue_1_t =
+  levelized_node_priority_queue<ite_triple_1, triple_label, ite_triple_1_lt,
+                                external_sorter, external_priority_queue,
+                                3>;
 
   struct ite_triple_2 : ite_triple_1
   {
@@ -89,7 +91,7 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  node_file ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
+  node_file __ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
   {
     // TODO: What is the performance of '<<' rather than 'unsafe_push'? If there
     // is a major difference, then we may want to "inline" the '<<' with its
@@ -168,7 +170,8 @@ namespace adiar
     }
   }
 
-  inline void ite_resolve_request(ite_priority_queue_1_t &ite_pq_1,
+  template<typename pq_1_t>
+  inline void __ite_resolve_request(pq_1_t &ite_pq_1,
                                   arc_writer &aw,
                                   ptr_t source, ptr_t r_if, ptr_t r_then, ptr_t r_else)
   {
@@ -196,78 +199,21 @@ namespace adiar
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
+  template<typename pq_1_t, typename pq_2_t, typename pq_3_t>
+  __bdd __bdd_ite(const bdd &bdd_if,   node_stream<> &in_nodes_if,   node_t &v_if,
+                  const bdd &bdd_then, node_stream<> &in_nodes_then, node_t &v_then,
+                  const bdd &bdd_else, node_stream<> &in_nodes_else, node_t &v_else,
+                  arc_file &out_arcs, arc_writer &aw,
+                  const tpie::memory_size_type available_memory_lpq,
+                  const tpie::memory_size_type available_memory_pq_2,
+                  const tpie::memory_size_type available_memory_pq_3,
+                  const size_t max_pq_size)
   {
-    // There are multiple cases, where this boils down to an Apply rather than
-    // an If-Then-Else. The bdd_apply uses tuples rather than triples and only
-    // two priority queues, so it will run considerably faster.
-    //
-    // The translations into Apply can be found in Figure 1 of "Efficient
-    // Implementation of a BDD Package" of Karl S. Brace, Richard L. Rudell, and
-    // Randal E. Bryant.
-
-    // Resolve being given the same underlying file in both cases
-    if (bdd_then.file._file_ptr == bdd_else.file._file_ptr) {
-      return bdd_then.negate == bdd_else.negate
-        ? __bdd(bdd_then)
-        : bdd_xnor(bdd_if, bdd_then);
-    }
-
-    // Resolve being given the same underlying file for conditional and a case
-    if (bdd_if.file._file_ptr == bdd_then.file._file_ptr) {
-      return bdd_if.negate == bdd_then.negate
-        ? bdd_or(bdd_if, bdd_else)
-        : bdd_and(bdd_not(bdd_if), bdd_else);
-    } else if (bdd_if.file._file_ptr == bdd_else.file._file_ptr) {
-      return bdd_if.negate == bdd_else.negate
-        ? bdd_and(bdd_if, bdd_then)
-        : bdd_imp(bdd_if, bdd_then);
-    }
-
-    // Resolve being given a sink in one of the cases
-    if      (is_sink(bdd_then, is_true))  { return bdd_or (bdd_if,          bdd_else); }
-    else if (is_sink(bdd_then, is_false)) { return bdd_and(bdd_not(bdd_if), bdd_else); }
-    else if (is_sink(bdd_else, is_true))  { return bdd_imp(bdd_if,          bdd_then); }
-    else if (is_sink(bdd_else, is_false)) { return bdd_and(bdd_if,          bdd_then); }
-
-    // Now, at this point we will not defer to using the Apply, so we can take
-    // up memory by opening the input streams and evaluating trivial
-    // conditionals.
-    node_stream<> in_nodes_if(bdd_if);
-    node_t v_if = in_nodes_if.pull();
-
-    if (is_sink(v_if)) {
-      return value_of(v_if) ? bdd_then : bdd_else;
-    }
-
-    node_stream<> in_nodes_then(bdd_then);
-    node_t v_then = in_nodes_then.pull();
-
-    node_stream<> in_nodes_else(bdd_else);
-    node_t v_else = in_nodes_else.pull();
-
-    // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
-    // the two others, then we can merely zip the 'then' and 'else' BDDs. This
-    // is only O((N1+N2+N3)/B) I/Os!
-    if (max_label(bdd_if) < label_of(v_then) &&
-        max_label(bdd_if) < label_of(v_then) &&
-        disjoint_labels(bdd_then, bdd_else)) {
-      return ite_zip_bdds(bdd_if,bdd_then,bdd_else);
-    }
-    // From here on forward, we probably cannot circumvent actually having to do
-    // the product construction.
-
-    arc_file out_arcs;
-    arc_writer aw(out_arcs);
-
-    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-
-    ite_priority_queue_1_t ite_pq_1({bdd_if, bdd_then, bdd_else},
-                                    available_memory / 3,
-                                    std::numeric_limits<size_t>::max());
-    ite_priority_queue_2_t ite_pq_2(available_memory / 3);
-    ite_priority_queue_3_t ite_pq_3(available_memory / 3);
+    pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else},
+                    available_memory_lpq,
+                    max_pq_size);
+    pq_2_t ite_pq_2(available_memory_pq_2);
+    pq_3_t ite_pq_3(available_memory_pq_3);
 
     // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v_if.uid, v_then.uid, v_else.uid));
@@ -279,8 +225,8 @@ namespace adiar
     ite_init_request(in_nodes_else, v_else, out_label, low_else, high_else);
 
     uid_t out_uid = create_node_uid(out_label, out_id++);
-    ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
-    ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
+    __ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
+    __ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
 
     size_t max_1level_cut = 0;
 
@@ -469,8 +415,8 @@ namespace adiar
       adiar_debug(out_id < MAX_ID, "Has run out of ids");
       out_uid = create_node_uid(out_label, out_id++);
 
-      ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
-      ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
+      __ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
+      __ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
 
       // Output ingoing arcs
       while (true) {
@@ -502,5 +448,111 @@ namespace adiar
 
     out_arcs._file_ptr->max_1level_cut = max_1level_cut;
     return out_arcs;
+  }
+
+  size_t __ite_size_based_upper_bound(const decision_diagram &in_if, const decision_diagram &in_then, const decision_diagram &in_else)
+  {
+    return in_if.file.size() * (in_then.file.size() + 2) * (in_else.file.size() + 2) +
+           in_then.file.size() + in_else.file.size() + 2;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
+  {
+    // There are multiple cases, where this boils down to an Apply rather than
+    // an If-Then-Else. The bdd_apply uses tuples rather than triples and only
+    // two priority queues, so it will run considerably faster.
+    //
+    // The translations into Apply can be found in Figure 1 of "Efficient
+    // Implementation of a BDD Package" of Karl S. Brace, Richard L. Rudell, and
+    // Randal E. Bryant.
+
+    // Resolve being given the same underlying file in both cases
+    if (bdd_then.file._file_ptr == bdd_else.file._file_ptr) {
+      return bdd_then.negate == bdd_else.negate
+        ? __bdd(bdd_then)
+        : bdd_xnor(bdd_if, bdd_then);
+    }
+
+    // Resolve being given the same underlying file for conditional and a case
+    if (bdd_if.file._file_ptr == bdd_then.file._file_ptr) {
+      return bdd_if.negate == bdd_then.negate
+        ? bdd_or(bdd_if, bdd_else)
+        : bdd_and(bdd_not(bdd_if), bdd_else);
+    } else if (bdd_if.file._file_ptr == bdd_else.file._file_ptr) {
+      return bdd_if.negate == bdd_else.negate
+        ? bdd_and(bdd_if, bdd_then)
+        : bdd_imp(bdd_if, bdd_then);
+    }
+
+    // Resolve being given a sink in one of the cases
+    if      (is_sink(bdd_then, is_true))  { return bdd_or (bdd_if,          bdd_else); }
+    else if (is_sink(bdd_then, is_false)) { return bdd_and(bdd_not(bdd_if), bdd_else); }
+    else if (is_sink(bdd_else, is_true))  { return bdd_imp(bdd_if,          bdd_then); }
+    else if (is_sink(bdd_else, is_false)) { return bdd_and(bdd_if,          bdd_then); }
+
+    // Now, at this point we will not defer to using the Apply, so we can take
+    // up memory by opening the input streams and evaluating trivial
+    // conditionals.
+    node_stream<> in_nodes_if(bdd_if);
+    node_t v_if = in_nodes_if.pull();
+
+    if (is_sink(v_if)) {
+      return value_of(v_if) ? bdd_then : bdd_else;
+    }
+
+    node_stream<> in_nodes_then(bdd_then);
+    node_t v_then = in_nodes_then.pull();
+
+    node_stream<> in_nodes_else(bdd_else);
+    node_t v_else = in_nodes_else.pull();
+
+    // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
+    // the two others, then we can merely zip the 'then' and 'else' BDDs. This
+    // is only O((N1+N2+N3)/B) I/Os!
+    if (max_label(bdd_if) < label_of(v_then) &&
+        max_label(bdd_if) < label_of(v_then) &&
+        disjoint_labels(bdd_then, bdd_else)) {
+      return __ite_zip_bdds(bdd_if,bdd_then,bdd_else);
+    }
+    // From here on forward, we probably cannot circumvent actually having to do
+    // the product construction.
+
+    arc_file out_arcs;
+    arc_writer aw(out_arcs);
+
+    // Derive an upper bound on the size of auxiliary data structures and check
+    // whether we can run them with a faster internal memory variant.
+    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    const size_t size_bound = __ite_size_based_upper_bound(bdd_if, bdd_then, bdd_else);
+
+    constexpr size_t data_structures_in_lpq =
+      ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+
+    const tpie::memory_size_type lpq_memory_fits =
+      ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits
+        ((available_memory / (data_structures_in_lpq + 2)) * data_structures_in_lpq);
+
+    if(size_bound <= lpq_memory_fits) {
+      return __bdd_ite<ite_priority_queue_1_t<internal_sorter, internal_priority_queue>,
+                       ite_priority_queue_2_t, ite_priority_queue_3_t>
+                      (bdd_if, in_nodes_if, v_if,
+                       bdd_then, in_nodes_then, v_then,
+                       bdd_else, in_nodes_else, v_else,
+                       out_arcs, aw,
+                       (available_memory / (data_structures_in_lpq + 2)) * data_structures_in_lpq,
+                       available_memory / (data_structures_in_lpq + 2),
+                       available_memory / (data_structures_in_lpq + 2),
+                       size_bound);
+    } else {
+      return __bdd_ite<ite_priority_queue_1_t<external_sorter, external_priority_queue>,
+                       ite_priority_queue_2_t, ite_priority_queue_3_t>
+                      (bdd_if, in_nodes_if, v_if,
+                       bdd_then, in_nodes_then, v_then,
+                       bdd_else, in_nodes_else, v_else,
+                       out_arcs, aw,
+                       available_memory / 3, available_memory / 3, available_memory / 3,
+                       size_bound);
+    }
   }
 }
