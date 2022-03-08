@@ -16,8 +16,11 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
-  typedef levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt>
-  substitute_priority_queue_t;
+  template<template<typename, typename> typename sorter_template,
+           template<typename, typename> typename priority_queue_template>
+  using substitute_priority_queue_t =
+    levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt,
+                                  sorter_template, priority_queue_template>;
 
   struct substitute_rec_output { node_t out; };
   struct substitute_rec_skipto { ptr_t child; };
@@ -71,8 +74,9 @@ namespace adiar
     }
   }
 
-  inline void substitute_resolve_request(const arc_t &request,
-                                         substitute_priority_queue_t &pq,
+  template<typename pq_t>
+  inline void __substitute_resolve_request(const arc_t &request,
+                                         pq_t &pq,
                                          arc_writer &aw)
   {
     if(is_sink(request.target)) {
@@ -82,19 +86,15 @@ namespace adiar
     }
   }
 
-  template<typename substitute_policy, typename substitute_act_mgr>
-  typename substitute_policy::unreduced_t substitute(const typename substitute_policy::reduced_t &dd,
-                                                     substitute_act_mgr &amgr)
+  template<typename substitute_policy, typename substitute_act_mgr, typename pq_t>
+  typename substitute_policy::unreduced_t __substitute
+    (const typename substitute_policy::reduced_t &dd, node_stream<> &ns, node_t &n,
+     substitute_act_mgr &amgr,
+     arc_file &out_arcs, arc_writer &aw,
+     const tpie::memory_size_type available_memory_lpq,
+     const size_t max_pq_size)
   {
-    node_stream<> ns(dd);
-    node_t n = ns.pull();
-
-    arc_file out_arcs;
-    arc_writer aw(out_arcs);
-
-    substitute_priority_queue_t substitute_pq({dd},
-                                              tpie::get_memory_manager().available(),
-                                              std::numeric_limits<size_t>::max());
+    pq_t substitute_pq({dd}, available_memory_lpq, max_pq_size);
 
     label_t level = label_of(n);
     size_t level_size = 0;
@@ -110,8 +110,8 @@ namespace adiar
 
         level_size = 1;
 
-        substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
-        substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
+        __substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
+        __substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
       } else { // std::holds_alternative<substitute_rec_skipto>(n_res)
         const ptr_t rec_child = std::get<substitute_rec_skipto>(rec_res).child;;
 
@@ -153,8 +153,8 @@ namespace adiar
         const node_t n_res = std::get<substitute_rec_output>(rec_res).out;
 
         // outgoing arcs
-        substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
-        substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
+        __substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
+        __substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
 
         // Ingoing arcs
         while(substitute_pq.can_pull() && substitute_pq.top().target == n_res.uid) {
@@ -178,7 +178,7 @@ namespace adiar
             return substitute_policy::sink(value_of(rec_child), amgr);
           }
 
-          substitute_resolve_request(request, substitute_pq, aw);
+          __substitute_resolve_request(request, substitute_pq, aw);
         }
       }
     }
@@ -190,6 +190,42 @@ namespace adiar
 
     out_arcs._file_ptr->max_1level_cut = max_1level_cut;
     return out_arcs;
+  }
+
+  template<typename substitute_policy>
+  size_t __substitute_size_based_upper_bound(const typename substitute_policy::reduced_t &dd)
+  {
+    return dd.file.size() + 2;
+  }
+
+  template<typename substitute_policy, typename substitute_act_mgr>
+  typename substitute_policy::unreduced_t substitute(const typename substitute_policy::reduced_t &dd,
+                                                     substitute_act_mgr &amgr)
+  {
+    // Set up to run the substitution algorithm
+    node_stream<> ns(dd);
+    node_t n = ns.pull();
+
+    arc_file out_arcs;
+    arc_writer aw(out_arcs);
+
+    // Derive an upper bound on the size of auxiliary data structures and check
+    // whether we can run them with a faster internal memory variant.
+    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    const size_t size_bound = __substitute_size_based_upper_bound<substitute_policy>(dd);
+
+    const tpie::memory_size_type lpq_memory_fits =
+      substitute_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(available_memory);
+
+    if(size_bound <= lpq_memory_fits) {
+      return __substitute<substitute_policy, substitute_act_mgr,
+                          substitute_priority_queue_t<internal_sorter, internal_priority_queue>>
+        (dd, ns, n, amgr, out_arcs, aw, available_memory, size_bound);
+    } else {
+      return __substitute<substitute_policy, substitute_act_mgr,
+                          substitute_priority_queue_t<external_sorter, external_priority_queue>>
+        (dd, ns, n, amgr, out_arcs, aw, available_memory, size_bound);
+    }
   }
 }
 
