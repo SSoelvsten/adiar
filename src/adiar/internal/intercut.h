@@ -15,11 +15,13 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // Priority queues
 
-  typedef levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt,
-                                        external_sorter, external_priority_queue,
-                                        1u,
-                                        0u>
-  intercut_priority_queue_1_t;
+  template<template<typename, typename> typename sorter_template,
+           template<typename, typename> typename priority_queue_template>
+  using intercut_priority_queue_1_t =
+    levelized_node_priority_queue<arc_t, arc_target_label, arc_target_lt,
+                                  sorter_template, priority_queue_template,
+                                  1u,
+                                  0u>;
 
   struct arc_cut : arc
   {
@@ -47,11 +49,13 @@ namespace adiar
     }
   };
 
-  typedef levelized_priority_queue<arc_cut, arc_cut_label, arc_cut_lt,
-                                   external_sorter, external_priority_queue,
-                                   label_file, 1u, std::less<label_t>,
-                                   0u>
-  intercut_priority_queue_2_t;
+  template<template<typename, typename> typename sorter_template,
+           template<typename, typename> typename priority_queue_template>
+  using intercut_priority_queue_2_t =
+    levelized_label_priority_queue<arc_cut, arc_cut_label, arc_cut_lt,
+                                   sorter_template, priority_queue_template,
+                                   1u,
+                                   0u>;
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -84,9 +88,10 @@ namespace adiar
   public:
     static constexpr bool ignore_nil = false;
 
+    template<typename pq_1_t, typename pq_2_t>
     static inline void forward(arc_writer &aw,
-                               intercut_priority_queue_1_t &pq_1,
-                               intercut_priority_queue_2_t &pq_2,
+                               pq_1_t &pq_1,
+                               pq_2_t &pq_2,
                                const ptr_t source, const ptr_t target,
                                const label_t curr_level, const label_t next_cut)
     {
@@ -111,9 +116,10 @@ namespace adiar
   public:
     static constexpr bool ignore_nil = true;
 
+    template<typename pq_1_t, typename pq_2_t>
     static inline void forward(arc_writer &aw,
-                               intercut_priority_queue_1_t &/*pq_1*/,
-                               intercut_priority_queue_2_t &/*pq_2*/,
+                               pq_1_t &/*pq_1*/,
+                               pq_2_t &/*pq_2*/,
                                const ptr_t source, const ptr_t target,
                                const label_t /*curr_level*/, const label_t /*next_cut*/)
     {
@@ -121,10 +127,11 @@ namespace adiar
     }
   };
 
-  template<typename intercut_policy, typename in_policy>
+  template<typename intercut_policy, typename in_policy,
+           typename pq_1_t, typename pq_2_t>
   inline void intercut_in__pq_1(arc_writer &aw,
-                                intercut_priority_queue_1_t &pq_1,
-                                intercut_priority_queue_2_t &pq_2,
+                                pq_1_t &pq_1,
+                                pq_2_t &pq_2,
                                 const label_t out_label,
                                 const ptr_t pq_target,
                                 const ptr_t out_target,
@@ -141,10 +148,11 @@ namespace adiar
     }
   }
 
-  template<typename intercut_policy, typename in_policy>
+  template<typename intercut_policy, typename in_policy,
+           typename pq_1_t, typename pq_2_t>
   inline void intercut_in__pq_2(arc_writer &aw,
-                                intercut_priority_queue_1_t &pq_1,
-                                intercut_priority_queue_2_t &pq_2,
+                                pq_1_t &pq_1,
+                                pq_2_t &pq_2,
                                 const label_t out_label,
                                 const ptr_t pq_target,
                                 const ptr_t out_target,
@@ -164,39 +172,17 @@ namespace adiar
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // TODO: If nothing changes (no new nodes are added and the current are left
-  //       as-is) then one can return the input once more.
-
-  template<typename intercut_policy>
-  typename intercut_policy::unreduced_t intercut(const typename intercut_policy::reduced_t &dd,
-                                                 const label_file &labels)
+  template<typename intercut_policy, typename pq_1_t, typename pq_2_t>
+  typename intercut_policy::unreduced_t __intercut
+    (const typename intercut_policy::reduced_t &dd, node_stream<> &in_nodes, node_t &n,
+     const label_file &labels, label_stream<> &ls, label_t &l,
+     arc_file &out_arcs, arc_writer &aw,
+     const tpie::memory_size_type available_memory_lpq_1,
+     const tpie::memory_size_type available_memory_lpq_2,
+     const size_t max_pq_size_1, const size_t max_pq_size_2)
   {
-    if (labels.size() == 0) {
-      return intercut_policy::on_empty_labels(dd);
-    }
-
-    node_stream<> in_nodes(dd);
-    node_t n = in_nodes.pull();
-
-    if (is_sink(n)) {
-      return intercut_policy::on_sink_input(value_of(n), dd, labels);
-    }
-
-    label_stream<> ls(labels);
-    label_t l = ls.pull();
-
-    arc_file out_arcs;
-    arc_writer aw(out_arcs);
-
-    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-
-    intercut_priority_queue_1_t intercut_pq_1({dd},
-                                              available_memory / 2,
-                                              std::numeric_limits<size_t>::max());
-    intercut_priority_queue_2_t intercut_pq_2({labels},
-                                              available_memory / 2,
-                                              std::numeric_limits<size_t>::max());
+    pq_1_t intercut_pq_1({dd}, available_memory_lpq_1, max_pq_size_1);
+    pq_2_t intercut_pq_2({labels}, available_memory_lpq_2, max_pq_size_2);
 
     // Add request for root in the relevant queue
     label_t out_label = std::min(l, label_of(n));
@@ -308,6 +294,81 @@ namespace adiar
 
     out_arcs._file_ptr->max_1level_cut = max_1level_cut;
     return out_arcs;
+  }
+
+  template<typename intercut_policy>
+  size_t __intercut_size_based_upper_bound_1(const typename intercut_policy::reduced_t &dd)
+  {
+    return 2 * dd.file.size() + 2;
+  }
+
+  template<typename intercut_policy>
+  size_t __intercut_size_based_upper_bound_2(const typename intercut_policy::reduced_t &dd)
+  {
+    return 2 * dd.file.size() + 2;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: If nothing changes (no new nodes are added and the current are left
+  //       as-is) then one can return the input once more.
+
+  template<typename intercut_policy>
+  typename intercut_policy::unreduced_t intercut(const typename intercut_policy::reduced_t &dd,
+                                                 const label_file &labels)
+  {
+    if (labels.size() == 0) {
+      return intercut_policy::on_empty_labels(dd);
+    }
+
+    node_stream<> in_nodes(dd);
+    node_t n = in_nodes.pull();
+
+    if (is_sink(n)) {
+      return intercut_policy::on_sink_input(value_of(n), dd, labels);
+    }
+
+    label_stream<> ls(labels);
+    label_t l = ls.pull();
+
+    arc_file out_arcs;
+    arc_writer aw(out_arcs);
+
+    // Derive an upper bound on the size of auxiliary data structures and check
+    // whether we can run them with a faster internal memory variant.
+    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    const size_t size_bound_1 = __intercut_size_based_upper_bound_1<intercut_policy>(dd);
+    const size_t size_bound_2 = __intercut_size_based_upper_bound_2<intercut_policy>(dd);
+
+    constexpr size_t data_structures_in_lpq_1 =
+      intercut_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+
+    constexpr size_t data_structures_in_lpq_2 =
+      intercut_priority_queue_2_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+
+    const tpie::memory_size_type lpq_1_memory_fits =
+      intercut_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits
+        ((available_memory / (data_structures_in_lpq_1 + data_structures_in_lpq_2) * data_structures_in_lpq_1));
+
+    const tpie::memory_size_type lpq_2_memory_fits =
+      intercut_priority_queue_2_t<internal_sorter, internal_priority_queue>::memory_fits
+        ((available_memory / (data_structures_in_lpq_1 + data_structures_in_lpq_2) * data_structures_in_lpq_2));
+
+    if(size_bound_1 <= lpq_1_memory_fits && size_bound_2 <= lpq_2_memory_fits) {
+      return __intercut<intercut_policy,
+                        intercut_priority_queue_1_t<external_sorter, external_priority_queue>,
+                        intercut_priority_queue_2_t<external_sorter, external_priority_queue>>
+        (dd, in_nodes, n, labels, ls, l, out_arcs, aw,
+         (available_memory / (data_structures_in_lpq_1 + data_structures_in_lpq_2) * data_structures_in_lpq_1),
+         (available_memory / (data_structures_in_lpq_1 + data_structures_in_lpq_2) * data_structures_in_lpq_2),
+         size_bound_1, size_bound_2);
+    } else {
+      return __intercut<intercut_policy,
+                        intercut_priority_queue_1_t<external_sorter, external_priority_queue>,
+                        intercut_priority_queue_2_t<external_sorter, external_priority_queue>>
+        (dd, in_nodes, n, labels, ls, l, out_arcs, aw,
+         available_memory / 2, available_memory / 2,
+         size_bound_1, size_bound_2);
+    }
   }
 }
 

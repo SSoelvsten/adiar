@@ -123,6 +123,12 @@ namespace adiar
     template<typename substitute_policy>
     friend size_t __substitute_size_based_upper_bound(const typename substitute_policy::reduced_t &dd);
 
+    template<typename intercut_policy>
+    friend size_t __intercut_size_based_upper_bound_1(const typename intercut_policy::reduced_t &dd);
+
+    template<typename intercut_policy>
+    friend size_t __intercut_size_based_upper_bound_2(const typename intercut_policy::reduced_t &dd);
+
     friend label_t min_label(const decision_diagram &dd);
     friend label_t max_label(const decision_diagram &dd);
 

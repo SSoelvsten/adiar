@@ -941,6 +941,20 @@ namespace adiar {
                                                                 INIT_LEVEL,
                                                                 LOOK_AHEAD>;
 
+  template <typename elem_t,
+            typename elem_level_t,
+            typename elem_comp_t  = std::less<elem_t>,
+            template<typename, typename> typename sorter_template = external_sorter,
+            template<typename, typename> typename priority_queue_template = external_priority_queue,
+            size_t   FILES        = 1u,
+            label_t  INIT_LEVEL   = 1u,
+            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD>
+  using levelized_label_priority_queue = levelized_priority_queue<elem_t, elem_level_t, elem_comp_t,
+                                                                  sorter_template, priority_queue_template,
+                                                                  label_file, FILES, std::less<label_t>,
+                                                                  INIT_LEVEL,
+                                                                  LOOK_AHEAD>;
+
   //////////////////////////////////////////////////////////////////////////////
   /// TODO: Make a levelized_priority_queue that does not have any buckets
 }
