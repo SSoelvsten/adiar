@@ -113,6 +113,8 @@ namespace adiar
     friend size_t __prod_size_based_upper_bound(const typename prod_policy::reduced_t &in_1,
                                                 const typename prod_policy::reduced_t &in_2);
 
+    friend size_t __ite_size_based_upper_bound(const decision_diagram &in_if, const decision_diagram &in_then, const decision_diagram &in_else);
+
     friend label_t min_label(const decision_diagram &dd);
     friend label_t max_label(const decision_diagram &dd);
 
