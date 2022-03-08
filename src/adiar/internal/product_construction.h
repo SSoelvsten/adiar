@@ -483,7 +483,7 @@ namespace adiar
       return __product_construction<prod_policy, prod_priority_queue_1_t<internal_sorter, internal_priority_queue>, prod_priority_queue_2_t>
         (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw,
          (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
-         available_memory / 4, size_bound);
+         available_memory / (data_structures_in_lpq + 1), size_bound);
     } else {
       return __product_construction<prod_policy, prod_priority_queue_1_t<external_sorter, external_priority_queue>, prod_priority_queue_2_t>
         (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw,
