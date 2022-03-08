@@ -60,13 +60,18 @@ namespace adiar
     }
   };
 
-  typedef levelized_node_priority_queue<quantify_tuple, tuple_label, quantify_1_lt> quantify_priority_queue_t;
+  template<template<typename, typename> typename sorter_template,
+           template<typename, typename> typename priority_queue_template>
+  using quantify_priority_queue_t =
+    levelized_node_priority_queue<quantify_tuple, tuple_label, quantify_1_lt,
+                                  sorter_template, priority_queue_template>;
+
   typedef tpie::priority_queue<quantify_tuple_data, quantify_2_lt> quantify_data_priority_queue_t;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  template<typename quantify_policy>
-  inline void quantify_resolve_request(quantify_priority_queue_t &quantify_pq_1,
+  template<typename quantify_policy, typename pq_1_t>
+  inline void __quantify_resolve_request(pq_1_t &quantify_pq_1,
                                        arc_writer &aw,
                                        const bool_op &op,
                                        const ptr_t source, ptr_t r1, ptr_t r2)
@@ -96,7 +101,8 @@ namespace adiar
     }
   }
 
-  inline bool quantify_update_source_or_break(quantify_priority_queue_t &quantify_pq_1,
+  template<typename pq_1_t>
+  inline bool __quantify_update_source_or_break(pq_1_t &quantify_pq_1,
                                               quantify_data_priority_queue_t &quantify_pq_2,
                                               ptr_t &source,
                                               const ptr_t t1, const ptr_t t2)
@@ -127,41 +133,17 @@ namespace adiar
     return false;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename quantify_policy>
-  typename quantify_policy::unreduced_t quantify(const typename quantify_policy::reduced_t &in,
-                                                 const label_t label,
-                                                 const bool_op &op)
+  template<typename quantify_policy, typename pq_1_t, typename pq_2_t>
+  typename quantify_policy::unreduced_t
+  __quantify(const typename quantify_policy::reduced_t &in, node_stream<> &in_nodes, node_t &v,
+             const label_t &label, const bool_op &op,
+             arc_file &out_arcs, arc_writer &aw,
+             const tpie::memory_size_type available_memory_lpq,
+             const tpie::memory_size_type available_memory_pq,
+             const size_t max_pq_size)
   {
-    adiar_debug(is_commutative(op), "Noncommutative operator used");
-
-    // Check if there is no need to do any computation
-    if (is_sink(in, is_any) || !quantify_has_label(label, in)) {
-      return in;
-    }
-
-    // Check for trivial sink-only return on shortcutting the root
-    node_stream<> in_nodes(in);
-    node_t v = in_nodes.pull();
-
-    if (label_of(v) == label && (is_sink(v.low) || is_sink(v.high))) {
-      typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_sink_root(v, op);
-
-      if (!maybe_resolved.empty()) {
-        return maybe_resolved;
-      }
-    }
-
-    // Set-up for arc_file output
-    arc_file out_arcs;
-
-    arc_writer aw(out_arcs);
-
-    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-    quantify_priority_queue_t quantify_pq_1({in},
-                                            available_memory / 2,
-                                            std::numeric_limits<size_t>::max());
-    quantify_data_priority_queue_t quantify_pq_2(available_memory / 2);
+    pq_1_t quantify_pq_1({in}, available_memory_lpq, max_pq_size);
+    pq_2_t quantify_pq_2(available_memory_pq);
 
     label_t out_label = label_of(v.uid);
     id_t out_id = 0;
@@ -249,8 +231,8 @@ namespace adiar
         adiar_debug(is_nil(t2), "Ended in pairing case on request that already is a pair");
 
         do {
-          quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, source, v.low, v.high);
-        } while (!quantify_update_source_or_break(quantify_pq_1, quantify_pq_2, source, t1, t2));
+          __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, source, v.low, v.high);
+        } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2, source, t1, t2));
       } else {
         // The variable should stay: proceed as in the Product Construction by
         // simulating both possibilities in parallel.
@@ -267,14 +249,14 @@ namespace adiar
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
         uid_t out_uid = create_node_uid(out_label, out_id++);
 
-        quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, out_uid, low1, low2);
-        quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, flag(out_uid), high1, high2);
+        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, out_uid, low1, low2);
+        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, flag(out_uid), high1, high2);
 
         if (!is_nil(source)) {
           do {
             arc_t out_arc = { source, out_uid };
             aw.unsafe_push_node(out_arc);
-          } while (!quantify_update_source_or_break(quantify_pq_1, quantify_pq_2, source, t1, t2));
+          } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2, source, t1, t2));
         }
       }
     }
@@ -285,7 +267,68 @@ namespace adiar
     }
 
     out_arcs._file_ptr->max_1level_cut = max_1level_cut;
+
     return out_arcs;
+  }
+
+  template<typename quantify_policy>
+  size_t __quantify_size_based_upper_bound(const typename quantify_policy::reduced_t &in)
+  {
+    return (in.file.size()) * (in.file.size()) + 2;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename quantify_policy>
+  typename quantify_policy::unreduced_t quantify(const typename quantify_policy::reduced_t &in,
+                                                 const label_t label,
+                                                 const bool_op &op)
+  {
+    adiar_debug(is_commutative(op), "Noncommutative operator used");
+
+    // Check if there is no need to do any computation
+    if (is_sink(in, is_any) || !quantify_has_label(label, in)) {
+      return in;
+    }
+
+    // Check for trivial sink-only return on shortcutting the root
+    node_stream<> in_nodes(in);
+    node_t v = in_nodes.pull();
+
+    if (label_of(v) == label && (is_sink(v.low) || is_sink(v.high))) {
+      typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_sink_root(v, op);
+
+      if (!maybe_resolved.empty()) {
+        return maybe_resolved;
+      }
+    }
+
+    // Set-up for arc_file output
+    arc_file out_arcs;
+    arc_writer aw(out_arcs);
+
+    // Derive an upper bound on the size of auxiliary data structures and check
+    // whether we can run them with a faster internal memory variant.
+    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    const size_t size_bound = __quantify_size_based_upper_bound<quantify_policy>(in);
+
+    constexpr size_t data_structures_in_lpq =
+      quantify_priority_queue_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+
+    const tpie::memory_size_type lpq_memory_fits =
+      quantify_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits
+        ((available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq);
+
+    if(size_bound <= lpq_memory_fits) {
+      return __quantify<quantify_policy, quantify_priority_queue_t<internal_sorter, internal_priority_queue>, quantify_data_priority_queue_t>
+        (in, in_nodes, v, label, op, out_arcs, aw,
+         (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
+         available_memory / (data_structures_in_lpq + 1), size_bound);
+    } else {
+      return __quantify<quantify_policy, quantify_priority_queue_t<external_sorter, external_priority_queue>, quantify_data_priority_queue_t>
+        (in, in_nodes, v, label, op, out_arcs, aw,
+        available_memory / 2,
+        available_memory / 2, size_bound);
+    }
   }
 }
 
