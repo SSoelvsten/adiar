@@ -476,7 +476,7 @@ namespace adiar {
 
       const label_t level = elem_level_t::label_of(e);
 
-      adiar_debug(_level_cmp_le(next_bucket_level(), level),
+      adiar_debug(level_cmp_le(next_bucket_level(), level),
                   "Can only push element to next bucket or later.");
 
       const size_t pushable_buckets = active_buckets() - has_front_bucket();
