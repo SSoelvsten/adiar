@@ -37,64 +37,25 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  typedef levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt,
-                                        external_sorter, external_priority_queue,
-                                        2>
-  comparison_priority_queue_t;
+  template<template<typename, typename> typename sorter_template,
+           template<typename, typename> typename priority_queue_template>
+  using comparison_priority_queue_t =
+    levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt,
+                                  sorter_template, priority_queue_template,
+                                  2>;
 
   typedef tpie::priority_queue<tuple_data, tuple_snd_lt>
   comparison_data_priority_queue_t;
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// Behaviour can be changed with the 'comp_policy'.
-  ///
-  /// - The 'resolve_sinks' function resolves the case of being given two sinks.
-  ///
-  /// - The 'resolve_request' function checks for early termination and places
-  ///   new recursion requests in the priority queue if more recursions are needed.
-  ///
-  /// - If the constexpr 'request_capped_by_level_size' variable is set to true,
-  ///   then the algorithm is guaranteed to only run in O(sort(N_1)) number of
-  ///   I/Os.
-  ///
-  /// - The constexpr 'early_return_value' and 'no_early_return_value' change the
-  ///   return value on early returns.
-  ///
-  /// This 'prod_policy' also should inherit (or provide) the general policy for
-  /// the decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in
-  /// zdd/zdd.h and so on). This provides the following functions
-  ///
-  /// - compute_cofactor:
-  ///   Used to change the low and high children retrieved from the input during
-  ///   the product construction.
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename comp_policy>
-  bool comparison_check(const node_file &f1, const node_file &f2,
-                        bool negate1, bool negate2)
+  template<typename comp_policy, typename pq_1_t, typename pq_2_t>
+  bool __comparison_check(const node_file &f1, node_stream<> &in_nodes_1, node_t &v1,
+                          const node_file &f2, node_stream<> &in_nodes_2, node_t &v2,
+                          const tpie::memory_size_type available_memory_lpq,
+                          const tpie::memory_size_type available_memory_pq,
+                          const size_t max_pq_size)
   {
-    node_stream<> in_nodes_1(f1, negate1);
-    node_stream<> in_nodes_2(f2, negate2);
-
-    node_t v1 = in_nodes_1.pull();
-    node_t v2 = in_nodes_2.pull();
-
-    if (is_sink(v1) || is_sink(v2)) {
-      bool ret_value;
-      if (comp_policy::resolve_sinks(v1, v2, ret_value)) {
-        return ret_value;
-      }
-    }
-
-    if (is_sink(v1.low) && is_sink(v1.high) && is_sink(v2.low) && is_sink(v2.high)) {
-      return comp_policy::resolve_singletons(v1, v2);
-    }
-
     // Set up priority queue for recursion
-    tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-
-    comparison_priority_queue_t comparison_pq_1({f1, f2},
-                                                (available_memory * 3) / 4,
-                                                std::numeric_limits<size_t>::max());
+    pq_1_t comparison_pq_1({f1, f2}, available_memory_lpq, max_pq_size);
 
     // Check for violation on root children, or 'recurse' otherwise
     label_t level = label_of(fst(v1.uid, v2.uid));
@@ -113,7 +74,7 @@ namespace adiar
     // Initialise level checking
     typename comp_policy::level_check_t level_checker(f1,f2);
 
-    comparison_data_priority_queue_t comparison_pq_2(available_memory / 4);
+    pq_2_t comparison_pq_2(available_memory_pq);
 
     while (!comparison_pq_1.empty() || !comparison_pq_2.empty()) {
       if (comparison_pq_1.empty_level() && comparison_pq_2.empty()) {
@@ -191,6 +152,78 @@ namespace adiar
     }
 
     return comp_policy::no_early_return_value;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Behaviour can be changed with the 'comp_policy'.
+  ///
+  /// - The 'resolve_sinks' function resolves the case of being given two sinks.
+  ///
+  /// - The 'resolve_request' function checks for early termination and places
+  ///   new recursion requests in the priority queue if more recursions are needed.
+  ///
+  /// - If the constexpr 'request_capped_by_level_size' variable is set to true,
+  ///   then the algorithm is guaranteed to only run in O(sort(N_1)) number of
+  ///   I/Os.
+  ///
+  /// - The constexpr 'early_return_value' and 'no_early_return_value' change the
+  ///   return value on early returns.
+  ///
+  /// This 'prod_policy' also should inherit (or provide) the general policy for
+  /// the decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in
+  /// zdd/zdd.h and so on). This provides the following functions
+  ///
+  /// - compute_cofactor:
+  ///   Used to change the low and high children retrieved from the input during
+  ///   the product construction.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename comp_policy>
+  bool comparison_check(const node_file &f1, const node_file &f2,
+                        bool negate1, bool negate2)
+  {
+    node_stream<> in_nodes_1(f1, negate1);
+    node_stream<> in_nodes_2(f2, negate2);
+
+    node_t v1 = in_nodes_1.pull();
+    node_t v2 = in_nodes_2.pull();
+
+    if (is_sink(v1) || is_sink(v2)) {
+      bool ret_value;
+      if (comp_policy::resolve_sinks(v1, v2, ret_value)) {
+        return ret_value;
+      }
+    }
+
+    if (is_sink(v1.low) && is_sink(v1.high) && is_sink(v2.low) && is_sink(v2.high)) {
+      return comp_policy::resolve_singletons(v1, v2);
+    }
+
+    // Derive an upper bound on the size of auxiliary data structures and check
+    // whether we can run them with a faster internal memory variant.
+    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    const size_t size_bound = comp_policy::level_check_t::__comparison_size_based_upper_bound(f1, f2);
+
+    constexpr size_t data_structures_in_lpq =
+      comparison_priority_queue_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+
+    const tpie::memory_size_type lpq_memory_fits =
+      comparison_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits
+        ((available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq);
+
+    if(size_bound <= lpq_memory_fits) {
+      return __comparison_check<comp_policy,
+                                comparison_priority_queue_t<internal_sorter, internal_priority_queue>,
+                                comparison_data_priority_queue_t>
+        (f1, in_nodes_1, v1, f2, in_nodes_2, v2,
+         (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
+         available_memory / (data_structures_in_lpq + 1), size_bound);
+    } else {
+      return __comparison_check<comp_policy,
+                                comparison_priority_queue_t<external_sorter, external_priority_queue>,
+                                comparison_data_priority_queue_t>
+        (f1, in_nodes_1, v1, f2, in_nodes_2, v2,
+         available_memory / 2, available_memory / 2, size_bound);
+    }
   }
 
   template<typename comp_policy>
