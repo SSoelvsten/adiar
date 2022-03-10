@@ -24,6 +24,13 @@ namespace adiar
     size_t curr_level_processed;
 
   public:
+    static size_t __comparison_size_based_upper_bound
+      (const node_file &in_1, const node_file &/*in_2*/)
+    {
+      return in_1.size();
+    }
+
+  public:
     input_bound_levels(const node_file &f1, const node_file &/*f2*/)
       : in_meta_1(f1),
         curr_level_size(width_of(in_meta_1.pull())),
@@ -80,8 +87,8 @@ namespace adiar
     }
 
   public:
-    static bool resolve_request(comparison_priority_queue_t &pq,
-                                ptr_t r1, ptr_t r2)
+    template<typename pq_1_t>
+    static bool resolve_request(pq_1_t &pq, ptr_t r1, ptr_t r2)
     {
       // Are they both a sink (and the same sink)?
       if (is_sink(r1) || is_sink(r2)) {

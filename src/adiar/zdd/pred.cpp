@@ -14,6 +14,13 @@ namespace adiar {
   class ignore_levels
   {
   public:
+    static size_t __comparison_size_based_upper_bound
+      (const node_file &in_1, const node_file &in_2)
+    {
+      return in_1.size() * in_2.size();
+    }
+
+  public:
     ignore_levels(const node_file &/*f1*/, const node_file &/*f2*/)
     { /* do nothing */ }
 
@@ -55,8 +62,8 @@ namespace adiar {
     }
 
   public:
-    static bool resolve_request(comparison_priority_queue_t &pq,
-                                ptr_t r1, ptr_t r2)
+    template<typename pq_1_t>
+    static bool resolve_request(pq_1_t &pq, ptr_t r1, ptr_t r2)
     {
       // Are they both a sink? If so, check whether the left-hand side is true
       // and not the right, which would contradict being an implication (i.e.
@@ -116,8 +123,8 @@ namespace adiar {
     }
 
   public:
-    static bool resolve_request(comparison_priority_queue_t &pq,
-                                ptr_t r1, ptr_t r2)
+  template<typename pq_1_t>
+    static bool resolve_request(pq_1_t &pq, ptr_t r1, ptr_t r2)
     {
       // Are they both a sink? If so, check whether they both are true, which
       // verify there is a satisfiying conjunction (i.e. representing a shared
