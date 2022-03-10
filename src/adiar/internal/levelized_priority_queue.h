@@ -417,7 +417,9 @@ namespace adiar {
                         "Front bucket not moved");
 
         _back_bucket_idx++;
-        setup_bucket(_back_bucket_idx, level);
+
+        _buckets_level[_back_bucket_idx] = level;
+        _buckets_sorter[_back_bucket_idx] = sorter_t::make_unique(_memory_for_buckets, _max_size, BUCKETS);
       }
     }
 
@@ -744,19 +746,6 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief       Set up a new bucket with a label at a specific index.
-    ///
-    /// \param idx   Index in the buckets array to use
-    ///
-    /// \param label Level to use for the bucket's level
-    ////////////////////////////////////////////////////////////////////////////
-    void setup_bucket(size_t idx, label_t level)
-    {
-      _buckets_level[idx] = level;
-      _buckets_sorter[idx] = std::make_unique<sorter_t>(_memory_for_buckets, _max_size, BUCKETS);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether there is an 'active' bucket from which ca be pulled
     ///        (though it may need to be sorted).
     ////////////////////////////////////////////////////////////////////////////
@@ -811,7 +800,11 @@ namespace adiar {
         // Replace the current read-only bucket, if there is one
         if (_level_merger.can_pull() && has_front_bucket()) {
           const label_t next_level = _level_merger.pull();
-          setup_bucket(_front_bucket_idx, next_level);
+
+          _buckets_level[_front_bucket_idx] = next_level;
+          sorter_t::reset_unique(_buckets_sorter[_front_bucket_idx],
+                                 _memory_for_buckets, _max_size, BUCKETS);
+
           _back_bucket_idx = _front_bucket_idx;
         }
         _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
@@ -902,9 +895,8 @@ namespace adiar {
 
         // Reset the prior read-only bucket, if relevant
         if (old_front_bucket_idx <= _back_bucket_idx) {
-          _buckets_sorter[old_front_bucket_idx] = std::make_unique<sorter_t>(_memory_for_buckets,
-                                                                             _max_size,
-                                                                             BUCKETS);
+          sorter_t::reset_unique(_buckets_sorter[old_front_bucket_idx],
+                                 _memory_for_buckets, _max_size, BUCKETS);
         }
 
         // We can clean up all the dead buckets with a '.reset()' on the
