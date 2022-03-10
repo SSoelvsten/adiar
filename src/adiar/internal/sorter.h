@@ -52,11 +52,11 @@ namespace adiar {
       return std::make_unique<internal_sorter<T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
     }
 
-    static void reset_unique(std::unique_ptr<internal_sorter<T, pred_t>> u_ptr,
+    static void reset_unique(std::unique_ptr<internal_sorter<T, pred_t>> &u_ptr,
                              size_t /*memory_bytes*/,
                              size_t /*no_elements*/,
                              size_t /*no_sorters*/,
-                             pred_t /*pred*/)
+                             pred_t /*pred*/ = pred_t())
     {
       u_ptr->reset();
     }
@@ -121,7 +121,7 @@ namespace adiar {
       return std::make_unique<external_sorter<T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
     }
 
-    static void reset_unique(std::unique_ptr<external_sorter<T, pred_t>> u_ptr,
+    static void reset_unique(std::unique_ptr<external_sorter<T, pred_t>> &u_ptr,
                              size_t memory_bytes,
                              size_t no_elements,
                              size_t no_sorters,
