@@ -358,10 +358,14 @@ namespace adiar
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
         uid_t out_uid = create_node_uid(out_label, out_id++);
 
+        // Ingoing arcs.
+        //   Outputting these before adding recursion requests decreases the maximum
+        //   size of the priority queues by 2.
+        prod_recurse_in<prod_recurse_in__output_node>(prod_pq_1, prod_pq_2, aw, out_uid, t1, t2);
+
+        // Outgoing arcs
         prod_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
         prod_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
-
-        prod_recurse_in<prod_recurse_in__output_node>(prod_pq_1, prod_pq_2, aw, out_uid, t1, t2);
 
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(rec_res);
@@ -392,7 +396,7 @@ namespace adiar
   size_t __prod_size_based_upper_bound(const typename prod_policy::reduced_t &in_1,
                                        const typename prod_policy::reduced_t &in_2)
   {
-    return (in_1.file.size() + 2) * (in_2.file.size() + 2) + 2;
+    return (in_1.file.size() + 2) * (in_2.file.size() + 2);
   }
 
   //////////////////////////////////////////////////////////////////////////////

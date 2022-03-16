@@ -415,10 +415,9 @@ namespace adiar
       adiar_debug(out_id < MAX_ID, "Has run out of ids");
       out_uid = create_node_uid(out_label, out_id++);
 
-      __ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
-      __ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
-
-      // Output ingoing arcs
+      // Ingoing arcs.
+      //   Outputting these before adding recursion requests decreases the maximum
+      //   size of the priority queues by 2.
       while (true) {
         arc_t out_arc = { source, out_uid };
         aw.unsafe_push_node(out_arc);
@@ -441,6 +440,10 @@ namespace adiar
           break;
         }
       }
+
+      // Outgoing arcs
+      __ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
+      __ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
     }
 
     // Push the level of the very last iteration
@@ -453,7 +456,7 @@ namespace adiar
   size_t __ite_size_based_upper_bound(const decision_diagram &in_if, const decision_diagram &in_then, const decision_diagram &in_else)
   {
     return in_if.file.size() * (in_then.file.size() + 2) * (in_else.file.size() + 2) +
-           in_then.file.size() + in_else.file.size() + 2;
+           in_then.file.size() + in_else.file.size();
   }
 
   //////////////////////////////////////////////////////////////////////////////

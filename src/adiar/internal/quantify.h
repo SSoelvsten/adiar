@@ -249,15 +249,20 @@ namespace adiar
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
         uid_t out_uid = create_node_uid(out_label, out_id++);
 
-        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, out_uid, low1, low2);
-        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, flag(out_uid), high1, high2);
-
+        // Ingoing arcs.
+        //   Outputting these before adding recursion requests decreases the maximum
+        //   size of the priority queues by 2.
         if (!is_nil(source)) {
           do {
             arc_t out_arc = { source, out_uid };
             aw.unsafe_push_node(out_arc);
           } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2, source, t1, t2));
         }
+
+        // Outgoing arcs
+        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, out_uid, low1, low2);
+        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, flag(out_uid), high1, high2);
+
       }
     }
 
@@ -274,7 +279,7 @@ namespace adiar
   template<typename quantify_policy>
   size_t __quantify_size_based_upper_bound(const typename quantify_policy::reduced_t &in)
   {
-    return (in.file.size()) * (in.file.size()) + 2;
+    return in.file.size() * in.file.size();
   }
 
   //////////////////////////////////////////////////////////////////////////////

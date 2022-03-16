@@ -152,11 +152,9 @@ namespace adiar
       if(std::holds_alternative<substitute_rec_output>(rec_res)) {
         const node_t n_res = std::get<substitute_rec_output>(rec_res).out;
 
-        // outgoing arcs
-        __substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
-        __substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
-
-        // Ingoing arcs
+        // Ingoing arcs.
+        //   Outputting these before adding recursion requests decreases the maximum
+        //   size of the priority queues by 2.
         while(substitute_pq.can_pull() && substitute_pq.top().target == n_res.uid) {
           const arc_t parent_arc = substitute_pq.pull();
 
@@ -164,6 +162,10 @@ namespace adiar
             aw.unsafe_push_node(parent_arc);
           }
         }
+
+        // Outgoing arcs
+        __substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
+        __substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
 
         level_size++;
       } else { // std::holds_alternative<substitute_rec_skipto>(rec_res)
@@ -195,7 +197,7 @@ namespace adiar
   template<typename substitute_policy>
   size_t __substitute_size_based_upper_bound(const typename substitute_policy::reduced_t &dd)
   {
-    return dd.file.size() + 2;
+    return dd.file.size();
   }
 
   template<typename substitute_policy, typename substitute_act_mgr>

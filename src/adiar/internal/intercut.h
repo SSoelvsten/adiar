@@ -248,18 +248,23 @@ namespace adiar
 
           intercut_in__pq_1<intercut_policy, intercut_out__pq<intercut_policy>>
             (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, rs.tgt, l);
+
         } else {
           const intercut_rec_output ro = std::get<intercut_rec_output>(r);
           const uid_t out_uid = create_node_uid(out_label, out_id++);
 
+          // Ingoing arcs.
+          //   Outputting these before adding recursion requests decreases the maximum
+          //   size of the priority queues by 2.
+          intercut_in__pq_1<intercut_policy, intercut_out__writer>
+            (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, out_uid, l);
+
+          // Outgoing arcs
           intercut_out__pq<intercut_policy>::forward
             (aw, intercut_pq_1, intercut_pq_2, out_uid, ro.low, out_label, l);
 
           intercut_out__pq<intercut_policy>::forward
             (aw, intercut_pq_1, intercut_pq_2, flag(out_uid), ro.high, out_label, l);
-
-          intercut_in__pq_1<intercut_policy, intercut_out__writer>
-            (aw, intercut_pq_1, intercut_pq_2, out_label, n.uid, out_uid, l);
         }
       }
 
@@ -299,13 +304,13 @@ namespace adiar
   template<typename intercut_policy>
   size_t __intercut_size_based_upper_bound_1(const typename intercut_policy::reduced_t &dd)
   {
-    return 2 * dd.file.size() + 2;
+    return 2 * dd.file.size();
   }
 
   template<typename intercut_policy>
   size_t __intercut_size_based_upper_bound_2(const typename intercut_policy::reduced_t &dd)
   {
-    return 2 * dd.file.size() + 2;
+    return 2 * dd.file.size();
   }
 
   //////////////////////////////////////////////////////////////////////////////
