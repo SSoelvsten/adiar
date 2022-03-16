@@ -1881,7 +1881,7 @@ go_bandit([]() {
 
       {
         node_writer nw_x1_and_x3(bdd_x1_and_x3);
-        nw_x1_and_x3 << create_node(3,42,sink_F,sink_T)                // 2
+        nw_x1_and_x3 << create_node(3,42,sink_F,sink_T)                // 3
                      << create_node(1,0,sink_F,create_node_uid(3,42)); // 1
       }
 
@@ -2182,6 +2182,116 @@ go_bandit([]() {
 
       bdd out_3 = bdd_ite(bdd_not(bdd_if), bdd_b, bdd_a);
       AssertThat(is_canonical(out_3), Is().True());
+    });
+
+    it("should not zip if bdd_then is not beyond max_label of bdd_if", [&]() {
+      __bdd out = bdd_ite(bdd_x1, bdd_x0, bdd_x2);
+      AssertThat(out.get<arc_file>()._file_ptr->canonical, Is().False());
+
+      node_arc_test_stream node_arcs(out);
+
+      AssertThat(node_arcs.can_pull(), Is().True());
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+
+      AssertThat(node_arcs.can_pull(), Is().True());
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+
+      AssertThat(node_arcs.can_pull(), Is().True());
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,0) }));
+
+      AssertThat(node_arcs.can_pull(), Is().True());
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), create_node_ptr(2,0) }));
+
+      AssertThat(node_arcs.can_pull(), Is().False());
+
+      sink_arc_test_stream sink_arcs(out);
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), sink_F }));
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), sink_T }));
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), sink_F }));
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), sink_T }));
+
+      AssertThat(sink_arcs.can_pull(), Is().False());
+
+      level_info_test_stream<arc_t> level_info(out);
+
+      AssertThat(level_info.can_pull(), Is().True());
+      AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+      AssertThat(level_info.can_pull(), Is().True());
+      AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+
+      AssertThat(level_info.can_pull(), Is().True());
+      AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+      AssertThat(level_info.can_pull(), Is().False());
+
+      AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+    });
+
+    it("should not zip if bdd_else is not beyond max_label of bdd_if", [&]() {
+      __bdd out = bdd_ite(bdd_x1, bdd_x2, bdd_x0);
+      AssertThat(out.get<arc_file>()._file_ptr->canonical, Is().False());
+
+      node_arc_test_stream node_arcs(out);
+
+      AssertThat(node_arcs.can_pull(), Is().True());
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+
+      AssertThat(node_arcs.can_pull(), Is().True());
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+
+      AssertThat(node_arcs.can_pull(), Is().True());
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,0) }));
+
+      AssertThat(node_arcs.can_pull(), Is().True());
+      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), create_node_ptr(2,0) }));
+
+      AssertThat(node_arcs.can_pull(), Is().False());
+
+      sink_arc_test_stream sink_arcs(out);
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), sink_F }));
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), sink_T }));
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), sink_F }));
+
+      AssertThat(sink_arcs.can_pull(), Is().True());
+      AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), sink_T }));
+
+      AssertThat(sink_arcs.can_pull(), Is().False());
+
+      level_info_test_stream<arc_t> level_info(out);
+
+      AssertThat(level_info.can_pull(), Is().True());
+      AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+      AssertThat(level_info.can_pull(), Is().True());
+      AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+
+      AssertThat(level_info.can_pull(), Is().True());
+      AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+      AssertThat(level_info.can_pull(), Is().False());
+
+      AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
+      AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
     });
   });
  });
