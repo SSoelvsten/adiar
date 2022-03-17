@@ -62,6 +62,19 @@ namespace adiar
       adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
+  public:
+    static size_t left_leaves(const bool_op &op)
+    {
+      return !can_left_shortcut(op, create_sink_ptr(false)) +
+             !can_left_shortcut(op, create_sink_ptr(true));
+    }
+
+    static size_t right_leaves(const bool_op &op)
+    {
+      return !can_right_shortcut(op, create_sink_ptr(false)) +
+             !can_right_shortcut(op, create_sink_ptr(true));
+    }
+
   private:
     static tuple __resolve_request(const bool_op &op, ptr_t r1, ptr_t r2)
     {
@@ -76,7 +89,8 @@ namespace adiar
 
   public:
     static prod_rec resolve_request(const bool_op &op,
-                                    ptr_t low1, ptr_t low2, ptr_t high1, ptr_t high2)
+                                    ptr_t low1, ptr_t low2,
+                                    ptr_t high1, ptr_t high2)
     {
       return prod_rec_output {
         __resolve_request(op, low1, low2),
