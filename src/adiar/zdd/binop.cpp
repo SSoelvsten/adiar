@@ -89,6 +89,19 @@ namespace adiar
       return __zdd(); // return with no_file
     }
 
+  public:
+    static size_t left_leaves(const bool_op &op)
+    {
+      return !can_left_shortcut_zdd(op, create_sink_ptr(false)) +
+             !can_left_shortcut_zdd(op, create_sink_ptr(true));
+    }
+
+    static size_t right_leaves(const bool_op &op)
+    {
+      return !can_right_shortcut_zdd(op, create_sink_ptr(false)) +
+             !can_right_shortcut_zdd(op, create_sink_ptr(true));
+    }
+
   private:
     static tuple __resolve_request(const bool_op &op, ptr_t r1, ptr_t r2)
     {

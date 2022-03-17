@@ -390,9 +390,10 @@ namespace adiar
 
   template<typename prod_policy>
   size_t __prod_size_based_upper_bound(const typename prod_policy::reduced_t &in_1,
-                                       const typename prod_policy::reduced_t &in_2)
+                                       const typename prod_policy::reduced_t &in_2,
+                                       const bool_op &op)
   {
-    return (in_1.file.size() + 2) * (in_2.file.size() + 2) + 2;
+    return (in_1.file.size() + prod_policy::right_leaves(op)) * (in_2.file.size() + prod_policy::left_leaves(op)) + 2;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -470,7 +471,7 @@ namespace adiar
     // Derive an upper bound on the size of auxiliary data structures and check
     // whether we can run them with a faster internal memory variant.
     const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-    const size_t size_bound = __prod_size_based_upper_bound<prod_policy>(in_1, in_2);
+    const size_t size_bound = __prod_size_based_upper_bound<prod_policy>(in_1, in_2, op);
 
     constexpr size_t data_structures_in_lpq =
       prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;

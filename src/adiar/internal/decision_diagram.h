@@ -111,7 +111,8 @@ namespace adiar
 
     template<typename prod_policy>
     friend size_t __prod_size_based_upper_bound(const typename prod_policy::reduced_t &in_1,
-                                                const typename prod_policy::reduced_t &in_2);
+                                                const typename prod_policy::reduced_t &in_2,
+                                                const bool_op &op);
 
     friend size_t __ite_size_based_upper_bound(const decision_diagram &in_if,
                                                const decision_diagram &in_then,
