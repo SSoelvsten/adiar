@@ -6,6 +6,13 @@
 
 namespace adiar
 {
+  // Internal/external memory (ADIAR_STATS)
+  struct memory_t
+  {
+    size_t lpq_internal = 0;
+    size_t lpq_external = 0;
+  };
+
   //////////////////////////////////////////////////////////////////////////////
   /// These numbers are always available, but they are only populated with
   /// actual statistics if Adiar is compiled with certain CMake variables set.
@@ -19,8 +26,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   struct stats_t
   {
+    // Count
+    struct count_t : public memory_t
+    { } count;
+
     // Equality Checking statistics  (ADIAR_STATS)
-    struct equality_t
+    struct equality_t : public memory_t
     {
       // Early termination cases
       size_t exit_on_same_file = 0;
@@ -45,15 +56,31 @@ namespace adiar
       } fast_check;
     } equality;
 
+    // If-then-else
+    struct if_else_t : public memory_t
+    { } if_else;
+
+    // Intercut
+    struct intercut_t : public memory_t
+    { } intercut;
+
     // Levelized Priority Queue (ADIAR_STATS_EXTRA)
     struct priority_queue_t
     {
-      size_t push_bucket;
-      size_t push_overflow;
+      size_t push_bucket = 0;
+      size_t push_overflow = 0;
     } priority_queue;
 
+    // Product construction
+    struct product_construction_t : public memory_t
+    { } product_construction;
+
+    // Quantification
+    struct quantify_t : public memory_t
+    { } quantify;
+
     // Reduce
-    struct reduce_t
+    struct reduce_t : public memory_t
     {
       // (ADIAR_STATS)
       size_t sum_node_arcs = 0;
@@ -63,6 +90,11 @@ namespace adiar
       size_t removed_by_rule_1 = 0;
       size_t removed_by_rule_2 = 0;
     } reduce;
+
+    // Substitution
+    struct substitute_t : public memory_t
+    { } substitute;
+
   };
 
   //////////////////////////////////////////////////////////////////////////////

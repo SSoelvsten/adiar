@@ -13,6 +13,10 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
+  /// Struct to hold statistics
+  extern stats_t::intercut_t stats_intercut;
+
+  //////////////////////////////////////////////////////////////////////////////
   // Priority queues
 
   template<template<typename, typename> typename sorter_template,
@@ -354,6 +358,9 @@ namespace adiar
         ((available_memory / (data_structures_in_lpq_1 + data_structures_in_lpq_2) * data_structures_in_lpq_2));
 
     if(size_bound_1 <= lpq_1_memory_fits && size_bound_2 <= lpq_2_memory_fits) {
+#ifdef ADIAR_STATS
+      stats_intercut.lpq_internal++;
+#endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_1_t<external_sorter, external_priority_queue>,
                         intercut_priority_queue_2_t<external_sorter, external_priority_queue>>
@@ -362,6 +369,9 @@ namespace adiar
          (available_memory / (data_structures_in_lpq_1 + data_structures_in_lpq_2) * data_structures_in_lpq_2),
          size_bound_1, size_bound_2);
     } else {
+#ifdef ADIAR_STATS
+      stats_intercut.lpq_external++;
+#endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_1_t<external_sorter, external_priority_queue>,
                         intercut_priority_queue_2_t<external_sorter, external_priority_queue>>

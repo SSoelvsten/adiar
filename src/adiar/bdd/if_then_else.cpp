@@ -8,8 +8,14 @@
 #include <adiar/internal/tuple.h>
 #include <adiar/internal/util.h>
 
+#include <adiar/statistics.h>
+
 namespace adiar
 {
+  //////////////////////////////////////////////////////////////////////////////
+  // Struct to hold statistics
+  stats_t::if_else_t stats_if_else;
+
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
   //
@@ -534,6 +540,9 @@ namespace adiar
         ((available_memory / (data_structures_in_lpq + 2)) * data_structures_in_lpq);
 
     if(size_bound <= lpq_memory_fits) {
+#ifdef ADIAR_STATS
+      stats_if_else.lpq_internal++;
+#endif
       return __bdd_ite<ite_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                        ite_priority_queue_2_t, ite_priority_queue_3_t>
                       (bdd_if, in_nodes_if, v_if,
@@ -545,6 +554,9 @@ namespace adiar
                        available_memory / (data_structures_in_lpq + 2),
                        size_bound);
     } else {
+#ifdef ADIAR_STATS
+      stats_if_else.lpq_external++;
+#endif
       return __bdd_ite<ite_priority_queue_1_t<external_sorter, external_priority_queue>,
                        ite_priority_queue_2_t, ite_priority_queue_3_t>
                       (bdd_if, in_nodes_if, v_if,

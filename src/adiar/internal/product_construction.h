@@ -17,6 +17,10 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
+  /// Struct to hold statistics
+  extern stats_t::product_construction_t stats_product_construction;
+
+  //////////////////////////////////////////////////////////////////////////////
   // Data structures
   struct prod_tuple_1 : tuple
   {
@@ -480,11 +484,17 @@ namespace adiar
         ((available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq);
 
     if(size_bound <= lpq_memory_fits) {
+#ifdef ADIAR_STATS
+      stats_product_construction.lpq_internal++;
+#endif
       return __product_construction<prod_policy, prod_priority_queue_1_t<internal_sorter, internal_priority_queue>, prod_priority_queue_2_t>
         (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw,
          (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
          available_memory / (data_structures_in_lpq + 1), size_bound);
     } else {
+#ifdef ADIAR_STATS
+      stats_product_construction.lpq_external++;
+#endif
       return __product_construction<prod_policy, prod_priority_queue_1_t<external_sorter, external_priority_queue>, prod_priority_queue_2_t>
         (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw,
          available_memory / 2,

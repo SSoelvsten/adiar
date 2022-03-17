@@ -211,6 +211,9 @@ namespace adiar
         ((available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq);
 
     if(size_bound <= lpq_memory_fits) {
+#ifdef ADIAR_STATS
+      stats_equality.lpq_internal++;
+#endif
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_t<internal_sorter, internal_priority_queue>,
                                 comparison_data_priority_queue_t>
@@ -218,6 +221,9 @@ namespace adiar
          (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
          available_memory / (data_structures_in_lpq + 1), size_bound);
     } else {
+#ifdef ADIAR_STATS
+      stats_equality.lpq_external++;
+#endif
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_t<external_sorter, external_priority_queue>,
                                 comparison_data_priority_queue_t>

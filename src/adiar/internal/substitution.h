@@ -15,6 +15,10 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
+  /// Struct to hold statistics
+  extern stats_t::substitute_t stats_substitute;
+
+  //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
   template<template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
@@ -218,10 +222,16 @@ namespace adiar
       substitute_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(available_memory);
 
     if(size_bound <= lpq_memory_fits) {
+#ifdef ADIAR_STATS
+      stats_substitute.lpq_internal++;
+#endif
       return __substitute<substitute_policy, substitute_act_mgr,
                           substitute_priority_queue_t<internal_sorter, internal_priority_queue>>
         (dd, ns, n, amgr, out_arcs, aw, available_memory, size_bound);
     } else {
+#ifdef ADIAR_STATS
+      stats_substitute.lpq_external++;
+#endif
       return __substitute<substitute_policy, substitute_act_mgr,
                           substitute_priority_queue_t<external_sorter, external_priority_queue>>
         (dd, ns, n, amgr, out_arcs, aw, available_memory, size_bound);

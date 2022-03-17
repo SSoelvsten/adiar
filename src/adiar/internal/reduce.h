@@ -354,9 +354,15 @@ namespace adiar
       reduce_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(available_memory / 2);
 
     if(max_cut <= lpq_memory_fits) {
+#ifdef ADIAR_STATS
+        stats_reduce.lpq_internal++;
+#endif
       __reduce<dd_policy, reduce_priority_queue_t<internal_sorter, internal_priority_queue>>
         (in_file, node_arcs, sink_arcs, level_info, out_writer, available_memory);
     } else {
+#ifdef ADIAR_STATS
+        stats_reduce.lpq_external++;
+#endif
       __reduce<dd_policy, reduce_priority_queue_t<external_sorter, external_priority_queue>>
         (in_file, node_arcs, sink_arcs, level_info, out_writer, available_memory);
     }
