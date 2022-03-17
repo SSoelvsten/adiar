@@ -278,9 +278,17 @@ namespace adiar
   template<typename quantify_policy>
   size_t __quantify_size_based_upper_bound(const typename quantify_policy::reduced_t &in)
   {
+    // Can the size_bound computation overflow?
     const size_t number_of_nodes = in.file_ptr()->size();
+    const bits_approximation input_bits(number_of_nodes);
 
-    return (number_of_nodes * number_of_nodes) + 2;
+    const bits_approximation bound_bits = input_bits * input_bits + 2;
+
+    if(bound_bits.may_overflow()) {
+      return std::numeric_limits<size_t>::max();
+    } else {
+      return (number_of_nodes * number_of_nodes) + 2;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -328,7 +336,9 @@ namespace adiar
 #ifdef ADIAR_STATS
       stats_quantify.lpq_internal++;
 #endif
-      return __quantify<quantify_policy, quantify_priority_queue_t<internal_sorter, internal_priority_queue>, quantify_data_priority_queue_t>
+      return __quantify<quantify_policy,
+                        quantify_priority_queue_t<internal_sorter, internal_priority_queue>,
+                        quantify_data_priority_queue_t>
         (in, in_nodes, v, label, op, out_arcs, aw,
          (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
          available_memory / (data_structures_in_lpq + 1), size_bound);
@@ -336,7 +346,9 @@ namespace adiar
 #ifdef ADIAR_STATS
       stats_quantify.lpq_external++;
 #endif
-      return __quantify<quantify_policy, quantify_priority_queue_t<external_sorter, external_priority_queue>, quantify_data_priority_queue_t>
+      return __quantify<quantify_policy,
+                        quantify_priority_queue_t<external_sorter, external_priority_queue>,
+                        quantify_data_priority_queue_t>
         (in, in_nodes, v, label, op, out_arcs, aw,
         available_memory / 2,
         available_memory / 2, size_bound);

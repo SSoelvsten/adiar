@@ -460,11 +460,22 @@ namespace adiar
                                       const decision_diagram &in_then,
                                       const decision_diagram &in_else)
   {
+    // Can the size_bound computation overflow?
     const size_t if_size = in_if.file_ptr()->size();
     const size_t then_size = in_then.file_ptr()->size();
     const size_t else_size = in_else.file_ptr()->size();
+    const bits_approximation if_bits(if_size);
+    const bits_approximation then_bits(then_size);
+    const bits_approximation else_bits(else_size);
 
-    return if_size * (then_size + 2) * (else_size + 2) + then_size + else_size + 2;
+    const bits_approximation bound_bits = if_bits * (then_bits + 2) * (else_bits + 2) +
+                                          then_bits + else_bits + 2;
+
+    if(bound_bits.may_overflow()) {
+      return std::numeric_limits<size_t>::max();
+    } else {
+      return if_size * (then_size + 2) * (else_size + 2) + then_size + else_size + 2;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

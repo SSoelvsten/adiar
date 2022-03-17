@@ -309,7 +309,17 @@ namespace adiar
   template<typename intercut_policy>
   size_t __intercut_size_based_upper_bound_2(const typename intercut_policy::reduced_t &dd)
   {
-    return 2 * dd.file_ptr()->size() + 2;
+    // Can the size_bound computation overflow?
+    const size_t number_of_nodes = dd.file_ptr()->size();
+    const bits_approximation input_bits(number_of_nodes);
+
+    const bits_approximation bound_bits = (input_bits * 2) + 2;
+
+    if(bound_bits.may_overflow()) {
+      return std::numeric_limits<size_t>::max();
+    } else {
+      return (2 * number_of_nodes) + 2;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

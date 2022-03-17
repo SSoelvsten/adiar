@@ -374,7 +374,6 @@ namespace adiar
             // Skipped in both DAGs all the way from the root until a pair of sinks.
             return prod_sink(r.t1, r.t2, op);
           }
-
           prod_recurse_in<prod_recurse_in__output_sink>(prod_pq_1, prod_pq_2, aw, op(r.t1, r.t2), t1, t2);
         } else {
           prod_recurse_in<prod_recurse_in__forward>(prod_pq_1, prod_pq_2, aw, r, t1, t2);
@@ -397,10 +396,19 @@ namespace adiar
                                        const typename prod_policy::reduced_t &in_2,
                                        const bool_op &op)
   {
+    // Can the size_bound computation overflow?
     const size_t nodes_in_1 = in_1.file_ptr()->size() + prod_policy::right_leaves(op);
     const size_t nodes_in_2 = in_2.file_ptr()->size() + prod_policy::left_leaves(op);
+    const bits_approximation in_1_bits(nodes_in_1);
+    const bits_approximation in_2_bits(nodes_in_2);
 
-    return nodes_in_1 * nodes_in_2 + 2;
+    const bits_approximation bound_bits = (in_1_bits * in_2_bits) + 2;
+
+    if(bound_bits.may_overflow()) {
+      return std::numeric_limits<size_t>::max();
+    } else {
+      return (nodes_in_1 * nodes_in_2) + 2;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -491,7 +499,9 @@ namespace adiar
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_internal++;
 #endif
-      return __product_construction<prod_policy, prod_priority_queue_1_t<internal_sorter, internal_priority_queue>, prod_priority_queue_2_t>
+      return __product_construction<prod_policy,
+                                    prod_priority_queue_1_t<internal_sorter, internal_priority_queue>,
+                                    prod_priority_queue_2_t>
         (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw,
          (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
          available_memory / (data_structures_in_lpq + 1), size_bound);
@@ -499,7 +509,9 @@ namespace adiar
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_external++;
 #endif
-      return __product_construction<prod_policy, prod_priority_queue_1_t<external_sorter, external_priority_queue>, prod_priority_queue_2_t>
+      return __product_construction<prod_policy,
+                                    prod_priority_queue_1_t<external_sorter, external_priority_queue>,
+                                    prod_priority_queue_2_t>
         (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw,
          available_memory / 2,
          available_memory / 2, size_bound);
