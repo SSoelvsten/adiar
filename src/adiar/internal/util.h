@@ -50,6 +50,65 @@ namespace adiar
     return vars;
   }
 
+  class bits_approximation
+  {
+  public:
+    static inline size_t log_2(size_t x)
+    {
+      unsigned bits, var = x;
+      for(bits = 0; var != 0; ++bits) var >>= 1;
+      return bits;
+    }
+
+  public:
+    const size_t bits;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// An over-approximation of the number of bits to represent a number
+    ////////////////////////////////////////////////////////////////////////////
+    bits_approximation(const size_t size)
+      : bits_approximation(size, false)
+    { }
+
+  private:
+    bits_approximation(const size_t size, const bool skip_log_2)
+      : bits(skip_log_2 ? size : bits_approximation::log_2(size))
+    { }
+
+  public:
+    bool may_overflow() const
+    {
+      constexpr size_t max_bits = sizeof(size_t) * 8;
+      return max_bits < bits;
+    }
+
+  private:
+    inline bits_approximation approximate_addition(const size_t bits_1,
+                                                   const size_t bits_2) const
+    {
+      size_t new_bits = std::max(bits_1, bits_2) + 1;
+      return bits_approximation(new_bits, true);
+    }
+
+    inline bits_approximation approximate_multiplication(const size_t bits_1,
+                                                         const size_t bits_2) const
+    {
+      size_t new_bits = bits_1 + bits_2;
+      return bits_approximation(new_bits, true);
+    }
+
+  public:
+    bits_approximation operator+ (const bits_approximation other) const
+    {
+      return approximate_addition(bits, other.bits);
+    }
+
+    bits_approximation operator* (const bits_approximation other) const
+    {
+      return approximate_multiplication(bits, other.bits);
+    }
+  };
 }
 
 #endif // ADIAR_INTERNAL_UTIL_H

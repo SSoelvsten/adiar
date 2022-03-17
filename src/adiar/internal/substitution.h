@@ -199,7 +199,17 @@ namespace adiar
   template<typename substitute_policy>
   size_t __substitute_size_based_upper_bound(const typename substitute_policy::reduced_t &dd)
   {
-    return dd.file_ptr()->size() + 2;
+    // Can the size_bound computation overflow?
+    const size_t number_of_nodes = dd.file_ptr()->size();
+    const bits_approximation input_bits(number_of_nodes);
+
+    const bits_approximation bound_bits = input_bits + 2;
+
+    if(bound_bits.may_overflow()) {
+      return std::numeric_limits<size_t>::max();
+    } else {
+      return number_of_nodes + 2;
+    }
   }
 
   template<typename substitute_policy, typename substitute_act_mgr>

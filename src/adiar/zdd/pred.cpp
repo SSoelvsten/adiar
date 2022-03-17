@@ -17,7 +17,17 @@ namespace adiar {
     static size_t __comparison_size_based_upper_bound
       (const node_file &in_1, const node_file &in_2)
     {
-      return in_1.size() * in_2.size();
+      // Can the size_bound computation overflow?
+      const bits_approximation in_1_bits(in_1.size());
+      const bits_approximation in_2_bits(in_2.size());
+
+      const bits_approximation bound_bits = in_1_bits * in_2_bits;
+
+      if(bound_bits.may_overflow()) {
+        return std::numeric_limits<size_t>::max();
+      } else {
+        return in_1.size() * in_2.size();
+      }
     }
 
   public:
