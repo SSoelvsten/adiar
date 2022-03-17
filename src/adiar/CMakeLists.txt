@@ -18,6 +18,7 @@ set(HEADERS
   bdd.h
   bdd/bdd.h
   bdd/bdd_policy.h
+  bdd/if_then_else.h
 
   # zdd files
   zdd.h
@@ -83,12 +84,17 @@ set(SOURCES
   zdd/zdd.cpp
 
   # internal
+  internal/count.cpp
   internal/decision_diagram.cpp
+  internal/intercut.cpp
   internal/memory.cpp
   internal/pred.cpp
+  internal/product_construction.cpp
   internal/levelized_priority_queue.cpp
+  internal/quantify.cpp
   internal/reduce.cpp
   internal/sorter.cpp
+  internal/substitution.cpp
 
   # statistics
   statistics.cpp

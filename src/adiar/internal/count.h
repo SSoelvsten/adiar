@@ -10,6 +10,10 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
+  /// Struct to hold statistics
+  extern stats_t::count_t stats_count;
+
+  //////////////////////////////////////////////////////////////////////////////
   // Data structures
   struct path_sum
   {
@@ -148,11 +152,17 @@ namespace adiar
       count_priority_queue_t<typename count_policy::queue_t>::memory_fits(available_memory);
 
     if (size_upper_bound <= memory_pq_fits) {
+#ifdef ADIAR_STATS
+      stats_count.lpq_internal++;
+#endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           internal_sorter,
                                                           internal_priority_queue>>
         (dd, ns, varcount, available_memory, size_upper_bound);
     } else {
+#ifdef ADIAR_STATS
+      stats_count.lpq_external++;
+#endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           external_sorter,
                                                           external_priority_queue>>
