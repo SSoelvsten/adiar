@@ -7,7 +7,7 @@ go_bandit([]() {
 
     describe("bdd_sink", [&]() {
       it("can create true sink [bdd_sink]", [&]() {
-        __bdd res = bdd_sink(true);
+        bdd res = bdd_sink(true);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -17,16 +17,16 @@ go_bandit([]() {
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can create true sink [bdd_true]", [&]() {
-        __bdd res = bdd_true();
+        bdd res = bdd_true();
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -36,16 +36,16 @@ go_bandit([]() {
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can create false sink [bdd_sink]", [&]() {
-        __bdd res = bdd_sink(false);
+        bdd res = bdd_sink(false);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -55,16 +55,16 @@ go_bandit([]() {
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(0u));
       });
 
       it("can create false sink [bdd_false]", [&]() {
-        __bdd res = bdd_false();
+        bdd res = bdd_false();
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -74,18 +74,18 @@ go_bandit([]() {
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(0u));
       });
     });
 
     describe("bdd_ithvar", [&]() {
       it("can create x0", [&]() {
-        __bdd res = bdd_ithvar(0);
+        bdd res = bdd_ithvar(0);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -98,16 +98,16 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can create x42", [&]() {
-        __bdd res = bdd_ithvar(42);
+        bdd res = bdd_ithvar(42);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -120,18 +120,18 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
     });
 
     describe("bdd_nithvar", [&]() {
       it("can create !x1", [&]() {
-        __bdd res = bdd_nithvar(1);
+        bdd res = bdd_nithvar(1);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -144,16 +144,16 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can create !x3", [&]() {
-        __bdd res = bdd_nithvar(3);
+        bdd res = bdd_nithvar(3);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -166,12 +166,12 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
     });
 
@@ -184,7 +184,7 @@ go_bandit([]() {
           lw << 1 << 2 << 5;
         }
 
-        __bdd res = bdd_and(labels);
+        bdd res = bdd_and(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -217,18 +217,18 @@ go_bandit([]() {
 
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(3u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can create {} as trivially true", [&]() {
         label_file labels;
 
-        __bdd res = bdd_and(labels);
+        bdd res = bdd_and(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -238,12 +238,12 @@ go_bandit([]() {
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
     });
 
@@ -256,7 +256,7 @@ go_bandit([]() {
           lw << 1 << 2 << 5;
         }
 
-        __bdd res = bdd_or(labels);
+        bdd res = bdd_or(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -289,18 +289,18 @@ go_bandit([]() {
 
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("can create {} as trivially false", [&]() {
         label_file labels;
 
-        __bdd res = bdd_or(labels);
+        bdd res = bdd_or(labels);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -310,18 +310,18 @@ go_bandit([]() {
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().EqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(res.file_ptr()->canonical, Is().True());
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(0u));
       });
     });
 
     describe("bdd_counter", [&]() {
       it("creates trivial counting to 10 in [0,8]", [&]() {
-        __bdd res = bdd_counter(0, 8, 10);
+        bdd res = bdd_counter(0, 8, 10);
 
         node_test_stream ns(res);
 
@@ -332,14 +332,14 @@ go_bandit([]() {
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(0u));
       });
 
       it("creates trivial counting to 10 in [10,18]", [&]() {
-        __bdd res = bdd_counter(10, 18, 10);
+        bdd res = bdd_counter(10, 18, 10);
 
         node_test_stream ns(res);
 
@@ -350,14 +350,14 @@ go_bandit([]() {
         level_info_test_stream<node_t> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(0u));
       });
 
       it("creates counting to 0 in [1,5]", [&]() {
-        __bdd res = bdd_counter(1, 5, 0);
+        bdd res = bdd_counter(1, 5, 0);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -406,14 +406,14 @@ go_bandit([]() {
 
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(5u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(5u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("creates counting to 2 in [2,5]", [&]() {
-        __bdd res = bdd_counter(2, 5, 2);
+        bdd res = bdd_counter(2, 5, 2);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -471,14 +471,14 @@ go_bandit([]() {
 
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(4u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().GreaterThanOrEqualTo(4u));
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(4u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(4u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("creates counting to 3 in [0,8]", [&]() {
-        __bdd res = bdd_counter(0, 8, 3);
+        bdd res = bdd_counter(0, 8, 3);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -649,10 +649,10 @@ go_bandit([]() {
 
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(7u));
+        AssertThat(res.file_ptr()->max_1level_cut, Is().GreaterThanOrEqualTo(7u));
 
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(9u));
-        AssertThat(res.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(9u));
+        AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
     });
   });

@@ -82,7 +82,7 @@ namespace adiar
   // Helper functions
   inline size_t __count_size_based_upper_bound(const decision_diagram &dd)
   {
-    return dd.file.size();
+    return dd.file_ptr()->size();
   }
 
   //////////////////////////////////////////////////////////////////////////////

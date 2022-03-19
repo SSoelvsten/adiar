@@ -195,7 +195,7 @@ namespace adiar
   template<typename substitute_policy>
   size_t __substitute_size_based_upper_bound(const typename substitute_policy::reduced_t &dd)
   {
-    return dd.file.size() + 2;
+    return dd.file_ptr()->size() + 2;
   }
 
   template<typename substitute_policy, typename substitute_act_mgr>

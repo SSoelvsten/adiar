@@ -450,10 +450,15 @@ namespace adiar
     return out_arcs;
   }
 
-  size_t __ite_size_based_upper_bound(const decision_diagram &in_if, const decision_diagram &in_then, const decision_diagram &in_else)
+  size_t __ite_size_based_upper_bound(const decision_diagram &in_if,
+                                      const decision_diagram &in_then,
+                                      const decision_diagram &in_else)
   {
-    return in_if.file.size() * (in_then.file.size() + 2) * (in_else.file.size() + 2) +
-           in_then.file.size() + in_else.file.size() + 2;
+    const size_t if_size = in_if.file_ptr()->size();
+    const size_t then_size = in_then.file_ptr()->size();
+    const size_t else_size = in_else.file_ptr()->size();
+
+    return if_size * (then_size + 2) * (else_size + 2) + then_size + else_size + 2;
   }
 
   //////////////////////////////////////////////////////////////////////////////
