@@ -55,7 +55,7 @@ namespace adiar {
       _file_ptr = shared_ptr;
       _file_ptr -> make_read_only();
 
-      _stream.open(f.__base_file, ADIAR_READ_ACCESS);
+      _stream.open(f._tpie_file, ADIAR_READ_ACCESS);
       _negate = negate;
 
       reset();
