@@ -6,6 +6,9 @@ namespace adiar
   struct FILE_CONSTANTS<int>
   {
     static constexpr size_t files = 2u;
+
+    struct stats
+    { /* No extra 'int' specific variables */ };
   };
 }
 

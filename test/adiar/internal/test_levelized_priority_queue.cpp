@@ -13,6 +13,9 @@ namespace adiar
   struct FILE_CONSTANTS<pq_test_data>
   {
     static constexpr size_t files = 1u;
+
+    struct stats
+    { /* No extra 'pq_test_data' specific variables */ };
   };
 }
 
