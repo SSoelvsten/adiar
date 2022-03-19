@@ -130,7 +130,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// We also provide not-so simple files for some type of elements 'T'. These
   /// files include meta information and split the file content into one or more
-  /// files. All of these constants are provided as \c static and \c constexpr.
+  /// files. All of these constants are provided as \c static and \c constexpr
+  /// or are mere type declarations.
   ///
   /// \param T Element type in the file
   //////////////////////////////////////////////////////////////////////////////
@@ -145,6 +146,16 @@ namespace adiar
   struct FILE_CONSTANTS<node_t>
   {
     static constexpr size_t files = 1u;
+
+    struct stats
+    {
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief Boolean flag whether a set of nodes are well-formed with
+      ///        respect to the stricter ordering required by the fast equality
+      ///        check.
+      //////////////////////////////////////////////////////////////////////////
+      bool canonical = false;
+    };
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -158,9 +169,13 @@ namespace adiar
   struct FILE_CONSTANTS<arc_t>
   {
     static constexpr size_t files = 3u;
-  };
 
-  // TODO: declare in 'FILE_CONSTANTS' the variables for each type of meta file.
+    struct stats
+    {
+      // TODO: move max_1level_cut up here when node files need four different
+      //       types of cuts.
+    };
+  };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       File(s) with meta information.
@@ -175,7 +190,7 @@ namespace adiar
   ///              granularity of the information.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T>
-  class __meta_file
+  class __meta_file : public FILE_CONSTANTS<T>::stats
   {
     static constexpr size_t FILES = FILE_CONSTANTS<T>::files;
 
@@ -188,12 +203,6 @@ namespace adiar
     typedef T elem_t;
 
   public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Boolean flag whether a set of nodes are well-formed with respect
-    ///        to the stricter ordering required by the fast equality check.
-    ////////////////////////////////////////////////////////////////////////////
-    bool canonical = false;
-
     ////////////////////////////////////////////////////////////////////////////
     /// \brief An upper bound for the maximum one-level cut of the DAG.
     ////////////////////////////////////////////////////////////////////////////
