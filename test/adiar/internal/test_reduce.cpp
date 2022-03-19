@@ -94,9 +94,9 @@ go_bandit([]() {
 
         // Reduce it
 
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -134,8 +134,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("applies to sink arcs [2]", [&]() {
@@ -182,9 +182,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 2;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -223,8 +223,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -275,9 +275,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 4;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -327,8 +327,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("applies to both node and sink arcs", [&]() {
@@ -376,9 +376,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 4;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -423,8 +423,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("applies to 'disjoint' branches", [&]() {
@@ -479,9 +479,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 4;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -540,8 +540,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("does forward the correct children [1]", [&]() {
@@ -589,9 +589,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 4;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -631,8 +631,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("does forward the correct children [2]", [&]() {
@@ -680,9 +680,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 4;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -722,8 +722,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
     });
 
@@ -767,9 +767,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 3;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -808,8 +808,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -857,9 +857,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 3;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -903,8 +903,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("works with two reductions on the same level", [&]() {
@@ -950,9 +950,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 4;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -987,8 +987,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2 [1]", [&]() {
@@ -1030,9 +1030,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 2;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1061,8 +1061,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2 [2]", [&]() {
@@ -1112,9 +1112,9 @@ go_bandit([]() {
           in._file_ptr->max_1level_cut = 4;
 
           // Reduce it
-          __bdd out = reduce<bdd_policy>(in);
+          bdd out = reduce<bdd_policy>(in);
 
-          AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+          AssertThat(is_canonical(out), Is().True());
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -1160,8 +1160,8 @@ go_bandit([]() {
 
           AssertThat(out_meta.can_pull(), Is().False());
 
-          AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-          AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+          AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(2u));
+          AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
         });
 
       it("can reduce the root", [&]() {
@@ -1203,9 +1203,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 3;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1223,8 +1223,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can apply reduction rule 1 to a single node", [&]() {
@@ -1250,9 +1250,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 0;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1266,8 +1266,8 @@ go_bandit([]() {
         level_info_test_stream<node_t> out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(0u));
       });
 
       it("can propagate reduction rule 1 up to a sink", [&]() {
@@ -1300,9 +1300,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 1;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1314,8 +1314,8 @@ go_bandit([]() {
         level_info_test_stream<node_t> out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can return non-reducible single-node variable with MAX_ID", [&]() {
@@ -1341,9 +1341,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 0;
 
         // Reduce it
-        __bdd out = reduce<bdd_policy>(in);
+        bdd out = reduce<bdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1358,8 +1358,8 @@ go_bandit([]() {
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0u,1u)));
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
     });
 
@@ -1394,9 +1394,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 1;
 
         // Reduce it
-        __zdd out = reduce<zdd_policy>(in);
+        zdd out = reduce<zdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1413,8 +1413,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -1462,9 +1462,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 3;
 
         // Reduce it
-        __zdd out = reduce<zdd_policy>(in);
+        zdd out = reduce<zdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1508,8 +1508,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2", [&]() {
@@ -1551,9 +1551,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 2;
 
         // Reduce it
-        __zdd out = reduce<zdd_policy>(in);
+        zdd out = reduce<zdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1582,8 +1582,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("applies to a single node", [&]() {
@@ -1609,9 +1609,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 0;
 
         // Reduce it
-        __zdd out = reduce<zdd_policy>(in);
+        zdd out = reduce<zdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1625,8 +1625,8 @@ go_bandit([]() {
         level_info_test_stream<node_t> out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can reduce the root", [&]() {
@@ -1659,9 +1659,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 1;
 
         // Reduce it
-        __zdd out = reduce<zdd_policy>(in);
+        zdd out = reduce<zdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1679,8 +1679,8 @@ go_bandit([]() {
 
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("can propagate reduction rule 1 up to a sink", [&]() {
@@ -1713,9 +1713,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 1;
 
         // Reduce it
-        __zdd out = reduce<zdd_policy>(in);
+        zdd out = reduce<zdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(out.file_ptr()->canonical, Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1727,8 +1727,8 @@ go_bandit([]() {
         level_info_test_stream<node_t> out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(0u));
       });
 
       it("can return non-reducible single-node variable with MAX_ID", [&]() {
@@ -1754,9 +1754,9 @@ go_bandit([]() {
         in._file_ptr->max_1level_cut = 0;
 
         // Reduce it
-        __zdd out = reduce<zdd_policy>(in);
+        zdd out = reduce<zdd_policy>(in);
 
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().True());
+        AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1771,8 +1771,8 @@ go_bandit([]() {
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(42u,1u)));
         AssertThat(out_meta.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
     });
   });

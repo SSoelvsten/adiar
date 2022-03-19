@@ -274,7 +274,9 @@ namespace adiar
   template<typename quantify_policy>
   size_t __quantify_size_based_upper_bound(const typename quantify_policy::reduced_t &in)
   {
-    return (in.file.size()) * (in.file.size()) + 2;
+    const size_t number_of_nodes = in.file_ptr()->size();
+
+    return (number_of_nodes * number_of_nodes) + 2;
   }
 
   //////////////////////////////////////////////////////////////////////////////

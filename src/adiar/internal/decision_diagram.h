@@ -96,39 +96,10 @@ namespace adiar
     template <typename file_t, typename comp_t, size_t FILES>
     friend class label_merger;
 
-    friend bool is_canonical(const decision_diagram &dd);
     friend bool is_isomorphic(const decision_diagram&, const decision_diagram&);
 
     template<typename comp_policy>
     friend bool comparison_check(const decision_diagram &in_1, const decision_diagram &in_2);
-
-    friend size_t __count_size_based_upper_bound(const decision_diagram &dd);
-
-    template<typename prod_policy>
-    friend typename prod_policy::unreduced_t product_construction(const typename prod_policy::reduced_t &in_1,
-                                                                  const typename prod_policy::reduced_t &in_2,
-                                                                  const bool_op &op);
-
-    template<typename prod_policy>
-    friend size_t __prod_size_based_upper_bound(const typename prod_policy::reduced_t &in_1,
-                                                const typename prod_policy::reduced_t &in_2,
-                                                const bool_op &op);
-
-    friend size_t __ite_size_based_upper_bound(const decision_diagram &in_if,
-                                               const decision_diagram &in_then,
-                                               const decision_diagram &in_else);
-
-    template<typename quantify_policy>
-    friend size_t __quantify_size_based_upper_bound(const typename quantify_policy::reduced_t &in);
-
-    template<typename substitute_policy>
-    friend size_t __substitute_size_based_upper_bound(const typename substitute_policy::reduced_t &dd);
-
-    template<typename intercut_policy>
-    friend size_t __intercut_size_based_upper_bound_1(const typename intercut_policy::reduced_t &dd);
-
-    template<typename intercut_policy>
-    friend size_t __intercut_size_based_upper_bound_2(const typename intercut_policy::reduced_t &dd);
 
     friend label_t min_label(const decision_diagram &dd);
     friend label_t max_label(const decision_diagram &dd);
@@ -166,6 +137,15 @@ namespace adiar
 
     decision_diagram(const decision_diagram &dd)
       : file(dd.file), negate(dd.negate) { }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Read-only access to the raw files and meta information.
+    ////////////////////////////////////////////////////////////////////////////
+    const std::shared_ptr<const __meta_file<node_t>> file_ptr() const
+    {
+      return file._file_ptr;
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////

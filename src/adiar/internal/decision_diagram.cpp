@@ -10,7 +10,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   bool is_canonical(const decision_diagram &dd)
   {
-    return dd.file._file_ptr -> canonical;
+    return dd.file_ptr() -> canonical;
   }
 
   bool is_sink(const decision_diagram &dd, const sink_pred &pred)

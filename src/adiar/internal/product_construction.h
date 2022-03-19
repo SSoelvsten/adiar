@@ -393,7 +393,10 @@ namespace adiar
                                        const typename prod_policy::reduced_t &in_2,
                                        const bool_op &op)
   {
-    return (in_1.file.size() + prod_policy::right_leaves(op)) * (in_2.file.size() + prod_policy::left_leaves(op)) + 2;
+    const size_t nodes_in_1 = in_1.file_ptr()->size() + prod_policy::right_leaves(op);
+    const size_t nodes_in_2 = in_2.file_ptr()->size() + prod_policy::left_leaves(op);
+
+    return nodes_in_1 * nodes_in_2 + 2;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -446,7 +449,7 @@ namespace adiar
                                                          const typename prod_policy::reduced_t &in_2,
                                                          const bool_op &op)
   {
-    if (in_1.file._file_ptr == in_2.file._file_ptr) {
+    if (in_1.file_ptr() == in_2.file_ptr()) {
       return prod_policy::resolve_same_file(in_1, in_2, op);
     }
 

@@ -299,13 +299,13 @@ namespace adiar
   template<typename intercut_policy>
   size_t __intercut_size_based_upper_bound_1(const typename intercut_policy::reduced_t &dd)
   {
-    return 2 * dd.file.size() + 2;
+    return 2 * dd.file_ptr()->size() + 2;
   }
 
   template<typename intercut_policy>
   size_t __intercut_size_based_upper_bound_2(const typename intercut_policy::reduced_t &dd)
   {
-    return 2 * dd.file.size() + 2;
+    return 2 * dd.file_ptr()->size() + 2;
   }
 
   //////////////////////////////////////////////////////////////////////////////
