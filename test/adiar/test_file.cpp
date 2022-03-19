@@ -604,7 +604,7 @@ go_bandit([]() {
             fw.push(21);
           }
 
-          sort(file, std::less<>());
+          simple_file_sorter<int, std::less<>>::sort(file);
 
           file_stream<int, false> fs(file);
 

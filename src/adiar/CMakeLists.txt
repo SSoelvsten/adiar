@@ -11,6 +11,9 @@ set(HEADERS
   file_stream.h
   file_writer.h
 
+  # deprecated
+  deprecated.h
+
   # bdd files
   bdd.h
   bdd/bdd.h

@@ -39,15 +39,32 @@ namespace adiar
 
   private:
     ////////////////////////////////////////////////////////////////////////////
+    // The variables above are 'mutable' to allow them to be used with
+    // 'non-const' operations (opening a stream) in a 'const' context.
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file has been read (and hence should not be further)
     ////////////////////////////////////////////////////////////////////////////
     mutable bool _is_read_only = false;
 
-  public: // TODO: Privatize and make friends
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The underlying TPIE file
     ////////////////////////////////////////////////////////////////////////////
-    tpie::temp_file _tpie_file;
+    mutable tpie::temp_file _tpie_file;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Befriend the few places that need direct access to these variables.
+    template <typename elem_t, typename pred_t>
+    friend class simple_file_sorter;
+
+    template <typename elem_t, typename Comp>
+    friend class simple_file_writer;
+
+    template <typename elem_t>
+    friend class meta_file_writer;
+
+    template <typename elem_t, bool REVERSE, typename SharedPtr_T>
+    friend class file_stream;
 
   private:
     void touch_file()
@@ -86,7 +103,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of elements in the file.
     ////////////////////////////////////////////////////////////////////////////
-    size_t size()
+    size_t size() const
     {
       tpie::file_stream<elem_t> fs;
       fs.open(_tpie_file, ADIAR_READ_ACCESS);
@@ -96,7 +113,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file is empty.
     ////////////////////////////////////////////////////////////////////////////
-    bool empty()
+    bool empty() const
     {
       return size() == 0u;
     }
@@ -104,7 +121,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Size of the file in bytes.
     ////////////////////////////////////////////////////////////////////////////
-    size_t file_size()
+    size_t file_size() const
     {
       return size() * sizeof(elem_t);
     }
@@ -238,7 +255,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of elements in the file(s)
     ////////////////////////////////////////////////////////////////////////////
-    size_t size()
+    size_t size() const
     {
       size_t sum_size = 0u;
       for(size_t idx = 0; idx < FILES; idx++) {
@@ -247,7 +264,7 @@ namespace adiar
       return sum_size;
     }
 
-    bool empty()
+    bool empty() const
     {
       return size() == 0u;
     }
@@ -255,7 +272,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of elements in the levelized meta information file
     ////////////////////////////////////////////////////////////////////////////
-    size_t meta_size()
+    size_t meta_size() const
     {
       return _level_info_file.size();
     }
@@ -263,7 +280,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The size of the file(s) in bytes.
     ////////////////////////////////////////////////////////////////////////////
-    size_t file_size()
+    size_t file_size() const
     {
       return size() * sizeof(elem_t) + meta_size() * sizeof(level_info_t);
     }
@@ -378,22 +395,6 @@ namespace adiar
   using simple_file = __shared_file<file<T>>;
 
   ////////////////////////////////////////////////////////////////////////////
-  /// \brief Sorts the content of a <tt>simple_file</tt> given some sorting
-  /// predicate.
-  ////////////////////////////////////////////////////////////////////////////
-  template<typename T, typename sorting_pred_t = std::less<>>
-  void sort(simple_file<T> f, sorting_pred_t pred = sorting_pred_t())
-  {
-    adiar_assert(!f.is_read_only(), "Cannot sort file after read-access");
-
-    tpie::file_stream<T> fs;
-    fs.open(f._file_ptr -> __base_file);
-
-    tpie::progress_indicator_null pi;
-    tpie::sort(fs, pred, pi);
-  }
-
-  ////////////////////////////////////////////////////////////////////////////
   /// \brief A file of assignments (label, value)
   ////////////////////////////////////////////////////////////////////////////
   typedef simple_file<assignment_t> assignment_file;
@@ -402,6 +403,27 @@ namespace adiar
   /// \brief A file of variable labels
   ////////////////////////////////////////////////////////////////////////////
   typedef simple_file<label_t> label_file;
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Provides sorting for <tt>simple_file</tt>.
+  ///
+  /// TODO: Move to 'sorter.h'?
+  ////////////////////////////////////////////////////////////////////////////
+  template <typename elem_t, typename pred_t = std::less<elem_t>>
+  class simple_file_sorter
+  {
+  public:
+    static void sort(simple_file<elem_t> f, pred_t pred = pred_t())
+    {
+      adiar_assert(!f.is_read_only(), "Cannot sort file after read-access");
+
+      tpie::file_stream<elem_t> fs;
+      fs.open(f._file_ptr -> _tpie_file);
+
+      tpie::progress_indicator_null pi;
+      tpie::sort(fs, pred, pi);
+    }
+  };
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief File(s) with 'meta' information
