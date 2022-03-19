@@ -18,8 +18,8 @@
 
 namespace adiar
 {
-#define ADIAR_READ_ACCESS tpie::access_type::access_read
-#define ADIAR_WRITE_ACCESS tpie::access_type::access_write
+  constexpr tpie::access_type ADIAR_READ_ACCESS  = tpie::access_type::access_read;
+  constexpr tpie::access_type ADIAR_WRITE_ACCESS = tpie::access_type::access_write;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Wrapper for TPIE's <tt>temp_file</tt>.
@@ -41,27 +41,27 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file has been read (and hence should not be further)
     ////////////////////////////////////////////////////////////////////////////
-    mutable bool __is_read_only = false;
+    mutable bool _is_read_only = false;
 
   public: // TODO: Privatize and make friends
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The underlying TPIE file
     ////////////////////////////////////////////////////////////////////////////
-    tpie::temp_file __base_file;
+    tpie::temp_file _tpie_file;
 
   private:
     void touch_file()
     {
       // Opening the file with 'access_read_write' automatically creates the
       // file with header on disk.
-      tpie::file_stream<T> fs;
-      fs.open(__base_file, tpie::access_type::access_read_write);
+      tpie::file_stream<elem_t> fs;
+      fs.open(_tpie_file, tpie::access_type::access_read_write);
     }
 
   public:
-    file() : __base_file() { touch_file(); }
+    file() : _tpie_file() { touch_file(); }
 
-    file(const std::string &filename) : __base_file(filename, true) {
+    file(const std::string &filename) : _tpie_file(filename, true) {
       touch_file();
       if (!empty()) { make_read_only(); }
     }
@@ -71,7 +71,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     void make_read_only() const
     {
-      __is_read_only = true;
+      _is_read_only = true;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     bool is_read_only() const
     {
-      return __is_read_only;
+      return _is_read_only;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -88,8 +88,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     size_t size()
     {
-      tpie::file_stream<T> fs;
-      fs.open(__base_file, ADIAR_READ_ACCESS);
+      tpie::file_stream<elem_t> fs;
+      fs.open(_tpie_file, ADIAR_READ_ACCESS);
       return fs.size();
     }
 
@@ -106,7 +106,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     size_t file_size()
     {
-      return size() * sizeof(T);
+      return size() * sizeof(elem_t);
     }
   };
 
@@ -143,6 +143,8 @@ namespace adiar
     static constexpr size_t files = 3u;
   };
 
+  // TODO: declare in 'FILE_CONSTANTS' the variables for each type of meta file.
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       File(s) with meta information.
   ///
@@ -158,8 +160,9 @@ namespace adiar
   template <typename T>
   class __meta_file
   {
-    static_assert(0 < FILE_CONSTANTS<T>::files,
-                  "The number of files must be positive");
+    static constexpr size_t FILES = FILE_CONSTANTS<T>::files;
+
+    static_assert(0 < FILES, "The number of files must be positive");
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -194,15 +197,16 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Files describing the directed acyclic graph.
     ////////////////////////////////////////////////////////////////////////////
-    file<T> _files [FILE_CONSTANTS<T>::files];
+    file<T> _files [FILES];
 
+  public:
     __meta_file() {
       adiar_debug(!is_read_only(), "Should be writable on creation");
     }
 
     // TODO: Opening a persistent file with meta information given a path.
     // __meta_file(const std::string& filename) : ? { ? }
-
+  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief  Make the file read-only. This disallows use of any writers but
     ///         (multiple) access by several readers.
@@ -213,7 +217,7 @@ namespace adiar
     void make_read_only() const
     {
       _level_info_file.make_read_only();
-      for (size_t idx = 0u; idx < FILE_CONSTANTS<T>::files; idx++) {
+      for (size_t idx = 0u; idx < FILES; idx++) {
         _files[idx].make_read_only();
       }
     }
@@ -223,7 +227,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     bool is_read_only() const
     {
-      for (size_t idx = 0u; idx < FILE_CONSTANTS<T>::files; idx++) {
+      for (size_t idx = 0u; idx < FILES; idx++) {
         if (!_files[idx].is_read_only()) {
           return false;
         };
@@ -237,7 +241,7 @@ namespace adiar
     size_t size()
     {
       size_t sum_size = 0u;
-      for(size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
+      for(size_t idx = 0; idx < FILES; idx++) {
         sum_size += _files[idx].size();
       }
       return sum_size;
@@ -261,7 +265,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     size_t file_size()
     {
-      return size() * sizeof(T) + meta_size() * sizeof(level_info_t);
+      return size() * sizeof(elem_t) + meta_size() * sizeof(level_info_t);
     }
   };
 
@@ -296,7 +300,6 @@ namespace adiar
     typedef typename T::elem_t elem_t;
 
   public:
-    // TODO: make the pointer private?
     std::shared_ptr<T> _file_ptr;
 
     ////////////////////////////////////////////////////////////////////////////
