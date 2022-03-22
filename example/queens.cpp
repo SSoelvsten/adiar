@@ -311,7 +311,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
         }
       };
 
-      adiar::sort(forced_assignment, sort_by_column(N));
+      adiar::simple_file_sorter<adiar::assignment_t, sort_by_column>::sort(forced_assignment, sort_by_column(N));
 
       // Copy the rest of the assignment into 'partial_assignment'
       adiar::assignment_stream<> fas(forced_assignment);
