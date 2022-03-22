@@ -10,7 +10,7 @@
 #include <adiar/internal/assert.h>
 
 namespace adiar {
-    //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
   /// To condense almost everything down to mere integer comparisons we reserve
   /// specific parts of a single 64 bit unsigned integer to different variables.
   ///
@@ -60,7 +60,7 @@ namespace adiar {
   /// \brief The number of bits for a label.
   //////////////////////////////////////////////////////////////////////////////
   constexpr uint8_t  LABEL_BITS = 24;
-  
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The maximal possible value for a unique identifier's label.
   //////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ namespace adiar {
   /// \brief The number of bits for a unique identifier's id.
   //////////////////////////////////////////////////////////////////////////////
   constexpr uint8_t  ID_BITS = 64 - 2 - LABEL_BITS;
-  
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The maximal possible value for a unique identifier's id.
   //////////////////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ namespace adiar {
   constexpr uint64_t FLAG_BIT = 0x0000000000000001ull;
 
   /* =============================== POINTERS =============================== */
-  
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief A (possibly flagged) identifier of a sink, an internal node
   ///        (uid_t), or nothing (NIL).
@@ -151,8 +151,8 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a pointer is NIL.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_nil(ptr_t p) 
-  { 
+  inline bool is_nil(ptr_t p)
+  {
     // Check for flagged and unflagged NIL
     return p >= NIL;
   }
@@ -208,7 +208,7 @@ namespace adiar {
   {
     return create_node_uid(label, id);
   }
-  
+
   inline ptr_t create_node_ptr(uid_t uid)
   {
     return uid; //???
@@ -589,7 +589,7 @@ namespace adiar {
     uint64_t high = is_sink(n.high) ? negate(n.high) : n.high;
     return { n.uid, low, high };
   }
-  
+
   inline node operator! (const node &n)
   {
     return negate(n);
