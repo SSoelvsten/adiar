@@ -300,7 +300,7 @@ namespace adiar
     adiar_debug(is_commutative(op), "Noncommutative operator used");
 
     // Check if there is no need to do any computation
-    if (is_sink(in, is_any) || !quantify_has_label(label, in)) {
+    if (is_sink(in) || !quantify_has_label(label, in)) {
       return in;
     }
 

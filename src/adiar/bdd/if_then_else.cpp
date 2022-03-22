@@ -508,10 +508,15 @@ namespace adiar
     }
 
     // Resolve being given a sink in one of the cases
-    if      (is_sink(bdd_then, is_true))  { return bdd_or (bdd_if,          bdd_else); }
-    else if (is_sink(bdd_then, is_false)) { return bdd_and(bdd_not(bdd_if), bdd_else); }
-    else if (is_sink(bdd_else, is_true))  { return bdd_imp(bdd_if,          bdd_then); }
-    else if (is_sink(bdd_else, is_false)) { return bdd_and(bdd_if,          bdd_then); }
+    if (is_sink(bdd_then)) {
+      return bdd_apply(value_of(bdd_then) ? bdd_if : bdd_not(bdd_if),
+                       bdd_else,
+                       value_of(bdd_then) ? or_op : and_op);
+    } else if (is_sink(bdd_else))  {
+      return bdd_apply(bdd_if,
+                       bdd_then,
+                       value_of(bdd_else) ? imp_op : and_op);
+    }
 
     // Now, at this point we will not defer to using the Apply, so we can take
     // up memory by opening the input streams and evaluating trivial

@@ -92,7 +92,7 @@ namespace adiar
   uint64_t bdd_satcount(const bdd& bdd, label_t varcount)
   {
     if (is_sink(bdd)) {
-      return is_sink(bdd, is_true) ? std::min(1u, varcount) << varcount : 0u;
+      return value_of(bdd) ? std::min(1u, varcount) << varcount : 0u;
     }
 
     adiar_assert(bdd_varcount(bdd) <= varcount,

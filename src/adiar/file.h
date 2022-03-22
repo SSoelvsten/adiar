@@ -472,16 +472,18 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Check whether a given node_file is sink-only and satisfies the
-  ///             given sink_pred.
+  /// \brief      Check whether a given node_file represents a sink-only DAG.
   ///
   /// \param file The node_file to check its content
-  ///
-  /// \param pred If the given node_file only contains a sink node, then
-  ///             secondly the sink is checked with the given sink predicate.
-  ///             Default is any type sink.
   //////////////////////////////////////////////////////////////////////////////
-  bool is_sink(const node_file &file, const sink_pred &pred = is_any);
+  bool is_sink(const node_file &file);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Obtain the sink value of a node_file where 'is_sink' is true.
+  ///
+  /// \param file The node_file to check its content
+  //////////////////////////////////////////////////////////////////////////////
+  bool value_of(const node_file &file);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The minimal label, i.e. the label of the root.

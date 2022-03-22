@@ -49,7 +49,7 @@ namespace adiar
   if (labels.size() == 0) { return bdd_var; }                       \
   label_stream<> ls(labels);                                        \
   while(true) {                                                     \
-    if (is_sink(bdd_var, is_any)) { return bdd_var; }               \
+    if (is_sink(bdd_var)) { return bdd_var; }                       \
                                                                     \
     label_t label = ls.pull();                                      \
     if (!ls.can_pull()) {                                           \
