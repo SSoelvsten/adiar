@@ -6,21 +6,24 @@
 
 namespace adiar
 {
-  // TODO: Remove?
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// node_file
-  bool is_sink(const node_file &file, const sink_pred &pred)
+  bool is_sink(const node_file &file)
   {
     adiar_debug(!file.empty(), "Invalid node_file: empty");
 
-    if (file.size() != 1) {
-      return false;
-    }
-    node_stream<> ns(file);
-    node_t n = ns.pull();
+    // A node_file only contains a sink iff the number of arcs to a sink value
+    // in its meta information is exactly one.
+    return (file._file_ptr -> number_of_sinks[false] +
+            file._file_ptr -> number_of_sinks[true]) == 1;
+  }
 
-    return is_sink(n) && pred(n.uid);
+  bool value_of(const node_file &file)
+  {
+    adiar_debug(is_sink(file), "Must be a sink to extract its value");
+
+    // Since the sum of the number of sinks is exactly one, then we can use the
+    // value of the number of true sinks to indirectly derive the value of the
+    // sink.
+    return file._file_ptr -> number_of_sinks[true];
   }
 
   template<bool reverse>

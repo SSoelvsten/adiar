@@ -13,12 +13,14 @@ namespace adiar {
     return dd.file_ptr() -> canonical;
   }
 
-  bool is_sink(const decision_diagram &dd, const sink_pred &pred)
+  bool is_sink(const decision_diagram &dd)
   {
-    node_stream<> ns(dd);
-    node_t n = ns.pull();
+    return is_sink(dd.file);
+  }
 
-    return is_sink(n) && pred(n.uid);
+  bool value_of(const decision_diagram &dd)
+  {
+    return dd.negate ^ value_of(dd.file);
   }
 
   label_t min_label(const decision_diagram &dd)

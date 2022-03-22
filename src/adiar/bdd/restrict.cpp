@@ -34,7 +34,7 @@ namespace adiar
   __bdd bdd_restrict(const bdd &dd, const assignment_file &a)
   {
     if (a.size() == 0
-        || is_sink(dd, is_any)
+        || is_sink(dd)
         || disjoint_labels<assignment_file, assignment_stream<>>(a, dd)) {
       return dd;
     }

@@ -166,7 +166,7 @@ namespace adiar {
   bool zdd_disjoint(const zdd &s1, const zdd &s2)
   {
     if (s1.file._file_ptr == s2.file._file_ptr) {
-      return is_sink(s1, is_false);
+      return is_sink(s1) && !value_of(s1);
     }
 
     return comparison_check<zdd_disjoint_policy>(s1, s2);

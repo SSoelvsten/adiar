@@ -101,6 +101,8 @@ namespace adiar
     template<typename comp_policy>
     friend bool comparison_check(const decision_diagram &in_1, const decision_diagram &in_2);
 
+    friend bool is_sink(const decision_diagram &dd);
+    friend bool value_of(const decision_diagram &dd);
     friend label_t min_label(const decision_diagram &dd);
     friend label_t max_label(const decision_diagram &dd);
 
@@ -168,11 +170,16 @@ namespace adiar
   /// the given sink_pred.
   ///
   /// \param file   The node_file to check its content
-  /// \param pred   If the given decision diagram is sink-only, then secondly
-  ///               the sink is checked with the given sink predicate. Default
-  ///               is any type sink.
   //////////////////////////////////////////////////////////////////////////////
-  bool is_sink(const decision_diagram &dd, const sink_pred &pred = is_any);
+  bool is_sink(const decision_diagram &dd);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Obtain the sink value of a decision diagram (assuming
+  ///             'is_sink' is true).
+  ///
+  /// \param file The node_file to check its content
+  //////////////////////////////////////////////////////////////////////////////
+  bool value_of(const decision_diagram &dd);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring label in the decision diagram
