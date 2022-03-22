@@ -106,29 +106,6 @@ go_bandit([]() {
         AssertThat(sizeof(sink), Is().EqualTo(8u));
       });
 
-      describe("predicates", []() {
-        ptr_t sink_T = create_sink_ptr(true);
-        ptr_t sink_F = create_sink_ptr(false);
-
-        it("should accept T sink with is_true and is_any", [&]() {
-          AssertThat(is_true(sink_T), Is().True());
-          AssertThat(is_any(sink_T), Is().True());
-        });
-
-        it("should reject T sink with is_false", [&]() {
-          AssertThat(is_false(sink_T), Is().False());
-        });
-
-        it("should accept F sink with is_false and is_any", [&]() {
-          AssertThat(is_false(sink_F), Is().True());
-          AssertThat(is_any(sink_F), Is().True());
-        });
-
-        it("should reject F sink with is_true", [&]() {
-          AssertThat(is_true(sink_F), Is().False());
-        });
-      });
-
       describe("bool_op", []() {
         it("and_op", []() {
           AssertThat(and_op(create_sink_ptr(true), create_sink_ptr(true)),

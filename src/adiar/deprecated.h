@@ -5,6 +5,8 @@
 
 namespace adiar
 {
+  /* ======================= SORTING SIMPLE FILES ========================= */
+
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Sorts the content of a <tt>simple_file</tt> given some sorting
   /// predicate.
@@ -15,6 +17,47 @@ namespace adiar
   {
     simple_file_sorter<T, pred_t>::sort(f, pred);
   }
+
+  /* ============================ SINK PREDICATE ============================ */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief A predicate function on sinks.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated]]
+  typedef std::function<bool(ptr_t)> sink_pred;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Predicate that accepts any type of sink.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated]]
+  const sink_pred is_any = [] ([[maybe_unused]]ptr_t sink) -> bool
+  {
+    adiar_debug(is_sink(sink), "Cannot examine non-sink");
+
+    return true;
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a sink contains the true value.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated]]
+  const sink_pred is_true = [] (ptr_t sink) -> bool
+  {
+    adiar_debug(is_sink(sink), "Cannot examine non-sink");
+
+    return value_of(sink);
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a sink contains the false value.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated]]
+  const sink_pred is_false = [] (ptr_t sink) -> bool
+  {
+    adiar_debug(is_sink(sink), "Cannot examine non-sink");
+
+    return !value_of(sink);
+  };
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Return whether <tt>file</tt> represents a sink which satisfies the
