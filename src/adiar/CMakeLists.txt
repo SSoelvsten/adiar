@@ -85,7 +85,6 @@ set(SOURCES
 
   # internal
   internal/count.cpp
-  internal/decision_diagram.cpp
   internal/intercut.cpp
   internal/memory.cpp
   internal/pred.cpp

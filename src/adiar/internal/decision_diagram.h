@@ -53,7 +53,7 @@ namespace adiar
 
     __decision_diagram(const arc_file &f) : _union(f) { }
 
-    __decision_diagram(const decision_diagram &dd); // decision_diagram.cpp
+    __decision_diagram(const decision_diagram &dd);
 
     ////////////////////////////////////////////////////////////////////////////
     // Accessors
@@ -150,6 +150,9 @@ namespace adiar
     }
   };
 
+  inline __decision_diagram::__decision_diagram(const decision_diagram &dd)
+    : _union(dd.file), negate(dd.negate) { };
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Check whether a given decision diagram is canonical, i.e. has the
   /// following stronger guarantees than the total ordering of nodes.
@@ -163,7 +166,10 @@ namespace adiar
   /// done in a single cheap linear scan rather than with an O(N log N)
   /// time-forwarding algorithm.
   //////////////////////////////////////////////////////////////////////////////
-  bool is_canonical(const decision_diagram &dd);
+  inline bool is_canonical(const decision_diagram &dd)
+  {
+    return dd.file_ptr() -> canonical;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Check whether a given decision diagram is sink-only and satisfies
@@ -171,7 +177,10 @@ namespace adiar
   ///
   /// \param file   The node_file to check its content
   //////////////////////////////////////////////////////////////////////////////
-  bool is_sink(const decision_diagram &dd);
+  inline bool is_sink(const decision_diagram &dd)
+  {
+    return is_sink(dd.file);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Obtain the sink value of a decision diagram (assuming
@@ -179,17 +188,26 @@ namespace adiar
   ///
   /// \param file The node_file to check its content
   //////////////////////////////////////////////////////////////////////////////
-  bool value_of(const decision_diagram &dd);
+  inline bool value_of(const decision_diagram &dd)
+  {
+    return dd.negate ^ value_of(dd.file);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
-  label_t min_label(const decision_diagram &dd);
+  inline label_t min_label(const decision_diagram &dd)
+  {
+    return min_label(dd.file);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the maximal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
-  label_t max_label(const decision_diagram &dd);
+  inline label_t max_label(const decision_diagram &dd)
+  {
+    return max_label(dd.file);
+  }
 }
 
 #endif // ADIAR_INTERNAL_DECISION_DIAGRAM_H

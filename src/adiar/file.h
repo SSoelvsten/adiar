@@ -476,14 +476,28 @@ namespace adiar
   ///
   /// \param file The node_file to check its content
   //////////////////////////////////////////////////////////////////////////////
-  bool is_sink(const node_file &file);
+  inline bool is_sink(const node_file &file)
+  {
+    // A node_file only contains a sink iff the number of arcs to a sink value
+    // in its meta information is exactly one.
+    return (file._file_ptr -> number_of_sinks[false] +
+            file._file_ptr -> number_of_sinks[true]) == 1;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Obtain the sink value of a node_file where 'is_sink' is true.
   ///
   /// \param file The node_file to check its content
   //////////////////////////////////////////////////////////////////////////////
-  bool value_of(const node_file &file);
+  inline bool value_of(const node_file &file)
+  {
+    adiar_debug(is_sink(file), "Must be a sink to extract its value");
+
+    // Since the sum of the number of sinks is exactly one, then we can use the
+    // value of the number of true sinks to indirectly derive the value of the
+    // sink.
+    return file._file_ptr -> number_of_sinks[true];
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The minimal label, i.e. the label of the root.
@@ -498,17 +512,27 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Number of nodes in the DAG.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t nodecount(const node_file &nodes);
+  inline uint64_t nodecount(const node_file &nodes)
+  {
+    return is_sink(nodes) ? 0u : nodes.size();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Number of nodes in the DAG.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t nodecount(const arc_file &arcs);
+  inline uint64_t nodecount(const arc_file &arcs)
+  {
+    // Every node is represented by two arcs
+    return arcs.size() / 2;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Number of levels (i.e. number of unique labels) in the DAG.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t varcount(const node_file &nodes);
+  inline uint64_t varcount(const node_file &nodes)
+  {
+    return nodes.meta_size();
+  }
 }
 
 #endif // ADIAR_FILE_H
