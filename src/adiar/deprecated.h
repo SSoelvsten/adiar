@@ -5,6 +5,8 @@
 
 namespace adiar
 {
+  // LCOV_EXCL_START
+	
   /* ======================= SORTING SIMPLE FILES ========================= */
 
   ////////////////////////////////////////////////////////////////////////////
@@ -85,6 +87,8 @@ namespace adiar
 
     return is_sink(n) && pred(n.uid);
   }
+
+  // LCOV_EXCL_STOP
 }
 
 #endif // ADIAR_DEPRECATED_H
