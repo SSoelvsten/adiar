@@ -90,26 +90,24 @@ namespace adiar
     const id_t max_id = set_size == 0              ? gt_sink_val    // gt_sink_val == 1
                       : set_size == 1              ? 2*gt_sink_val
                       : gt_sink_val && eq_sink_val ? set_size
-                      : gt_sink_val                ? set_size + 1   // ~eq_sink
-                      : eq_sink_val                ? set_size - 1   // ~gt_sink
-                                                   : set_size - 2   // ~eq_sink /\ ~gt_sink
+                      : gt_sink_val                ? set_size + 1u  // ~eq_sink
+                      : eq_sink_val                ? set_size - 1u  // ~gt_sink
+                                                   : set_size - 2u  // ~eq_sink /\ ~gt_sink
       ;
 
     const bool not_equal = lt_sink_val && !eq_sink_val && gt_sink_val;
 
     id_t prior_min_id = MAX_ID; // <-- dummy value to squelch the compiler
 
-    size_t processed_levels = 0;
+    size_t processed_levels = 0u;
     label_t prior_label = MAX_LABEL; // <-- dummy value to squelch the compiler
-
-    nf._file_ptr->max_1level_cut = 0;
 
     do {
       label_t curr_label = ls.pull();
-      size_t level_size = 0;
+      size_t level_size = 0u;
 
       // Start with the maximal number the accumulated value can be at
-      // up to this label.
+      // up to this level.
       const size_t remaining_levels = labels_size - processed_levels - 1; // exclusive of current level
       id_t curr_id = std::min(remaining_levels, max_id);
 
@@ -122,7 +120,7 @@ namespace adiar
         + (not_equal && processed_levels > 0)
         ;
 
-      const id_t min_id = curr_level_width < max_id ? max_id - curr_level_width : 0;
+      const id_t min_id = curr_level_width < max_id ? max_id - curr_level_width : 0u;
 
       do {
         ptr_t low;
@@ -146,8 +144,8 @@ namespace adiar
 
         ptr_t high;
         if (processed_levels == 0) {
-          high = curr_id >= set_size   ? gt_sink
-               : curr_id == set_size-1 ? eq_sink
+          high = curr_id >= set_size    ? gt_sink
+               : curr_id == set_size-1u ? eq_sink
                : lt_sink;
         } else if (curr_id == max_id) {
           high = gt_sink_val ? low
@@ -156,7 +154,7 @@ namespace adiar
         } else if (not_equal && processed_levels == 1 && curr_id == min_id){
           high = lt_sink; // <-- true sink
         } else {
-          high = create_node_ptr(prior_label, curr_id + 1);
+          high = create_node_ptr(prior_label, curr_id + 1u);
         }
 
         adiar_debug(high != create_sink_ptr(false), "Should not create a reducible node");
@@ -168,13 +166,15 @@ namespace adiar
 
       adiar_debug(level_size > 0, "Should have output a node");
       nw.unsafe_push(create_level_info(curr_label, level_size));
-      nf._file_ptr->max_1level_cut = std::max(nf._file_ptr->max_1level_cut, 2 * level_size);
 
       prior_label = curr_label;
       prior_min_id = curr_id + 1;
 
       processed_levels++;
     } while (ls.can_pull());
+
+    // Maximum 1-level cut
+    // TODO: ...
 
     return nf;
   }

@@ -138,7 +138,6 @@ namespace adiar
   template <typename T>
   struct FILE_CONSTANTS;
 
-
   //////////////////////////////////////////////////////////////////////////////
   /// A reduced Decision Diagram is given by a single sorted file by nodes.
   //////////////////////////////////////////////////////////////////////////////
@@ -149,12 +148,26 @@ namespace adiar
 
     struct stats
     {
+    private:
+      static constexpr size_t MAX_64u = std::numeric_limits<size_t>::max();
+
+    public:
       //////////////////////////////////////////////////////////////////////////
       /// \brief Boolean flag whether a set of nodes are well-formed with
       ///        respect to the stricter ordering required by the fast equality
       ///        check.
       //////////////////////////////////////////////////////////////////////////
       bool canonical = false;
+
+      ////////////////////////////////////////////////////////////////////////////
+      /// \brief An upper bound for the maximum one-level cut of the DAG (with
+      ///        or without arcs to each respective sink). First index is
+      ///        whether to include false sinks while the second is whether to
+      ///        include true sinks.
+      ///
+      /// TODO: one index (with an enum)
+      ////////////////////////////////////////////////////////////////////////////
+      size_t max_1level_cut[2][2] = { { MAX_64u, MAX_64u }, { MAX_64u, MAX_64u } };
     };
   };
 
@@ -172,8 +185,11 @@ namespace adiar
 
     struct stats
     {
-      // TODO: move max_1level_cut up here when node files need four different
-      //       types of cuts.
+      ////////////////////////////////////////////////////////////////////////////
+      /// \brief An upper bound for the maximum one-level cut of the DAG (not
+      ///        counting any arcs to sinks).
+      ////////////////////////////////////////////////////////////////////////////
+      size_t max_1level_cut = std::numeric_limits<size_t>::max();
     };
   };
 
@@ -203,11 +219,6 @@ namespace adiar
     typedef T elem_t;
 
   public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief An upper bound for the maximum one-level cut of the DAG.
-    ////////////////////////////////////////////////////////////////////////////
-    size_t max_1level_cut = std::numeric_limits<size_t>::max();
-
     ///////////////////////////////////////////////////////////////////////////
     /// \brief The number of false and true sinks in the file.
     ///        Index 0 gives the number of false sinks and index 1 gives the
