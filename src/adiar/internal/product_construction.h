@@ -11,6 +11,7 @@
 
 #include <adiar/bdd/bdd.h>
 
+#include <adiar/internal/build.h>
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/tuple.h>
@@ -147,12 +148,8 @@ namespace adiar
 
   inline node_file prod_sink(ptr_t t1, ptr_t t2, const bool_op &op)
   {
-    node_file sink_file;
-    node_writer sink_writer(sink_file);
-
-    sink_writer.push(create_sink(value_of(op(t1,t2))));
-
-    return sink_file;
+    // TODO: Abuse that op(t1,t2) already is a pointer.
+    return build_sink(value_of(op(t1,t2)));
   }
 
   inline bool prod_from_1(ptr_t t1, ptr_t t2)
@@ -303,7 +300,8 @@ namespace adiar
     // Process nodes in topological order of both BDDs
     while (!prod_pq_1.empty() || !prod_pq_2.empty()) {
       if (prod_pq_1.empty_level() && prod_pq_2.empty()) {
-        if (prod_policy::no_skip || out_id > 0) { // Only output level_info information on prior level, if output
+        if (prod_policy::no_skip || out_id > 0) {
+          // Only output level_info information on prior level, if output
           aw.unsafe_push(create_level_info(out_label, out_id));
         }
 

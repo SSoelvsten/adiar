@@ -14,8 +14,14 @@ namespace adiar
     node_file nf;
     node_writer nw(nf);
     nw.unsafe_push(create_sink(value));
-    nf._file_ptr->max_1level_cut = 0;
+
+    nf._file_ptr->max_1level_cut[false][false] = 0u;
+    nf._file_ptr->max_1level_cut[true][false] = !value;
+    nf._file_ptr->max_1level_cut[false][true] = value;
+    nf._file_ptr->max_1level_cut[true][true] = 1u;
+
     nf._file_ptr->number_of_sinks[value] = 1;
+
     return nf;
   }
 
@@ -30,7 +36,12 @@ namespace adiar
                                create_sink_ptr(true)));
 
     nw.unsafe_push(create_level_info(label,1u));
-    nf._file_ptr->max_1level_cut = 0;
+
+    nf._file_ptr->max_1level_cut[false][false] = 0u;
+    nf._file_ptr->max_1level_cut[true][false] = 1u;
+    nf._file_ptr->max_1level_cut[false][true] = 1u;
+    nf._file_ptr->max_1level_cut[true][true] = 2u;
+
     return nf;
   }
 
@@ -39,7 +50,8 @@ namespace adiar
     bool init_high = true>
   inline node_file build_chain(const label_file &labels)
     {
-      if (labels.size() == 0) {
+      const size_t number_of_levels = labels.size();
+      if (number_of_levels == 0) {
         return build_sink(on_empty);
       }
 
@@ -69,7 +81,30 @@ namespace adiar
         nw.unsafe_push(create_level_info(next_label,1u));
       }
 
-      nf._file_ptr->max_1level_cut = (link_low + link_high) * (labels.size() > 1);
+      // Compute 1-level cut sizes
+      const size_t internal_arcs = number_of_levels > 1 ? (link_low + link_high) : 0u;
+
+      nf._file_ptr->max_1level_cut[false][false] = internal_arcs;
+
+      const size_t false_arcs_pre_end =
+        (number_of_levels - 1) * ((!link_low && !init_low) + (!link_high && !init_high));
+
+      const size_t false_arcs_end = false_arcs_pre_end + !init_low + !init_high;
+
+      nf._file_ptr->max_1level_cut[true][false] = std::max(internal_arcs + false_arcs_pre_end,
+                                                           false_arcs_end);
+
+      const size_t true_arcs_pre_end  =
+        (number_of_levels - 1) * ((!link_low && init_low) + (!link_high && init_high));
+
+      const size_t true_arcs_end = true_arcs_pre_end + init_low + init_high;
+
+      nf._file_ptr->max_1level_cut[false][true] = std::max(internal_arcs + true_arcs_pre_end,
+                                                           true_arcs_end);
+
+      nf._file_ptr->max_1level_cut[true][true] = std::max(internal_arcs + false_arcs_pre_end + true_arcs_pre_end,
+                                                          false_arcs_end + true_arcs_end);
+
       return nf;
     }
 

@@ -55,20 +55,27 @@ namespace adiar
     adiar_assert(min_label <= max_label,
                  "The given min_label should be smaller than the given max_label");
 
-    ptr_t gt_sink = create_sink_ptr(false); // create_sink(comparator(threshold + 1, threshold));
-    ptr_t eq_sink = create_sink_ptr(true);  // create_sink(comparator(threshold, threshold));
-    ptr_t lt_sink = create_sink_ptr(false); // create_sink(comparator(threshold - 1, threshold));
+    const ptr_t gt_sink = create_sink_ptr(false);
+    const ptr_t eq_sink = create_sink_ptr(true);
+    const ptr_t lt_sink = create_sink_ptr(false);
 
-    if (max_label - min_label + 1 < threshold) {
+    const size_t vars = max_label - min_label + 1u;
+    if (vars < threshold) {
       return bdd_sink(false);
     }
 
+    if (vars == 1) {
+      adiar_debug(min_label == max_label,
+                  "If 'vars == 1' then we ought to have 'max_label - min_label == 0'");
+      return threshold == 1 ? bdd_ithvar(min_label) : bdd_nithvar(min_label);
+    }
+
+    // Construct parallelogram-shaped BDD where each node stores the number of
+    // variables up to said point has been set to true.
     node_file nf;
     node_writer nw(nf);
 
     label_t curr_label = max_label;
-
-    nf._file_ptr->max_1level_cut = 0;
 
     do {
       // Start with the maximal number the accumulated value can be at
@@ -103,8 +110,67 @@ namespace adiar
 
       } while (curr_id-- > min_id);
       nw.unsafe_push(create_level_info(curr_label, (max_id - min_id) + 1));
-      nf._file_ptr->max_1level_cut = std::max(nf._file_ptr->max_1level_cut, 2 * ((max_id - min_id) + 1));
+
     } while (curr_label-- > min_label);
+
+    // Maximum 1-level cut
+    const label_t first_lvl_with_lt = vars - threshold; // 0-indexed
+    const label_t first_lvl_with_gt = threshold;        // 0-indexed
+
+    // A single gt_sink is created on each level after having seen threshold+1
+    // many levels (including said level).
+    const size_t gt_sinks = vars - first_lvl_with_gt;
+
+    // There are two nodes (only one if the threshold is 0 or vars) at the very
+    // bottom that can reach the eq_sink.
+    const size_t eq_sinks = 2u - (threshold == 0u || threshold == vars);
+
+    // An lt_sink is made once on each level for the node that is i levels from
+    // the end but still needs threshold-i+1 many variable to be set to true.
+    const size_t lt_sinks = threshold;
+
+    const label_t shallowest_widest_lvl = std::min(first_lvl_with_lt, first_lvl_with_gt);
+
+    const size_t internal_cut_below_shallowest_lvl = 2u * (shallowest_widest_lvl + 1u)
+      // Do not count the one gt_sink (if any)
+      - (first_lvl_with_gt == shallowest_widest_lvl)
+      // Do not count the eq_sinks (if any)
+      - (vars == shallowest_widest_lvl + 1u ? eq_sinks : 0u)
+      // Do not count the lt_sink (if any)
+      - (first_lvl_with_lt == shallowest_widest_lvl);
+
+    const label_t deepest_widest_lvl = std::max(first_lvl_with_lt, first_lvl_with_gt);
+
+    const size_t internal_cut_below_deepest_lvl = 2u * (threshold + 1u)
+      // Do not count nodes that do not exist due to shortcutting to lt_sink.
+      - 2u * (deepest_widest_lvl - first_lvl_with_lt)
+      // Do not count the one gt_sink (if any)
+      - (gt_sinks > 0)
+      // Do not count the eq_sinks (if any)
+      - (vars <= deepest_widest_lvl+1u ? eq_sinks : 0u)
+      // Do not count the one lt_sink (if any)
+      - (lt_sinks > 0);
+
+    const label_t lvls_after_widest = vars - deepest_widest_lvl - (deepest_widest_lvl < vars);
+
+    nf._file_ptr->max_1level_cut[false][false] = std::max(internal_cut_below_shallowest_lvl,
+                                                          internal_cut_below_deepest_lvl);
+
+    // The maximum cut with false sinks is at the deepes widest level. Beyond
+    // it, a node (with two children) is removed, which outweighs the gt_sink
+    // and possible lt_sink added.
+    nf._file_ptr->max_1level_cut[true][false] =
+      std::max(internal_cut_below_deepest_lvl + lt_sinks + gt_sinks - 2u * lvls_after_widest,
+               lt_sinks + gt_sinks);
+
+    // Compare the cut at deepest widest level and below the last level.
+    nf._file_ptr->max_1level_cut[false][true] = std::max(nf._file_ptr->max_1level_cut[false][false],
+                                                         eq_sinks);
+
+    // Counting both false and true sinks is only different from counting false
+    // sinks, if the number of eq_sinks outweighs the number of internal nodes.
+    nf._file_ptr->max_1level_cut[true][true] = std::max(nf._file_ptr->max_1level_cut[true][false],
+                                                        lt_sinks + eq_sinks + gt_sinks);
 
     return nf;
   }

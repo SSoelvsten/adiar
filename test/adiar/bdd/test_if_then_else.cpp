@@ -710,9 +710,9 @@ go_bandit([]() {
     describe("Inputs that require the cross-product of all three BDDs", [&]() {
       it("should compute x0 ? ~x1 : x1", [&]() {
         /*
-                      (x0, ~x1, x1)             ---- x0
+                       (x0, ~x1, x1)             ---- x0
                         /         \
-                (F, Nil, x1)  (T, ~x1, Nil)     ---- x1
+                 (F, Nil, x1)  (T, ~x1, Nil)     ---- x1
                   /        \    /         \
                   F        T    T         F
 
@@ -765,8 +765,8 @@ go_bandit([]() {
       it("should compute x1 ? ~x0 : x0", [&]() {
         /*
                       (x1, ~x0, x0)          ---- x0
-                        /         \
-                  (x1, T, F)  (x1, F, T)      ---- x1
+                       /         \
+                 (x1, T, F)  (x1, F, T)      ---- x1
                   /      \    /      \
                   F      T    T      F
 
@@ -818,9 +818,9 @@ go_bandit([]() {
 
       it("should compute x1 ? x0 : ~x0", [&]() {
         /*
-                      (x1, x0, ~x0)         ---- x0
+                       (x1, x0, ~x0)         ---- x0
                         /         \
-                (x1, F, T)  (x1, T, F)      ---- x1
+                 (x1, F, T)  (x1, T, F)      ---- x1
                   /      \    /       \
                   T      F    F       T
 
@@ -883,16 +883,16 @@ go_bandit([]() {
 
         /*
                                   ((2,0),(0,0),(0,0))                 ---- x0
-                                  /               \
+                                   /               \
                         ((2,0),(1,0),(1,1))  ((2,0),(1,1),(1,0))      ---- x1
-                              /   \              /      \
+                               /   \              /      \
                               /     \             \ _____/
                               |      \ ____________X
                               |       X________     \
                               |      /         \     \
-                            ((2,0),F,T)      ((2,0),T,F)             ---- x2
-                                / \               / \
-                                F T               T F
+                             ((2,0),F,T)      ((2,0),T,F)             ---- x2
+                                 / \               / \
+                                 F T               T F
         */
         __bdd out = bdd_ite(bdd_not(bdd_x2), bdd_x0_xor_x1, bdd_x0_xnor_x1);
 
@@ -977,7 +977,7 @@ go_bandit([]() {
 
         /*
                                           (1,1,1)                          ---- x0
-                              ____________/   \___________
+                               ____________/   \___________
                               /                            \
                           (1,1,2)                      (1,1,3)            ---- x1
                         ____/   \____                ____/   \____
@@ -986,7 +986,7 @@ go_bandit([]() {
                     /   \         /   \         /   \          /   \
                     F    \       /     \       /     \        /    T
                           \     /       \     /       \_______\
-                            \___/________ \ __/                 \
+                           \___/________ \ __/                 \
                             \             \                     \
                           (1,F,T)       (1,T,7)              (1,F,7)      ---- x3
                             /   \         /   \                /   \
@@ -1096,14 +1096,14 @@ go_bandit([]() {
         /*
                                       (1,1,1)               ---- x0
                                   ______/ \______
-                                  /               \
-                              (2,2,2)              \         ---- x1
+                                 /               \
+                             (2,2,2)              \         ---- x1
                           ____/   \____            \
                           /             \            \
                       (3,4,5)        (4,5,3)     (5,3,4)    ---- x2
                         \ /           /   \       /   \
-                          X            T   |       F   F
-                        _/ \_              |
+                         X            T   |       F   F
+                       _/ \_              |
                       /     \             |
                   (T,6,_) (F,_,6)      (6,7,F)              ---- x3
                     /   \   /   \        /   \
@@ -1195,8 +1195,8 @@ go_bandit([]() {
       it("should compute bdd_6 ? x0^x2 : bdd_not_6", [&]() {
         /*                      bdd_x0_xor_x2
                       _1_       ---- x1
-                    /   \
-                    2   3      ---- x2
+                     /   \
+                     2   3      ---- x2
                     / \ / \
                     F T T F
         */
@@ -1204,7 +1204,7 @@ go_bandit([]() {
         /*
                                   (1,1,1)               ---- x0
                                     /   \
-                                    T  (2,2,3)           ---- x1
+                                   T  (2,2,3)           ---- x1
                                         /   \
                                   (3,3,3) (4,4,3)       ---- x2
                                     /   \   /   \
@@ -1270,14 +1270,14 @@ go_bandit([]() {
       it("should compute bdd_not_6 ? bdd_6 : x0^x2", [&]() {
         /*                      bdd_x0_xor_x2
                       _1_       ---- x1
-                    /   \
-                    2   3      ---- x2
+                     /   \
+                     2   3      ---- x2
                     / \ / \
                     F T T F
         */
 
         /*
-                                  (1,1,1)               ---- x0
+                                   (1,1,1)               ---- x0
                                     /   \
                                     F  (2,3,2)           ---- x1
                                         /   \
@@ -1345,8 +1345,8 @@ go_bandit([]() {
         node_file bdd_x0_xnor_x2;
         /*
                                   _1_
-                                /   \
-                                3   2
+                                 /   \
+                                 3   2
                                 / \ / \
                                 T F F T
         */
@@ -1358,8 +1358,8 @@ go_bandit([]() {
         }
 
         /*
-                                  (1,1,1)                   ---- x0
-                            _______/   \________
+                                   (1,1,1)                   ---- x0
+                             _______/   \________
                             /                    \
                         (3,1,2)                (2,1,3)       ---- x1
                         /   \                  /   \
@@ -1367,7 +1367,7 @@ go_bandit([]() {
                     /   \   /   \          /   \   /   \
                     T   T   T    \         T   F  /    F
                                   \______   _____/
-                                          \ /
+                                         \ /
                                         (F,_,7)              ---- x3
                                         /   \
                                         F   T
@@ -1461,8 +1461,8 @@ go_bandit([]() {
         node_file bdd_x1_xor_x2_2;
         /*
                               _1_      ---- x1
-                            /   \
-                            3   2     ---- x2
+                             /   \
+                             3   2     ---- x2
                             / \ / \
                             F T T F
         */
@@ -1475,9 +1475,9 @@ go_bandit([]() {
         }
 
         /*
-                                  (1,1,1)                   ---- x0
+                                   (1,1,1)                   ---- x0
                               ______/   \_____
-                            /                \
+                             /                \
                         (1,2,2)             (1,3,3)          ---- x1
                         /   \               /   \
                     (3,6,4) (2,5,5)     (3,5,6) (2,4,7)      ---- x2  Order of resolvement:
@@ -1574,11 +1574,11 @@ go_bandit([]() {
       it("should compute (~x0 & ~x1 & x2) ? bdd_2 : bdd_4", [&]() {
         node_file bdd_if;
         /*
-                                1       ---- x0
-                              / \
-                              2 F      ---- x1
-                              / \
-                              3 F       ---- x2
+                              1       ---- x0
+                             / \
+                             2 F      ---- x1
+                             / \
+                             3 F       ---- x2
                             / \
                             F T
         */
@@ -1592,12 +1592,12 @@ go_bandit([]() {
 
         /*
                                         (1,1,1)                  ---- x0
-                                  ________/   \
+                                 ________/   \
                                 /             \
                             (2,2,2)            \                 ---- x1
                             /     \             \
                       (3,4,4)     (F,_,5)     (F,_,3)            ---- x2
-                        /   \       /   \       /   \
+                       /   \       /   \       /   \
                   (F,_,6) (T,8,_) F (F,_,7)    T   F             ---- x3
                     /   \   /   \     /   \
                     T   F   T   F     F   T
@@ -1686,12 +1686,12 @@ go_bandit([]() {
         node_file bdd_if;
         /*
                                 1        ---- x0
-                                / \
-                                2 T       ---- x1
+                               / \
+                               2 T       ---- x1
                               / \
                               F 3        ---- x2
-                                / \
-                                F T
+                               / \
+                               F T
         */
         {
           node_writer nw_if(bdd_if);
@@ -1704,10 +1704,10 @@ go_bandit([]() {
         /*
                                       (1,1,1)        ---- x0
                               _________/   \
-                              /             |
-                          (2,2,2)           |         ---- x1
+                             /             |
+                         (2,2,2)           |         ---- x1
                           /   \            |
-                      (F,_,3) (3,4,4)       |         ---- x2
+                     (F,_,3) (3,4,4)       |         ---- x2
                       /   \   /   \________|
                       F  (F,_,5)        (T,4,_)      ---- x3
                           /   \          /   \
@@ -1781,13 +1781,13 @@ go_bandit([]() {
       it("should compute bdd_6 ? bdd_4 : bdd_2", [&]() {
         /*
                                         (1,1,1)                           ---- x0
-                                __________/   \___________
+                               __________/   \___________
                               /                          \
-                            (F,_,2)                    (2,3,3)             ---- x1
+                           (F,_,2)                    (2,3,3)             ---- x1
                             /     \                     /   \
                       (F,_,4)   (F,_,5)           (3,3,6) (4,3,7)         ---- x2
                         /   \     /   \             /   \   /   \
-                        F (F,_,8) F (F,_,9)         T   F   T   T          ---- x3
+                       F (F,_,8) F (F,_,9)         T   F   T   T          ---- x3
                           /   \     /   \
                           T   F     F   T
         */
@@ -1877,11 +1877,11 @@ go_bandit([]() {
       it("should merely zip disjunct levels if possible [1]", [&]() {
         node_file bdd_x1_and_x3;
         /*
-                          1      ---- x1
+                           1      ---- x1
                           / \
                           F 2     ---- x3
-                          / \
-                          T F
+                           / \
+                           T F
         */
 
         {
@@ -1897,23 +1897,23 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(3,42,
-                                                      sink_F,
-                                                      sink_T)));
+                                                       sink_F,
+                                                       sink_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(2,0,
-                                                      sink_F,
-                                                      sink_T)));
+                                                       sink_F,
+                                                       sink_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(1,0,
-                                                      sink_F,
-                                                      create_node_ptr(3,42))));
+                                                       sink_F,
+                                                       create_node_ptr(3,42))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(0,0,
-                                                      create_node_ptr(1,0),
-                                                      create_node_ptr(2,0))));
+                                                       create_node_ptr(1,0),
+                                                       create_node_ptr(2,0))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1933,7 +1933,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][false], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][false], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][true], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][true], Is().GreaterThanOrEqualTo(4u));
 
         AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
         AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
@@ -1942,15 +1945,15 @@ go_bandit([]() {
       it("should merely zip disjunct levels if possible [2]", [&]() {
         node_file bdd_then;
         /*
-                          _1_      ---- x2
+                           _1_      ---- x2
                           /   \
                           2   3     ---- x3
-                        / \ / \
-                        T 4 T 5    ---- x4
+                         / \ / \
+                         T 4 T 5    ---- x4
                           / \ / \
                           F T T 6   ---- x6
-                              / \
-                              T F
+                               / \
+                               T F
         */
 
         {
@@ -1966,8 +1969,8 @@ go_bandit([]() {
         node_file bdd_else;
         /*
                           _1_      ---- x5
-                          /   \
-                          2   3     ---- x8
+                         /   \
+                         2   3     ---- x8
                         / \ / \
                         T F F T
         */
@@ -1987,63 +1990,63 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(8,1,
-                                                      sink_T,
-                                                      sink_F)));
+                                                       sink_T,
+                                                       sink_F)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(8,0,
-                                                      sink_F,
-                                                      sink_T)));
+                                                       sink_F,
+                                                       sink_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(6,1,
-                                                      sink_T,
-                                                      sink_F)));
+                                                       sink_T,
+                                                       sink_F)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(5,0,
-                                                      create_node_ptr(8,0),
-                                                      create_node_ptr(8,1))));
+                                                       create_node_ptr(8,0),
+                                                       create_node_ptr(8,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4,1,
-                                                      sink_T,
-                                                      create_node_ptr(6,1))));
+                                                       sink_T,
+                                                       create_node_ptr(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4,0,
-                                                      sink_F,
-                                                      sink_T)));
+                                                       sink_F,
+                                                       sink_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(3,2,
-                                                      sink_T,
-                                                      create_node_ptr(4,1))));
+                                                       sink_T,
+                                                       create_node_ptr(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(3,0,
-                                                      sink_T,
-                                                      create_node_ptr(4,0))));
+                                                       sink_T,
+                                                       create_node_ptr(4,0))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(2,0,
-                                                      create_node_ptr(3,0),
-                                                      create_node_ptr(3,2))));
+                                                       create_node_ptr(3,0),
+                                                       create_node_ptr(3,2))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(1,1,
-                                                      create_node_ptr(5,0),
-                                                      create_node_ptr(2,0))));
+                                                       create_node_ptr(5,0),
+                                                       create_node_ptr(2,0))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(1,0,
-                                                      create_node_ptr(2,0),
-                                                      create_node_ptr(5,0))));
+                                                       create_node_ptr(2,0),
+                                                       create_node_ptr(5,0))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(0,0,
-                                                      create_node_ptr(1,0),
-                                                      create_node_ptr(1,1))));
+                                                       create_node_ptr(1,0),
+                                                       create_node_ptr(1,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -2075,7 +2078,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][false], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][false], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][true], Is().GreaterThanOrEqualTo(8u));
+        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][true], Is().GreaterThanOrEqualTo(8u));
 
         AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(4u));
         AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(7u));
