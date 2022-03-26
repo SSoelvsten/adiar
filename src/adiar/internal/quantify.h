@@ -333,8 +333,11 @@ namespace adiar
     constexpr size_t data_structures_in_pq_1 =
       quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
 
+    constexpr size_t data_structures_in_pq_2 =
+      quantify_priority_queue_2_t<internal_priority_queue>::DATA_STRUCTURES;
+
     const size_t pq_1_internal_memory =
-      (aux_available_memory / (data_structures_in_pq_1 + 1)) * data_structures_in_pq_1;
+      (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
 
     const size_t pq_1_memory_fits =
       quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);

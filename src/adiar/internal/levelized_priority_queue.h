@@ -226,7 +226,8 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Total number of data structures in Levelized Priority Queue.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr size_t DATA_STRUCTURES = BUCKETS + 1;
+    static constexpr size_t DATA_STRUCTURES =
+      BUCKETS * sorter_t::DATA_STRUCTURES + priority_queue_t::DATA_STRUCTURES;
 
   public:
     static constexpr tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
