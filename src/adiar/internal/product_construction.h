@@ -490,11 +490,11 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    constexpr size_t data_structures_in_lpq =
-      prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+    constexpr size_t data_structures_in_pq_1 =
+      prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
-      (aux_available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq;
+      (aux_available_memory / (data_structures_in_pq_1 + 1)) * data_structures_in_pq_1;
 
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 

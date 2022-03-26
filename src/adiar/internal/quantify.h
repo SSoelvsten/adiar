@@ -331,7 +331,7 @@ namespace adiar
     const size_t size_bound = __quantify_size_based_upper_bound<quantify_policy>(in);
 
     constexpr size_t data_structures_in_pq_1 =
-      quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+      quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + 1)) * data_structures_in_pq_1;
