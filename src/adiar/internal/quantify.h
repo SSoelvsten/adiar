@@ -138,16 +138,31 @@ namespace adiar
   }
 
   template<typename quantify_policy, typename pq_1_t, typename pq_2_t>
-  typename quantify_policy::unreduced_t
-  __quantify(const typename quantify_policy::reduced_t &in, node_stream<> &in_nodes, node_t &v,
-             const label_t &label, const bool_op &op,
-             arc_file &out_arcs, arc_writer &aw,
-             const tpie::memory_size_type available_memory_lpq,
-             const tpie::memory_size_type available_memory_pq,
-             const size_t max_pq_size)
+  typename quantify_policy::unreduced_t __quantify(const typename quantify_policy::reduced_t &in,
+                                                   const label_t &label,
+                                                   const bool_op &op,
+                                                   const size_t pq_1_memory,
+                                                   const size_t pq_2_memory,
+                                                   const size_t max_pq_size)
   {
-    pq_1_t quantify_pq_1({in}, available_memory_lpq, max_pq_size);
-    pq_2_t quantify_pq_2(available_memory_pq);
+    // Check for trivial sink-only return on shortcutting the root
+    node_stream<> in_nodes(in);
+    node_t v = in_nodes.pull();
+
+    if (label_of(v) == label && (is_sink(v.low) || is_sink(v.high))) {
+      typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_sink_root(v, op);
+
+      if (!maybe_resolved.empty()) {
+        return maybe_resolved;
+      }
+    }
+
+    // Set-up for arc_file output
+    arc_file out_arcs;
+    arc_writer aw(out_arcs);
+
+    pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_size);
+    pq_2_t quantify_pq_2(pq_2_memory);
 
     label_t out_label = label_of(v.uid);
     id_t out_id = 0;
@@ -304,54 +319,46 @@ namespace adiar
       return in;
     }
 
-    // Check for trivial sink-only return on shortcutting the root
-    node_stream<> in_nodes(in);
-    node_t v = in_nodes.pull();
-
-    if (label_of(v) == label && (is_sink(v.low) || is_sink(v.high))) {
-      typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_sink_root(v, op);
-
-      if (!maybe_resolved.empty()) {
-        return maybe_resolved;
-      }
-    }
-
-    // Set-up for arc_file output
-    arc_file out_arcs;
-    arc_writer aw(out_arcs);
-
     // Derive an upper bound on the size of auxiliary data structures and check
     // whether we can run them with a faster internal memory variant.
-    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    const size_t aux_available_memory = tpie::get_memory_manager().available()
+      // Input stream
+      - node_stream<>::memory_usage()
+      // Output stream
+      - arc_writer::memory_usage();
+
     const size_t size_bound = __quantify_size_based_upper_bound<quantify_policy>(in);
 
-    constexpr size_t data_structures_in_lpq =
+    constexpr size_t data_structures_in_pq_1 =
       quantify_priority_queue_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
 
-    const tpie::memory_size_type lpq_memory_fits =
-      quantify_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits
-        ((available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq);
+    const size_t pq_1_internal_memory =
+      (aux_available_memory / (data_structures_in_pq_1 + 1)) * data_structures_in_pq_1;
 
-    if(size_bound <= lpq_memory_fits) {
+    const size_t pq_1_memory_fits =
+      quantify_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
+
+    if(size_bound <= pq_1_memory_fits) {
 #ifdef ADIAR_STATS
       stats_quantify.lpq_internal++;
 #endif
+      const size_t pq_2_memory = aux_available_memory - pq_1_internal_memory;
+
       return __quantify<quantify_policy,
                         quantify_priority_queue_t<internal_sorter, internal_priority_queue>,
                         quantify_data_priority_queue_t>
-        (in, in_nodes, v, label, op, out_arcs, aw,
-         (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
-         available_memory / (data_structures_in_lpq + 1), size_bound);
+        (in, label, op, pq_1_internal_memory, pq_2_memory, size_bound);
     } else {
 #ifdef ADIAR_STATS
       stats_quantify.lpq_external++;
 #endif
+      const size_t pq_1_memory = aux_available_memory / 2;
+      const size_t pq_2_memory = pq_1_memory;
+
       return __quantify<quantify_policy,
                         quantify_priority_queue_t<external_sorter, external_priority_queue>,
                         quantify_data_priority_queue_t>
-        (in, in_nodes, v, label, op, out_arcs, aw,
-        available_memory / 2,
-        available_memory / 2, size_bound);
+        (in, label, op, pq_1_memory, pq_2_memory, size_bound);
     }
   }
 }
