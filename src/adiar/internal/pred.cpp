@@ -30,6 +30,11 @@ namespace adiar
       return in_1.size();
     }
 
+    static constexpr size_t memory_usage()
+    {
+      return level_info_stream<node_t>::memory_usage();
+    }
+
   public:
     input_bound_levels(const node_file &f1, const node_file &/*f2*/)
       : in_meta_1(f1),

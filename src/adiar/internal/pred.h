@@ -48,12 +48,29 @@ namespace adiar
   comparison_data_priority_queue_t;
 
   template<typename comp_policy, typename pq_1_t, typename pq_2_t>
-  bool __comparison_check(const node_file &f1, node_stream<> &in_nodes_1, node_t &v1,
-                          const node_file &f2, node_stream<> &in_nodes_2, node_t &v2,
+  bool __comparison_check(const node_file &f1, const node_file &f2,
+                          const bool negate1, const bool negate2,
                           const tpie::memory_size_type available_memory_lpq,
                           const tpie::memory_size_type available_memory_pq,
                           const size_t max_pq_size)
   {
+    node_stream<> in_nodes_1(f1, negate1);
+    node_stream<> in_nodes_2(f2, negate2);
+
+    node_t v1 = in_nodes_1.pull();
+    node_t v2 = in_nodes_2.pull();
+
+    if (is_sink(v1) || is_sink(v2)) {
+      bool ret_value;
+      if (comp_policy::resolve_sinks(v1, v2, ret_value)) {
+        return ret_value;
+      }
+    }
+
+    if (is_sink(v1.low) && is_sink(v1.high) && is_sink(v2.low) && is_sink(v2.high)) {
+      return comp_policy::resolve_singletons(v1, v2);
+    }
+
     // Set up priority queue for recursion
     pq_1_t comparison_pq_1({f1, f2}, available_memory_lpq, max_pq_size);
 
@@ -179,56 +196,47 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename comp_policy>
   bool comparison_check(const node_file &f1, const node_file &f2,
-                        bool negate1, bool negate2)
+                        const bool negate1, const bool negate2)
   {
-    node_stream<> in_nodes_1(f1, negate1);
-    node_stream<> in_nodes_2(f2, negate2);
-
-    node_t v1 = in_nodes_1.pull();
-    node_t v2 = in_nodes_2.pull();
-
-    if (is_sink(v1) || is_sink(v2)) {
-      bool ret_value;
-      if (comp_policy::resolve_sinks(v1, v2, ret_value)) {
-        return ret_value;
-      }
-    }
-
-    if (is_sink(v1.low) && is_sink(v1.high) && is_sink(v2.low) && is_sink(v2.high)) {
-      return comp_policy::resolve_singletons(v1, v2);
-    }
-
     // Derive an upper bound on the size of auxiliary data structures and check
     // whether we can run them with a faster internal memory variant.
-    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-    const size_t size_bound = comp_policy::level_check_t::__comparison_size_based_upper_bound(f1, f2);
+    const size_t aux_available_memory = tpie::get_memory_manager().available()
+      // Input
+      - 2*node_stream<>::memory_usage()
+      // Level checker policy
+      - comp_policy::level_check_t::memory_usage();
 
     constexpr size_t data_structures_in_lpq =
       comparison_priority_queue_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
 
-    const tpie::memory_size_type lpq_memory_fits =
-      comparison_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits
-        ((available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq);
+    const size_t pq_1_internal_memory = (aux_available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq;
 
-    if(size_bound <= lpq_memory_fits) {
+    const size_t size_bound = comp_policy::level_check_t::__comparison_size_based_upper_bound(f1, f2);
+
+    const size_t pq_1_memory_fits =
+      comparison_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
+
+    if(size_bound <= pq_1_memory_fits) {
 #ifdef ADIAR_STATS
       stats_equality.lpq_internal++;
 #endif
+      const size_t pq_2_memory = aux_available_memory - pq_1_internal_memory;
+
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_t<internal_sorter, internal_priority_queue>,
                                 comparison_data_priority_queue_t>
-        (f1, in_nodes_1, v1, f2, in_nodes_2, v2,
-         (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
-         available_memory / (data_structures_in_lpq + 1), size_bound);
+        (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_memory, size_bound);
     } else {
 #ifdef ADIAR_STATS
       stats_equality.lpq_external++;
 #endif
+      const size_t pq_1_memory = aux_available_memory / 2;
+      const size_t pq_2_memory = pq_1_memory;
+
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_t<external_sorter, external_priority_queue>,
                                 comparison_data_priority_queue_t>
-        (f1, in_nodes_1, v1, f2, in_nodes_2, v2,
-         available_memory / 2, available_memory / 2, size_bound);
+        (f1, f2, negate1, negate2, pq_1_memory, pq_2_memory, size_bound);
     }
   }
 

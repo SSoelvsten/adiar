@@ -30,6 +30,11 @@ namespace adiar {
       }
     }
 
+    static constexpr size_t memory_usage()
+    {
+      return 0u;
+    }
+
   public:
     ignore_levels(const node_file &/*f1*/, const node_file &/*f2*/)
     { /* do nothing */ }
