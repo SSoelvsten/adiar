@@ -355,14 +355,14 @@ namespace adiar
     const size_t size_bound_1 = __intercut_size_based_upper_bound_1<intercut_policy>(dd);
     const size_t size_bound_2 = __intercut_size_based_upper_bound_2<intercut_policy>(dd);
 
-    constexpr size_t data_structures_in_lpq_1 =
-      intercut_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+    constexpr size_t data_structures_in_pq_1 =
+      intercut_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
 
-    constexpr size_t data_structures_in_lpq_2 =
-      intercut_priority_queue_2_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+    constexpr size_t data_structures_in_pq_2 =
+      intercut_priority_queue_2_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
-      (aux_available_memory / (data_structures_in_lpq_1 + data_structures_in_lpq_2)) * data_structures_in_lpq_1;
+      (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
 
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 

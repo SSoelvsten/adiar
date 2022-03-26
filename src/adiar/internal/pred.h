@@ -206,10 +206,10 @@ namespace adiar
       // Level checker policy
       - comp_policy::level_check_t::memory_usage();
 
-    constexpr size_t data_structures_in_lpq =
-      comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+    constexpr size_t data_structures_in_pq_1 =
+      comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
 
-    const size_t pq_1_internal_memory = (aux_available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq;
+    const size_t pq_1_internal_memory = (aux_available_memory / (data_structures_in_pq_1 + 1)) * data_structures_in_pq_1;
 
     const size_t size_bound = comp_policy::level_check_t::__comparison_size_based_upper_bound(f1, f2);
 

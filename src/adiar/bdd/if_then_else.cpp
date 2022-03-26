@@ -551,11 +551,11 @@ namespace adiar
 
     const size_t size_bound = __ite_size_based_upper_bound(bdd_if, bdd_then, bdd_else);
 
-    constexpr size_t data_structures_in_lpq =
-      ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+    constexpr size_t data_structures_in_pq_1 =
+      ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
-      (aux_available_memory / (data_structures_in_lpq + 2)) * data_structures_in_lpq;
+      (aux_available_memory / (data_structures_in_pq_1 + 2)) * data_structures_in_pq_1;
 
     const size_t pq_1_memory_fits =
       ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
