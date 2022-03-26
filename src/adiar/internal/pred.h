@@ -39,19 +39,19 @@ namespace adiar
   // Data structures
   template<template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
-  using comparison_priority_queue_t =
+  using comparison_priority_queue_1_t =
     levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt,
                                   sorter_template, priority_queue_template,
                                   2>;
 
-  typedef tpie::priority_queue<tuple_data, tuple_snd_lt>
-  comparison_data_priority_queue_t;
+  template<template<typename, typename> typename priority_queue_template>
+  using comparison_priority_queue_2_t =  priority_queue_template<tuple_data, tuple_snd_lt>;
 
   template<typename comp_policy, typename pq_1_t, typename pq_2_t>
   bool __comparison_check(const node_file &f1, const node_file &f2,
                           const bool negate1, const bool negate2,
-                          const tpie::memory_size_type available_memory_lpq,
-                          const tpie::memory_size_type available_memory_pq,
+                          const tpie::memory_size_type pq_1_memory,
+                          const tpie::memory_size_type pq_2_memory,
                           const size_t max_pq_size)
   {
     node_stream<> in_nodes_1(f1, negate1);
@@ -72,7 +72,7 @@ namespace adiar
     }
 
     // Set up priority queue for recursion
-    pq_1_t comparison_pq_1({f1, f2}, available_memory_lpq, max_pq_size);
+    pq_1_t comparison_pq_1({f1, f2}, pq_1_memory, max_pq_size);
 
     // Check for violation on root children, or 'recurse' otherwise
     label_t level = label_of(fst(v1.uid, v2.uid));
@@ -91,7 +91,7 @@ namespace adiar
     // Initialise level checking
     typename comp_policy::level_check_t level_checker(f1,f2);
 
-    pq_2_t comparison_pq_2(available_memory_pq);
+    pq_2_t comparison_pq_2(pq_2_memory, max_pq_size);
 
     while (!comparison_pq_1.empty() || !comparison_pq_2.empty()) {
       if (comparison_pq_1.empty_level() && comparison_pq_2.empty()) {
@@ -207,14 +207,14 @@ namespace adiar
       - comp_policy::level_check_t::memory_usage();
 
     constexpr size_t data_structures_in_lpq =
-      comparison_priority_queue_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+      comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
 
     const size_t pq_1_internal_memory = (aux_available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq;
 
     const size_t size_bound = comp_policy::level_check_t::__comparison_size_based_upper_bound(f1, f2);
 
     const size_t pq_1_memory_fits =
-      comparison_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
+      comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
     if(size_bound <= pq_1_memory_fits) {
 #ifdef ADIAR_STATS
@@ -223,8 +223,8 @@ namespace adiar
       const size_t pq_2_memory = aux_available_memory - pq_1_internal_memory;
 
       return __comparison_check<comp_policy,
-                                comparison_priority_queue_t<internal_sorter, internal_priority_queue>,
-                                comparison_data_priority_queue_t>
+                                comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>,
+                                comparison_priority_queue_2_t<internal_priority_queue>>
         (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_memory, size_bound);
     } else {
 #ifdef ADIAR_STATS
@@ -234,8 +234,8 @@ namespace adiar
       const size_t pq_2_memory = pq_1_memory;
 
       return __comparison_check<comp_policy,
-                                comparison_priority_queue_t<external_sorter, external_priority_queue>,
-                                comparison_data_priority_queue_t>
+                                comparison_priority_queue_1_t<external_sorter, external_priority_queue>,
+                                comparison_priority_queue_2_t<external_priority_queue>>
         (f1, f2, negate1, negate2, pq_1_memory, pq_2_memory, size_bound);
     }
   }
