@@ -70,8 +70,8 @@ namespace adiar
   typedef triple_snd_lt ite_triple_2_lt;
 #endif
 
-  typedef tpie::priority_queue<ite_triple_2, ite_triple_2_lt>
-  ite_priority_queue_2_t;
+  template<template<typename, typename> typename priority_queue_template>
+  using ite_priority_queue_2_t = priority_queue_template<ite_triple_2, ite_triple_2_lt>;
 
   struct ite_triple_3 : ite_triple_2
   {
@@ -92,8 +92,8 @@ namespace adiar
   typedef triple_trd_lt ite_triple_3_lt;
 #endif
 
-  typedef tpie::priority_queue<ite_triple_3, ite_triple_3_lt>
-  ite_priority_queue_3_t;
+  template<template<typename, typename> typename priority_queue_template>
+  using ite_priority_queue_3_t = priority_queue_template<ite_triple_3, ite_triple_3_lt>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -241,8 +241,8 @@ namespace adiar
     arc_writer aw(out_arcs);
 
     pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, pq_1_memory, max_pq_size);
-    pq_2_t ite_pq_2(pq_2_memory);
-    pq_3_t ite_pq_3(pq_3_memory);
+    pq_2_t ite_pq_2(pq_2_memory, max_pq_size);
+    pq_3_t ite_pq_3(pq_3_memory, max_pq_size);
 
     // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v_if.uid, v_then.uid, v_else.uid));
@@ -568,7 +568,8 @@ namespace adiar
       const size_t pq_3_memory = pq_2_memory;
 
       return __bdd_ite<ite_priority_queue_1_t<internal_sorter, internal_priority_queue>,
-                       ite_priority_queue_2_t, ite_priority_queue_3_t>
+                       ite_priority_queue_2_t<internal_priority_queue>,
+                       ite_priority_queue_3_t<internal_priority_queue>>
         (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_memory, pq_3_memory, size_bound);
     } else {
 #ifdef ADIAR_STATS
@@ -579,7 +580,8 @@ namespace adiar
       const size_t pq_3_memory = pq_1_memory;
 
       return __bdd_ite<ite_priority_queue_1_t<external_sorter, external_priority_queue>,
-                       ite_priority_queue_2_t, ite_priority_queue_3_t>
+                       ite_priority_queue_2_t<external_priority_queue>,
+                       ite_priority_queue_3_t<external_priority_queue>>
         (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_memory, pq_3_memory, size_bound);
     }
   }
