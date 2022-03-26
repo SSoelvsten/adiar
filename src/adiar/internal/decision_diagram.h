@@ -39,7 +39,7 @@ namespace adiar
 
     ////////////////////////////////////////////////////////////////////////////
     // Union of node_file and arc_file (with std::monostate for 'error')
-    const std::variant<std::monostate, node_file, arc_file> _union;
+    const std::variant<no_file, node_file, arc_file> _union;
 
     ////////////////////////////////////////////////////////////////////////////
     // Propagating the negation flag below
