@@ -235,7 +235,7 @@ namespace adiar {
     {
       const size_t const_memory_bytes = label_merger<file_t, level_comp_t, FILES>::memory_usage();
 
-      if (const_memory_bytes < memory_bytes) {
+      if (memory_bytes < const_memory_bytes) {
         return 0u;
       }
 
