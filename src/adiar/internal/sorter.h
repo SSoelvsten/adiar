@@ -36,7 +36,7 @@ namespace adiar {
       if (no_elements > max_elem) {
         return max_value;
       }
-      return tpie::array<T>::memory_usage(no_elements);
+      return unsafe_memory_usage(no_elements);
     }
 
     static constexpr tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
