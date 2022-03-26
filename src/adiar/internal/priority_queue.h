@@ -51,8 +51,12 @@ namespace adiar
     tpie::internal_priority_queue<elem_t, comp_t> pq;
 
   public:
-    internal_priority_queue(size_t /*memory_bytes*/, size_t max_size) : pq(max_size)
-    {}
+    internal_priority_queue([[maybe_unused]] size_t memory_bytes, size_t max_size)
+      : pq(max_size)
+    {
+      adiar_debug(memory_usage(max_size) <= memory_bytes,
+                  "Must be instantiated with enough memory.");
+    }
 
     elem_t top()
     { return pq.top(); }
