@@ -9,8 +9,10 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/memory.h>
 
-namespace adiar {
+namespace adiar
+{
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream to a file with a one-way reading direction.
   ///
@@ -18,7 +20,7 @@ namespace adiar {
   ///
   /// \param REVERSE     Whether the reading direction should be reversed
   ///
-  /// \param SharedPtr_T The type of the shared poitner to a file
+  /// \param SharedPtr_T The type of the shared pointer to a file
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, bool REVERSE = false, typename SharedPtr_T = file<T>>
   class file_stream
@@ -144,6 +146,13 @@ namespace adiar {
     {
       _stream.close();
       // if (_file_ptr) { _file_ptr.reset(); }
+    }
+
+  public:
+    static constexpr size_t memory_usage()
+    {
+      const size_t tpie_file_stream_usage = 8u + memory::get_block_size();
+      return tpie_file_stream_usage;
     }
   };
 
