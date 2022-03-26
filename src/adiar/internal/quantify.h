@@ -66,19 +66,20 @@ namespace adiar
 
   template<template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
-  using quantify_priority_queue_t =
+  using quantify_priority_queue_1_t =
     levelized_node_priority_queue<quantify_tuple, tuple_label, quantify_1_lt,
                                   sorter_template, priority_queue_template>;
 
-  typedef tpie::priority_queue<quantify_tuple_data, quantify_2_lt> quantify_data_priority_queue_t;
+  template<template<typename, typename> typename priority_queue_template>
+  using quantify_priority_queue_2_t = priority_queue_template<quantify_tuple_data, quantify_2_lt>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   template<typename quantify_policy, typename pq_1_t>
   inline void __quantify_resolve_request(pq_1_t &quantify_pq_1,
-                                       arc_writer &aw,
-                                       const bool_op &op,
-                                       const ptr_t source, ptr_t r1, ptr_t r2)
+                                         arc_writer &aw,
+                                         const bool_op &op,
+                                         const ptr_t source, ptr_t r1, ptr_t r2)
   {
     adiar_debug(!is_nil(r1), "NIL should only ever end up being placed in r2");
 
@@ -105,11 +106,11 @@ namespace adiar
     }
   }
 
-  template<typename pq_1_t>
+  template<typename pq_1_t, typename pq_2_t>
   inline bool __quantify_update_source_or_break(pq_1_t &quantify_pq_1,
-                                              quantify_data_priority_queue_t &quantify_pq_2,
-                                              ptr_t &source,
-                                              const ptr_t t1, const ptr_t t2)
+                                                pq_2_t &quantify_pq_2,
+                                                ptr_t &source,
+                                                const ptr_t t1, const ptr_t t2)
   {
     if (quantify_pq_1.can_pull() && quantify_pq_1.top().t1 == t1 && quantify_pq_1.top().t2 == t2) {
       source = quantify_pq_1.pull().source;
@@ -162,7 +163,7 @@ namespace adiar
     arc_writer aw(out_arcs);
 
     pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_size);
-    pq_2_t quantify_pq_2(pq_2_memory);
+    pq_2_t quantify_pq_2(pq_2_memory, max_pq_size);
 
     label_t out_label = label_of(v.uid);
     id_t out_id = 0;
@@ -330,13 +331,13 @@ namespace adiar
     const size_t size_bound = __quantify_size_based_upper_bound<quantify_policy>(in);
 
     constexpr size_t data_structures_in_pq_1 =
-      quantify_priority_queue_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
+      quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + 1)) * data_structures_in_pq_1;
 
     const size_t pq_1_memory_fits =
-      quantify_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
+      quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
     if(size_bound <= pq_1_memory_fits) {
 #ifdef ADIAR_STATS
@@ -345,8 +346,8 @@ namespace adiar
       const size_t pq_2_memory = aux_available_memory - pq_1_internal_memory;
 
       return __quantify<quantify_policy,
-                        quantify_priority_queue_t<internal_sorter, internal_priority_queue>,
-                        quantify_data_priority_queue_t>
+                        quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>,
+                        quantify_priority_queue_2_t<internal_priority_queue>>
         (in, label, op, pq_1_internal_memory, pq_2_memory, size_bound);
     } else {
 #ifdef ADIAR_STATS
@@ -356,8 +357,8 @@ namespace adiar
       const size_t pq_2_memory = pq_1_memory;
 
       return __quantify<quantify_policy,
-                        quantify_priority_queue_t<external_sorter, external_priority_queue>,
-                        quantify_data_priority_queue_t>
+                        quantify_priority_queue_1_t<external_sorter, external_priority_queue>,
+                        quantify_priority_queue_2_t<external_priority_queue>>
         (in, label, op, pq_1_memory, pq_2_memory, size_bound);
     }
   }
