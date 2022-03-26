@@ -11,6 +11,7 @@
 
 #include <adiar/bdd/bdd.h>
 
+#include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/tuple.h>
 
@@ -238,17 +239,33 @@ namespace adiar
 
   template<typename prod_policy, typename pq_1_t, typename pq_2_t>
   typename prod_policy::unreduced_t
-  __product_construction(const typename prod_policy::reduced_t &in_1, node_stream<> &in_nodes_1, node_t &v1,
-                         const typename prod_policy::reduced_t &in_2, node_stream<> &in_nodes_2, node_t &v2,
+  __product_construction(const typename prod_policy::reduced_t &in_1,
+                         const typename prod_policy::reduced_t &in_2,
                          const bool_op &op,
-                         arc_file &out_arcs, arc_writer &aw,
-                         const tpie::memory_size_type available_memory_lpq,
-                         const tpie::memory_size_type available_memory_pq,
+                         const size_t pq_1_memory,
+                         const size_t pq_2_memory,
                          const size_t max_pq_size)
   {
-    pq_1_t prod_pq_1({in_1, in_2}, available_memory_lpq, max_pq_size);
+    node_stream<> in_nodes_1(in_1);
+    node_stream<> in_nodes_2(in_2);
 
-    pq_2_t prod_pq_2(available_memory_pq);
+    node_t v1 = in_nodes_1.pull();
+    node_t v2 = in_nodes_2.pull();
+
+    if (is_sink(v1) || is_sink(v2)) {
+      typename prod_policy::unreduced_t maybe_resolved = prod_policy::resolve_sink_root(v1, in_1, v2, in_2, op);
+
+      if (!(maybe_resolved.template has<no_file>())) {
+        return maybe_resolved;
+      }
+    }
+
+    // Set-up for Product Construction Algorithm
+    arc_file out_arcs;
+    arc_writer aw(out_arcs);
+
+    pq_1_t prod_pq_1({in_1, in_2}, pq_1_memory, max_pq_size);
+    pq_2_t prod_pq_2(pq_2_memory);
 
     // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v1.uid, v2.uid));
@@ -465,56 +482,48 @@ namespace adiar
       return prod_policy::resolve_same_file(in_1, in_2, op);
     }
 
-    node_stream<> in_nodes_1(in_1);
-    node_stream<> in_nodes_2(in_2);
-
-    node_t v1 = in_nodes_1.pull();
-    node_t v2 = in_nodes_2.pull();
-
-    if (is_sink(v1) || is_sink(v2)) {
-      typename prod_policy::unreduced_t maybe_resolved = prod_policy::resolve_sink_root(v1, in_1, v2, in_2, op);
-
-      if (!(std::holds_alternative<no_file>(maybe_resolved._union))) {
-        return maybe_resolved;
-      }
-    }
-
-    // Set-up for Product Construction Algorithm
-    arc_file out_arcs;
-    arc_writer aw(out_arcs);
-
-    // Derive an upper bound on the size of auxiliary data structures and check
-    // whether we can run them with a faster internal memory variant.
-    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-    const size_t size_bound = __prod_size_based_upper_bound<prod_policy>(in_1, in_2, op);
+    // Compute amount of memory available for auxiliary data structures after
+    // having opened all streams.
+    const size_t aux_available_memory = tpie::get_memory_manager().available()
+      // Input streams
+      - 2*node_stream<>::memory_usage()
+      // Output stream
+      - arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_lpq =
       prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
 
+    const size_t pq_1_internal_memory =
+      (aux_available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq;
+
+    // Derive an upper bound on the size of auxiliary data structures and check
+    // whether we can run them with a faster internal memory variant.
+    const size_t size_bound = __prod_size_based_upper_bound<prod_policy>(in_1, in_2, op);
+
     const tpie::memory_size_type lpq_memory_fits =
-      prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits
-        ((available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq);
+      prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
     if(size_bound <= lpq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_internal++;
 #endif
+      const size_t pq_2_memory = aux_available_memory - pq_1_internal_memory;
+
       return __product_construction<prod_policy,
                                     prod_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                                     prod_priority_queue_2_t>
-        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw,
-         (available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq,
-         available_memory / (data_structures_in_lpq + 1), size_bound);
+        (in_1, in_2, op, pq_1_internal_memory, pq_2_memory, size_bound);
     } else {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_external++;
 #endif
+      const size_t pq_1_memory = aux_available_memory / 2;
+      const size_t pq_2_memory = pq_1_memory;
+
       return __product_construction<prod_policy,
                                     prod_priority_queue_1_t<external_sorter, external_priority_queue>,
                                     prod_priority_queue_2_t>
-        (in_1, in_nodes_1, v1, in_2, in_nodes_2, v2, op, out_arcs, aw,
-         available_memory / 2,
-         available_memory / 2, size_bound);
+        (in_1, in_2, op, pq_1_memory, pq_2_memory, size_bound);
     }
   }
 }
