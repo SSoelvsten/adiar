@@ -91,14 +91,19 @@ namespace adiar
   }
 
   template<typename substitute_policy, typename substitute_act_mgr, typename pq_t>
-  typename substitute_policy::unreduced_t __substitute
-    (const typename substitute_policy::reduced_t &dd, node_stream<> &ns, node_t &n,
-     substitute_act_mgr &amgr,
-     arc_file &out_arcs, arc_writer &aw,
-     const tpie::memory_size_type available_memory_lpq,
-     const size_t max_pq_size)
+  typename substitute_policy::unreduced_t __substitute(const typename substitute_policy::reduced_t &dd,
+                                                       substitute_act_mgr &amgr,
+                                                       const size_t pq_memory,
+                                                       const size_t pq_max_size)
   {
-    pq_t substitute_pq({dd}, available_memory_lpq, max_pq_size);
+    // Set up to run the substitution algorithm
+    node_stream<> ns(dd);
+    node_t n = ns.pull();
+
+    arc_file out_arcs;
+    arc_writer aw(out_arcs);
+
+    pq_t substitute_pq({dd}, pq_memory, pq_max_size);
 
     label_t level = label_of(n);
     size_t level_size = 0;
@@ -216,20 +221,15 @@ namespace adiar
   typename substitute_policy::unreduced_t substitute(const typename substitute_policy::reduced_t &dd,
                                                      substitute_act_mgr &amgr)
   {
-    // Set up to run the substitution algorithm
-    node_stream<> ns(dd);
-    node_t n = ns.pull();
-
-    arc_file out_arcs;
-    arc_writer aw(out_arcs);
+    const tpie::memory_size_type aux_available_memory = tpie::get_memory_manager().available()
+      - node_stream<>::memory_usage() - arc_writer::memory_usage();
 
     // Derive an upper bound on the size of auxiliary data structures and check
     // whether we can run them with a faster internal memory variant.
-    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
     const size_t size_bound = __substitute_size_based_upper_bound<substitute_policy>(dd);
 
     const tpie::memory_size_type lpq_memory_fits =
-      substitute_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(available_memory);
+      substitute_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(aux_available_memory);
 
     if(size_bound <= lpq_memory_fits) {
 #ifdef ADIAR_STATS
@@ -237,14 +237,14 @@ namespace adiar
 #endif
       return __substitute<substitute_policy, substitute_act_mgr,
                           substitute_priority_queue_t<internal_sorter, internal_priority_queue>>
-        (dd, ns, n, amgr, out_arcs, aw, available_memory, size_bound);
+        (dd, amgr, aux_available_memory, size_bound);
     } else {
 #ifdef ADIAR_STATS
       stats_substitute.lpq_external++;
 #endif
       return __substitute<substitute_policy, substitute_act_mgr,
                           substitute_priority_queue_t<external_sorter, external_priority_queue>>
-        (dd, ns, n, amgr, out_arcs, aw, available_memory, size_bound);
+        (dd, amgr, aux_available_memory, size_bound);
     }
   }
 }
