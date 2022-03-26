@@ -52,10 +52,17 @@ namespace adiar {
     static_assert(0 < FILES,
                   "At least one file should be merged");
 
+    typedef typename label_stream_t<file_t>::stream_t stream_t;
+
+  public:
+    static constexpr size_t memory_usage()
+    {
+      return FILES * stream_t::memory_usage();
+    }
+
   private:
     comp_t _comparator = comp_t();
 
-    typedef typename label_stream_t<file_t>::stream_t stream_t;
     std::unique_ptr<stream_t> _label_streams [FILES];
 
   public:
@@ -183,6 +190,7 @@ namespace adiar {
             >
   class levelized_priority_queue
   {
+  private:
     static_assert(0 < LOOK_AHEAD,
                   "LOOK_AHEAD must at least be of one level");
 
@@ -219,15 +227,23 @@ namespace adiar {
     static constexpr tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
       return internal_priority_queue<elem_t, elem_comp_t>::memory_usage(no_elements)
-        + BUCKETS * internal_sorter<elem_t, elem_comp_t>::memory_usage(no_elements);
+        + BUCKETS * internal_sorter<elem_t, elem_comp_t>::memory_usage(no_elements)
+        + label_merger<file_t, level_comp_t, FILES>::memory_usage();
     }
 
     static constexpr tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
+      const size_t const_memory_bytes = label_merger<file_t, level_comp_t, FILES>::memory_usage();
+
+      if (const_memory_bytes < memory_bytes) {
+        return 0u;
+      }
+
       // HACK: the 'internal_priority_queue' can take (two) fewer elements than
       // the 'internal_sorter'. So, this is a slight under-approximation of what
-      // we could do with this amount of memory.
-      return internal_priority_queue<elem_t, elem_comp_t>::memory_fits(memory_bytes / (BUCKETS + 1));
+      // we truly could do with this amount of memory.
+      return internal_priority_queue<elem_t, elem_comp_t>
+        ::memory_fits((memory_bytes - const_memory_bytes) / (BUCKETS + 1));
     }
 
   private:
