@@ -7,6 +7,7 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/levelized_priority_queue.h>
+#include <adiar/internal/memory.h>
 #include <adiar/internal/sorter.h>
 
 #include <adiar/statistics.h>
@@ -92,7 +93,7 @@ namespace adiar
                       pq_t &reduce_pq,
                       label_t &label,
                       node_writer &out_writer,
-                      const tpie::memory_size_type available_memory,
+                      const size_t sorters_memory,
                       const size_t level_width)
   {
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
@@ -100,10 +101,10 @@ namespace adiar
 
     // Sorter to find Reduction Rule 2 mappings
     sorter_t<node_t, reduce_node_children_lt>
-      child_grouping(available_memory, level_width, 2);
+      child_grouping(sorters_memory, level_width, 2);
 
     sorter_t<mapping, reduce_uid_lt>
-      red2_mapping(available_memory, level_width, 2);
+      red2_mapping(sorters_memory, level_width, 2);
 
     // Pull out all nodes from reduce_pq and sink_arcs for this level
     while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label)
@@ -251,63 +252,9 @@ namespace adiar
   }
 
   template<typename dd_policy, typename pq_t>
-  void __reduce(const arc_file &in_file,
-                node_arc_stream<> &node_arcs,
-                sink_arc_stream<> &sink_arcs,
-                level_info_stream<arc_t> &level_info,
-                node_writer &out_writer,
-                const tpie::memory_size_type available_memory)
+  typename dd_policy::reduced_t __reduce(const arc_file &in_file,
+                                         const size_t lpq_memory, const size_t sorters_memory)
   {
-    pq_t reduce_pq({in_file}, available_memory / 2, in_file._file_ptr->max_1level_cut);
-
-    const size_t level_memory = available_memory / 2 - file_stream<mapping>::memory_usage();
-
-    // Find the first label
-    // TODO take from level info instead
-    label_t label = label_of(sink_arcs.peek().source);
-
-    // Process bottom-up each level
-    while (sink_arcs.can_pull() || !reduce_pq.empty()) {
-      adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
-                      "label and priority queue should be in sync");
-
-      const level_info_t current_level_info = level_info.pull();
-      const size_t level_width = width_of(current_level_info);
-
-      const size_t internal_sorter_can_fit = internal_sorter<node_t>::memory_fits(level_memory / 2);
-
-      if(level_width <= internal_sorter_can_fit) {
-        __reduce_level<dd_policy, pq_t, internal_sorter>
-          (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
-      } else {
-        __reduce_level<dd_policy, pq_t, external_sorter>
-          (sink_arcs, node_arcs, reduce_pq, label, out_writer, level_memory, level_width);
-      }
-
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Reduce a given edge-based decision diagram.
-  ///
-  /// \param dd_policy Which includes the types and the reduction rule
-  /// \param arc_file The unreduced bdd in its arc-based representation
-  ///
-  /// \return The reduced decision diagram in a node-based representation
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename dd_policy>
-  typename dd_policy::reduced_t reduce(const typename dd_policy::unreduced_t &input)
-  {
-    adiar_debug(!input.empty(), "Input for Reduce should always be non-empty");
-
-    // Is it already reduced?
-    if (input.template has<node_file>()) {
-      return typename dd_policy::reduced_t(input.template get<node_file>(), input.negate);
-    }
-
-    // Get unreduced input
-    const arc_file in_file = input.template get<arc_file>();
-
 #ifdef ADIAR_STATS
     stats_reduce.sum_node_arcs += in_file._file_ptr -> _files[0].size();
     stats_reduce.sum_sink_arcs += in_file._file_ptr -> _files[1].size();
@@ -346,29 +293,85 @@ namespace adiar
       return out_file;
     }
 
+    pq_t reduce_pq({in_file}, lpq_memory, in_file._file_ptr->max_1level_cut);
+
+    // Find the first label
+    // TODO take from level info instead
+    label_t label = label_of(sink_arcs.peek().source);
+
+    const size_t internal_sorter_can_fit = internal_sorter<node_t>::memory_fits(sorters_memory / 2);
+
+    // Process bottom-up each level
+    while (sink_arcs.can_pull() || !reduce_pq.empty()) {
+      adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
+                      "label and priority queue should be in sync");
+
+      const level_info_t current_level_info = level_info.pull();
+      const size_t level_width = width_of(current_level_info);
+
+      if(level_width <= internal_sorter_can_fit) {
+        __reduce_level<dd_policy, pq_t, internal_sorter>
+          (sink_arcs, node_arcs, reduce_pq, label, out_writer, sorters_memory, level_width);
+      } else {
+        __reduce_level<dd_policy, pq_t, external_sorter>
+          (sink_arcs, node_arcs, reduce_pq, label, out_writer, sorters_memory, level_width);
+      }
+    }
+
+    return out_file;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Reduce a given edge-based decision diagram.
+  ///
+  /// \param dd_policy Which includes the types and the reduction rule
+  /// \param arc_file The unreduced bdd in its arc-based representation
+  ///
+  /// \return The reduced decision diagram in a node-based representation
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename dd_policy>
+  typename dd_policy::reduced_t reduce(const typename dd_policy::unreduced_t &input)
+  {
+    adiar_debug(!input.empty(), "Input for Reduce should always be non-empty");
+
+    // Is it already reduced?
+    if (input.template has<node_file>()) {
+      return typename dd_policy::reduced_t(input.template get<node_file>(), input.negate);
+    }
+
+    // Get unreduced input
+    const arc_file in_file = input.template get<arc_file>();
+
+    // Compute amount of memory available for auxiliary data structures after
+    // having opened all streams.
+    const size_t aux_available_memory = tpie::get_memory_manager().available()
+      // Input streams
+      - node_arc_stream<>::memory_usage() - sink_arc_stream<>::memory_usage() - level_info_stream<arc_t>::memory_usage()
+      // Output streams
+      - node_writer::memory_usage();
+
+    const size_t lpq_memory = aux_available_memory / 2;
+    const size_t sorters_memory = aux_available_memory / 2 - __tpie_file_stream_memory_usage<mapping>();
+
     // Derive an upper bound on the size of auxiliary data structures and check
     // whether we can run them with a faster internal memory variant.
-    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
-
     const size_t max_cut = in_file._file_ptr->max_1level_cut;
     const tpie::memory_size_type lpq_memory_fits =
-      reduce_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(available_memory / 2);
+      reduce_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(lpq_memory);
 
     if(max_cut <= lpq_memory_fits) {
 #ifdef ADIAR_STATS
         stats_reduce.lpq_internal++;
 #endif
-      __reduce<dd_policy, reduce_priority_queue_t<internal_sorter, internal_priority_queue>>
-        (in_file, node_arcs, sink_arcs, level_info, out_writer, available_memory);
+      return __reduce<dd_policy, reduce_priority_queue_t<internal_sorter, internal_priority_queue>>
+        (in_file, lpq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
         stats_reduce.lpq_external++;
 #endif
-      __reduce<dd_policy, reduce_priority_queue_t<external_sorter, external_priority_queue>>
-        (in_file, node_arcs, sink_arcs, level_info, out_writer, available_memory);
+      return __reduce<dd_policy, reduce_priority_queue_t<external_sorter, external_priority_queue>>
+        (in_file, lpq_memory, sorters_memory);
     }
-
-    return out_file;
   }
 }
 
