@@ -68,8 +68,8 @@ namespace adiar
   typedef tuple_snd_lt prod_tuple_2_lt;
 #endif
 
-  typedef tpie::priority_queue<prod_tuple_2, prod_tuple_2_lt>
-  prod_priority_queue_2_t;
+  template<template<typename, typename> typename priority_queue_template>
+  using prod_priority_queue_2_t = priority_queue_template<prod_tuple_2, prod_tuple_2_lt>;
 
   struct prod_rec_output {
     tuple low;
@@ -265,7 +265,7 @@ namespace adiar
     arc_writer aw(out_arcs);
 
     pq_1_t prod_pq_1({in_1, in_2}, pq_1_memory, max_pq_size);
-    pq_2_t prod_pq_2(pq_2_memory);
+    pq_2_t prod_pq_2(pq_2_memory, max_pq_size);
 
     // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v1.uid, v2.uid));
@@ -496,23 +496,27 @@ namespace adiar
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_lpq + 1)) * data_structures_in_lpq;
 
+    const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
+
     // Derive an upper bound on the size of auxiliary data structures and check
     // whether we can run them with a faster internal memory variant.
     const size_t size_bound = __prod_size_based_upper_bound<prod_policy>(in_1, in_2, op);
 
-    const tpie::memory_size_type lpq_memory_fits =
+    const size_t pq_1_memory_fits =
       prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
-    if(size_bound <= lpq_memory_fits) {
+    const size_t pq_2_memory_fits =
+      prod_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
+
+
+    if(size_bound <= pq_1_memory_fits && size_bound <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_internal++;
 #endif
-      const size_t pq_2_memory = aux_available_memory - pq_1_internal_memory;
-
       return __product_construction<prod_policy,
                                     prod_priority_queue_1_t<internal_sorter, internal_priority_queue>,
-                                    prod_priority_queue_2_t>
-        (in_1, in_2, op, pq_1_internal_memory, pq_2_memory, size_bound);
+                                    prod_priority_queue_2_t<internal_priority_queue>>
+        (in_1, in_2, op, pq_1_internal_memory, pq_2_internal_memory, size_bound);
     } else {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_external++;
@@ -522,7 +526,7 @@ namespace adiar
 
       return __product_construction<prod_policy,
                                     prod_priority_queue_1_t<external_sorter, external_priority_queue>,
-                                    prod_priority_queue_2_t>
+                                    prod_priority_queue_2_t<external_priority_queue>>
         (in_1, in_2, op, pq_1_memory, pq_2_memory, size_bound);
     }
   }
