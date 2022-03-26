@@ -260,6 +260,8 @@ namespace adiar
   {
     pq_t reduce_pq({in_file}, available_memory / 2, in_file._file_ptr->max_1level_cut);
 
+    const size_t level_memory = available_memory / 2 - file_stream<mapping>::memory_usage();
+
     // Find the first label
     // TODO take from level info instead
     label_t label = label_of(sink_arcs.peek().source);
@@ -271,7 +273,6 @@ namespace adiar
 
       const level_info_t current_level_info = level_info.pull();
       const size_t level_width = width_of(current_level_info);
-      const size_t level_memory = available_memory / 2;
 
       const size_t internal_sorter_can_fit = internal_sorter<node_t>::memory_fits(level_memory / 2);
 
