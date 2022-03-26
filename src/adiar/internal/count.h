@@ -146,7 +146,7 @@ namespace adiar
     // whether we can run them with a faster internal memory variant.
     const size_t size_upper_bound = __count_size_based_upper_bound(dd);
 
-    const tpie::memory_size_type aux_available_memory = tpie::get_memory_manager().available()
+    const tpie::memory_size_type aux_available_memory = memory::available()
       - node_stream<>::memory_usage();
 
     const size_t pq_memory_fits =

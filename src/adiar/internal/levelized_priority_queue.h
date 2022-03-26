@@ -360,7 +360,7 @@ namespace adiar {
     levelized_priority_queue(tpie::memory_size_type memory_given, size_t max_size)
       : _max_size(max_size),
         _memory_given(memory_given),
-        _memory_occupied_by_merger(tpie::get_memory_manager().available()),
+        _memory_occupied_by_merger(memory::available()),
         _memory_occupied_by_overflow(m_overflow_queue(memory_given)),
         _overflow_queue(m_overflow_queue(memory_given), max_size)
     { }
@@ -413,7 +413,7 @@ namespace adiar {
       // memory. This was done before the _level_merger had created all of its
       // level_info streams, so we can get how much space they already took of
       // what we are given now.
-      _memory_occupied_by_merger -= tpie::get_memory_manager().available();
+      _memory_occupied_by_merger -= memory::available();
       _memory_for_buckets = _memory_given - _memory_occupied_by_merger - _memory_occupied_by_overflow;
 
       adiar_debug(_memory_occupied_by_merger + _memory_occupied_by_overflow <= _memory_given,

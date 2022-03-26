@@ -484,7 +484,7 @@ namespace adiar
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
-    const size_t aux_available_memory = tpie::get_memory_manager().available()
+    const size_t aux_available_memory = memory::available()
       // Input streams
       - 2*node_stream<>::memory_usage()
       // Output stream
