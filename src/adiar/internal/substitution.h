@@ -221,7 +221,7 @@ namespace adiar
   typename substitute_policy::unreduced_t substitute(const typename substitute_policy::reduced_t &dd,
                                                      substitute_act_mgr &amgr)
   {
-    const tpie::memory_size_type aux_available_memory = tpie::get_memory_manager().available()
+    const tpie::memory_size_type aux_available_memory = memory::available()
       - node_stream<>::memory_usage() - arc_writer::memory_usage();
 
     // Derive an upper bound on the size of auxiliary data structures and check
