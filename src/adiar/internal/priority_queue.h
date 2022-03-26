@@ -10,6 +10,9 @@ namespace adiar
   template<typename elem_t, typename comp_t = std::less<elem_t>>
   class external_priority_queue
   {
+  public:
+    static constexpr size_t DATA_STRUCTURES = 1u;
+
   private:
     tpie::priority_queue<elem_t, comp_t> pq;
 
@@ -46,6 +49,8 @@ namespace adiar
     {
       return tpie::internal_priority_queue<elem_t, comp_t>::memory_fits(memory_bytes);
     }
+
+    static constexpr size_t DATA_STRUCTURES = 1u;
 
   private:
     tpie::internal_priority_queue<elem_t, comp_t> pq;

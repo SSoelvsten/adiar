@@ -44,6 +44,8 @@ namespace adiar {
       return tpie::array<T>::memory_fits(memory_bytes);
     }
 
+    static constexpr size_t DATA_STRUCTURES = 1u;
+
     static std::unique_ptr<internal_sorter<T, pred_t>> make_unique(size_t memory_bytes,
                                                                    size_t no_elements,
                                                                    size_t no_sorters,
@@ -113,6 +115,8 @@ namespace adiar {
     tpie::merge_sorter<T, false, pred_t> _sorter;
 
   public:
+    static constexpr size_t DATA_STRUCTURES = 1u;
+
     static std::unique_ptr<external_sorter<T, pred_t>> make_unique(size_t memory_bytes,
                                                                    size_t no_elements,
                                                                    size_t no_sorters,
