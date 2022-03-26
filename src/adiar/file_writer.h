@@ -7,6 +7,7 @@
 #include <adiar/file.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/memory.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,12 @@ namespace adiar {
   template <typename T, typename Comp = no_ordering<T>>
   class simple_file_writer
   {
+  public:
+    static constexpr size_t memory_usage()
+    {
+      return __tpie_file_stream_memory_usage<T>();
+    }
+
   protected:
     ////////////////////////////////////////////////////////////////////////////
     /// The file stream includes a shared pointer to hook into the reference
@@ -169,6 +176,13 @@ namespace adiar {
   template <typename T>
   class meta_file_writer
   {
+  public:
+    static constexpr size_t memory_usage()
+    {
+      return FILE_CONSTANTS<T>::files * __tpie_file_stream_memory_usage<T>()
+        + __tpie_file_stream_memory_usage<level_info>();
+    }
+
   protected:
     ////////////////////////////////////////////////////////////////////////////
     /// The file stream includes a shared pointer to hook into the reference

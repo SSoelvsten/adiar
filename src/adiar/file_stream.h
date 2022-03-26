@@ -25,6 +25,12 @@ namespace adiar
   template <typename T, bool REVERSE = false, typename SharedPtr_T = file<T>>
   class file_stream
   {
+  public:
+    static constexpr size_t memory_usage()
+    {
+      return __tpie_file_stream_memory_usage<T>();
+    }
+
   private:
     bool _has_peeked = false;
     T _peeked;
@@ -147,13 +153,6 @@ namespace adiar
       _stream.close();
       // if (_file_ptr) { _file_ptr.reset(); }
     }
-
-  public:
-    static constexpr size_t memory_usage()
-    {
-      const size_t tpie_file_stream_usage = 8u + memory::get_block_size();
-      return tpie_file_stream_usage;
-    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -245,6 +244,13 @@ namespace adiar
   class sink_arc_stream
     : private in_order_arc_stream<REVERSE>, private out_of_order_arc_stream<REVERSE>
   {
+  public:
+    static constexpr size_t memory_usage()
+    {
+      return in_order_arc_stream<REVERSE>::memory_usage()
+        + out_of_order_arc_stream<REVERSE>::memory_usage();
+    }
+
   public:
     sink_arc_stream(const arc_file &file, bool negate = false)
       : in_order_arc_stream<REVERSE>(file, negate),
