@@ -206,20 +206,43 @@ namespace adiar
   }
 
   template<typename pq_1_t, typename pq_2_t, typename pq_3_t>
-  __bdd __bdd_ite(const bdd &bdd_if,   node_stream<> &in_nodes_if,   node_t &v_if,
-                  const bdd &bdd_then, node_stream<> &in_nodes_then, node_t &v_then,
-                  const bdd &bdd_else, node_stream<> &in_nodes_else, node_t &v_else,
-                  arc_file &out_arcs, arc_writer &aw,
-                  const tpie::memory_size_type available_memory_lpq,
-                  const tpie::memory_size_type available_memory_pq_2,
-                  const tpie::memory_size_type available_memory_pq_3,
+  __bdd __bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else,
+                  const size_t pq_1_memory, const size_t pq_2_memory, const size_t pq_3_memory,
                   const size_t max_pq_size)
   {
-    pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else},
-                    available_memory_lpq,
-                    max_pq_size);
-    pq_2_t ite_pq_2(available_memory_pq_2);
-    pq_3_t ite_pq_3(available_memory_pq_3);
+    // Now, at this point we will not defer to using the Apply, so we can take
+    // up memory by opening the input streams and evaluating trivial
+    // conditionals.
+    node_stream<> in_nodes_if(bdd_if);
+    node_t v_if = in_nodes_if.pull();
+
+    if (is_sink(v_if)) {
+      return value_of(v_if) ? bdd_then : bdd_else;
+    }
+
+    node_stream<> in_nodes_then(bdd_then);
+    node_t v_then = in_nodes_then.pull();
+
+    node_stream<> in_nodes_else(bdd_else);
+    node_t v_else = in_nodes_else.pull();
+
+    // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
+    // the two others, then we can merely zip the 'then' and 'else' BDDs. This
+    // is only O((N1+N2+N3)/B) I/Os!
+    if (max_label(bdd_if) < label_of(v_then) &&
+        max_label(bdd_if) < label_of(v_else) &&
+        disjoint_labels(bdd_then, bdd_else)) {
+      return __ite_zip_bdds(bdd_if,bdd_then,bdd_else);
+    }
+    // From here on forward, we probably cannot circumvent actually having to do
+    // the product construction.
+
+    arc_file out_arcs;
+    arc_writer aw(out_arcs);
+
+    pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, pq_1_memory, max_pq_size);
+    pq_2_t ite_pq_2(pq_2_memory);
+    pq_3_t ite_pq_3(pq_3_memory);
 
     // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v_if.uid, v_then.uid, v_else.uid));
@@ -518,74 +541,46 @@ namespace adiar
                        value_of(bdd_else) ? imp_op : and_op);
     }
 
-    // Now, at this point we will not defer to using the Apply, so we can take
-    // up memory by opening the input streams and evaluating trivial
-    // conditionals.
-    node_stream<> in_nodes_if(bdd_if);
-    node_t v_if = in_nodes_if.pull();
-
-    if (is_sink(v_if)) {
-      return value_of(v_if) ? bdd_then : bdd_else;
-    }
-
-    node_stream<> in_nodes_then(bdd_then);
-    node_t v_then = in_nodes_then.pull();
-
-    node_stream<> in_nodes_else(bdd_else);
-    node_t v_else = in_nodes_else.pull();
-
-    // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
-    // the two others, then we can merely zip the 'then' and 'else' BDDs. This
-    // is only O((N1+N2+N3)/B) I/Os!
-    if (max_label(bdd_if) < label_of(v_then) &&
-        max_label(bdd_if) < label_of(v_else) &&
-        disjoint_labels(bdd_then, bdd_else)) {
-      return __ite_zip_bdds(bdd_if,bdd_then,bdd_else);
-    }
-    // From here on forward, we probably cannot circumvent actually having to do
-    // the product construction.
-
-    arc_file out_arcs;
-    arc_writer aw(out_arcs);
-
     // Derive an upper bound on the size of auxiliary data structures and check
     // whether we can run them with a faster internal memory variant.
-    const tpie::memory_size_type available_memory = tpie::get_memory_manager().available();
+    const tpie::memory_size_type aux_available_memory = tpie::get_memory_manager().available()
+      // Input streams
+      - 3*node_stream<>::memory_usage()
+      // Output stream
+      - arc_writer::memory_usage();
+
     const size_t size_bound = __ite_size_based_upper_bound(bdd_if, bdd_then, bdd_else);
 
     constexpr size_t data_structures_in_lpq =
       ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::BUCKETS + 1;
 
-    const tpie::memory_size_type lpq_memory_fits =
-      ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits
-        ((available_memory / (data_structures_in_lpq + 2)) * data_structures_in_lpq);
+    const size_t pq_1_internal_memory =
+      (aux_available_memory / (data_structures_in_lpq + 2)) * data_structures_in_lpq;
 
-    if(size_bound <= lpq_memory_fits) {
+    const size_t pq_1_memory_fits =
+      ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
+
+    if(size_bound <= pq_1_memory_fits) {
 #ifdef ADIAR_STATS
       stats_if_else.lpq_internal++;
 #endif
+      const size_t pq_2_memory = (aux_available_memory - pq_1_internal_memory) / 2;
+      const size_t pq_3_memory = pq_2_memory;
+
       return __bdd_ite<ite_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                        ite_priority_queue_2_t, ite_priority_queue_3_t>
-                      (bdd_if, in_nodes_if, v_if,
-                       bdd_then, in_nodes_then, v_then,
-                       bdd_else, in_nodes_else, v_else,
-                       out_arcs, aw,
-                       (available_memory / (data_structures_in_lpq + 2)) * data_structures_in_lpq,
-                       available_memory / (data_structures_in_lpq + 2),
-                       available_memory / (data_structures_in_lpq + 2),
-                       size_bound);
+        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_memory, pq_3_memory, size_bound);
     } else {
 #ifdef ADIAR_STATS
       stats_if_else.lpq_external++;
 #endif
+      const size_t pq_1_memory = aux_available_memory / 3;
+      const size_t pq_2_memory = pq_1_memory;
+      const size_t pq_3_memory = pq_1_memory;
+
       return __bdd_ite<ite_priority_queue_1_t<external_sorter, external_priority_queue>,
                        ite_priority_queue_2_t, ite_priority_queue_3_t>
-                      (bdd_if, in_nodes_if, v_if,
-                       bdd_then, in_nodes_then, v_then,
-                       bdd_else, in_nodes_else, v_else,
-                       out_arcs, aw,
-                       available_memory / 3, available_memory / 3, available_memory / 3,
-                       size_bound);
+        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_memory, pq_3_memory, size_bound);
     }
   }
 }
