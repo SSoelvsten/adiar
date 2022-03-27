@@ -162,8 +162,8 @@ namespace adiar
 
   __zdd zdd_onset(const zdd &dd, const label_file &l)
   {
-    if (l.size() == 0 || (is_sink(dd) && !value_of(dd))) { return dd; }
-    if ((is_sink(dd) && value_of(dd)) || disjoint_labels<label_file, label_stream<>>(l, dd)) {
+    if (l.size() == 0 || (is_false(dd))) { return dd; }
+    if ((is_true(dd)) || disjoint_labels<label_file, label_stream<>>(l, dd)) {
       return zdd_empty();
     }
 

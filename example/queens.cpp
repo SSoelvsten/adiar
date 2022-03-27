@@ -264,7 +264,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
                        std::vector<uint64_t>& partial_assignment,
                        const adiar::bdd& constraints)
 {
-  if (adiar::is_sink(constraints) && !adiar::value_of(constraints)) {
+  if (adiar::is_false(constraints)) {
     return 0;
   }
   deepest_column = std::max(deepest_column, column);
@@ -327,7 +327,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       for (uint64_t c = N-1; c > column; c--) {
         partial_assignment.pop_back();
       }
-    } else if (adiar::is_sink(restricted_constraints) && adiar::value_of(restricted_constraints)) {
+    } else if (adiar::is_true(restricted_constraints)) {
       n_queens_print_solution(partial_assignment);
       solutions += 1;
     } else {
