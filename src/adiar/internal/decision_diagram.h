@@ -172,10 +172,7 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Check whether a given decision diagram is sink-only and satisfies
-  /// the given sink_pred.
-  ///
-  /// \param file   The node_file to check its content
+  /// \brief Whether a given decision diagram represents a sink.
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_sink(const decision_diagram &dd)
   {
@@ -183,10 +180,7 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Obtain the sink value of a decision diagram (assuming
-  ///             'is_sink' is true).
-  ///
-  /// \param file The node_file to check its content
+  /// \brief Obtain the sink's value (if 'is_sink' is true).
   //////////////////////////////////////////////////////////////////////////////
   inline bool value_of(const decision_diagram &dd)
   {
