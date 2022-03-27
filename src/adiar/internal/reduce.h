@@ -91,7 +91,7 @@ namespace adiar
   void __reduce_level(sink_arc_stream<> &sink_arcs,
                       node_arc_stream<> &node_arcs,
                       pq_t &reduce_pq,
-                      label_t &label,
+                      const label_t label,
                       node_writer &out_writer,
                       const size_t sorters_memory,
                       const size_t level_width)
@@ -232,11 +232,6 @@ namespace adiar
       } else {
         reduce_pq.setup_next_level();
       }
-
-      label = !reduce_pq.empty_level()
-        ? reduce_pq.current_level()
-        : label_of(sink_arcs.peek().source);
-
     } else if (!out_writer.has_pushed()) {
       adiar_debug(!node_arcs.can_pull() && !sink_arcs.can_pull(),
                   "Nodes are still left to be processed");
@@ -295,18 +290,16 @@ namespace adiar
 
     pq_t reduce_pq({in_file}, lpq_memory, in_file._file_ptr->max_1level_cut);
 
-    // Find the first label
-    // TODO take from level info instead
-    label_t label = label_of(sink_arcs.peek().source);
-
     const size_t internal_sorter_can_fit = internal_sorter<node_t>::memory_fits(sorters_memory / 2);
 
     // Process bottom-up each level
     while (sink_arcs.can_pull() || !reduce_pq.empty()) {
+      const level_info_t current_level_info = level_info.pull();
+      const label_t label = label_of(current_level_info);
+
       adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
                       "label and priority queue should be in sync");
 
-      const level_info_t current_level_info = level_info.pull();
       const size_t level_width = width_of(current_level_info);
 
       if(level_width <= internal_sorter_can_fit) {
