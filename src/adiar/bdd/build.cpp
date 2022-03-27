@@ -156,16 +156,16 @@ namespace adiar
     nf._file_ptr->max_1level_cut[false][false] = std::max(internal_cut_below_shallowest_lvl,
                                                           internal_cut_below_deepest_lvl);
 
+    // Compare the cut at deepest widest level and below the last level.
+    nf._file_ptr->max_1level_cut[false][true] = std::max(nf._file_ptr->max_1level_cut[false][false],
+                                                         eq_sinks);
+
     // The maximum cut with false sinks is at the deepes widest level. Beyond
     // it, a node (with two children) is removed, which outweighs the gt_sink
     // and possible lt_sink added.
     nf._file_ptr->max_1level_cut[true][false] =
       std::max(internal_cut_below_deepest_lvl + lt_sinks + gt_sinks - 2u * lvls_after_widest,
                lt_sinks + gt_sinks);
-
-    // Compare the cut at deepest widest level and below the last level.
-    nf._file_ptr->max_1level_cut[false][true] = std::max(nf._file_ptr->max_1level_cut[false][false],
-                                                         eq_sinks);
 
     // Counting both false and true sinks is only different from counting false
     // sinks, if the number of eq_sinks outweighs the number of internal nodes.

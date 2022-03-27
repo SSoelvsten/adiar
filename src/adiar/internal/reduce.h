@@ -46,11 +46,69 @@ namespace adiar
     }
   };
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Decorator on the levelized priority queue to also keep track of
+  ///        the number of arcs to each sink.
+  ////////////////////////////////////////////////////////////////////////////
   template<template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
-  using reduce_priority_queue_t =
-    levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt,
-                                 sorter_template, priority_queue_template>;
+  class reduce_priority_queue : public levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt,
+                                                                      sorter_template, priority_queue_template>
+  {
+  private:
+    using inner_lpq = levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt,
+                                                   sorter_template, priority_queue_template>;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of sinks (of each type) placed within the priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t sinks[2] = { 0u, 0u };
+
+    reduce_priority_queue(const arc_file (&files) [1u], size_t memory_given, size_t max_size)
+      : inner_lpq(files, memory_given, max_size)
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Push an arc into the priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    void push(const arc_t &a)
+    {
+      sinks[false] += is_false(a.target);
+      sinks[true]  += is_true(a.target);
+
+      inner_lpq::push(a);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the top arc on the current level and remove it.
+    ////////////////////////////////////////////////////////////////////////////
+    arc_t pull()
+    {
+      arc_t a = inner_lpq::pull();
+
+      sinks[false] -= is_false(a.target);
+      sinks[true]  -= is_true(a.target);
+
+      return a;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Remove the top arc on the current level.
+    ////////////////////////////////////////////////////////////////////////////
+    void pop()
+    {
+      pull();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Total number of arcs (across all levels) ignoring sinks.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t size_without_sinks()
+    {
+      return inner_lpq::size() - sinks[false] - sinks[true];
+    }
+  };
 
   //////////////////////////////////////////////////////////////////////////////
   // For sorting for Reduction Rule 2 (and back again)
@@ -75,9 +133,11 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
 
-  // Merging priority queue with sink_arc stream
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Merging priority queue with sink_arc stream.
+  //////////////////////////////////////////////////////////////////////////////
   template <typename pq_t>
-  inline arc_t __reduce_get_next(pq_t &reduce_pq, sink_arc_stream<false> &sink_arcs)
+  inline arc_t __reduce_get_next(pq_t &reduce_pq, sink_arc_stream<> &sink_arcs)
   {
     if (!reduce_pq.can_pull()
         || (sink_arcs.can_pull() && sink_arcs.peek().source > reduce_pq.top().source)) {
@@ -87,17 +147,33 @@ namespace adiar
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Update a cut size with some number of arcs.
+  //////////////////////////////////////////////////////////////////////////////
+  inline void __reduce_cut_add(size_t (&cut)[2][2],
+                               const size_t internal_arcs,
+                               const size_t false_arcs,
+                               const size_t true_arcs)
+  {
+    cut[false][false] += internal_arcs;
+    cut[false][true]  += internal_arcs + true_arcs;
+    cut[true][false]  += internal_arcs + false_arcs;
+    cut[true][true]   += internal_arcs + false_arcs + true_arcs;
+  }
+
   template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
   void __reduce_level(sink_arc_stream<> &sink_arcs,
                       node_arc_stream<> &node_arcs,
-                      pq_t &reduce_pq,
                       const label_t label,
+                      pq_t &reduce_pq,
                       node_writer &out_writer,
                       const size_t sorters_memory,
                       const size_t level_width)
   {
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
     tpie::file_stream<mapping> red1_mapping;
+
+    size_t red1_sinks[2] = { 0u, 0u };
 
     // Sorter to find Reduction Rule 2 mappings
     sorter_t<node_t, reduce_node_children_lt>
@@ -123,48 +199,62 @@ namespace adiar
 #ifdef ADIAR_STATS_EXTRA
         stats_reduce.removed_by_rule_1++;
 #endif
+        red1_sinks[false] += is_false(reduction_rule_ret);
+        red1_sinks[true] += is_true(reduction_rule_ret);
+
         red1_mapping.write({ n.uid, reduction_rule_ret });
       } else {
         child_grouping.push(n);
       }
     }
+
+    // Count number of arcs that cross this level
+    size_t one_level_cut[2][2] = { { 0u, 0u }, { 0u, 0u } };
+
+    const size_t red1_internal = red1_mapping.is_open()
+      ? red1_mapping.size() - red1_sinks[false] - red1_sinks[true]
+      : 0u;
+
+    __reduce_cut_add(one_level_cut,
+                     reduce_pq.size_without_sinks() + red1_internal,
+                     reduce_pq.sinks[false] + red1_sinks[false] + sink_arcs.unread[false],
+                     reduce_pq.sinks[true] + red1_sinks[true] + sink_arcs.unread[true]);
+
     // Sort and apply Reduction rule 2
     child_grouping.sort();
 
-    if (child_grouping.can_pull()) {
-      // Set up for remapping, keeping the very first node seen
-      id_t out_id = MAX_ID;
-      node_t current_node = child_grouping.pull();
+    id_t out_id = MAX_ID;
+    node_t out_node = { NIL, NIL, NIL };
 
-      adiar_debug(out_id > 0, "Has run out of ids");
+    while (child_grouping.can_pull()) {
+      node_t next_node = child_grouping.pull();
 
-      node_t out_node = create_node(label, out_id--, current_node.low, current_node.high);
-      out_writer.unsafe_push(out_node);
+      if (out_node.low != next_node.low || out_node.high != next_node.high) {
+        out_node = create_node(label, out_id, next_node.low, next_node.high);
+        out_writer.unsafe_push(out_node);
 
-      red2_mapping.push({ current_node.uid, out_node.uid });
+        adiar_debug(out_id > 0, "Has run out of ids");
+        out_id--;
 
-      // Keep the first node with different children than prior, and remap all
-      // the later that match its children.
-      while (child_grouping.can_pull()) {
-        node_t next_node = child_grouping.pull();
-        if (current_node.low == next_node.low && current_node.high == next_node.high) {
+        __reduce_cut_add(one_level_cut,
+                         is_node(out_node.low) + is_node(out_node.high),
+                         is_false(out_node.low) + is_false(out_node.high),
+                         is_true(out_node.low) + is_true(out_node.high));
+      } else {
 #ifdef ADIAR_STATS_EXTRA
-          stats_reduce.removed_by_rule_2++;
+        stats_reduce.removed_by_rule_2++;
 #endif
-          red2_mapping.push({ next_node.uid, out_node.uid });
-        } else {
-          current_node = next_node;
-
-          out_node = create_node(label, out_id, current_node.low, current_node.high);
-          out_writer.unsafe_push(out_node);
-          out_id--;
-
-          red2_mapping.push({current_node.uid, out_node.uid});
-        }
       }
 
+      red2_mapping.push({ next_node.uid, out_node.uid });
+    }
+
+    if (!is_nil(out_node.uid)) {
       out_writer.unsafe_push(create_level_info(label, MAX_ID - out_id));
     }
+
+    // Update with 1-level cut below current level
+    out_writer.inc_1level_cut(one_level_cut);
 
     // Sort mappings for Reduction rule 2 back in order of node_arcs
     red2_mapping.sort();
@@ -195,7 +285,7 @@ namespace adiar
 
       // Find all arcs that have sources that match the current mapping's old_uid
       while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target) {
-        // The is_high flag is included in arc_t..source
+        // The is_high flag is included in arc_t.source
         arc_t new_arc = { node_arcs.pull().source, current_map.new_uid };
         reduce_pq.push(new_arc);
       }
@@ -234,7 +324,7 @@ namespace adiar
       }
     } else if (!out_writer.has_pushed()) {
       adiar_debug(!node_arcs.can_pull() && !sink_arcs.can_pull(),
-                  "Nodes are still left to be processed");
+                  "All nodes should be processed at this point");
 
       adiar_debug(reduce_pq.empty(),
                   "Nothing has been pushed to a 'parent'");
@@ -251,8 +341,8 @@ namespace adiar
                                          const size_t lpq_memory, const size_t sorters_memory)
   {
 #ifdef ADIAR_STATS
-    stats_reduce.sum_node_arcs += in_file._file_ptr -> _files[0].size();
-    stats_reduce.sum_sink_arcs += in_file._file_ptr -> _files[1].size();
+    stats_reduce.sum_node_arcs += in_file->_files[0].size();
+    stats_reduce.sum_sink_arcs += in_file->_files[1].size();
 #endif
 
     node_arc_stream<> node_arcs(in_file);
@@ -261,7 +351,12 @@ namespace adiar
 
     // Set up output
     node_file out_file;
-    out_file._file_ptr -> canonical = true;
+    out_file->canonical = true;
+
+    out_file->max_1level_cut[false][false] = 0u;
+    out_file->max_1level_cut[false][true]  = 0u;
+    out_file->max_1level_cut[true][false]  = 0u;
+    out_file->max_1level_cut[true][true]   = 0u;
 
     node_writer out_writer(out_file);
 
@@ -271,24 +366,33 @@ namespace adiar
       const arc_t e_low = sink_arcs.pull();
 
       // Apply reduction rule 1, if applicable
-      ptr_t reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
+      const ptr_t reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
       if (reduction_rule_ret != e_low.source) {
 #ifdef ADIAR_STATS_EXTRA
         stats_reduce.removed_by_rule_1++;
 #endif
-        node_t out_node = create_sink(value_of(reduction_rule_ret));
+        const bool sink_val = value_of(reduction_rule_ret);
+        const node_t out_node = create_sink(sink_val);
         out_writer.push(out_node);
-      } else {
-        label_t label = label_of(e_low.source);
 
-        out_writer.unsafe_push(create_node(label, MAX_ID,e_low.target,e_high.target));
+        __reduce_cut_add(out_file->max_1level_cut, 0u, !sink_val, sink_val);
+      } else {
+        const label_t label = label_of(e_low.source);
+
+        out_writer.unsafe_push(create_node(label, MAX_ID, e_low.target, e_high.target));
 
         out_writer.unsafe_push(create_level_info(label,1u));
+
+        out_file->max_1level_cut[false][false] = 1u;
+        out_file->max_1level_cut[false][true]  = std::max(value_of(e_low.target) + value_of(e_high.target), 1);
+        out_file->max_1level_cut[true][false]  = std::max(!value_of(e_low.target) + !value_of(e_high.target), 1);
+        out_file->max_1level_cut[true][true]   = 2u;
       }
       return out_file;
     }
 
-    pq_t reduce_pq({in_file}, lpq_memory, in_file._file_ptr->max_1level_cut);
+    // Initialize (levelized) priority queue
+    pq_t reduce_pq({in_file}, lpq_memory, in_file->max_1level_cut);
 
     const size_t internal_sorter_can_fit = internal_sorter<node_t>::memory_fits(sorters_memory / 2);
 
@@ -304,10 +408,47 @@ namespace adiar
 
       if(level_width <= internal_sorter_can_fit) {
         __reduce_level<dd_policy, pq_t, internal_sorter>
-          (sink_arcs, node_arcs, reduce_pq, label, out_writer, sorters_memory, level_width);
+          (sink_arcs, node_arcs, label, reduce_pq, out_writer, sorters_memory, level_width);
       } else {
         __reduce_level<dd_policy, pq_t, external_sorter>
-          (sink_arcs, node_arcs, reduce_pq, label, out_writer, sorters_memory, level_width);
+          (sink_arcs, node_arcs, label, reduce_pq, out_writer, sorters_memory, level_width);
+      }
+    }
+
+    // Compute final maximum 1-level cuts
+    if (is_sink(out_file)) { // Sink case
+      const bool sink_val = value_of(out_file);
+
+      out_file->max_1level_cut[false][false] = 0u;
+      out_file->max_1level_cut[true][false]  = !sink_val;
+      out_file->max_1level_cut[false][true]  = sink_val;
+      out_file->max_1level_cut[true][true]   = 1u;
+    } else if (out_writer.size() == 1) { // Single node case
+        out_file->max_1level_cut[false][false] = 1u;
+        out_file->max_1level_cut[false][true] = std::max(out_file->number_of_sinks[true], 1lu);
+        out_file->max_1level_cut[true][false] = std::max(out_file->number_of_sinks[false], 1lu);
+        out_file->max_1level_cut[true][true] = 2u;
+    } else { // General case
+      // Decrease maximum 1-level cut approximation below maximum cut and the
+      // trivial number of arcs in the subgraphs.
+      for(size_t incl_false = 0; incl_false < 2; incl_false++) {
+        for(size_t incl_true = 0; incl_true < 2; incl_true++) {
+          // Upper bound from above approximation.
+          const size_t sweep_approximation = out_file->max_1level_cut[incl_false][incl_true];
+
+          // Upper bound based on rough over-approximation of i-level cuts for
+          // any value of i.
+          const size_t max_cut = out_writer.size() + 1;
+
+          // Upper bound on just 'all arcs'
+          const size_t number_of_arcs = 2u * out_writer.size()
+            - (!incl_false ? out_file->number_of_sinks[false] : 0u)
+            - (!incl_true  ? out_file->number_of_sinks[true]  : 0u);
+
+          out_file->max_1level_cut[incl_false][incl_true] = std::min({
+              sweep_approximation, max_cut, number_of_arcs
+            });
+        }
       }
     }
 
@@ -350,21 +491,21 @@ namespace adiar
     const size_t lpq_memory = aux_available_memory / 2;
     const size_t sorters_memory = aux_available_memory - lpq_memory - __tpie_file_stream_memory_usage<mapping>();
 
-    const size_t max_cut = in_file._file_ptr->max_1level_cut;
+    const size_t max_cut = in_file->max_1level_cut;
     const tpie::memory_size_type lpq_memory_fits =
-      reduce_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(lpq_memory);
+      reduce_priority_queue<internal_sorter, internal_priority_queue>::memory_fits(lpq_memory);
 
     if(max_cut <= lpq_memory_fits) {
 #ifdef ADIAR_STATS
         stats_reduce.lpq_internal++;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue_t<internal_sorter, internal_priority_queue>>
+      return __reduce<dd_policy, reduce_priority_queue<internal_sorter, internal_priority_queue>>
         (in_file, lpq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
         stats_reduce.lpq_external++;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue_t<external_sorter, external_priority_queue>>
+      return __reduce<dd_policy, reduce_priority_queue<external_sorter, external_priority_queue>>
         (in_file, lpq_memory, sorters_memory);
     }
   }
