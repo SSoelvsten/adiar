@@ -32,7 +32,7 @@ namespace adiar
 
       // Has the second option fallen out, while the first is still within? Then
       // we can collapse back into the original ZDD.
-      if (is_node(r_fst) && is_sink(r_snd) && !value_of(r_snd)) {
+      if (is_node(r_fst) && is_false(r_snd)) {
         r_snd = NIL;
       }
 

@@ -53,7 +53,7 @@ namespace adiar
     static intercut_rec_output hit_cut(const ptr_t target)
     {
       // T chain: We are definitely outside of the given set
-      if (is_sink(target) && value_of(target)) {
+      if (is_true(target)) {
         return intercut_rec_output { target, target };
       }
 

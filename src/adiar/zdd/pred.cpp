@@ -83,12 +83,12 @@ namespace adiar {
       }
 
       // Has the left-hand side fallen out of its set?
-      if (is_sink(r1) && !value_of(r1)) {
+      if (is_false(r1)) {
         return false;
       }
 
       // Has the right-hand side fallen out of its set?
-      if (is_sink(r2) && !value_of(r2)) {
+      if (is_false(r2)) {
         return true;
       }
 
@@ -144,12 +144,12 @@ namespace adiar {
       }
 
       // Has the left-hand side fallen out of its set?
-      if (is_sink(r1) && !value_of(r1)) {
+      if (is_false(r1)) {
         return false;
       }
 
       // Has the right-hand side fallen out of its set?
-      if (is_sink(r2) && !value_of(r2)) {
+      if (is_false(r2)) {
         return false;
       }
 

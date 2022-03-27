@@ -191,8 +191,8 @@ namespace adiar
     }
     // Remove irrelevant parts of a request to prune requests similar to
     // shortcutting the operator in bdd_apply.
-    r_then = is_sink(r_if) && !value_of(r_if) ? NIL : r_then;
-    r_else = is_sink(r_if) && value_of(r_if) ? NIL : r_else;
+    r_then = is_false(r_if) ? NIL : r_then;
+    r_else = is_true(r_if)  ? NIL : r_else;
 
     if (is_sink(r_if) && is_sink(r_then)) {
       // => ~NIL => r_if is a sink with the 'true' value
