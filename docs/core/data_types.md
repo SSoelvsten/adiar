@@ -74,6 +74,14 @@ the following two predicates.
 
 - `bool is_sink(uid_t p)`
 
+  - `bool is_false(uid_t p)`
+
+    Shorthand for `is_sink(p) && !value_of(p)`.
+
+  - `bool is_true(uid_t p)`
+
+    Shorthand for `is_sink(p) && value_of(p)`.
+
 ### The Node Struct
 
 With the above a node in _Adiar_ is the following combination of 3 unsigned
@@ -114,6 +122,10 @@ node with the following function.
 - `bool value_of(node_t n)`
 
   Extract the value of the given sink node.
+
+  To evaluate whether a node *n* is specifically the *v* sink then you may use
+  the `is_false(n)` and `is_true(n)` functions which are shorthand for
+  `is_sink(n) && value_of(n) == v`.
 
 - `node_t negate(node_t n)` (operator `!`)
 

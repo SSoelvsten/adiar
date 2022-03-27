@@ -179,6 +179,30 @@ Return whether *A ⊂ B*.
 
 Return whether *A ∩ B = Ø*.
 
+### `bool is_sink(zdd A)`
+{: .no_toc }
+
+Whether the ZDD for *A* only consists of a sink, i.e. *A* is represents a
+constant function.
+
+### `bool value_of(zdd A)`
+{: .no_toc }
+
+Assuming that `is_sink(A)` evaluates to true, i.e. *A* can be interpreted as a
+constant function *v*, then returns the value *v*.
+
+### `bool is_empty(zdd A)`
+{: .no_toc }
+
+Whether *A* is the always empty set Ø. This is merely shorthand for
+`is_false(A)`, i.e. `is_sink(A) && !value_of(A)`.
+
+### `bool is_null(zdd A)`
+{: .no_toc }
+
+Whether *A* is the always is the null set {Ø}. This is merely shorthand for
+`is_true(A)`, i.e. `is_sink(A) && value_of(A)`.
+
 ## Set elements
 
 ### `bool zdd_contains(zdd A, label_file a)`
@@ -216,12 +240,6 @@ the deepest node of the DAG in the ZDD.
 Return a file with the labels of the existing levels in *A*.
 
 ## Other Functions
-
-### `bool is_sink(zdd A, sink_pred)`
-{: .no_toc }
-
-Whether the ZDD for _A_ only consists of a sink satisfying the given sink
-predicate. By default the predicate for *any* kind of sink is used.
 
 ### `zdd zdd_from(bdd f, label_file dom)`
 {: .no_toc }
