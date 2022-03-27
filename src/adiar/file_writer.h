@@ -275,7 +275,7 @@ namespace adiar {
     bool has_pushed()
     {
       for (size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
-        if (has_pushed(idx)) {
+        if (_streams[idx].size() > 0) {
           return true;
         }
       }
@@ -291,16 +291,23 @@ namespace adiar {
       return !has_pushed();
     }
 
-  protected:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief     Whether anything was pushed to a specific file of type \c T .
+    /// \brief Number of elements pushed to the underlying files.
     ///
-    /// \param idx Index for the file to check for any elements
+    /// \param incl_level_info Whether to also count the number of elements
+    ///                        pushed to the level info file.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_pushed(const size_t idx)
+    size_t size(bool incl_level_info = false)
     {
-      adiar_debug(idx < FILE_CONSTANTS<T>::files, "Invalid index");
-      return _streams[idx].size() > 0;
+      size_t acc = 0u;
+      for (size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
+        acc += _streams[idx].size();
+      }
+
+      if (incl_level_info) {
+        acc += _meta_stream.size();
+      }
+      return acc;
     }
   };
 
@@ -411,6 +418,22 @@ namespace adiar {
 
       if (is_sink(n.low)) { _file_ptr->number_of_sinks[value_of(n.low)]++; }
       if (is_sink(n.high)) { _file_ptr->number_of_sinks[value_of(n.high)]++; }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Increase the 1-level cut size to the maximum of the current or
+    ///        the given cuts.
+    ////////////////////////////////////////////////////////////////////////////
+    void inc_1level_cut(size_t (&o)[2][2])
+    {
+      size_t (&c)[2][2] = _file_ptr->max_1level_cut;
+
+      for(size_t incl_false = 0; incl_false < 2; incl_false++) {
+        for(size_t incl_true = 0; incl_true < 2; incl_true++) {
+          c[incl_false][incl_true] = std::max(c[incl_false][incl_true],
+                                              o[incl_false][incl_true]);
+        }
+      }
     }
 
     ////////////////////////////////////////////////////////////////////////////
