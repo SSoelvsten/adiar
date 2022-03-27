@@ -23,87 +23,173 @@ go_bandit([]() {
     });
 
     describe("ptr_t (sinks)", [&](){
-      it("should store and retrieve value", [&]() {
-        ptr_t p = create_sink_ptr(true);
-        AssertThat(value_of(p), Is().True());
-
-        p = create_sink_ptr(false);
-        AssertThat(value_of(p), Is().False());
-      });
-
-      it("should recognise Sinks as such", [&]() {
-        ptr_t sink_f = create_sink_ptr(false);
-        ptr_t sink_t = create_sink_ptr(true);
-
-        AssertThat(is_sink(sink_f), Is().True());
-        AssertThat(is_sink(sink_t), Is().True());
-      });
-
-      it("should not be confused with Node Ptr (unflagged)", [&]() {
-        ptr_t arc_node_max = create_node_ptr(MAX_LABEL,MAX_ID);
-        AssertThat(is_sink(arc_node_max), Is().False());
-
-        ptr_t arc_node_min = create_node_ptr(0,0);
-        AssertThat(is_sink(arc_node_min), Is().False());
-
-        ptr_t arc_node = create_node_ptr(42,18);
-        AssertThat(is_sink(arc_node), Is().False());
-      });
-
-      it("should not be confused with Node Ptr (flagged)", [&]() {
-        ptr_t arc_node_max = flag(create_node_ptr(MAX_LABEL,MAX_ID));
-        AssertThat(is_sink(arc_node_max), Is().False());
-
-        ptr_t arc_node_min = flag(create_node_ptr(0,0));
-        AssertThat(is_sink(arc_node_min), Is().False());
-
-        ptr_t arc_node = flag(create_node_ptr(42,18));
-        AssertThat(is_sink(arc_node), Is().False());
-      });
-
-      it("can see whether the flag is set", [&]() {
-        ptr_t p = flag(create_sink_ptr(false));
-        AssertThat(is_flagged(p), Is().True());
-
-        p = flag(create_sink_ptr(false));
-        AssertThat(is_flagged(p), Is().True());
-      });
-
-      it("can see whether the flag is not set", [&]() {
-        ptr_t p = create_sink_ptr(true);
-        AssertThat(is_flagged(p), Is().False());
-
-        p = create_sink_ptr(false);
-        AssertThat(is_flagged(p), Is().False());
-      });
-
-      it("should not be confused with Nil (unflagged)", [&]() {
-        AssertThat(is_sink(NIL), Is().False());
-      });
-
-      it("should not be confused with Nil (flagged)", [&]() {
-        AssertThat(is_sink(flag(NIL)), Is().False());
-      });
-
-      it("should negate sink (unflagged)", [&]() {
-        ptr_t p1 = create_sink_ptr(false);
-        AssertThat(negate(p1), Is().EqualTo(create_sink_ptr(true)));
-
-        ptr_t p2 = create_sink_ptr(true);
-        AssertThat(negate(p2), Is().EqualTo(create_sink_ptr(false)));
-      });
-
-      it("should negate sink into sink (flagged)", [&]() {
-        ptr_t p1 = flag(create_sink_ptr(false));
-        AssertThat(negate(p1), Is().EqualTo(flag(create_sink_ptr(true))));
-
-        ptr_t p2 = flag(create_sink_ptr(true));
-        AssertThat(negate(p2), Is().EqualTo(flag(create_sink_ptr(false))));
-      });
-
       it("should take up 8 bytes of memory", [&]() {
         ptr_t sink = create_sink_ptr(false);
         AssertThat(sizeof(sink), Is().EqualTo(8u));
+      });
+
+      describe("flag, unflag, is_flagged", []() {
+        it("is unflagged by default", [&]() {
+          ptr_t p = create_sink_ptr(true);
+          AssertThat(is_flagged(p), Is().False());
+
+          p = create_sink_ptr(true);
+          AssertThat(is_flagged(p), Is().False());
+        });
+
+        it("can set the flag", [&]() {
+          ptr_t p = flag(create_sink_ptr(false));
+          AssertThat(is_flagged(p), Is().True());
+
+          p = flag(create_sink_ptr(true));
+          AssertThat(is_flagged(p), Is().True());
+        });
+
+        it("can unset the flag", [&]() {
+          ptr_t p = flag(create_sink_ptr(false));
+          p = unflag(p);
+          AssertThat(is_flagged(p), Is().False());
+
+          p = flag(create_sink_ptr(true));
+          p = unflag(p);
+          AssertThat(is_flagged(p), Is().False());
+        });
+      });
+
+      describe("is_sink", []() {
+        it("should recognise Sinks as such", [&]() {
+          ptr_t sink_f = create_sink_ptr(false);
+          ptr_t sink_t = create_sink_ptr(true);
+
+          AssertThat(is_sink(sink_f), Is().True());
+          AssertThat(is_sink(sink_t), Is().True());
+        });
+
+        it("should not be confused with Node Ptr (unflagged)", [&]() {
+          ptr_t arc_node_max = create_node_ptr(MAX_LABEL,MAX_ID);
+          AssertThat(is_sink(arc_node_max), Is().False());
+          AssertThat(is_false(arc_node_max), Is().False());
+          AssertThat(is_true(arc_node_max), Is().False());
+
+          ptr_t arc_node_min = create_node_ptr(0,0);
+          AssertThat(is_sink(arc_node_min), Is().False());
+          AssertThat(is_false(arc_node_min), Is().False());
+          AssertThat(is_true(arc_node_min), Is().False());
+
+          ptr_t arc_node = create_node_ptr(42,18);
+          AssertThat(is_sink(arc_node), Is().False());
+          AssertThat(is_false(arc_node), Is().False());
+          AssertThat(is_true(arc_node), Is().False());
+        });
+
+        it("should not be confused with Node Ptr (flagged)", [&]() {
+          ptr_t arc_node_max = flag(create_node_ptr(MAX_LABEL,MAX_ID));
+          AssertThat(is_sink(arc_node_max), Is().False());
+          AssertThat(is_false(arc_node_max), Is().False());
+          AssertThat(is_true(arc_node_max), Is().False());
+
+          ptr_t arc_node_min = flag(create_node_ptr(0,0));
+          AssertThat(is_sink(arc_node_min), Is().False());
+          AssertThat(is_false(arc_node_min), Is().False());
+          AssertThat(is_true(arc_node_min), Is().False());
+
+          ptr_t arc_node = flag(create_node_ptr(42,18));
+          AssertThat(is_sink(arc_node), Is().False());
+          AssertThat(is_false(arc_node), Is().False());
+          AssertThat(is_true(arc_node), Is().False());
+        });
+
+        it("should not be confused with Nil (unflagged)", [&]() {
+          AssertThat(is_sink(NIL), Is().False());
+        });
+
+        it("should not be confused with Nil (flagged)", [&]() {
+          AssertThat(is_sink(flag(NIL)), Is().False());
+        });
+      });
+
+      describe("value_of", []() {
+        it("retrieves value from false sink", [&]() {
+          ptr_t p = create_sink_ptr(false);
+          AssertThat(value_of(p), Is().False());
+        });
+
+        it("retrieves value from true sink", [&]() {
+          ptr_t p = create_sink_ptr(true);
+          AssertThat(value_of(p), Is().True());
+        });
+      });
+
+      describe("is_false", []() {
+        it("should accept false sink", [&]() {
+          ptr_t sink_f = create_sink_ptr(false);
+          AssertThat(is_false(sink_f), Is().True());
+        });
+
+        it("should accept false sink (flagged)", [&]() {
+          ptr_t sink_f = flag(create_sink_ptr(false));
+          AssertThat(is_false(sink_f), Is().True());
+        });
+
+        it("should reject sink", [&]() {
+          ptr_t sink_t = create_sink_ptr(true);
+          AssertThat(is_false(sink_t), Is().False());
+        });
+
+        it("should reject non-sink", [&]() {
+          ptr_t p = create_node_ptr(0,0);
+          AssertThat(is_false(p), Is().False());
+        });
+
+        it("should reject NIL", [&]() {
+          ptr_t p = NIL;
+          AssertThat(is_false(p), Is().False());
+        });
+      });
+
+      describe("is_true", []() {
+        it("should reject false sink", [&]() {
+          ptr_t sink_f = create_sink_ptr(false);
+          AssertThat(is_true(sink_f), Is().False());
+        });
+
+        it("should accept true sink", [&]() {
+          ptr_t sink_t = create_sink_ptr(true);
+          AssertThat(is_true(sink_t), Is().True());
+        });
+
+        it("should accept true sink (flagged)", [&]() {
+          ptr_t sink_t = flag(create_sink_ptr(true));
+          AssertThat(is_true(sink_t), Is().True());
+        });
+
+        it("should reject non-sink", [&]() {
+          ptr_t p = create_node_ptr(0,1);
+          AssertThat(is_true(p), Is().False());
+        });
+
+        it("should reject NIL", [&]() {
+          ptr_t p = NIL;
+          AssertThat(is_true(p), Is().False());
+        });
+      });
+
+      describe("negate", []() {
+        it("should negate sink (unflagged)", [&]() {
+          ptr_t p1 = create_sink_ptr(false);
+          AssertThat(negate(p1), Is().EqualTo(create_sink_ptr(true)));
+
+          ptr_t p2 = create_sink_ptr(true);
+          AssertThat(negate(p2), Is().EqualTo(create_sink_ptr(false)));
+        });
+
+        it("should negate sink into sink (flagged)", [&]() {
+          ptr_t p1 = flag(create_sink_ptr(false));
+          AssertThat(negate(p1), Is().EqualTo(flag(create_sink_ptr(true))));
+
+          ptr_t p2 = flag(create_sink_ptr(true));
+          AssertThat(negate(p2), Is().EqualTo(flag(create_sink_ptr(false))));
+        });
       });
 
       describe("bool_op", []() {
