@@ -208,6 +208,30 @@ Returns whether *f* ≡ *g*.
 
 Returns whether *f* and *g* are different functions.
 
+### `bool is_sink(bdd f)`
+{: .no_toc }
+
+Whether the BDD for *f* only consists of a sink, i.e. *f* is a constant
+function.
+
+### `bool value_of(bdd f)`
+{: .no_toc }
+
+Assuming that `is_sink(f)` evaluates to true, i.e. *f* is a constant
+function *v*, then returns the value *v*.
+
+### `bool is_false(bdd f)`
+{: .no_toc }
+
+Whether *f* is the always false constant function. This is merely shorthand for
+`is_sink(f) && !value_of(f)`.
+
+### `bool is_true(bdd f)`
+{: .no_toc }
+
+Whether *f* is the always true constant function. This is merely shorthand for
+`is_sink(f) && value_of(f)`.
+
 ## Input variables
 
 ### `bool bdd_eval(bdd f, T x)`
@@ -247,13 +271,6 @@ This is the largest input variable that has an effect on the output of *f*.
 Return a file with the labels of the existing levels in *f*.
 
 ## Other Functions
-
-### `bool is_sink(bdd f, sink_pred)`
-{: .no_toc }
-
-Whether the BDD for *f* only consists of a sink satisfying the given sink
-predicate, i.e. *f* is a constant function. By default the predicate for *any*
-kind of sink is used.
 
 ### `bdd bdd_from(zdd A, label_file dom)`
 {: .no_toc }
