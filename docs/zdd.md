@@ -194,13 +194,13 @@ constant function *v*, then returns the value *v*.
 ### `bool is_empty(zdd A)`
 {: .no_toc }
 
-Whether *A* is the always empty set Ø. This is merely shorthand for
+Whether *A* is the empty set Ø. This is merely shorthand for
 `is_false(A)`, i.e. `is_sink(A) && !value_of(A)`.
 
 ### `bool is_null(zdd A)`
 {: .no_toc }
 
-Whether *A* is the always is the null set {Ø}. This is merely shorthand for
+Whether *A* is the is the null set {Ø}. This is merely shorthand for
 `is_true(A)`, i.e. `is_sink(A) && value_of(A)`.
 
 ## Set elements
