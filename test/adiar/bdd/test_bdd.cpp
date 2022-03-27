@@ -229,33 +229,101 @@ go_bandit([]() {
       });
     });
 
-    describe("is_sink predicate", [&]() {
-      it("should reject x0 as a sink file", [&]() {
-        AssertThat(is_sink(x0), Is().False());
+    describe("sink predicates", [&]() {
+      describe("is_sink", [&]() {
+        it("rejects x0 as a sink file", [&]() {
+          AssertThat(is_sink(x0), Is().False());
+        });
+
+        it("rejects x0 & x1 as a sink file", [&]() {
+          AssertThat(is_sink(x0_and_x1), Is().False());
+        });
+
+        it("accepts a true sink", [&]() {
+          AssertThat(is_sink(sink_T), Is().True());
+        });
+
+        it("accepts a false sink", [&]() {
+          AssertThat(is_sink(sink_F), Is().True());
+        });
+
+        it("accepts negation of a false sink", [&]() {
+          AssertThat(is_sink(~ sink_F), Is().True());
+        });
+
+        it("accepts negation of a true sink", [&]() {
+          AssertThat(is_sink(~ sink_T), Is().True());
+        });
       });
 
-      it("should reject x0 & x1 as a sink file", [&]() {
-        AssertThat(is_sink(x0_and_x1), Is().False());
+      describe("value_of", [&]() {
+        it("extracts from a true sink", [&]() {
+          AssertThat(value_of(sink_T), Is().True());
+        });
+
+        it("extracts from a false sink", [&]() {
+          AssertThat(value_of(sink_F), Is().False());
+        });
+
+        it("extracts from a negation of a false sink", [&]() {
+          AssertThat(value_of(~ sink_F), Is().True());
+        });
+
+        it("extracts from a negation of a true sink", [&]() {
+          AssertThat(value_of(~ sink_T), Is().False());
+        });
       });
 
-      it("should recognise a true sink", [&]() {
-        AssertThat(is_sink(sink_T), Is().True());
-        AssertThat(value_of(sink_T), Is().True());
+      describe("is_false", [&]() {
+        it("rejects x0 as a false sink file", [&]() {
+          AssertThat(is_false(x0), Is().False());
+        });
+
+        it("rejects x0 & x1 as a false sink file", [&]() {
+          AssertThat(is_false(x0_and_x1), Is().False());
+        });
+
+        it("rejects a true sink", [&]() {
+          AssertThat(is_false(sink_T), Is().False());
+        });
+
+        it("accepts a false sink", [&]() {
+          AssertThat(is_false(sink_F), Is().True());
+        });
+
+        it("rejects negation of a false sink", [&]() {
+          AssertThat(is_false(~ sink_F), Is().False());
+        });
+
+        it("accepts negation of a true sink", [&]() {
+          AssertThat(is_false(~ sink_T), Is().True());
+        });
       });
 
-      it("should recognise a false sink", [&]() {
-        AssertThat(is_sink(sink_F), Is().True());
-        AssertThat(value_of(sink_F), Is().False());
-      });
+      describe("is_true", [&]() {
+        it("rejects x0 as a true sink file", [&]() {
+          AssertThat(is_true(x0), Is().False());
+        });
 
-      it("should recognise negation of a false sink", [&]() {
-        AssertThat(is_sink(~ sink_F), Is().True());
-        AssertThat(value_of(~ sink_F), Is().True());
-      });
+        it("rejects x0 & x1 as a sink file", [&]() {
+          AssertThat(is_true(x0_and_x1), Is().False());
+        });
 
-      it("should recognise negation of a true sink", [&]() {
-        AssertThat(is_sink(~ sink_T), Is().True());
-        AssertThat(value_of(~ sink_T), Is().False());
+        it("accepts a true sink", [&]() {
+          AssertThat(is_true(sink_T), Is().True());
+        });
+
+        it("rejects a false sink", [&]() {
+          AssertThat(is_true(sink_F), Is().False());
+        });
+
+        it("accepts negation of a false sink", [&]() {
+          AssertThat(is_true(~ sink_F), Is().True());
+        });
+
+        it("rejects negation of a true sink", [&]() {
+          AssertThat(is_true(~ sink_T), Is().False());
+        });
       });
     });
   });
