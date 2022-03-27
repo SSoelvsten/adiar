@@ -54,10 +54,10 @@ namespace adiar {
       if (is_sink(v1) && is_sink(v2)) {
         ret_value = !value_of(v1) || value_of(v2);
         return true;
-      } if (is_sink(v1) && !value_of(v1)) {
+      } if (is_false(v1)) {
         ret_value = true;
         return true;
-      } else if (is_sink(v2) && value_of(v2)) {
+      } else if (is_true(v2)) {
         ret_value = false;
         return true;
       }
@@ -120,7 +120,7 @@ namespace adiar {
   public:
     static bool resolve_sinks(const node_t &v1, const node_t &v2, bool &ret_value)
     {
-      ret_value = (is_sink(v1) && !value_of(v1)) || (is_sink(v2) && !value_of(v2));
+      ret_value = is_false(v1) || is_false(v2);
       return (is_sink(v1) && is_sink(v2)) || ret_value;
     }
 

@@ -492,19 +492,71 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   typedef node node_t;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a terminal node representing the given boolean value.
+  //////////////////////////////////////////////////////////////////////////////
+  inline node_t create_sink(bool value)
+  {
+    return { create_sink_ptr(value) , NIL, NIL };
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a given node represents a sink.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool is_sink(const node_t& n)
+  {
+    return n.uid >= SINK_BIT;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the value from a sink.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool value_of(const node_t &n)
+  {
+    adiar_debug(is_sink(n), "Cannot extract value from non-sink");
+
+    return value_of(n.uid);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a pointer is the false sink.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool is_false(const node_t &n)
+  {
+    return is_false(n.uid);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a pointer is the true sink.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool is_true(const node_t &n)
+  {
+    return is_true(n.uid);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a node with the given unique identifier (label, id) and a
+  ///        pointer to its two children.
+  //////////////////////////////////////////////////////////////////////////////
   inline node_t create_node(uid_t uid, ptr_t low, ptr_t high)
   {
     return { uid, low, high };
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a node with the given its label, its level identifier, and a
+  ///        pointer to its two children.
+  //////////////////////////////////////////////////////////////////////////////
   inline node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high)
   {
     // TODO: Should these be adiar_assert instead to check validity of user input?
     adiar_debug(!is_nil(low), "Cannot create a node with NIL child");
-    adiar_debug(is_sink(low) || label < label_of(low), "Node is not prior to given low child");
+    adiar_debug(is_sink(low) || label < label_of(low),
+                "Node is not prior to given low child");
 
     adiar_debug(!is_nil(high), "Cannot create a node with NIL child");
-    adiar_debug(is_sink(high) || label < label_of(high), "Node is not prior to given high child");
+    adiar_debug(is_sink(high) || label < label_of(high),
+                "Node is not prior to given high child");
 
     return create_node(create_node_uid(label, id), low, high);
   }
@@ -524,11 +576,9 @@ namespace adiar {
     return create_node(label, id, low.uid, high.uid);
   }
 
-  inline bool is_sink(const node_t& n)
-  {
-    return n.uid >= SINK_BIT;
-  }
-
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the label from a node.
+  //////////////////////////////////////////////////////////////////////////////
   inline label_t label_of(const node_t &n)
   {
     adiar_debug(!is_sink(n), "Cannot extract label of a sink");
@@ -536,6 +586,9 @@ namespace adiar {
     return label_of(n.uid);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the level identifier of a node.
+  //////////////////////////////////////////////////////////////////////////////
   inline id_t id_of(const node_t &n)
   {
     adiar_debug(!is_sink(n), "Cannot extract id of a sink");
@@ -543,23 +596,19 @@ namespace adiar {
     return id_of(n.uid);
   }
 
-  inline node_t create_sink(bool value)
-  {
-    return { create_sink_ptr(value) , NIL, NIL };
-  }
-
-  inline bool value_of(const node_t &n)
-  {
-    adiar_debug(is_sink(n), "Cannot extract value from non-sink");
-
-    return value_of(n.uid);
-  }
-
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a node is on a given level, i.e. has the given label.
+  //////////////////////////////////////////////////////////////////////////////
   inline bool on_level(const node_t &n, label_t level)
   {
     return on_level(n.uid, level);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create the node representing the (locally) negated function:
+  ///        pointers to sink children are negated while pointers to other nodes
+  ///        are left unchanged.
+  //////////////////////////////////////////////////////////////////////////////
   inline node_t negate(const node_t &n)
   {
     if (is_sink(n)) {
