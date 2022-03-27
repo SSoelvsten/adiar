@@ -609,53 +609,90 @@ go_bandit([]() {
     });
 
     describe("node_t", [&]() {
-      it("should create node", [&]() {
-        auto sink_f = create_sink_ptr(false);
-        auto sink_t = create_sink_ptr(true);
+      it("should be a POD", [&]() {
+        AssertThat(std::is_pod<node>::value, Is().True());
+      });
 
-        // Test create_node(label, id, ptr, ptr)
-        auto n1 = create_node(3,12,sink_f,sink_t);
-        AssertThat(n1.uid, Is().EqualTo(create_node_ptr(3,12)));
-        AssertThat(label_of(n1), Is().EqualTo(3u));
-        AssertThat(id_of(n1), Is().EqualTo(12u));
+      it("should take up 24 bytes of memory", [&]() {
+        ptr_t node_ptr = create_node_ptr(42,2);
+        ptr_t sink = create_sink_ptr(false);
+        node_t node = create_node(1, 8, node_ptr, sink);
 
-        AssertThat(n1.low, Is().EqualTo(sink_f));
-        AssertThat(n1.high, Is().EqualTo(sink_t));
+        AssertThat(sizeof(node), Is().EqualTo(3u * 8u));
+      });
 
-        auto n2 = create_node(3,42,sink_t,sink_f);
-        AssertThat(n2.uid, Is().EqualTo(create_node_ptr(3,42)));
-        AssertThat(label_of(n2), Is().EqualTo(3u));
-        AssertThat(id_of(n2), Is().EqualTo(42u));
+      describe("create_node, label_of, id_of", [&]() {
+        it("should create node [label_t, id_t, ptr_t, ptr_t] [1]", [&]() {
+          ptr_t sink_f = create_sink_ptr(false);
+          ptr_t sink_t = create_sink_ptr(true);
 
-        AssertThat(n2.low, Is().EqualTo(sink_t));
-        AssertThat(n2.high, Is().EqualTo(sink_f));
+          node_t n1 = create_node(3,12,sink_f,sink_t);
+          AssertThat(n1.uid, Is().EqualTo(create_node_ptr(3,12)));
+          AssertThat(label_of(n1), Is().EqualTo(3u));
+          AssertThat(id_of(n1), Is().EqualTo(12u));
 
-        // Test create_node(label, id, node&, node&)
-        auto n3 = create_node(2,2,n1,n2);
-        AssertThat(n3.uid, Is().EqualTo(create_node_ptr(2,2)));
-        AssertThat(label_of(n3), Is().EqualTo(2u));
-        AssertThat(id_of(n3), Is().EqualTo(2u));
+          AssertThat(n1.low, Is().EqualTo(sink_f));
+          AssertThat(n1.high, Is().EqualTo(sink_t));
+        });
 
-        AssertThat(n3.low, Is().EqualTo(n1.uid));
-        AssertThat(n3.high, Is().EqualTo(n2.uid));
+        it("should create node [label_t, id_t, ptr_t, ptr_t] [2]", [&]() {
+          ptr_t sink_f = create_sink_ptr(false);
+          ptr_t sink_t = create_sink_ptr(true);
 
-        // Test create_node(label, ptr, node&)
-        auto n4 = create_node(1,7,sink_t,n3);
-        AssertThat(n4.uid, Is().EqualTo(create_node_ptr(1,7)));
-        AssertThat(label_of(n4), Is().EqualTo(1u));
-        AssertThat(id_of(n4), Is().EqualTo(7u));
+          node_t n2 = create_node(3,42,sink_t,sink_f);
+          AssertThat(n2.uid, Is().EqualTo(create_node_ptr(3,42)));
+          AssertThat(label_of(n2), Is().EqualTo(3u));
+          AssertThat(id_of(n2), Is().EqualTo(42u));
 
-        AssertThat(n4.low, Is().EqualTo(sink_t));
-        AssertThat(n4.high, Is().EqualTo(n3.uid));
+          AssertThat(n2.low, Is().EqualTo(sink_t));
+          AssertThat(n2.high, Is().EqualTo(sink_f));
+        });
 
-        // Test create_node(label, ptr, node&)
-        auto n5 = create_node(0,3,sink_t,n4);
-        AssertThat(n5.uid, Is().EqualTo(create_node_ptr(0,3)));
-        AssertThat(label_of(n5), Is().EqualTo(0u));
-        AssertThat(id_of(n5), Is().EqualTo(3u));
+        it("should create node [label_t, id_t, node_t&, node_t&]", [&]() {
+          ptr_t sink_f = create_sink_ptr(false);
+          ptr_t sink_t = create_sink_ptr(true);
 
-        AssertThat(n5.low, Is().EqualTo(sink_t));
-        AssertThat(n5.high, Is().EqualTo(n4.uid));
+          node_t n_child1 = create_node(3,12,sink_f,sink_t);
+          node_t n_child2 = create_node(3,42,sink_t,sink_f);
+
+          node_t n = create_node(2,2,n_child1,n_child2);
+          AssertThat(n.uid, Is().EqualTo(create_node_ptr(2,2)));
+          AssertThat(label_of(n), Is().EqualTo(2u));
+          AssertThat(id_of(n), Is().EqualTo(2u));
+
+          AssertThat(n.low, Is().EqualTo(n_child1.uid));
+          AssertThat(n.high, Is().EqualTo(n_child2.uid));
+        });
+
+        it("should create node [label_t, id_t, node_t&, ptr_t]", [&]() {
+          ptr_t sink_f = create_sink_ptr(false);
+          ptr_t sink_t = create_sink_ptr(true);
+
+          node_t n_child = create_node(2,2,sink_f,sink_t);
+
+          node_t n = create_node(1,7,sink_t,n_child);
+          AssertThat(n.uid, Is().EqualTo(create_node_ptr(1,7)));
+          AssertThat(label_of(n), Is().EqualTo(1u));
+          AssertThat(id_of(n), Is().EqualTo(7u));
+
+          AssertThat(n.low, Is().EqualTo(sink_t));
+          AssertThat(n.high, Is().EqualTo(n_child.uid));
+        });
+
+        it("should create node [label_t, id_t, ptr_t, node_t&]", [&]() {
+          ptr_t sink_f = create_sink_ptr(false);
+          ptr_t sink_t = create_sink_ptr(true);
+
+          node_t n_child = create_node(2,2,sink_f,sink_t);
+
+          node_t n = create_node(0,3,sink_t,n_child);
+          AssertThat(n.uid, Is().EqualTo(create_node_ptr(0,3)));
+          AssertThat(label_of(n), Is().EqualTo(0u));
+          AssertThat(id_of(n), Is().EqualTo(3u));
+
+          AssertThat(n.low, Is().EqualTo(sink_t));
+          AssertThat(n.high, Is().EqualTo(n_child.uid));
+        });
       });
 
       it("should sort by label, then by id", [&]() {
@@ -704,81 +741,117 @@ go_bandit([]() {
         AssertThat(node_1 != node_4, Is().True());
       });
 
-      it("should leave node_ptr children unchanged", [&]() {
-        auto node = create_node(2,2,
-                                create_node_ptr(42,3),
-                                create_node_ptr(8,2));
-
-        AssertThat(!node, Is().EqualTo(node));
-      });
-
-      it("should negate sink_ptr child", [&]() {
-        auto node = create_node(2,2,
-                                create_sink_ptr(false),
-                                create_node_ptr(8,2));
-
-        AssertThat(!node, Is().EqualTo(create_node(2,2,
-                                                   create_sink_ptr(true),
-                                                   create_node_ptr(8,2))));
-      });
-
-      it("should negate sink_ptr children", [&]() {
-        auto node = create_node(2,2,
-                                create_sink_ptr(false),
-                                flag(create_sink_ptr(true)));
-
-        AssertThat(!node, Is().EqualTo(create_node(2,2,
-                                                   create_sink_ptr(true),
-                                                   flag(create_sink_ptr(false)))));
-      });
-
-      it("should negate sink_ptr children", [&]() {
-        AssertThat(!create_sink(true), Is().EqualTo(create_sink(false)));
-        AssertThat(!create_sink(false), Is().EqualTo(create_sink(true)));
-      });
-
-      it("should be a POD", [&]() {
-        AssertThat(std::is_pod<node>::value, Is().True());
-      });
-
-      it("should take up 24 bytes of memory", [&]() {
-        ptr_t node_ptr = create_node_ptr(42,2);
-        ptr_t sink = create_sink_ptr(false);
-        node_t node = create_node(1,
-                                  8,
-                                  node_ptr,
-                                  sink);
-
-        AssertThat(sizeof(node), Is().EqualTo(3u * 8u));
-      });
-
       describe("sink nodes", [&]() {
-        it("should recognise sink nodes as such", [&]() {
-          node_t sink_node_T = create_sink(true);
-          AssertThat(is_sink(sink_node_T), Is().True());
+        describe("is_sink", [&]() {
+          it("accepts true sink", [&]() {
+            node_t sink_node_T = create_sink(true);
+            AssertThat(is_sink(sink_node_T), Is().True());
+          });
 
-          node_t sink_node_F = create_sink(false);
-          AssertThat(is_sink(sink_node_F), Is().True());
+          it("accepts false sink", [&]() {
+            node_t sink_node_F = create_sink(false);
+            AssertThat(is_sink(sink_node_F), Is().True());
+          });
+
+          it("rejects non-sink nodes [1]", [&]() {
+            node_t node_1 = create_node(42,2, create_sink_ptr(false), create_sink_ptr(true));
+            AssertThat(is_sink(node_1), Is().False());
+          });
+
+          it("rejects non-sink nodes [2]", [&]() {
+            node_t almost_F_sink = create_node(0,0,
+                                               create_sink_ptr(true),
+                                               create_node_ptr(42,2));
+            AssertThat(is_sink(almost_F_sink), Is().False());
+          });
+
+          it("rejects non-sink nodes [2]", [&]() {
+            node_t almost_T_sink = create_node(0,1,
+                                               create_sink_ptr(true),
+                                               create_node_ptr(42,2));
+            AssertThat(is_sink(almost_T_sink), Is().False());
+          });
         });
 
-        it("should recognise normal nodes not as sink nodes", [&]() {
-          node_t node_1 = create_node(42,2,
-                                      create_sink_ptr(false),
-                                      create_sink_ptr(true));
-          AssertThat(is_sink(node_1), Is().False());
+        describe("value_of", [&]() {
+          it("retrives value of a true sink node", [&]() {
+            node_t sink_node_T = create_sink(true);
+            AssertThat(value_of(sink_node_T), Is().True());
+          });
 
-          node_t node_2 = create_node(0,0,
-                                      create_sink_ptr(true),
-                                      node_1.uid);
-          AssertThat(is_sink(node_2), Is().False());
+          it("retrives value of a false sink node", [&]() {
+            node_t sink_node_F = create_sink(false);
+            AssertThat(value_of(sink_node_F), Is().False());
+          });
         });
 
-        it("should retrive value of a sink node", [&]() {
-          node_t sink_node_T = create_sink(true);
-          AssertThat(value_of(sink_node_T), Is().True());
+        describe("is_false", [&]() {
+          it("rejects true sink", [&]() {
+            node_t sink_node_T = create_sink(true);
+            AssertThat(is_false(sink_node_T), Is().False());
+          });
 
-          node_t sink_node_F = create_sink(false);
-          AssertThat(value_of(sink_node_F), Is().False());
+          it("accepts false sink", [&]() {
+            node_t sink_node_F = create_sink(false);
+            AssertThat(is_false(sink_node_F), Is().True());
+          });
+
+          it("rejects non-sink nodes", [&]() {
+            node_t n = create_node(0,0,create_node_ptr(42,2),create_sink_ptr(false));
+            AssertThat(is_false(n), Is().False());
+          });
+        });
+
+        describe("is_true", [&]() {
+          it("accepts true sink", [&]() {
+            node_t sink_node_T = create_sink(true);
+            AssertThat(is_true(sink_node_T), Is().True());
+          });
+
+          it("rejects false sink", [&]() {
+            node_t sink_node_F = create_sink(false);
+            AssertThat(is_true(sink_node_F), Is().False());
+          });
+
+          it("rejects non-sink nodes", [&]() {
+            node_t n = create_node(0,1,create_sink_ptr(true),create_node_ptr(2,3));
+            AssertThat(is_true(n), Is().False());
+          });
+        });
+      });
+
+      describe("negate (!)", [&]() {
+        it("should leave node_ptr children unchanged", [&]() {
+          auto node = create_node(2,2,
+                                  create_node_ptr(42,3),
+                                  create_node_ptr(8,2));
+
+          AssertThat(!node, Is().EqualTo(node));
+        });
+
+        it("should negate sink_ptr child", [&]() {
+          auto node = create_node(2,2,
+                                  create_sink_ptr(false),
+                                  create_node_ptr(8,2));
+
+          AssertThat(!node, Is().EqualTo(create_node(2,2,
+                                                     create_sink_ptr(true),
+                                                     create_node_ptr(8,2))));
+        });
+
+        it("should negate sink_ptr children while preserving flags", [&]() {
+          auto node = create_node(2,2,
+                                  create_sink_ptr(false),
+                                  flag(create_sink_ptr(true)));
+
+          AssertThat(!node, Is().EqualTo(create_node(2,2,
+                                                     create_sink_ptr(true),
+                                                     flag(create_sink_ptr(false)))));
+        });
+
+        it("should negate sink node", [&]() {
+          AssertThat(!create_sink(true), Is().EqualTo(create_sink(false)));
+          AssertThat(!create_sink(false), Is().EqualTo(create_sink(true)));
         });
       });
     });

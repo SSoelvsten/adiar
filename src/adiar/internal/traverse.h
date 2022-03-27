@@ -37,7 +37,7 @@ namespace adiar
     inline ptr_t visit(const node_t &n)
     {
       // Only pick high, if low is the false sink
-      return is_sink(n.low) && !value_of(n.low) ? n.high : n.low;
+      return is_false(n.low) ? n.high : n.low;
     }
 
     inline void visit(const bool /*s*/)

@@ -33,7 +33,7 @@ namespace adiar
 
     static intercut_rec hit_existing(const node_t &n)
     {
-      if (is_sink(n.low) && !value_of(n.low)) {
+      if (is_false(n.low)) {
         return intercut_rec_skipto { n.high };
       }
 

@@ -20,7 +20,7 @@ namespace adiar
   public:
     static inline ptr_t reduction_rule(const node_t &n)
     {
-      if (is_sink(n.high) && !value_of(n.high)) { return n.low; }
+      if (is_false(n.high)) { return n.low; }
       return n.uid;
     }
 
