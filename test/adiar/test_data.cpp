@@ -431,172 +431,180 @@ go_bandit([]() {
     });
 
     describe("ptr_t (nodes)", [&]() {
-      it("should store and retrieve label for Ptr with maximal id (unflagged)", [&]() {
-        ptr_t p = create_node_ptr(12,MAX_ID);
-        AssertThat(label_of(p), Is().EqualTo(12u));
-      });
-
-      it("should store and retrieve 42 label Ptr (unflagged)", [&]() {
-        ptr_t p = create_node_ptr(42,2);
-        AssertThat(label_of(p), Is().EqualTo(42u));
-      });
-
-      it("should store and retrieve 21 label Ptr (unflagged)", [&]() {
-        ptr_t p = create_node_ptr(21,2);
-        AssertThat(label_of(p), Is().EqualTo(21u));
-      });
-
-      it("should store and retrieve MAX label Ptr (unflagged)", [&]() {
-        ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
-        AssertThat(label_of(p), Is().EqualTo(MAX_LABEL));
-      });
-
-      it("should store and retrieve label for Ptr with maximal id (flagged)", [&]() {
-        ptr_t p = flag(create_node_ptr(12,MAX_ID));
-        AssertThat(label_of(p), Is().EqualTo(12u));
-      });
-
-      it("should store and retrieve 42 label Ptr (flagged)", [&]() {
-        ptr_t p = flag(create_node_ptr(42,2));
-        AssertThat(label_of(p), Is().EqualTo(42u));
-      });
-
-      it("should store and retrieve 21 label Ptr (flagged)", [&]() {
-        ptr_t p = flag(create_node_ptr(21,2));
-        AssertThat(label_of(p), Is().EqualTo(21u));
-      });
-
-      it("should store and retrieve MAX label Ptr (flagged)", [&]() {
-        ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
-        AssertThat(label_of(p), Is().EqualTo(MAX_LABEL));
-      });
-
-      it("should store and retrieve 42 id (unflagged)", [&]() {
-        ptr_t p = create_node_ptr(2,42);
-        AssertThat(id_of(p), Is().EqualTo(42u));
-      });
-
-      it("should store and retrieve 21 id (unflagged)", [&]() {
-        ptr_t p = create_node_ptr(2,21);
-        AssertThat(id_of(p), Is().EqualTo(21u));
-      });
-
-      it("should store and retrieve MAX id (unflagged)", [&]() {
-        ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
-        AssertThat(id_of(p), Is().EqualTo(MAX_ID));
-      });
-
-      it("should store and retrieve 42 id (flagged)", [&]() {
-        ptr_t p = flag(create_node_ptr(2,42));
-        AssertThat(id_of(p), Is().EqualTo(42u));
-      });
-
-      it("should store and retrieve 21 id (flagged)", [&]() {
-        ptr_t p = flag(create_node_ptr(2,21));
-        AssertThat(id_of(p), Is().EqualTo(21u));
-      });
-
-      it("should store and retrieve MAX id (flagged)", [&]() {
-        ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
-        AssertThat(id_of(p), Is().EqualTo(MAX_ID));
-      });
-
-      it("should create uid without being flagged", [&]() {
-        adiar::uid_t n_uid = create_node_uid(53, 4);
-        AssertThat(is_flagged(n_uid), Is().False());
-
-        n_uid = create_node_uid(42, 9);
-        AssertThat(is_flagged(n_uid), Is().False());
-      });
-
-      it("should sort Sink arcs after Node Ptr (unflagged)", [&]() {
-        // Create a node pointer with the highest possible raw value
-        ptr_t p_node = create_node_ptr(MAX_LABEL,MAX_ID);
-
-        // Create a sink pointer with the lowest raw value
-        ptr_t p_sink = create_sink_ptr(false);
-
-        AssertThat(p_node < p_sink, Is().True());
-        AssertThat(flag(p_node) < p_sink, Is().True());
-      });
-
-      it("should sort Sink arcs after Node Ptr (flagged)", [&]() {
-        // Create a node pointer with the highest possible raw value
-        ptr_t p_node = flag(create_node_ptr(MAX_LABEL,MAX_ID));
-
-        // Create a sink pointer with the lowest raw value
-        ptr_t p_sink = create_sink_ptr(false);
-
-        AssertThat(p_node < p_sink, Is().True());
-        AssertThat(flag(p_node) < p_sink, Is().True());
-      });
-
-      it("should recognise Node Ptr (unflagged)", [&]() {
-        ptr_t p_node_max = create_node_ptr(MAX_LABEL,MAX_ID);
-        AssertThat(is_node(p_node_max), Is().True());
-
-        ptr_t p_node_min = create_node_ptr(0,0);
-        AssertThat(is_node(p_node_min), Is().True());
-
-        ptr_t p_node = create_node_ptr(42,18);
-        AssertThat(is_node(p_node), Is().True());
-      });
-
-      it("should recognise Node Ptr (flagged)", [&]() {
-        ptr_t p_node_max = flag(create_node_ptr(MAX_LABEL,MAX_ID));
-        AssertThat(is_node(p_node_max), Is().True());
-
-        ptr_t p_node_min = flag(create_node_ptr(0,0));
-        AssertThat(is_node(p_node_min), Is().True());
-
-        ptr_t p_node = flag(create_node_ptr(42,18));
-        AssertThat(is_node(p_node), Is().True());
-      });
-
-      it("should not be confused with Sinks", [&]() {
-        ptr_t sink_f = create_sink_ptr(false);
-        ptr_t sink_t = create_sink_ptr(true);
-
-        AssertThat(is_node(sink_f), Is().False());
-        AssertThat(is_node(sink_t), Is().False());
-      });
-
-      it("should not be confused with Nil (unflagged)", [&]() {
-        AssertThat(is_node(NIL), Is().False());
-      });
-
-      it("should not be confused with Nil (flagged)", [&]() {
-        AssertThat(is_node(flag(NIL)), Is().False());
-      });
-
-      it("can recognise the flag is set", [&]() {
-        ptr_t p = flag(create_node_ptr(42,2));
-        AssertThat(is_flagged(p), Is().True());
-
-        p = flag(create_node_ptr(17,3));
-        AssertThat(is_flagged(p), Is().True());
-      });
-
-      it("can recognise the flag is not set", [&]() {
-        ptr_t p = create_node_ptr(42,2);
-        AssertThat(is_flagged(p), Is().False());
-
-        p = create_node_ptr(17,3);
-        AssertThat(is_flagged(p), Is().False());
-      });
-
-      it("should sort by label, then by id", [&]() {
-        auto node_1_2 = create_node_ptr(1,2);
-        auto node_2_1 = create_node_ptr(2,1);
-        auto node_2_2 = create_node_ptr(2,2);
-
-        AssertThat(node_1_2 < node_2_1, Is().True());
-        AssertThat(node_2_1 < node_2_2, Is().True());
-      });
-
       it("should take up 8 bytes of memory", [&]() {
-        auto node_ptr = create_node_ptr(42,2);
+        ptr_t node_ptr = create_node_ptr(42,2);
         AssertThat(sizeof(node_ptr), Is().EqualTo(8u));
+      });
+
+      describe("flag, unflag, is_flagged", [&]() {
+        it("can recognise the flag is set", [&]() {
+          ptr_t p = flag(create_node_ptr(42,2));
+          AssertThat(is_flagged(p), Is().True());
+
+          p = flag(create_node_ptr(17,3));
+          AssertThat(is_flagged(p), Is().True());
+        });
+
+        it("can recognise the flag is not set", [&]() {
+          ptr_t p = create_node_ptr(42,2);
+          AssertThat(is_flagged(p), Is().False());
+
+          p = create_node_ptr(17,3);
+          AssertThat(is_flagged(p), Is().False());
+        });
+      });
+
+      describe("create_node_ptr, label_of, id_of", [&]() {
+        it("should store and retrieve label for Ptr with maximal id (unflagged)", [&]() {
+          ptr_t p = create_node_ptr(12,MAX_ID);
+          AssertThat(label_of(p), Is().EqualTo(12u));
+        });
+
+        it("should store and retrieve 42 label Ptr (unflagged)", [&]() {
+          ptr_t p = create_node_ptr(42,2);
+          AssertThat(label_of(p), Is().EqualTo(42u));
+        });
+
+        it("should store and retrieve 21 label Ptr (unflagged)", [&]() {
+          ptr_t p = create_node_ptr(21,2);
+          AssertThat(label_of(p), Is().EqualTo(21u));
+        });
+
+        it("should store and retrieve MAX label Ptr (unflagged)", [&]() {
+          ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
+          AssertThat(label_of(p), Is().EqualTo(MAX_LABEL));
+        });
+
+        it("should store and retrieve label for Ptr with maximal id (flagged)", [&]() {
+          ptr_t p = flag(create_node_ptr(12,MAX_ID));
+          AssertThat(label_of(p), Is().EqualTo(12u));
+        });
+
+        it("should store and retrieve 42 label Ptr (flagged)", [&]() {
+          ptr_t p = flag(create_node_ptr(42,2));
+          AssertThat(label_of(p), Is().EqualTo(42u));
+        });
+
+        it("should store and retrieve 21 label Ptr (flagged)", [&]() {
+          ptr_t p = flag(create_node_ptr(21,2));
+          AssertThat(label_of(p), Is().EqualTo(21u));
+        });
+
+        it("should store and retrieve MAX label Ptr (flagged)", [&]() {
+          ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
+          AssertThat(label_of(p), Is().EqualTo(MAX_LABEL));
+        });
+
+        it("should store and retrieve 42 id (unflagged)", [&]() {
+          ptr_t p = create_node_ptr(2,42);
+          AssertThat(id_of(p), Is().EqualTo(42u));
+        });
+
+        it("should store and retrieve 21 id (unflagged)", [&]() {
+          ptr_t p = create_node_ptr(2,21);
+          AssertThat(id_of(p), Is().EqualTo(21u));
+        });
+
+        it("should store and retrieve MAX id (unflagged)", [&]() {
+          ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
+          AssertThat(id_of(p), Is().EqualTo(MAX_ID));
+        });
+
+        it("should store and retrieve 42 id (flagged)", [&]() {
+          ptr_t p = flag(create_node_ptr(2,42));
+          AssertThat(id_of(p), Is().EqualTo(42u));
+        });
+
+        it("should store and retrieve 21 id (flagged)", [&]() {
+          ptr_t p = flag(create_node_ptr(2,21));
+          AssertThat(id_of(p), Is().EqualTo(21u));
+        });
+
+        it("should store and retrieve MAX id (flagged)", [&]() {
+          ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
+          AssertThat(id_of(p), Is().EqualTo(MAX_ID));
+        });
+
+        it("should create uid without being flagged", [&]() {
+          adiar::uid_t n_uid = create_node_uid(53, 4);
+          AssertThat(is_flagged(n_uid), Is().False());
+
+          n_uid = create_node_uid(42, 9);
+          AssertThat(is_flagged(n_uid), Is().False());
+        });
+      });
+
+      describe("ordering ( < )", [&]() {
+        it("should sort by label, then by id", [&]() {
+          ptr_t node_1_2 = create_node_ptr(1,2);
+          ptr_t node_2_1 = create_node_ptr(2,1);
+          ptr_t node_2_2 = create_node_ptr(2,2);
+
+          AssertThat(node_1_2 < node_2_1, Is().True());
+          AssertThat(node_2_1 < node_2_2, Is().True());
+        });
+
+        it("should sort Sink arcs after Node Ptr (unflagged)", [&]() {
+          // Create a node pointer with the highest possible raw value
+          ptr_t p_node = create_node_ptr(MAX_LABEL,MAX_ID);
+
+          // Create a sink pointer with the lowest raw value
+          ptr_t p_sink = create_sink_ptr(false);
+
+          AssertThat(p_node < p_sink, Is().True());
+          AssertThat(flag(p_node) < p_sink, Is().True());
+        });
+
+        it("should sort Sink arcs after Node Ptr (flagged)", [&]() {
+          // Create a node pointer with the highest possible raw value
+          ptr_t p_node = flag(create_node_ptr(MAX_LABEL,MAX_ID));
+
+          // Create a sink pointer with the lowest raw value
+          ptr_t p_sink = create_sink_ptr(false);
+
+          AssertThat(p_node < p_sink, Is().True());
+          AssertThat(flag(p_node) < p_sink, Is().True());
+        });
+      });
+
+      describe("is_node", [&]() {
+        it("should recognise Node Ptr (unflagged)", [&]() {
+          ptr_t p_node_max = create_node_ptr(MAX_LABEL,MAX_ID);
+          AssertThat(is_node(p_node_max), Is().True());
+
+          ptr_t p_node_min = create_node_ptr(0,0);
+          AssertThat(is_node(p_node_min), Is().True());
+
+          ptr_t p_node = create_node_ptr(42,18);
+          AssertThat(is_node(p_node), Is().True());
+        });
+
+        it("should recognise Node Ptr (flagged)", [&]() {
+          ptr_t p_node_max = flag(create_node_ptr(MAX_LABEL,MAX_ID));
+          AssertThat(is_node(p_node_max), Is().True());
+
+          ptr_t p_node_min = flag(create_node_ptr(0,0));
+          AssertThat(is_node(p_node_min), Is().True());
+
+          ptr_t p_node = flag(create_node_ptr(42,18));
+          AssertThat(is_node(p_node), Is().True());
+        });
+
+        it("should not be confused with Sinks", [&]() {
+          ptr_t sink_f = create_sink_ptr(false);
+          ptr_t sink_t = create_sink_ptr(true);
+
+          AssertThat(is_node(sink_f), Is().False());
+          AssertThat(is_node(sink_t), Is().False());
+        });
+
+        it("should not be confused with Nil (unflagged)", [&]() {
+          AssertThat(is_node(NIL), Is().False());
+        });
+
+        it("should not be confused with Nil (flagged)", [&]() {
+          AssertThat(is_node(flag(NIL)), Is().False());
+        });
       });
     });
 
