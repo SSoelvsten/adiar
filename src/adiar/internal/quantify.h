@@ -292,9 +292,8 @@ namespace adiar
   }
 
   template<typename quantify_policy>
-  size_t __quantify_size_based_upper_bound(const typename quantify_policy::reduced_t &in)
+  size_t __quantify_max_cut_upper_bound(const typename quantify_policy::reduced_t &in)
   {
-    // Can the size_bound computation overflow?
     const size_t number_of_nodes = in.file_ptr()->size();
     const bits_approximation input_bits(number_of_nodes);
 
@@ -328,7 +327,7 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t size_bound = __quantify_size_based_upper_bound<quantify_policy>(in);
+    const size_t max_pq_size = __quantify_max_cut_upper_bound<quantify_policy>(in);
 
     constexpr size_t data_structures_in_pq_1 =
       quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
@@ -342,7 +341,7 @@ namespace adiar
     const size_t pq_1_memory_fits =
       quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
-    if(size_bound <= pq_1_memory_fits) {
+    if(max_pq_size <= pq_1_memory_fits) {
 #ifdef ADIAR_STATS
       stats_quantify.lpq_internal++;
 #endif
@@ -351,7 +350,7 @@ namespace adiar
       return __quantify<quantify_policy,
                         quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                         quantify_priority_queue_2_t<internal_priority_queue>>
-        (in, label, op, pq_1_internal_memory, pq_2_memory, size_bound);
+        (in, label, op, pq_1_internal_memory, pq_2_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_quantify.lpq_external++;
@@ -362,7 +361,7 @@ namespace adiar
       return __quantify<quantify_policy,
                         quantify_priority_queue_1_t<external_sorter, external_priority_queue>,
                         quantify_priority_queue_2_t<external_priority_queue>>
-        (in, label, op, pq_1_memory, pq_2_memory, size_bound);
+        (in, label, op, pq_1_memory, pq_2_memory, max_pq_size);
     }
   }
 }

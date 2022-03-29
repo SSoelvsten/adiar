@@ -479,25 +479,26 @@ namespace adiar
     return out_arcs;
   }
 
-  size_t __ite_size_based_upper_bound(const decision_diagram &in_if,
-                                      const decision_diagram &in_then,
-                                      const decision_diagram &in_else)
+  size_t __ite_max_cut_upper_bound(const decision_diagram &in_if,
+                                   const decision_diagram &in_then,
+                                   const decision_diagram &in_else)
   {
-    // Can the size_bound computation overflow?
     const size_t if_size = in_if.file_ptr()->size();
     const size_t then_size = in_then.file_ptr()->size();
     const size_t else_size = in_else.file_ptr()->size();
+
     const bits_approximation if_bits(if_size);
     const bits_approximation then_bits(then_size);
     const bits_approximation else_bits(else_size);
 
-    const bits_approximation bound_bits = if_bits * (then_bits + 2) * (else_bits + 2) +
-                                          then_bits + else_bits + 2;
+    const bits_approximation bound_bits = (if_bits + 1) * (then_bits + 1 + 2) * (else_bits + 1 + 2)
+                                          + (then_bits + 1) + (else_bits + 1) + 2;
 
     if(bound_bits.may_overflow()) {
       return std::numeric_limits<size_t>::max();
     } else {
-      return if_size * (then_size + 2) * (else_size + 2) + then_size + else_size + 2;
+      return (if_size + 1) * (then_size + 1 + 2) * (else_size + 1 + 2)
+             + (then_size + 1) + (else_size + 1) + 2;
     }
   }
 
@@ -549,7 +550,7 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t size_bound = __ite_size_based_upper_bound(bdd_if, bdd_then, bdd_else);
+    const size_t max_pq_size = __ite_max_cut_upper_bound(bdd_if, bdd_then, bdd_else);
 
     constexpr size_t data_structures_in_pq_1 =
       ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
@@ -566,7 +567,7 @@ namespace adiar
     const size_t pq_1_memory_fits =
       ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
-    if(size_bound <= pq_1_memory_fits) {
+    if(max_pq_size <= pq_1_memory_fits) {
 #ifdef ADIAR_STATS
       stats_if_else.lpq_internal++;
 #endif
@@ -576,7 +577,7 @@ namespace adiar
       return __bdd_ite<ite_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                        ite_priority_queue_2_t<internal_priority_queue>,
                        ite_priority_queue_3_t<internal_priority_queue>>
-        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_memory, pq_3_memory, size_bound);
+        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_memory, pq_3_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_if_else.lpq_external++;
@@ -588,7 +589,7 @@ namespace adiar
       return __bdd_ite<ite_priority_queue_1_t<external_sorter, external_priority_queue>,
                        ite_priority_queue_2_t<external_priority_queue>,
                        ite_priority_queue_3_t<external_priority_queue>>
-        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_memory, pq_3_memory, size_bound);
+        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_memory, pq_3_memory, max_pq_size);
     }
   }
 }

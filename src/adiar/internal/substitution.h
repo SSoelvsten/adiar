@@ -202,9 +202,8 @@ namespace adiar
   }
 
   template<typename substitute_policy>
-  size_t __substitute_size_based_upper_bound(const typename substitute_policy::reduced_t &dd)
+  size_t __substitute_max_cut_upper_bound(const typename substitute_policy::reduced_t &dd)
   {
-    // Can the size_bound computation overflow?
     const size_t number_of_nodes = dd.file_ptr()->size();
     const bits_approximation input_bits(number_of_nodes);
 
@@ -226,25 +225,25 @@ namespace adiar
 
     // Derive an upper bound on the size of auxiliary data structures and check
     // whether we can run them with a faster internal memory variant.
-    const size_t size_bound = __substitute_size_based_upper_bound<substitute_policy>(dd);
+    const size_t max_pq_size = __substitute_max_cut_upper_bound<substitute_policy>(dd);
 
-    const tpie::memory_size_type lpq_memory_fits =
+    const tpie::memory_size_type pq_memory_fits =
       substitute_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(aux_available_memory);
 
-    if(size_bound <= lpq_memory_fits) {
+    if(max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_substitute.lpq_internal++;
 #endif
       return __substitute<substitute_policy, substitute_act_mgr,
                           substitute_priority_queue_t<internal_sorter, internal_priority_queue>>
-        (dd, amgr, aux_available_memory, size_bound);
+        (dd, amgr, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_substitute.lpq_external++;
 #endif
       return __substitute<substitute_policy, substitute_act_mgr,
                           substitute_priority_queue_t<external_sorter, external_priority_queue>>
-        (dd, amgr, aux_available_memory, size_bound);
+        (dd, amgr, aux_available_memory, max_pq_size);
     }
   }
 }

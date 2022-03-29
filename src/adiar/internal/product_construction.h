@@ -409,22 +409,26 @@ namespace adiar
   }
 
   template<typename prod_policy>
-  size_t __prod_size_based_upper_bound(const typename prod_policy::reduced_t &in_1,
-                                       const typename prod_policy::reduced_t &in_2,
-                                       const bool_op &op)
+  size_t __prod_max_cut_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                    const typename prod_policy::reduced_t &in_2,
+                                    const bool_op &op)
   {
-    // Can the size_bound computation overflow?
-    const size_t nodes_in_1 = in_1.file_ptr()->size() + prod_policy::right_leaves(op);
-    const size_t nodes_in_2 = in_2.file_ptr()->size() + prod_policy::left_leaves(op);
+    const size_t nodes_in_1 = in_1.file_ptr()->size();
+    const size_t left_leaves = prod_policy::left_leaves(op);
+
+    const size_t nodes_in_2 = in_2.file_ptr()->size();
+    const size_t right_leaves = prod_policy::right_leaves(op);
+
     const bits_approximation in_1_bits(nodes_in_1);
     const bits_approximation in_2_bits(nodes_in_2);
 
-    const bits_approximation bound_bits = (in_1_bits * in_2_bits) + 2;
+    const bits_approximation bound_bits =
+      (in_1_bits + 1 + left_leaves) * (in_2_bits + 1 + right_leaves) + 2;
 
     if(bound_bits.may_overflow()) {
       return std::numeric_limits<size_t>::max();
     } else {
-      return (nodes_in_1 * nodes_in_2) + 2;
+      return (nodes_in_1 + 1 + left_leaves) * (nodes_in_2 + 1 + right_leaves) + 2;
     }
   }
 
@@ -499,27 +503,23 @@ namespace adiar
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
 
-    const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
-
     // Derive an upper bound on the size of auxiliary data structures and check
     // whether we can run them with a faster internal memory variant.
-    const size_t size_bound = __prod_size_based_upper_bound<prod_policy>(in_1, in_2, op);
+    const size_t max_pq_size = __prod_max_cut_upper_bound<prod_policy>(in_1, in_2, op);
 
     const size_t pq_1_memory_fits =
       prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
-    const size_t pq_2_memory_fits =
-      prod_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
-
-
-    if(size_bound <= pq_1_memory_fits && size_bound <= pq_2_memory_fits) {
+    if(max_pq_size <= pq_1_memory_fits) {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_internal++;
 #endif
+      const size_t pq_2_memory = aux_available_memory - pq_1_internal_memory;
+
       return __product_construction<prod_policy,
                                     prod_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                                     prod_priority_queue_2_t<internal_priority_queue>>
-        (in_1, in_2, op, pq_1_internal_memory, pq_2_internal_memory, size_bound);
+        (in_1, in_2, op, pq_1_internal_memory, pq_2_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_external++;
@@ -530,7 +530,7 @@ namespace adiar
       return __product_construction<prod_policy,
                                     prod_priority_queue_1_t<external_sorter, external_priority_queue>,
                                     prod_priority_queue_2_t<external_priority_queue>>
-        (in_1, in_2, op, pq_1_memory, pq_2_memory, size_bound);
+        (in_1, in_2, op, pq_1_memory, pq_2_memory, max_pq_size);
     }
   }
 }
