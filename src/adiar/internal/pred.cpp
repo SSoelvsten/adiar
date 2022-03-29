@@ -1,6 +1,7 @@
 #include "pred.h"
 
 #include <adiar/file_stream.h>
+#include <adiar/internal/util.h>
 
 namespace adiar
 {
@@ -24,10 +25,18 @@ namespace adiar
     size_t curr_level_processed;
 
   public:
-    static size_t __comparison_size_based_upper_bound
-      (const node_file &in_1, const node_file &/*in_2*/)
+    static size_t max_cut_upper_bound(const node_file &in_1, const node_file &/*in_2*/)
     {
-      return in_1.size();
+      const size_t number_of_nodes = in_1._file_ptr->size();
+      const bits_approximation input_bits(number_of_nodes);
+
+      const bits_approximation bound_bits = input_bits + 1;
+
+      if (bound_bits.may_overflow()) {
+        return std::numeric_limits<size_t>::max();
+      } else {
+        return in_1.size() + 1u;
+      }
     }
 
     static constexpr size_t memory_usage()

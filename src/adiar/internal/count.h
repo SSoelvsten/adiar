@@ -6,6 +6,7 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/levelized_priority_queue.h>
+#include <adiar/internal/util.h>
 
 namespace adiar
 {
@@ -84,9 +85,18 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  inline size_t __count_size_based_upper_bound(const decision_diagram &dd)
+  inline size_t __count_max_cut_upper_bound(const decision_diagram &dd)
   {
-    return dd.file_ptr()->size();
+    const size_t input_size = dd.file_ptr()->size();
+    const bits_approximation input_bits(input_size);
+
+    const bits_approximation bound_bits = input_bits + 1;
+
+    if (bound_bits.may_overflow()) {
+      return std::numeric_limits<size_t>::max();
+    } else {
+      return input_size + 1;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -144,22 +154,21 @@ namespace adiar
 
     // Derive an upper bound on the size of auxiliary data structures and check
     // whether we can run them with a faster internal memory variant.
-    const size_t size_upper_bound = __count_size_based_upper_bound(dd);
+    const size_t max_pq_size = __count_max_cut_upper_bound(dd);
 
-    const tpie::memory_size_type aux_available_memory = memory::available()
-      - node_stream<>::memory_usage();
+    const size_t aux_available_memory = memory::available() - node_stream<>::memory_usage();
 
     const size_t pq_memory_fits =
       count_priority_queue_t<typename count_policy::queue_t>::memory_fits(aux_available_memory);
 
-    if (size_upper_bound <= pq_memory_fits) {
+    if (max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_count.lpq_internal++;
 #endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           internal_sorter,
                                                           internal_priority_queue>>
-        (dd, varcount, aux_available_memory, size_upper_bound);
+        (dd, varcount, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_count.lpq_external++;
@@ -167,7 +176,7 @@ namespace adiar
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           external_sorter,
                                                           external_priority_queue>>
-        (dd, varcount, aux_available_memory, size_upper_bound);
+        (dd, varcount, aux_available_memory, max_pq_size);
     }
   }
 }

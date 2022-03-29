@@ -9,6 +9,7 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/levelized_priority_queue.h>
+#include <adiar/internal/util.h>
 
 namespace adiar
 {
@@ -180,7 +181,7 @@ namespace adiar
   typename intercut_policy::unreduced_t __intercut (const typename intercut_policy::reduced_t &dd,
                                                     const label_file &labels,
                                                     const size_t pq_1_memory, const size_t pq_2_memory,
-                                                    const size_t max_pq_1_size, const size_t max_pq_2_size)
+                                                    const size_t max_pq_size)
   {
     node_stream<> in_nodes(dd);
     node_t n = in_nodes.pull();
@@ -195,8 +196,8 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_1_t intercut_pq_1({dd}, pq_1_memory, max_pq_1_size);
-    pq_2_t intercut_pq_2({labels}, pq_2_memory, max_pq_2_size);
+    pq_1_t intercut_pq_1({dd}, pq_1_memory, max_pq_size);
+    pq_2_t intercut_pq_2({labels}, pq_2_memory, max_pq_size);
 
     // Add request for root in the relevant queue
     label_t out_label = std::min(l, label_of(n));
@@ -311,15 +312,8 @@ namespace adiar
   }
 
   template<typename intercut_policy>
-  size_t __intercut_size_based_upper_bound_1(const typename intercut_policy::reduced_t &dd)
+  size_t __intercut_max_cut_upper_bound(const typename intercut_policy::reduced_t &dd)
   {
-    return 2 * dd.file_ptr()->size() + 2;
-  }
-
-  template<typename intercut_policy>
-  size_t __intercut_size_based_upper_bound_2(const typename intercut_policy::reduced_t &dd)
-  {
-    // Can the size_bound computation overflow?
     const size_t number_of_nodes = dd.file_ptr()->size();
     const bits_approximation input_bits(number_of_nodes);
 
@@ -352,8 +346,7 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t size_bound_1 = __intercut_size_based_upper_bound_1<intercut_policy>(dd);
-    const size_t size_bound_2 = __intercut_size_based_upper_bound_2<intercut_policy>(dd);
+    const size_t max_pq_size = __intercut_max_cut_upper_bound<intercut_policy>(dd);
 
     constexpr size_t data_structures_in_pq_1 =
       intercut_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
@@ -369,17 +362,18 @@ namespace adiar
     const size_t pq_1_memory_fits =
       intercut_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
+   // TODO: Abuse that this one can contain just as many elements as pq_1?
     const size_t pq_2_memory_fits =
       intercut_priority_queue_2_t<internal_sorter, internal_priority_queue>::memory_fits(pq_2_internal_memory);
 
-    if(size_bound_1 <= pq_1_memory_fits && size_bound_2 <= pq_2_memory_fits) {
+    if(max_pq_size <= pq_1_memory_fits && max_pq_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_intercut.lpq_internal++;
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_1_t<external_sorter, external_priority_queue>,
                         intercut_priority_queue_2_t<external_sorter, external_priority_queue>>
-        (dd, labels, pq_1_internal_memory, pq_2_internal_memory, size_bound_1, size_bound_2);
+        (dd, labels, pq_1_internal_memory, pq_2_internal_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_intercut.lpq_external++;
@@ -390,7 +384,7 @@ namespace adiar
       return __intercut<intercut_policy,
                         intercut_priority_queue_1_t<external_sorter, external_priority_queue>,
                         intercut_priority_queue_2_t<external_sorter, external_priority_queue>>
-        (dd, labels, pq_1_memory, pq_2_memory, size_bound_1, size_bound_2);
+        (dd, labels, pq_1_memory, pq_2_memory, max_pq_size);
     }
   }
 }
