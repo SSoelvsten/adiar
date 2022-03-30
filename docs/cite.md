@@ -80,7 +80,7 @@ optimisations, extensions, and new theoretical contributions to make it usable
 in practice.
 
 - Steffan Christ Sølvsten, Jaco van de Pol, Anna Blume Jakobsen, Mathias Weller Berg Thomasen.
-  “*Adiar: Binary Decision Diagrams in External Memory*”.
+  “[*Adiar: Binary Decision Diagrams in External Memory*](https://link.springer.com/chapter/10.1007/978-3-030-99527-0_16)”.
   In: *Tools and Algorithms for the Construction and Analysis of Systems* (TACAS). (2022)
   
   ```bibtex
@@ -92,12 +92,16 @@ in practice.
                  and Thomasen, Mathias Weller Berg},
     year          = {2022},
     booktitle     = {Tools and Algorithms for the Construction and Analysis of Systems},
-    editor        = {Dana Fisman
-                 and Grigore Rosu},
+    editor        = {Fisman, Dana
+                 and Rosu, Grigore},
+    pages         = {295--313},
     numPages      = {19},
     publisher     = {Springer},
     address       = {Berlin, Heidelberg},  
     series        = {Lecture Notes in Computer Science},
+    volume        = {13244},
+    isbn          = {978-3-030-99527-0},
+    doi           = {10.1007/978-3-030-99527-0\_16},
   }
   ```
 
