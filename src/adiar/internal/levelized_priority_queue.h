@@ -249,7 +249,7 @@ namespace adiar {
       // the 'internal_sorter'. So, this is a slight under-approximation of what
       // we truly could do with this amount of memory.
       return internal_priority_queue<elem_t, elem_comp_t>
-        ::memory_fits((memory_bytes - const_memory_bytes) / (BUCKETS + 1));
+        ::memory_fits((memory_bytes - const_memory_bytes) / DATA_STRUCTURES);
     }
 
   private:
