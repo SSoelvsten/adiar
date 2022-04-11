@@ -344,6 +344,10 @@ namespace adiar
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
+    //
+    // We then may derive an upper bound on the size of auxiliary data
+    // structures and check whether we can run them with a faster internal
+    // memory variant.
     const size_t aux_available_memory = memory::available()
       // Input streams
       - node_arc_stream<>::memory_usage() - sink_arc_stream<>::memory_usage() - level_info_stream<arc_t>::memory_usage()
@@ -353,8 +357,6 @@ namespace adiar
     const size_t lpq_memory = aux_available_memory / 2;
     const size_t sorters_memory = aux_available_memory / 2 - __tpie_file_stream_memory_usage<mapping>();
 
-    // Derive an upper bound on the size of auxiliary data structures and check
-    // whether we can run them with a faster internal memory variant.
     const size_t max_cut = in_file._file_ptr->max_1level_cut;
     const tpie::memory_size_type lpq_memory_fits =
       reduce_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(lpq_memory);

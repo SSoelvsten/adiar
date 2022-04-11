@@ -488,6 +488,10 @@ namespace adiar
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
+    //
+    // We then may derive an upper bound on the size of auxiliary data
+    // structures and check whether we can run them with a faster internal
+    // memory variant.
     const size_t aux_available_memory = memory::available()
       // Input streams
       - 2*node_stream<>::memory_usage()
@@ -503,23 +507,25 @@ namespace adiar
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
 
-    // Derive an upper bound on the size of auxiliary data structures and check
-    // whether we can run them with a faster internal memory variant.
+    const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
+
     const size_t max_pq_size = __prod_max_cut_upper_bound<prod_policy>(in_1, in_2, op);
 
     const size_t pq_1_memory_fits =
       prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
-    if(max_pq_size <= pq_1_memory_fits) {
+    const size_t pq_2_memory_fits =
+      prod_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
+
+    // TODO: maximum 1-level cut suffices for pq_2!
+    if(max_pq_size <= pq_1_memory_fits && max_pq_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_internal++;
 #endif
-      const size_t pq_2_memory = aux_available_memory - pq_1_internal_memory;
-
       return __product_construction<prod_policy,
                                     prod_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                                     prod_priority_queue_2_t<internal_priority_queue>>
-        (in_1, in_2, op, pq_1_internal_memory, pq_2_memory, max_pq_size);
+        (in_1, in_2, op, pq_1_internal_memory, pq_2_internal_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_external++;

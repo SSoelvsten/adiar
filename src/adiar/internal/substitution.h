@@ -220,11 +220,15 @@ namespace adiar
   typename substitute_policy::unreduced_t substitute(const typename substitute_policy::reduced_t &dd,
                                                      substitute_act_mgr &amgr)
   {
+    // Compute amount of memory available for auxiliary data structures after
+    // having opened all streams.
+    //
+    // We then may derive an upper bound on the size of auxiliary data
+    // structures and check whether we can run them with a faster internal
+    // memory variant.
     const tpie::memory_size_type aux_available_memory = memory::available()
       - node_stream<>::memory_usage() - arc_writer::memory_usage();
 
-    // Derive an upper bound on the size of auxiliary data structures and check
-    // whether we can run them with a faster internal memory variant.
     const size_t max_pq_size = __substitute_max_cut_upper_bound<substitute_policy>(dd);
 
     const tpie::memory_size_type pq_memory_fits =

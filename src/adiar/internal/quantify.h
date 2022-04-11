@@ -319,8 +319,12 @@ namespace adiar
       return in;
     }
 
-    // Derive an upper bound on the size of auxiliary data structures and check
-    // whether we can run them with a faster internal memory variant.
+    // Compute amount of memory available for auxiliary data structures after
+    // having opened all streams.
+    //
+    // We then may derive an upper bound on the size of auxiliary data
+    // structures and check whether we can run them with a faster internal
+    // memory variant.
     const size_t aux_available_memory = memory::available()
       // Input stream
       - node_stream<>::memory_usage()
@@ -341,16 +345,21 @@ namespace adiar
     const size_t pq_1_memory_fits =
       quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
-    if(max_pq_size <= pq_1_memory_fits) {
+    const size_t pq_2_internal_memory =
+      aux_available_memory - pq_1_internal_memory;
+
+    const size_t pq_2_memory_fits =
+      quantify_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
+
+    // TODO: maximum 1-level cut is sufficient for pq_2!
+    if(max_pq_size <= pq_1_memory_fits && max_pq_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_quantify.lpq_internal++;
 #endif
-      const size_t pq_2_memory = aux_available_memory - pq_1_internal_memory;
-
       return __quantify<quantify_policy,
                         quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                         quantify_priority_queue_2_t<internal_priority_queue>>
-        (in, label, op, pq_1_internal_memory, pq_2_memory, max_pq_size);
+        (in, label, op, pq_1_internal_memory, pq_2_internal_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_quantify.lpq_external++;
