@@ -338,8 +338,12 @@ namespace adiar
       return intercut_policy::on_empty_labels(dd);
     }
 
-    // Derive an upper bound on the size of auxiliary data structures and check
-    // whether we can run them with a faster internal memory variant.
+    // Compute amount of memory available for auxiliary data structures after
+    // having opened all streams.
+    //
+    // We then may derive an upper bound on the size of auxiliary data
+    // structures and check whether we can run them with a faster internal
+    // memory variant.
     const tpie::memory_size_type aux_available_memory = memory::available()
       // Input stream
       - node_stream<>::memory_usage()
@@ -362,7 +366,6 @@ namespace adiar
     const size_t pq_1_memory_fits =
       intercut_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
-   // TODO: Abuse that this one can contain just as many elements as pq_1?
     const size_t pq_2_memory_fits =
       intercut_priority_queue_2_t<internal_sorter, internal_priority_queue>::memory_fits(pq_2_internal_memory);
 

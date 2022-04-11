@@ -198,8 +198,12 @@ namespace adiar
   bool comparison_check(const node_file &f1, const node_file &f2,
                         const bool negate1, const bool negate2)
   {
-    // Derive an upper bound on the size of auxiliary data structures and check
-    // whether we can run them with a faster internal memory variant.
+    // Compute amount of memory available for auxiliary data structures after
+    // having opened all streams.
+    //
+    // We then may derive an upper bound on the size of auxiliary data
+    // structures and check whether we can run them with a faster internal
+    // memory variant.
     const size_t aux_available_memory = memory::available()
       // Input
       - 2*node_stream<>::memory_usage()
@@ -215,21 +219,26 @@ namespace adiar
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
 
+
+    const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
+
     const size_t max_pq_size = comp_policy::level_check_t::max_cut_upper_bound(f1, f2);
 
     const size_t pq_1_memory_fits =
       comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
-    if(max_pq_size <= pq_1_memory_fits) {
+    const size_t pq_2_memory_fits =
+      comparison_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
+
+    // TODO: Only one element per node in pq_2, so maximum is width (or their product)!
+    if(max_pq_size <= pq_1_memory_fits && max_pq_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_equality.lpq_internal++;
 #endif
-      const size_t pq_2_memory = aux_available_memory - pq_1_internal_memory;
-
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                                 comparison_priority_queue_2_t<internal_priority_queue>>
-        (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_memory, max_pq_size);
+        (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_internal_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_equality.lpq_external++;

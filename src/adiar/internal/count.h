@@ -152,8 +152,12 @@ namespace adiar
     adiar_debug(!is_sink(dd),
                 "Count algorithm does not work on sink-only edge case");
 
-    // Derive an upper bound on the size of auxiliary data structures and check
-    // whether we can run them with a faster internal memory variant.
+    // Compute amount of memory available for auxiliary data structures after
+    // having opened all streams.
+    //
+    // We then may derive an upper bound on the size of auxiliary data
+    // structures and check whether we can run them with a faster internal
+    // memory variant.
     const size_t max_pq_size = __count_max_cut_upper_bound(dd);
 
     const size_t aux_available_memory = memory::available() - node_stream<>::memory_usage();

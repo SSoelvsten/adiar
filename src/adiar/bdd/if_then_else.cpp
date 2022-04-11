@@ -542,8 +542,12 @@ namespace adiar
                        value_of(bdd_else) ? imp_op : and_op);
     }
 
-    // Derive an upper bound on the size of auxiliary data structures and check
-    // whether we can run them with a faster internal memory variant.
+    // Compute amount of memory available for auxiliary data structures after
+    // having opened all streams.
+    //
+    // We then may derive an upper bound on the size of auxiliary data
+    // structures and check whether we can run them with a faster internal
+    // memory variant.
     const tpie::memory_size_type aux_available_memory = memory::available()
       // Input streams
       - 3*node_stream<>::memory_usage()
@@ -564,20 +568,30 @@ namespace adiar
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2 + data_structures_in_pq_3)) * data_structures_in_pq_1;
 
+    const size_t pq_2_internal_memory =
+      ((aux_available_memory - pq_1_internal_memory) / (data_structures_in_pq_2 + data_structures_in_pq_3)) * data_structures_in_pq_2;
+
+    const size_t pq_3_internal_memory =
+      aux_available_memory - pq_1_internal_memory - pq_2_internal_memory;
+
     const size_t pq_1_memory_fits =
       ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
-    if(max_pq_size <= pq_1_memory_fits) {
+    const size_t pq_2_memory_fits =
+      ite_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
+
+    const size_t pq_3_memory_fits =
+      ite_priority_queue_3_t<internal_priority_queue>::memory_fits(pq_3_internal_memory);
+
+    // TODO: maximum 1-level cut is sufficient for pq_2 and pq_3!
+    if(max_pq_size <= pq_1_memory_fits && max_pq_size <= pq_2_memory_fits && max_pq_size <= pq_3_memory_fits) {
 #ifdef ADIAR_STATS
       stats_if_else.lpq_internal++;
 #endif
-      const size_t pq_2_memory = (aux_available_memory - pq_1_internal_memory) / 2;
-      const size_t pq_3_memory = pq_2_memory;
-
       return __bdd_ite<ite_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                        ite_priority_queue_2_t<internal_priority_queue>,
                        ite_priority_queue_3_t<internal_priority_queue>>
-        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_memory, pq_3_memory, max_pq_size);
+        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_internal_memory, pq_3_internal_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_if_else.lpq_external++;
