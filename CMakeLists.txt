@@ -36,10 +36,10 @@ message(STATUS "  Statistics:")
 
 option(ADIAR_STATS "Collect statistics" OFF)
 
-option(ADIAR_STATS_EXTRA "Collect (a lot of) statistics" ${ADIAR_STATS})
+option(ADIAR_STATS_EXTRA "Collect (a lot of) statistics" OFF)
 if (ADIAR_STATS_EXTRA)
   set(ADIAR_STATS ON)
-endif()
+endif (ADIAR_STATS_EXTRA)
 
 message(STATUS "    Coarse: ${ADIAR_STATS}")
 message(STATUS "    Fine-grained: ${ADIAR_STATS_EXTRA}")
