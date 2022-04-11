@@ -355,7 +355,7 @@ namespace adiar
       - node_writer::memory_usage();
 
     const size_t lpq_memory = aux_available_memory / 2;
-    const size_t sorters_memory = aux_available_memory / 2 - __tpie_file_stream_memory_usage<mapping>();
+    const size_t sorters_memory = aux_available_memory - lpq_memory - __tpie_file_stream_memory_usage<mapping>();
 
     const size_t max_cut = in_file._file_ptr->max_1level_cut;
     const tpie::memory_size_type lpq_memory_fits =
