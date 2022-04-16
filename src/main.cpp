@@ -30,26 +30,13 @@ int main(int argc, char *argv[])
 
   {
     // ===== Your code starts here =====
-    bdd x1 = bdd_ithvar(1);
-    bdd x2 = bdd_ithvar(2);
-    bdd x3 = bdd_ithvar(3);
-    bdd intnode = bdd_or(x2, x1);
-    bdd root = bdd_and(x3, intnode);
+    bdd x1 = bdd_ithvar(3);
+    bdd x2 = bdd_ithvar(1);
+    bdd x3 = bdd_ithvar(2);
+    bdd intnode = bdd_and(x1, x2);
+    bdd root = bdd_or(intnode, x3);
 
-    uint64_t solutions = bdd_satcount(root);
-    std::cout << "number of solutions: " << solutions << std::endl;
-
-    std::vector<label_t> order = bdd_order(root);
-    std::cout << "order: " << std::endl;
-    for (auto l : order)
-    {
-      std::cout << "  " << l << std::endl;
-    }
-        
-    bdd redordered = bdd_reorder(root);
-
-    solutions = bdd_satcount(redordered);
-    std::cout << "number of solutions after reordering: " << solutions << std::endl;
+    output_dot(root, "root.dot");
 
     // =====  Your code ends here  =====
   }
