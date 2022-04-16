@@ -317,6 +317,8 @@ namespace adiar
   __bdd bdd_forall(const bdd &f, const label_file &vars);
   __bdd bdd_forall(bdd &&f, const label_file &vars);
 
+  __bdd bdd_reorder(const bdd &dd);
+
   /* ============================ BDD PREDICATES ============================ */
 
   //////////////////////////////////////////////////////////////////////////////

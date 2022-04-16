@@ -68,6 +68,7 @@ set(SOURCES
   bdd/pred.cpp
   bdd/quantify.cpp
   bdd/restrict.cpp
+  bdd/reorder.cpp
 
   # zdd files
   zdd/binop.cpp
