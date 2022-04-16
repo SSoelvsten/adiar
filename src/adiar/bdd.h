@@ -318,6 +318,8 @@ namespace adiar
   __bdd bdd_forall(bdd &&f, const label_file &vars);
 
   __bdd bdd_reorder(const bdd &dd);
+  std::vector<uint32_t> bdd_order(const bdd &dd);
+  
 
   /* ============================ BDD PREDICATES ============================ */
 

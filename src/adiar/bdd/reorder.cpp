@@ -17,4 +17,20 @@ namespace adiar
   {
     return bdd_sink(false);
   }
+
+  std::vector<label_t> bdd_order(const bdd &dd)
+  {
+    std::vector<label_t> result = std::vector<label_t>();
+    label_file labels = bdd_varprofile(dd);
+    adiar::file_stream<label_t> fs(labels);
+
+    while (fs.can_pull())
+    {
+      label_t l = fs.pull();
+      result.push_back(l);
+    }
+
+    fs.detach();
+    return result;
+  }
 }
