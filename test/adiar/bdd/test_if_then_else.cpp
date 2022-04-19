@@ -343,10 +343,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should create XNOR of x0 and ~x1 (x0 ? ~x1 : x1) due to same file", [&]() {
@@ -388,10 +388,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should create OR of x0 and x1 (x0 ? x0 : x1) due to same file", [&]() {
@@ -427,10 +427,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should create AND of x0 (negated) and x1 (x0 ? ~x0 : x1) due to same file", [&]() {
@@ -466,10 +466,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("should create AND of x0 and x1 (x0 ? x1 : x0) due to same file", [&]() {
@@ -505,10 +505,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("should create IMPLIES of x0 and x1 (x0 ? x1 : ~x0) due to same file", [&]() {
@@ -544,10 +544,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should create OR of x0 and x1 (x0 ? T : x1)", [&]() {
@@ -583,10 +583,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should create AND of x0 (negated) and x1 (x0 ? F : x1)", [&]() {
@@ -622,10 +622,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("should create IMPLIES of x0 and x1 (x0 ? x1 : T)", [&]() {
@@ -661,10 +661,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should create AND of x0 and x1 (x0 ? x1 : F)", [&]() {
@@ -700,10 +700,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
       });
     });
 
@@ -758,8 +758,8 @@ go_bandit([]() {
 
         AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should compute x1 ? ~x0 : x0", [&]() {
@@ -810,10 +810,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should compute x1 ? x0 : ~x0", [&]() {
@@ -864,10 +864,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should compute ~x2 ? (x0^x1) : ~(x0^x1)", [&]() {
@@ -943,10 +943,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(4u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should compute x3 ? (x1 & x2) : bdd_1", [&]() {
@@ -1086,10 +1086,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(6u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(6u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(5u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(5u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
       });
 
       it("should compute bdd_3 ? bdd_4 : bdd_5", [&]() {
@@ -1186,10 +1186,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(3u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(5u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(4u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(5u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(4u));
       });
 
       it("should compute bdd_6 ? x0^x2 : bdd_not_6", [&]() {
@@ -1260,10 +1260,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(4u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(4u));
       });
 
 
@@ -1335,10 +1335,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(4u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(4u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
       it("should compute ~(x0^x2) ? ~x2 : bdd_1", [&]() {
@@ -1451,10 +1451,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(4u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(5u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(5u));
       });
 
       it("should compute (x1^x2) ? bdd_1 : bdd_2", [&]() {
@@ -1565,10 +1565,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(4u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(6u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(6u));
       });
 
       it("should compute (~x0 & ~x1 & x2) ? bdd_2 : bdd_4", [&]() {
@@ -1676,10 +1676,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(3u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(5u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(4u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(5u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(4u));
       });
 
       it("should compute (x0 | (x1 & x2)) ? bdd_8 : bdd_7", [&]() {
@@ -1772,10 +1772,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(4u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should compute bdd_6 ? bdd_4 : bdd_2", [&]() {
@@ -1866,10 +1866,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().EqualTo(4u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(5u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(5u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(5u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(5u));
       });
     });
 
@@ -1891,7 +1891,7 @@ go_bandit([]() {
         }
 
         __bdd out = bdd_ite(bdd_x0, bdd_x2, bdd_x1_and_x3);
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().False());
+        AssertThat(out.get<node_file>()->canonical, Is().False());
 
         node_test_stream ns(out);
 
@@ -1933,13 +1933,13 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][false], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][true], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][false], Is().GreaterThanOrEqualTo(3u));
-        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][true], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<node_file>()->max_1level_cut[false][false], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_1level_cut[false][true], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_1level_cut[true][false], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out.get<node_file>()->max_1level_cut[true][true], Is().GreaterThanOrEqualTo(4u));
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(3u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(3u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should merely zip disjunct levels if possible [2]", [&]() {
@@ -1984,7 +1984,7 @@ go_bandit([]() {
         }
 
         __bdd out = bdd_ite(bdd_not(bdd_x0_xor_x1), bdd_then, bdd_else);
-        AssertThat(out.get<node_file>()._file_ptr->canonical, Is().False());
+        AssertThat(out.get<node_file>()->canonical, Is().False());
 
         node_test_stream ns(out);
 
@@ -2078,13 +2078,13 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][false], Is().GreaterThanOrEqualTo(4u));
-        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][true], Is().GreaterThanOrEqualTo(8u));
-        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][false], Is().GreaterThanOrEqualTo(4u));
-        AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][true], Is().GreaterThanOrEqualTo(8u));
+        AssertThat(out.get<node_file>()->max_1level_cut[false][false], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<node_file>()->max_1level_cut[false][true], Is().GreaterThanOrEqualTo(8u));
+        AssertThat(out.get<node_file>()->max_1level_cut[true][false], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<node_file>()->max_1level_cut[true][true], Is().GreaterThanOrEqualTo(8u));
 
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(4u));
-        AssertThat(out.get<node_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(7u));
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(4u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(7u));
       });
 
       it("can derive canonicity when zipping with one-node 'if'", [&]() {
@@ -2243,10 +2243,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
 
       it("should not zip if bdd_else is not beyond max_label of bdd_if", [&]() {
@@ -2297,10 +2297,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()._file_ptr->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()._file_ptr->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
     });
   });

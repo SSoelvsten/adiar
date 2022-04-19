@@ -450,7 +450,7 @@ namespace adiar
       adiar_assert(!f.is_read_only(), "Cannot sort file after read-access");
 
       tpie::file_stream<elem_t> fs;
-      fs.open(f._file_ptr -> _tpie_file);
+      fs.open(f->_tpie_file);
 
       tpie::progress_indicator_null pi;
       tpie::sort(fs, pred, pi);
@@ -503,8 +503,7 @@ namespace adiar
   {
     // A node_file only contains a sink iff the number of arcs to a sink value
     // in its meta information is exactly one.
-    return (file._file_ptr -> number_of_sinks[false] +
-            file._file_ptr -> number_of_sinks[true]) == 1;
+    return (file->number_of_sinks[false] + file->number_of_sinks[true]) == 1;
   }
 
   //////////////////////////////////////////////////////////////////////////////

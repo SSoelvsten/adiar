@@ -27,7 +27,7 @@ namespace adiar
   public:
     static size_t max_cut_upper_bound(const node_file &in_1, const node_file &/*in_2*/)
     {
-      const size_t number_of_nodes = in_1._file_ptr->size();
+      const size_t number_of_nodes = in_1->size();
       const bits_approximation input_bits(number_of_nodes);
 
       const bits_approximation bound_bits = input_bits + 1;
@@ -189,7 +189,7 @@ namespace adiar
 
     // Are they trivially not the same, since they have different number of
     // nodes (in _files[0])?
-    if (f1._file_ptr -> _files[0].size() != f2._file_ptr -> _files[0].size()) {
+    if (f1->_files[0].size() != f2->_files[0].size()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_nodecount++;
 #endif
@@ -198,7 +198,7 @@ namespace adiar
 
     // Are they trivially not the same, since they have different number of
     // levels (in the _level_info_file)?
-    if (f1._file_ptr -> _level_info_file.size() != f2._file_ptr -> _level_info_file.size()) {
+    if (f1->_level_info_file.size() != f2->_level_info_file.size()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_varcount++;
 #endif
@@ -207,8 +207,8 @@ namespace adiar
 
     // Are they trivially not the same, since they have different number of
     // sink arcs?
-    if(f1._file_ptr->number_of_sinks[negate1] != f2._file_ptr->number_of_sinks[negate2] ||
-       f1._file_ptr->number_of_sinks[!negate1] != f2._file_ptr->number_of_sinks[!negate2]) {
+    if(f1->number_of_sinks[negate1] != f2->number_of_sinks[negate2] ||
+       f1->number_of_sinks[!negate1] != f2->number_of_sinks[!negate2]) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_sinkcount++;
 #endif
@@ -236,7 +236,7 @@ namespace adiar
 
     // Compare their content to discern whether there exists an isomorphism
     // between them.
-    if (f1._file_ptr -> canonical && f2._file_ptr -> canonical && negate1 == negate2) {
+    if (f1->canonical && f2->canonical && negate1 == negate2) {
 #ifdef ADIAR_STATS
       stats_equality.fast_check.runs++;
 #endif
