@@ -176,10 +176,10 @@ namespace adiar
     // Maximum 1-level cut
     const size_t max_cut = nw.size() + 1u;
 
-    nf._file_ptr->max_1level_cut[false][false] = max_cut;
-    nf._file_ptr->max_1level_cut[false][false] = max_cut;
-    nf._file_ptr->max_1level_cut[false][false] = max_cut;
-    nf._file_ptr->max_1level_cut[false][false] = max_cut;
+    nf->max_1level_cut[false][false] = max_cut;
+    nf->max_1level_cut[false][true] = max_cut;
+    nf->max_1level_cut[true][false] = max_cut;
+    nf->max_1level_cut[true][true] = max_cut;
 
     // TODO: compute correctly
 

@@ -192,7 +192,7 @@ namespace adiar
 
   public:
     meta_file_stream(const meta_file<T> &file, bool negate = false)
-      : file_stream<T, REVERSE, __meta_file<T>>(file._file_ptr -> _files[File], file._file_ptr, negate)
+      : file_stream<T, REVERSE, __meta_file<T>>(file->_files[File], file._file_ptr, negate)
     { }
 
     // TODO: 'attach', 'attached', and 'detach'
@@ -334,7 +334,7 @@ namespace adiar
     /// Access the level information of a file with meta information.
     //////////////////////////////////////////////////////////////////////////////
     level_info_stream(const meta_file<T> &f)
-      : file_stream<level_info_t, !REVERSE, __meta_file<T>>(f._file_ptr -> _level_info_file, f._file_ptr)
+      : file_stream<level_info_t, !REVERSE, __meta_file<T>>(f->_level_info_file, f._file_ptr)
     { }
 
     //////////////////////////////////////////////////////////////////////////////

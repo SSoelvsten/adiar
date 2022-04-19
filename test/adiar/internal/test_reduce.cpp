@@ -90,7 +90,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(2,2u));
         }
 
-        in._file_ptr->max_1level_cut = 2;
+        in->max_1level_cut = 2;
 
         // Reduce it
 
@@ -184,7 +184,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(3,2u));
         }
 
-        in._file_ptr->max_1level_cut = 2;
+        in->max_1level_cut = 2;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -282,7 +282,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(3,2u));
         }
 
-        in._file_ptr->max_1level_cut = 4;
+        in->max_1level_cut = 4;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -388,7 +388,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(3,1u));
         }
 
-        in._file_ptr->max_1level_cut = 4;
+        in->max_1level_cut = 4;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -502,7 +502,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(3,1u));
         }
 
-        in._file_ptr->max_1level_cut = 4;
+        in->max_1level_cut = 4;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -621,7 +621,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(2,3u));
         }
 
-        in._file_ptr->max_1level_cut = 4;
+        in->max_1level_cut = 4;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -717,7 +717,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(2,3u));
         }
 
-        in._file_ptr->max_1level_cut = 4;
+        in->max_1level_cut = 4;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -809,7 +809,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(2,2u));
         }
 
-        in._file_ptr->max_1level_cut = 3;
+        in->max_1level_cut = 3;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -904,7 +904,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(3,1u));
         }
 
-        in._file_ptr->max_1level_cut = 3;
+        in->max_1level_cut = 3;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -1002,7 +1002,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(2,2u));
         }
 
-        in._file_ptr->max_1level_cut = 4;
+        in->max_1level_cut = 4;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -1084,7 +1084,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(2,2u));
         }
 
-        in._file_ptr->max_1level_cut = 2;
+        in->max_1level_cut = 2;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -1172,7 +1172,7 @@ go_bandit([]() {
             aw.unsafe_push(create_level_info(3,1u));
           }
 
-          in._file_ptr->max_1level_cut = 4;
+          in->max_1level_cut = 4;
 
           // Reduce it
           bdd out = reduce<bdd_policy>(in);
@@ -1274,7 +1274,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(2,2u));
         }
 
-        in._file_ptr->max_1level_cut = 3;
+        in->max_1level_cut = 3;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -1326,7 +1326,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(0,1u));
         }
 
-        in._file_ptr->max_1level_cut = 0;
+        in->max_1level_cut = 0;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -1381,7 +1381,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(1,1u));
         }
 
-        in._file_ptr->max_1level_cut = 1;
+        in->max_1level_cut = 1;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -1427,7 +1427,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(0u,1u));
         }
 
-        in._file_ptr->max_1level_cut = 0;
+        in->max_1level_cut = 0;
 
         // Reduce it
         bdd out = reduce<bdd_policy>(in);
@@ -1485,7 +1485,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(1,1u));
         }
 
-        in._file_ptr->max_1level_cut = 1;
+        in->max_1level_cut = 1;
 
         // Reduce it
         zdd out = reduce<zdd_policy>(in);
@@ -1558,7 +1558,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(3,1u));
         }
 
-        in._file_ptr->max_1level_cut = 3;
+        in->max_1level_cut = 3;
 
         // Reduce it
         zdd out = reduce<zdd_policy>(in);
@@ -1655,7 +1655,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(2,1u));
         }
 
-        in._file_ptr->max_1level_cut = 2;
+        in->max_1level_cut = 2;
 
         // Reduce it
         zdd out = reduce<zdd_policy>(in);
@@ -1722,7 +1722,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(0,1u));
         }
 
-        in._file_ptr->max_1level_cut = 0;
+        in->max_1level_cut = 0;
 
         // Reduce it
         zdd out = reduce<zdd_policy>(in);
@@ -1777,7 +1777,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(1,1u));
         }
 
-        in._file_ptr->max_1level_cut = 1;
+        in->max_1level_cut = 1;
 
         // Reduce it
         zdd out = reduce<zdd_policy>(in);
@@ -1836,7 +1836,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(1,1u));
         }
 
-        in._file_ptr->max_1level_cut = 1;
+        in->max_1level_cut = 1;
 
         // Reduce it
         zdd out = reduce<zdd_policy>(in);
@@ -1882,7 +1882,7 @@ go_bandit([]() {
           aw.unsafe_push(create_level_info(42,1u));
         }
 
-        in._file_ptr->max_1level_cut = 0;
+        in->max_1level_cut = 0;
 
         // Reduce it
         zdd out = reduce<zdd_policy>(in);

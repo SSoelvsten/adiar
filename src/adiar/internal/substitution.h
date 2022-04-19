@@ -197,7 +197,7 @@ namespace adiar
       aw.unsafe_push(create_level_info(level, level_size));
     }
 
-    out_arcs._file_ptr->max_1level_cut = max_1level_cut;
+    out_arcs->max_1level_cut = max_1level_cut;
     return out_arcs;
   }
 

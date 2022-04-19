@@ -214,14 +214,14 @@ namespace adiar {
       adiar_assert(!(_file_ptr -> _level_info_file.is_read_only()),
                    "Cannot attach a writer onto a read-only meta file");
 
-      _meta_stream.open(f._file_ptr -> _level_info_file._tpie_file);
+      _meta_stream.open(_file_ptr->_level_info_file._tpie_file);
       _meta_stream.seek(0, tpie::file_stream_base::end);
 
       for (size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
-        adiar_assert(!(_file_ptr -> _files[idx].is_read_only()),
+        adiar_assert(!(_file_ptr->_files[idx].is_read_only()),
                      "Cannot attach a writer onto a read-only content file");
 
-        _streams[idx].open(f._file_ptr -> _files[idx]._tpie_file);
+        _streams[idx].open(_file_ptr->_files[idx]._tpie_file);
         _streams[idx].seek(0, tpie::file_stream_base::end);
       }
     }
@@ -327,9 +327,10 @@ namespace adiar {
 
   public:
     node_writer() : meta_file_writer() { }
-    node_writer(const node_file &nf) : meta_file_writer(nf),
-                                       _canonical(!meta_file_writer::has_pushed()
-                                                  || nf._file_ptr -> canonical) { }
+    node_writer(const node_file &nf)
+      : meta_file_writer(nf),
+        _canonical(!meta_file_writer::has_pushed()|| nf->canonical)
+    { }
 
     ~node_writer() { detach(); }
 
