@@ -174,7 +174,14 @@ namespace adiar
     } while (ls.can_pull());
 
     // Maximum 1-level cut
-    // TODO: ...
+    const size_t max_cut = nw.size() + 1u;
+
+    nf._file_ptr->max_1level_cut[false][false] = max_cut;
+    nf._file_ptr->max_1level_cut[false][false] = max_cut;
+    nf._file_ptr->max_1level_cut[false][false] = max_cut;
+    nf._file_ptr->max_1level_cut[false][false] = max_cut;
+
+    // TODO: compute correctly
 
     return nf;
   }
