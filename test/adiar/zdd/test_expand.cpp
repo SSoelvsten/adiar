@@ -118,8 +118,8 @@ go_bandit([]() {
 
       AssertThat(level_info.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][false], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][false], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][false], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][false], Is().EqualTo(1u));
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[false][true], Is().EqualTo(2u));
       AssertThat(out.get<node_file>()._file_ptr->max_1level_cut[true][true], Is().EqualTo(2u));
 

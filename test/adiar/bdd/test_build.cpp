@@ -20,8 +20,8 @@ go_bandit([]() {
         AssertThat(is_canonical(res), Is().True());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(0u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(0u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(1u));
 
         AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(0u));
@@ -40,8 +40,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(0u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(0u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(1u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -62,8 +62,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(1u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -84,8 +84,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(1u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -110,9 +110,9 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(2u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -135,9 +135,9 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(2u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -162,9 +162,9 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(2u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -187,9 +187,9 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(2u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -242,8 +242,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(1u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(3u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(3u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(4u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -266,8 +266,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(0u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(0u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(1u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -320,8 +320,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(1u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(3u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(4u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -344,8 +344,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(1u));
 
         AssertThat(is_canonical(res), Is().True());
@@ -369,8 +369,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(1u));
 
         AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
@@ -390,8 +390,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(0u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(1u));
 
         AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
@@ -414,16 +414,16 @@ go_bandit([]() {
 
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(2u));
 
         AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
-      it("collapses counting to 0 in [10, 10] to ~x42", [&]() {
+      it("collapses counting to 0 in [10, 10] to ~x10", [&]() {
         bdd res = bdd_counter(10, 10, 0);
 
         node_test_stream ns(res);
@@ -439,9 +439,9 @@ go_bandit([]() {
 
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(0u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(1u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(2u));
 
         AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(1u));
@@ -499,8 +499,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(1u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(5u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(5u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(6u));
 
         AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(5u));
@@ -558,8 +558,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(1u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(5u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(1u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(5u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(6u));
 
         AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(5u));
@@ -626,8 +626,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(4u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(6u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(4u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(6u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(6u));
 
         AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(4u));
@@ -807,8 +807,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(7u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(11u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(7u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(11u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(11u));
 
         AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(9u));
@@ -883,8 +883,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res.file_ptr()->max_1level_cut[false][false], Is().EqualTo(3u));
-        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(5u));
         AssertThat(res.file_ptr()->max_1level_cut[false][true], Is().EqualTo(3u));
+        AssertThat(res.file_ptr()->max_1level_cut[true][false], Is().EqualTo(5u));
         AssertThat(res.file_ptr()->max_1level_cut[true][true], Is().EqualTo(7u));
 
         AssertThat(res.file_ptr()->number_of_sinks[0], Is().EqualTo(5u));
