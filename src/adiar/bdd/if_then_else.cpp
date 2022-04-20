@@ -483,9 +483,9 @@ namespace adiar
                                    const decision_diagram &in_then,
                                    const decision_diagram &in_else)
   {
-    const size_t if_size = in_if.file_ptr()->size();
-    const size_t then_size = in_then.file_ptr()->size();
-    const size_t else_size = in_else.file_ptr()->size();
+    const size_t if_size = in_if->size();
+    const size_t then_size = in_then->size();
+    const size_t else_size = in_else->size();
 
     const bits_approximation if_bits(if_size);
     const bits_approximation then_bits(then_size);

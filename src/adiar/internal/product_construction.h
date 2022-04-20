@@ -411,10 +411,10 @@ namespace adiar
                                     const typename prod_policy::reduced_t &in_2,
                                     const bool_op &op)
   {
-    const size_t nodes_in_1 = in_1.file_ptr()->size();
+    const size_t nodes_in_1 = in_1->size();
     const size_t left_leaves = prod_policy::left_leaves(op);
 
-    const size_t nodes_in_2 = in_2.file_ptr()->size();
+    const size_t nodes_in_2 = in_2->size();
     const size_t right_leaves = prod_policy::right_leaves(op);
 
     const bits_approximation in_1_bits(nodes_in_1);

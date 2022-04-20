@@ -314,7 +314,7 @@ namespace adiar
   template<typename intercut_policy>
   size_t __intercut_max_cut_upper_bound(const typename intercut_policy::reduced_t &dd)
   {
-    const size_t number_of_nodes = dd.file_ptr()->size();
+    const size_t number_of_nodes = dd->size();
     const bits_approximation input_bits(number_of_nodes);
 
     const bits_approximation bound_bits = (input_bits * 2) + 2;

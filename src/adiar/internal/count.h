@@ -87,7 +87,7 @@ namespace adiar
   // Helper functions
   inline size_t __count_max_cut_upper_bound(const decision_diagram &dd)
   {
-    const size_t input_size = dd.file_ptr()->size();
+    const size_t input_size = dd->size();
     const bits_approximation input_bits(input_size);
 
     const bits_approximation bound_bits = input_bits + 1;

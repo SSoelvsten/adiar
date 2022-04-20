@@ -294,7 +294,7 @@ namespace adiar
   template<typename quantify_policy>
   size_t __quantify_max_cut_upper_bound(const typename quantify_policy::reduced_t &in)
   {
-    const size_t number_of_nodes = in.file_ptr()->size();
+    const size_t number_of_nodes = in->size();
     const bits_approximation input_bits(number_of_nodes);
 
     const bits_approximation bound_bits = input_bits * input_bits + 2;
