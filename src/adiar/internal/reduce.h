@@ -59,12 +59,12 @@ namespace adiar
     using inner_lpq = levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt,
                                                    sorter_template, priority_queue_template>;
 
-  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of sinks (of each type) placed within the priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    size_t sinks[2] = { 0u, 0u };
+    size_t _sinks[2] = { 0u, 0u };
 
+  public:
     reduce_priority_queue(const arc_file (&files) [1u], size_t memory_given, size_t max_size)
       : inner_lpq(files, memory_given, max_size)
     { }
@@ -74,8 +74,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     void push(const arc_t &a)
     {
-      sinks[false] += is_false(a.target);
-      sinks[true]  += is_true(a.target);
+      _sinks[false] += is_false(a.target);
+      _sinks[true]  += is_true(a.target);
 
       inner_lpq::push(a);
     }
@@ -87,8 +87,8 @@ namespace adiar
     {
       arc_t a = inner_lpq::pull();
 
-      sinks[false] -= is_false(a.target);
-      sinks[true]  -= is_true(a.target);
+      _sinks[false] -= is_false(a.target);
+      _sinks[true]  -= is_true(a.target);
 
       return a;
     }
@@ -102,11 +102,19 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of sinks (of each type) placed within the priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    const size_t& sinks(const bool sink_value) const
+    {
+      return _sinks[sink_value];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Total number of arcs (across all levels) ignoring sinks.
     ////////////////////////////////////////////////////////////////////////////
     size_t size_without_sinks()
     {
-      return inner_lpq::size() - sinks[false] - sinks[true];
+      return inner_lpq::size() - _sinks[false] - _sinks[true];
     }
   };
 
@@ -217,8 +225,8 @@ namespace adiar
 
     __reduce_cut_add(one_level_cut,
                      reduce_pq.size_without_sinks() + red1_internal,
-                     reduce_pq.sinks[false] + red1_sinks[false] + sink_arcs.unread[false],
-                     reduce_pq.sinks[true] + red1_sinks[true] + sink_arcs.unread[true]);
+                     reduce_pq.sinks(false) + red1_sinks[false] + sink_arcs.unread(false),
+                     reduce_pq.sinks(true) + red1_sinks[true] + sink_arcs.unread(true));
 
     // Sort and apply Reduction rule 2
     child_grouping.sort();
