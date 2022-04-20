@@ -292,20 +292,14 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of elements pushed to the underlying files.
-    ///
-    /// \param incl_level_info Whether to also count the number of elements
-    ///                        pushed to the level info file.
+    /// \brief Number of elements pushed to the underlying files (excluding the
+    ///        level info file).
     ////////////////////////////////////////////////////////////////////////////
-    size_t size(bool incl_level_info = false)
+    size_t size()
     {
       size_t acc = 0u;
       for (size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
         acc += _streams[idx].size();
-      }
-
-      if (incl_level_info) {
-        acc += _meta_stream.size();
       }
       return acc;
     }
