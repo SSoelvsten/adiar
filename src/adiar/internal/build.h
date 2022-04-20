@@ -46,8 +46,8 @@ namespace adiar
   }
 
   template<bool on_empty, bool link_low, bool link_high,
-    bool init_low = false,
-    bool init_high = true>
+    bool low_sink_value = false,
+    bool high_sink_value = true>
   inline node_file build_chain(const label_file &labels)
     {
       const size_t number_of_levels = labels.size();
@@ -55,8 +55,8 @@ namespace adiar
         return build_sink(on_empty);
       }
 
-      ptr_t low = create_sink_ptr(init_low);
-      ptr_t high = create_sink_ptr(init_high);
+      ptr_t low = create_sink_ptr(low_sink_value);
+      ptr_t high = create_sink_ptr(high_sink_value);
 
       node_file nf;
       node_writer nw(nf);
@@ -87,17 +87,17 @@ namespace adiar
       nf->max_1level_cut[false][false] = internal_arcs;
 
       const size_t true_arcs_pre_end  =
-        (number_of_levels - 1) * ((!link_low && init_low) + (!link_high && init_high));
+        (number_of_levels - 1) * ((!link_low && low_sink_value) + (!link_high && high_sink_value));
 
-      const size_t true_arcs_end = true_arcs_pre_end + init_low + init_high;
+      const size_t true_arcs_end = true_arcs_pre_end + low_sink_value + high_sink_value;
 
       nf->max_1level_cut[false][true] = std::max(internal_arcs + true_arcs_pre_end,
                                                  true_arcs_end);
 
       const size_t false_arcs_pre_end =
-        (number_of_levels - 1) * ((!link_low && !init_low) + (!link_high && !init_high));
+        (number_of_levels - 1) * ((!link_low && !low_sink_value) + (!link_high && !high_sink_value));
 
-      const size_t false_arcs_end = false_arcs_pre_end + !init_low + !init_high;
+      const size_t false_arcs_end = false_arcs_pre_end + !low_sink_value + !high_sink_value;
 
       nf->max_1level_cut[true][false] = std::max(internal_arcs + false_arcs_pre_end,
                                                  false_arcs_end);
