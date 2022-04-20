@@ -151,14 +151,17 @@ namespace adiar
       // Do not count the one lt_sink (if any)
       - (lt_sinks > 0);
 
-    const label_t lvls_after_widest = vars - deepest_widest_lvl - (deepest_widest_lvl < vars);
-
     nf->max_1level_cut[false][false] = std::max(internal_cut_below_shallowest_lvl,
                                                 internal_cut_below_deepest_lvl);
 
     // Compare the cut at deepest widest level and below the last level.
     nf->max_1level_cut[false][true] = std::max(nf->max_1level_cut[false][false],
                                                eq_sinks);
+
+    // With 'vars - deepest_widest_lvl' we obtain the number of levels beyond
+    // the widest one. But, if 'deepest_widest_lvl < vars' then there are two
+    // nodes at the last level which offsets the number of levels by one more.
+    const label_t lvls_after_widest = vars - deepest_widest_lvl - (deepest_widest_lvl < vars);
 
     // The maximum cut with false sinks is at the deepes widest level. Beyond
     // it, a node (with two children) is removed, which outweighs the gt_sink
@@ -168,7 +171,8 @@ namespace adiar
                lt_sinks + gt_sinks);
 
     // Counting both false and true sinks is only different from counting false
-    // sinks, if the number of eq_sinks outweighs the number of internal nodes.
+    // sinks, if the number of eq_sinks outweighs the number of internal nodes
+    // since the true sinks are only spawned at the very bottom.
     nf->max_1level_cut[true][true] = std::max(nf->max_1level_cut[true][false],
                                               lt_sinks + eq_sinks + gt_sinks);
 
