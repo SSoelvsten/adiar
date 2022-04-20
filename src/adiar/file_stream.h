@@ -244,8 +244,8 @@ namespace adiar
   class sink_arc_stream
     : private in_order_arc_stream<REVERSE>, private out_of_order_arc_stream<REVERSE>
   {
-  public:
-    size_t unread[2] = { 0u, 0u };
+  private:
+    size_t _unread[2] = { 0u, 0u };
 
   public:
     static constexpr size_t memory_usage()
@@ -258,8 +258,14 @@ namespace adiar
     sink_arc_stream(const arc_file &file, bool negate = false)
       : in_order_arc_stream<REVERSE>(file, negate),
         out_of_order_arc_stream<REVERSE>(file, negate),
-        unread{ file->number_of_sinks[false], file->number_of_sinks[true] }
+        _unread{ file->number_of_sinks[false], file->number_of_sinks[true] }
     { }
+
+  public:
+    const size_t& unread(const bool sink_value) const
+    {
+      return _unread[sink_value];
+    }
 
   private:
     bool pull_in_order()
@@ -307,7 +313,7 @@ namespace adiar
         ? in_order_arc_stream<REVERSE>::pull()
         : out_of_order_arc_stream<REVERSE>::pull();
 
-      unread[value_of(a.target)]--;
+      _unread[value_of(a.target)]--;
 
       return a;
     }
