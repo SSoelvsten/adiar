@@ -148,6 +148,16 @@ namespace adiar
     {
       return file._file_ptr;
     }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Read-only access to the members of the raw files and meta
+    ///        information, i.e. this is similar to writing
+    ///        <tt>.file_ptr()-></tt>.
+    ////////////////////////////////////////////////////////////////////////////
+    const __meta_file<node_t>* operator->() const
+    {
+      return file_ptr().get();
+    }
   };
 
   inline __decision_diagram::__decision_diagram(const decision_diagram &dd)
@@ -168,7 +178,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_canonical(const decision_diagram &dd)
   {
-    return dd.file_ptr() -> canonical;
+    return dd->canonical;
   }
 
   //////////////////////////////////////////////////////////////////////////////
