@@ -319,6 +319,7 @@ namespace adiar
 
   __bdd bdd_reorder(const bdd &dd);
   std::vector<uint32_t> bdd_order(const bdd &dd);
+  label_t min_label(const bdd &dd);
   
 
   /* ============================ BDD PREDICATES ============================ */
