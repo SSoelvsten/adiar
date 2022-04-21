@@ -3,6 +3,7 @@
 
 // ADIAR Imports
 #include <adiar/adiar.h>
+#include <adiar/internal/dot.h>
 
 using namespace adiar;
 
@@ -34,11 +35,11 @@ int main(int argc, char *argv[])
     bdd x2 = bdd_ithvar(2);
     bdd x3 = bdd_ithvar(3);
     bdd intnode = bdd_and(x1, x2);
-    bdd root = bdd_or(intnode, x3);
+    __bdd root = bdd_or(intnode, x3);
+    // get arc file: root.get<arc_file>().. Vigtigt at det er en __bdd, og vi includer adiar/internal/dot.h
+    //std::cout << min_label(root) << std::endl;
 
-    std::cout << min_label(root) << std::endl;
-
-    output_dot(root, "root.dot");
+    output_dot(root.get<arc_file>(), "root.dot");
 
     // =====  Your code ends here  =====
   }

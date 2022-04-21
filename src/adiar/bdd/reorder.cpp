@@ -13,21 +13,36 @@
 namespace adiar
 {
 
-  struct pq_elem
+  struct reorder_request
   {
-    int k;
-    int i;
-    bool b;
-    int t;
+    ptr_t source; // gemmer også is_high (brug flag, unflag, is_flagged)
+    label_t child_level;
   };
 
-  bool operator<(const pq_elem& a, const pq_elem& b){
-    a.k < b.k;
-  }
+  struct reorder_lt
+  {
+    // when doing the expensive comparison, we might need to make a lambda so the arc file is in scope
+    bool operator()(const reorder_request &a, const reorder_request &b) const
+    {
+      return a.child_level < b.child_level;
+    }
+  };
 
   __bdd bdd_reorder(const bdd &dd)
   {
-    external_priority_queue<pq_elem, pq_elem> pq(10, 100); //??
+    // prøv levelized_priority_queue for UNLIMITED POWER
+    external_priority_queue<reorder_request, reorder_lt> pq(memory::available(), 0); //0 is pq external doesnt care
+    
+    /*
+    Sådan pusher vi arcs (substitute.h i internal/substitution.h))):
+    while(substitute_pq.can_pull() && substitute_pq.top().target == n_res.uid) {
+      const arc_t parent_arc = substitute_pq.pull();
+
+      if(!is_nil(parent_arc.source)) {
+        aw.unsafe_push_node(parent_arc);
+      }
+    }
+    */
 
     return bdd_sink(false);
   }
@@ -59,11 +74,15 @@ namespace adiar
   }
 
   // T/B I/Os
-  std::vector<assignment> reverse_path(const arc_file &af, node_t &n)
+  //
+  std::vector<assignment> reverse_path(const arc_file &af, ptr_t n)
   {
     std::vector<assignment> assignments = std::vector<assignment>();
-    adiar::node_arc_stream<> fs(af);
-    ptr_t current = high_arc_of(n).source; // Hacky solution - is this valid
+    adiar::node_arc_stream<true> fs(af); // true means that we read it backwards
+    // Måske virker node_arc_stream ikke.. (Detach er ikke defineret)
+    // Denne node_arc_stream er ikke beregnet til at at read, write, read, write
+    // Vi tror, det er muligt, men måske render vi ind i problemer senere.
+    ptr_t current = n; // Hacky solution - is this valid
 
     while (fs.can_pull())
     {
@@ -75,7 +94,7 @@ namespace adiar
       }
     }
 
-    fs.detach();
+    fs.detach(); // TODO: Make issue about missing detach impl.
     return assignments;
   }
 }
