@@ -48,13 +48,11 @@ int main(int argc, char *argv[])
     }
     auto rev_path = reverse_path(root_arc_file, a.target);
 
-    if (rev_path.empty()) {
-      std::cout << "No path found" << std::endl;
-    }
-
-    for (auto a : rev_path)
+    assignment_stream<> ass_stream(rev_path);
+    while (ass_stream.can_pull())
     {
-      std::cout << a.label << " = " << a.value << std::endl;
+      assignment_t ass = ass_stream.pull();
+      std::cout << ass.label << " = " << ass.value << std::endl;
     }
     // =====  Your code ends here  =====
   }

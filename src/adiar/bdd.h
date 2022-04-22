@@ -320,7 +320,7 @@ namespace adiar
   __bdd bdd_reorder(const bdd &dd);
   std::vector<uint32_t> bdd_order(const bdd &dd);
   label_t min_label(const bdd &dd);
-  std::vector<assignment> reverse_path(const arc_file &af, ptr_t n);
+  simple_file<assignment_t> reverse_path(const arc_file &af, ptr_t n);
   
 
   /* ============================ BDD PREDICATES ============================ */

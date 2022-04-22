@@ -74,11 +74,15 @@ namespace adiar
   }
 
   // T/B I/Os
-  //
-  std::vector<assignment> reverse_path(const arc_file &af, ptr_t n)
+  assignment_file reverse_path(const arc_file &af, ptr_t n)
   {
-    std::vector<assignment> assignments = std::vector<assignment>();
+    assignment_file ass_file;
+    assignment_writer aw(ass_file);
+    
+    // TODO: This node_arc_stream should read backwards as our reorder implementation
+    //       will always write the arc of the root first in the file.
     adiar::node_arc_stream<false> fs(af); // true means that we read it backwards
+    
     // Måske virker node_arc_stream ikke.. (Detach er ikke defineret)
     // Denne node_arc_stream er ikke beregnet til at at read, write, read, write
     // Vi tror, det er muligt, men måske render vi ind i problemer senere.
@@ -93,11 +97,11 @@ namespace adiar
       if (a.target == current)
       {
         current = a.source;
-        assignments.push_back(assignment{label_of(current), is_high(a)});
+        aw.unsafe_push(assignment{label_of(current), is_high(a)});
       }
     }
 
     fs.detach(); // TODO: Make issue about missing detach impl.
-    return assignments;
+    return ass_file;
   }
 }
