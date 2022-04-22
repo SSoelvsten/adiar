@@ -78,15 +78,18 @@ namespace adiar
   std::vector<assignment> reverse_path(const arc_file &af, ptr_t n)
   {
     std::vector<assignment> assignments = std::vector<assignment>();
-    adiar::node_arc_stream<true> fs(af); // true means that we read it backwards
+    adiar::node_arc_stream<false> fs(af); // true means that we read it backwards
     // Måske virker node_arc_stream ikke.. (Detach er ikke defineret)
     // Denne node_arc_stream er ikke beregnet til at at read, write, read, write
     // Vi tror, det er muligt, men måske render vi ind i problemer senere.
     ptr_t current = n; // Hacky solution - is this valid
 
+    std::cout << "Starting arc: " << n << std::endl;
+
     while (fs.can_pull())
     {
       arc_t a = fs.pull();
+      std::cout << "Looking  source: " << a.source << " - target: " << a.target << std::endl;
       if (a.target == current)
       {
         current = a.source;

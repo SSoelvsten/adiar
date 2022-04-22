@@ -38,9 +38,24 @@ int main(int argc, char *argv[])
     __bdd root = bdd_or(intnode, x3);
     // get arc file: root.get<arc_file>().. Vigtigt at det er en __bdd, og vi includer adiar/internal/dot.h
     //std::cout << min_label(root) << std::endl;
-
+    auto root_arc_file = root.get<arc_file>();
     output_dot(root.get<arc_file>(), "root.dot");
 
+    arc_t a;
+    {
+      adiar::node_arc_stream<false> fs(root_arc_file);
+      a = fs.pull();
+    }
+    auto rev_path = reverse_path(root_arc_file, a.target);
+
+    if (rev_path.empty()) {
+      std::cout << "No path found" << std::endl;
+    }
+
+    for (auto a : rev_path)
+    {
+      std::cout << a.label << " = " << a.value << std::endl;
+    }
     // =====  Your code ends here  =====
   }
 
