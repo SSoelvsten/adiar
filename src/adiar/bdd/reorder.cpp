@@ -18,6 +18,26 @@ namespace adiar
     label_t child_level;
   };
 
+  struct level_request
+  {
+    reorder_request rr;
+    arc_file af;
+    bdd input;
+
+    bdd f_ikc(){
+      assignment_file path = reverse_path(af, rr.source);
+      bdd f_ikb = bdd_restrict(input, path);
+      return f_ikb;
+    }
+  };
+
+  struct level_request_lt{
+    bool operator()(level_request &a, level_request &b) const
+    {
+      return bdd_equal(a.f_ikc(), b.f_ikc());
+    }
+  };
+  
   struct reorder_lt
   {
     // when doing the expensive comparison, we might need to make a lambda so the arc file is in scope
@@ -27,10 +47,48 @@ namespace adiar
     }
   };
 
-  __bdd bdd_reorder(const bdd &dd)
+  /*
+  struct level_lt
+  {
+    std::function<bool(reorder_request, reorder_request)> op;
+    level_lt(std::function<bool(reorder_request, reorder_request)> op){
+      this->op = op;
+    };
+
+    bool operator()(const reorder_request &a, const reorder_request &b) const
+    {
+      return op(a, b);
+    }
+  };
+  */
+
+  __bdd bdd_reorder(const bdd &dd, const label_t permutation[])
   {
     // prøv levelized_priority_queue for UNLIMITED POWER
     external_priority_queue<reorder_request, reorder_lt> pq(memory::available(), 0); // 0 is pq external doesnt care
+
+    arc_file af;
+    ptr_t root = create_node_ptr(permutation[0], 0);
+    push_children(pq, root, af, dd);
+
+    while (!pq.empty())
+    {
+      // QUESTION: Should we create a file format for this?
+      // This vector can be 2^31 bits large (i.e contain an element per node possible)
+      std::vector<level_request> level;
+
+      reorder_request rr = pq.top();
+      pq.pop();
+      level.push_back(level_request{rr, af, dd});
+      while (pq.top().child_level == rr.child_level)
+      {
+        level_request next = level_request{pq.top(), af, dd};
+        pq.pop();
+        level.push_back(next);
+      }
+
+      tpie::merge_sorter<level_request, false, level_request_lt> sorter_opm_sorter;
+    }
 
     /*
     Sådan pusher vi arcs (substitute.h i internal/substitution.h))):
@@ -46,7 +104,7 @@ namespace adiar
     return bdd_sink(false);
   }
 
-  void push_children(external_priority_queue<reorder_request, reorder_lt> &pq, const ptr_t source, arc_file &af, const bdd &f)
+  void push_children(external_priority_queue<reorder_request, reorder_lt> &pq, const ptr_t source, const arc_file &af, const bdd &f)
   {
     auto deal_with = [&](bool b)
     {
