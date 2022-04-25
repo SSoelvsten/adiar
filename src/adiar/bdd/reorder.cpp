@@ -12,7 +12,6 @@
 
 namespace adiar
 {
-
   struct reorder_request
   {
     ptr_t source; // gemmer også is_high (brug flag, unflag, is_flagged)
