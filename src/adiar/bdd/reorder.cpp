@@ -34,6 +34,7 @@ namespace adiar
   struct level_request_lt{
     bool operator()(level_request &a, level_request &b) const
     {
+      //TODO not a equality
       return bdd_equal(a.f_ikc(), b.f_ikc());
     }
   };
@@ -75,7 +76,13 @@ namespace adiar
     {
       // QUESTION: Should we create a file format for this?
       // This vector can be 2^31 bits large (i.e contain an element per node possible)
+      // TODO add elements directly to merge_sorter
       std::vector<level_request> level;
+
+      //TODO https://github.com/Mortal/tpieex/blob/master/main.cc line 68-70
+      //TODO add operator as argument in the constructor.
+      tpie::merge_sorter<level_request, false, level_request_lt> sorter_opm_sorter;
+      //TODO call init on merge_sorter, set memory and .begin
 
       reorder_request rr = pq.top();
       pq.pop();
@@ -87,7 +94,6 @@ namespace adiar
         level.push_back(next);
       }
 
-      tpie::merge_sorter<level_request, false, level_request_lt> sorter_opm_sorter;
     }
 
     /*
@@ -132,6 +138,7 @@ namespace adiar
   }
 
   // N/B I/Os
+  // TODO retrive from meta data
   label_t min_label(const bdd &dd)
   {
     if (is_sink(dd))
@@ -158,19 +165,18 @@ namespace adiar
   }
 
   // T/B I/Os
+  // TODO reverse path of two arc at once
   assignment_file reverse_path(const arc_file &af, ptr_t n)
   {
     assignment_file ass_file;
     assignment_writer aw(ass_file);
 
-    // TODO: This node_arc_stream should read backwards as our reorder implementation
-    //       will always write the arc of the root first in the file.
-    adiar::node_arc_stream<false> fs(af); // true means that we read it backwards
+    adiar::node_arc_stream<> fs(af); 
 
     // Måske virker node_arc_stream ikke.. (Detach er ikke defineret)
     // Denne node_arc_stream er ikke beregnet til at at read, write, read, write
     // Vi tror, det er muligt, men måske render vi ind i problemer senere.
-    ptr_t current = n; // Hacky solution - is this valid
+    ptr_t current = n;
 
     std::cout << "Starting arc: " << n << std::endl;
 
@@ -185,7 +191,6 @@ namespace adiar
       }
     }
 
-    fs.detach(); // TODO: Make issue about missing detach impl.
     return ass_file;
   }
 }
