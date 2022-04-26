@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     std::cout << "Number out of range: " << argv[1] << std::endl;
   }
 
-  adiar_init(M * 1024 * 1024);
+  adiar_init(M * 1024 * 1024*2);
 
   {
     // ===== Your code starts here =====
@@ -35,7 +35,15 @@ int main(int argc, char *argv[])
     bdd x2 = bdd_ithvar(2);
     bdd x3 = bdd_ithvar(3);
     bdd intnode = bdd_and(x1, x2);
-    __bdd root = bdd_or(intnode, x3);
+    bdd root = bdd_or(intnode, x3);
+    
+    label_t permutation[] = {1,2,3};
+    bdd new_order = bdd_reorder(root, permutation);
+
+    output_dot(new_order, "new.dot");
+
+    /*
+    // Test for reverse path
     // get arc file: root.get<arc_file>().. Vigtigt at det er en __bdd, og vi includer adiar/internal/dot.h
     //std::cout << min_label(root) << std::endl;
     auto root_arc_file = root.get<arc_file>();
@@ -54,6 +62,7 @@ int main(int argc, char *argv[])
       assignment_t ass = ass_stream.pull();
       std::cout << ass.label << " = " << ass.value << std::endl;
     }
+    */
     // =====  Your code ends here  =====
   }
 

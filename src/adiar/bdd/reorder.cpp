@@ -184,28 +184,39 @@ namespace adiar
       m_sorter.end();
       m_sorter.calc(d_indicator);
 
-      bdd r;
+      bdd r = bdd_ithvar(permutation[0]);
       bdd r_prime;
       uint64_t i = 0;
       while (m_sorter.can_pull())
       {
         std::cout << "Merger loop" << std::endl;
+        
         reorder_request rr = m_sorter.pull();
         assignment_file path = reverse_path(af, rr.source);
-        r_prime = bdd_restrict(dd, path);
+        {
+          assignment_writer aw(path);
+          aw.unsafe_push(assignment{label_of(rr.source), is_flagged(rr.source)});
+        }
 
+        r_prime = bdd_restrict(dd, path);
+        std::cout << "R_Prime restriction found" << std::endl;
+        
         if (bdd_equal(r, r_prime))
         {
+          std::cout << "R and R_Prime equal" << std::endl;
           arc_writer aw(af);
           ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
           aw.unsafe_push(arc_t{rr.source, new_node});
         }
         else
         {
+          std::cout << "R and R_Prime NOT equal" << std::endl;
           i++;
-          arc_writer aw(af);
           ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
-          aw.unsafe_push(arc_t{rr.source, new_node});
+          {
+            arc_writer aw(af);
+            aw.unsafe_push(arc_t{rr.source, new_node});
+          }
           push_children(pq, new_node, af, dd);
         }
         r = r_prime;
