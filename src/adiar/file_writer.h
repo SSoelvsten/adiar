@@ -419,15 +419,12 @@ namespace adiar {
     /// \brief Increase the 1-level cut size to the maximum of the current or
     ///        the given cuts.
     ////////////////////////////////////////////////////////////////////////////
-    void inc_1level_cut(size_t (&o)[2][2])
+    void inc_1level_cut(cuts_t &o)
     {
-      size_t (&c)[2][2] = _file_ptr->max_1level_cut;
+      cuts_t &c = _file_ptr->max_1level_cut;
 
-      for(size_t incl_false = 0; incl_false < 2; incl_false++) {
-        for(size_t incl_true = 0; incl_true < 2; incl_true++) {
-          c[incl_false][incl_true] = std::max(c[incl_false][incl_true],
-                                              o[incl_false][incl_true]);
-        }
+      for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+        c[ct] = std::max(c[ct], o[ct]);
       }
     }
 

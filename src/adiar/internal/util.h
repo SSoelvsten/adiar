@@ -38,18 +38,29 @@ namespace adiar
     return true;
   }
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtain the level_info stream projected onto the labels.
+  ////////////////////////////////////////////////////////////////////////////
   inline label_file varprofile(const decision_diagram &dd)
   {
+    level_info_stream<node_t> info_stream(dd);
+
     label_file vars;
     label_writer writer(vars);
-    level_info_stream<node_t> info_stream(dd);
-    while(info_stream.can_pull())
-    {
+
+    while(info_stream.can_pull()) {
       writer << label_of(info_stream.pull());
     }
     return vars;
   }
 
+  ////////////////////////////////////////////////////////////////////////////
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// Class to over-approximate the number of bits required to represent the
+  /// result of arithmetic. This can be used to detect the possibility of
+  /// overflow.
+  ////////////////////////////////////////////////////////////////////////////
   class bits_approximation
   {
   public:

@@ -341,10 +341,10 @@ go_bandit([]() {
       level_info_test_stream<node_t> meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[false][false], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[false][true], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[true][false], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[true][true], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
       AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
       AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
@@ -371,10 +371,10 @@ go_bandit([]() {
       level_info_test_stream<node_t> meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[false][false], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[false][true], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[true][false], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[true][true], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
       AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
       AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
@@ -731,10 +731,10 @@ go_bandit([]() {
       level_info_test_stream<node_t> meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[false][false], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[false][true], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[true][false], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[true][true], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
       AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
       AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
@@ -769,10 +769,10 @@ go_bandit([]() {
       level_info_test_stream<node_t> meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[false][false], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[false][true], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[true][false], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[true][true], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
       AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
       AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));

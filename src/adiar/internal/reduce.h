@@ -6,6 +6,7 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/cut.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/sorter.h>
@@ -158,15 +159,15 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Update a cut size with some number of arcs.
   //////////////////////////////////////////////////////////////////////////////
-  inline void __reduce_cut_add(size_t (&cut)[2][2],
+  inline void __reduce_cut_add(size_t (&cut)[4],
                                const size_t internal_arcs,
                                const size_t false_arcs,
                                const size_t true_arcs)
   {
-    cut[false][false] += internal_arcs;
-    cut[false][true]  += internal_arcs + true_arcs;
-    cut[true][false]  += internal_arcs + false_arcs;
-    cut[true][true]   += internal_arcs + false_arcs + true_arcs;
+    cut[cut_type::INTERNAL]       += internal_arcs;
+    cut[cut_type::INTERNAL_FALSE] += internal_arcs + false_arcs;
+    cut[cut_type::INTERNAL_TRUE]  += internal_arcs + true_arcs;
+    cut[cut_type::ALL]            += internal_arcs + false_arcs + true_arcs;
   }
 
   template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
@@ -217,7 +218,7 @@ namespace adiar
     }
 
     // Count number of arcs that cross this level
-    size_t one_level_cut[2][2] = { { 0u, 0u }, { 0u, 0u } };
+    size_t one_level_cut[4] = { 0u, 0u, 0u, 0u };
 
     const size_t red1_internal = red1_mapping.is_open()
       ? red1_mapping.size() - red1_sinks[false] - red1_sinks[true]
@@ -361,10 +362,10 @@ namespace adiar
     node_file out_file;
     out_file->canonical = true;
 
-    out_file->max_1level_cut[false][false] = 0u;
-    out_file->max_1level_cut[false][true]  = 0u;
-    out_file->max_1level_cut[true][false]  = 0u;
-    out_file->max_1level_cut[true][true]   = 0u;
+    out_file->max_1level_cut[cut_type::INTERNAL]       = 0u;
+    out_file->max_1level_cut[cut_type::INTERNAL_FALSE] = 0u;
+    out_file->max_1level_cut[cut_type::INTERNAL_TRUE]  = 0u;
+    out_file->max_1level_cut[cut_type::ALL]            = 0u;
 
     node_writer out_writer(out_file);
 
@@ -391,10 +392,15 @@ namespace adiar
 
         out_writer.unsafe_push(create_level_info(label,1u));
 
-        out_file->max_1level_cut[false][false] = 1u;
-        out_file->max_1level_cut[false][true]  = std::max(value_of(e_low.target) + value_of(e_high.target), 1);
-        out_file->max_1level_cut[true][false]  = std::max(!value_of(e_low.target) + !value_of(e_high.target), 1);
-        out_file->max_1level_cut[true][true]   = 2u;
+        out_file->max_1level_cut[cut_type::INTERNAL] = 1u;
+
+        out_file->max_1level_cut[cut_type::INTERNAL_FALSE] =
+          std::max(!value_of(e_low.target) + !value_of(e_high.target), 1);
+
+        out_file->max_1level_cut[cut_type::INTERNAL_TRUE] =
+          std::max(value_of(e_low.target) + value_of(e_high.target), 1);
+
+        out_file->max_1level_cut[cut_type::ALL]      = 2u;
       }
       return out_file;
     }
@@ -427,36 +433,40 @@ namespace adiar
     if (is_sink(out_file)) { // Sink case
       const bool sink_val = value_of(out_file);
 
-      out_file->max_1level_cut[false][false] = 0u;
-      out_file->max_1level_cut[true][false]  = !sink_val;
-      out_file->max_1level_cut[false][true]  = sink_val;
-      out_file->max_1level_cut[true][true]   = 1u;
+      out_file->max_1level_cut[cut_type::INTERNAL]       = 0u;
+      out_file->max_1level_cut[cut_type::INTERNAL_FALSE] = !sink_val;
+      out_file->max_1level_cut[cut_type::INTERNAL_TRUE]  = sink_val;
+      out_file->max_1level_cut[cut_type::ALL]            = 1u;
     } else if (out_writer.size() == 1) { // Single node case
-        out_file->max_1level_cut[false][false] = 1u;
-        out_file->max_1level_cut[false][true] = std::max(out_file->number_of_sinks[true], 1lu);
-        out_file->max_1level_cut[true][false] = std::max(out_file->number_of_sinks[false], 1lu);
-        out_file->max_1level_cut[true][true] = 2u;
+      out_file->max_1level_cut[cut_type::INTERNAL] = 1u;
+
+      out_file->max_1level_cut[cut_type::INTERNAL_FALSE] =
+        std::max(out_file->number_of_sinks[false], 1lu);
+
+      out_file->max_1level_cut[cut_type::INTERNAL_TRUE] =
+        std::max(out_file->number_of_sinks[true], 1lu);
+
+      out_file->max_1level_cut[cut_type::ALL] = 2u;
     } else { // General case
       // Decrease maximum 1-level cut approximation below maximum cut and the
       // trivial number of arcs in the subgraphs.
-      for(size_t incl_false = 0; incl_false < 2; incl_false++) {
-        for(size_t incl_true = 0; incl_true < 2; incl_true++) {
+      for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
           // Upper bound from above approximation.
-          const size_t sweep_approximation = out_file->max_1level_cut[incl_false][incl_true];
+          const size_t sweep_approximation = out_file->max_1level_cut[ct];
 
           // Upper bound based on rough over-approximation of i-level cuts for
           // any value of i.
           const size_t max_cut = out_writer.size() + 1;
 
           // Upper bound on just 'all arcs'
+          const bool incl_false = includes_sink(ct, false);
+          const bool incl_true  = includes_sink(ct, true);
+
           const size_t number_of_arcs = 2u * out_writer.size()
             - (!incl_false ? out_file->number_of_sinks[false] : 0u)
             - (!incl_true  ? out_file->number_of_sinks[true]  : 0u);
 
-          out_file->max_1level_cut[incl_false][incl_true] = std::min({
-              sweep_approximation, max_cut, number_of_arcs
-            });
-        }
+          out_file->max_1level_cut[ct] = std::min({ sweep_approximation, max_cut, number_of_arcs });
       }
     }
 

@@ -31,6 +31,7 @@ set(HEADERS
   internal/build.h
   internal/convert.h
   internal/count.h
+  internal/cut.h
   internal/decision_diagram.h
   internal/dot.h
   internal/intercut.h
