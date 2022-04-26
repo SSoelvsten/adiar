@@ -31,11 +31,15 @@ namespace adiar
     auto deal_with = [&](bool b)
     {
       assignment_file path = reverse_path(af, source);
+      std::cout << "PUSH-CHILDREN: reverse path done" << std::endl;
       assignment_writer aw(path);
       aw.unsafe_push(assignment_t{label_of(source), b});
+      std::cout << "PUSH-CHILDREN: Added asignment" << std::endl;
 
       bdd f_ikb = bdd_restrict(f, path);
+      std::cout << "PUSH-CHILDREN: restriction done" << std::endl;
       label_t label = min_label(f_ikb);
+      std::cout << "PUSH-CHILDREN: min-label found" << std::endl;
 
       bool is_leaf = label == -1;
       if (!is_leaf)
@@ -93,45 +97,59 @@ namespace adiar
   assignment_file reverse_path(const arc_file &af, ptr_t n)
   {
     assignment_file ass_file;
-    assignment_writer aw(ass_file);
-
-    adiar::node_arc_stream<> fs(af);
-
-    // Måske virker node_arc_stream ikke.. (Detach er ikke defineret)
-    // Denne node_arc_stream er ikke beregnet til at at read, write, read, write
-    // Vi tror, det er muligt, men måske render vi ind i problemer senere.
-    ptr_t current = n;
-
-    std::cout << "Starting arc: " << n << std::endl;
-
-    while (fs.can_pull())
+    if(af.empty()){
+      return ass_file;
+    }
     {
-      arc_t a = fs.pull();
-      std::cout << "Looking  source: " << a.source << " - target: " << a.target << std::endl;
-      if (a.target == current)
+      assignment_writer aw(ass_file);
+
+      adiar::node_arc_stream<> fs(af);
+
+      // Måske virker node_arc_stream ikke.. (Detach er ikke defineret)
+      // Denne node_arc_stream er ikke beregnet til at at read, write, read, write
+      // Vi tror, det er muligt, men måske render vi ind i problemer senere.
+      ptr_t current = n;
+
+      std::cout << "Starting arc: " << n << std::endl;
+
+      while (fs.can_pull())
       {
-        current = a.source;
-        aw.unsafe_push(assignment{label_of(current), is_high(a)});
+        arc_t a = fs.pull();
+        std::cout << "Looking  source: " << a.source << " - target: " << a.target << std::endl;
+        if (a.target == current)
+        {
+          current = a.source;
+          aw.unsafe_push(assignment{label_of(current), is_high(a)});
+        }
       }
     }
+
+    simple_file_sorter<assignment_t> sf_sorter;
+    sf_sorter.sort(ass_file);
 
     return ass_file;
   }
 
   __bdd bdd_reorder(const bdd &dd, const label_t permutation[])
   {
+    std::cout << "Reorder started" << std::endl;
+
     // prøv levelized_priority_queue for UNLIMITED POWER
     external_priority_queue<reorder_request, reorder_lt> pq(memory::available(), 0); // 0 is pq external doesnt care
 
     arc_file af;
     ptr_t root = create_node_ptr(permutation[0], 0);
+    std::cout << "Now pushing children" << std::endl;
     push_children(pq, root, af, dd);
+
+    std::cout << "Initialization done" << std::endl;
 
     while (!pq.empty())
     {
+      std::cout << "PQ loop" << std::endl;
+
       // TODO https://github.com/Mortal/tpieex/blob/master/main.cc line 68-70
       // TODO add operator as argument in the constructor.
-
       auto pred = [&](const reorder_request &a, const reorder_request &b) -> bool
       {
         assignment_file path_a = reverse_path(af, a.source);
@@ -167,6 +185,7 @@ namespace adiar
       uint64_t i = 0;
       while (m_sorter.can_pull())
       {
+        std::cout << "Merger loop" << std::endl;
         reorder_request rr = m_sorter.pull();
         assignment_file path = reverse_path(af, rr.source);
         r_prime = bdd_restrict(dd, path);
