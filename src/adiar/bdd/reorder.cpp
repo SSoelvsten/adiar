@@ -173,7 +173,9 @@ namespace adiar
       reorder_request rr = pq.top();
       pq.pop();
       m_sorter.push(rr);
-      while (pq.top().child_level == rr.child_level)
+      std::cout << "First element from PQ removed" << std::endl;
+
+      while (!pq.empty() && pq.top().child_level == rr.child_level)
       {
         reorder_request next = pq.top();
         pq.pop();
