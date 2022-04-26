@@ -100,18 +100,7 @@ namespace adiar
     // TODO change arc file to node file to create an bdd
     // maybe do bdd(af);
 
-    /*
-    Sådan pusher vi arcs (substitute.h i internal/substitution.h))):
-    while(substitute_pq.can_pull() && substitute_pq.top().target == n_res.uid) {
-      const arc_t parent_arc = substitute_pq.pull();
-
-      if(!is_nil(parent_arc.source)) {
-        aw.unsafe_push_node(parent_arc);
-      }
-    }
-    */
-
-    return bdd_sink(false);
+    return bdd(af);
   }
 
   void push_children(external_priority_queue<reorder_request, reorder_lt> &pq, const ptr_t source, const arc_file &af, const bdd &f)
