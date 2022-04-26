@@ -17,7 +17,7 @@ namespace adiar
     ptr_t source; // gemmer også is_high (brug flag, unflag, is_flagged)
     label_t child_level;
   };
-  
+
   struct reorder_lt
   {
     bool operator()(const reorder_request &a, const reorder_request &b) const
@@ -37,13 +37,14 @@ namespace adiar
 
     while (!pq.empty())
     {
-      //TODO https://github.com/Mortal/tpieex/blob/master/main.cc line 68-70
-      //TODO add operator as argument in the constructor.
+      // TODO https://github.com/Mortal/tpieex/blob/master/main.cc line 68-70
+      // TODO add operator as argument in the constructor.
 
-      auto pred = [&](const reorder_request &a, const reorder_request &b) -> bool {
+      auto pred = [&](const reorder_request &a, const reorder_request &b) -> bool
+      {
         assignment_file path = reverse_path(af, a.source);
         bdd a_restrict = bdd_restrict(dd, path);
-        
+
         assignment_file path = reverse_path(af, b.source);
         bdd b_restrict = bdd_restrict(dd, path);
 
@@ -69,7 +70,31 @@ namespace adiar
       m_sorter.end();
       m_sorter.calc(d_indicator);
 
+      bdd r;
+      bdd r_prime;
+      uint64_t i = 0;
+      while (m_sorter.can_pull())
+      {
+        reorder_request rr = m_sorter.pull();
+        assignment_file path = reverse_path(af, rr.source);
+        r_prime = bdd_restrict(dd, path);
+
+        if (bdd_equal(r, r_prime))
+        {
+          // TODO output arc
+        }
+        else
+        {
+          i++;
+          // TODO output arc
+          // TODO push-children
+        }
+        r = r_prime;
+      }
     }
+
+    // TODO change arc file to node file to create an bdd
+    // maybe do bdd(af);
 
     /*
     Sådan pusher vi arcs (substitute.h i internal/substitution.h))):
@@ -146,7 +171,7 @@ namespace adiar
     assignment_file ass_file;
     assignment_writer aw(ass_file);
 
-    adiar::node_arc_stream<> fs(af); 
+    adiar::node_arc_stream<> fs(af);
 
     // Måske virker node_arc_stream ikke.. (Detach er ikke defineret)
     // Denne node_arc_stream er ikke beregnet til at at read, write, read, write
