@@ -5,6 +5,7 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/build.h>
+#include <adiar/internal/cut.h>
 
 namespace adiar
 {
@@ -151,12 +152,8 @@ namespace adiar
       // Do not count the one lt_sink (if any)
       - (lt_sinks > 0);
 
-    nf->max_1level_cut[false][false] = std::max(internal_cut_below_shallowest_lvl,
-                                                internal_cut_below_deepest_lvl);
-
-    // Compare the cut at deepest widest level and below the last level.
-    nf->max_1level_cut[false][true] = std::max(nf->max_1level_cut[false][false],
-                                               eq_sinks);
+    nf->max_1level_cut[cut_type::INTERNAL] = std::max(internal_cut_below_shallowest_lvl,
+                                                      internal_cut_below_deepest_lvl);
 
     // With 'vars - deepest_widest_lvl' we obtain the number of levels beyond
     // the widest one. But, if 'deepest_widest_lvl < vars' then there are two
@@ -166,15 +163,19 @@ namespace adiar
     // The maximum cut with false sinks is at the deepes widest level. Beyond
     // it, a node (with two children) is removed, which outweighs the gt_sink
     // and possible lt_sink added.
-    nf->max_1level_cut[true][false] =
+    nf->max_1level_cut[cut_type::INTERNAL_FALSE] =
       std::max(internal_cut_below_deepest_lvl + lt_sinks + gt_sinks - 2u * lvls_after_widest,
                lt_sinks + gt_sinks);
+
+    // Compare the cut at deepest widest level and below the last level.
+    nf->max_1level_cut[cut_type::INTERNAL_TRUE] = std::max(nf->max_1level_cut[cut_type::INTERNAL],
+                                                           eq_sinks);
 
     // Counting both false and true sinks is only different from counting false
     // sinks, if the number of eq_sinks outweighs the number of internal nodes
     // since the true sinks are only spawned at the very bottom.
-    nf->max_1level_cut[true][true] = std::max(nf->max_1level_cut[true][false],
-                                              lt_sinks + eq_sinks + gt_sinks);
+    nf->max_1level_cut[cut_type::ALL] = std::max(nf->max_1level_cut[cut_type::INTERNAL_FALSE],
+                                                 lt_sinks + eq_sinks + gt_sinks);
 
     return nf;
   }

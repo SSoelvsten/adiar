@@ -8,6 +8,7 @@
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
+#include <adiar/internal/cut.h>
 
 #include <functional>
 
@@ -176,10 +177,10 @@ namespace adiar
     // Maximum 1-level cut
     const size_t max_cut = nw.size() + 1u;
 
-    nf->max_1level_cut[false][false] = max_cut;
-    nf->max_1level_cut[false][true] = max_cut;
-    nf->max_1level_cut[true][false] = max_cut;
-    nf->max_1level_cut[true][true] = max_cut;
+    nf->max_1level_cut[cut_type::INTERNAL]       = max_cut;
+    nf->max_1level_cut[cut_type::INTERNAL_FALSE] = max_cut;
+    nf->max_1level_cut[cut_type::INTERNAL_TRUE]  = max_cut;
+    nf->max_1level_cut[cut_type::ALL]            = max_cut;
 
     // TODO: compute correctly
 

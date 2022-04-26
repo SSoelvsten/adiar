@@ -6,6 +6,7 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/cut.h>
 
 namespace adiar
 {
@@ -15,10 +16,10 @@ namespace adiar
     node_writer nw(nf);
     nw.unsafe_push(create_sink(value));
 
-    nf->max_1level_cut[false][false] = 0u;
-    nf->max_1level_cut[false][true] = value;
-    nf->max_1level_cut[true][false] = !value;
-    nf->max_1level_cut[true][true] = 1u;
+    nf->max_1level_cut[cut_type::INTERNAL]       = 0u;
+    nf->max_1level_cut[cut_type::INTERNAL_FALSE] = !value;
+    nf->max_1level_cut[cut_type::INTERNAL_TRUE]  = value;
+    nf->max_1level_cut[cut_type::ALL]            = 1u;
 
     nf->number_of_sinks[value] = 1;
 
@@ -37,10 +38,10 @@ namespace adiar
 
     nw.unsafe_push(create_level_info(label,1u));
 
-    nf->max_1level_cut[false][false] = 1u;
-    nf->max_1level_cut[false][true] = 1u;
-    nf->max_1level_cut[true][false] = 1u;
-    nf->max_1level_cut[true][true] = 2u;
+    nf->max_1level_cut[cut_type::INTERNAL]       = 1u;
+    nf->max_1level_cut[cut_type::INTERNAL_FALSE] = 1u;
+    nf->max_1level_cut[cut_type::INTERNAL_TRUE]  = 1u;
+    nf->max_1level_cut[cut_type::ALL]            = 2u;
 
     return nf;
   }
@@ -84,26 +85,26 @@ namespace adiar
       // Compute 1-level cut sizes
       const size_t internal_arcs = number_of_levels > 1 ? (link_low + link_high) : 1u;
 
-      nf->max_1level_cut[false][false] = internal_arcs;
-
-      const size_t true_arcs_pre_end  =
-        (number_of_levels - 1) * ((!link_low && low_sink_value) + (!link_high && high_sink_value));
-
-      const size_t true_arcs_end = true_arcs_pre_end + low_sink_value + high_sink_value;
-
-      nf->max_1level_cut[false][true] = std::max(internal_arcs + true_arcs_pre_end,
-                                                 true_arcs_end);
+      nf->max_1level_cut[cut_type::INTERNAL] = internal_arcs;
 
       const size_t false_arcs_pre_end =
         (number_of_levels - 1) * ((!link_low && !low_sink_value) + (!link_high && !high_sink_value));
 
       const size_t false_arcs_end = false_arcs_pre_end + !low_sink_value + !high_sink_value;
 
-      nf->max_1level_cut[true][false] = std::max(internal_arcs + false_arcs_pre_end,
-                                                 false_arcs_end);
+      nf->max_1level_cut[cut_type::INTERNAL_FALSE] = std::max(internal_arcs + false_arcs_pre_end,
+                                                              false_arcs_end);
 
-      nf->max_1level_cut[true][true] = std::max(internal_arcs + false_arcs_pre_end + true_arcs_pre_end,
-                                                false_arcs_end + true_arcs_end);
+      const size_t true_arcs_pre_end  =
+      (number_of_levels - 1) * ((!link_low && low_sink_value) + (!link_high && high_sink_value));
+
+      const size_t true_arcs_end = true_arcs_pre_end + low_sink_value + high_sink_value;
+
+      nf->max_1level_cut[cut_type::INTERNAL_TRUE] = std::max(internal_arcs + true_arcs_pre_end,
+                                                             true_arcs_end);
+
+      nf->max_1level_cut[cut_type::ALL] = std::max(internal_arcs + false_arcs_pre_end + true_arcs_pre_end,
+                                                   false_arcs_end + true_arcs_end);
 
       return nf;
     }

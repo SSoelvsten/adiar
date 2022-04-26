@@ -15,6 +15,7 @@
 // ADIAR imports
 #include <adiar/data.h>
 #include <adiar/internal/assert.h>
+#include <adiar/internal/cut.h>
 
 namespace adiar
 {
@@ -148,10 +149,6 @@ namespace adiar
 
     struct stats
     {
-    private:
-      static constexpr size_t MAX_64u = std::numeric_limits<size_t>::max();
-
-    public:
       //////////////////////////////////////////////////////////////////////////
       /// \brief Boolean flag whether a set of nodes are well-formed with
       ///        respect to the stricter ordering required by the fast equality
@@ -159,15 +156,14 @@ namespace adiar
       //////////////////////////////////////////////////////////////////////////
       bool canonical = false;
 
-      ////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum one-level cut of the DAG (with
-      ///        or without arcs to each respective sink). First index is
-      ///        whether to include false sinks while the second is whether to
-      ///        include true sinks.
+      ///        or without arcs to each respective sink). Use <tt>cut_type</tt>
+      ///        to index the desired variant of the type.
       ///
-      /// TODO: one index (with an enum)
-      ////////////////////////////////////////////////////////////////////////////
-      size_t max_1level_cut[2][2] = { { MAX_64u, MAX_64u }, { MAX_64u, MAX_64u } };
+      /// \sa    cut_type
+      //////////////////////////////////////////////////////////////////////////
+      cuts_t max_1level_cut = { MAX_CUT, MAX_CUT, MAX_CUT, MAX_CUT };
     };
   };
 
@@ -185,11 +181,13 @@ namespace adiar
 
     struct stats
     {
-      ////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum one-level cut of the DAG (not
       ///        counting any arcs to sinks).
-      ////////////////////////////////////////////////////////////////////////////
-      size_t max_1level_cut = std::numeric_limits<size_t>::max();
+      ///
+      /// TODO: use array of size 1?
+      //////////////////////////////////////////////////////////////////////////
+      size_t max_1level_cut = MAX_CUT;
     };
   };
 
