@@ -128,6 +128,14 @@ namespace adiar
       bool is_leaf = label == -1;
       if (!is_leaf)
       {
+        if (b)
+        {
+          flag(source);
+        }
+        else
+        {
+          unflag(source);
+        }
         pq.push(reorder_request{source, label});
       }
       else
