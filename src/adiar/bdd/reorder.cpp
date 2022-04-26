@@ -17,27 +17,6 @@ namespace adiar
     ptr_t source; // gemmer også is_high (brug flag, unflag, is_flagged)
     label_t child_level;
   };
-
-  struct level_request
-  {
-    reorder_request rr;
-    arc_file af;
-    bdd input;
-
-    bdd f_ikc(){
-      assignment_file path = reverse_path(af, rr.source);
-      bdd f_ikb = bdd_restrict(input, path);
-      return f_ikb;
-    }
-  };
-
-  struct level_request_lt{
-    bool operator()(level_request &a, level_request &b) const
-    {
-      //TODO not a equality
-      return bdd_equal(a.f_ikc(), b.f_ikc());
-    }
-  };
   
   struct reorder_lt
   {
@@ -74,24 +53,33 @@ namespace adiar
 
     while (!pq.empty())
     {
-      // QUESTION: Should we create a file format for this?
-      // This vector can be 2^31 bits large (i.e contain an element per node possible)
-      // TODO add elements directly to merge_sorter
-      std::vector<level_request> level;
-
       //TODO https://github.com/Mortal/tpieex/blob/master/main.cc line 68-70
       //TODO add operator as argument in the constructor.
-      tpie::merge_sorter<level_request, false, level_request_lt> sorter_opm_sorter;
-      //TODO call init on merge_sorter, set memory and .begin
+
+      auto pred = [&](const reorder_request &a, const reorder_request &b) -> bool {
+        assignment_file path = reverse_path(af, a.source);
+        bdd a_restrict = bdd_restrict(dd, path);
+        
+        assignment_file path = reverse_path(af, b.source);
+        bdd b_restrict = bdd_restrict(dd, path);
+
+        // TODO Add N/B less than operator.
+
+        return false;
+      };
+
+      tpie::merge_sorter<reorder_request, false, decltype(pred)> m_sorter(pred);
+      m_sorter.set_available_memory(memory::available());
+      m_sorter.begin();
 
       reorder_request rr = pq.top();
       pq.pop();
-      level.push_back(level_request{rr, af, dd});
+      m_sorter.push(rr);
       while (pq.top().child_level == rr.child_level)
       {
-        level_request next = level_request{pq.top(), af, dd};
+        reorder_request next = pq.top();
         pq.pop();
-        level.push_back(next);
+        m_sorter.push(rr);
       }
 
     }
