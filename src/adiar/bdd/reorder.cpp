@@ -32,8 +32,10 @@ namespace adiar
     {
       assignment_file path = reverse_path(af, source);
       std::cout << "PUSH-CHILDREN: reverse path done" << std::endl;
-      assignment_writer aw(path);
-      aw.unsafe_push(assignment_t{label_of(source), b});
+      {
+        assignment_writer aw(path);
+        aw.unsafe_push(assignment_t{label_of(source), b});
+      }
       std::cout << "PUSH-CHILDREN: Added asignment" << std::endl;
 
       bdd f_ikb = bdd_restrict(f, path);
