@@ -317,7 +317,7 @@ namespace adiar
   __bdd bdd_forall(const bdd &f, const label_file &vars);
   __bdd bdd_forall(bdd &&f, const label_file &vars);
 
-  __bdd bdd_reorder(const bdd &dd);
+  __bdd bdd_reorder(const bdd &dd, const label_t permutation[]);
   std::vector<uint32_t> bdd_order(const bdd &dd);
   label_t min_label(const bdd &dd);
   simple_file<assignment_t> reverse_path(const arc_file &af, ptr_t n);

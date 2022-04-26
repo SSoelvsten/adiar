@@ -26,83 +26,6 @@ namespace adiar
     }
   };
 
-  __bdd bdd_reorder(const bdd &dd, const label_t permutation[])
-  {
-    // prøv levelized_priority_queue for UNLIMITED POWER
-    external_priority_queue<reorder_request, reorder_lt> pq(memory::available(), 0); // 0 is pq external doesnt care
-
-    arc_file af;
-    ptr_t root = create_node_ptr(permutation[0], 0);
-    push_children(pq, root, af, dd);
-
-    while (!pq.empty())
-    {
-      // TODO https://github.com/Mortal/tpieex/blob/master/main.cc line 68-70
-      // TODO add operator as argument in the constructor.
-
-      auto pred = [&](const reorder_request &a, const reorder_request &b) -> bool
-      {
-        assignment_file path = reverse_path(af, a.source);
-        bdd a_restrict = bdd_restrict(dd, path);
-
-        assignment_file path = reverse_path(af, b.source);
-        bdd b_restrict = bdd_restrict(dd, path);
-
-        // TODO Add N/B less than operator.
-
-        return false;
-      };
-
-      tpie::merge_sorter<reorder_request, false, decltype(pred)> m_sorter(pred);
-      m_sorter.set_available_memory(memory::available());
-      tpie::dummy_progress_indicator d_indicator;
-      m_sorter.begin();
-
-      reorder_request rr = pq.top();
-      pq.pop();
-      m_sorter.push(rr);
-      while (pq.top().child_level == rr.child_level)
-      {
-        reorder_request next = pq.top();
-        pq.pop();
-        m_sorter.push(rr);
-      }
-      m_sorter.end();
-      m_sorter.calc(d_indicator);
-
-      bdd r;
-      bdd r_prime;
-      uint64_t i = 0;
-      while (m_sorter.can_pull())
-      {
-        reorder_request rr = m_sorter.pull();
-        assignment_file path = reverse_path(af, rr.source);
-        r_prime = bdd_restrict(dd, path);
-
-        if (bdd_equal(r, r_prime))
-        {
-          arc_writer aw(af);
-          ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
-          aw.unsafe_push(arc_t{rr.source, new_node});
-        }
-        else
-        {
-          i++;
-          arc_writer aw(af);
-          ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
-          aw.unsafe_push(arc_t{rr.source, new_node});
-          push_children(pq, new_node, af, dd);
-        }
-        r = r_prime;
-      }
-    }
-
-    // TODO change arc file to node file to create an bdd
-    // maybe do bdd(af);
-
-    return bdd(af);
-  }
-
   void push_children(external_priority_queue<reorder_request, reorder_lt> &pq, const ptr_t source, const arc_file &af, const bdd &f)
   {
     auto deal_with = [&](bool b)
@@ -193,5 +116,82 @@ namespace adiar
     }
 
     return ass_file;
+  }
+
+  __bdd bdd_reorder(const bdd &dd, const label_t permutation[])
+  {
+    // prøv levelized_priority_queue for UNLIMITED POWER
+    external_priority_queue<reorder_request, reorder_lt> pq(memory::available(), 0); // 0 is pq external doesnt care
+
+    arc_file af;
+    ptr_t root = create_node_ptr(permutation[0], 0);
+    push_children(pq, root, af, dd);
+
+    while (!pq.empty())
+    {
+      // TODO https://github.com/Mortal/tpieex/blob/master/main.cc line 68-70
+      // TODO add operator as argument in the constructor.
+
+      auto pred = [&](const reorder_request &a, const reorder_request &b) -> bool
+      {
+        assignment_file path_a = reverse_path(af, a.source);
+        bdd a_restrict = bdd_restrict(dd, path_a);
+
+        assignment_file path_b = reverse_path(af, b.source);
+        bdd b_restrict = bdd_restrict(dd, path_b);
+
+        // TODO Add N/B less than operator.
+
+        return false;
+      };
+
+      tpie::merge_sorter<reorder_request, false, decltype(pred)> m_sorter(pred);
+      m_sorter.set_available_memory(memory::available());
+      tpie::dummy_progress_indicator d_indicator;
+      m_sorter.begin();
+
+      reorder_request rr = pq.top();
+      pq.pop();
+      m_sorter.push(rr);
+      while (pq.top().child_level == rr.child_level)
+      {
+        reorder_request next = pq.top();
+        pq.pop();
+        m_sorter.push(next);
+      }
+      m_sorter.end();
+      m_sorter.calc(d_indicator);
+
+      bdd r;
+      bdd r_prime;
+      uint64_t i = 0;
+      while (m_sorter.can_pull())
+      {
+        reorder_request rr = m_sorter.pull();
+        assignment_file path = reverse_path(af, rr.source);
+        r_prime = bdd_restrict(dd, path);
+
+        if (bdd_equal(r, r_prime))
+        {
+          arc_writer aw(af);
+          ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
+          aw.unsafe_push(arc_t{rr.source, new_node});
+        }
+        else
+        {
+          i++;
+          arc_writer aw(af);
+          ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
+          aw.unsafe_push(arc_t{rr.source, new_node});
+          push_children(pq, new_node, af, dd);
+        }
+        r = r_prime;
+      }
+    }
+
+    // TODO change arc file to node file to create an bdd
+    // maybe do bdd(af);
+
+    return bdd(af);
   }
 }
