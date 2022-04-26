@@ -20,27 +20,11 @@ namespace adiar
   
   struct reorder_lt
   {
-    // when doing the expensive comparison, we might need to make a lambda so the arc file is in scope
     bool operator()(const reorder_request &a, const reorder_request &b) const
     {
       return a.child_level < b.child_level;
     }
   };
-
-  /*
-  struct level_lt
-  {
-    std::function<bool(reorder_request, reorder_request)> op;
-    level_lt(std::function<bool(reorder_request, reorder_request)> op){
-      this->op = op;
-    };
-
-    bool operator()(const reorder_request &a, const reorder_request &b) const
-    {
-      return op(a, b);
-    }
-  };
-  */
 
   __bdd bdd_reorder(const bdd &dd, const label_t permutation[])
   {
@@ -70,6 +54,7 @@ namespace adiar
 
       tpie::merge_sorter<reorder_request, false, decltype(pred)> m_sorter(pred);
       m_sorter.set_available_memory(memory::available());
+      tpie::dummy_progress_indicator d_indicator;
       m_sorter.begin();
 
       reorder_request rr = pq.top();
@@ -81,6 +66,8 @@ namespace adiar
         pq.pop();
         m_sorter.push(rr);
       }
+      m_sorter.end();
+      m_sorter.calc(d_indicator);
 
     }
 
