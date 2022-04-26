@@ -81,13 +81,17 @@ namespace adiar
 
         if (bdd_equal(r, r_prime))
         {
-          // TODO output arc
+          arc_writer aw(af);
+          ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
+          aw.unsafe_push(arc_t{rr.source, new_node});
         }
         else
         {
           i++;
-          // TODO output arc
-          // TODO push-children
+          arc_writer aw(af);
+          ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
+          aw.unsafe_push(arc_t{rr.source, new_node});
+          push_children(pq, new_node, af, dd);
         }
         r = r_prime;
       }
