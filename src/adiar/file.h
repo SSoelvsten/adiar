@@ -157,13 +157,22 @@ namespace adiar
       bool canonical = false;
 
       //////////////////////////////////////////////////////////////////////////
-      /// \brief An upper bound for the maximum one-level cut of the DAG (with
-      ///        or without arcs to each respective sink). Use <tt>cut_type</tt>
-      ///        to index the desired variant of the type.
+      /// \brief An upper bound for the maximum 1-level cut of the DAG (with or
+      ///        without arcs to each respective sink). Use <tt>cut_type</tt> to
+      ///        index the desired variant of the type.
       ///
       /// \sa    cut_type
       //////////////////////////////////////////////////////////////////////////
       cuts_t max_1level_cut = { MAX_CUT, MAX_CUT, MAX_CUT, MAX_CUT };
+
+      //////////////////////////////////////////////////////////////////////////
+      /// \brief An upper bound for the maximum 2-level cut of the DAG (with or
+      ///        without arcs to each respective sink). Use <tt>cut_type</tt> to
+      ///        index the desired variant of the type.
+      ///
+      /// \sa    cut_type
+      //////////////////////////////////////////////////////////////////////////
+      cuts_t max_2level_cut = { MAX_CUT, MAX_CUT, MAX_CUT, MAX_CUT };
     };
   };
 

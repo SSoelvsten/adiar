@@ -402,6 +402,12 @@ namespace adiar
 
         out_file->max_1level_cut[cut_type::ALL]      = 2u;
       }
+
+      // Copy over 1-level cut to 2-level cut.
+      for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+        out_file->max_2level_cut[ct] = out_file->max_1level_cut[ct];
+      }
+
       return out_file;
     }
 
@@ -429,7 +435,25 @@ namespace adiar
       }
     }
 
-    // Compute final maximum 1-level cuts
+    // Compute final maximum i-level cuts
+
+    // Upper bound based on rough over-approximation of i-level cuts for
+    // any value of i.
+    const size_t max_cut = out_writer.size() + 1; // TODO: catch overflow
+
+    // Upper bound on just 'all arcs'
+    const size_t number_of_arcs = 2u * out_writer.size(); // TODO: catch overflow
+    const size_t number_of_false = out_file->number_of_sinks[false];
+    const size_t number_of_true = out_file->number_of_sinks[true];
+
+    const cuts_t all_arcs_cut = {
+      number_of_arcs - number_of_false - number_of_true,
+      number_of_arcs - number_of_true,
+      number_of_arcs - number_of_false,
+      number_of_arcs
+    };
+
+    // 1-level cuts
     if (is_sink(out_file)) { // Sink case
       const bool sink_val = value_of(out_file);
 
@@ -448,25 +472,33 @@ namespace adiar
 
       out_file->max_1level_cut[cut_type::ALL] = 2u;
     } else { // General case
-      // Decrease maximum 1-level cut approximation below maximum cut and the
-      // trivial number of arcs in the subgraphs.
       for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
-          // Upper bound from above approximation.
-          const size_t sweep_approximation = out_file->max_1level_cut[ct];
+        // Use smallest sound upper bound.
+        out_file->max_1level_cut[ct] = std::min({
+            out_file->max_1level_cut[ct], max_cut, all_arcs_cut[ct]
+          });
+      }
+    }
 
-          // Upper bound based on rough over-approximation of i-level cuts for
-          // any value of i.
-          const size_t max_cut = out_writer.size() + 1;
+    // 2-level cuts
+    if (is_sink(out_file) || out_writer.size() == 1) { // Single vertex cases
+      for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+        out_file->max_2level_cut[ct] = out_file->max_1level_cut[ct];
+      }
+    } else { // General case
+      for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+        // Upper bound based on 1-level cut
+        const size_t ub_from_1level_cut = ct == cut_type::INTERNAL
+          ? (out_file->max_1level_cut[cut_type::INTERNAL] * 3) / 2
+          : out_file->max_1level_cut[ct] + out_file->max_1level_cut[cut_type::INTERNAL];
 
-          // Upper bound on just 'all arcs'
-          const bool incl_false = includes_sink(ct, false);
-          const bool incl_true  = includes_sink(ct, true);
+        // TODO: If the number of nodes match the number of levels, then it is
+        //       exactly the 1-level cut.
 
-          const size_t number_of_arcs = 2u * out_writer.size()
-            - (!incl_false ? out_file->number_of_sinks[false] : 0u)
-            - (!incl_true  ? out_file->number_of_sinks[true]  : 0u);
-
-          out_file->max_1level_cut[ct] = std::min({ sweep_approximation, max_cut, number_of_arcs });
+        // Use smallest sound upper bound.
+        out_file->max_2level_cut[ct] = std::min({
+            ub_from_1level_cut, max_cut, all_arcs_cut[ct]
+          });
       }
     }
 
