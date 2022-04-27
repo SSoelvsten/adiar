@@ -8,6 +8,7 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/cut.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/util.h>
 
@@ -312,18 +313,14 @@ namespace adiar
   }
 
   template<typename intercut_policy>
-  size_t __intercut_max_cut_upper_bound(const typename intercut_policy::reduced_t &dd)
+  cut_size_t __intercut_2level_upper_bound(const typename intercut_policy::reduced_t &dd)
   {
-    const size_t number_of_nodes = dd->size();
-    const bits_approximation input_bits(number_of_nodes);
+    const cut_type ct = cut_type_with(intercut_policy::cut_false_sink, intercut_policy::cut_true_sink);
+    const cut_size_t max_2level_cut = dd->max_2level_cut[dd.is_negated() ? negate(ct) : ct];
 
-    const bits_approximation bound_bits = (input_bits * 2) + 2;
-
-    if(bound_bits.may_overflow()) {
-      return std::numeric_limits<size_t>::max();
-    } else {
-      return (2 * number_of_nodes) + 2;
-    }
+    return ((bits_approximation(max_2level_cut) * 2) + 2).may_overflow()
+      ? MAX_CUT
+      : (2 * max_2level_cut) + 2;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -350,7 +347,7 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t max_pq_size = __intercut_max_cut_upper_bound<intercut_policy>(dd);
+    const size_t max_pq_size = __intercut_2level_upper_bound<intercut_policy>(dd);
 
     constexpr size_t data_structures_in_pq_1 =
       intercut_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;

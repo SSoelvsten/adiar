@@ -5,6 +5,7 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/cut.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/product_construction.h>
 #include <adiar/internal/tuple.h>
@@ -63,16 +64,20 @@ namespace adiar
     }
 
   public:
-    static size_t left_leaves(const bool_op &op)
+    static cut_type left_cut(const bool_op &op)
     {
-      return !can_left_shortcut(op, create_sink_ptr(false)) +
-             !can_left_shortcut(op, create_sink_ptr(true));
+      const bool incl_false = !can_left_shortcut(op, create_sink_ptr(false));
+      const bool incl_true = !can_left_shortcut(op, create_sink_ptr(true));
+
+      return cut_type_with(incl_false, incl_true);
     }
 
-    static size_t right_leaves(const bool_op &op)
+    static cut_type right_cut(const bool_op &op)
     {
-      return !can_right_shortcut(op, create_sink_ptr(false)) +
-             !can_right_shortcut(op, create_sink_ptr(true));
+      const bool incl_false = !can_right_shortcut(op, create_sink_ptr(false));
+      const bool incl_true = !can_right_shortcut(op, create_sink_ptr(true));
+
+      return cut_type_with(incl_false, incl_true);
     }
 
   private:

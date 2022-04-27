@@ -443,7 +443,7 @@ namespace adiar
     const size_t number_of_nodes = out_writer.size();
 
     // Upper bound for any cut based on number of internal nodes.
-    const cut_t max_cut = number_of_nodes < MAX_CUT ? number_of_nodes + 1 : MAX_CUT;
+    const cut_size_t max_cut = number_of_nodes < MAX_CUT ? number_of_nodes + 1 : MAX_CUT;
 
     // Upper bound on just 'all arcs'
     const size_t number_of_arcs = 2u * number_of_nodes;
@@ -497,7 +497,7 @@ namespace adiar
     } else { // General case
       for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
         // Upper bound based on 1-level cut
-        const cut_t ub_from_1level_cut = out_file->max_1level_cut[ct] < MAX_CUT / 3u && ct == cut_type::INTERNAL
+        const cut_size_t ub_from_1level_cut = out_file->max_1level_cut[ct] < MAX_CUT / 3u && ct == cut_type::INTERNAL
           ? (out_file->max_1level_cut[cut_type::INTERNAL] * 3) / 2
           : out_file->max_1level_cut[ct] < MAX_CUT / 2u
           ? out_file->max_1level_cut[ct] + out_file->max_1level_cut[cut_type::INTERNAL]

@@ -84,22 +84,6 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  // Helper functions
-  inline size_t __count_max_cut_upper_bound(const decision_diagram &dd)
-  {
-    const size_t input_size = dd->size();
-    const bits_approximation input_bits(input_size);
-
-    const bits_approximation bound_bits = input_bits + 1;
-
-    if (bound_bits.may_overflow()) {
-      return std::numeric_limits<size_t>::max();
-    } else {
-      return input_size + 1;
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
   template<typename count_policy, typename count_pq_t>
   uint64_t __count(const decision_diagram &dd,
                    const label_t varcount,
@@ -158,7 +142,7 @@ namespace adiar
     // We then may derive an upper bound on the size of auxiliary data
     // structures and check whether we can run them with a faster internal
     // memory variant.
-    const size_t max_pq_size = __count_max_cut_upper_bound(dd);
+    const size_t max_pq_size = dd->max_2level_cut[cut_type::INTERNAL];
 
     const size_t aux_available_memory = memory::available() - node_stream<>::memory_usage();
 

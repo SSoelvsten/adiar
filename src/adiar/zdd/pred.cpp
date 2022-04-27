@@ -11,21 +11,18 @@ namespace adiar {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  template<cut_type ct_1, cut_type ct_2>
   class ignore_levels
   {
   public:
-    static size_t max_cut_upper_bound(const node_file &in_1, const node_file &in_2)
+    static cut_size_t pq1_upper_bound(const node_file &in_1, const node_file &in_2)
     {
-      const bits_approximation in_1_bits(in_1.size());
-      const bits_approximation in_2_bits(in_2.size());
+      const cut_size_t max_2level_cut_1 = in_1->max_2level_cut[ct_1];
+      const cut_size_t max_2level_cut_2 = in_2->max_2level_cut[ct_2];
 
-      const bits_approximation bound_bits = (in_1_bits + 1) * (in_2_bits + 1);
-
-      if(bound_bits.may_overflow()) {
-        return std::numeric_limits<size_t>::max();
-      } else {
-        return (in_1.size() + 1) * (in_2.size() + 1);
-      }
+      return (bits_approximation(max_2level_cut_1) * bits_approximation(max_2level_cut_2)).may_overflow()
+        ? MAX_CUT
+        : max_2level_cut_1 * max_2level_cut_2;
     }
 
     static constexpr size_t memory_usage()
@@ -49,7 +46,7 @@ namespace adiar {
   class zdd_subseteq_policy : public zdd_policy, public prod_mixed_level_merger
   {
   public:
-    typedef ignore_levels level_check_t;
+    typedef ignore_levels<cut_type::INTERNAL_TRUE, cut_type::INTERNAL_TRUE> level_check_t;
 
   public:
     static bool resolve_sinks(const node_t &v1, const node_t &v2, bool &ret_value)
@@ -118,7 +115,7 @@ namespace adiar {
   class zdd_disjoint_policy : public zdd_policy, public prod_mixed_level_merger
   {
   public:
-    typedef ignore_levels level_check_t;
+    typedef ignore_levels<cut_type::ALL, cut_type::ALL> level_check_t;
 
   public:
     static bool resolve_sinks(const node_t &v1, const node_t &v2, bool &ret_value)
