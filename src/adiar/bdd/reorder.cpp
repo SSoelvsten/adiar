@@ -46,6 +46,7 @@ namespace adiar
       bool is_leaf = label == -1;
       if (!is_leaf)
       {
+        std::cout << "PUSH-CHILDREN: pushing non-leaf" << std::endl;
         if (b)
         {
           flag(source);
@@ -58,6 +59,7 @@ namespace adiar
       }
       else
       {
+        std::cout << "PUSH-CHILDREN: writing arc to leaf" << std::endl;
         arc_writer aw(af);
         aw.unsafe_push(arc_t{source, create_sink_ptr(value_of(f_ikb))});
       }
@@ -99,7 +101,8 @@ namespace adiar
   assignment_file reverse_path(const arc_file &af, ptr_t n)
   {
     assignment_file ass_file;
-    if(af.empty()){
+    if (af.empty())
+    {
       return ass_file;
     }
     {
@@ -125,6 +128,7 @@ namespace adiar
         }
       }
     }
+    af.make_writeable();
 
     simple_file_sorter<assignment_t> sf_sorter;
     sf_sorter.sort(ass_file);
@@ -137,7 +141,7 @@ namespace adiar
     std::cout << "Reorder started" << std::endl;
 
     // prøv levelized_priority_queue for UNLIMITED POWER
-    external_priority_queue<reorder_request, reorder_lt> pq(memory::available(), 0); // 0 is pq external doesnt care
+    external_priority_queue<reorder_request, reorder_lt> pq(memory::available() / 2, 0); // 0 is pq external doesnt care
 
     arc_file af;
     ptr_t root = create_node_ptr(permutation[0], 0);
@@ -166,7 +170,7 @@ namespace adiar
       };
 
       tpie::merge_sorter<reorder_request, false, decltype(pred)> m_sorter(pred);
-      m_sorter.set_available_memory(memory::available());
+      m_sorter.set_available_memory(memory::available() / 2);
       tpie::dummy_progress_indicator d_indicator;
       m_sorter.begin();
 
@@ -190,7 +194,7 @@ namespace adiar
       while (m_sorter.can_pull())
       {
         std::cout << "Merger loop" << std::endl;
-        
+
         reorder_request rr = m_sorter.pull();
         assignment_file path = reverse_path(af, rr.source);
         {
@@ -200,13 +204,15 @@ namespace adiar
 
         r_prime = bdd_restrict(dd, path);
         std::cout << "R_Prime restriction found" << std::endl;
-        
+
         if (bdd_equal(r, r_prime))
         {
           std::cout << "R and R_Prime equal" << std::endl;
-          arc_writer aw(af);
           ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
-          aw.unsafe_push(arc_t{rr.source, new_node});
+          {
+            arc_writer aw(af);
+            aw.unsafe_push(arc_t{rr.source, new_node});
+          }
         }
         else
         {
