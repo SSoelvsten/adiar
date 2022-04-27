@@ -341,7 +341,10 @@ namespace adiar
       adiar_debug(!out_writer.has_pushed(),
                   "No nodes are pushed when it collapses to a sink");
 
-      out_writer.push({ next_red1.new_uid, NIL, NIL });
+      const bool sink_val = value_of(next_red1.new_uid);
+
+      out_writer.unsafe_push(create_sink(sink_val));
+      out_writer.set_number_of_sinks(!sink_val, sink_val);
     }
   }
 
@@ -382,8 +385,9 @@ namespace adiar
 #endif
         const bool sink_val = value_of(reduction_rule_ret);
         const node_t out_node = create_sink(sink_val);
-        out_writer.push(out_node);
+        out_writer.unsafe_push(out_node);
 
+        out_writer.set_number_of_sinks(!sink_val, sink_val);
         __reduce_cut_add(out_file->max_1level_cut, 0u, !sink_val, sink_val);
       } else {
         const label_t label = label_of(e_low.source);
