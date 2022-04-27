@@ -436,21 +436,23 @@ namespace adiar
     }
 
     // Compute final maximum i-level cuts
+    const size_t number_of_nodes = out_writer.size();
 
-    // Upper bound based on rough over-approximation of i-level cuts for
-    // any value of i.
-    const size_t max_cut = out_writer.size() + 1; // TODO: catch overflow
+    // Upper bound for any cut based on number of internal nodes.
+    const cut_t max_cut = number_of_nodes < MAX_CUT ? number_of_nodes + 1 : MAX_CUT;
 
     // Upper bound on just 'all arcs'
-    const size_t number_of_arcs = 2u * out_writer.size(); // TODO: catch overflow
+    const size_t number_of_arcs = 2u * number_of_nodes;
+    const bool noa_overflow = number_of_nodes <= MAX_CUT / 2u;
+
     const size_t number_of_false = out_file->number_of_sinks[false];
     const size_t number_of_true = out_file->number_of_sinks[true];
 
     const cuts_t all_arcs_cut = {
-      number_of_arcs - number_of_false - number_of_true,
-      number_of_arcs - number_of_true,
-      number_of_arcs - number_of_false,
-      number_of_arcs
+      noa_overflow ? number_of_arcs - number_of_false - number_of_true : MAX_CUT,
+      noa_overflow ? number_of_arcs - number_of_true                   : MAX_CUT,
+      noa_overflow ? number_of_arcs - number_of_false                  : MAX_CUT,
+      noa_overflow ? number_of_arcs                                    : MAX_CUT
     };
 
     // 1-level cuts
@@ -488,9 +490,11 @@ namespace adiar
     } else { // General case
       for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
         // Upper bound based on 1-level cut
-        const size_t ub_from_1level_cut = ct == cut_type::INTERNAL
+        const cut_t ub_from_1level_cut = out_file->max_1level_cut[ct] < MAX_CUT / 3u && ct == cut_type::INTERNAL
           ? (out_file->max_1level_cut[cut_type::INTERNAL] * 3) / 2
-          : out_file->max_1level_cut[ct] + out_file->max_1level_cut[cut_type::INTERNAL];
+          : out_file->max_1level_cut[ct] < MAX_CUT / 2u
+          ? out_file->max_1level_cut[ct] + out_file->max_1level_cut[cut_type::INTERNAL]
+          : MAX_CUT;
 
         // TODO: If the number of nodes match the number of levels, then it is
         //       exactly the 1-level cut.
