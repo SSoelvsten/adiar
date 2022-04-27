@@ -484,6 +484,9 @@ namespace adiar
 
     // 2-level cuts
     if (is_sink(out_file) || out_writer.size() == 1) { // Single vertex cases
+      // TODO: If the number of nodes match the number of levels, then it is
+      //       also exactly the 1-level cut.
+
       for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
         out_file->max_2level_cut[ct] = out_file->max_1level_cut[ct];
       }
@@ -495,9 +498,6 @@ namespace adiar
           : out_file->max_1level_cut[ct] < MAX_CUT / 2u
           ? out_file->max_1level_cut[ct] + out_file->max_1level_cut[cut_type::INTERNAL]
           : MAX_CUT;
-
-        // TODO: If the number of nodes match the number of levels, then it is
-        //       exactly the 1-level cut.
 
         // Use smallest sound upper bound.
         out_file->max_2level_cut[ct] = std::min({
