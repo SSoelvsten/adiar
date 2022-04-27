@@ -458,25 +458,38 @@ namespace adiar {
       _file_ptr -> canonical = _canonical;
 
       // Has '.push' been used?
-      if (!is_nil(_latest_node.uid) && !is_sink(_latest_node)) {
+      if (!is_nil(_latest_node.uid)) {
         // Output level information of the final level
-        meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
-                                                        _level_size));
+        if (!is_sink(_latest_node)) {
+          meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
+                                                          _level_size));
+        }
 
         _level_size = 0u; // TODO: move to attach...?
 
         // Maximum i-level cuts
-        const size_t pushed_elems = meta_file_writer::size();
-        const cut_t max_cut = pushed_elems < MAX_CUT ? pushed_elems+1 : MAX_CUT;
+        if (is_sink(_latest_node)) {
+          _file_ptr->max_1level_cut[cut_type::INTERNAL] = 0;
+          _file_ptr->max_1level_cut[cut_type::INTERNAL_FALSE] = !value_of(_latest_node);
+          _file_ptr->max_1level_cut[cut_type::INTERNAL_TRUE] = value_of(_latest_node);
+          _file_ptr->max_1level_cut[cut_type::ALL] = 1u;
 
-        // Maximum 1-level cut
-        for (size_t ct = 0; ct < CUT_TYPES; ct++) {
-          _file_ptr->max_1level_cut[ct] = max_cut;
-        }
+          for (size_t ct = 0; ct < CUT_TYPES; ct++) {
+            _file_ptr->max_2level_cut[ct] = _file_ptr->max_1level_cut[ct];
+          }
+        } else {
+          const size_t pushed_elems = meta_file_writer::size();
+          const cut_t max_cut = pushed_elems < MAX_CUT ? pushed_elems+1 : MAX_CUT;
 
-        // Maximum 2-level cut
-        for (size_t ct = 0; ct < CUT_TYPES; ct++) {
-          _file_ptr->max_1level_cut[ct] = max_cut;
+          // Maximum 1-level cut
+          for (size_t ct = 0; ct < CUT_TYPES; ct++) {
+            _file_ptr->max_1level_cut[ct] = max_cut;
+          }
+
+          // Maximum 2-level cut
+          for (size_t ct = 0; ct < CUT_TYPES; ct++) {
+            _file_ptr->max_2level_cut[ct] = max_cut;
+          }
         }
       }
 
