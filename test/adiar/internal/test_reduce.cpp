@@ -27,13 +27,13 @@ go_bandit([]() {
                / \                / \
                F T                F T
       */
+      __bdd in = bdd(x0x1_node_file, false);
 
       // Reduce it
-      bdd in(x0x1_node_file, false);
-      __bdd out = reduce<bdd_policy>(in);
+      bdd out = reduce<bdd_policy>(in);
 
-      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(x0x1_node_file._file_ptr));
-      AssertThat(out.negate, Is().False());
+      AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file._file_ptr));
+      AssertThat(out.is_negated(), Is().False());
     });
 
     it("preserves negation flag on reduced input [2]", [&]() {
@@ -44,13 +44,13 @@ go_bandit([]() {
                / \                / \
                F T                T F
       */
+      __bdd in = bdd(x0x1_node_file, true);
 
       // Reduce it
-      bdd in(x0x1_node_file, true);
-      __bdd out = reduce<bdd_policy>(in);
+      bdd out = reduce<bdd_policy>(in);
 
-      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(x0x1_node_file._file_ptr));
-      AssertThat(out.negate, Is().True());
+      AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file._file_ptr));
+      AssertThat(out.is_negated(), Is().True());
     });
 
     describe("Reduction Rule 2", [&]() {

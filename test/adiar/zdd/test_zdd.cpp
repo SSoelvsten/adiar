@@ -161,12 +161,9 @@ go_bandit([]() {
     });
 
     it("should copy-construct node_file and negation back to zdd", [&]() {
-      // Since we know the __zdd copy constructor works, then we can use
-      // it to peek into the 'zdd' class
-      __zdd t2 = __zdd(zdd(__zdd(x0_or_x1)));
-      AssertThat(t2.has<node_file>(), Is().True());
-      AssertThat(t2.get<node_file>()._file_ptr, Is().EqualTo(x0_or_x1_nf._file_ptr));
-      AssertThat(t2.negate, Is().False());
+      zdd t2 = zdd(__zdd(x0_or_x1));
+      AssertThat(t2.file_ptr(), Is().EqualTo(x0_or_x1_nf._file_ptr));
+      AssertThat(t2.is_negated(), Is().False());
     });
 
     describe("sink predicates", [&]() {

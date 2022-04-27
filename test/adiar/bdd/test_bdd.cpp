@@ -59,12 +59,14 @@ go_bandit([]() {
 
     describe("__bdd", [&]() {
       it("should copy-construct values from bdd", [&]() {
-        __bdd t1 = x0_and_x1;
+        __bdd t1 = bdd(x0_and_x1);
         AssertThat(t1.has<node_file>(), Is().True());
         AssertThat(t1.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
         AssertThat(t1.negate, Is().False());
+      });
 
-        __bdd t2 = x0_nand_x1;
+      it("should copy-construct values from negated bdd", [&]() {
+        __bdd t2 = bdd(x0_nand_x1);
         AssertThat(t2.has<node_file>(), Is().True());
         AssertThat(t2.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
         AssertThat(t2.negate, Is().True());
@@ -112,20 +114,20 @@ go_bandit([]() {
       });
     });
 
-    it("should copy-construct boolean value as a sink", [&]() {
+    it("should copy-construct boolean 'true' value as a T sink", [&]() {
       bdd t1 = true;
       AssertThat(t1, Is().EqualTo(sink_T));
+    });
+
+    it("should copy-construct boolean 'false' value as an F sink", [&]() {
       bdd t2 = false;
       AssertThat(t2, Is().EqualTo(sink_F));
     });
 
     it("should copy-construct node_file and negation back to bdd", [&]() {
-      // Since we know the __bdd copy constructor works, then we can use
-      // it to peek into the 'bdd' class
-      __bdd t2 = __bdd(bdd(__bdd(x0_and_x1)));
-      AssertThat(t2.has<node_file>(), Is().True());
-      AssertThat(t2.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
-      AssertThat(t2.negate, Is().False());
+      bdd t2 = bdd(__bdd(x0_and_x1));
+      AssertThat(t2.file_ptr(), Is().EqualTo(x0_and_x1_nf._file_ptr));
+      AssertThat(t2.is_negated(), Is().False());
     });
 
     describe("operators", [&]() {
