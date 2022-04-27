@@ -990,6 +990,48 @@ go_bandit([]() {
         AssertThat(res->number_of_sinks[0], Is().EqualTo(5u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(2u));
       });
+
+      it("creates counting to 1 in [0,1]", [&]() {
+        bdd res = bdd_counter(0, 1, 1);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 1,
+                                                       sink_T,
+                                                       sink_F)));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 0,
+                                                       sink_F,
+                                                       sink_T)));
+
+        AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0,
+                                                       create_node_ptr(1,0),
+                                                       create_node_ptr(1,1))));
+
+        level_info_test_stream<node_t> ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,2u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+        AssertThat(res->number_of_sinks[0], Is().EqualTo(2u));
+        AssertThat(res->number_of_sinks[1], Is().EqualTo(2u));
+      });
     });
   });
  });
