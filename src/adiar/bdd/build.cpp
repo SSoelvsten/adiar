@@ -177,6 +177,38 @@ namespace adiar
     nf->max_1level_cut[cut_type::ALL] = std::max(nf->max_1level_cut[cut_type::INTERNAL_FALSE],
                                                  lt_sinks + eq_sinks + gt_sinks);
 
+    // Maximum 2-level cut
+    //
+    // Every node has at most in-degree of 2, which is also exactly it's
+    // out-degree. The out-degree is also 2 (assuming we count all arcs). So, we
+    // do not increase the size of the cut by abusing the added freedom of a
+    // 2-level cut when all arcs are present.
+    nf->max_2level_cut[cut_type::ALL] = nf->max_1level_cut[cut_type::ALL];
+
+    // When only looking at internal arcs, then the exception to the above are
+    // the nodes with id '0'and id 'threshold'. Both have only an out-degree of
+    // 1, while the latter has an in-degree of one.
+    //
+    // This does not happen when in the following cases:
+    const size_t extra_2level_cut =
+      (// If we reach the widest level at the very bottom.
+       vars > shallowest_widest_lvl + 1u
+       // Except if each level only one node wide.
+       && shallowest_widest_lvl > 0u
+       ) ? 1u : 0u;
+
+    nf->max_2level_cut[cut_type::INTERNAL] = std::min(nf->max_1level_cut[cut_type::ALL],
+                                                      nf->max_1level_cut[cut_type::INTERNAL] + extra_2level_cut);
+
+    // When including the false sink, then these two 'edge-case nodes' already
+    // have an out-degree of two, except again if the same edge-case applies.
+    nf->max_2level_cut[cut_type::INTERNAL_FALSE] = std::min(nf->max_1level_cut[cut_type::ALL],
+                                                            nf->max_1level_cut[cut_type::INTERNAL_FALSE] + extra_2level_cut);
+
+    // And similarly, if we only include the true sinks
+    nf->max_2level_cut[cut_type::INTERNAL_TRUE] = std::min(nf->max_1level_cut[cut_type::ALL],
+                                                           nf->max_1level_cut[cut_type::INTERNAL_TRUE] + extra_2level_cut);
+
     return nf;
   }
 }

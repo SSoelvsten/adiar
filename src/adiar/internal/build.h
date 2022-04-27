@@ -21,6 +21,10 @@ namespace adiar
     nf->max_1level_cut[cut_type::INTERNAL_TRUE]  = value;
     nf->max_1level_cut[cut_type::ALL]            = 1u;
 
+    for (size_t ct = 0u; ct < CUT_TYPES; ct++) {
+      nf->max_2level_cut[ct] = nf->max_1level_cut[ct];
+    }
+
     nf->number_of_sinks[value] = 1;
 
     return nf;
@@ -42,6 +46,10 @@ namespace adiar
     nf->max_1level_cut[cut_type::INTERNAL_FALSE] = 1u;
     nf->max_1level_cut[cut_type::INTERNAL_TRUE]  = 1u;
     nf->max_1level_cut[cut_type::ALL]            = 2u;
+
+    for (size_t ct = 0u; ct < CUT_TYPES; ct++) {
+      nf->max_2level_cut[ct] = nf->max_1level_cut[ct];
+    }
 
     return nf;
   }
@@ -106,9 +114,13 @@ namespace adiar
       nf->max_1level_cut[cut_type::ALL] = std::max(internal_arcs + false_arcs_pre_end + true_arcs_pre_end,
                                                    false_arcs_end + true_arcs_end);
 
+      // 2-level cut
+      for (size_t ct = 0u; ct < CUT_TYPES; ct++) {
+        nf->max_2level_cut[ct] = nf->max_1level_cut[ct];
+      }
+
       return nf;
     }
-
 }
 
 #endif // ADIAR_INTERNAL_BUILD_H

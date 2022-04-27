@@ -20,6 +20,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
         AssertThat(res->canonical, Is().True());
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
@@ -41,6 +46,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
         AssertThat(is_canonical(res), Is().True());
 
@@ -64,6 +74,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
         AssertThat(is_canonical(res), Is().True());
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
@@ -85,6 +100,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
         AssertThat(is_canonical(res), Is().True());
 
@@ -113,6 +133,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
 
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
         AssertThat(is_canonical(res), Is().True());
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
@@ -137,6 +162,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
         AssertThat(is_canonical(res), Is().True());
 
@@ -163,6 +193,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
         AssertThat(is_canonical(res), Is().True());
 
@@ -195,6 +230,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
         AssertThat(is_canonical(res), Is().True());
 
@@ -237,6 +277,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
 
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+
         AssertThat(is_canonical(res), Is().True());
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(3u));
@@ -262,6 +307,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
         AssertThat(is_canonical(res), Is().True());
 
@@ -294,6 +344,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
         AssertThat(is_canonical(res), Is().True());
 
@@ -335,6 +390,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
         AssertThat(is_canonical(res), Is().True());
 
@@ -392,6 +452,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
 
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
         AssertThat(is_canonical(res), Is().True());
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
@@ -437,6 +502,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
 
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
         AssertThat(is_canonical(res), Is().True());
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
@@ -463,6 +533,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
       });
@@ -483,6 +558,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(0u));
@@ -511,6 +591,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
         AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(0u));
       });
@@ -537,6 +622,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
@@ -590,6 +680,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
 
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(2u));
       });
@@ -616,6 +711,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(0u));
@@ -662,6 +762,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
 
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(2u));
       });
@@ -706,6 +811,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(3u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
@@ -760,6 +870,11 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
@@ -824,6 +939,8 @@ go_bandit([]() {
 
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
+
+        // TODO
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(2u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(2u));
@@ -906,6 +1023,8 @@ go_bandit([]() {
 
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(10u));
+
+        // TODO
 
         AssertThat(res->number_of_sinks[1], Is().EqualTo(3u));
         AssertThat(res->number_of_sinks[0], Is().EqualTo(3u));
@@ -994,6 +1113,8 @@ go_bandit([]() {
 
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(12u));
+
+        // TODO
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(2u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(3u));
@@ -1086,6 +1207,8 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(12u));
 
+        // TODO
+
         AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(3u));
       });
@@ -1174,6 +1297,8 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(12u));
 
+        // TODO
+
         AssertThat(res->number_of_sinks[0], Is().EqualTo(2u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(3u));
       });
@@ -1241,6 +1366,8 @@ go_bandit([]() {
 
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(6u));
+
+        // TODO
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(6u));
@@ -1310,6 +1437,8 @@ go_bandit([]() {
 
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(7u));
+
+        // TODO
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(4u));
@@ -1467,6 +1596,8 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(10u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(25u));
 
+        // TODO
+
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(7u));
       });
@@ -1544,6 +1675,8 @@ go_bandit([]() {
 
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(9u));
+
+        // TODO
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(5u));
@@ -1755,6 +1888,8 @@ go_bandit([]() {
 
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(12u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(39u));
+
+        // TODO
 
         AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
         AssertThat(res->number_of_sinks[1], Is().EqualTo(5u));
