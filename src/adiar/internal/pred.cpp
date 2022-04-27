@@ -1,6 +1,8 @@
 #include "pred.h"
 
 #include <adiar/file_stream.h>
+
+#include <adiar/internal/cut.h>
 #include <adiar/internal/util.h>
 
 namespace adiar
@@ -25,18 +27,10 @@ namespace adiar
     size_t curr_level_processed;
 
   public:
-    static size_t max_cut_upper_bound(const node_file &in_1, const node_file &/*in_2*/)
+    static cut_size_t pq1_upper_bound(const node_file &in_1, const node_file &in_2)
     {
-      const size_t number_of_nodes = in_1->size();
-      const bits_approximation input_bits(number_of_nodes);
-
-      const bits_approximation bound_bits = input_bits + 1;
-
-      if (bound_bits.may_overflow()) {
-        return std::numeric_limits<size_t>::max();
-      } else {
-        return in_1.size() + 1u;
-      }
+      return std::max(in_1->max_2level_cut[cut_type::INTERNAL],
+                      in_2->max_2level_cut[cut_type::INTERNAL]);
     }
 
     static constexpr size_t memory_usage()

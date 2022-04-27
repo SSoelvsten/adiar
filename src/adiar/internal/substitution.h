@@ -9,6 +9,7 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
+#include <adiar/internal/cut.h>
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
 
@@ -202,18 +203,13 @@ namespace adiar
   }
 
   template<typename substitute_policy>
-  size_t __substitute_max_cut_upper_bound(const typename substitute_policy::reduced_t &dd)
+  cut_size_t __substitute_2level_upper_bound(const typename substitute_policy::reduced_t &dd)
   {
-    const size_t number_of_nodes = dd->size();
-    const bits_approximation input_bits(number_of_nodes);
+    const cut_size_t max_2level_cut = dd->max_2level_cut[cut_type::INTERNAL];
 
-    const bits_approximation bound_bits = input_bits + 2;
-
-    if(bound_bits.may_overflow()) {
-      return std::numeric_limits<size_t>::max();
-    } else {
-      return number_of_nodes + 2;
-    }
+    return (bits_approximation(max_2level_cut) + 2).may_overflow()
+      ? MAX_CUT
+      : max_2level_cut + 2;
   }
 
   template<typename substitute_policy, typename substitute_act_mgr>
@@ -229,7 +225,7 @@ namespace adiar
     const tpie::memory_size_type aux_available_memory = memory::available()
       - node_stream<>::memory_usage() - arc_writer::memory_usage();
 
-    const size_t max_pq_size = __substitute_max_cut_upper_bound<substitute_policy>(dd);
+    const size_t max_pq_size = __substitute_2level_upper_bound<substitute_policy>(dd);
 
     const tpie::memory_size_type pq_memory_fits =
       substitute_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(aux_available_memory);

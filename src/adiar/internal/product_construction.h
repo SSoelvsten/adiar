@@ -12,6 +12,7 @@
 #include <adiar/bdd/bdd.h>
 
 #include <adiar/internal/build.h>
+#include <adiar/internal/cut.h>
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/tuple.h>
@@ -407,27 +408,22 @@ namespace adiar
   }
 
   template<typename prod_policy>
-  size_t __prod_max_cut_upper_bound(const typename prod_policy::reduced_t &in_1,
-                                    const typename prod_policy::reduced_t &in_2,
-                                    const bool_op &op)
+  cut_size_t __prod_2level_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                       const typename prod_policy::reduced_t &in_2,
+                                       const bool_op &op)
   {
-    const size_t nodes_in_1 = in_1->size();
-    const size_t left_leaves = prod_policy::left_leaves(op);
+    const cut_type left_ct = prod_policy::left_cut(op);
+    const cut_size_t left_2level_cut = in_1->max_2level_cut[in_1.is_negated() ? negate(left_ct) : left_ct];
 
-    const size_t nodes_in_2 = in_2->size();
-    const size_t right_leaves = prod_policy::right_leaves(op);
+    const cut_type right_ct = prod_policy::right_cut(op);
+    const cut_size_t right_2level_cut = in_2->max_2level_cut[in_2.is_negated() ? negate(right_ct) : right_ct];
 
-    const bits_approximation in_1_bits(nodes_in_1);
-    const bits_approximation in_2_bits(nodes_in_2);
+    const bits_approximation left_bits(left_2level_cut);
+    const bits_approximation right_bits(right_2level_cut);
 
-    const bits_approximation bound_bits =
-      (in_1_bits + 1 + left_leaves) * (in_2_bits + 1 + right_leaves) + 2;
-
-    if(bound_bits.may_overflow()) {
-      return std::numeric_limits<size_t>::max();
-    } else {
-      return (nodes_in_1 + 1 + left_leaves) * (nodes_in_2 + 1 + right_leaves) + 2;
-    }
+    return (left_bits * right_bits + 2).may_overflow()
+      ? MAX_CUT
+      : left_2level_cut * right_2level_cut + 2;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -507,7 +503,7 @@ namespace adiar
 
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
-    const size_t max_pq_size = __prod_max_cut_upper_bound<prod_policy>(in_1, in_2, op);
+    const size_t max_pq_size = __prod_2level_upper_bound<prod_policy>(in_1, in_2, op);
 
     const size_t pq_1_memory_fits =
       prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);

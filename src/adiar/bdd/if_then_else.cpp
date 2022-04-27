@@ -4,6 +4,7 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/cut.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/tuple.h>
 #include <adiar/internal/util.h>
@@ -479,27 +480,21 @@ namespace adiar
     return out_arcs;
   }
 
-  size_t __ite_max_cut_upper_bound(const decision_diagram &in_if,
-                                   const decision_diagram &in_then,
-                                   const decision_diagram &in_else)
+  cut_size_t __ite_2level_upper_bound(const decision_diagram &in_if,
+                                      const decision_diagram &in_then,
+                                      const decision_diagram &in_else)
   {
-    const size_t if_size = in_if->size();
-    const size_t then_size = in_then->size();
-    const size_t else_size = in_else->size();
+    const size_t if_cut = in_if->max_2level_cut[cut_type::INTERNAL];
+    const size_t then_cut = in_then->max_2level_cut[cut_type::ALL];
+    const size_t else_cut = in_else->max_2level_cut[cut_type::ALL];
 
-    const bits_approximation if_bits(if_size);
-    const bits_approximation then_bits(then_size);
-    const bits_approximation else_bits(else_size);
+    const bits_approximation if_bits(if_cut);
+    const bits_approximation then_bits(then_cut);
+    const bits_approximation else_bits(else_cut);
 
-    const bits_approximation bound_bits = (if_bits + 1) * (then_bits + 1 + 2) * (else_bits + 1 + 2)
-                                          + (then_bits + 1) + (else_bits + 1) + 2;
-
-    if(bound_bits.may_overflow()) {
-      return std::numeric_limits<size_t>::max();
-    } else {
-      return (if_size + 1) * (then_size + 1 + 2) * (else_size + 1 + 2)
-             + (then_size + 1) + (else_size + 1) + 2;
-    }
+    return ((if_bits * then_bits * else_bits) + (then_bits * else_bits) + 2).may_overflow()
+      ? MAX_CUT
+      : (if_cut * then_cut * else_cut) + (then_cut * else_cut) + 2;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -554,7 +549,7 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t max_pq_size = __ite_max_cut_upper_bound(bdd_if, bdd_then, bdd_else);
+    const size_t max_pq_size = __ite_2level_upper_bound(bdd_if, bdd_then, bdd_else);
 
     constexpr size_t data_structures_in_pq_1 =
       ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;

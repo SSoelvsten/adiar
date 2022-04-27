@@ -479,7 +479,7 @@ namespace adiar {
           }
         } else {
           const size_t pushed_elems = meta_file_writer::size();
-          const cut_t max_cut = pushed_elems < MAX_CUT ? pushed_elems+1 : MAX_CUT;
+          const cut_size_t max_cut = pushed_elems < MAX_CUT ? pushed_elems+1 : MAX_CUT;
 
           // Maximum 1-level cut
           for (size_t ct = 0; ct < CUT_TYPES; ct++) {

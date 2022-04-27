@@ -9,6 +9,7 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
+#include <adiar/internal/cut.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/tuple.h>
 
@@ -292,18 +293,15 @@ namespace adiar
   }
 
   template<typename quantify_policy>
-  size_t __quantify_max_cut_upper_bound(const typename quantify_policy::reduced_t &in)
+  cut_size_t __quantify_2level_upper_bound(const typename quantify_policy::reduced_t &in)
   {
-    const size_t number_of_nodes = in->size();
-    const bits_approximation input_bits(number_of_nodes);
+    const cut_size_t max_2level_cut = in->max_2level_cut[cut_type::INTERNAL];
 
-    const bits_approximation bound_bits = input_bits * input_bits + 2;
+    const bits_approximation input_bits(max_2level_cut);
 
-    if(bound_bits.may_overflow()) {
-      return std::numeric_limits<size_t>::max();
-    } else {
-      return (number_of_nodes * number_of_nodes) + 2;
-    }
+    return ((input_bits * input_bits) + 2).may_overflow()
+      ? MAX_CUT
+      : (max_2level_cut * max_2level_cut) + 2;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -331,7 +329,7 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t max_pq_size = __quantify_max_cut_upper_bound<quantify_policy>(in);
+    const size_t max_pq_size = __quantify_2level_upper_bound<quantify_policy>(in);
 
     constexpr size_t data_structures_in_pq_1 =
       quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
