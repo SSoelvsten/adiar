@@ -91,6 +91,11 @@ namespace adiar
       _is_read_only = true;
     }
 
+    void make_writeable() const 
+    {
+      _is_read_only = false;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file is currently in read-only mode, i.e. some
     /// adiar::file_stream has been attached to it and has marked it.
@@ -248,6 +253,14 @@ namespace adiar
       }
     }
 
+    void make_writeable() const
+    {
+      _level_info_file.make_writeable();
+      for (size_t idx = 0u; idx < FILES; idx++) {
+        _files[idx].make_writeable();
+      }
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file is read-only.
     ////////////////////////////////////////////////////////////////////////////
@@ -354,6 +367,11 @@ namespace adiar
     void make_read_only() const
     {
       _file_ptr -> make_read_only();
+    }
+
+    void make_writeable() const
+    {
+      _file_ptr -> make_writeable();
     }
 
     ////////////////////////////////////////////////////////////////////////////

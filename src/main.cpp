@@ -31,16 +31,17 @@ int main(int argc, char *argv[])
 
   {
     // ===== Your code starts here =====
-    bdd x1 = bdd_ithvar(4);
-    bdd x2 = bdd_ithvar(2);
-    bdd x3 = bdd_ithvar(3);
+    bdd x1 = bdd_ithvar(2);
+    bdd x2 = bdd_ithvar(0);
+    bdd x3 = bdd_ithvar(1);
     bdd intnode = bdd_and(x1, x2);
     bdd root = bdd_or(intnode, x3);
     
-    label_t permutation[] = {1,2,3};
-    bdd new_order = bdd_reorder(root, permutation);
+    label_t permutation[] = {2,3,1};
+    //bdd new_order = bdd_reorder(root, permutation);
 
-    output_dot(new_order, "new.dot");
+    output_dot(root, "old.dot");
+    output_dot(root, "new.dot", permutation);
 
     /*
     // Test for reverse path
