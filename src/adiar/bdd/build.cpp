@@ -140,6 +140,12 @@ namespace adiar
       // Do not count the lt_sink (if any)
       - (first_lvl_with_lt == shallowest_widest_lvl);
 
+    // The in-degree on the widest level is twice its width, except for the two
+    // nodes on either end, since their in-degree is only 1 and not 2.
+    const size_t internal_cut_above_shallowest_lvl = shallowest_widest_lvl == 0
+      ? 1u
+      : (2u * (shallowest_widest_lvl + 1u) - 2u);
+
     const label_t deepest_widest_lvl = std::max(first_lvl_with_lt, first_lvl_with_gt);
 
     const size_t internal_cut_below_deepest_lvl = 2u * (threshold + 1u)
@@ -152,8 +158,10 @@ namespace adiar
       // Do not count the one lt_sink (if any)
       - (lt_sinks > 0);
 
-    nf->max_1level_cut[cut_type::INTERNAL] = std::max(internal_cut_below_shallowest_lvl,
-                                                      internal_cut_below_deepest_lvl);
+    nf->max_1level_cut[cut_type::INTERNAL] = std::max({
+        internal_cut_above_shallowest_lvl,
+        internal_cut_below_shallowest_lvl,
+        internal_cut_below_deepest_lvl});
 
     // With 'vars - deepest_widest_lvl' we obtain the number of levels beyond
     // the widest one. But, if 'deepest_widest_lvl < vars' then there are two
