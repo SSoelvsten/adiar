@@ -448,11 +448,29 @@ namespace adiar {
     void detach() {
       _file_ptr -> canonical = _canonical;
 
+      // Has '.push' been used?
       if (!is_nil(_latest_node.uid) && !is_sink(_latest_node)) {
+        // Output level information of the final level
         meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
                                                         _level_size));
-        _level_size = 0u; // move to attach...
+
+        _level_size = 0u; // TODO: move to attach...?
+
+        // Maximum i-level cuts
+        const size_t pushed_elems = meta_file_writer::size();
+        const cut_t max_cut = pushed_elems < MAX_CUT ? pushed_elems+1 : MAX_CUT;
+
+        // Maximum 1-level cut
+        for (size_t ct = 0; ct < CUT_TYPES; ct++) {
+          _file_ptr->max_1level_cut[ct] = max_cut;
+        }
+
+        // Maximum 2-level cut
+        for (size_t ct = 0; ct < CUT_TYPES; ct++) {
+          _file_ptr->max_1level_cut[ct] = max_cut;
+        }
       }
+
       return meta_file_writer::detach();
     }
 
