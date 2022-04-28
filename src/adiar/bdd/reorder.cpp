@@ -43,18 +43,14 @@ namespace adiar
       label_t label = min_label(f_ikb);
       std::cout << "PUSH-CHILDREN: min-label found" << std::endl;
 
-      bool is_leaf = label == -1;
+      bool is_leaf = label == 0xffffffff;
       if (!is_leaf)
       {
         std::cout << "PUSH-CHILDREN: pushing non-leaf" << std::endl;
         if (b)
-        {
           flag(source);
-        }
         else
-        {
           unflag(source);
-        }
         pq.push(reorder_request{source, label});
       }
       else
@@ -75,7 +71,7 @@ namespace adiar
   {
     if (is_sink(dd))
     {
-      return -1; // TODO: nodes are indexed from 0 - change
+      return 0xffffffff;
     }
 
     label_t result = UINT_MAX;
@@ -102,9 +98,8 @@ namespace adiar
   {
     assignment_file ass_file;
     if (af.empty())
-    {
       return ass_file;
-    }
+
     {
       assignment_writer aw(ass_file);
 
@@ -130,6 +125,8 @@ namespace adiar
     }
     af.make_writeable();
 
+    // TODO test if this is needed!
+    // As the reverse_path no longer only takes T/B I/Os
     simple_file_sorter<assignment_t> sf_sorter;
     sf_sorter.sort(ass_file);
 
@@ -164,9 +161,26 @@ namespace adiar
         assignment_file path_b = reverse_path(af, b.source);
         bdd b_restrict = bdd_restrict(dd, path_b);
 
-        // TODO Add N/B less than operator.
+        node_stream<> a_ns(a_restrict);
+        node_stream<> b_ns(b_restrict);
 
-        return false;
+        // Is A < B?
+        while (a_ns.can_pull())
+        {
+          if (b_ns.can_pull())
+          {
+            node_t a_node = a_ns.pull();
+            node_t b_node = b_ns.pull();
+
+            if (a_node != b_node)
+            {
+              return a_node < b_node;
+            }
+            continue;
+          }
+          return false;
+        }
+        return true;
       };
 
       tpie::merge_sorter<reorder_request, false, decltype(pred)> m_sorter(pred);
@@ -188,6 +202,10 @@ namespace adiar
       m_sorter.end();
       m_sorter.calc(d_indicator);
 
+      // The root of output can never be within a restriction
+      // Therefore r is assigned this variable, to ensure that
+      // the following equality check will always fail in the first iteration!
+      // ie. this is a way of setting r to null
       bdd r = bdd_ithvar(permutation[0]);
       bdd r_prime;
       uint64_t i = 0;
@@ -208,17 +226,17 @@ namespace adiar
         if (bdd_equal(r, r_prime))
         {
           std::cout << "R and R_Prime equal" << std::endl;
-          ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
+          ptr_t old_node = create_node_ptr(permutation[rr.child_level], i);
           {
             arc_writer aw(af);
-            aw.unsafe_push(arc_t{rr.source, new_node});
+            aw.unsafe_push(arc_t{rr.source, old_node});
           }
         }
         else
         {
           std::cout << "R and R_Prime NOT equal" << std::endl;
-          i++;
           ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
+          i++;
           {
             arc_writer aw(af);
             aw.unsafe_push(arc_t{rr.source, new_node});
