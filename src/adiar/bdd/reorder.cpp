@@ -12,6 +12,9 @@
 
 namespace adiar
 {
+  std::vector<label_t> perm;
+  std::vector<label_t> perm_inv;
+
   struct reorder_request
   {
     ptr_t source; // gemmer også is_high (brug flag, unflag, is_flagged)
@@ -34,24 +37,26 @@ namespace adiar
       std::cout << "PUSH-CHILDREN: reverse path done" << std::endl;
       {
         assignment_writer aw(path);
-        aw.unsafe_push(assignment_t{label_of(source), b});
+        aw.unsafe_push(assignment_t{perm[label_of(source)], b});
       }
       std::cout << "PUSH-CHILDREN: Added asignment" << std::endl;
 
       bdd f_ikb = bdd_restrict(f, path);
       std::cout << "PUSH-CHILDREN: restriction done" << std::endl;
       label_t label = min_label(f_ikb);
-      std::cout << "PUSH-CHILDREN: min-label found" << std::endl;
+      std::cout << "PUSH-CHILDREN: min-label found: " << label << std::endl;
 
       bool is_leaf = label == 0xffffffff;
       if (!is_leaf)
       {
         std::cout << "PUSH-CHILDREN: pushing non-leaf" << std::endl;
+        ptr_t src;
         if (b)
-          flag(source);
+          src = flag(source);
         else
-          unflag(source);
-        pq.push(reorder_request{source, label});
+          src = unflag(source);
+        pq.push(reorder_request{src, label});
+        std::cout << "RR: {" << src << " , " << label << "}" << std::endl;
       }
       else
       {
@@ -60,6 +65,8 @@ namespace adiar
         aw.unsafe_push(arc_t{source, create_sink_ptr(value_of(f_ikb))});
       }
     };
+
+    std::cout << "PUSH-CHILDREN: Called" << std::endl;
 
     deal_with(true);
     deal_with(false);
@@ -82,7 +89,7 @@ namespace adiar
       node_t node = fs.pull();
       if (!is_sink(node))
       {
-        label_t label = label_of(node);
+        label_t label = perm_inv[label_of(node)];
         if (label < result)
         {
           result = label;
@@ -110,16 +117,16 @@ namespace adiar
       // Vi tror, det er muligt, men måske render vi ind i problemer senere.
       ptr_t current = n;
 
-      std::cout << "Starting arc: " << n << std::endl;
+      std::cout << "REVERSE PATH: Starting arc: " << n << std::endl;
 
       while (fs.can_pull())
       {
         arc_t a = fs.pull();
-        std::cout << "Looking  source: " << a.source << " - target: " << a.target << std::endl;
+        std::cout << "REVERSE PATH: Looking @ source: " << a.source << " - target: " << a.target << std::endl;
         if (a.target == current)
         {
           current = a.source;
-          aw.unsafe_push(assignment{label_of(current), is_high(a)});
+          aw.unsafe_push(assignment{perm[label_of(current)], is_high(a)});
         }
       }
     }
@@ -133,15 +140,31 @@ namespace adiar
     return ass_file;
   }
 
-  __bdd bdd_reorder(const bdd &dd, const label_t permutation[])
+  void initPermutation(const std::vector<label_t> permutation)
   {
+    perm = permutation;
+    perm_inv = std::vector<label_t>(permutation.size(), 0);
+    for (int i = 0; i < permutation.size(); i++)
+    {
+      perm_inv[permutation[i]] = i;
+    }
+  }
+
+  __bdd bdd_reorder(const bdd &dd, const std::vector<label_t> permutation)
+  {
+    initPermutation(permutation);
+    for (label_t l : perm_inv)
+    {
+      std::cout << "PERM_INV: " << l << std::endl;
+    }
+
     std::cout << "Reorder started" << std::endl;
 
     // prøv levelized_priority_queue for UNLIMITED POWER
     external_priority_queue<reorder_request, reorder_lt> pq(memory::available() / 2, 0); // 0 is pq external doesnt care
 
     arc_file af;
-    ptr_t root = create_node_ptr(permutation[0], 0);
+    ptr_t root = create_node_ptr(0, 0);
     std::cout << "Now pushing children" << std::endl;
     push_children(pq, root, af, dd);
 
@@ -213,11 +236,11 @@ namespace adiar
       {
         std::cout << "Merger loop" << std::endl;
 
-        reorder_request rr = m_sorter.pull();
-        assignment_file path = reverse_path(af, rr.source);
+        reorder_request m_rr = m_sorter.pull();
+        assignment_file path = reverse_path(af, m_rr.source);
         {
           assignment_writer aw(path);
-          aw.unsafe_push(assignment{label_of(rr.source), is_flagged(rr.source)});
+          aw.unsafe_push(assignment{label_of(m_rr.source), is_flagged(m_rr.source)});
         }
 
         r_prime = bdd_restrict(dd, path);
@@ -226,20 +249,20 @@ namespace adiar
         if (bdd_equal(r, r_prime))
         {
           std::cout << "R and R_Prime equal" << std::endl;
-          ptr_t old_node = create_node_ptr(permutation[rr.child_level], i);
+          ptr_t old_node = create_node_ptr(permutation[m_rr.child_level], i);
           {
             arc_writer aw(af);
-            aw.unsafe_push(arc_t{rr.source, old_node});
+            aw.unsafe_push(arc_t{m_rr.source, old_node});
           }
         }
         else
         {
           std::cout << "R and R_Prime NOT equal" << std::endl;
-          ptr_t new_node = create_node_ptr(permutation[rr.child_level], i);
+          ptr_t new_node = create_node_ptr(permutation[m_rr.child_level], i);
           i++;
           {
             arc_writer aw(af);
-            aw.unsafe_push(arc_t{rr.source, new_node});
+            aw.unsafe_push(arc_t{m_rr.source, new_node});
           }
           push_children(pq, new_node, af, dd);
         }
@@ -250,6 +273,8 @@ namespace adiar
     // TODO change arc file to node file to create an bdd
     // maybe do bdd(af);
 
+    // TODO traverse all arcs, and map them using the perm array
+    // This makes the BDD go from identity order to permutation order
     return bdd(af);
   }
 }

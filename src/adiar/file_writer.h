@@ -530,7 +530,7 @@ namespace adiar {
     //////////////////////////////////////////////////////////////////////////////
     void attach(const arc_file &af) {
       meta_file_writer::attach(af);
-      adiar_debug(meta_file_writer::empty(), "Attached to non-empty arc_file");
+      //adiar_debug(meta_file_writer::empty(), "Attached to non-empty arc_file");
     }
 
     //////////////////////////////////////////////////////////////////////////////

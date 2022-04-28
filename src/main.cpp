@@ -37,11 +37,11 @@ int main(int argc, char *argv[])
     bdd intnode = bdd_and(x1, x2);
     bdd root = bdd_or(intnode, x3);
     
-    label_t permutation[] = {2,3,1};
-    //bdd new_order = bdd_reorder(root, permutation);
+    std::vector<label_t> permutation = {1,2,0};
+    bdd new_order = bdd_reorder(root, permutation);
 
-    output_dot(root, "old.dot");
-    output_dot(root, "new.dot", permutation);
+    //output_dot(root, "old.dot");
+    //output_dot(root, "new.dot", permutation);
 
     /*
     // Test for reverse path
