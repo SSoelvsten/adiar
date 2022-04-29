@@ -239,11 +239,14 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     void detach()
     {
+      if (!attached()) { return; }
+
       _meta_stream.close();
       for (size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
         _streams[idx].close();
       }
-      // if (_file_ptr) { _file_ptr.reset(); }
+
+      _file_ptr.reset();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -322,10 +325,29 @@ namespace adiar {
   class node_writer: public meta_file_writer<node_t>
   {
   private:
+    // Buffer of latest pushed element, such that one can compare with it.
     node_t _latest_node = { NIL, NIL, NIL };
+
+    // Canonicity flag
     bool _canonical = true;
 
+    // Number of nodes pushed to the current level
     size_t _level_size = 0u;
+
+    // Variables for 1-level cut
+    // We will count the following globally
+    // - The number of arcs pushed at the very bottom
+    // - The number of (long) arcs that cross at least one pushed level
+    //
+    // While for each level we can safely count
+    // - The number of (short) arcs from a single level to the next
+    size_t _sinks_at_bottom[2] = { 0u, 0u };
+
+    cut_size_t _max_1level_short_internal = 0u;
+    cut_size_t _curr_1level_short_internal = 0u;
+
+    uid_t _long_internal_uid = NIL;
+    cut_size_t _number_of_long_internal_arcs = 0u;
 
   public:
     node_writer() : meta_file_writer() { }
@@ -349,8 +371,9 @@ namespace adiar {
     {
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
-      // Check validity of input based on latest written node
-      if (!is_nil(_latest_node.uid)) {
+      if (is_nil(_latest_node.uid)) { // First node pushed
+        _canonical = is_sink(n) || id_of(n) == MAX_ID;
+      } else { // Check validity of input based on prior written node
         adiar_assert(!is_sink(_latest_node),
                      "Cannot push a node after having pushed a sink");
         adiar_assert(!is_sink(n),
@@ -378,18 +401,47 @@ namespace adiar {
           }
         }
 
-        // Check if the level_info file has to be updated
+        // Check if this is the first node of a new level
         if (label_of(n) != label_of(_latest_node)) {
+          // Update level information with the level just finished
           meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
                                                           _level_size));
           _level_size = 0u;
-        }
-      } else {
-        if(!is_sink(n) && id_of(n) != MAX_ID) {
-          _canonical = false;
+
+          // Update 1-level cut information
+          _max_1level_short_internal = std::max(_max_1level_short_internal,
+                                                _curr_1level_short_internal);
+
+          _curr_1level_short_internal = 0u;
+          _long_internal_uid = create_node_uid(label_of(_latest_node), MAX_ID);
         }
       }
 
+      const bool is_pushing_to_bottom = _long_internal_uid == NIL;
+      if (is_pushing_to_bottom && !is_sink(n)) {
+        adiar_assert(is_sink(n.low),
+                     "When pushing to bottom-most level then low must be a sink");
+        adiar_assert(is_sink(n.high),
+                     "When pushing to bottom-most level then high must be a sink");
+      }
+
+      // 1-level cut
+      if (is_pushing_to_bottom && !is_sink(n)) {
+        _sinks_at_bottom[value_of(n.low)]++;
+        _sinks_at_bottom[value_of(n.high)]++;
+      }
+
+      if (is_node(n.low)) {
+        if (n.low > _long_internal_uid) { _number_of_long_internal_arcs++; }
+        else { _curr_1level_short_internal++; }
+      }
+
+      if (is_node(n.high)) {
+        if (n.high > _long_internal_uid) { _number_of_long_internal_arcs++; }
+        else { _curr_1level_short_internal++; }
+      }
+
+      // Update sink counters
       if (is_sink(n.low)) { _file_ptr->number_of_sinks[value_of(n.low)]++; }
       if (is_sink(n.high)) { _file_ptr->number_of_sinks[value_of(n.high)]++; }
       if (is_sink(n.uid)) { _file_ptr->number_of_sinks[value_of(n.uid)]++; }
@@ -467,7 +519,10 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detach from a file (if need be)
     ////////////////////////////////////////////////////////////////////////////
-    void detach() {
+    void detach()
+    {
+      if (!attached()) { return; }
+
       _file_ptr -> canonical = _canonical;
 
       // Has '.push' been used?
@@ -479,12 +534,38 @@ namespace adiar {
         }
 
         _level_size = 0u; // TODO: move to attach...?
+
+        // 1-level cut
+        _max_1level_short_internal = std::max(_max_1level_short_internal,
+                                              _curr_1level_short_internal);
+
+        const cut_size_t max_1level_internal_cut =
+          _max_1level_short_internal + _number_of_long_internal_arcs;
+
+        _file_ptr->max_1level_cut[cut_type::INTERNAL] = max_1level_internal_cut;
+
+        const size_t sinks_above_bottom[2] = {
+          _file_ptr->number_of_sinks[false] - _sinks_at_bottom[false],
+          _file_ptr->number_of_sinks[true]  - _sinks_at_bottom[true]
+        };
+
+        _file_ptr->max_1level_cut[cut_type::INTERNAL_FALSE] =
+          std::max(max_1level_internal_cut + sinks_above_bottom[false],
+                   _file_ptr->number_of_sinks[false]);
+
+        _file_ptr->max_1level_cut[cut_type::INTERNAL_TRUE] =
+          std::max(max_1level_internal_cut + sinks_above_bottom[true],
+                   _file_ptr->number_of_sinks[true]);
+
+        _file_ptr->max_1level_cut[cut_type::ALL] =
+          std::max(max_1level_internal_cut + sinks_above_bottom[false] + sinks_above_bottom[true],
+                   _file_ptr->number_of_sinks[false] + _file_ptr->number_of_sinks[true]);
       }
 
       // Run final i-level cut computations
       fixup_ilevel_cuts();
 
-      return meta_file_writer::detach();
+      meta_file_writer::detach();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -560,8 +641,8 @@ namespace adiar {
         for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
           // Upper bound based on 1-level cut
           const cut_size_t ub_from_1level_cut =
-            _file_ptr->max_1level_cut[ct] < MAX_CUT / 3u && ct == cut_type::INTERNAL
-            ? (_file_ptr->max_1level_cut[cut_type::INTERNAL] * 3) / 2
+            ct == cut_type::INTERNAL && _file_ptr->max_1level_cut[ct] < MAX_CUT / 3u
+            ? (_file_ptr->max_1level_cut[cut_type::INTERNAL] * 3u) / 2u
             : (_file_ptr->max_1level_cut[ct] < MAX_CUT / 2u
                ? _file_ptr->max_1level_cut[ct] + _file_ptr->max_1level_cut[cut_type::INTERNAL]
                : MAX_CUT);

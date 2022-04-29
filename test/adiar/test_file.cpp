@@ -303,20 +303,24 @@ go_bandit([]() {
                      |X|
                      6 7   ---- x3
                      |X|
+                     8 9   ---- x4
+                     |X|
                      F T
           */
-          node_file nf_sum0123_mod2;
+          node_file nf_sum01234_mod2;
           {
             // In comments, we provide the sum (mod 2) before adding the
             // respective variable.
-            node_writer nw(nf_sum0123_mod2);
-            nw << create_node(3, MAX_ID,   sink_F, sink_T)                                            // 0
-               << create_node(3, MAX_ID-1, sink_T, sink_F)                                            // 1
-               << create_node(2, MAX_ID,   create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))    // 1
-               << create_node(2, MAX_ID-1, create_node_ptr(3,MAX_ID),   create_node_ptr(3,MAX_ID-1))  // 0
-               << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))    // 0
-               << create_node(1, MAX_ID-1, create_node_ptr(2,MAX_ID),   create_node_ptr(2,MAX_ID-1))  // 1
-               << create_node(0, MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(1,MAX_ID-1)); // 0
+            node_writer nw(nf_sum01234_mod2);
+            nw << create_node(4, MAX_ID,   sink_F, sink_T)                                            // 0
+               << create_node(4, MAX_ID-1, sink_T, sink_F)                                            // 1
+               << create_node(3, MAX_ID,   create_node_ptr(4,MAX_ID-1), create_node_ptr(4,MAX_ID))    // 1
+               << create_node(3, MAX_ID-1, create_node_ptr(4,MAX_ID),   create_node_ptr(4,MAX_ID-1))  // 0
+               << create_node(2, MAX_ID,   create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))    // 0
+               << create_node(2, MAX_ID-1, create_node_ptr(3,MAX_ID),   create_node_ptr(3,MAX_ID-1))  // 1
+               << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))    // 1
+               << create_node(1, MAX_ID-1, create_node_ptr(2,MAX_ID),   create_node_ptr(2,MAX_ID-1))  // 0
+               << create_node(0, MAX_ID,   create_node_ptr(1,MAX_ID-1),   create_node_ptr(1,MAX_ID)); // 0
           }
 
           // -------------------------------------------------------------------
@@ -524,97 +528,39 @@ go_bandit([]() {
               AssertThat(nf_not42->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
             });
 
-            it("is soundly upper bounded for x0 & x1", [&]() {
-              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
-              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(2u));
-
-              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(3u));
-
-              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(2u));
-
+            it("is exact for x0 & x1", [&]() {
+              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
               AssertThat(nf_0and1->max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
             });
 
-            it("is soundly upper bounded for x0 & x1 & 2", [&]() {
-              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
-              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(2u));
-
-              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
-
-              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(3u));
-
+            it("is exact for x0 & x1 & 2", [&]() {
+              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
               AssertThat(nf_0and1and2->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
             });
 
-            it("is soundly upper bounded for x0 & x1 | c2", [&]() {
-              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(3u));
-
-              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
-
-              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
-
-              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+            it("is exact for x0 & x1 | c2", [&]() {
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
             });
 
-            it("is soundly upper bounded for x21 ^ x42", [&]() {
+            it("is exact for x21 ^ x42", [&]() {
               AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
-
-              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
-
-              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
-
+              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
               AssertThat(nf_21xor42->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
             });
 
-            it("is soundly upper bounded for (x0 + x1 + x2 + x3) mod 2", [&]() {
-              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
-
-              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
-
-              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
-
-              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
-            });
-
-            it("is soundly upper bounded when 2-level cut > 1-level cut [A]", [&]() {
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
-
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
-
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(5u));
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
-
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
-            });
-
-            it("is soundly upper bounded when 2-level cut > 1-level cut [B]", [&]() {
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
-
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
-
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
-
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+            it("is exact for (x0 + x1 + x2 + x3) mod 2", [&]() {
+              AssertThat(nf_sum01234_mod2->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(4u));
+              AssertThat(nf_sum01234_mod2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+              AssertThat(nf_sum01234_mod2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(4u));
+              AssertThat(nf_sum01234_mod2->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
             });
           });
 
@@ -648,43 +594,25 @@ go_bandit([]() {
             });
 
             // The maximum 1-level and maximum 2-level cuts are the same.
-            it("is soundly upper bounded for x0 & x1", [&]() {
-              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
-              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(2u));
-
-              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(3u));
-
-              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(2u));
-
+            it("is copy of 1-level for x0 & x1", [&]() {
+              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
               AssertThat(nf_0and1->max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
             });
 
-            it("is soundly upper bounded for x0 & x1 & 2", [&]() {
-              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
-              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(2u));
-
-              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
-
-              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(3u));
-
+            it("is copy of 1-level for x0 & x1 & 2", [&]() {
+              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
               AssertThat(nf_0and1and2->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
             });
 
-            it("is soundly upper bounded for x0 & x1 | c2", [&]() {
-              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(3u));
-
-              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
-
-              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
-
-              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+            it("is copy of 1-level for x0 & x1 | c2", [&]() {
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
             });
 
             it("is soundly upper bounded for x21 ^ x42", [&]() {
@@ -699,27 +627,28 @@ go_bandit([]() {
               AssertThat(nf_21xor42->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
             });
 
-            it("is soundly upper bounded for (x0 + x1 + x2 + x3) mod 2", [&]() {
-              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+            it("is soundly upper bounded for (x0 + x1 + x2 + x3 + x4) mod 2", [&]() {
+              // Uses upper bounds derived from 1-level cut.
+              AssertThat(nf_sum01234_mod2->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_sum01234_mod2->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(6u));
 
-              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+              AssertThat(nf_sum01234_mod2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_sum01234_mod2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
 
-              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
+              AssertThat(nf_sum01234_mod2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_sum01234_mod2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
 
-              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
-              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+              AssertThat(nf_sum01234_mod2->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_sum01234_mod2->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
             });
 
             // The maximum 2-level cut greater than the maximum 1-level cut.
             it("is soundly upper bounded when 2-level cut > 1-level cut [A]", [&]() {
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(6u));
 
               AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
-              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(6u));
 
               AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(5u));
               AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
@@ -729,16 +658,16 @@ go_bandit([]() {
             });
 
             it("is soundly upper bounded when 2-level cut > 1-level cut [B]", [&]() {
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(6u));
 
               AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(7u));
 
               AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(7u));
 
-              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
               AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
             });
           });
