@@ -303,6 +303,14 @@ namespace adiar {
       }
       return acc;
     }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of elements in the level info file.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t levels()
+    {
+      return _meta_stream.size();
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -430,11 +438,16 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     void inc_1level_cut(cuts_t &o)
     {
-      cuts_t &c = _file_ptr->max_1level_cut;
+      inc_cut(_file_ptr->max_1level_cut, o);
+    }
 
-      for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
-        c[ct] = std::max(c[ct], o[ct]);
-      }
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Increase the 2-level cut size to the maximum of the current or
+    ///        the given cuts.
+    ////////////////////////////////////////////////////////////////////////////
+    void inc_2level_cut(cuts_t &o)
+    {
+      inc_cut(_file_ptr->max_2level_cut, o);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -466,32 +479,10 @@ namespace adiar {
         }
 
         _level_size = 0u; // TODO: move to attach...?
-
-        // Maximum i-level cuts
-        if (is_sink(_latest_node)) {
-          _file_ptr->max_1level_cut[cut_type::INTERNAL] = 0;
-          _file_ptr->max_1level_cut[cut_type::INTERNAL_FALSE] = !value_of(_latest_node);
-          _file_ptr->max_1level_cut[cut_type::INTERNAL_TRUE] = value_of(_latest_node);
-          _file_ptr->max_1level_cut[cut_type::ALL] = 1u;
-
-          for (size_t ct = 0; ct < CUT_TYPES; ct++) {
-            _file_ptr->max_2level_cut[ct] = _file_ptr->max_1level_cut[ct];
-          }
-        } else {
-          const size_t pushed_elems = meta_file_writer::size();
-          const cut_size_t max_cut = pushed_elems < MAX_CUT ? pushed_elems+1 : MAX_CUT;
-
-          // Maximum 1-level cut
-          for (size_t ct = 0; ct < CUT_TYPES; ct++) {
-            _file_ptr->max_1level_cut[ct] = max_cut;
-          }
-
-          // Maximum 2-level cut
-          for (size_t ct = 0; ct < CUT_TYPES; ct++) {
-            _file_ptr->max_2level_cut[ct] = max_cut;
-          }
-        }
       }
+
+      // Run final i-level cut computations
+      fixup_ilevel_cuts();
 
       return meta_file_writer::detach();
     }
@@ -507,6 +498,91 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     bool empty()
     { return meta_file_writer::empty(); }
+
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Helper function to bound derived 1-level and 2-level cuts with
+    ///        their trivial upper bounds (assuming nothing is pushed later).
+    ////////////////////////////////////////////////////////////////////////////
+    void fixup_ilevel_cuts()
+    {
+      const size_t number_of_nodes = meta_file_writer::size();
+      const size_t number_of_false = _file_ptr->number_of_sinks[false];
+      const size_t number_of_true = _file_ptr->number_of_sinks[true];
+
+      // -----------------------------------------------------------------------
+      // Upper bound for any directed cut based on number of internal nodes.
+      const cut_size_t max_cut = number_of_nodes < MAX_CUT ? number_of_nodes + 1 : MAX_CUT;
+
+      // -----------------------------------------------------------------------
+      // Upper bound on just 'all arcs'. This is better than 'max_cut' above, if
+      // there are 'number_of_nodes' or more arcs to sinks.
+      const bool noa_overflow_safe = number_of_nodes <= MAX_CUT / 2u;
+      const size_t number_of_arcs = 2u * number_of_nodes;
+
+      const cuts_t all_arcs_cut = {
+        noa_overflow_safe ? number_of_arcs - number_of_false - number_of_true : MAX_CUT,
+        noa_overflow_safe ? number_of_arcs - number_of_true                   : MAX_CUT,
+        noa_overflow_safe ? number_of_arcs - number_of_false                  : MAX_CUT,
+        noa_overflow_safe ? number_of_arcs                                    : MAX_CUT
+      };
+
+      // -----------------------------------------------------------------------
+      // Maximum 1-level cuts
+      const bool is_sink = number_of_false + number_of_true == 1;
+
+      if (is_sink) {
+        _file_ptr->max_1level_cut[cut_type::INTERNAL]       = 0u;
+        _file_ptr->max_1level_cut[cut_type::INTERNAL_FALSE] = number_of_false;
+        _file_ptr->max_1level_cut[cut_type::INTERNAL_TRUE]  = number_of_true;
+        _file_ptr->max_1level_cut[cut_type::ALL]            = 1u;
+      } else {
+        for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+          // Use smallest sound upper bound. Since it is not a sink, then there
+          // must be at least one in-going arc to the root.
+          _file_ptr->max_1level_cut[ct] = std::max(1lu, std::min({
+                _file_ptr->max_1level_cut[ct],
+                max_cut,
+                all_arcs_cut[ct]
+              }));
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // Maximum 2-level cut
+      const size_t number_of_levels = meta_file_writer::levels();
+
+      if (is_sink || number_of_nodes == number_of_levels) {
+        for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+          _file_ptr->max_2level_cut[ct] = _file_ptr->max_1level_cut[ct];
+        }
+      } else { // General case
+        for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+          // Upper bound based on 1-level cut
+          const cut_size_t ub_from_1level_cut =
+            _file_ptr->max_1level_cut[ct] < MAX_CUT / 3u && ct == cut_type::INTERNAL
+            ? (_file_ptr->max_1level_cut[cut_type::INTERNAL] * 3) / 2
+            : (_file_ptr->max_1level_cut[ct] < MAX_CUT / 2u
+               ? _file_ptr->max_1level_cut[ct] + _file_ptr->max_1level_cut[cut_type::INTERNAL]
+               : MAX_CUT);
+
+          // Use smallest sound upper bound.
+          _file_ptr->max_2level_cut[ct] = std::min({
+              _file_ptr->max_2level_cut[ct],
+              ub_from_1level_cut,
+              max_cut,
+              all_arcs_cut[ct]
+            });
+        }
+      }
+    }
+
+    void inc_cut(cuts_t &c, cuts_t &o)
+    {
+      for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+        c[ct] = std::max(c[ct], o[ct]);
+      }
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
