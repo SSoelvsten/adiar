@@ -29,17 +29,101 @@ namespace adiar
     }
   };
 
+  // T/B I/Os
+  // TODO reverse path of two arc at once
+  assignment_file reverse_path(const arc_file &af, ptr_t n, const assignment_t ass_of_n, const bool extra_ass)
+  {
+    assignment_file ass_file;
+    {
+      assignment_writer aw(ass_file);
+
+      adiar::node_arc_stream<> fs(af);
+
+      // Måske virker node_arc_stream ikke.. (Detach er ikke defineret)
+      // Denne node_arc_stream er ikke beregnet til at at read, write, read, write
+      // Vi tror, det er muligt, men måske render vi ind i problemer senere.
+      ptr_t current = n;
+
+      std::cout << "REVERSE PATH: Starting arc: " << n << std::endl;
+
+      while (fs.can_pull())
+      {
+        arc_t a = fs.pull();
+        std::cout << "REVERSE PATH: Looking @ source: " << a.source << " --" << is_flagged(a.source) << "--> target: " << a.target << std::endl;
+        if (a.target == current)
+        {
+          current = unflag(a.source);
+          aw.unsafe_push(assignment{perm[label_of(current)], is_high(a)});
+        }
+      }
+      af.make_writeable();
+      if (extra_ass)
+      {
+        aw.unsafe_push(ass_of_n);
+      }
+    }
+
+    // TODO test if this is needed!
+    // As the reverse_path no longer only takes T/B I/Os
+    simple_file_sorter<assignment_t> sf_sorter;
+    sf_sorter.sort(ass_file);
+
+    return ass_file;
+  }
+
+  assignment_file reverse_path(const arc_file &af, ptr_t n)
+  {
+    return reverse_path(af, n, assignment_t{0, 0}, false);
+  }
+
+  assignment_file reverse_path(const arc_file &af, ptr_t n, const assignment_t ass_of_n)
+  {
+    return reverse_path(af, n, ass_of_n, true);
+  }
+
+  // N/B I/Os
+  // TODO retrive from meta data
+  label_t min_label(const bdd &dd)
+  {
+    if (is_sink(dd))
+    {
+      return 0xffffffff;
+    }
+
+    label_t result = UINT_MAX;
+    adiar::node_stream<> fs(dd); // TODO: Brug levelinfostream i stedet (meget mindre)
+
+    while (fs.can_pull())
+    {
+      node_t node = fs.pull();
+      if (!is_sink(node))
+      {
+        label_t label = perm_inv[label_of(node)];
+        if (label < result)
+        {
+          result = label;
+        }
+      }
+    }
+    return result;
+  }
+
   void push_children(external_priority_queue<reorder_request, reorder_lt> &pq, const ptr_t source, const arc_file &af, const bdd &f)
   {
     auto deal_with = [&](bool b)
     {
-      assignment_file path = reverse_path(af, source);
+      assignment_file path = reverse_path(af, source, assignment_t{perm[label_of(source)], b});
       std::cout << "PUSH-CHILDREN: reverse path done" << std::endl;
       {
-        assignment_writer aw(path);
-        aw.unsafe_push(assignment_t{perm[label_of(source)], b});
+        std::cout << "PUSH-CHILDREN: reverse_path Assignment = (";
+        assignment_stream<> as(path);
+        while (as.can_pull())
+        {
+          assignment_t a = as.pull();
+          std::cout << a.label << " = " << a.value << ", ";
+        }
+        std::cout << ")" << std::endl;
       }
-      std::cout << "PUSH-CHILDREN: Added asignment" << std::endl;
 
       bdd f_ikb = bdd_restrict(f, path);
       std::cout << "PUSH-CHILDREN: restriction done" << std::endl;
@@ -72,79 +156,11 @@ namespace adiar
     deal_with(false);
   }
 
-  // N/B I/Os
-  // TODO retrive from meta data
-  label_t min_label(const bdd &dd)
-  {
-    if (is_sink(dd))
-    {
-      return 0xffffffff;
-    }
-
-    label_t result = UINT_MAX;
-    adiar::node_stream<> fs(dd); // TODO: Brug levelinfostream i stedet (meget mindre)
-
-    while (fs.can_pull())
-    {
-      node_t node = fs.pull();
-      if (!is_sink(node))
-      {
-        label_t label = perm_inv[label_of(node)];
-        if (label < result)
-        {
-          result = label;
-        }
-      }
-    }
-    return result;
-  }
-
-  // T/B I/Os
-  // TODO reverse path of two arc at once
-  assignment_file reverse_path(const arc_file &af, ptr_t n)
-  {
-    assignment_file ass_file;
-    if (af.empty())
-      return ass_file;
-
-    {
-      assignment_writer aw(ass_file);
-
-      adiar::node_arc_stream<> fs(af);
-
-      // Måske virker node_arc_stream ikke.. (Detach er ikke defineret)
-      // Denne node_arc_stream er ikke beregnet til at at read, write, read, write
-      // Vi tror, det er muligt, men måske render vi ind i problemer senere.
-      ptr_t current = n;
-
-      std::cout << "REVERSE PATH: Starting arc: " << n << std::endl;
-
-      while (fs.can_pull())
-      {
-        arc_t a = fs.pull();
-        std::cout << "REVERSE PATH: Looking @ source: " << a.source << " - target: " << a.target << std::endl;
-        if (a.target == current)
-        {
-          current = a.source;
-          aw.unsafe_push(assignment{perm[label_of(current)], is_high(a)});
-        }
-      }
-    }
-    af.make_writeable();
-
-    // TODO test if this is needed!
-    // As the reverse_path no longer only takes T/B I/Os
-    simple_file_sorter<assignment_t> sf_sorter;
-    sf_sorter.sort(ass_file);
-
-    return ass_file;
-  }
-
   void initPermutation(const std::vector<label_t> permutation)
   {
     perm = permutation;
     perm_inv = std::vector<label_t>(permutation.size(), 0);
-    for (int i = 0; i < permutation.size(); i++)
+    for (unsigned long i = 0; i < permutation.size(); i++)
     {
       perm_inv[permutation[i]] = i;
     }
@@ -153,10 +169,6 @@ namespace adiar
   __bdd bdd_reorder(const bdd &dd, const std::vector<label_t> permutation)
   {
     initPermutation(permutation);
-    for (label_t l : perm_inv)
-    {
-      std::cout << "PERM_INV: " << l << std::endl;
-    }
 
     std::cout << "Reorder started" << std::endl;
 
@@ -229,19 +241,15 @@ namespace adiar
       // Therefore r is assigned this variable, to ensure that
       // the following equality check will always fail in the first iteration!
       // ie. this is a way of setting r to null
-      bdd r = bdd_ithvar(permutation[0]);
+      bdd r = bdd_ithvar(perm[0]);
       bdd r_prime;
-      uint64_t i = 0;
+      uint64_t i = -1;
       while (m_sorter.can_pull())
       {
         std::cout << "Merger loop" << std::endl;
 
         reorder_request m_rr = m_sorter.pull();
-        assignment_file path = reverse_path(af, m_rr.source);
-        {
-          assignment_writer aw(path);
-          aw.unsafe_push(assignment{label_of(m_rr.source), is_flagged(m_rr.source)});
-        }
+        assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
 
         r_prime = bdd_restrict(dd, path);
         std::cout << "R_Prime restriction found" << std::endl;
@@ -249,7 +257,7 @@ namespace adiar
         if (bdd_equal(r, r_prime))
         {
           std::cout << "R and R_Prime equal" << std::endl;
-          ptr_t old_node = create_node_ptr(permutation[m_rr.child_level], i);
+          ptr_t old_node = create_node_ptr(m_rr.child_level, i);
           {
             arc_writer aw(af);
             aw.unsafe_push(arc_t{m_rr.source, old_node});
@@ -257,9 +265,9 @@ namespace adiar
         }
         else
         {
-          std::cout << "R and R_Prime NOT equal" << std::endl;
-          ptr_t new_node = create_node_ptr(permutation[m_rr.child_level], i);
           i++;
+          std::cout << "R and R_Prime NOT equal" << std::endl;
+          ptr_t new_node = create_node_ptr(m_rr.child_level, i);
           {
             arc_writer aw(af);
             aw.unsafe_push(arc_t{m_rr.source, new_node});
@@ -270,6 +278,7 @@ namespace adiar
       }
     }
 
+    std::cout << "Finished reordering BDD" << std::endl;
     // TODO change arc file to node file to create an bdd
     // maybe do bdd(af);
 
