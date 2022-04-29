@@ -284,6 +284,6 @@ namespace adiar
 
     // TODO traverse all arcs, and map them using the perm array
     // This makes the BDD go from identity order to permutation order
-    return bdd(af);
+    return __bdd(af);
   }
 }
