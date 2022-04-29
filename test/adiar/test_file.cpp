@@ -140,6 +140,9 @@ go_bandit([]() {
         });
 
         describe("node_writer", [&]() {
+          const ptr_t sink_F = create_sink_ptr(false);
+          const ptr_t sink_T = create_sink_ptr(true);
+
           it("can hook into and write to node_test_file", [&]() {
             AssertThat(node_test_file.is_read_only(), Is().False());
 
@@ -149,72 +152,595 @@ go_bandit([]() {
             AssertThat(node_test_file.is_read_only(), Is().False());
           });
 
-          it("can derive whether it is on canonical form [1]", [&]() {
-            node_file nf;
-            {
-              node_writer nw(nf);
-              nw << create_node(42, MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
-            }
+          // -------------------------------------------------------------------
+          // Canonical node files where the max 1-level cut and max 2-level cuts
+          // are the same.
+          /*
+                    F
+           */
+          node_file nf_F;
+          {
+            node_writer nw(nf_F);
+            nw << create_sink(false);
+          }
 
-            AssertThat(is_canonical(nf), Is().True());
+          /*
+                    T
+          */
+          node_file nf_T;
+          {
+            node_writer nw(nf_T);
+            nw << create_sink(true);
+          }
+
+          /*
+                    1           ---- 42
+                   / \
+                   F T
+           */
+          node_file nf_42;
+          {
+            node_writer nw(nf_42);
+            nw << create_node(42, MAX_ID, sink_F, sink_T);
+          }
+
+          /*
+                    1           ---- 42
+                   / \
+                   T F
+          */
+          node_file nf_not42;
+          {
+            node_writer nw(nf_not42);
+            nw << create_node(42, MAX_ID, sink_F, sink_T);
+          }
+
+          /*
+                    1            ---- x0
+                   / \
+                   F 2           ---- x1
+                    / \
+                    F T
+           */
+          node_file nf_0and1;
+          {
+            node_writer nw(nf_0and1);
+            nw << create_node(1, MAX_ID, sink_F, sink_T)
+               << create_node(0, MAX_ID, sink_F, create_node_ptr(1,MAX_ID));
+          }
+
+          /*
+                     1          ---- x0
+                    / \
+                    F 2         ---- x1
+                     / \
+                     F 3        ---- x2
+                      / \
+                      F T
+          */
+          node_file nf_0and1and2;
+          {
+            node_writer nw(nf_0and1and2);
+            nw << create_node(2, MAX_ID, sink_F, sink_T)
+               << create_node(1, MAX_ID, sink_F, create_node_ptr(2,MAX_ID))
+               << create_node(0, MAX_ID, sink_F, create_node_ptr(1,MAX_ID));
+          }
+
+          /*
+                       1          ---- x0
+                      / \
+                      | 2         ---- x1
+                      |/ \
+                      3  T        ---- x2
+                     / \
+                     F T
+          */
+          node_file nf_0and1_or_2;
+          {
+            node_writer nw(nf_0and1_or_2);
+            nw << create_node(2, MAX_ID, sink_F, sink_T)
+               << create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), sink_T)
+               << create_node(0, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID));
+          }
+
+          /*
+                     1           ---- 21
+                    / \
+                    2 3          ---- 42
+                    |X|
+                    F T
+          */
+          node_file nf_21xor42;
+          {
+            node_writer nw(nf_21xor42);
+            nw << create_node(42, MAX_ID, sink_F, sink_T)
+               << create_node(42, MAX_ID-1, sink_T, sink_F)
+               << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
+          }
+
+          /*
+                      _1_        ---- x0
+                     /   \
+                     2   3       ---- x1
+                    / \ / \
+                    T  4  T      ---- x2
+                      / \
+                      F T
+           */
+          node_file nf_0xnor1_or_2;
+          {
+            node_writer nw(nf_0xnor1_or_2);
+            nw << create_node(2, MAX_ID, sink_F, sink_T)
+               << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), sink_T)
+               << create_node(1, MAX_ID-1, sink_T, create_node_ptr(2, MAX_ID))
+               << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID-1), create_node_ptr(1, MAX_ID));
+          }
+
+          /*
+                      1         ---- x0
+                     _X_
+                    2   3       ---- x1
+                   / \ / \
+                   T  4  T      ---- x2
+                     / \
+                     F T
+          */
+          node_file nf_0xor1_or_2;
+          {
+            node_writer nw(nf_0xor1_or_2);
+            nw << create_node(2, MAX_ID, sink_F, sink_T)
+               << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), sink_T)
+               << create_node(1, MAX_ID-1, sink_T, create_node_ptr(2, MAX_ID))
+               << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID-1));
+          }
+
+          /*
+                      1    ---- x0
+                      X
+                     2 3   ---- x1
+                     |X|
+                     4 5   ---- x2
+                     |X|
+                     6 7   ---- x3
+                     |X|
+                     F T
+          */
+          node_file nf_sum0123_mod2;
+          {
+            // In comments, we provide the sum (mod 2) before adding the
+            // respective variable.
+            node_writer nw(nf_sum0123_mod2);
+            nw << create_node(3, MAX_ID,   sink_F, sink_T)                                            // 0
+               << create_node(3, MAX_ID-1, sink_T, sink_F)                                            // 1
+               << create_node(2, MAX_ID,   create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))    // 1
+               << create_node(2, MAX_ID-1, create_node_ptr(3,MAX_ID),   create_node_ptr(3,MAX_ID-1))  // 0
+               << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))    // 0
+               << create_node(1, MAX_ID-1, create_node_ptr(2,MAX_ID),   create_node_ptr(2,MAX_ID-1))  // 1
+               << create_node(0, MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(1,MAX_ID-1)); // 0
+          }
+
+          // -------------------------------------------------------------------
+          // Canonical node file where the max 1-level cut and max 2-level cuts
+          // are NOT the same.
+
+          /*
+                       _1_      ---- x0
+                      /   \
+                      2   3     ---- x1
+                     / \ / \
+                    4   5  T    ---- x2
+                   / \ / \
+                   6  7  T      ---- x3
+                  / \/ \
+                  T  F T
+
+                When ignoring arcs to sinks:
+                  The maximum 1-level cut: 3
+                  The maximum 2-level cut: 4 (1 extra in-going edge to (5))
+           */
+          node_file nf_larger_2level_cut_A;
+          {
+            node_writer nw(nf_larger_2level_cut_A);
+            nw << create_node(3, MAX_ID,   sink_F, sink_T)
+               << create_node(3, MAX_ID-1, sink_T, sink_F)
+               << create_node(2, MAX_ID,   create_node_ptr(3,MAX_ID),   sink_T)
+               << create_node(2, MAX_ID-1, create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))
+               << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID-1), sink_T)
+               << create_node(1, MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
+               << create_node(0, MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+          }
+
+          /*
+
+                       1      ---- x0
+                      / \
+                    _2_  \    ---- x1
+                   /   \ |
+                   4   3 |    ---- x2
+                  / \  \\|
+                  F T   5     ---- x3
+                       / \
+                       F T
+
+               When ignoring arcs to sinks:
+                  The maximum 1-level cut: 3
+                  The maximum 2-level cut: 4 (1 in-going edge to (4))
+           */
+          node_file nf_larger_2level_cut_B;
+          {
+            node_writer nw(nf_larger_2level_cut_B);
+            nw << create_node(3, MAX_ID,   sink_F, sink_T)
+               << create_node(2, MAX_ID,   sink_F, sink_T)
+               << create_node(2, MAX_ID-1, create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID))
+               << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
+               << create_node(0, MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(3,MAX_ID));
+          }
+
+          describe("canonicity", [&]() {
+            it("is true for False sink", [&]() {
+              AssertThat(is_canonical(nf_F), Is().True());
+            });
+
+            it("is true for True sink", [&]() {
+              AssertThat(is_canonical(nf_T), Is().True());
+            });
+
+            it("is true for single node [1]", [&]() {
+              AssertThat(is_canonical(nf_42), Is().True());
+            });
+
+            it("is true for single node [2]", [&]() {
+              AssertThat(is_canonical(nf_not42), Is().True());
+            });
+
+            it("is false for single node due to too small Id", [&]() {
+              node_file nf;
+              {
+                node_writer nw(nf);
+                nw << create_node(21, 42, sink_F, sink_T);
+              }
+
+              AssertThat(is_canonical(nf), Is().False());
+            });
+
+            it("is true for x21 + x42", [&]() {
+              AssertThat(is_canonical(nf_21xor42), Is().True());
+            });
+
+            it("is false if child ordering with sinks are mismatching", [&]() {
+              node_file nf;
+              {
+                node_writer nw(nf);
+                nw << create_node(42, MAX_ID, sink_T, sink_F)
+                   << create_node(42, MAX_ID-1, sink_F, sink_T)
+                   << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
+              }
+
+              AssertThat(is_canonical(nf), Is().False());
+            });
+
+            it("is false if id is not reset per level", [&]() {
+              node_file nf;
+              {
+                node_writer nw(nf);
+                nw << create_node(42, MAX_ID, sink_F, sink_T)
+                   << create_node(42, MAX_ID-1, sink_T, sink_F)
+                   << create_node(21, MAX_ID-2, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
+              }
+
+              AssertThat(is_canonical(nf), Is().False());
+            });
+
+            it("is false if id is decremented by more than one", [&]() {
+              node_file nf;
+              {
+                node_writer nw(nf);
+                nw << create_node(42, MAX_ID, sink_F, sink_T)
+                   << create_node(42, MAX_ID-2, sink_T, sink_F)
+                   << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-2));
+              }
+
+              AssertThat(is_canonical(nf), Is().False());
+            });
+
+            it("is true for ~(x0 + x1) \\/ x2", [&]() {
+              AssertThat(is_canonical(nf_0xnor1_or_2), Is().True());
+            });
+
+            it("is true for (x0 + x1) \\/ x2", [&]() {
+              AssertThat(is_canonical(nf_0xor1_or_2), Is().True());
+            });
+
+            it("is false due to internal uid child is out-of-order compared to a sink child", [&]() {
+              node_file nf;
+              {
+                node_writer nw(nf);
+                nw << create_node(2, MAX_ID, sink_F, sink_T)
+                   << create_node(1, MAX_ID, sink_T, create_node_ptr(2, MAX_ID))
+                   << create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID), sink_F)
+                   << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID-1));
+              }
+
+              AssertThat(is_canonical(nf), Is().False());
+            });
+
+            it("is false due to internal uid low-children are out-of-order", [&]() {
+              node_file nf;
+              {
+                node_writer nw(nf);
+                nw << create_node(3, MAX_ID,   sink_F, sink_T)
+                   << create_node(2, MAX_ID,   sink_F, sink_T)
+                   << create_node(2, MAX_ID-1, sink_T, create_node_ptr(3, MAX_ID))
+                   << create_node(1, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID))
+                   << create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID),   create_node_ptr(2, MAX_ID))
+                   << create_node(0, MAX_ID,   create_node_ptr(1, MAX_ID),   create_node_ptr(1, MAX_ID-1));
+              }
+
+              AssertThat(is_canonical(nf), Is().False());
+            });
+
+            it("is false due to internal uid high-children are out-of-order", [&]() {
+              node_file nf;
+              {
+                node_writer nw(nf);
+                nw << create_node(3, MAX_ID,   sink_F, sink_T)
+                   << create_node(2, MAX_ID,   sink_F, sink_T)
+                   << create_node(2, MAX_ID-1, sink_T, create_node_ptr(3, MAX_ID))
+                   << create_node(1, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID-1))
+                   << create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID))
+                   << create_node(0, MAX_ID,   create_node_ptr(1, MAX_ID),   create_node_ptr(1, MAX_ID-1));
+              }
+
+              AssertThat(is_canonical(nf), Is().False());
+            });
           });
 
-          it("can derive whether it is on canonical form [2]", [&]() {
-            node_file nf;
-            {
-              node_writer nw(nf);
-              nw << create_node(21, 42, create_sink_ptr(false), create_sink_ptr(true));
-            }
+          describe("max 1-level cut", [&]() {
+            it("is exact for F", [&]() {
+              AssertThat(nf_F->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+              AssertThat(nf_F->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+              AssertThat(nf_F->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+              AssertThat(nf_F->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+            });
 
-            AssertThat(is_canonical(nf), Is().False());
+            it("is exact for T", [&]() {
+              AssertThat(nf_T->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+              AssertThat(nf_T->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+              AssertThat(nf_T->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+              AssertThat(nf_T->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+            });
+
+            it("is exact for x42", [&]() {
+              AssertThat(nf_42->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+              AssertThat(nf_42->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+              AssertThat(nf_42->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+              AssertThat(nf_42->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+            });
+
+            it("is exact for ~x42", [&]() {
+              AssertThat(nf_not42->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+              AssertThat(nf_not42->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+              AssertThat(nf_not42->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+              AssertThat(nf_not42->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+            });
+
+            it("is soundly upper bounded for x0 & x1", [&]() {
+              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(2u));
+
+              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(3u));
+
+              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+              AssertThat(nf_0and1->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(2u));
+
+              AssertThat(nf_0and1->max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
+            });
+
+            it("is soundly upper bounded for x0 & x1 & 2", [&]() {
+              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(2u));
+
+              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+
+              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+              AssertThat(nf_0and1and2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(3u));
+
+              AssertThat(nf_0and1and2->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+            });
+
+            it("is soundly upper bounded for x0 & x1 | c2", [&]() {
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(3u));
+
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
+
+              AssertThat(nf_0and1_or_2->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+            });
+
+            it("is soundly upper bounded for x21 ^ x42", [&]() {
+              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+
+              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+
+              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_21xor42->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
+
+              AssertThat(nf_21xor42->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+            });
+
+            it("is soundly upper bounded for (x0 + x1 + x2 + x3) mod 2", [&]() {
+              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_sum0123_mod2->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+            });
+
+            it("is soundly upper bounded when 2-level cut > 1-level cut [A]", [&]() {
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(5u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+            });
+
+            it("is soundly upper bounded when 2-level cut > 1-level cut [B]", [&]() {
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+            });
           });
 
-          it("can derive whether it is on canonical form [3]", [&]() {
-            node_file nf;
-            {
-              node_writer nw(nf);
-              nw << create_node(42, MAX_ID, create_sink_ptr(false), create_sink_ptr(true))
-                 << create_node(42, MAX_ID-1, create_sink_ptr(true), create_sink_ptr(false))
-                 << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
-            }
+          describe("2-level cut", [&]() {
+            it("is exact for F", [&]() {
+              AssertThat(nf_F->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+              AssertThat(nf_F->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+              AssertThat(nf_F->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+              AssertThat(nf_F->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+            });
 
-            AssertThat(is_canonical(nf), Is().True());
-          });
+            it("is exact for T", [&]() {
+              AssertThat(nf_T->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+              AssertThat(nf_T->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+              AssertThat(nf_T->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+              AssertThat(nf_T->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+            });
 
-          it("can derive whether it is on canonical form [4]", [&]() {
-            node_file nf;
-            {
-              node_writer nw(nf);
-              nw << create_node(42, MAX_ID, create_sink_ptr(true), create_sink_ptr(false))
-                 << create_node(42, MAX_ID-1, create_sink_ptr(false), create_sink_ptr(true))
-                 << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
-            }
+            it("is exact for x42", [&]() {
+              AssertThat(nf_42->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+              AssertThat(nf_42->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+              AssertThat(nf_42->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+              AssertThat(nf_42->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+            });
 
-            AssertThat(is_canonical(nf), Is().False());
-          });
+            it("is exact for ~x42", [&]() {
+              AssertThat(nf_not42->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+              AssertThat(nf_not42->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+              AssertThat(nf_not42->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+              AssertThat(nf_not42->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+            });
 
-          it("can derive whether it is on canonical form [5]", [&]() {
-            node_file nf;
-            {
-              node_writer nw(nf);
-              nw << create_node(42, MAX_ID, create_sink_ptr(false), create_sink_ptr(true))
-                 << create_node(42, MAX_ID-1, create_sink_ptr(true), create_sink_ptr(false))
-                 << create_node(21, MAX_ID-1, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
-            }
+            // The maximum 1-level and maximum 2-level cuts are the same.
+            it("is soundly upper bounded for x0 & x1", [&]() {
+              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(2u));
 
-            AssertThat(is_canonical(nf), Is().False());
-          });
+              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(3u));
 
-          it("can derive whether it is on canonical form [6]", [&]() {
-            node_file nf;
-            {
-              node_writer nw(nf);
-              nw << create_node(42, MAX_ID, create_sink_ptr(false), create_sink_ptr(true))
-                 << create_node(42, MAX_ID-2, create_sink_ptr(true), create_sink_ptr(false))
-                 << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-2));
-            }
+              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+              AssertThat(nf_0and1->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(2u));
 
-            AssertThat(is_canonical(nf), Is().False());
+              AssertThat(nf_0and1->max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
+            });
+
+            it("is soundly upper bounded for x0 & x1 & 2", [&]() {
+              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(2u));
+
+              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+
+              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+              AssertThat(nf_0and1and2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(3u));
+
+              AssertThat(nf_0and1and2->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+            });
+
+            it("is soundly upper bounded for x0 & x1 | c2", [&]() {
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(3u));
+
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
+
+              AssertThat(nf_0and1_or_2->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+            });
+
+            it("is soundly upper bounded for x21 ^ x42", [&]() {
+              AssertThat(nf_21xor42->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+
+              AssertThat(nf_21xor42->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_21xor42->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+
+              AssertThat(nf_21xor42->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_21xor42->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
+
+              AssertThat(nf_21xor42->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+            });
+
+            it("is soundly upper bounded for (x0 + x1 + x2 + x3) mod 2", [&]() {
+              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+              AssertThat(nf_sum0123_mod2->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+            });
+
+            // The maximum 2-level cut greater than the maximum 1-level cut.
+            it("is soundly upper bounded when 2-level cut > 1-level cut [A]", [&]() {
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(5u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
+              AssertThat(nf_larger_2level_cut_A->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+            });
+
+            it("is soundly upper bounded when 2-level cut > 1-level cut [B]", [&]() {
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(8u));
+
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+              AssertThat(nf_larger_2level_cut_B->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
+            });
           });
         });
 
