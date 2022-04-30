@@ -488,7 +488,7 @@ namespace adiar {
     /// \brief Increase the 1-level cut size to the maximum of the current or
     ///        the given cuts.
     ////////////////////////////////////////////////////////////////////////////
-    void inc_1level_cut(cuts_t &o)
+    void inc_1level_cut(const cuts_t &o)
     {
       inc_cut(_file_ptr->max_1level_cut, o);
     }
@@ -497,7 +497,7 @@ namespace adiar {
     /// \brief Increase the 2-level cut size to the maximum of the current or
     ///        the given cuts.
     ////////////////////////////////////////////////////////////////////////////
-    void inc_2level_cut(cuts_t &o)
+    void inc_2level_cut(const cuts_t &o)
     {
       inc_cut(_file_ptr->max_2level_cut, o);
     }
@@ -658,7 +658,7 @@ namespace adiar {
       }
     }
 
-    void inc_cut(cuts_t &c, cuts_t &o)
+    void inc_cut(cuts_t &c, const cuts_t &o)
     {
       for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
         c[ct] = std::max(c[ct], o[ct]);
