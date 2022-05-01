@@ -144,16 +144,21 @@ namespace adiar
       }
       else
       {
+        ptr_t src;
+        if (b)
+          src = flag(source);
+        else
+          src = unflag(source);
         std::cout << "PUSH-CHILDREN: writing arc to leaf" << std::endl;
         arc_writer aw(af);
-        aw.unsafe_push(arc_t{source, create_sink_ptr(value_of(f_ikb))});
+        aw.unsafe_push(arc_t{src, create_sink_ptr(value_of(f_ikb))});
       }
     };
 
     std::cout << "PUSH-CHILDREN: Called" << std::endl;
 
-    deal_with(true);
     deal_with(false);
+    deal_with(true);
   }
 
   void initPermutation(const std::vector<label_t> permutation)
@@ -279,11 +284,52 @@ namespace adiar
     }
 
     std::cout << "Finished reordering BDD" << std::endl;
+
+    simple_file<arc_t> allarcs;
+    {
+
+      simple_file_writer<arc_t> sfw(allarcs);
+
+      node_arc_stream<true> as(af);
+      while (as.can_pull())
+      {
+        arc_t arc = as.pull();
+        sfw.push(arc);
+      }
+
+      sink_arc_stream<true> ass(af);
+      while (ass.can_pull())
+      {
+        arc_t arc = ass.pull();
+        sfw.push(arc);
+      }
+    }
+
+    auto pred_arc = [](const arc_t &a, const arc_t &b) -> bool {return b.source<a.source;};
+    simple_file_sorter<arc_t, decltype(pred_arc)> sfs;
+    sfs.sort(allarcs, pred_arc);
+
+    node_file nodes;
+    node_writer nw(nodes);
+
+    file_stream<arc_t> fs(allarcs);
+    while(fs.can_pull()){
+      arc_t arc1 = fs.pull();
+      arc_t arc2 = fs.pull();
+      std::cout << "Arc: " << label_of(arc1.source) << "," << id_of(arc1.source) << "--" << is_flagged(arc1.source) << "--> " << arc1.target << std::endl;
+      std::cout << "Arc: " << label_of(arc2.source) << "," << id_of(arc2.source) <<"--" << is_flagged(arc2.source) << "--> " << arc2.target << std::endl;
+      node n = node_of(arc2, arc1);
+      std::cout << n.uid << std::endl;
+      nw.push(n);
+    }
+    
+ 
     // TODO change arc file to node file to create an bdd
     // maybe do bdd(af);
 
     // TODO traverse all arcs, and map them using the perm array
     // This makes the BDD go from identity order to permutation order
-    return __bdd(af);
+    std::cout << "Returning" << std::endl;
+    return __bdd(nodes);
   }
 }

@@ -80,7 +80,7 @@ namespace adiar {
   }
 
   template <typename T>
-  void output_dot(const T& nodes, const std::string &filename, label_t permutation[])
+  void output_dot(const T& nodes, const std::string &filename, std::vector<label_t> permutation)
   {
     std::ofstream out;
     out.open(filename);

@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
     std::vector<label_t> permutation = {1,2,0};
     bdd new_order = bdd_reorder(root, permutation);
 
-    output_dot(root, "old.dot");
-    //output_dot(root, "new.dot", permutation);
+    output_dot(root, "old.dot", permutation);
+    output_dot(new_order, "new.dot");
 
     /*
     // Test for reverse path
