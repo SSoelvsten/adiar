@@ -10,7 +10,7 @@
 #include <adiar/internal/substitution.h>
 
 #define PRINT 0
-#define HASHING 1
+#define HASHING 0
 
 namespace adiar
 {
@@ -192,7 +192,7 @@ namespace adiar
     {
       assignment_file path = reverse_path(af, source_ptr, assignment_t{perm[label_of(source_ptr)], source_assignment});
       debug_log("PUSH-CHILDREN: reverse path done", 1);
-      
+
 #if PRINT
       {
         std::cout << "  PUSH-CHILDREN: reverse_path Assignment = (";
@@ -403,6 +403,14 @@ namespace adiar
             if (a_node != b_node)
             {
               return a_node < b_node;
+            }
+            if (a_node.low != b_node.low)
+            {
+              return a_node.low < b_node.low;
+            }
+            if (a_node.high != b_node.high)
+            {
+              return a_node.high < b_node.high;
             }
             continue;
           }
