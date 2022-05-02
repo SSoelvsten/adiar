@@ -10,14 +10,12 @@
 #include <adiar/internal/substitution.h>
 
 #define PRINT 0
-#define HASHING 1
 
 namespace adiar
 {
   std::vector<label_t> perm;
   std::vector<label_t> perm_inv;
 
-#if HASHING
   typedef uint64_t hash_t;
 
   struct reorder_request
@@ -47,22 +45,6 @@ namespace adiar
     }
   };
 
-#else
-  struct reorder_request
-  {
-    ptr_t source;
-    label_t child_level;
-  };
-
-  struct reorder_request_lt
-  {
-    bool operator()(const reorder_request &a, const reorder_request &b) const
-    {
-      return a.child_level < b.child_level;
-    }
-  };
-#endif
-
   void debug_log(const std::string &msg, int tabs)
   {
 #if PRINT
@@ -72,7 +54,6 @@ namespace adiar
 #endif
   }
 
-#if HASHING
   hash_t hash_of(const bdd &dd)
   {
     node_stream<> ns(dd);
@@ -84,7 +65,6 @@ namespace adiar
     }
     return hash;
   }
-#endif
 
   // T/B I/Os
   assignment_file reverse_path(const arc_file &af, ptr_t node_ptr, const assignment_t assignment_of_node, const bool extra_assignment)
@@ -230,11 +210,10 @@ namespace adiar
         else
           src = unflag(source_ptr);
 
-#if HASHING
-        pq.push(reorder_request{src, label, hash_of(F_ikb)});
-#else
-        pq.push(reorder_request{src, label});
-#endif
+        // set hash to 0, for testing non-hashing algo
+        // set hash to hash_of(F_ikb), for hashing algo
+        pq.push(reorder_request{src, label, hash_of(F_ikb)}); 
+
         debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
       }
       else
@@ -303,7 +282,7 @@ namespace adiar
     }
     return nodes;
   }
-#if HASHING
+
   __bdd bdd_reorder(const bdd &F, const std::vector<label_t> permutation)
   {
     init_permutation(permutation);
@@ -448,136 +427,4 @@ namespace adiar
     node_file nodes = convert_arc_file_to_node_file(af);
     return __bdd(nodes);
   }
-#else
-  __bdd bdd_reorder(const bdd &F, const std::vector<label_t> permutation)
-  {
-    init_permutation(permutation);
-
-    // TODO: be sure of this total memory
-    size_t total_available_memory_after_streams = memory::available() - 2 * node_stream<>::memory_usage() - std::max(node_arc_stream<>::memory_usage(), arc_writer::memory_usage());
-
-    debug_log("Reorder started", 0);
-
-    // LEVELIZED PRIORTY QUEUE EXAMPLE
-    /*
-    label_file perm_filter;
-    levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> llpq({perm_filter}, memory_total, std::numeric_limits<size_t>::max());
-    {
-      llpq.setup_next_level();
-      llpq.empty_level();
-      llpq.empty();
-    }
-    */
-    external_priority_queue<reorder_request, reorder_request_lt> pq(total_available_memory_after_streams / 2, 0); // 0 is pq external doesnt care
-
-    arc_file af;
-    ptr_t root = create_node_ptr(0, 0);
-    push_children(pq, root, af, F);
-
-    debug_log("Initialization done", 0);
-
-    while (!pq.empty())
-    {
-      debug_log("PQ loop", 0);
-      auto bdd_lt = [&](const reorder_request &a, const reorder_request &b) -> bool
-      {
-        assignment_file path_a, path_b;
-        std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
-
-        bdd a_restrict = bdd_restrict(F, path_a);
-        bdd b_restrict = bdd_restrict(F, path_b);
-
-        node_stream<> a_ns(a_restrict);
-        node_stream<> b_ns(b_restrict);
-
-        // Is A < B?
-        while (a_ns.can_pull())
-        {
-          if (b_ns.can_pull())
-          {
-            node_t a_node = a_ns.pull();
-            node_t b_node = b_ns.pull();
-
-            if (a_node != b_node)
-            {
-              return a_node < b_node;
-            }
-            if (a_node.low != b_node.low)
-            {
-              return a_node.low < b_node.low;
-            }
-            if (a_node.high != b_node.high)
-            {
-              return a_node.high < b_node.high;
-            }
-            continue;
-          }
-          return false;
-        }
-        return true;
-      };
-      tpie::merge_sorter<reorder_request, false, decltype(bdd_lt)> msorter(bdd_lt);
-      msorter.set_available_memory(total_available_memory_after_streams / 2);
-      tpie::dummy_progress_indicator dummy_indicator;
-      msorter.begin();
-
-      reorder_request rr = pq.top();
-      pq.pop();
-      msorter.push(rr);
-
-      while (!pq.empty() && pq.top().child_level == rr.child_level)
-      {
-        reorder_request next = pq.top();
-        pq.pop();
-        msorter.push(next);
-      }
-      msorter.end();
-      msorter.calc(dummy_indicator);
-
-      // The root of output can never be within arc restriction
-      // Therefore r is assigned this variable, to ensure that
-      // the following equality check will always fail in the first iteration!
-      // ie. this is arc way of setting r to null
-      bdd r = bdd_ithvar(perm[0]);
-      bdd r_prime;
-
-      // i is set to -1, as it is incremented before the first iteration
-      uint64_t i = -1U;
-      while (msorter.can_pull())
-      {
-        debug_log("Merger loop", 0);
-
-        reorder_request m_rr = msorter.pull();
-        assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
-
-        r_prime = bdd_restrict(F, path);
-        debug_log("R_Prime restriction found", 0);
-        if (i != -1U && bdd_equal(r, r_prime))
-        {
-          debug_log("R and R_Prime equal", 0);
-          ptr_t old_node = create_node_ptr(m_rr.child_level, i);
-          {
-            arc_writer aw(af);
-            aw.unsafe_push(arc_t{m_rr.source, old_node});
-          }
-        }
-        else
-        {
-          i++;
-          debug_log("R and R_Prime NOT equal", 0);
-          ptr_t new_node = create_node_ptr(m_rr.child_level, i);
-          {
-            arc_writer aw(af);
-            aw.unsafe_push(arc_t{m_rr.source, new_node});
-          }
-          push_children(pq, new_node, af, F);
-        }
-        r = r_prime;
-      }
-    }
-    debug_log("Reorder done", 0);
-    node_file nodes = convert_arc_file_to_node_file(af);
-    return __bdd(af);
-  }
-#endif
 }
