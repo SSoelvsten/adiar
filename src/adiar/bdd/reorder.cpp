@@ -192,6 +192,7 @@ namespace adiar
     {
       assignment_file path = reverse_path(af, source_ptr, assignment_t{perm[label_of(source_ptr)], source_assignment});
       debug_log("PUSH-CHILDREN: reverse path done", 1);
+      
 #if PRINT
       {
         std::cout << "  PUSH-CHILDREN: reverse_path Assignment = (";
