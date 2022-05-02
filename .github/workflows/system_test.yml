@@ -45,6 +45,10 @@ jobs:
             exec: adiar_queens
             N: '8 9 10 11 12 13 14'
 
+          - name: 'Queens (ZDD)'
+            exec: adiar_queens_zdd
+            N: '8 9 10 11 12 13 14'
+
           - name: 'SAT: Pigeonhole Princiople'
             exec: adiar_sat_pigeonhole_principle
             N: '1 2 3 4 5 6 7 8 9 10'
