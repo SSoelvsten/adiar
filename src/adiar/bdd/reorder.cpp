@@ -10,7 +10,7 @@
 #include <adiar/internal/substitution.h>
 
 #define PRINT 0
-#define HASHING 0
+#define HASHING 1
 
 namespace adiar
 {
@@ -71,7 +71,7 @@ namespace adiar
     while (ns.can_pull())
     {
       node_t node = ns.pull();
-      hash = hash ^ (node.uid * node.low * node.high);
+      hash = hash ^ (5 * (node.uid >> 1) + 3 * (node.low >> 1) + 2 * (node.high >> 1));
     }
     return hash;
   }
@@ -168,7 +168,7 @@ namespace adiar
   {
     if (is_sink(dd))
     {
-      return 0xffffffff;
+      return MAX_LABEL + 1;
     }
 
     label_t result = UINT_MAX;
@@ -211,7 +211,7 @@ namespace adiar
       label_t label = min_label(F_ikb);
       debug_log("PUSH-CHILDREN: min-label done - found: " + std::to_string(label), 1);
 
-      bool is_leaf = label == 0xffffffff;
+      bool is_leaf = label == MAX_LABEL + 1;
       if (!is_leaf)
       {
         debug_log("PUSH-CHILDREN: pushing non-leaf", 1);
@@ -482,7 +482,7 @@ namespace adiar
     }
     debug_log("Reorder done", 0);
     node_file nodes = convert_arc_file_to_node_file(af);
-    return __bdd(nodes);
+    return __bdd(af);
   }
 #endif
 }
