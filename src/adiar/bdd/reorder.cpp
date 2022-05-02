@@ -386,7 +386,7 @@ namespace adiar
       reorder_request last_rr = {0, 0, 1}; // dummy reorder request
 
       // i is set to -1, as it is incremented before the first iteration
-      uint64_t i = -1U;
+      uint64_t i = -1L;
       debug_log("Merger loop", 0);
       while (msorter.can_pull())
       {
