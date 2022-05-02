@@ -23,11 +23,11 @@ namespace adiar
     label_t child_level;
   };
 
-  struct reorder_lt
+  struct reorder_request_lt
   {
-    bool operator()(const reorder_request &arc, const reorder_request &b) const
+    bool operator()(const reorder_request &arc, const reorder_request &source_assignment) const
     {
-      return arc.child_level < b.child_level;
+      return arc.child_level < source_assignment.child_level;
     }
   };
 
@@ -41,25 +41,19 @@ namespace adiar
   }
 
   // T/B I/Os
-  // TODO reverse path of two arc at once
-  assignment_file reverse_path(const arc_file &af, ptr_t n, const assignment_t ass_of_n, const bool extra_ass)
+  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr, const assignment_t assignment_of_node, const bool extra_assignment)
   {
-    assignment_file ass_file;
+    assignment_file assign_file;
     {
-      assignment_writer aw(ass_file);
+      assignment_writer aw(assign_file);
+      node_arc_stream<> nas(af);
+      ptr_t current = node_ptr;
 
-      adiar::node_arc_stream<> fs(af);
+      debug_log("REVERSE PATH: Starting arc: " + std::to_string(node_ptr), 2);
 
-      // Måske virker node_arc_stream ikke.. (Detach er ikke defineret)
-      // Denne node_arc_stream er ikke beregnet til at at read, write, read, write
-      // Vi tror, det er muligt, men måske render vi ind i problemer senere.
-      ptr_t current = n;
-
-      debug_log("REVERSE PATH: Starting arc: " + std::to_string(n), 2);
-
-      while (fs.can_pull())
+      while (nas.can_pull())
       {
-        arc_t arc = fs.pull();
+        arc_t arc = nas.pull();
         debug_log("REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
         if (arc.target == current)
         {
@@ -68,49 +62,48 @@ namespace adiar
         }
       }
       af.make_writeable();
-      if (extra_ass)
+      if (extra_assignment)
       {
-        aw.unsafe_push(ass_of_n);
+        aw.unsafe_push(assignment_of_node);
       }
     }
 
-    // TODO test if this is needed!
-    // As the reverse_path no longer only takes T/B I/Os
-    simple_file_sorter<assignment_t> sf_sorter;
-    sf_sorter.sort(ass_file);
+    // Reverse_path no longer only takes T/B I/Os
+    simple_file_sorter<assignment_t> sfsorter;
+    sfsorter.sort(assign_file);
 
-    return ass_file;
+    return assign_file;
   }
 
-  assignment_file reverse_path(const arc_file &af, ptr_t n)
+  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr)
   {
-    return reverse_path(af, n, assignment_t{0, 0}, false);
+    return reverse_path(af, node_ptr, assignment_t{0, 0}, false);
   }
 
-  assignment_file reverse_path(const arc_file &af, ptr_t n, const assignment_t ass_of_n)
+  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr, const assignment_t assignment_of_node)
   {
-    return reverse_path(af, n, ass_of_n, true);
+    return reverse_path(af, node_ptr, assignment_of_node, true);
   }
 
-  std::tuple<assignment_file, assignment_file> dual_reverse_path(const arc_file &af, ptr_t n, ptr_t m)
+  std::tuple<assignment_file, assignment_file> dual_reverse_path(const arc_file &af, ptr_t node_ptr_n, ptr_t node_ptr_m)
   {
-    assignment_file ass_file_n;
-    assignment_file ass_file_m;
+    assignment_file assignment_file_n;
+    assignment_file assignment_file_m;
 
     {
-      assignment_writer aw_n(ass_file_n);
-      assignment_writer aw_m(ass_file_m);
+      assignment_writer aw_n(assignment_file_n);
+      assignment_writer aw_m(assignment_file_m);
 
-      adiar::node_arc_stream<> fs(af);
+      adiar::node_arc_stream<> nas(af);
 
-      ptr_t current_n = n;
-      ptr_t current_m = m;
+      ptr_t current_n = node_ptr_n;
+      ptr_t current_m = node_ptr_m;
 
-      debug_log("DUAL REVERSE PATH: Starting arc_n: " + std::to_string(n) + " arc_m: " + std::to_string(m), 2);
+      debug_log("DUAL REVERSE PATH: Starting arc_n: " + std::to_string(node_ptr_n) + " arc_m: " + std::to_string(node_ptr_m), 2);
 
-      while (fs.can_pull())
+      while (nas.can_pull())
       {
-        arc_t arc = fs.pull();
+        arc_t arc = nas.pull();
         debug_log("DUAL REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
         if (arc.target == current_n)
         {
@@ -126,15 +119,14 @@ namespace adiar
       af.make_writeable();
     }
 
-    simple_file_sorter<assignment_t> sf_sorter;
-    sf_sorter.sort(ass_file_n);
-    sf_sorter.sort(ass_file_m);
+    simple_file_sorter<assignment_t> sfsorter;
+    sfsorter.sort(assignment_file_n);
+    sfsorter.sort(assignment_file_m);
 
-    return {ass_file_n, ass_file_m};
+    return {assignment_file_n, assignment_file_m};
   }
 
   // N/B I/Os
-  // TODO retrive from meta data
   label_t min_label(const bdd &dd)
   {
     if (is_sink(dd))
@@ -143,28 +135,25 @@ namespace adiar
     }
 
     label_t result = UINT_MAX;
-    adiar::node_stream<> fs(dd); // TODO: Brug levelinfostream i stedet (meget mindre)
+    level_info_stream<node_t> lis(dd);
 
-    while (fs.can_pull())
+    while (lis.can_pull())
     {
-      node_t node = fs.pull();
-      if (!is_sink(node))
+      level_info_t li = lis.pull();
+      label_t label = perm_inv[li.label];
+      if (label < result && li.width > 0)
       {
-        label_t label = perm_inv[label_of(node)];
-        if (label < result)
-        {
-          result = label;
-        }
+        result = label;
       }
     }
     return result;
   }
 
-  void push_children(external_priority_queue<reorder_request, reorder_lt> &pq, const ptr_t source, const arc_file &af, const bdd &f)
+  void push_children(external_priority_queue<reorder_request, reorder_request_lt> &pq, const ptr_t source_ptr, const arc_file &af, const bdd &F)
   {
-    auto deal_with = [&](bool b)
+    auto push_children_with_source_assignment = [&](bool source_assignment)
     {
-      assignment_file path = reverse_path(af, source, assignment_t{perm[label_of(source)], b});
+      assignment_file path = reverse_path(af, source_ptr, assignment_t{perm[label_of(source_ptr)], source_assignment});
       debug_log("PUSH-CHILDREN: reverse path done", 1);
 #if PRINT
       {
@@ -179,38 +168,38 @@ namespace adiar
       }
 #endif
 
-      bdd f_ikb = bdd_restrict(f, path);
+      bdd F_ikb = bdd_restrict(F, path);
       debug_log("PUSH-CHILDREN: restriction done", 1);
-      label_t label = min_label(f_ikb);
-      debug_log("PUSH-CHILDREN: min-label done", 1);
+      label_t label = min_label(F_ikb);
+      debug_log("PUSH-CHILDREN: min-label done - found: " + std::to_string(label), 1);
 
       bool is_leaf = label == 0xffffffff;
       if (!is_leaf)
       {
         debug_log("PUSH-CHILDREN: pushing non-leaf", 1);
         ptr_t src;
-        if (b)
-          src = flag(source);
+        if (source_assignment)
+          src = flag(source_ptr);
         else
-          src = unflag(source);
+          src = unflag(source_ptr);
         pq.push(reorder_request{src, label});
         debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
       }
       else
       {
         ptr_t src;
-        if (b)
-          src = flag(source);
+        if (source_assignment)
+          src = flag(source_ptr);
         else
-          src = unflag(source);
+          src = unflag(source_ptr);
         debug_log("PUSH-CHILDREN: writing arc to leaf", 1);
         arc_writer aw(af);
-        aw.unsafe_push(arc_t{src, create_sink_ptr(value_of(f_ikb))});
+        aw.unsafe_push(arc_t{src, create_sink_ptr(value_of(F_ikb))});
       }
     };
 
-    deal_with(false);
-    deal_with(true);
+    push_children_with_source_assignment(false);
+    push_children_with_source_assignment(true);
   }
 
   void init_permutation(const std::vector<label_t> permutation)
@@ -229,25 +218,25 @@ namespace adiar
     {
       simple_file_writer<arc_t> sfw(all_arcs);
 
-      node_arc_stream<true> as(af);
-      while (as.can_pull())
+      node_arc_stream<true> nas(af);
+      while (nas.can_pull())
       {
-        arc_t arc = as.pull();
+        arc_t arc = nas.pull();
         sfw.push(arc);
       }
 
-      sink_arc_stream<true> ass(af);
-      while (ass.can_pull())
+      sink_arc_stream<true> sas(af);
+      while (sas.can_pull())
       {
-        arc_t arc = ass.pull();
+        arc_t arc = sas.pull();
         sfw.push(arc);
       }
     }
 
-    auto pred_arc = [](const arc_t &arc, const arc_t &b) -> bool
-    { return b.source < arc.source; };
-    simple_file_sorter<arc_t, decltype(pred_arc)> sfs;
-    sfs.sort(all_arcs, pred_arc);
+    auto arc_gt = [](const arc_t &arc, const arc_t &source_assignment) -> bool
+    { return source_assignment.source < arc.source; };
+    simple_file_sorter<arc_t, decltype(arc_gt)> sfs;
+    sfs.sort(all_arcs, arc_gt);
 
     node_file nodes;
     node_writer nw(nodes);
@@ -255,26 +244,26 @@ namespace adiar
     file_stream<arc_t> fs(all_arcs);
     while (fs.can_pull())
     {
-      arc_t arc1 = fs.pull();
-      arc_t arc2 = fs.pull();
-      node n = node_of(arc2, arc1);
+      arc_t high_arc = fs.pull();
+      arc_t low_arc = fs.pull();
+      node n = node_of(low_arc, high_arc);
       nw.push(n);
     }
     return nodes;
   }
 
-  __bdd bdd_reorder(const bdd &dd, const std::vector<label_t> permutation)
+  __bdd bdd_reorder(const bdd &F, const std::vector<label_t> permutation)
   {
     init_permutation(permutation);
 
     debug_log("Reorder started", 0);
 
     // prøv levelized_priority_queue for UNLIMITED POWER
-    external_priority_queue<reorder_request, reorder_lt> pq(memory::available() / 2, 0); // 0 is pq external doesnt care
+    external_priority_queue<reorder_request, reorder_request_lt> pq(memory::available() / 2, 0); // 0 is pq external doesnt care
 
     arc_file af;
     ptr_t root = create_node_ptr(0, 0);
-    push_children(pq, root, af, dd);
+    push_children(pq, root, af, F);
 
     debug_log("Initialization done", 0);
 
@@ -282,16 +271,13 @@ namespace adiar
     {
       debug_log("PQ loop", 0);
 
-      // TODO https://github.com/Mortal/tpieex/blob/master/main.cc line 68-70
-      // TODO add operator as argument in the constructor.
-      auto pred = [&](const reorder_request &arc, const reorder_request &b) -> bool
+      auto bdd_lt = [&](const reorder_request &a, const reorder_request &b) -> bool
       {
         assignment_file path_a, path_b;
-        std::tie(path_a, path_b) = dual_reverse_path(af, arc.source, b.source);
+        std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
 
-        bdd a_restrict = bdd_restrict(dd, path_a);
-
-        bdd b_restrict = bdd_restrict(dd, path_b);
+        bdd a_restrict = bdd_restrict(F, path_a);
+        bdd b_restrict = bdd_restrict(F, path_b);
 
         node_stream<> a_ns(a_restrict);
         node_stream<> b_ns(b_restrict);
@@ -315,23 +301,23 @@ namespace adiar
         return true;
       };
 
-      tpie::merge_sorter<reorder_request, false, decltype(pred)> m_sorter(pred);
-      m_sorter.set_available_memory(memory::available() / 2);
-      tpie::dummy_progress_indicator d_indicator;
-      m_sorter.begin();
+      tpie::merge_sorter<reorder_request, false, decltype(bdd_lt)> msorter(bdd_lt);
+      msorter.set_available_memory(memory::available() / 2);
+      tpie::dummy_progress_indicator dummy_indicator;
+      msorter.begin();
 
       reorder_request rr = pq.top();
       pq.pop();
-      m_sorter.push(rr);
+      msorter.push(rr);
 
       while (!pq.empty() && pq.top().child_level == rr.child_level)
       {
         reorder_request next = pq.top();
         pq.pop();
-        m_sorter.push(next);
+        msorter.push(next);
       }
-      m_sorter.end();
-      m_sorter.calc(d_indicator);
+      msorter.end();
+      msorter.calc(dummy_indicator);
 
       // The root of output can never be within arc restriction
       // Therefore r is assigned this variable, to ensure that
@@ -339,15 +325,17 @@ namespace adiar
       // ie. this is arc way of setting r to null
       bdd r = bdd_ithvar(perm[0]);
       bdd r_prime;
+
+      // i is set to -1, as it is incremented before the first iteration
       uint64_t i = -1;
-      while (m_sorter.can_pull())
+      while (msorter.can_pull())
       {
         debug_log("Merger loop", 0);
 
-        reorder_request m_rr = m_sorter.pull();
+        reorder_request m_rr = msorter.pull();
         assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
 
-        r_prime = bdd_restrict(dd, path);
+        r_prime = bdd_restrict(F, path);
         debug_log("R_Prime restriction found", 0);
 
         if (bdd_equal(r, r_prime))
@@ -368,7 +356,7 @@ namespace adiar
             arc_writer aw(af);
             aw.unsafe_push(arc_t{m_rr.source, new_node});
           }
-          push_children(pq, new_node, af, dd);
+          push_children(pq, new_node, af, F);
         }
         r = r_prime;
       }
