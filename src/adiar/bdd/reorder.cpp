@@ -38,6 +38,13 @@ namespace adiar
       return a.child_level < b.child_level;
     }
   };
+
+  struct reorder_level {
+    label_t label_of(const reorder_request &rr) {
+      return rr.child_level;
+    }
+  };
+
 #else
   struct reorder_request
   {
@@ -303,7 +310,19 @@ namespace adiar
 
     // prøv levelized_priority_queue for UNLIMITED POWER
     // spørg Steffan - how to do dis?
+
+    label_file perm_filter;
+    auto memory_total = 0;
+    levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> llpq({perm_filter}, memory_total, std::numeric_limits<size_t>::max());
     external_priority_queue<reorder_request, reorder_request_lt> pq(memory::available(), 0); // 0 is pq external doesnt care
+
+    // how to do it
+    // kan skippes, hvis andet er vigtigere
+    {
+      llpq.setup_next_level();
+      llpq.empty_level();
+      llpq.empty();
+    }
 
     arc_file af;
     ptr_t root = create_node_ptr(0, 0);
