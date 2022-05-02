@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     std::cout << "Number out of range: " << argv[1] << std::endl;
   }
 
-  adiar_init(M * 1024 * 1024*2);
+  adiar_init(M * 1024 * 1024);
 
   {
     // ===== Your code starts here =====
@@ -35,13 +35,16 @@ int main(int argc, char *argv[])
     bdd x2 = bdd_ithvar(0);
     bdd x3 = bdd_ithvar(1);
     bdd intnode = bdd_and(x1, x2);
-    bdd root = bdd_or(intnode, x3);
+    bdd org = bdd_or(intnode, x3);
     
     std::vector<label_t> permutation = {1,2,0};
-    bdd new_order = bdd_reorder(root, permutation);
+    bdd new_order = bdd_reorder(org, permutation);
+    std::vector<label_t> permutation_inverse = {2,0,1};
+    bdd org_back = bdd_reorder(new_order, permutation_inverse);
 
-    output_dot(root, "old.dot", permutation);
+    output_dot(org, "org.dot", permutation);
     output_dot(new_order, "new.dot");
+    output_dot(org_back, "org_back.dot", permutation);
 
     /*
     // Test for reverse path

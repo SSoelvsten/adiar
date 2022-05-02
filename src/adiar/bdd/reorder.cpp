@@ -322,13 +322,7 @@ namespace adiar
       std::cout << n.uid << std::endl;
       nw.push(n);
     }
-    
- 
-    // TODO change arc file to node file to create an bdd
-    // maybe do bdd(af);
 
-    // TODO traverse all arcs, and map them using the perm array
-    // This makes the BDD go from identity order to permutation order
     std::cout << "Returning" << std::endl;
     return __bdd(nodes);
   }
