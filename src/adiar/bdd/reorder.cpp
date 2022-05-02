@@ -444,7 +444,7 @@ namespace adiar
       bdd r_prime;
 
       // i is set to -1, as it is incremented before the first iteration
-      uint64_t i = -1;
+      uint64_t i = -1U;
       while (msorter.can_pull())
       {
         debug_log("Merger loop", 0);
@@ -454,7 +454,7 @@ namespace adiar
 
         r_prime = bdd_restrict(F, path);
         debug_log("R_Prime restriction found", 0);
-        if (bdd_equal(r, r_prime))
+        if (i != -1U && bdd_equal(r, r_prime))
         {
           debug_log("R and R_Prime equal", 0);
           ptr_t old_node = create_node_ptr(m_rr.child_level, i);
