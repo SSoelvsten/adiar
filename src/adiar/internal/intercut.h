@@ -316,7 +316,7 @@ namespace adiar
   cut_size_t __intercut_2level_upper_bound(const typename intercut_policy::reduced_t &dd)
   {
     const cut_type ct = cut_type_with(intercut_policy::cut_false_sink, intercut_policy::cut_true_sink);
-    const cut_size_t max_2level_cut = dd->max_2level_cut[dd.is_negated() ? negate(ct) : ct];
+    const cut_size_t max_2level_cut = dd.max_2level_cut(ct);
 
     return ((bits_approximation(max_2level_cut) * 2) + 2).may_overflow()
       ? MAX_CUT

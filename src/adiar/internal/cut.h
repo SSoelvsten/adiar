@@ -30,21 +30,6 @@ namespace adiar
   };
 
   ////////////////////////////////////////////////////////////////////////////
-  /// \brief Provides the cut_type reflecting a negation of sink values.
-  ////////////////////////////////////////////////////////////////////////////
-  inline cut_type negate(const cut_type &ct)
-  {
-    switch (ct) {
-    case cut_type::INTERNAL_FALSE:
-      return cut_type::INTERNAL_TRUE;
-    case cut_type::INTERNAL_TRUE:
-      return cut_type::INTERNAL_FALSE;
-    default:
-      return ct;
-    }
-  }
-
-  ////////////////////////////////////////////////////////////////////////////
   /// \brief Number of different types of cuts.
   ////////////////////////////////////////////////////////////////////////////
   constexpr size_t CUT_TYPES = 4u;

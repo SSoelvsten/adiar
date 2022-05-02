@@ -3,6 +3,8 @@
 
 #include <adiar/file.h>
 
+#include <adiar/internal/cut.h>
+
 #include <variant>
 
 namespace adiar
@@ -165,6 +167,43 @@ namespace adiar
     const __meta_file<node_t>* operator->() const
     {
       return file_ptr().get();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the 1-level cut of the desired type, i.e. of the sub-graph
+    ///        including the desired type of arcs.
+    ///
+    /// \param ct The type of the cut to obtain
+    ////////////////////////////////////////////////////////////////////////////
+    cut_size_t max_1level_cut(const cut_type ct) const
+    {
+      return file._file_ptr->max_1level_cut[negate_cut_type(ct)];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the 2-level cut of the desired type, i.e. of the sub-graph
+    ///        including the desired type of arcs.
+    ///
+    /// \param ct The type of the cut to obtain
+    ////////////////////////////////////////////////////////////////////////////
+    cut_size_t max_2level_cut(const cut_type ct) const
+    {
+      return file._file_ptr->max_2level_cut[negate_cut_type(ct)];
+    }
+
+  private:
+    cut_type negate_cut_type(const cut_type ct) const
+    {
+      if (!negate) { return ct; }
+
+      switch (ct) {
+      case cut_type::INTERNAL_FALSE:
+        return cut_type::INTERNAL_TRUE;
+      case cut_type::INTERNAL_TRUE:
+        return cut_type::INTERNAL_FALSE;
+      default:
+        return ct;
+      }
     }
   };
 

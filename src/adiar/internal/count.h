@@ -142,7 +142,7 @@ namespace adiar
     // We then may derive an upper bound on the size of auxiliary data
     // structures and check whether we can run them with a faster internal
     // memory variant.
-    const size_t max_pq_size = dd->max_2level_cut[cut_type::INTERNAL];
+    const size_t max_pq_size = dd.max_2level_cut(cut_type::INTERNAL);
 
     const size_t aux_available_memory = memory::available() - node_stream<>::memory_usage();
 
