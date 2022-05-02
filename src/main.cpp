@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
     std::vector<label_t> permutation_inverse = {2,0,1};
     bdd org_back = bdd_reorder(new_order, permutation_inverse);
 
-    output_dot(org, "org.dot", permutation);
-    output_dot(new_order, "new.dot");
-    output_dot(org_back, "org_back.dot", permutation);
+    output_dot(org, "org.dot");
+    output_dot(new_order, "new.dot", permutation);
+    output_dot(org_back, "org_back.dot");
 
     /*
     // Test for reverse path

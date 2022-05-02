@@ -81,6 +81,44 @@ namespace adiar
     return reverse_path(af, n, ass_of_n, true);
   }
 
+  std::tuple<assignment_file, assignment_file> dual_reverse_path(const arc_file &af, ptr_t n, ptr_t i)
+  {
+    assignment_file ass_file_n;
+    assignment_file ass_file_i;
+
+    {
+      assignment_writer aw_n(ass_file_n);
+      assignment_writer aw_i(ass_file_i);
+
+      adiar::node_arc_stream<> fs(af);
+
+      ptr_t current_n = n;
+      ptr_t current_i = i;
+
+      while (fs.can_pull())
+      {
+        arc_t arc = fs.pull();
+        if (arc.target == current_n)
+        {
+          current_n = unflag(arc.source);
+          aw_n.unsafe_push(assignment{perm[label_of(current_n)], is_high(arc)});
+        }
+        if (arc.target == current_i)
+        {
+          current_i = unflag(arc.source);
+          aw_i.unsafe_push(assignment{perm[label_of(current_i)], is_high(arc)});
+        }
+      }
+      af.make_writeable();
+    }
+
+    simple_file_sorter<assignment_t> sf_sorter;
+    sf_sorter.sort(ass_file_n);
+    sf_sorter.sort(ass_file_i);
+
+    return {ass_file_n, ass_file_i};
+  }
+
   // N/B I/Os
   // TODO retrive from meta data
   label_t min_label(const bdd &dd)
@@ -195,10 +233,11 @@ namespace adiar
       // TODO add operator as argument in the constructor.
       auto pred = [&](const reorder_request &a, const reorder_request &b) -> bool
       {
-        assignment_file path_a = reverse_path(af, a.source);
+        assignment_file path_a, path_b;
+        std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);  
+
         bdd a_restrict = bdd_restrict(dd, path_a);
 
-        assignment_file path_b = reverse_path(af, b.source);
         bdd b_restrict = bdd_restrict(dd, path_b);
 
         node_stream<> a_ns(a_restrict);
@@ -305,7 +344,8 @@ namespace adiar
       }
     }
 
-    auto pred_arc = [](const arc_t &a, const arc_t &b) -> bool {return b.source<a.source;};
+    auto pred_arc = [](const arc_t &a, const arc_t &b) -> bool
+    { return b.source < a.source; };
     simple_file_sorter<arc_t, decltype(pred_arc)> sfs;
     sfs.sort(allarcs, pred_arc);
 
@@ -313,11 +353,12 @@ namespace adiar
     node_writer nw(nodes);
 
     file_stream<arc_t> fs(allarcs);
-    while(fs.can_pull()){
+    while (fs.can_pull())
+    {
       arc_t arc1 = fs.pull();
       arc_t arc2 = fs.pull();
       std::cout << "Arc: " << label_of(arc1.source) << "," << id_of(arc1.source) << "--" << is_flagged(arc1.source) << "--> " << arc1.target << std::endl;
-      std::cout << "Arc: " << label_of(arc2.source) << "," << id_of(arc2.source) <<"--" << is_flagged(arc2.source) << "--> " << arc2.target << std::endl;
+      std::cout << "Arc: " << label_of(arc2.source) << "," << id_of(arc2.source) << "--" << is_flagged(arc2.source) << "--> " << arc2.target << std::endl;
       node n = node_of(arc2, arc1);
       std::cout << n.uid << std::endl;
       nw.push(n);
