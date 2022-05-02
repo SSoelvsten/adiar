@@ -39,8 +39,10 @@ namespace adiar
     }
   };
 
-  struct reorder_level {
-    label_t label_of(const reorder_request &rr) {
+  struct reorder_level
+  {
+    label_t label_of(const reorder_request &rr)
+    {
       return rr.child_level;
     }
   };
@@ -306,23 +308,12 @@ namespace adiar
   {
     init_permutation(permutation);
 
+    // TODO: be sure of this total memory
+    size_t total_available_memory_after_streams = memory::available() - 2 * node_stream<>::memory_usage() - std::max(node_arc_stream<>::memory_usage(), arc_writer::memory_usage());
+
     debug_log("Reorder started", 0);
 
-    // prøv levelized_priority_queue for UNLIMITED POWER
-    // spørg Steffan - how to do dis?
-
-    label_file perm_filter;
-    auto memory_total = 0;
-    levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> llpq({perm_filter}, memory_total, std::numeric_limits<size_t>::max());
-    external_priority_queue<reorder_request, reorder_request_lt> pq(memory::available(), 0); // 0 is pq external doesnt care
-
-    // how to do it
-    // kan skippes, hvis andet er vigtigere
-    {
-      llpq.setup_next_level();
-      llpq.empty_level();
-      llpq.empty();
-    }
+    external_priority_queue<reorder_request, reorder_request_lt> pq(total_available_memory_after_streams / 2, 0); // 0 is pq external doesnt care
 
     arc_file af;
     ptr_t root = create_node_ptr(0, 0);
@@ -330,50 +321,127 @@ namespace adiar
 
     debug_log("Initialization done", 0);
 
-    // The root of output can never be within arc restriction
-    // Therefore r is assigned this variable, to ensure that
-    // the following equality check will always fail in the first iteration!
-    // ie. this is arc way of setting r to null
-    bdd r = bdd_ithvar(perm[0]);
-    bdd r_prime;
-    reorder_request last_rr = {0, 0, 1}; // dummy reorder request
+    // LEVELIZED PRIORTY QUEUE EXAMPLE
+    /*
+    label_file perm_filter;
+    levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> llpq({perm_filter}, memory_total, std::numeric_limits<size_t>::max());
+    {
+      llpq.setup_next_level();
+      llpq.empty_level();
+      llpq.empty();
+    }
+    */
 
-    // i is set to -1, as it is incremented before the first iteration
-    uint64_t i = -1;
+    auto bdd_lt = [&](const reorder_request &a, const reorder_request &b) -> bool
+    {
+      if (a.hash < b.hash)
+        return true;
+
+      if (a.hash > b.hash)
+        return false;
+
+      assignment_file path_a, path_b;
+      std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
+
+      bdd a_restrict = bdd_restrict(F, path_a);
+      bdd b_restrict = bdd_restrict(F, path_b);
+
+      node_stream<> a_ns(a_restrict);
+      node_stream<> b_ns(b_restrict);
+
+      // Is A < B?
+      while (a_ns.can_pull())
+      {
+        if (b_ns.can_pull())
+        {
+          node_t a_node = a_ns.pull();
+          node_t b_node = b_ns.pull();
+
+          if (a_node != b_node)
+          {
+            return a_node < b_node;
+          }
+          if (a_node.low != b_node.low)
+          {
+            return a_node.low < b_node.low;
+          }
+          if (a_node.high != b_node.high)
+          {
+            return a_node.high < b_node.high;
+          }
+          continue;
+        }
+        return false;
+      }
+      return true;
+    };
+
     while (!pq.empty())
     {
       debug_log("PQ loop", 0);
 
-      reorder_request m_rr = pq.top();
+      tpie::merge_sorter<reorder_request, false, decltype(bdd_lt)> msorter(bdd_lt);
+      msorter.set_available_memory(total_available_memory_after_streams / 2);
+      tpie::dummy_progress_indicator dummy_indicator;
+      msorter.begin();
+
+      reorder_request rr = pq.top();
       pq.pop();
-      debug_log("R_Prime restriction found", 0);
-      if (m_rr.hash == last_rr.hash)
+      msorter.push(rr);
+
+      while (!pq.empty() && pq.top().child_level == rr.child_level)
       {
-        assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
-        r_prime = bdd_restrict(F, path);
+        reorder_request next = pq.top();
+        pq.pop();
+        msorter.push(next);
       }
-      if (m_rr.hash == last_rr.hash && bdd_equal(r, r_prime))
+      msorter.end();
+      msorter.calc(dummy_indicator);
+
+      // The root of output can never be within arc restriction
+      // Therefore r is assigned this variable, to ensure that
+      // the following equality check will always fail in the first iteration!
+      // ie. this is arc way of setting r to null
+      bdd r = bdd_ithvar(perm[0]);
+      bdd r_prime;
+      reorder_request last_rr = {0, 0, 1}; // dummy reorder request
+
+      // i is set to -1, as it is incremented before the first iteration
+      uint64_t i = -1U;
+      debug_log("Merger loop", 0);
+      while (msorter.can_pull())
       {
-        debug_log("R and R_Prime equal", 0);
-        ptr_t old_node = create_node_ptr(m_rr.child_level, i);
+        reorder_request m_rr = msorter.pull();
+
+        if (m_rr.hash == last_rr.hash)
         {
-          arc_writer aw(af);
-          aw.unsafe_push(arc_t{m_rr.source, old_node});
+          assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
+          r_prime = bdd_restrict(F, path);
+          debug_log("R_Prime restriction found", 1);
         }
-      }
-      else
-      {
-        i++;
-        debug_log("R and R_Prime NOT equal", 0);
-        ptr_t new_node = create_node_ptr(m_rr.child_level, i);
+        if (m_rr.hash == last_rr.hash && bdd_equal(r, r_prime))
         {
-          arc_writer aw(af);
-          aw.unsafe_push(arc_t{m_rr.source, new_node});
+          debug_log("R and R_Prime equal", 1);
+          ptr_t old_node = create_node_ptr(m_rr.child_level, i);
+          {
+            arc_writer aw(af);
+            aw.unsafe_push(arc_t{m_rr.source, old_node});
+          }
         }
-        push_children(pq, new_node, af, F);
+        else
+        {
+          i++;
+          debug_log("R and R_Prime NOT equal", 1);
+          ptr_t new_node = create_node_ptr(m_rr.child_level, i);
+          {
+            arc_writer aw(af);
+            aw.unsafe_push(arc_t{m_rr.source, new_node});
+          }
+          push_children(pq, new_node, af, F);
+        }
+        r = r_prime;
+        last_rr = m_rr;
       }
-      r = r_prime;
-      last_rr = m_rr;
     }
 
     debug_log("Reorder done", 0);
@@ -390,8 +458,16 @@ namespace adiar
 
     debug_log("Reorder started", 0);
 
-    // prøv levelized_priority_queue for UNLIMITED POWER
-    // spørg Steffan - how to do dis?
+    // LEVELIZED PRIORTY QUEUE EXAMPLE
+    /*
+    label_file perm_filter;
+    levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> llpq({perm_filter}, memory_total, std::numeric_limits<size_t>::max());
+    {
+      llpq.setup_next_level();
+      llpq.empty_level();
+      llpq.empty();
+    }
+    */
     external_priority_queue<reorder_request, reorder_request_lt> pq(total_available_memory_after_streams / 2, 0); // 0 is pq external doesnt care
 
     arc_file af;
