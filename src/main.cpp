@@ -45,28 +45,6 @@ int main(int argc, char *argv[])
     output_dot(org, "org.dot");
     output_dot(new_order, "new.dot", permutation);
     output_dot(org_back, "org_back.dot");
-
-    /*
-    // Test for reverse path
-    // get arc file: root.get<arc_file>().. Vigtigt at det er en __bdd, og vi includer adiar/internal/dot.h
-    //std::cout << min_label(root) << std::endl;
-    auto root_arc_file = root.get<arc_file>();
-    output_dot(root.get<arc_file>(), "root.dot");
-
-    arc_t a;
-    {
-      adiar::node_arc_stream<false> fs(root_arc_file);
-      a = fs.pull();
-    }
-    auto rev_path = reverse_path(root_arc_file, a.target);
-
-    assignment_stream<> ass_stream(rev_path);
-    while (ass_stream.can_pull())
-    {
-      assignment_t ass = ass_stream.pull();
-      std::cout << ass.label << " = " << ass.value << std::endl;
-    }
-    */
     // =====  Your code ends here  =====
   }
 

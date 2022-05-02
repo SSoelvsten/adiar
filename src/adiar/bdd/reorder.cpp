@@ -8,15 +8,37 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/substitution.h>
-#include <adiar/internal/util.h>
 
 #define PRINT 0
+#define HASHING 1
 
 namespace adiar
 {
   std::vector<label_t> perm;
   std::vector<label_t> perm_inv;
 
+#if HASHING
+  typedef uint64_t hash_t;
+
+  struct reorder_request
+  {
+    ptr_t source;
+    label_t child_level;
+    hash_t hash;
+  };
+
+  struct reorder_request_lt
+  {
+    bool operator()(const reorder_request &a, const reorder_request &b) const
+    {
+      if (a.child_level == b.child_level)
+      {
+        return a.hash < b.hash;
+      }
+      return a.child_level < b.child_level;
+    }
+  };
+#else
   struct reorder_request
   {
     ptr_t source;
@@ -25,11 +47,12 @@ namespace adiar
 
   struct reorder_request_lt
   {
-    bool operator()(const reorder_request &arc, const reorder_request &source_assignment) const
+    bool operator()(const reorder_request &a, const reorder_request &b) const
     {
-      return arc.child_level < source_assignment.child_level;
+      return a.child_level < b.child_level;
     }
   };
+#endif
 
   void debug_log(const std::string &msg, int tabs)
   {
@@ -39,6 +62,20 @@ namespace adiar
     std::cout << msg << std::endl;
 #endif
   }
+
+#if HASHING
+  hash_t hash_of(const bdd &dd)
+  {
+    node_stream<> ns(dd);
+    hash_t hash = 0;
+    while (ns.can_pull())
+    {
+      node_t node = ns.pull();
+      hash = hash ^ (node.uid * node.low * node.high);
+    }
+    return hash;
+  }
+#endif
 
   // T/B I/Os
   assignment_file reverse_path(const arc_file &af, ptr_t node_ptr, const assignment_t assignment_of_node, const bool extra_assignment)
@@ -182,7 +219,12 @@ namespace adiar
           src = flag(source_ptr);
         else
           src = unflag(source_ptr);
+
+#if HASHING
+        pq.push(reorder_request{src, label, hash_of(F_ikb)});
+#else
         pq.push(reorder_request{src, label});
+#endif
         debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
       }
       else
@@ -251,7 +293,7 @@ namespace adiar
     }
     return nodes;
   }
-
+#if HASHING
   __bdd bdd_reorder(const bdd &F, const std::vector<label_t> permutation)
   {
     init_permutation(permutation);
@@ -259,6 +301,74 @@ namespace adiar
     debug_log("Reorder started", 0);
 
     // prøv levelized_priority_queue for UNLIMITED POWER
+    // spørg Steffan - how to do dis?
+    external_priority_queue<reorder_request, reorder_request_lt> pq(memory::available() / 2, 0); // 0 is pq external doesnt care
+
+    arc_file af;
+    ptr_t root = create_node_ptr(0, 0);
+    push_children(pq, root, af, F);
+
+    debug_log("Initialization done", 0);
+
+    // The root of output can never be within arc restriction
+    // Therefore r is assigned this variable, to ensure that
+    // the following equality check will always fail in the first iteration!
+    // ie. this is arc way of setting r to null
+    bdd r = bdd_ithvar(perm[0]);
+    bdd r_prime;
+    reorder_request last_rr = {0, 0, 1}; // dummy reorder request
+
+    // i is set to -1, as it is incremented before the first iteration
+    uint64_t i = -1;
+    while (!pq.empty())
+    {
+      debug_log("PQ loop", 0);
+
+      reorder_request m_rr = pq.top();
+      pq.pop();
+      debug_log("R_Prime restriction found", 0);
+      if (m_rr.hash == last_rr.hash)
+      {
+        assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
+        r_prime = bdd_restrict(F, path);
+      }
+      if (m_rr.hash == last_rr.hash && bdd_equal(r, r_prime))
+      {
+        debug_log("R and R_Prime equal", 0);
+        ptr_t old_node = create_node_ptr(m_rr.child_level, i);
+        {
+          arc_writer aw(af);
+          aw.unsafe_push(arc_t{m_rr.source, old_node});
+        }
+      }
+      else
+      {
+        i++;
+        debug_log("R and R_Prime NOT equal", 0);
+        ptr_t new_node = create_node_ptr(m_rr.child_level, i);
+        {
+          arc_writer aw(af);
+          aw.unsafe_push(arc_t{m_rr.source, new_node});
+        }
+        push_children(pq, new_node, af, F);
+      }
+      r = r_prime;
+      last_rr = m_rr;
+    }
+
+    debug_log("Reorder done", 0);
+    node_file nodes = convert_arc_file_to_node_file(af);
+    return __bdd(nodes);
+  }
+#else
+  __bdd bdd_reorder(const bdd &F, const std::vector<label_t> permutation)
+  {
+    init_permutation(permutation);
+
+    debug_log("Reorder started", 0);
+
+    // prøv levelized_priority_queue for UNLIMITED POWER
+    // spørg Steffan - how to do dis?
     external_priority_queue<reorder_request, reorder_request_lt> pq(memory::available() / 2, 0); // 0 is pq external doesnt care
 
     arc_file af;
@@ -270,7 +380,6 @@ namespace adiar
     while (!pq.empty())
     {
       debug_log("PQ loop", 0);
-
       auto bdd_lt = [&](const reorder_request &a, const reorder_request &b) -> bool
       {
         assignment_file path_a, path_b;
@@ -300,7 +409,6 @@ namespace adiar
         }
         return true;
       };
-
       tpie::merge_sorter<reorder_request, false, decltype(bdd_lt)> msorter(bdd_lt);
       msorter.set_available_memory(memory::available() / 2);
       tpie::dummy_progress_indicator dummy_indicator;
@@ -337,7 +445,6 @@ namespace adiar
 
         r_prime = bdd_restrict(F, path);
         debug_log("R_Prime restriction found", 0);
-
         if (bdd_equal(r, r_prime))
         {
           debug_log("R and R_Prime equal", 0);
@@ -365,4 +472,5 @@ namespace adiar
     node_file nodes = convert_arc_file_to_node_file(af);
     return __bdd(nodes);
   }
+#endif
 }
