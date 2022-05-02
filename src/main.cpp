@@ -31,11 +31,11 @@ int main(int argc, char *argv[])
 
   {
     // ===== Your code starts here =====
-    bdd x1 = bdd_ithvar(2);
-    bdd x2 = bdd_ithvar(0);
-    bdd x3 = bdd_ithvar(1);
-    bdd intnode = bdd_and(x1, x2);
-    bdd org = bdd_or(intnode, x3);
+    bdd x2 = bdd_ithvar(2);
+    bdd x0 = bdd_ithvar(0);
+    bdd x1 = bdd_ithvar(1);
+    bdd intnode = bdd_and(x2, x0);
+    bdd org = bdd_or(intnode, x1);
     
     std::vector<label_t> permutation = {1,2,0};
     bdd new_order = bdd_reorder(org, permutation);

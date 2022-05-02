@@ -303,7 +303,7 @@ namespace adiar
 
     // prøv levelized_priority_queue for UNLIMITED POWER
     // spørg Steffan - how to do dis?
-    external_priority_queue<reorder_request, reorder_request_lt> pq(memory::available() / 2, 0); // 0 is pq external doesnt care
+    external_priority_queue<reorder_request, reorder_request_lt> pq(memory::available(), 0); // 0 is pq external doesnt care
 
     arc_file af;
     ptr_t root = create_node_ptr(0, 0);
@@ -366,11 +366,14 @@ namespace adiar
   {
     init_permutation(permutation);
 
+    // TODO: be sure of this total memory
+    size_t total_available_memory_after_streams = memory::available() - 2 * node_stream<>::memory_usage() - std::max(node_arc_stream<>::memory_usage(), arc_writer::memory_usage());
+
     debug_log("Reorder started", 0);
 
     // prøv levelized_priority_queue for UNLIMITED POWER
     // spørg Steffan - how to do dis?
-    external_priority_queue<reorder_request, reorder_request_lt> pq(memory::available() / 2, 0); // 0 is pq external doesnt care
+    external_priority_queue<reorder_request, reorder_request_lt> pq(total_available_memory_after_streams / 2, 0); // 0 is pq external doesnt care
 
     arc_file af;
     ptr_t root = create_node_ptr(0, 0);
@@ -419,7 +422,7 @@ namespace adiar
         return true;
       };
       tpie::merge_sorter<reorder_request, false, decltype(bdd_lt)> msorter(bdd_lt);
-      msorter.set_available_memory(memory::available() / 2);
+      msorter.set_available_memory(total_available_memory_after_streams / 2);
       tpie::dummy_progress_indicator dummy_indicator;
       msorter.begin();
 
