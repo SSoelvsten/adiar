@@ -209,6 +209,49 @@ namespace adiar
     }
   }
 
+  node_file convert_arc_file_to_node_file(const arc_file &af)
+  {
+    simple_file<arc_t> allarcs;
+    {
+      simple_file_writer<arc_t> sfw(allarcs);
+
+      node_arc_stream<true> as(af);
+      while (as.can_pull())
+      {
+        arc_t arc = as.pull();
+        sfw.push(arc);
+      }
+
+      sink_arc_stream<true> ass(af);
+      while (ass.can_pull())
+      {
+        arc_t arc = ass.pull();
+        sfw.push(arc);
+      }
+    }
+
+    auto pred_arc = [](const arc_t &a, const arc_t &b) -> bool
+    { return b.source < a.source; };
+    simple_file_sorter<arc_t, decltype(pred_arc)> sfs;
+    sfs.sort(allarcs, pred_arc);
+
+    node_file nodes;
+    node_writer nw(nodes);
+
+    file_stream<arc_t> fs(allarcs);
+    while (fs.can_pull())
+    {
+      arc_t arc1 = fs.pull();
+      arc_t arc2 = fs.pull();
+      std::cout << "Arc: " << label_of(arc1.source) << "," << id_of(arc1.source) << "--" << is_flagged(arc1.source) << "--> " << arc1.target << std::endl;
+      std::cout << "Arc: " << label_of(arc2.source) << "," << id_of(arc2.source) << "--" << is_flagged(arc2.source) << "--> " << arc2.target << std::endl;
+      node n = node_of(arc2, arc1);
+      std::cout << n.uid << std::endl;
+      nw.push(n);
+    }
+    return nodes;
+  }
+
   __bdd bdd_reorder(const bdd &dd, const std::vector<label_t> permutation)
   {
     initPermutation(permutation);
@@ -234,7 +277,7 @@ namespace adiar
       auto pred = [&](const reorder_request &a, const reorder_request &b) -> bool
       {
         assignment_file path_a, path_b;
-        std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);  
+        std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
 
         bdd a_restrict = bdd_restrict(dd, path_a);
 
@@ -324,47 +367,10 @@ namespace adiar
 
     std::cout << "Finished reordering BDD" << std::endl;
 
-    simple_file<arc_t> allarcs;
-    {
-
-      simple_file_writer<arc_t> sfw(allarcs);
-
-      node_arc_stream<true> as(af);
-      while (as.can_pull())
-      {
-        arc_t arc = as.pull();
-        sfw.push(arc);
-      }
-
-      sink_arc_stream<true> ass(af);
-      while (ass.can_pull())
-      {
-        arc_t arc = ass.pull();
-        sfw.push(arc);
-      }
-    }
-
-    auto pred_arc = [](const arc_t &a, const arc_t &b) -> bool
-    { return b.source < a.source; };
-    simple_file_sorter<arc_t, decltype(pred_arc)> sfs;
-    sfs.sort(allarcs, pred_arc);
-
-    node_file nodes;
-    node_writer nw(nodes);
-
-    file_stream<arc_t> fs(allarcs);
-    while (fs.can_pull())
-    {
-      arc_t arc1 = fs.pull();
-      arc_t arc2 = fs.pull();
-      std::cout << "Arc: " << label_of(arc1.source) << "," << id_of(arc1.source) << "--" << is_flagged(arc1.source) << "--> " << arc1.target << std::endl;
-      std::cout << "Arc: " << label_of(arc2.source) << "," << id_of(arc2.source) << "--" << is_flagged(arc2.source) << "--> " << arc2.target << std::endl;
-      node n = node_of(arc2, arc1);
-      std::cout << n.uid << std::endl;
-      nw.push(n);
-    }
+    node_file nodes = convert_arc_file_to_node_file(af);
 
     std::cout << "Returning" << std::endl;
     return __bdd(nodes);
   }
+
 }
