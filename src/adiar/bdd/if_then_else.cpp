@@ -484,9 +484,9 @@ namespace adiar
                                       const decision_diagram &in_then,
                                       const decision_diagram &in_else)
   {
-    const size_t if_cut = in_if->max_2level_cut[cut_type::INTERNAL];
-    const size_t then_cut = in_then->max_2level_cut[cut_type::ALL];
-    const size_t else_cut = in_else->max_2level_cut[cut_type::ALL];
+    const size_t if_cut = in_if.max_2level_cut(cut_type::INTERNAL);
+    const size_t then_cut = in_then.max_2level_cut(cut_type::ALL);
+    const size_t else_cut = in_else.max_2level_cut(cut_type::ALL);
 
     const bits_approximation if_bits(if_cut);
     const bits_approximation then_bits(then_cut);

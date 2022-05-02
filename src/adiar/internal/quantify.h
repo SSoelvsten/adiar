@@ -295,7 +295,7 @@ namespace adiar
   template<typename quantify_policy>
   cut_size_t __quantify_2level_upper_bound(const typename quantify_policy::reduced_t &in)
   {
-    const cut_size_t max_2level_cut = in->max_2level_cut[cut_type::INTERNAL];
+    const cut_size_t max_2level_cut = in.max_2level_cut(cut_type::INTERNAL);
 
     const bits_approximation input_bits(max_2level_cut);
 

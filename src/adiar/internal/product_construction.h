@@ -413,10 +413,10 @@ namespace adiar
                                        const bool_op &op)
   {
     const cut_type left_ct = prod_policy::left_cut(op);
-    const cut_size_t left_2level_cut = in_1->max_2level_cut[in_1.is_negated() ? negate(left_ct) : left_ct];
+    const cut_size_t left_2level_cut = in_1.max_2level_cut(left_ct);
 
     const cut_type right_ct = prod_policy::right_cut(op);
-    const cut_size_t right_2level_cut = in_2->max_2level_cut[in_2.is_negated() ? negate(right_ct) : right_ct];
+    const cut_size_t right_2level_cut = in_2.max_2level_cut(right_ct);
 
     const bits_approximation left_bits(left_2level_cut);
     const bits_approximation right_bits(right_2level_cut);

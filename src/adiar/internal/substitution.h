@@ -205,7 +205,7 @@ namespace adiar
   template<typename substitute_policy>
   cut_size_t __substitute_2level_upper_bound(const typename substitute_policy::reduced_t &dd)
   {
-    const cut_size_t max_2level_cut = dd->max_2level_cut[cut_type::INTERNAL];
+    const cut_size_t max_2level_cut = dd.max_2level_cut(cut_type::INTERNAL);
 
     return (bits_approximation(max_2level_cut) + 2).may_overflow()
       ? MAX_CUT
