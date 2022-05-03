@@ -407,12 +407,9 @@ namespace adiar
       {
         reorder_request m_rr = msorter.pull();
 
-        if (m_rr.hash == last_rr.hash)
-        {
-          assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
-          r_prime = bdd_restrict(F, path);
-          debug_log("R_Prime restriction found", 1);
-        }
+        assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
+        r_prime = bdd_restrict(F, path);
+        debug_log("R_Prime restriction found", 1);
         if (m_rr.hash == last_rr.hash && bdd_equal(r, r_prime))
         {
           debug_log("R and R_Prime equal", 1);
