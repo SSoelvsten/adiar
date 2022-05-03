@@ -5,9 +5,9 @@
 #include <adiar/adiar.h>
 #include <adiar/internal/dot.h>
 
-#define EXP_BDD 0
+#define EXP_BDD 1
 #define OUR_BDD 0
-#define EXP_BDD_SML 1
+#define EXP_BDD_SML 0
 
 using namespace adiar;
 

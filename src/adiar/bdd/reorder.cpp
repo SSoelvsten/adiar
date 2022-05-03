@@ -216,7 +216,7 @@ namespace adiar
 
         // set hash to 0, for testing non-hashing algo
         // set hash to hash_of(F_ikb), for hashing algo
-        //pq.push(reorder_request{src, label, 0});
+        // pq.push(reorder_request{src, label, 0});
         pq.push(reorder_request{src, label, hash_of(F_ikb)});
 
         debug_log("RR: {" + std::to_string(src) + ", " + debug_label + "}", 1);
@@ -289,12 +289,12 @@ namespace adiar
       }
     };
 
-    while(sas.can_pull() || fs.can_read())
+    while (sas.can_pull() || fs.can_read())
     {
       arc_t high_arc = pull_arc();
       arc_t low_arc = pull_arc();
       node n = node_of(low_arc, high_arc);
-      nw.push(n); 
+      nw.push(n);
     }
     return nodes;
   }
@@ -408,7 +408,7 @@ namespace adiar
       {
         reorder_request m_rr = msorter.pull();
 
-        assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
+        assignment_file path = reverse_path(af, unflag(m_rr.source), assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
         r_prime = bdd_restrict(F, path);
         debug_log("R_Prime restriction found", 1);
         if (m_rr.hash == last_rr.hash && bdd_equal(r, r_prime))
