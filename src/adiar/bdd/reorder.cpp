@@ -58,10 +58,13 @@ namespace adiar
   {
     node_stream<> ns(dd);
     hash_t hash = 0;
+    // 2^64 - 59
+    // Source: https://primes.utm.edu/lists/2small/0bit.html
+    uint64_t modulus = 18446744073709551557U;
     while (ns.can_pull())
     {
       node_t node = ns.pull();
-      hash = hash ^ (5 * (node.uid >> 1) + 3 * (node.low >> 1) + 2 * (node.high >> 1));
+      hash = hash ^ ((5 * (node.uid >> 1) + 3 * (node.low >> 1) + 2 * (node.high >> 1)) % modulus);
     }
     return hash;
   }
@@ -212,8 +215,8 @@ namespace adiar
 
         // set hash to 0, for testing non-hashing algo
         // set hash to hash_of(F_ikb), for hashing algo
-        pq.push(reorder_request{src, label, 0});
-        // pq.push(reorder_request{src, label, hash_of(F_ikb)});
+        //pq.push(reorder_request{src, label, 0});
+        pq.push(reorder_request{src, label, hash_of(F_ikb)});
 
         debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
       }
