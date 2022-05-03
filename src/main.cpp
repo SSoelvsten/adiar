@@ -5,6 +5,9 @@
 #include <adiar/adiar.h>
 #include <adiar/internal/dot.h>
 
+#define EXP_BDD 0
+#define OUR_BDD 1
+
 using namespace adiar;
 
 int main(int argc, char *argv[])
@@ -31,20 +34,37 @@ int main(int argc, char *argv[])
 
   {
     // ===== Your code starts here =====
+#if EXP_BDD
+    bdd x0 = bdd_ithvar(0);
+    bdd x1 = bdd_ithvar(1);
+    bdd x2 = bdd_ithvar(2);
+    bdd x3 = bdd_ithvar(3);
+    bdd x0Ax1 = bdd_and(x0, x1);
+    bdd x2Ax3 = bdd_and(x2, x3);
+    bdd root = bdd_or(x0Ax1, x2Ax3);
+
+    std::vector<label_t> permutation = {0, 3, 1, 2};
+    bdd new_order = bdd_reorder(root, permutation);
+    std::vector<label_t> permutation_inverse = {0, 2, 3, 2};
+    bdd org_back = bdd_reorder(new_order, permutation_inverse);
+#endif
+
+#if OUR_BDD
     bdd x2 = bdd_ithvar(2);
     bdd x0 = bdd_ithvar(0);
     bdd x1 = bdd_ithvar(1);
     bdd intnode = bdd_and(x2, x0);
-    bdd org = bdd_or(intnode, x1);
+    bdd root = bdd_or(intnode, x1);
     
     std::vector<label_t> permutation = {1,2,0};
-    bdd new_order = bdd_reorder(org, permutation);
+    bdd new_order = bdd_reorder(root, permutation);
     std::vector<label_t> permutation_inverse = {2,0,1};
     bdd org_back = bdd_reorder(new_order, permutation_inverse);
+#endif
 
-    output_dot(org, "org.dot");
-    output_dot(new_order, "new.dot", permutation);
-    output_dot(org_back, "org_back.dot");
+    output_dot(root, "orginal_order.dot");
+    output_dot(new_order, "new_order.dot", permutation);
+    output_dot(org_back, "orginal_order_back.dot");
     // =====  Your code ends here  =====
   }
 

@@ -9,7 +9,7 @@
 
 #include <adiar/internal/substitution.h>
 
-#define PRINT 0
+#define PRINT 1
 
 namespace adiar
 {
