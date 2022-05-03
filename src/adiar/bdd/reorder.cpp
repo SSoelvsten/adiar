@@ -244,7 +244,7 @@ namespace adiar
     }
   }
 
-  node_file convert_arc_to_node(const arc_file &af)
+  node_file convert_arc_file_to_node_file(const arc_file &af)
   {
     tpie::temp_file internal_arcs = af._file_ptr->_files[0].get_tpie_file();
 
@@ -256,7 +256,6 @@ namespace adiar
 
     tpie::progress_indicator_null pi;
     tpie::sort(fs, arc_gt, pi);
-    // Internal arc sorted in place
 
     sink_arc_stream<> sas(af);
 
@@ -273,9 +272,10 @@ namespace adiar
       {
         return sas.pull();
       }
-      arc_t a1 = sas.peek();
-      arc_t a2 = fs.peek();
-      if (a1.source > a2.source)
+
+      arc_t sink_arc = sas.peek();
+      arc_t node_arc = fs.peek();
+      if (sink_arc.source > node_arc.source)
       {
         return sas.pull();
       }
@@ -289,50 +289,8 @@ namespace adiar
     {
       arc_t high_arc = pull_arc();
       arc_t low_arc = pull_arc();
-      std::cout << "ARC: " << high_arc.source << " --"<< is_flagged(high_arc.source) <<"--> " << high_arc.target << std::endl;
-      std::cout << "ARC: " << low_arc.source << " --"<< is_flagged(low_arc.source) <<"--> " << low_arc.target << std::endl;
       node n = node_of(low_arc, high_arc);
       nw.push(n); 
-    }
-    return nodes;
-  }
-
-  node_file convert_arc_file_to_node_file(const arc_file &af)
-  {
-    simple_file<arc_t> all_arcs;
-    {
-      simple_file_writer<arc_t> sfw(all_arcs);
-
-      node_arc_stream<true> nas(af);
-      while (nas.can_pull())
-      {
-        arc_t arc = nas.pull();
-        sfw.push(arc);
-      }
-
-      sink_arc_stream<true> sas(af);
-      while (sas.can_pull())
-      {
-        arc_t arc = sas.pull();
-        sfw.push(arc);
-      }
-    }
-
-    auto arc_gt = [](const arc_t &arc, const arc_t &source_assignment) -> bool
-    { return source_assignment.source < arc.source; };
-    simple_file_sorter<arc_t, decltype(arc_gt)> sfs;
-    sfs.sort(all_arcs, arc_gt);
-
-    node_file nodes;
-    node_writer nw(nodes);
-
-    file_stream<arc_t> fs(all_arcs);
-    while (fs.can_pull())
-    {
-      arc_t high_arc = fs.pull();
-      arc_t low_arc = fs.pull();
-      node n = node_of(low_arc, high_arc);
-      nw.push(n);
     }
     return nodes;
   }
@@ -478,7 +436,7 @@ namespace adiar
     }
 
     debug_log("Reorder done", 0);
-    node_file nodes = convert_arc_to_node(af);
+    node_file nodes = convert_arc_file_to_node_file(af);
     return __bdd(nodes);
   }
 }
