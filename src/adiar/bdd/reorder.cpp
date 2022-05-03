@@ -212,8 +212,8 @@ namespace adiar
 
         // set hash to 0, for testing non-hashing algo
         // set hash to hash_of(F_ikb), for hashing algo
-        pq.push(reorder_request{src, label, 0}); 
-        //pq.push(reorder_request{src, label, hash_of(F_ikb)}); 
+        pq.push(reorder_request{src, label, 0});
+        // pq.push(reorder_request{src, label, hash_of(F_ikb)});
 
         debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
       }
@@ -242,6 +242,59 @@ namespace adiar
     {
       perm_inv[permutation[i]] = i;
     }
+  }
+
+  node_file convert_arc_to_node(const arc_file &af)
+  {
+    tpie::temp_file internal_arcs = af._file_ptr->_files[0].get_tpie_file();
+
+    tpie::file_stream<arc_t> fs;
+    fs.open(internal_arcs);
+
+    auto arc_gt = [](const arc_t &a, const arc_t &b) -> bool
+    { return b.source < a.source; };
+
+    tpie::progress_indicator_null pi;
+    tpie::sort(fs, arc_gt, pi);
+    // Internal arc sorted in place
+
+    sink_arc_stream<> sas(af);
+
+    node_file nodes;
+    node_writer nw(nodes);
+
+    auto pull_arc = [&]
+    {
+      if (!sas.can_pull())
+      {
+        return fs.read();
+      }
+      if (!fs.can_read())
+      {
+        return sas.pull();
+      }
+      arc_t a1 = sas.peek();
+      arc_t a2 = fs.peek();
+      if (a1.source > a2.source)
+      {
+        return sas.pull();
+      }
+      else
+      {
+        return fs.read();
+      }
+    };
+
+    while(sas.can_pull() || fs.can_read())
+    {
+      arc_t high_arc = pull_arc();
+      arc_t low_arc = pull_arc();
+      std::cout << "ARC: " << high_arc.source << " --"<< is_flagged(high_arc.source) <<"--> " << high_arc.target << std::endl;
+      std::cout << "ARC: " << low_arc.source << " --"<< is_flagged(low_arc.source) <<"--> " << low_arc.target << std::endl;
+      node n = node_of(low_arc, high_arc);
+      nw.push(n); 
+    }
+    return nodes;
   }
 
   node_file convert_arc_file_to_node_file(const arc_file &af)
@@ -425,7 +478,7 @@ namespace adiar
     }
 
     debug_log("Reorder done", 0);
-    node_file nodes = convert_arc_file_to_node_file(af);
+    node_file nodes = convert_arc_to_node(af);
     return __bdd(nodes);
   }
 }

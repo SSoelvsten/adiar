@@ -96,6 +96,11 @@ namespace adiar
       _is_read_only = false;
     }
 
+    tpie::temp_file get_tpie_file() const 
+    {
+      return _tpie_file;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file is currently in read-only mode, i.e. some
     /// adiar::file_stream has been attached to it and has marked it.
