@@ -5,8 +5,8 @@
 #include <adiar/adiar.h>
 #include <adiar/internal/dot.h>
 
-#define EXP_BDD 1
-#define OUR_BDD 0
+#define EXP_BDD 0
+#define OUR_BDD 1
 
 using namespace adiar;
 
@@ -64,9 +64,9 @@ int main(int argc, char *argv[])
     bdd intnode = bdd_and(x0, x2);
     bdd root = bdd_or(intnode, x1);
 
-    std::vector<label_t> permutation = {0, 2, 1};
+    std::vector<label_t> permutation = {2, 0, 1};
     bdd new_order = bdd_reorder(root, permutation);
-    std::vector<label_t> permutation_inverse = {0, 2, 1};
+    std::vector<label_t> permutation_inverse = {1, 2, 0};
     bdd org_back = bdd_reorder(new_order, permutation_inverse);
 #endif
 

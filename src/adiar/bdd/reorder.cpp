@@ -201,7 +201,8 @@ namespace adiar
       bdd F_ikb = bdd_restrict(F, path);
       debug_log("PUSH-CHILDREN: restriction done", 1);
       label_t label = min_label(F_ikb);
-      debug_log("PUSH-CHILDREN: min-label done - found: " + std::to_string(label), 1);
+      auto debug_label = label != MAX_LABEL + 1 ? std::to_string(perm[label]) : "LEAF";
+      debug_log("PUSH-CHILDREN: min-label done - found: " + debug_label, 1);
 
       bool is_leaf = label == MAX_LABEL + 1;
       if (!is_leaf)
@@ -218,7 +219,7 @@ namespace adiar
         //pq.push(reorder_request{src, label, 0});
         pq.push(reorder_request{src, label, hash_of(F_ikb)});
 
-        debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
+        debug_log("RR: {" + std::to_string(src) + ", " + debug_label + "}", 1);
       }
       else
       {
