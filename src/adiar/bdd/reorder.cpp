@@ -212,7 +212,8 @@ namespace adiar
 
         // set hash to 0, for testing non-hashing algo
         // set hash to hash_of(F_ikb), for hashing algo
-        pq.push(reorder_request{src, label, hash_of(F_ikb)}); 
+        pq.push(reorder_request{src, label, 0}); 
+        //pq.push(reorder_request{src, label, hash_of(F_ikb)}); 
 
         debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
       }
