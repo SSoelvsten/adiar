@@ -304,7 +304,8 @@ namespace adiar
     init_permutation(permutation);
 
     // TODO: be sure of this total memory
-    size_t total_available_memory_after_streams = memory::available() - 2 * node_stream<>::memory_usage() - std::max(node_arc_stream<>::memory_usage(), arc_writer::memory_usage());
+    size_t stream_mem_use = std::max(2*assignment_writer::memory_usage() + node_arc_stream<>::memory_usage(), 2*node_stream<>::memory_usage());
+    size_t total_available_memory_after_streams = memory::available() - stream_mem_use;
 
     debug_log("Reorder started", 0);
 
