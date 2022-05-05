@@ -369,11 +369,9 @@ namespace adiar
 
       if (a.hash > b.hash)
         return false;
-
+        
       stats_reorder.expensive_less_than_comparisons++;
       assignment_file path_a, path_b;
-      //path_a = reverse_path(af, a.source);
-      //path_b = reverse_path(af, b.source);
       std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
 
       bdd a_restrict = bdd_restrict(F, path_a);
@@ -392,7 +390,7 @@ namespace adiar
         node_t b_node = b_ns.pull();
 
         if (a_node.uid != b_node.uid)
-          return a_node < b_node;
+          return a_node < b_node; // this compares uids
         if (a_node.low != b_node.low)
           return a_node.low < b_node.low;
         if (a_node.high != b_node.high)
