@@ -5,9 +5,11 @@
 #include <adiar/adiar.h>
 #include <adiar/internal/dot.h>
 
+// TIME Imports
+#include <chrono>
+
 #define EXP_BDD 1
 #define OUR_BDD 0
-
 
 using namespace adiar;
 
@@ -42,7 +44,7 @@ int main(int argc, char *argv[])
     {
       root = bdd_or(root, bdd_and(bdd_ithvar(i), bdd_ithvar(i + 1)));
     }
-    
+
     std::vector<label_t> permutation;
     for (int i = 0; i < num_of_vars; i += 2)
     {
@@ -70,13 +72,24 @@ int main(int argc, char *argv[])
     std::vector<label_t> permutation = {2, 0, 1};
     std::vector<label_t> permutation_inverse = {1, 2, 0};
 #endif
-    
-    bdd new_order = bdd_reorder(root, permutation);
-    bdd org_back = bdd_reorder(new_order, permutation_inverse);
 
+    std::chrono::steady_clock::time_point begin_new = std::chrono::steady_clock::now();
+    bdd new_order = bdd_reorder(root, permutation);
+    std::chrono::steady_clock::time_point end_new = std::chrono::steady_clock::now();
+    
+    std::cout << "Time elapsed reordering = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_new - begin_new).count() << "[ms]" << std::endl;
+    
+    std::chrono::steady_clock::time_point begin_back = std::chrono::steady_clock::now();
+    bdd org_back = bdd_reorder(new_order, permutation_inverse);
+    std::chrono::steady_clock::time_point end_back = std::chrono::steady_clock::now();
+
+    std::cout << "Time elapsed reordering back = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_back - begin_back).count() << "[ms]" << std::endl;
+    
     output_dot(root, "orginal_order.dot");
     output_dot(new_order, "new_order.dot", permutation);
     output_dot(org_back, "orginal_order_back.dot");
+
+
     // =====  Your code ends here  =====
   }
 

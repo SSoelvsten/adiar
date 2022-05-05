@@ -11,9 +11,13 @@
 
 #define LOG 0
 #define PROGRESS_INDICATOR 1
+#define HASHING 1
 
 namespace adiar
 {
+
+  stats_t::reorder_t stats_reorder;
+
   std::vector<label_t> perm;
   std::vector<label_t> perm_inv;
 
@@ -55,6 +59,24 @@ namespace adiar
 #endif
   }
 
+
+  std::string debug_assignment_string(assignment_file af)
+  {
+#if LOG
+    std::string str = "Assignment (";
+    assignment_stream<> as(af);
+    while (as.can_pull())
+    {
+      assignment_t arc = as.pull();
+      str += std::to_string(arc.label) + " = " + std::to_string(arc.value) + ", ";
+    }
+    str += ")";
+    return str;
+#else
+    return "";
+#endif
+  }
+
   void log_progress(label_t level)
   {
 #if PROGRESS_INDICATOR
@@ -78,20 +100,22 @@ namespace adiar
   }
 
   // T/B I/Os
-  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr, const assignment_t assignment_of_node, const bool extra_assignment)
+  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr)
   {
+    stats_reorder.reverse_path++;
     assignment_file assign_file;
     {
       assignment_writer aw(assign_file);
       node_arc_stream<> nas(af);
       ptr_t current = unflag(node_ptr);
 
-      debug_log("REVERSE PATH: Starting arc: " + std::to_string(node_ptr), 2);
+      debug_log("REVERSE PATH starting @ " + std::to_string(label_of(node_ptr)) + "," + std::to_string(id_of(node_ptr)), 2);
 
       while (nas.can_pull())
       {
         arc_t arc = nas.pull();
-        debug_log("REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
+
+        debug_log("REVERSE PATH: Looking @ source: " + std::to_string(label_of(arc.source)) + "," + std::to_string(id_of(arc.source)) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(label_of(arc.target)) + "," + std::to_string(id_of(arc.target)), 2);
         if (arc.target == current)
         {
           current = unflag(arc.source);
@@ -99,10 +123,7 @@ namespace adiar
         }
       }
       af.make_writeable();
-      if (extra_assignment)
-      {
-        aw.unsafe_push(assignment_of_node);
-      }
+      aw.unsafe_push(assignment{perm[label_of(node_ptr)], is_flagged(node_ptr)});
     }
 
     // Reverse_path no longer only takes T/B I/Os
@@ -112,18 +133,19 @@ namespace adiar
     return assign_file;
   }
 
-  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr)
+  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr, bool node_ptr_assignment)
   {
-    return reverse_path(af, node_ptr, assignment_t{0, 0}, false);
-  }
-
-  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr, const assignment_t assignment_of_node)
-  {
-    return reverse_path(af, node_ptr, assignment_of_node, true);
+    ptr_t src;
+    if (node_ptr_assignment)
+      src = flag(node_ptr);
+    else
+      src = unflag(node_ptr);
+    return reverse_path(af, src);
   }
 
   std::tuple<assignment_file, assignment_file> dual_reverse_path(const arc_file &af, ptr_t node_ptr_n, ptr_t node_ptr_m)
   {
+    stats_reorder.dual_reverse_path++;
     assignment_file assignment_file_n;
     assignment_file assignment_file_m;
 
@@ -153,6 +175,9 @@ namespace adiar
           aw_m.unsafe_push(assignment{perm[label_of(current_m)], is_high(arc)});
         }
       }
+
+      aw_n.unsafe_push(assignment{perm[label_of(node_ptr_n)], is_flagged(node_ptr_n)});
+      aw_m.unsafe_push(assignment{perm[label_of(node_ptr_m)], is_flagged(node_ptr_m)});
       af.make_writeable();
     }
 
@@ -166,6 +191,7 @@ namespace adiar
   // N/B I/Os
   label_t min_label(const bdd &dd)
   {
+    stats_reorder.min_label++;
     if (is_sink(dd))
     {
       return MAX_LABEL + 1;
@@ -190,21 +216,9 @@ namespace adiar
   {
     auto push_children_with_source_assignment = [&](bool source_assignment)
     {
-      assignment_file path = reverse_path(af, source_ptr, assignment_t{perm[label_of(source_ptr)], source_assignment});
+      assignment_file path = reverse_path(af, source_ptr, source_assignment);
       debug_log("PUSH-CHILDREN: reverse path done", 1);
-
-#if LOG
-      {
-        std::cout << "  PUSH-CHILDREN: reverse_path Assignment = (";
-        assignment_stream<> as(path);
-        while (as.can_pull())
-        {
-          assignment_t arc = as.pull();
-          std::cout << arc.label << " = " << arc.value << ", ";
-        }
-        std::cout << ")" << std::endl;
-      }
-#endif
+      debug_log("PUSH-CHILDREN: reverse_path " + debug_assignment_string(path), 1);
 
       bdd F_ikb = bdd_restrict(F, path);
       debug_log("PUSH-CHILDREN: restriction done", 1);
@@ -222,10 +236,13 @@ namespace adiar
         else
           src = unflag(source_ptr);
 
-        // set hash to 0, for testing non-hashing algo
-        // set hash to hash_of(F_ikb), for hashing algo
-        // pq.push(reorder_request{src, label, 0});
+          // set hash to 0, for testing non-hashing algo
+          // set hash to hash_of(F_ikb), for hashing algo
+#if HASHING
         pq.push(reorder_request{src, label, hash_of(F_ikb)});
+#else
+        pq.push(reorder_request{src, label, 0});
+#endif
 
         debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
       }
@@ -316,7 +333,6 @@ namespace adiar
 
     debug_log("Reorder started", 0);
 
-    // external_priority_queue<reorder_request, reorder_request_lt> pq(total_available_memory_after_streams / 2, 0); // 0 is pq external doesnt care
     label_file filter;
     {
       simple_file_writer<label_t> sfw(filter);
@@ -345,26 +361,19 @@ namespace adiar
 
     debug_log("Initialization done", 0);
 
-    // LEVELIZED PRIORTY QUEUE EXAMPLE
-    /*
-    label_file perm_filter;
-    levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> llpq({perm_filter}, memory_total, std::numeric_limits<size_t>::max());
-    {
-      llpq.setup_next_level();
-      llpq.empty_level();
-      llpq.empty();
-    }
-    */
-
     auto bdd_lt = [&](const reorder_request &a, const reorder_request &b) -> bool
     {
+      stats_reorder.less_than_comparisons++;
       if (a.hash < b.hash)
         return true;
 
       if (a.hash > b.hash)
         return false;
 
+      stats_reorder.expensive_less_than_comparisons++;
       assignment_file path_a, path_b;
+      //path_a = reverse_path(af, a.source);
+      //path_b = reverse_path(af, b.source);
       std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
 
       bdd a_restrict = bdd_restrict(F, path_a);
@@ -374,30 +383,22 @@ namespace adiar
       node_stream<> b_ns(b_restrict);
 
       // Is A < B?
+      if (bdd_nodecount(a_restrict) != bdd_nodecount(b_restrict))
+        return bdd_nodecount(a_restrict) < bdd_nodecount(b_restrict);
+
       while (a_ns.can_pull())
       {
-        if (b_ns.can_pull())
-        {
-          node_t a_node = a_ns.pull();
-          node_t b_node = b_ns.pull();
+        node_t a_node = a_ns.pull();
+        node_t b_node = b_ns.pull();
 
-          if (a_node != b_node)
-          {
-            return a_node < b_node;
-          }
-          if (a_node.low != b_node.low)
-          {
-            return a_node.low < b_node.low;
-          }
-          if (a_node.high != b_node.high)
-          {
-            return a_node.high < b_node.high;
-          }
-          continue;
-        }
-        return false;
+        if (a_node.uid != b_node.uid)
+          return a_node < b_node;
+        if (a_node.low != b_node.low)
+          return a_node.low < b_node.low;
+        if (a_node.high != b_node.high)
+          return a_node.high < b_node.high;
       }
-      return true;
+      return false;
     };
 
     while (!llpq.empty())
@@ -440,7 +441,7 @@ namespace adiar
       {
         reorder_request m_rr = msorter.pull();
 
-        assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
+        assignment_file path = reverse_path(af, m_rr.source);
         r_prime = bdd_restrict(F, path);
         debug_log("R_Prime restriction found", 1);
         if (m_rr.hash == last_rr.hash && bdd_equal(r, r_prime))
