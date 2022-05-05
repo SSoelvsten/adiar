@@ -11,7 +11,7 @@
 
 #define LOG 0
 #define PROGRESS_INDICATOR 1
-#define HASHING 0
+#define HASHING 1
 
 namespace adiar
 {
@@ -88,14 +88,17 @@ namespace adiar
       ptr_t current = unflag(node_ptr);
 
       // debug_log("REVERSE PATH: Starting arc: " + std::to_string(node_ptr), 2);
-      
-      //std::cout << "REVERSE PATH starting @ " << label_of(node_ptr) << "," << id_of(node_ptr) << std::endl;
+
+      // if (label_of(node_ptr) == 3 && id_of(node_ptr) == 2)
+      //   std::cout << "REVERSE PATH starting @ " << label_of(node_ptr) << "," << id_of(node_ptr) << std::endl;
 
       while (nas.can_pull())
       {
         arc_t arc = nas.pull();
-        //std::cout << "REVERSE PATH looking @ " << label_of(arc.source) << "," << id_of(arc.source) << " --"  << is_flagged(arc.source) << "--> " << label_of(arc.target) << "," << id_of(arc.target) << std::endl;
-        //debug_log("REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
+
+        // if (label_of(node_ptr) == 3 && id_of(node_ptr) == 2)
+        //   std::cout << "REVERSE PATH looking @ " << label_of(arc.source) << "," << id_of(arc.source) << " --" << is_flagged(arc.source) << "--> " << label_of(arc.target) << "," << id_of(arc.target) << std::endl;
+        //  debug_log("REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
         if (arc.target == current)
         {
           current = unflag(arc.source);
@@ -376,12 +379,13 @@ namespace adiar
 
       bdd a_restrict = bdd_restrict(F, path_a);
       bdd b_restrict = bdd_restrict(F, path_b);
-      
+
+      /*
       if (label_of(a.source) == 3 && id_of(a.source) == 2)
       {
         output_dot(a_restrict, "3_1.dot");
         {
-          std::cout << "###3_1###  BBD_LT: reverse_path assignment a = (";
+          std::cout << "###6_2###  BBD_LT: reverse_path assignment a = (";
           assignment_stream<> as(path_a);
           while (as.can_pull())
           {
@@ -391,37 +395,7 @@ namespace adiar
           std::cout << ")" << std::endl;
         }
       }
-
-      if (label_of(a.source) == 3 && id_of(a.source) == 6)
-      {
-        output_dot(a_restrict, "3_2.dot");
-        {
-          std::cout << "###3_2###  BBD_LT: reverse_path assignment a = (";
-          assignment_stream<> as(path_a);
-          while (as.can_pull())
-          {
-            assignment_t arc = as.pull();
-            std::cout << arc.label << " = " << arc.value << ", ";
-          }
-          std::cout << ")" << std::endl;
-        }
-      }
-
-      if (label_of(a.source) == 4 && id_of(a.source) == 5)
-      {
-        output_dot(a_restrict, "3_3.dot");
-        {
-          std::cout << "###3_3###  BBD_LT: reverse_path assignment a = (";
-          assignment_stream<> as(path_a);
-          while (as.can_pull())
-          {
-            assignment_t arc = as.pull();
-            std::cout << arc.label << " = " << arc.value << ", ";
-          }
-          std::cout << ")" << std::endl;
-        }
-      }
-      
+      */
 
       node_stream<> a_ns(a_restrict);
       node_stream<> b_ns(b_restrict);
@@ -435,7 +409,7 @@ namespace adiar
         node_t a_node = a_ns.pull();
         node_t b_node = b_ns.pull();
 
-        if (a_node != b_node)
+        if (a_node.uid != b_node.uid)
           return a_node < b_node;
         if (a_node.low != b_node.low)
           return a_node.low < b_node.low;
