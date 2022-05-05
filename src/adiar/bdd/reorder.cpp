@@ -11,6 +11,7 @@
 
 #define LOG 0
 #define PROGRESS_INDICATOR 1
+#define HASHING 0
 
 namespace adiar
 {
@@ -222,10 +223,13 @@ namespace adiar
         else
           src = unflag(source_ptr);
 
-        // set hash to 0, for testing non-hashing algo
-        // set hash to hash_of(F_ikb), for hashing algo
-        // pq.push(reorder_request{src, label, 0});
+          // set hash to 0, for testing non-hashing algo
+          // set hash to hash_of(F_ikb), for hashing algo
+#if HASHING
         pq.push(reorder_request{src, label, hash_of(F_ikb)});
+#else
+        pq.push(reorder_request{src, label, 0});
+#endif
 
         debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
       }

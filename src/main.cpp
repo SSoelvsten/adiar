@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     // ===== Your code starts here =====
 #if EXP_BDD
     bdd root = bdd_and(bdd_ithvar(0), bdd_ithvar(1));
-    int num_of_vars = 16;
+    int num_of_vars = 10;
     for (int i = 2; i < num_of_vars; i += 2)
     {
       root = bdd_or(root, bdd_and(bdd_ithvar(i), bdd_ithvar(i + 1)));
