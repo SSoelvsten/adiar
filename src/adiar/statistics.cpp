@@ -9,6 +9,7 @@
 #include <adiar/bdd/if_then_else.h>
 #include <adiar/internal/substitution.h>
 #include <adiar/internal/intercut.h>
+#include <adiar/bdd/reorder.h>
 
 namespace adiar
 {
@@ -29,6 +30,7 @@ namespace adiar
       stats_quantify,
       stats_reduce,
       stats_substitute,
+      stats_reorder,
     };
   }
 
@@ -161,6 +163,15 @@ namespace adiar
       << stats_intercut.lpq_internal << " = " << compute_percent(stats_intercut.lpq_internal, total_intercut) << percent << endl;
     o << indent << indent << indent << "External" << indent
       << stats_intercut.lpq_external << " = " << compute_percent(stats_intercut.lpq_external, total_intercut) << percent << endl;
+
+    o << endl;
+    o << indent << bold_on << "Reordering statistics" << bold_off << endl;
+    o << indent << indent << "Comparisons          " << indent << stats_reorder.less_than_comparisons << endl;
+    o << indent << indent << "Expensive comparisons" << indent 
+      << stats_reorder.expensive_less_than_comparisons << " = " << compute_percent(stats_reorder.expensive_less_than_comparisons, stats_reorder.less_than_comparisons) << percent << endl;
+    o << indent << indent << "Reverse paths        " << indent << stats_reorder.reverse_path << endl;
+    o << indent << indent << "Dual reverse paths   " << indent << stats_reorder.dual_reverse_path << endl;
+    o << indent << indent << "Min label            " << indent << stats_reorder.min_label << endl;
 
     o << endl;
 #endif

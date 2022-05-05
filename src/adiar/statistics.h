@@ -95,6 +95,15 @@ namespace adiar
     struct substitute_t : public memory_t
     { } substitute;
 
+    // Reorder
+    struct reorder_t : public memory_t 
+    {
+      size_t less_than_comparisons = 0;
+      size_t expensive_less_than_comparisons = 0;
+      size_t reverse_path = 0;
+      size_t dual_reverse_path = 0;
+      size_t min_label = 0;
+    } reorder;
   };
 
   //////////////////////////////////////////////////////////////////////////////

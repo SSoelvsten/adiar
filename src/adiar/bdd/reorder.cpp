@@ -15,6 +15,9 @@
 
 namespace adiar
 {
+
+  stats_t::reorder_t stats_reorder;
+
   std::vector<label_t> perm;
   std::vector<label_t> perm_inv;
 
@@ -99,6 +102,7 @@ namespace adiar
   // T/B I/Os
   assignment_file reverse_path(const arc_file &af, ptr_t node_ptr)
   {
+    stats_reorder.reverse_path++;
     assignment_file assign_file;
     {
       assignment_writer aw(assign_file);
@@ -141,6 +145,7 @@ namespace adiar
 
   std::tuple<assignment_file, assignment_file> dual_reverse_path(const arc_file &af, ptr_t node_ptr_n, ptr_t node_ptr_m)
   {
+    stats_reorder.dual_reverse_path++;
     assignment_file assignment_file_n;
     assignment_file assignment_file_m;
 
@@ -186,6 +191,7 @@ namespace adiar
   // N/B I/Os
   label_t min_label(const bdd &dd)
   {
+    stats_reorder.min_label++;
     if (is_sink(dd))
     {
       return MAX_LABEL + 1;
@@ -357,12 +363,14 @@ namespace adiar
 
     auto bdd_lt = [&](const reorder_request &a, const reorder_request &b) -> bool
     {
+      stats_reorder.less_than_comparisons++;
       if (a.hash < b.hash)
         return true;
 
       if (a.hash > b.hash)
         return false;
 
+      stats_reorder.expensive_less_than_comparisons++;
       assignment_file path_a, path_b;
       //path_a = reverse_path(af, a.source);
       //path_b = reverse_path(af, b.source);
