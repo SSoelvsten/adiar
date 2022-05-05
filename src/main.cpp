@@ -5,9 +5,11 @@
 #include <adiar/adiar.h>
 #include <adiar/internal/dot.h>
 
-#define EXP_BDD 1
-#define OUR_BDD 0
+#define EXP_BDD 0
+#define EXP_BDD_HUGE 1
 #define EXP_BDD_SML 0
+#define OUR_BDD 0
+
 
 using namespace adiar;
 
@@ -56,6 +58,34 @@ int main(int argc, char *argv[])
     bdd new_order = bdd_reorder(root, permutation);
     std::vector<label_t> permutation_inverse = {0, 4, 1, 5, 2, 6, 3, 7};
     bdd org_back = bdd_reorder(new_order, permutation_inverse);
+#endif
+
+#if EXP_BDD_HUGE
+    bdd root = bdd_and(bdd_ithvar(0), bdd_ithvar(1));
+    int num_of_vars = 20;
+    for (int i = 2; i < num_of_vars; i += 2)
+    {
+      root = bdd_or(root, bdd_and(bdd_ithvar(i), bdd_ithvar(i + 1)));
+    }
+    
+    std::vector<label_t> permutation;
+    for (int i = 0; i < num_of_vars; i += 2)
+    {
+      permutation.push_back(i);
+    }
+    for (int i = 1; i < num_of_vars; i += 2)
+    {
+      permutation.push_back(i);
+    }
+
+    std::vector<label_t> permutation_inverse = std::vector<label_t>(permutation.size(), 0);
+    for (unsigned long i = 0; i < permutation.size(); i++)
+    {
+      permutation_inverse[permutation[i]] = i;
+    }
+    bdd new_order = bdd_reorder(root, permutation);
+    bdd org_back = bdd_reorder(new_order, permutation_inverse);
+
 #endif
 
 #if EXP_BDD_SML
