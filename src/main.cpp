@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     // ===== Your code starts here =====
 #if EXP_BDD
     bdd root = bdd_and(bdd_ithvar(0), bdd_ithvar(1));
-    int num_of_vars = 10;
+    int num_of_vars = 8;
     for (int i = 2; i < num_of_vars; i += 2)
     {
       root = bdd_or(root, bdd_and(bdd_ithvar(i), bdd_ithvar(i + 1)));
@@ -78,16 +78,27 @@ int main(int argc, char *argv[])
     std::chrono::steady_clock::time_point end_new = std::chrono::steady_clock::now();
     
     std::cout << "Time elapsed reordering = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_new - begin_new).count() << "[ms]" << std::endl;
-
+    /*
     std::chrono::steady_clock::time_point begin_back = std::chrono::steady_clock::now();
     bdd org_back = bdd_reorder(new_order, permutation_inverse);
     std::chrono::steady_clock::time_point end_back = std::chrono::steady_clock::now();
 
     std::cout << "Time elapsed reordering back = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_back - begin_back).count() << "[ms]" << std::endl;
-
+    */
     output_dot(root, "orginal_order.dot");
     output_dot(new_order, "new_order.dot", permutation);
-    output_dot(org_back, "orginal_order_back.dot");
+    //output_dot(org_back, "orginal_order_back.dot");
+    assignment_file ass;
+    {
+      assignment_writer aw(ass);
+      aw.push(assignment_t{0,0});
+      aw.push(assignment_t{2,1});
+      aw.push(assignment_t{4,1});
+      aw.push(assignment_t{6,0});
+    }
+    bdd res = bdd_restrict(root, ass);
+    output_dot(res, "res.dot");
+
     // =====  Your code ends here  =====
   }
 

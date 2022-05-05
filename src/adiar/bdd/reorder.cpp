@@ -79,7 +79,7 @@ namespace adiar
   }
 
   // T/B I/Os
-  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr, const assignment_t assignment_of_node, const bool extra_assignment)
+  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr)
   {
     assignment_file assign_file;
     {
@@ -87,12 +87,15 @@ namespace adiar
       node_arc_stream<> nas(af);
       ptr_t current = unflag(node_ptr);
 
-      debug_log("REVERSE PATH: Starting arc: " + std::to_string(node_ptr), 2);
+      // debug_log("REVERSE PATH: Starting arc: " + std::to_string(node_ptr), 2);
+      
+      //std::cout << "REVERSE PATH starting @ " << label_of(node_ptr) << "," << id_of(node_ptr) << std::endl;
 
       while (nas.can_pull())
       {
         arc_t arc = nas.pull();
-        debug_log("REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
+        //std::cout << "REVERSE PATH looking @ " << label_of(arc.source) << "," << id_of(arc.source) << " --"  << is_flagged(arc.source) << "--> " << label_of(arc.target) << "," << id_of(arc.target) << std::endl;
+        //debug_log("REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
         if (arc.target == current)
         {
           current = unflag(arc.source);
@@ -100,10 +103,7 @@ namespace adiar
         }
       }
       af.make_writeable();
-      if (extra_assignment)
-      {
-        aw.unsafe_push(assignment_of_node);
-      }
+      aw.unsafe_push(assignment{perm[label_of(node_ptr)], is_flagged(node_ptr)});
     }
 
     // Reverse_path no longer only takes T/B I/Os
@@ -113,14 +113,14 @@ namespace adiar
     return assign_file;
   }
 
-  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr)
+  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr, bool node_ptr_assignment)
   {
-    return reverse_path(af, node_ptr, assignment_t{0, 0}, false);
-  }
-
-  assignment_file reverse_path(const arc_file &af, ptr_t node_ptr, const assignment_t assignment_of_node)
-  {
-    return reverse_path(af, node_ptr, assignment_of_node, true);
+    ptr_t src;
+    if (node_ptr_assignment)
+      src = flag(node_ptr);
+    else
+      src = unflag(node_ptr);
+    return reverse_path(af, src);
   }
 
   std::tuple<assignment_file, assignment_file> dual_reverse_path(const arc_file &af, ptr_t node_ptr_n, ptr_t node_ptr_m)
@@ -137,12 +137,12 @@ namespace adiar
       ptr_t current_n = unflag(node_ptr_n);
       ptr_t current_m = unflag(node_ptr_m);
 
-      debug_log("DUAL REVERSE PATH: Starting arc_n: " + std::to_string(node_ptr_n) + " arc_m: " + std::to_string(node_ptr_m), 2);
+      // debug_log("DUAL REVERSE PATH: Starting arc_n: " + std::to_string(node_ptr_n) + " arc_m: " + std::to_string(node_ptr_m), 2);
 
       while (nas.can_pull())
       {
         arc_t arc = nas.pull();
-        debug_log("DUAL REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
+        // debug_log("DUAL REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
         if (arc.target == current_n)
         {
           current_n = unflag(arc.source);
@@ -191,7 +191,7 @@ namespace adiar
   {
     auto push_children_with_source_assignment = [&](bool source_assignment)
     {
-      assignment_file path = reverse_path(af, source_ptr, assignment_t{perm[label_of(source_ptr)], source_assignment});
+      assignment_file path = reverse_path(af, source_ptr, source_assignment);
       debug_log("PUSH-CHILDREN: reverse path done", 1);
 
 #if LOG
@@ -369,39 +369,80 @@ namespace adiar
         return false;
 
       assignment_file path_a, path_b;
-      std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
+      // TODO dual reverse
+      path_a = reverse_path(af, a.source);
+      path_b = reverse_path(af, b.source);
+      // std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
 
       bdd a_restrict = bdd_restrict(F, path_a);
       bdd b_restrict = bdd_restrict(F, path_b);
+      
+      if (label_of(a.source) == 3 && id_of(a.source) == 2)
+      {
+        output_dot(a_restrict, "3_1.dot");
+        {
+          std::cout << "###3_1###  BBD_LT: reverse_path assignment a = (";
+          assignment_stream<> as(path_a);
+          while (as.can_pull())
+          {
+            assignment_t arc = as.pull();
+            std::cout << arc.label << " = " << arc.value << ", ";
+          }
+          std::cout << ")" << std::endl;
+        }
+      }
+
+      if (label_of(a.source) == 3 && id_of(a.source) == 6)
+      {
+        output_dot(a_restrict, "3_2.dot");
+        {
+          std::cout << "###3_2###  BBD_LT: reverse_path assignment a = (";
+          assignment_stream<> as(path_a);
+          while (as.can_pull())
+          {
+            assignment_t arc = as.pull();
+            std::cout << arc.label << " = " << arc.value << ", ";
+          }
+          std::cout << ")" << std::endl;
+        }
+      }
+
+      if (label_of(a.source) == 4 && id_of(a.source) == 5)
+      {
+        output_dot(a_restrict, "3_3.dot");
+        {
+          std::cout << "###3_3###  BBD_LT: reverse_path assignment a = (";
+          assignment_stream<> as(path_a);
+          while (as.can_pull())
+          {
+            assignment_t arc = as.pull();
+            std::cout << arc.label << " = " << arc.value << ", ";
+          }
+          std::cout << ")" << std::endl;
+        }
+      }
+      
 
       node_stream<> a_ns(a_restrict);
       node_stream<> b_ns(b_restrict);
 
       // Is A < B?
+      if (bdd_nodecount(a_restrict) != bdd_nodecount(b_restrict))
+        return bdd_nodecount(a_restrict) < bdd_nodecount(b_restrict);
+
       while (a_ns.can_pull())
       {
-        if (b_ns.can_pull())
-        {
-          node_t a_node = a_ns.pull();
-          node_t b_node = b_ns.pull();
+        node_t a_node = a_ns.pull();
+        node_t b_node = b_ns.pull();
 
-          if (a_node != b_node)
-          {
-            return a_node < b_node;
-          }
-          if (a_node.low != b_node.low)
-          {
-            return a_node.low < b_node.low;
-          }
-          if (a_node.high != b_node.high)
-          {
-            return a_node.high < b_node.high;
-          }
-          continue;
-        }
-        return false;
+        if (a_node != b_node)
+          return a_node < b_node;
+        if (a_node.low != b_node.low)
+          return a_node.low < b_node.low;
+        if (a_node.high != b_node.high)
+          return a_node.high < b_node.high;
       }
-      return true;
+      return false;
     };
 
     while (!llpq.empty())
@@ -444,7 +485,7 @@ namespace adiar
       {
         reorder_request m_rr = msorter.pull();
 
-        assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
+        assignment_file path = reverse_path(af, m_rr.source);
         r_prime = bdd_restrict(F, path);
         debug_log("R_Prime restriction found", 1);
         if (m_rr.hash == last_rr.hash && bdd_equal(r, r_prime))
