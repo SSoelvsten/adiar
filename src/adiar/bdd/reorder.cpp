@@ -9,7 +9,7 @@
 
 #include <adiar/internal/substitution.h>
 
-#define PRINT 0
+#define LOG 0
 
 namespace adiar
 {
@@ -47,7 +47,7 @@ namespace adiar
 
   void debug_log(const std::string &msg, int tabs)
   {
-#if PRINT
+#if LOG
     for (int i = 0; i < tabs; i++)
       std::cout << "  ";
     std::cout << msg << std::endl;
@@ -185,7 +185,7 @@ namespace adiar
       assignment_file path = reverse_path(af, source_ptr, assignment_t{perm[label_of(source_ptr)], source_assignment});
       debug_log("PUSH-CHILDREN: reverse path done", 1);
 
-#if PRINT
+#if LOG
       {
         std::cout << "  PUSH-CHILDREN: reverse_path Assignment = (";
         assignment_stream<> as(path);
@@ -201,8 +201,8 @@ namespace adiar
       bdd F_ikb = bdd_restrict(F, path);
       debug_log("PUSH-CHILDREN: restriction done", 1);
       label_t label = min_label(F_ikb);
-      auto debug_label = label != MAX_LABEL + 1 ? std::to_string(perm[label]) : "LEAF";
-      debug_log("PUSH-CHILDREN: min-label done - found: " + debug_label, 1);
+
+      debug_log("PUSH-CHILDREN: min-label done - found: " + std::to_string(label), 1);
 
       bool is_leaf = label == MAX_LABEL + 1;
       if (!is_leaf)
@@ -219,7 +219,7 @@ namespace adiar
         // pq.push(reorder_request{src, label, 0});
         pq.push(reorder_request{src, label, hash_of(F_ikb)});
 
-        debug_log("RR: {" + std::to_string(src) + ", " + debug_label + "}", 1);
+        debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
       }
       else
       {
@@ -303,8 +303,7 @@ namespace adiar
   {
     init_permutation(permutation);
 
-    // TODO: be sure of this total memory
-    size_t stream_mem_use = std::max(2*assignment_writer::memory_usage() + node_arc_stream<>::memory_usage(), 2*node_stream<>::memory_usage());
+    size_t stream_mem_use = std::max(2 * assignment_writer::memory_usage() + node_arc_stream<>::memory_usage(), 2 * node_stream<>::memory_usage());
     size_t total_available_memory_after_streams = memory::available() - stream_mem_use;
 
     debug_log("Reorder started", 0);
