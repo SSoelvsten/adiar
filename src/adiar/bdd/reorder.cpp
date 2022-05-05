@@ -39,7 +39,7 @@ namespace adiar
 
   struct reorder_level
   {
-    label_t label_of(const reorder_request &rr)
+    static label_t label_of(const reorder_request &rr)
     {
       return rr.child_level;
     }
@@ -178,7 +178,7 @@ namespace adiar
     return result;
   }
 
-  void push_children(external_priority_queue<reorder_request, reorder_request_lt> &pq, const ptr_t source_ptr, const arc_file &af, const bdd &F)
+  void push_children(levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> &pq, const ptr_t source_ptr, const arc_file &af, const bdd &F)
   {
     auto push_children_with_source_assignment = [&](bool source_assignment)
     {
@@ -308,11 +308,32 @@ namespace adiar
 
     debug_log("Reorder started", 0);
 
-    external_priority_queue<reorder_request, reorder_request_lt> pq(total_available_memory_after_streams / 2, 0); // 0 is pq external doesnt care
+    //external_priority_queue<reorder_request, reorder_request_lt> pq(total_available_memory_after_streams / 2, 0); // 0 is pq external doesnt care
+    label_file filter;
+    {
+      simple_file_writer<label_t> sfw(filter);
+
+      level_info_stream<node_t> lis(F);
+      while (lis.can_pull())
+      {
+        level_info_t li = lis.pull();
+        if (li.width > 0)
+        {
+          label_t label = perm[li.label];
+          sfw.push(label);
+        }
+      }
+    }
+    {
+      simple_file_sorter<label_t> sfs;
+      sfs.sort(filter);
+    }
+    
+    levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> llpq({filter}, total_available_memory_after_streams / 2, std::numeric_limits<size_t>::max());
 
     arc_file af;
     ptr_t root = create_node_ptr(0, 0);
-    push_children(pq, root, af, F);
+    push_children(llpq, root, af, F);
 
     debug_log("Initialization done", 0);
 
@@ -371,7 +392,7 @@ namespace adiar
       return true;
     };
 
-    while (!pq.empty())
+    while (!llpq.empty())
     {
       debug_log("PQ loop", 0);
 
@@ -380,14 +401,16 @@ namespace adiar
       tpie::dummy_progress_indicator dummy_indicator;
       msorter.begin();
 
-      reorder_request rr = pq.top();
-      pq.pop();
+      if(llpq.has_next_level()){
+        llpq.setup_next_level();
+      }
+
+      reorder_request rr = llpq.pull();
       msorter.push(rr);
 
-      while (!pq.empty() && pq.top().child_level == rr.child_level)
+      while (!llpq.empty_level())
       {
-        reorder_request next = pq.top();
-        pq.pop();
+        reorder_request next = llpq.pull();
         msorter.push(next);
       }
       msorter.end();
@@ -429,7 +452,7 @@ namespace adiar
             arc_writer aw(af);
             aw.unsafe_push(arc_t{m_rr.source, new_node});
           }
-          push_children(pq, new_node, af, F);
+          push_children(llpq, new_node, af, F);
         }
         r = r_prime;
         last_rr = m_rr;
