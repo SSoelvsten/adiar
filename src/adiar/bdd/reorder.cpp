@@ -56,6 +56,24 @@ namespace adiar
 #endif
   }
 
+
+  std::string debug_assignment_string(assignment_file af)
+  {
+#if LOG
+    std::string str = "Assignment (";
+    assignment_stream<> as(af);
+    while (as.can_pull())
+    {
+      assignment_t arc = as.pull();
+      str += std::to_string(arc.label) + " = " + std::to_string(arc.value) + ", ";
+    }
+    str += ")";
+    return str;
+#else
+    return "";
+#endif
+  }
+
   void log_progress(label_t level)
   {
 #if PROGRESS_INDICATOR
@@ -87,18 +105,13 @@ namespace adiar
       node_arc_stream<> nas(af);
       ptr_t current = unflag(node_ptr);
 
-      // debug_log("REVERSE PATH: Starting arc: " + std::to_string(node_ptr), 2);
-
-      // if (label_of(node_ptr) == 3 && id_of(node_ptr) == 2)
-      //   std::cout << "REVERSE PATH starting @ " << label_of(node_ptr) << "," << id_of(node_ptr) << std::endl;
+      debug_log("REVERSE PATH starting @ " + std::to_string(label_of(node_ptr)) + "," + std::to_string(id_of(node_ptr)), 2);
 
       while (nas.can_pull())
       {
         arc_t arc = nas.pull();
 
-        // if (label_of(node_ptr) == 3 && id_of(node_ptr) == 2)
-        //   std::cout << "REVERSE PATH looking @ " << label_of(arc.source) << "," << id_of(arc.source) << " --" << is_flagged(arc.source) << "--> " << label_of(arc.target) << "," << id_of(arc.target) << std::endl;
-        //  debug_log("REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
+        debug_log("REVERSE PATH: Looking @ source: " + std::to_string(label_of(arc.source)) + "," + std::to_string(id_of(arc.source)) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(label_of(arc.target)) + "," + std::to_string(id_of(arc.target)), 2);
         if (arc.target == current)
         {
           current = unflag(arc.source);
@@ -140,12 +153,12 @@ namespace adiar
       ptr_t current_n = unflag(node_ptr_n);
       ptr_t current_m = unflag(node_ptr_m);
 
-      // debug_log("DUAL REVERSE PATH: Starting arc_n: " + std::to_string(node_ptr_n) + " arc_m: " + std::to_string(node_ptr_m), 2);
+      debug_log("DUAL REVERSE PATH: Starting arc_n: " + std::to_string(node_ptr_n) + " arc_m: " + std::to_string(node_ptr_m), 2);
 
       while (nas.can_pull())
       {
         arc_t arc = nas.pull();
-        // debug_log("DUAL REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
+        debug_log("DUAL REVERSE PATH: Looking @ source: " + std::to_string(arc.source) + " --" + std::to_string(is_flagged(arc.source)) + "--> target: " + std::to_string(arc.target), 2);
         if (arc.target == current_n)
         {
           current_n = unflag(arc.source);
@@ -196,19 +209,7 @@ namespace adiar
     {
       assignment_file path = reverse_path(af, source_ptr, source_assignment);
       debug_log("PUSH-CHILDREN: reverse path done", 1);
-
-#if LOG
-      {
-        std::cout << "  PUSH-CHILDREN: reverse_path Assignment = (";
-        assignment_stream<> as(path);
-        while (as.can_pull())
-        {
-          assignment_t arc = as.pull();
-          std::cout << arc.label << " = " << arc.value << ", ";
-        }
-        std::cout << ")" << std::endl;
-      }
-#endif
+      debug_log("PUSH-CHILDREN: reverse_path " + debug_assignment_string(path), 1);
 
       bdd F_ikb = bdd_restrict(F, path);
       debug_log("PUSH-CHILDREN: restriction done", 1);
@@ -323,7 +324,6 @@ namespace adiar
 
     debug_log("Reorder started", 0);
 
-    // external_priority_queue<reorder_request, reorder_request_lt> pq(total_available_memory_after_streams / 2, 0); // 0 is pq external doesnt care
     label_file filter;
     {
       simple_file_writer<label_t> sfw(filter);
@@ -352,17 +352,6 @@ namespace adiar
 
     debug_log("Initialization done", 0);
 
-    // LEVELIZED PRIORTY QUEUE EXAMPLE
-    /*
-    label_file perm_filter;
-    levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> llpq({perm_filter}, memory_total, std::numeric_limits<size_t>::max());
-    {
-      llpq.setup_next_level();
-      llpq.empty_level();
-      llpq.empty();
-    }
-    */
-
     auto bdd_lt = [&](const reorder_request &a, const reorder_request &b) -> bool
     {
       if (a.hash < b.hash)
@@ -379,23 +368,6 @@ namespace adiar
 
       bdd a_restrict = bdd_restrict(F, path_a);
       bdd b_restrict = bdd_restrict(F, path_b);
-
-      /*
-      if (label_of(a.source) == 3 && id_of(a.source) == 2)
-      {
-        output_dot(a_restrict, "3_1.dot");
-        {
-          std::cout << "###6_2###  BBD_LT: reverse_path assignment a = (";
-          assignment_stream<> as(path_a);
-          while (as.can_pull())
-          {
-            assignment_t arc = as.pull();
-            std::cout << arc.label << " = " << arc.value << ", ";
-          }
-          std::cout << ")" << std::endl;
-        }
-      }
-      */
 
       node_stream<> a_ns(a_restrict);
       node_stream<> b_ns(b_restrict);
