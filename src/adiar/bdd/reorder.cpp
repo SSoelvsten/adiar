@@ -76,7 +76,7 @@ namespace adiar
     {
       assignment_writer aw(assign_file);
       node_arc_stream<> nas(af);
-      ptr_t current = node_ptr;
+      ptr_t current = unflag(node_ptr);
 
       debug_log("REVERSE PATH: Starting arc: " + std::to_string(node_ptr), 2);
 
@@ -125,8 +125,8 @@ namespace adiar
 
       adiar::node_arc_stream<> nas(af);
 
-      ptr_t current_n = node_ptr_n;
-      ptr_t current_m = node_ptr_m;
+      ptr_t current_n = unflag(node_ptr_n);
+      ptr_t current_m = unflag(node_ptr_m);
 
       debug_log("DUAL REVERSE PATH: Starting arc_n: " + std::to_string(node_ptr_n) + " arc_m: " + std::to_string(node_ptr_m), 2);
 
@@ -408,7 +408,7 @@ namespace adiar
       {
         reorder_request m_rr = msorter.pull();
 
-        assignment_file path = reverse_path(af, unflag(m_rr.source), assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
+        assignment_file path = reverse_path(af, m_rr.source, assignment{perm[label_of(m_rr.source)], is_flagged(m_rr.source)});
         r_prime = bdd_restrict(F, path);
         debug_log("R_Prime restriction found", 1);
         if (m_rr.hash == last_rr.hash && bdd_equal(r, r_prime))
