@@ -170,6 +170,9 @@ namespace adiar
           aw_m.unsafe_push(assignment{perm[label_of(current_m)], is_high(arc)});
         }
       }
+
+      aw_n.unsafe_push(assignment{perm[label_of(node_ptr_n)], is_flagged(node_ptr_n)});
+      aw_m.unsafe_push(assignment{perm[label_of(node_ptr_m)], is_flagged(node_ptr_m)});
       af.make_writeable();
     }
 
@@ -361,10 +364,9 @@ namespace adiar
         return false;
 
       assignment_file path_a, path_b;
-      // TODO dual reverse
-      path_a = reverse_path(af, a.source);
-      path_b = reverse_path(af, b.source);
-      // std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
+      //path_a = reverse_path(af, a.source);
+      //path_b = reverse_path(af, b.source);
+      std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
 
       bdd a_restrict = bdd_restrict(F, path_a);
       bdd b_restrict = bdd_restrict(F, path_b);
