@@ -10,6 +10,7 @@
 #include <adiar/internal/substitution.h>
 
 #define LOG 0
+#define PROGRESS_INDICATOR 1
 
 namespace adiar
 {
@@ -51,6 +52,13 @@ namespace adiar
     for (int i = 0; i < tabs; i++)
       std::cout << "  ";
     std::cout << msg << std::endl;
+#endif
+  }
+
+  void log_progress(label_t level)
+  {
+#if PROGRESS_INDICATOR
+    std::cout << "Finished level: " << level << std::endl;
 #endif
   }
 
@@ -308,7 +316,7 @@ namespace adiar
 
     debug_log("Reorder started", 0);
 
-    //external_priority_queue<reorder_request, reorder_request_lt> pq(total_available_memory_after_streams / 2, 0); // 0 is pq external doesnt care
+    // external_priority_queue<reorder_request, reorder_request_lt> pq(total_available_memory_after_streams / 2, 0); // 0 is pq external doesnt care
     label_file filter;
     {
       simple_file_writer<label_t> sfw(filter);
@@ -328,7 +336,7 @@ namespace adiar
       simple_file_sorter<label_t> sfs;
       sfs.sort(filter);
     }
-    
+
     levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> llpq({filter}, total_available_memory_after_streams / 2, std::numeric_limits<size_t>::max());
 
     arc_file af;
@@ -401,7 +409,8 @@ namespace adiar
       tpie::dummy_progress_indicator dummy_indicator;
       msorter.begin();
 
-      if(llpq.has_next_level()){
+      if (llpq.has_next_level())
+      {
         llpq.setup_next_level();
       }
 
@@ -457,6 +466,7 @@ namespace adiar
         r = r_prime;
         last_rr = m_rr;
       }
+      log_progress(last_rr.child_level);
     }
 
     debug_log("Reorder done", 0);
