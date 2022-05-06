@@ -378,12 +378,12 @@ namespace adiar
       bdd a_restrict = bdd_restrict(F, path_a);
       bdd b_restrict = bdd_restrict(F, path_b);
 
-      node_stream<> a_ns(a_restrict);
-      node_stream<> b_ns(b_restrict);
-
       // Is A < B?
       if (bdd_nodecount(a_restrict) != bdd_nodecount(b_restrict))
         return bdd_nodecount(a_restrict) < bdd_nodecount(b_restrict);
+
+      node_stream<> a_ns(a_restrict);
+      node_stream<> b_ns(b_restrict);
 
       while (a_ns.can_pull())
       {
