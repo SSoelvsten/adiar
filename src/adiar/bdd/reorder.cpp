@@ -90,11 +90,12 @@ namespace adiar
     hash_t hash = 0;
     // 2^64 - 59
     // Source: https://primes.utm.edu/lists/2small/0bit.html
-    uint64_t modulus = 18446744073709551557U;
+    uint64_t modulus =   18446744073709551557U;
+    uint64_t term_prime = 3689348814741910277U;
     while (ns.can_pull())
     {
       node_t node = ns.pull();
-      hash = hash ^ ((5 * (node.uid >> 1) + 3 * (node.low >> 1) + 2 * (node.high >> 1)) % modulus);
+      hash = hash ^ ((5 * ((node.uid >> 1)%term_prime) + 3 * ((node.low >> 1)%term_prime) + 2 * ((node.high >> 1)%term_prime)) % modulus);
     }
     return hash;
   }
@@ -470,6 +471,6 @@ namespace adiar
 
     debug_log("Reorder done", 0);
     node_file nodes = convert_arc_file_to_node_file(af);
-    return __bdd(nodes);
+    return nodes;
   }
 }
