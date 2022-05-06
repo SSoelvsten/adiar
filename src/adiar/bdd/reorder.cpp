@@ -59,7 +59,6 @@ namespace adiar
 #endif
   }
 
-
   std::string debug_assignment_string(assignment_file af)
   {
 #if LOG
@@ -90,12 +89,12 @@ namespace adiar
     hash_t hash = 0;
     // 2^64 - 59
     // Source: https://primes.utm.edu/lists/2small/0bit.html
-    uint64_t modulus =   18446744073709551557U;
+    uint64_t modulus = 18446744073709551557U;
     uint64_t term_prime = 3689348814741910277U;
     while (ns.can_pull())
     {
       node_t node = ns.pull();
-      hash = hash ^ ((5 * ((node.uid >> 1)%term_prime) + 3 * ((node.low >> 1)%term_prime) + 2 * ((node.high >> 1)%term_prime)) % modulus);
+      hash = hash ^ ((5 * ((node.uid >> 1) % term_prime) + 3 * ((node.low >> 1) % term_prime) + 2 * ((node.high >> 1) % term_prime)) % modulus);
     }
     return hash;
   }
@@ -215,9 +214,17 @@ namespace adiar
 
   void push_children(levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> &pq, const ptr_t source_ptr, const arc_file &af, const bdd &F)
   {
+    assignment_file t_path, f_path;
+    std::tie(t_path, f_path) = dual_reverse_path(af, flag(source_ptr), unflag(source_ptr));
+
     auto push_children_with_source_assignment = [&](bool source_assignment)
     {
-      assignment_file path = reverse_path(af, source_ptr, source_assignment);
+      
+      assignment_file path;
+      if (source_assignment)
+        path = t_path;
+      else
+        path = f_path;
       debug_log("PUSH-CHILDREN: reverse path done", 1);
       debug_log("PUSH-CHILDREN: reverse_path " + debug_assignment_string(path), 1);
 
@@ -370,7 +377,7 @@ namespace adiar
 
       if (a.hash > b.hash)
         return false;
-        
+
       stats_reorder.expensive_less_than_comparisons++;
       assignment_file path_a, path_b;
       std::tie(path_a, path_b) = dual_reverse_path(af, a.source, b.source);
