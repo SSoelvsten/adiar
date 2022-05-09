@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     // ===== Your code starts here =====
 #if EXP_BDD
     bdd root = bdd_and(bdd_ithvar(0), bdd_ithvar(1));
-    int num_of_vars = 16;
+    int num_of_vars = 20;
     for (int i = 2; i < num_of_vars; i += 2)
     {
       root = bdd_or(root, bdd_and(bdd_ithvar(i), bdd_ithvar(i + 1)));
@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
     output_dot(new_order, "new_order.dot", permutation);
     output_dot(org_back, "orginal_order_back.dot");
 
+    std::cout << "Reordered node count: " << bdd_nodecount(new_order) << " original_back node count: " << bdd_nodecount(org_back) << std::endl;
 
     // =====  Your code ends here  =====
   }
