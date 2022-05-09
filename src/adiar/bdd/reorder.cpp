@@ -50,6 +50,15 @@ namespace adiar
     }
   };
 
+  void reset_reorder_stats()
+  {
+    stats_reorder.expensive_less_than_comparisons = 0;
+    stats_reorder.min_label = 0;
+    stats_reorder.reverse_path = 0;
+    stats_reorder.dual_reverse_path = 0;
+    stats_reorder.less_than_comparisons = 0;
+  }
+
   void debug_log(const std::string &msg, int tabs)
   {
 #if LOG

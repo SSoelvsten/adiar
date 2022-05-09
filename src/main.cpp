@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     // ===== Your code starts here =====
 #if EXP_BDD
     bdd root = bdd_and(bdd_ithvar(0), bdd_ithvar(1));
-    int num_of_vars = 20;
+    int num_of_vars = 16;
     for (int i = 2; i < num_of_vars; i += 2)
     {
       root = bdd_or(root, bdd_and(bdd_ithvar(i), bdd_ithvar(i + 1)));
@@ -76,6 +76,9 @@ int main(int argc, char *argv[])
     std::chrono::steady_clock::time_point begin_new = std::chrono::steady_clock::now();
     bdd new_order = bdd_reorder(root, permutation);
     std::chrono::steady_clock::time_point end_new = std::chrono::steady_clock::now();
+    adiar_printstat();
+    adiar_statsreset();
+    reset_reorder_stats();
     
     std::cout << "Time elapsed reordering = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_new - begin_new).count() << "[ms]" << std::endl;
     
@@ -84,6 +87,7 @@ int main(int argc, char *argv[])
     std::chrono::steady_clock::time_point end_back = std::chrono::steady_clock::now();
 
     std::cout << "Time elapsed reordering back = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_back - begin_back).count() << "[ms]" << std::endl;
+    adiar_printstat();
     
     output_dot(root, "orginal_order.dot");
     output_dot(new_order, "new_order.dot", permutation);
@@ -93,8 +97,6 @@ int main(int argc, char *argv[])
 
     // =====  Your code ends here  =====
   }
-
-  adiar_printstat();
 
   adiar_deinit();
   exit(0);

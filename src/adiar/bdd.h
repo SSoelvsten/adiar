@@ -318,6 +318,7 @@ namespace adiar
   __bdd bdd_forall(bdd &&f, const label_file &vars);
 
   __bdd bdd_reorder(const bdd &dd, const std::vector<label_t> permutation);
+  void reset_reorder_stats();
   
 
   /* ============================ BDD PREDICATES ============================ */
