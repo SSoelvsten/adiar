@@ -270,6 +270,62 @@ namespace adiar
     push_children_with_source_assignment(true);
   }
 
+  void push_children_r_prime(levelized_label_priority_queue<reorder_request, reorder_level, reorder_request_lt> &pq, const ptr_t source_ptr, const arc_file &af, const bdd &F)
+  {
+    auto push_children_with_source_assignment = [&](bool source_assignment)
+    {
+      assignment_file path;
+      {
+        assignment_writer aw(path);
+        aw.unsafe_push(assignment{perm[label_of(source_ptr)], source_assignment});
+      }
+      debug_log("PUSH-CHILDREN-R': reverse path done", 1);
+      debug_log("PUSH-CHILDREN-R': reverse_path " + debug_assignment_string(path), 1);
+
+      bdd F_ikb = bdd_restrict(F, path);
+      debug_log("PUSH-CHILDREN-R': restriction done", 1);
+      label_t label = min_label(F_ikb);
+
+      debug_log("PUSH-CHILDREN-R': min-label done - found: " + std::to_string(label), 1);
+
+      bool is_leaf = label == MAX_LABEL + 1;
+      if (!is_leaf)
+      {
+        debug_log("PUSH-CHILDREN-R: pushing non-leaf", 1);
+        ptr_t src;
+        if (source_assignment)
+          src = flag(source_ptr);
+        else
+          src = unflag(source_ptr);
+
+          // set hash to 0, for testing non-hashing algo
+          // set hash to hash_of(F_ikb), for hashing algo
+#if HASHING
+        pq.push(reorder_request{src, label, hash_of(F_ikb)});
+#else
+        pq.push(reorder_request{src, label, 0});
+#endif
+
+        debug_log("RR: {" + std::to_string(src) + ", " + std::to_string(label) + "}", 1);
+      }
+      else
+      {
+        ptr_t src;
+        if (source_assignment)
+          src = flag(source_ptr);
+        else
+          src = unflag(source_ptr);
+        debug_log("PUSH-CHILDREN-R: writing arc to leaf", 1);
+        arc_writer aw(af);
+        aw.unsafe_push(arc_t{src, create_sink_ptr(value_of(F_ikb))});
+      }
+    };
+
+    push_children_with_source_assignment(false);
+    push_children_with_source_assignment(true);
+  }
+
+
   void init_permutation(const std::vector<label_t> permutation)
   {
     perm = permutation;
@@ -463,7 +519,7 @@ namespace adiar
             arc_writer aw(af);
             aw.unsafe_push(arc_t{m_rr.source, new_node});
           }
-          push_children(llpq, new_node, af, F);
+          push_children_r_prime(llpq, new_node, af, r_prime);
           r = r_prime;
           last_rr = m_rr;
         }
