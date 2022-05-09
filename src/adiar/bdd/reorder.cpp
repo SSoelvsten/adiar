@@ -219,7 +219,6 @@ namespace adiar
 
     auto push_children_with_source_assignment = [&](bool source_assignment)
     {
-      
       assignment_file path;
       if (source_assignment)
         path = t_path;
@@ -432,11 +431,7 @@ namespace adiar
       msorter.end();
       msorter.calc(dummy_indicator);
 
-      // The root of output can never be within arc restriction
-      // Therefore r is assigned this variable, to ensure that
-      // the following equality check will always fail in the first iteration!
-      // ie. this is arc way of setting r to null
-      bdd r = bdd_ithvar(perm[0]);
+      bdd r;
       bdd r_prime;
       reorder_request last_rr = {0, 0, 1}; // dummy reorder request
 
@@ -469,9 +464,9 @@ namespace adiar
             aw.unsafe_push(arc_t{m_rr.source, new_node});
           }
           push_children(llpq, new_node, af, F);
+          r = r_prime;
+          last_rr = m_rr;
         }
-        r = r_prime;
-        last_rr = m_rr;
       }
       log_progress(last_rr.child_level);
     }
