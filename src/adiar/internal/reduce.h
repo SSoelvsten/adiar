@@ -138,7 +138,9 @@ namespace adiar
       // If adding attributed edges, i.e. complement edges:
       //     Use the 'flag' bit on children to mark attributed edges. Currently,
       //     we use this flag to mark whether Reduction Rule 1 was applied to
-      //     some node across some arc.
+      //     some node across some arc; move that flag into a new separate field
+      //     of the priority queues request.
+
       const ptr_t a_high = unflag(a.high);
       const ptr_t a_low = unflag(a.low);
 
@@ -185,17 +187,40 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Update a cut size with some number of arcs.
+  /// \brief Sets a cut to be based off a given number of arcs.
   //////////////////////////////////////////////////////////////////////////////
-  inline void __reduce_cut_add(size_t (&cut)[CUT_TYPES],
+  inline void __reduce_cut_set(cuts_t &cut,
                                const size_t internal_arcs,
                                const size_t false_arcs,
                                const size_t true_arcs)
   {
-    cut[cut_type::INTERNAL]       += internal_arcs;
-    cut[cut_type::INTERNAL_FALSE] += internal_arcs + false_arcs;
-    cut[cut_type::INTERNAL_TRUE]  += internal_arcs + true_arcs;
-    cut[cut_type::ALL]            += internal_arcs + false_arcs + true_arcs;
+    cut[cut_type::INTERNAL]       = internal_arcs;
+    cut[cut_type::INTERNAL_FALSE] = internal_arcs + false_arcs;
+    cut[cut_type::INTERNAL_TRUE]  = internal_arcs + true_arcs;
+    cut[cut_type::ALL]            = internal_arcs + false_arcs + true_arcs;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Update a cut size with the arcs from another cut
+  //////////////////////////////////////////////////////////////////////////////
+  inline void __reduce_cut_add(cuts_t &cut, const cuts_t &other_cut)
+  {
+    cut[cut_type::INTERNAL]       += other_cut[cut_type::INTERNAL];
+    cut[cut_type::INTERNAL_FALSE] += other_cut[cut_type::INTERNAL_FALSE];
+    cut[cut_type::INTERNAL_TRUE]  += other_cut[cut_type::INTERNAL_TRUE];
+    cut[cut_type::ALL]            += other_cut[cut_type::ALL];
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Update a cut size with the arcs from another cut or at least the
+  ///        given minimum value.
+  //////////////////////////////////////////////////////////////////////////////
+  inline void __reduce_cut_add(cuts_t &cut, const cuts_t &other_cut, const size_t min_val)
+  {
+    cut[cut_type::INTERNAL]       += std::max(other_cut[cut_type::INTERNAL], min_val);
+    cut[cut_type::INTERNAL_FALSE] += std::max(other_cut[cut_type::INTERNAL_FALSE], min_val);
+    cut[cut_type::INTERNAL_TRUE]  += std::max(other_cut[cut_type::INTERNAL_TRUE], min_val);
+    cut[cut_type::ALL]            += std::max(other_cut[cut_type::ALL], min_val);
   }
 
   inline void __reduce_cut_add(size_t (&cut)[4], const ptr_t target)
@@ -218,7 +243,7 @@ namespace adiar
                       const label_t label,
                       pq_t &reduce_pq,
                       node_writer &out_writer,
-                      cuts_t &global_1level_cut,
+                      cuts_t &global_cut,
                       const size_t sorters_memory,
                       const size_t level_width)
   {
@@ -240,12 +265,6 @@ namespace adiar
 
       node_with_indegree n(e_low, e_high);
 
-      // Accumulate the number of in-going arcs to 'n'
-      while (node_arcs_1.can_pull() && n.uid <= node_arcs_1.peek().target) {
-        adiar_debug(n.uid == node_arcs_1.pull().target, "there should not be any dead nodes");
-        n.in_degree++;
-      }
-
       // Apply Reduction rule 1
       ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
       if (reduction_rule_ret != n.uid) {
@@ -258,9 +277,14 @@ namespace adiar
         red1_mapping.write({ n.uid, reduction_rule_ret });
       } else {
         // Accumulate the number of in-going arcs to 'n' for later 2-level cut
+        adiar_debug(n.in_degree == 0, "in-degree should be 0 before counting");
+
         while (node_arcs_1.can_pull() && n.uid <= node_arcs_1.peek().target) {
           if (n.uid == node_arcs_1.pull().target) { n.in_degree++; }
         }
+
+        adiar_debug(!node_arcs_1.can_pull() || n.in_degree > 0,
+                    "at least one in-going arc should be present or it is the root.");
 
         child_grouping.push(n);
       }
@@ -269,42 +293,69 @@ namespace adiar
     // Count number of arcs that cross this level
     cuts_t local_1level_cut = { 0u, 0u, 0u, 0u };
 
-    __reduce_cut_add(local_1level_cut,
+    __reduce_cut_set(local_1level_cut,
                      reduce_pq.size_without_terminals(),
                      reduce_pq.terminals(false) + terminal_arcs.unread(false),
                      reduce_pq.terminals(true) + terminal_arcs.unread(true));
+
+    // Initialise 2-level cut where we copy over the number of arcs crossing
+    // this level (from 'one_level_cut').
+    cuts_t local_2level_cut = { 0u, 0u, 0u, 0u };
+    for (size_t ct = 0u; ct < CUT_TYPES; ct++) {
+      local_2level_cut[ct] = local_1level_cut[ct];
+    }
 
     // Sort and apply Reduction rule 2
     child_grouping.sort();
 
     id_t out_id = MAX_ID;
-    node_t out_node = { NIL, NIL, NIL };
+    node_with_indegree out_node(node_t { NIL, NIL, NIL });
+    cuts_t out_node_local_1level_cut = { 0u, 0u, 0u, 0u };
 
     while (child_grouping.can_pull()) {
-      const node_t next_node = child_grouping.pull();
+      node_with_indegree next_node = child_grouping.pull();
 
       if (out_node.low != unflag(next_node.low) || out_node.high != unflag(next_node.high)) {
-        out_node = create_node(label, out_id, unflag(next_node.low), unflag(next_node.high));
+        // Update cuts based on output node stored inside of 'out_node' (if any)
+        if (!is_nil(out_node.uid)) {
+          __reduce_cut_add(local_1level_cut, out_node_local_1level_cut);
+          __reduce_cut_add(local_2level_cut, out_node_local_1level_cut, out_node.in_degree);
+        }
+
+        // Output next node
+        adiar_debug(out_id > 0, "Has run out of ids");
+
+        out_node = create_node(label, out_id--, unflag(next_node.low), unflag(next_node.high));
+        out_node.in_degree = next_node.in_degree;
+
         out_writer.unsafe_push(out_node);
 
-        adiar_debug(out_id > 0, "Has run out of ids");
-        out_id--;
+        // Store 1-level cut below this node for later
+        for (size_t ct = 0u; ct < CUT_TYPES; ct++) {
+          out_node_local_1level_cut[ct] = 0u;
+        }
 
-        __reduce_cut_add(is_flagged(next_node.low) ? global_1level_cut : local_1level_cut,
+        __reduce_cut_add(is_flagged(next_node.low) ? global_cut : out_node_local_1level_cut,
                          out_node.low);
-        __reduce_cut_add(is_flagged(next_node.high) ? global_1level_cut : local_1level_cut,
+        __reduce_cut_add(is_flagged(next_node.high) ? global_cut : out_node_local_1level_cut,
                          out_node.high);
       } else {
 #ifdef ADIAR_STATS
         stats_reduce.removed_by_rule_2++;
 #endif
+        out_node.in_degree += next_node.in_degree;
       }
 
       red2_mapping.push({ next_node.uid, out_node.uid });
     }
 
     if (!is_nil(out_node.uid)) {
+      // Output level information on non-empty level
       out_writer.unsafe_push(create_level_info(label, MAX_ID - out_id));
+
+      // Update cuts from last node that was output above
+      __reduce_cut_add(local_1level_cut, out_node_local_1level_cut);
+      __reduce_cut_add(local_2level_cut, out_node_local_1level_cut, out_node.in_degree);
     }
 
     // Sort mappings for Reduction rule 2 back in order of node_arcs_2
@@ -335,16 +386,15 @@ namespace adiar
                       "Mapping forwarded in sync with node_arcs_2");
 
       // Find all arcs that have sources that match the current mapping's old_uid
-      size_t indegree = 0u;
       while (node_arcs_2.can_pull() && current_map.old_uid == node_arcs_2.peek().target) {
         // The is_high flag is included in arc_t.source pulled from node_arcs_2.
-        ptr_t s = node_arcs_2.pull().source;
+        const ptr_t s = node_arcs_2.pull().source;
 
-        // If Reduction Rule 1 was used, then tell the parents to add it to the global cut.
-        ptr_t t = is_red1_current ? flag(current_map.new_uid) : current_map.new_uid;
+        // If adding attributed edges, i.e. complement edges:
+        //   Move the flagging to the new variable pushed inside of the request.
+        const ptr_t t = is_red1_current ? flag(current_map.new_uid) : current_map.new_uid;
 
         reduce_pq.push({ s,t });
-        indegree++;
       }
 
       // Update the mapping that was used
@@ -364,8 +414,9 @@ namespace adiar
     // Move on to the next level
     red1_mapping.close();
 
-    // Update with 1-level cut below current level
+    // Update with 1-level cut below current level and 2-level cut around current level
     out_writer.inc_1level_cut(local_1level_cut);
+    out_writer.inc_2level_cut(local_2level_cut);
 
     if (!reduce_pq.empty()) {
       adiar_debug(!terminal_arcs.can_pull() || label_of(terminal_arcs.peek().source) < label,
@@ -426,6 +477,11 @@ namespace adiar
     out_file->max_1level_cut[cut_type::INTERNAL_TRUE]  = 0u;
     out_file->max_1level_cut[cut_type::ALL]            = 0u;
 
+    out_file->max_2level_cut[cut_type::INTERNAL]       = 0u;
+    out_file->max_2level_cut[cut_type::INTERNAL_FALSE] = 0u;
+    out_file->max_2level_cut[cut_type::INTERNAL_TRUE]  = 0u;
+    out_file->max_2level_cut[cut_type::ALL]            = 0u;
+
     node_writer out_writer(out_file);
 
     // Trivial single-node case
@@ -444,7 +500,8 @@ namespace adiar
         out_writer.unsafe_push(out_node);
 
         out_writer.set_number_of_terminals(!terminal_val, terminal_val);
-        __reduce_cut_add(out_file->max_1level_cut, 0u, !terminal_val, terminal_val);
+        __reduce_cut_set(out_file->max_1level_cut, 0u, !terminal_val, terminal_val);
+        __reduce_cut_set(out_file->max_2level_cut, 0u, !terminal_val, terminal_val);
       } else {
         const label_t label = label_of(e_low.source);
 
@@ -474,7 +531,7 @@ namespace adiar
     // Cut for arcs that suddenly cross much further down than they did
     // initially in the input, e.g. when a node was removed due to Reduction
     // Rule 1.
-    cuts_t global_1level_cut = { 0u, 0u, 0u, 0u };
+    cuts_t global_cut = { 0u, 0u, 0u, 0u };
 
     // Initialize (levelized) priority queue
     pq_t reduce_pq({in_file}, lpq_memory, in_file->max_1level_cut);
@@ -493,16 +550,17 @@ namespace adiar
 
       if(level_width <= internal_sorter_can_fit) {
         __reduce_level<dd_policy, pq_t, internal_sorter>
-          (terminal_arcs, node_arcs_1, node_arcs_2, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
+          (terminal_arcs, node_arcs_1, node_arcs_2, label, reduce_pq, out_writer, global_cut, sorters_memory, level_width);
       } else {
         __reduce_level<dd_policy, pq_t, external_sorter>
-          (terminal_arcs, node_arcs_1, node_arcs_2, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
+          (terminal_arcs, node_arcs_1, node_arcs_2, label, reduce_pq, out_writer, global_cut, sorters_memory, level_width);
       }
     }
 
-    // Add global_1level_cut to the maximum 1-level cut already present in 'out_file'.
+    // Add global_cut to the (local) maximum i-level cuts already present in 'out_file'.
     for (size_t ct = 0u; ct < CUT_TYPES; ct++) {
-      out_file->max_1level_cut[ct] += global_1level_cut[ct];
+      out_file->max_1level_cut[ct] += global_cut[ct];
+      out_file->max_2level_cut[ct] += global_cut[ct];
     }
 
     return out_file;
