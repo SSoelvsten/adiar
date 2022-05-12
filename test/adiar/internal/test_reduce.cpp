@@ -257,8 +257,8 @@ go_bandit([]() {
                    3 4 T              4  T     ---- x2
                    |X|               / \
                    5 6               5  6      ---- x3
-                  / \ \\            / \/ \
-                  F T T F           F  T F
+                  /| |\             / \/ \
+                 F T T F            F  T F
         */
 
         ptr_t n1 = create_node_ptr(0,0);
