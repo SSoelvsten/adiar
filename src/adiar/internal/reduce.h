@@ -46,8 +46,8 @@ namespace adiar
   template<size_t LOOK_AHEAD,
            template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
-  class reduce_priority_queue : public levelized_arc_priority_queue<arc_t, reduce_queue_label,
-                                                                    reduce_queue_lt, LOOK_AHEAD,
+  class reduce_priority_queue : public levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt,
+                                                                    LOOK_AHEAD,
                                                                     sorter_template, priority_queue_template>
   {
   private:
@@ -187,7 +187,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Update a cut size with some number of arcs.
   //////////////////////////////////////////////////////////////////////////////
-  inline void __reduce_cut_add(size_t (&cut)[4],
+  inline void __reduce_cut_add(size_t (&cut)[CUT_TYPES],
                                const size_t internal_arcs,
                                const size_t false_arcs,
                                const size_t true_arcs)
@@ -206,6 +206,11 @@ namespace adiar
     cut[cut_type::ALL]            += 1u;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Reduce a single level.
+  ///
+  /// \sa __reduce
+  //////////////////////////////////////////////////////////////////////////////
   template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
   void __reduce_level(terminal_arc_stream<> &terminal_arcs,
                       node_arc_stream<> &node_arcs_1,
@@ -252,6 +257,11 @@ namespace adiar
 #endif
         red1_mapping.write({ n.uid, reduction_rule_ret });
       } else {
+        // Accumulate the number of in-going arcs to 'n' for later 2-level cut
+        while (node_arcs_1.can_pull() && n.uid <= node_arcs_1.peek().target) {
+          if (n.uid == node_arcs_1.pull().target) { n.in_degree++; }
+        }
+
         child_grouping.push(n);
       }
     }
@@ -389,6 +399,10 @@ namespace adiar
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Reduce a given decision diagram with a semi-transposed arc
+  ///        representation (in an <tt>arc_file</tt>).
+  //////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy, typename pq_t>
   typename dd_policy::reduced_t __reduce(const arc_file &in_file,
                                          const size_t lpq_memory, const size_t sorters_memory)
@@ -495,12 +509,12 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Reduce a given edge-based decision diagram.
+  /// \brief Reduce a given decision diagram.
   ///
-  /// \param dd_policy Which includes the types and the reduction rule
-  /// \param arc_file The unreduced bdd in its arc-based representation
+  /// \param dd_policy Which includes the types and the reduction rule.
+  /// \param input     A (possibly) unreduced decision diagram.
   ///
-  /// \return The reduced decision diagram in a node-based representation
+  /// \return The equivalent reduced decision diagram (as a node_file).
   //////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy>
   typename dd_policy::reduced_t reduce(const typename dd_policy::unreduced_t &input)
