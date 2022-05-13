@@ -27,7 +27,7 @@ namespace adiar
     size_t curr_level_processed;
 
   public:
-    static cut_size_t pq1_upper_bound(const node_file &in_1, const node_file &in_2)
+    static size_t pq1_upper_bound(const node_file &in_1, const node_file &in_2)
     {
       return std::max(in_1->max_2level_cut[cut_type::INTERNAL],
                       in_2->max_2level_cut[cut_type::INTERNAL]);

@@ -60,6 +60,8 @@ message(STATUS "")
 option(COMPILE_TEST OFF)
 add_subdirectory (external/tpie tpie)
 
+add_subdirectory (external/cnl cnl)
+
 # ============================================================================ #
 # Core project
 # ============================================================================ #
