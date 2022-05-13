@@ -52,6 +52,10 @@ The implementation is dependant on the the following external libraries
 
   Unit testing framework that is easy-to-read and write.
 
+- [**CNL**](https://github.com/johnmcfarlane/cnl):
+
+  Templated and efficient implementation of fixed-precision numbers.
+
 These are directly imported as submodules. If you have not cloned the repository
 recursively, then run the following command
 
