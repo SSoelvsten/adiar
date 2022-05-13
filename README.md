@@ -1,4 +1,4 @@
-# Adiar
+# Variable reordering in Adiar
 [![MIT License](https://img.shields.io/github/license/ssoelvsten/adiar)](LICENSE.md)
 &nbsp;
 [![Release](https://img.shields.io/github/v/release/ssoelvsten/adiar)](https://github.com/SSoelvsten/adiar/releases)
@@ -10,6 +10,8 @@
 [![test](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/unit%20test/main?label=test&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/unit_test.yml)
 &nbsp;
 [![examples](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/examples/main?label=examples&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/examples.yml)
+
+This project is a fork of [SSoelvsten/adiar](https://github.com/SSoelvsten/adiar). In this project I/O effecient variable reordering has been implemented as a part of the bachelor thesis of Anders Benjamin Clausen and Kent Nielsen.
 
 Based on the work of Lars Arge [[Arge96](#references)], Adiar<sup>[1](#footnotes)</sup>
 is a BDD package [[Bryant86](#references)] that makes use of time-forward processing
