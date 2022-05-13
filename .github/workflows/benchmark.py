@@ -79,6 +79,7 @@ def git_fetch():
 
 def git_checkout(remote, branch):
     subprocess.run(['git', 'checkout', f'{remote_name(remote)}/{branch}'])
+    subprocess.run(['git', 'checkout', 'update', '--init', '--recursive'])
     subprocess.run(['git', 'status'])
 
 # ------------------------------------------------------------------------------
