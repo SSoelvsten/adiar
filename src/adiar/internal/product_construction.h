@@ -15,6 +15,7 @@
 #include <adiar/internal/cut.h>
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
+#include <adiar/internal/safe_number.h>
 #include <adiar/internal/tuple.h>
 
 namespace adiar
@@ -408,22 +409,17 @@ namespace adiar
   }
 
   template<typename prod_policy>
-  cut_size_t __prod_2level_upper_bound(const typename prod_policy::reduced_t &in_1,
-                                       const typename prod_policy::reduced_t &in_2,
-                                       const bool_op &op)
+  size_t __prod_2level_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                   const typename prod_policy::reduced_t &in_2,
+                                   const bool_op &op)
   {
     const cut_type left_ct = prod_policy::left_cut(op);
-    const cut_size_t left_2level_cut = in_1.max_2level_cut(left_ct);
+    const safe_size_t left_2level_cut = in_1.max_2level_cut(left_ct);
 
     const cut_type right_ct = prod_policy::right_cut(op);
-    const cut_size_t right_2level_cut = in_2.max_2level_cut(right_ct);
+    const safe_size_t right_2level_cut = in_2.max_2level_cut(right_ct);
 
-    const bits_approximation left_bits(left_2level_cut);
-    const bits_approximation right_bits(right_2level_cut);
-
-    return (left_bits * right_bits + 2).may_overflow()
-      ? MAX_CUT
-      : left_2level_cut * right_2level_cut + 2;
+    return unpack(left_2level_cut * right_2level_cut + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////

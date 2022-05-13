@@ -5,6 +5,7 @@
 #include <adiar/file.h>
 
 #include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/safe_number.h>
 #include <adiar/internal/util.h>
 
 namespace adiar {
@@ -109,21 +110,30 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     cut_size_t add_false_cofactor(const cut_type ct, const cuts_t &ilevel_cuts) const
     {
-      // If the requested cut does not include false arcs, then we do not need
-      // to account for the missing one.
-      if (includes_sink(ct, false)) {
-        return ilevel_cuts[ct];
-      }
+      const safe_size_t cut_size = ilevel_cuts[ct];
 
       // Bit-mask (allowing implicit conversion to size_t with bit-operators) to
       // get the cut-type WITHOUT the false arcs.
-      const size_t bit_mask = cut_type::INTERNAL_TRUE;
-      if (ilevel_cuts[ct] == ilevel_cuts[static_cast<cut_type>(ct & bit_mask)]) {
-        bits_approximation cut_bits(ilevel_cuts[ct]);
+      constexpr size_t bit_mask = cut_type::INTERNAL_TRUE;
+      const cut_type ct_excl_false = static_cast<cut_type>(ct & bit_mask);
 
-        return (cut_bits + 1).may_overflow() ? MAX_CUT : ilevel_cuts[ct] + 1u;
-      }
-      return ilevel_cuts[ct];
+      // In product construction algorithms we need to take into account the
+      // (single) suppressed false arc, which may suddenly become visible (e.g.
+      // 'zdd_union'). Here, the DAG gets stuck inside of a copy of only one of
+      // the input ZDDs. To get there, one followed an arc of the input but
+      // afterwards one pairs with an invisible false arc that spans all levels.
+      //
+      // We do not need to account for this invisible false arc in the following
+      // two cases
+      //
+      // - If the requested cut does not include false arcs.
+      //
+      // - If the cut size is strictly larger than the corresponding cut_type
+      //   excluding false. In this case, we already have a false arc to pair
+      //   with.
+      const size_t add_suppressed = !includes_sink(ct, false) && cut_size == ilevel_cuts[ct_excl_false];
+
+      return unpack(cut_size + add_suppressed);
     }
   };
 }

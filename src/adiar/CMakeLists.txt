@@ -122,6 +122,7 @@ endif()
 # ============================================================================ #
 # Link dependencies
 target_link_libraries(adiar tpie)
+target_link_libraries(adiar Cnl)
 
 # ============================================================================ #
 # Setup as library

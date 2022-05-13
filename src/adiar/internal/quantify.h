@@ -11,6 +11,7 @@
 
 #include <adiar/internal/cut.h>
 #include <adiar/internal/levelized_priority_queue.h>
+#include <adiar/internal/safe_number.h>
 #include <adiar/internal/tuple.h>
 
 namespace adiar
@@ -293,15 +294,10 @@ namespace adiar
   }
 
   template<typename quantify_policy>
-  cut_size_t __quantify_2level_upper_bound(const typename quantify_policy::reduced_t &in)
+  size_t __quantify_2level_upper_bound(const typename quantify_policy::reduced_t &in)
   {
-    const cut_size_t max_2level_cut = in.max_2level_cut(cut_type::INTERNAL);
-
-    const bits_approximation input_bits(max_2level_cut);
-
-    return ((input_bits * input_bits) + 2).may_overflow()
-      ? MAX_CUT
-      : (max_2level_cut * max_2level_cut) + 2;
+    const safe_size_t max_2level_cut = in.max_2level_cut(cut_type::INTERNAL);
+    return unpack(max_2level_cut * max_2level_cut + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////

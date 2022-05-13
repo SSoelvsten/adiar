@@ -8,6 +8,7 @@
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/tuple.h>
 #include <adiar/internal/util.h>
+#include <adiar/internal/safe_number.h>
 
 #include <adiar/statistics.h>
 
@@ -480,21 +481,15 @@ namespace adiar
     return out_arcs;
   }
 
-  cut_size_t __ite_2level_upper_bound(const decision_diagram &in_if,
-                                      const decision_diagram &in_then,
-                                      const decision_diagram &in_else)
+  size_t __ite_2level_upper_bound(const decision_diagram &in_if,
+                                  const decision_diagram &in_then,
+                                  const decision_diagram &in_else)
   {
-    const size_t if_cut = in_if.max_2level_cut(cut_type::INTERNAL);
-    const size_t then_cut = in_then.max_2level_cut(cut_type::ALL);
-    const size_t else_cut = in_else.max_2level_cut(cut_type::ALL);
+    const safe_size_t if_cut = in_if.max_2level_cut(cut_type::INTERNAL);
+    const safe_size_t then_cut = in_then.max_2level_cut(cut_type::ALL);
+    const safe_size_t else_cut = in_else.max_2level_cut(cut_type::ALL);
 
-    const bits_approximation if_bits(if_cut);
-    const bits_approximation then_bits(then_cut);
-    const bits_approximation else_bits(else_cut);
-
-    return ((if_bits * then_bits * else_bits) + (then_bits * else_bits) + 2).may_overflow()
-      ? MAX_CUT
-      : (if_cut * then_cut * else_cut) + (then_cut * else_cut) + 2;
+    return unpack((if_cut * then_cut * else_cut) + (then_cut * else_cut) + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
