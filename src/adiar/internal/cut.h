@@ -66,6 +66,9 @@ namespace adiar
     return includes_sink(static_cast<cut_type>(cut), sink_val);
   }
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief The number of sinks included in a cut type.
+  ////////////////////////////////////////////////////////////////////////////
   inline size_t number_of_sinks(const cut_type cut)
   {
     return includes_sink(cut, false) + includes_sink(cut, true);
@@ -75,6 +78,30 @@ namespace adiar
   {
     return number_of_sinks(static_cast<cut_type>(cut));
   }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Interface hiding that the 1-level cut is obtained
+  ////////////////////////////////////////////////////////////////////////////
+  struct get_1level_cut
+  {
+    template<typename dd_t>
+    static inline cut_size_t get(const dd_t &dd, const cut_type ct)
+    {
+      return dd.max_1level_cut(ct);
+    }
+  };
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Interface hiding that the 2-level cut is obtained
+  ////////////////////////////////////////////////////////////////////////////
+  struct get_2level_cut
+  {
+    template<typename dd_t>
+    static inline cut_size_t get(const dd_t &dd, const cut_type ct)
+    {
+      return dd.max_2level_cut(ct);
+    }
+  };
 
   // TODO: Exact top-down sweep computation of 1-level and 2-level cuts.
 }

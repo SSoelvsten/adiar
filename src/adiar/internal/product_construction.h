@@ -241,9 +241,8 @@ namespace adiar
   __product_construction(const typename prod_policy::reduced_t &in_1,
                          const typename prod_policy::reduced_t &in_2,
                          const bool_op &op,
-                         const size_t pq_1_memory,
-                         const size_t pq_2_memory,
-                         const size_t max_pq_size)
+                         const size_t pq_1_memory, const size_t max_pq_1_size,
+                         const size_t pq_2_memory, const size_t max_pq_2_size)
   {
     node_stream<> in_nodes_1(in_1);
     node_stream<> in_nodes_2(in_2);
@@ -263,8 +262,8 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_1_t prod_pq_1({in_1, in_2}, pq_1_memory, max_pq_size);
-    pq_2_t prod_pq_2(pq_2_memory, max_pq_size);
+    pq_1_t prod_pq_1({in_1, in_2}, pq_1_memory, max_pq_1_size);
+    pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v1.uid, v2.uid));
@@ -409,41 +408,41 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Derives upper bound based on the product of the maximum 2-level cut of
-  /// both inputs.
+  /// Derives an upper bound on the output's maximum i-level cut based on the
+  /// product of the maximum i-level cut of both inputs.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename prod_policy>
-  size_t __prod_2level_upper_bound(const typename prod_policy::reduced_t &in_1,
+  template<typename prod_policy, typename cut, size_t const_size_inc>
+  size_t __prod_ilevel_upper_bound(const typename prod_policy::reduced_t &in_1,
                                    const typename prod_policy::reduced_t &in_2,
                                    const bool_op &op)
   {
     // Cuts for left-hand side
-    const safe_size_t left_cut_internal = in_1.max_2level_cut(cut_type::INTERNAL);
+    const safe_size_t left_cut_internal = cut::get(in_1, cut_type::INTERNAL);
 
     const cut_type left_ct = prod_policy::left_cut(op);
-    const safe_size_t left_cut_sinks = in_1.max_2level_cut(left_ct) - left_cut_internal;
+    const safe_size_t left_cut_sinks = cut::get(in_1, left_ct) - left_cut_internal;
 
     // Cuts for right-hand side
-    const safe_size_t right_cut_internal = in_2.max_2level_cut(cut_type::INTERNAL);
+    const safe_size_t right_cut_internal = cut::get(in_2, cut_type::INTERNAL);
 
     const cut_type right_ct = prod_policy::right_cut(op);
-    const safe_size_t right_cut_sinks = in_2.max_2level_cut(right_ct) - right_cut_internal;
+    const safe_size_t right_cut_sinks = cut::get(in_2, right_ct) - right_cut_internal;
 
     // Compute cut, where we make sure not to pair sinks with sinks.
     return unpack(left_cut_internal * right_cut_internal
                   + left_cut_sinks * right_cut_internal
                   + left_cut_internal * right_cut_sinks
-                  + 2u);
+                  + const_size_inc);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Possible improvement on the max 2-level cut product by using the max
-  /// 1-level cut and the number of relevant sinks to describe each case
+  /// Derives an upper bound on the output's maximum 2-level cut based on both
+  /// using the max 1 and 2-level cuts and the number of relevant sinks.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
-  size_t __prod_mixedlevel_upper_bound(const typename prod_policy::reduced_t &in_1,
-                                       const typename prod_policy::reduced_t &in_2,
-                                       const bool_op &op)
+  size_t __prod_2level_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                   const typename prod_policy::reduced_t &in_2,
+                                   const bool_op &op)
   {
     // Left-hand side
     const safe_size_t left_2level_cut = in_1.max_2level_cut(cut_type::INTERNAL);
@@ -472,13 +471,13 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Computes the maximum possible output size and uses a simple upper bound of
-  /// its maximum cut to derive an upper bound.
+  /// Upper bound on i-level cut based on the maximum possible number of nodes
+  /// in the output.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
-  size_t __prod_size_upper_bound(const typename prod_policy::reduced_t &in_1,
-                                 const typename prod_policy::reduced_t &in_2,
-                                 const bool_op &op)
+  size_t __prod_ilevel_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                   const typename prod_policy::reduced_t &in_2,
+                                   const bool_op &op)
   {
     const cut_type left_ct = prod_policy::left_cut(op);
     const safe_size_t left_sink_vals = number_of_sinks(left_ct);
@@ -568,11 +567,14 @@ namespace adiar
 
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
-    const size_t max_pq_size = std::min({
+    const size_t max_pq_1_size = std::min({
+        __prod_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_1, in_2, op),
         __prod_2level_upper_bound<prod_policy>(in_1, in_2, op),
-        __prod_mixedlevel_upper_bound<prod_policy>(in_1, in_2, op),
-        __prod_size_upper_bound<prod_policy>(in_1, in_2, op)
+        __prod_ilevel_upper_bound<prod_policy>(in_1, in_2, op)
       });
+
+    const size_t max_pq_2_size =
+      __prod_ilevel_upper_bound<prod_policy, get_1level_cut, 0u>(in_1, in_2, op);
 
     const size_t pq_1_memory_fits =
       prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
@@ -580,15 +582,14 @@ namespace adiar
     const size_t pq_2_memory_fits =
       prod_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
 
-    // TODO: maximum 1-level cut suffices for pq_2!
-    if(max_pq_size <= pq_1_memory_fits && max_pq_size <= pq_2_memory_fits) {
+    if(max_pq_1_size <= pq_1_memory_fits && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_internal++;
 #endif
       return __product_construction<prod_policy,
                                     prod_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                                     prod_priority_queue_2_t<internal_priority_queue>>
-        (in_1, in_2, op, pq_1_internal_memory, pq_2_internal_memory, max_pq_size);
+        (in_1, in_2, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq_external++;
@@ -599,7 +600,7 @@ namespace adiar
       return __product_construction<prod_policy,
                                     prod_priority_queue_1_t<external_sorter, external_priority_queue>,
                                     prod_priority_queue_2_t<external_priority_queue>>
-        (in_1, in_2, op, pq_1_memory, pq_2_memory, max_pq_size);
+        (in_1, in_2, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
   }
 }

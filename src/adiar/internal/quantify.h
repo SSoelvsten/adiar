@@ -144,9 +144,8 @@ namespace adiar
   typename quantify_policy::unreduced_t __quantify(const typename quantify_policy::reduced_t &in,
                                                    const label_t &label,
                                                    const bool_op &op,
-                                                   const size_t pq_1_memory,
-                                                   const size_t pq_2_memory,
-                                                   const size_t max_pq_size)
+                                                   const size_t pq_1_memory, const size_t max_pq_1_size,
+                                                   const size_t pq_2_memory, const size_t max_pq_2_size)
   {
     // Check for trivial sink-only return on shortcutting the root
     node_stream<> in_nodes(in);
@@ -164,8 +163,8 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_size);
-    pq_2_t quantify_pq_2(pq_2_memory, max_pq_size);
+    pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size);
+    pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
     label_t out_label = label_of(v.uid);
     id_t out_id = 0;
@@ -294,27 +293,27 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Derives upper bound based on the product of the maximum 2-level cut.
+  /// Derives an upper bound on the output's maximum i-level cut given its
+  /// maximum i-level cut.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename quantify_policy>
-  size_t __quantify_2level_upper_bound(const typename quantify_policy::reduced_t &in,
+  template<typename quantify_policy, typename cut, size_t const_size_inc>
+  size_t __quantify_ilevel_upper_bound(const typename quantify_policy::reduced_t &in,
                                        const bool_op &op)
   {
     const cut_type ct_internal = cut_type::INTERNAL;
     const cut_type ct_sinks = quantify_policy::cut_with_sinks(op);
 
-    const safe_size_t max_2level_cut_internal = in.max_2level_cut(ct_internal);
-    const safe_size_t max_2level_cut_sinks = in.max_2level_cut(ct_sinks);
+    const safe_size_t max_cut_internal = cut::get(in, ct_internal);
+    const safe_size_t max_cut_sinks = cut::get(in, ct_sinks);
 
-    return unpack(max_2level_cut_internal * max_2level_cut_sinks + 2u);
+    return unpack(max_cut_internal * max_cut_sinks + const_size_inc);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Computes the maximum possible output size and uses a simple upper bound of
-  /// its maximum cut to derive an upper bound.
+  /// Derives an upper bound on the output's maximum i-level cut given its size.
   //////////////////////////////////////////////////////////////////////////////
   template<typename quantify_policy>
-  size_t __quantify_size_upper_bound(const typename quantify_policy::reduced_t &in)
+  size_t __quantify_ilevel_upper_bound(const typename quantify_policy::reduced_t &in)
   {
     const safe_size_t in_size = in->size();
     return unpack(in_size * in_size + 1u + 2u);
@@ -345,10 +344,13 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t max_pq_size = std::min({
-        __quantify_2level_upper_bound<quantify_policy>(in,op),
-        __quantify_size_upper_bound<quantify_policy>(in)
+    const size_t max_pq_1_size = std::min({
+        __quantify_ilevel_upper_bound<quantify_policy, get_2level_cut, 2u>(in,op),
+        __quantify_ilevel_upper_bound<quantify_policy>(in)
       });
+
+    const size_t max_pq_2_size =
+      __quantify_ilevel_upper_bound<quantify_policy, get_1level_cut, 0u>(in,op);
 
     constexpr size_t data_structures_in_pq_1 =
       quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
@@ -368,15 +370,14 @@ namespace adiar
     const size_t pq_2_memory_fits =
       quantify_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
 
-    // TODO: maximum 1-level cut is sufficient for pq_2!
-    if(max_pq_size <= pq_1_memory_fits && max_pq_size <= pq_2_memory_fits) {
+    if(max_pq_1_size <= pq_1_memory_fits && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_quantify.lpq_internal++;
 #endif
       return __quantify<quantify_policy,
                         quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                         quantify_priority_queue_2_t<internal_priority_queue>>
-        (in, label, op, pq_1_internal_memory, pq_2_internal_memory, max_pq_size);
+        (in, label, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
       stats_quantify.lpq_external++;
@@ -387,7 +388,7 @@ namespace adiar
       return __quantify<quantify_policy,
                         quantify_priority_queue_1_t<external_sorter, external_priority_queue>,
                         quantify_priority_queue_2_t<external_priority_queue>>
-        (in, label, op, pq_1_memory, pq_2_memory, max_pq_size);
+        (in, label, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
   }
 }
