@@ -4,7 +4,7 @@
 	branch = headers-only
 [submodule "external/tpie"]
 	path = external/tpie
-	url = ../../thomasmoelhave/tpie
+	url = ../../thomasmoelhave/tpie.git
 [submodule "external/cnl"]
 	path = external/cnl
 	url = ../../johnmcfarlane/cnl.git
