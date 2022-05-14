@@ -481,6 +481,10 @@ namespace adiar
     return out_arcs;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// Derives upper bound based on the product of the maximum 2-level cut of
+  /// all three inputs.
+  //////////////////////////////////////////////////////////////////////////////
   size_t __ite_2level_upper_bound(const decision_diagram &in_if,
                                   const decision_diagram &in_then,
                                   const decision_diagram &in_else)
@@ -509,6 +513,25 @@ namespace adiar
                   + if_cut_trues  * then_cut_internal
                   + if_cut_falses * else_cut_internal
                   + 2u);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Computes the maximum possible output size and uses a simple upper bound of
+  /// its maximum cut to derive an upper bound.
+  //////////////////////////////////////////////////////////////////////////////
+  size_t __ite_size_upper_bound(const decision_diagram &in_if,
+                                const decision_diagram &in_then,
+                                const decision_diagram &in_else)
+  {
+    const safe_size_t if_size = in_if->size();
+    const safe_size_t then_size = in_then->size();
+    const safe_size_t else_size = in_else->size();
+
+    // Compute the number of triples (t_if, t_then, t_else) where t_if is an
+    // internal node and t_then and t_else are nodes or (mismatching) sinks.
+    // Then also count the copies of in_then and in_else for when in_if hits a
+    // sink early.
+    return unpack(if_size * ((then_size + 2u) * (else_size + 2u) - 2u) + then_size + else_size + 1u + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -563,7 +586,10 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t max_pq_size = __ite_2level_upper_bound(bdd_if, bdd_then, bdd_else);
+    const size_t max_pq_size = std::min({
+        __ite_2level_upper_bound(bdd_if, bdd_then, bdd_else),
+        __ite_size_upper_bound(bdd_if, bdd_then, bdd_else)
+      });
 
     constexpr size_t data_structures_in_pq_1 =
       ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;

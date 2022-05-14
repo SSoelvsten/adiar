@@ -293,6 +293,9 @@ namespace adiar
     return out_arcs;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// Derives upper bound based on the product of the maximum 2-level cut.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename quantify_policy>
   size_t __quantify_2level_upper_bound(const typename quantify_policy::reduced_t &in,
                                        const bool_op &op)
@@ -304,6 +307,17 @@ namespace adiar
     const safe_size_t max_2level_cut_sinks = in.max_2level_cut(ct_sinks);
 
     return unpack(max_2level_cut_internal * max_2level_cut_sinks + 2u);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Computes the maximum possible output size and uses a simple upper bound of
+  /// its maximum cut to derive an upper bound.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename quantify_policy>
+  size_t __quantify_size_upper_bound(const typename quantify_policy::reduced_t &in)
+  {
+    const safe_size_t in_size = in->size();
+    return unpack(in_size * in_size + 1u + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -331,7 +345,10 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t max_pq_size = __quantify_2level_upper_bound<quantify_policy>(in, op);
+    const size_t max_pq_size = std::min({
+        __quantify_2level_upper_bound<quantify_policy>(in,op),
+        __quantify_size_upper_bound<quantify_policy>(in)
+      });
 
     constexpr size_t data_structures_in_pq_1 =
       quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
