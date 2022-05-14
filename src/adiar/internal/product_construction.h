@@ -413,13 +413,23 @@ namespace adiar
                                    const typename prod_policy::reduced_t &in_2,
                                    const bool_op &op)
   {
+    // Cuts for left-hand side
+    const safe_size_t left_cut_internal = in_1.max_2level_cut(cut_type::INTERNAL);
+
     const cut_type left_ct = prod_policy::left_cut(op);
-    const safe_size_t left_2level_cut = in_1.max_2level_cut(left_ct);
+    const safe_size_t left_cut_sinks = in_1.max_2level_cut(left_ct) - left_cut_internal;
+
+    // Cuts for right-hand side
+    const safe_size_t right_cut_internal = in_2.max_2level_cut(cut_type::INTERNAL);
 
     const cut_type right_ct = prod_policy::right_cut(op);
-    const safe_size_t right_2level_cut = in_2.max_2level_cut(right_ct);
+    const safe_size_t right_cut_sinks = in_2.max_2level_cut(right_ct) - right_cut_internal;
 
-    return unpack(left_2level_cut * right_2level_cut + 2u);
+    // Compute cut, where we make sure not to pair sinks with sinks.
+    return unpack(left_cut_internal * right_cut_internal
+                  + left_cut_sinks * right_cut_internal
+                  + left_cut_internal * right_cut_sinks
+                  + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
