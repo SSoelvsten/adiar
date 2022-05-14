@@ -42,6 +42,15 @@ namespace adiar
 
       return { r_fst, r_snd };
     }
+
+  public:
+    static cut_type cut_with_sinks(const bool_op &op)
+    {
+      const bool incl_false = !can_right_shortcut(op, create_sink_ptr(false));
+      const bool incl_true = !can_right_shortcut(op, create_sink_ptr(true));
+
+      return cut_type_with(incl_false, incl_true);
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
