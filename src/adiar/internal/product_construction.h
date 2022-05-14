@@ -450,8 +450,7 @@ namespace adiar
     const safe_size_t left_1level_cut = in_1.max_1level_cut(cut_type::INTERNAL);
 
     const cut_type left_ct = prod_policy::left_cut(op);
-
-    const safe_size_t left_sink_vals = includes_sink(left_ct, false) + includes_sink(left_ct, true);
+    const safe_size_t left_sink_vals = number_of_sinks(left_ct);
 
     const safe_size_t left_sink_arcs =  in_1.max_1level_cut(left_ct) - left_1level_cut;
 
@@ -460,8 +459,7 @@ namespace adiar
     const safe_size_t right_1level_cut = in_2.max_1level_cut(cut_type::INTERNAL);
 
     const cut_type right_ct = prod_policy::right_cut(op);
-
-    const safe_size_t right_sink_vals = includes_sink(right_ct, false) + includes_sink(right_ct, true);
+    const safe_size_t right_sink_vals = number_of_sinks(right_ct);
 
     const safe_size_t right_sink_arcs = in_2.max_1level_cut(right_ct) - right_1level_cut;
 
@@ -471,6 +469,26 @@ namespace adiar
                   + (right_1level_cut * left_sink_arcs) + left_sink_vals * right_2level_cut
                   + (left_1level_cut * right_sink_arcs) + right_sink_vals * left_2level_cut
                   + 2u);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Computes the maximum possible output size and uses a simple upper bound of
+  /// its maximum cut to derive an upper bound.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename prod_policy>
+  size_t __prod_size_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                 const typename prod_policy::reduced_t &in_2,
+                                 const bool_op &op)
+  {
+    const cut_type left_ct = prod_policy::left_cut(op);
+    const safe_size_t left_sink_vals = number_of_sinks(left_ct);
+    const safe_size_t left_size = in_1->size();
+
+    const cut_type right_ct = prod_policy::right_cut(op);
+    const safe_size_t right_sink_vals = number_of_sinks(right_ct);
+    const safe_size_t right_size = in_2->size();
+
+    return unpack((left_size + left_sink_vals) * (right_size + right_sink_vals) + 1u + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -552,7 +570,8 @@ namespace adiar
 
     const size_t max_pq_size = std::min({
         __prod_2level_upper_bound<prod_policy>(in_1, in_2, op),
-        __prod_mixedlevel_upper_bound<prod_policy>(in_1, in_2, op)
+        __prod_mixedlevel_upper_bound<prod_policy>(in_1, in_2, op),
+        __prod_size_upper_bound<prod_policy>(in_1, in_2, op)
       });
 
     const size_t pq_1_memory_fits =

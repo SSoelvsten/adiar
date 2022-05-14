@@ -66,6 +66,16 @@ namespace adiar
     return includes_sink(static_cast<cut_type>(cut), sink_val);
   }
 
+  inline size_t number_of_sinks(const cut_type cut)
+  {
+    return includes_sink(cut, false) + includes_sink(cut, true);
+  }
+
+  inline size_t number_of_sinks(const size_t cut)
+  {
+    return number_of_sinks(static_cast<cut_type>(cut));
+  }
+
   // TODO: Exact top-down sweep computation of 1-level and 2-level cuts.
 }
 
