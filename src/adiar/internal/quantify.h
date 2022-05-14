@@ -294,10 +294,16 @@ namespace adiar
   }
 
   template<typename quantify_policy>
-  size_t __quantify_2level_upper_bound(const typename quantify_policy::reduced_t &in)
+  size_t __quantify_2level_upper_bound(const typename quantify_policy::reduced_t &in,
+                                       const bool_op &op)
   {
-    const safe_size_t max_2level_cut = in.max_2level_cut(cut_type::INTERNAL);
-    return unpack(max_2level_cut * max_2level_cut + 2u);
+    const cut_type ct_internal = cut_type::INTERNAL;
+    const cut_type ct_sinks = quantify_policy::cut_with_sinks(op);
+
+    const safe_size_t max_2level_cut_internal = in.max_2level_cut(ct_internal);
+    const safe_size_t max_2level_cut_sinks = in.max_2level_cut(ct_sinks);
+
+    return unpack(max_2level_cut_internal * max_2level_cut_sinks + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -325,7 +331,7 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t max_pq_size = __quantify_2level_upper_bound<quantify_policy>(in);
+    const size_t max_pq_size = __quantify_2level_upper_bound<quantify_policy>(in, op);
 
     constexpr size_t data_structures_in_pq_1 =
       quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;

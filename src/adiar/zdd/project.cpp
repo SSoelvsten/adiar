@@ -27,7 +27,7 @@ namespace adiar
     {
       adiar_debug(!is_nil(r1) && !is_nil(r2), "Resolve request is only used for tuple cases");
 
-      ptr_t r_fst = fst(r1,r2);
+      const ptr_t r_fst = fst(r1,r2);
       ptr_t r_snd = snd(r1,r2);
 
       // Has the second option fallen out, while the first is still within? Then
@@ -37,6 +37,12 @@ namespace adiar
       }
 
       return { r_fst, r_snd };
+    }
+
+  public:
+    static cut_type cut_with_sinks(const bool_op &/*op*/)
+    {
+      return cut_type::ALL;
     }
   };
 
