@@ -485,11 +485,30 @@ namespace adiar
                                   const decision_diagram &in_then,
                                   const decision_diagram &in_else)
   {
-    const safe_size_t if_cut = in_if.max_2level_cut(cut_type::INTERNAL);
-    const safe_size_t then_cut = in_then.max_2level_cut(cut_type::ALL);
-    const safe_size_t else_cut = in_else.max_2level_cut(cut_type::ALL);
+    // 2-level cuts for 'if', where we split the false and true arcs away.
+    const safe_size_t if_cut_internal = in_if.max_2level_cut(cut_type::INTERNAL);
+    const safe_size_t if_cut_falses = in_if.max_2level_cut(cut_type::INTERNAL_FALSE) - if_cut_internal;
+    const safe_size_t if_cut_trues = in_if.max_2level_cut(cut_type::INTERNAL_TRUE) - if_cut_internal;
 
-    return unpack((if_cut * then_cut * else_cut) + (then_cut * else_cut) + 2u);
+    // 2-level cuts for 'then'
+    const safe_size_t then_cut_internal = in_then.max_2level_cut(cut_type::INTERNAL);
+    const safe_size_t then_cut_falses = in_then.max_2level_cut(cut_type::INTERNAL_FALSE) - then_cut_internal;
+    const safe_size_t then_cut_trues = in_then.max_2level_cut(cut_type::INTERNAL_TRUE) - then_cut_internal;
+    const safe_size_t then_cut_all = in_then.max_2level_cut(cut_type::ALL);
+
+    // 2-level cuts for 'else'
+    const safe_size_t else_cut_internal = in_else.max_2level_cut(cut_type::INTERNAL);
+    const safe_size_t else_cut_falses = in_else.max_2level_cut(cut_type::INTERNAL_FALSE) - else_cut_internal;
+    const safe_size_t else_cut_trues = in_else.max_2level_cut(cut_type::INTERNAL_TRUE) - else_cut_internal;
+    const safe_size_t else_cut_all = in_else.max_2level_cut(cut_type::ALL);
+
+    // Compute 2-level cut where irrelevant pairs of sinks are not paired
+    return unpack((if_cut_internal * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all
+                                      + then_cut_falses * else_cut_trues
+                                      + then_cut_trues * else_cut_falses))
+                  + if_cut_trues  * then_cut_internal
+                  + if_cut_falses * else_cut_internal
+                  + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
