@@ -408,6 +408,10 @@ namespace adiar
     return out_arcs;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// Derives upper bound based on the product of the maximum 2-level cut of
+  /// both inputs.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
   size_t __prod_2level_upper_bound(const typename prod_policy::reduced_t &in_1,
                                    const typename prod_policy::reduced_t &in_2,
@@ -429,6 +433,43 @@ namespace adiar
     return unpack(left_cut_internal * right_cut_internal
                   + left_cut_sinks * right_cut_internal
                   + left_cut_internal * right_cut_sinks
+                  + 2u);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Possible improvement on the max 2-level cut product by using the max
+  /// 1-level cut and the number of relevant sinks to describe each case
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename prod_policy>
+  size_t __prod_mixedlevel_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                       const typename prod_policy::reduced_t &in_2,
+                                       const bool_op &op)
+  {
+    // Left-hand side
+    const safe_size_t left_2level_cut = in_1.max_2level_cut(cut_type::INTERNAL);
+    const safe_size_t left_1level_cut = in_1.max_1level_cut(cut_type::INTERNAL);
+
+    const cut_type left_ct = prod_policy::left_cut(op);
+
+    const safe_size_t left_sink_vals = includes_sink(left_ct, false) + includes_sink(left_ct, true);
+
+    const safe_size_t left_sink_arcs =  in_1.max_1level_cut(left_ct) - left_1level_cut;
+
+    // Right-hand side
+    const safe_size_t right_2level_cut = in_2.max_2level_cut(cut_type::INTERNAL);
+    const safe_size_t right_1level_cut = in_2.max_1level_cut(cut_type::INTERNAL);
+
+    const cut_type right_ct = prod_policy::right_cut(op);
+
+    const safe_size_t right_sink_vals = includes_sink(right_ct, false) + includes_sink(right_ct, true);
+
+    const safe_size_t right_sink_arcs = in_2.max_1level_cut(right_ct) - right_1level_cut;
+
+    // Compute cut, where we count the product, the input-sink pairings, and the
+    // connection from the product to the input-sink pairings separately.
+    return unpack(left_2level_cut * right_2level_cut
+                  + (right_1level_cut * left_sink_arcs) + left_sink_vals * right_2level_cut
+                  + (left_1level_cut * right_sink_arcs) + right_sink_vals * left_2level_cut
                   + 2u);
   }
 
@@ -509,7 +550,10 @@ namespace adiar
 
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
-    const size_t max_pq_size = __prod_2level_upper_bound<prod_policy>(in_1, in_2, op);
+    const size_t max_pq_size = std::min({
+        __prod_2level_upper_bound<prod_policy>(in_1, in_2, op),
+        __prod_mixedlevel_upper_bound<prod_policy>(in_1, in_2, op)
+      });
 
     const size_t pq_1_memory_fits =
       prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
