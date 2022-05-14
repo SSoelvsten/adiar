@@ -209,8 +209,9 @@ namespace adiar
 
   template<typename pq_1_t, typename pq_2_t, typename pq_3_t>
   __bdd __bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else,
-                  const size_t pq_1_memory, const size_t pq_2_memory, const size_t pq_3_memory,
-                  const size_t max_pq_size)
+                  const size_t pq_1_memory, const size_t max_pq_1_size,
+                  const size_t pq_2_memory, const size_t max_pq_2_size,
+                  const size_t pq_3_memory, const size_t max_pq_3_size)
   {
     // Now, at this point we will not defer to using the Apply, so we can take
     // up memory by opening the input streams and evaluating trivial
@@ -242,9 +243,9 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, pq_1_memory, max_pq_size);
-    pq_2_t ite_pq_2(pq_2_memory, max_pq_size);
-    pq_3_t ite_pq_3(pq_3_memory, max_pq_size);
+    pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, pq_1_memory, max_pq_1_size);
+    pq_2_t ite_pq_2(pq_2_memory, max_pq_2_size);
+    pq_3_t ite_pq_3(pq_3_memory, max_pq_3_size);
 
     // Process root and create initial recursion requests
     label_t out_label = label_of(fst(v_if.uid, v_then.uid, v_else.uid));
@@ -482,29 +483,30 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Derives upper bound based on the product of the maximum 2-level cut of
-  /// all three inputs.
+  /// Derives an upper bound on the output's maximum i-level cut based on the
+  /// product of the maximum i-level cut of all three inputs.
   //////////////////////////////////////////////////////////////////////////////
-  size_t __ite_2level_upper_bound(const decision_diagram &in_if,
+  template<typename cut, size_t const_size_inc>
+  size_t __ite_ilevel_upper_bound(const decision_diagram &in_if,
                                   const decision_diagram &in_then,
                                   const decision_diagram &in_else)
   {
     // 2-level cuts for 'if', where we split the false and true arcs away.
-    const safe_size_t if_cut_internal = in_if.max_2level_cut(cut_type::INTERNAL);
-    const safe_size_t if_cut_falses = in_if.max_2level_cut(cut_type::INTERNAL_FALSE) - if_cut_internal;
-    const safe_size_t if_cut_trues = in_if.max_2level_cut(cut_type::INTERNAL_TRUE) - if_cut_internal;
+    const safe_size_t if_cut_internal = cut::get(in_if, cut_type::INTERNAL);
+    const safe_size_t if_cut_falses = cut::get(in_if, cut_type::INTERNAL_FALSE) - if_cut_internal;
+    const safe_size_t if_cut_trues = cut::get(in_if, cut_type::INTERNAL_TRUE) - if_cut_internal;
 
     // 2-level cuts for 'then'
-    const safe_size_t then_cut_internal = in_then.max_2level_cut(cut_type::INTERNAL);
-    const safe_size_t then_cut_falses = in_then.max_2level_cut(cut_type::INTERNAL_FALSE) - then_cut_internal;
-    const safe_size_t then_cut_trues = in_then.max_2level_cut(cut_type::INTERNAL_TRUE) - then_cut_internal;
-    const safe_size_t then_cut_all = in_then.max_2level_cut(cut_type::ALL);
+    const safe_size_t then_cut_internal = cut::get(in_then, cut_type::INTERNAL);
+    const safe_size_t then_cut_falses = cut::get(in_then, cut_type::INTERNAL_FALSE) - then_cut_internal;
+    const safe_size_t then_cut_trues = cut::get(in_then, cut_type::INTERNAL_TRUE) - then_cut_internal;
+    const safe_size_t then_cut_all = cut::get(in_then, cut_type::ALL);
 
     // 2-level cuts for 'else'
-    const safe_size_t else_cut_internal = in_else.max_2level_cut(cut_type::INTERNAL);
-    const safe_size_t else_cut_falses = in_else.max_2level_cut(cut_type::INTERNAL_FALSE) - else_cut_internal;
-    const safe_size_t else_cut_trues = in_else.max_2level_cut(cut_type::INTERNAL_TRUE) - else_cut_internal;
-    const safe_size_t else_cut_all = in_else.max_2level_cut(cut_type::ALL);
+    const safe_size_t else_cut_internal = cut::get(in_else, cut_type::INTERNAL);
+    const safe_size_t else_cut_falses = cut::get(in_else, cut_type::INTERNAL_FALSE) - else_cut_internal;
+    const safe_size_t else_cut_trues = cut::get(in_else, cut_type::INTERNAL_TRUE) - else_cut_internal;
+    const safe_size_t else_cut_all = cut::get(in_else, cut_type::ALL);
 
     // Compute 2-level cut where irrelevant pairs of sinks are not paired
     return unpack((if_cut_internal * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all
@@ -512,16 +514,15 @@ namespace adiar
                                       + then_cut_trues * else_cut_falses))
                   + if_cut_trues  * then_cut_internal
                   + if_cut_falses * else_cut_internal
-                  + 2u);
+                  + const_size_inc);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Computes the maximum possible output size and uses a simple upper bound of
-  /// its maximum cut to derive an upper bound.
+  /// Derives an upper bound on the output's maximum i-level cut given its size.
   //////////////////////////////////////////////////////////////////////////////
-  size_t __ite_size_upper_bound(const decision_diagram &in_if,
-                                const decision_diagram &in_then,
-                                const decision_diagram &in_else)
+  size_t __ite_ilevel_upper_bound(const decision_diagram &in_if,
+                                  const decision_diagram &in_then,
+                                  const decision_diagram &in_else)
   {
     const safe_size_t if_size = in_if->size();
     const safe_size_t then_size = in_then->size();
@@ -586,10 +587,15 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t max_pq_size = std::min({
-        __ite_2level_upper_bound(bdd_if, bdd_then, bdd_else),
-        __ite_size_upper_bound(bdd_if, bdd_then, bdd_else)
+    const size_t max_pq_1_size = std::min({
+        __ite_ilevel_upper_bound<get_2level_cut, 2u>(bdd_if, bdd_then, bdd_else),
+        __ite_ilevel_upper_bound(bdd_if, bdd_then, bdd_else)
       });
+
+    const size_t max_pq_2_size =
+      __ite_ilevel_upper_bound<get_1level_cut, 0u>(bdd_if, bdd_then, bdd_else);
+
+    const size_t max_pq_3_size = max_pq_2_size;
 
     constexpr size_t data_structures_in_pq_1 =
       ite_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
@@ -618,15 +624,15 @@ namespace adiar
     const size_t pq_3_memory_fits =
       ite_priority_queue_3_t<internal_priority_queue>::memory_fits(pq_3_internal_memory);
 
-    // TODO: maximum 1-level cut is sufficient for pq_2 and pq_3!
-    if(max_pq_size <= pq_1_memory_fits && max_pq_size <= pq_2_memory_fits && max_pq_size <= pq_3_memory_fits) {
+    if(max_pq_1_size <= pq_1_memory_fits && max_pq_2_size <= pq_2_memory_fits && max_pq_3_size <= pq_3_memory_fits) {
 #ifdef ADIAR_STATS
       stats_if_else.lpq_internal++;
 #endif
       return __bdd_ite<ite_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                        ite_priority_queue_2_t<internal_priority_queue>,
                        ite_priority_queue_3_t<internal_priority_queue>>
-        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_internal_memory, pq_3_internal_memory, max_pq_size);
+        (bdd_if, bdd_then, bdd_else,
+         pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
     } else {
 #ifdef ADIAR_STATS
       stats_if_else.lpq_external++;
@@ -638,7 +644,8 @@ namespace adiar
       return __bdd_ite<ite_priority_queue_1_t<external_sorter, external_priority_queue>,
                        ite_priority_queue_2_t<external_priority_queue>,
                        ite_priority_queue_3_t<external_priority_queue>>
-        (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, pq_2_memory, pq_3_memory, max_pq_size);
+        (bdd_if, bdd_then, bdd_else,
+         pq_1_internal_memory, max_pq_1_size, pq_2_memory, max_pq_2_size, pq_3_memory, max_pq_3_size);
     }
   }
 }
