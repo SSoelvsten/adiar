@@ -103,6 +103,7 @@ namespace adiar
       size_t reverse_path = 0;
       size_t dual_reverse_path = 0;
       size_t min_label = 0;
+      size_t merges = 0;
     } reorder;
   };
 

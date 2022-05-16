@@ -80,7 +80,6 @@ int main(int argc, char *argv[])
 
     adiar_printstat();
     adiar_statsreset();
-    reset_reorder_stats();
     
     std::chrono::steady_clock::time_point begin_back = std::chrono::steady_clock::now();
     bdd org_back = bdd_reorder(new_order, permutation_inverse);

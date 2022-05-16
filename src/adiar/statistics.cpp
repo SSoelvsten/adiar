@@ -172,6 +172,7 @@ namespace adiar
     o << indent << indent << "Reverse paths        " << indent << stats_reorder.reverse_path << endl;
     o << indent << indent << "Dual reverse paths   " << indent << stats_reorder.dual_reverse_path << endl;
     o << indent << indent << "Min label            " << indent << stats_reorder.min_label << endl;
+    o << indent << indent << "Merges               " << indent << stats_reorder.merges << endl;
 
     o << endl;
 #endif
@@ -188,5 +189,6 @@ namespace adiar
     stats_quantify = {};
     stats_reduce = {};
     stats_substitute = {};
+    stats_reorder = {};
   }
 }

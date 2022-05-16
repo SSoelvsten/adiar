@@ -50,15 +50,6 @@ namespace adiar
     }
   };
 
-  void reset_reorder_stats()
-  {
-    stats_reorder.expensive_less_than_comparisons = 0;
-    stats_reorder.min_label = 0;
-    stats_reorder.reverse_path = 0;
-    stats_reorder.dual_reverse_path = 0;
-    stats_reorder.less_than_comparisons = 0;
-  }
-
   void debug_log(const std::string &msg, int tabs)
   {
 #if LOG
@@ -454,6 +445,7 @@ namespace adiar
         debug_log("R_Prime restriction found", 1);
         if (m_rr.hash == last_rr.hash && bdd_equal(r, r_prime))
         {
+          stats_reorder.merges++;
           debug_log("R and R_Prime equal", 1);
           ptr_t old_node = create_node_ptr(m_rr.child_level, i);
           {
