@@ -8,7 +8,11 @@
 // TIME Imports
 #include <chrono>
 
-#define EXP_BDD 1
+// Queens
+#include <queens.h>
+
+#define EXP_BDD 0
+#define QUEENS_BDD 1
 #define OUR_BDD 0
 
 using namespace adiar;
@@ -39,7 +43,7 @@ int main(int argc, char *argv[])
     // ===== Your code starts here =====
 #if EXP_BDD
     bdd root = bdd_and(bdd_ithvar(0), bdd_ithvar(1));
-    int num_of_vars = 16;
+    int num_of_vars = 20;
     for (int i = 2; i < num_of_vars; i += 2)
     {
       root = bdd_or(root, bdd_and(bdd_ithvar(i), bdd_ithvar(i + 1)));
@@ -73,6 +77,67 @@ int main(int argc, char *argv[])
     std::vector<label_t> permutation_inverse = {1, 2, 0};
 #endif
 
+#if QUEENS_BDD
+    N = 7;
+    
+    std::vector<label_t> permutation;
+    int dir = 1;
+
+    auto walk = [&](int dir, int dist, int start) {
+      for (int j = 1; j <= dist; j++) {
+        if (dir % 4 == 0) {
+          // right
+          permutation.push_back(start + j);
+        } else if (dir % 4 == 1) {
+          // down
+          permutation.push_back(start + j * N);
+        } else if (dir % 4 == 2) {
+          // left
+          permutation.push_back(start - j);
+        } else if (dir % 4 == 3) {
+          // up
+          permutation.push_back(start - j * N);
+        }
+      }
+    };
+
+    for (int i = N; i > 0; i--)
+    {
+      if (i == N)
+      {
+          for (int j = 0; j < N; j++)
+            permutation.push_back(j);
+      }
+      else
+      {
+        for (int j = 0; j < 2; j++)
+        {
+          walk(dir, i, permutation.back());
+          dir++;
+        }
+      }
+    }
+    
+    std::reverse(permutation.begin(), permutation.end());
+
+    std::vector<label_t> permutation_inverse = std::vector<label_t>(permutation.size(), 0);
+    for (unsigned long i = 0; i < permutation.size(); i++)
+    {
+      permutation_inverse[permutation[i]] = i;
+    }
+
+    std::cout << "Permutation" << std::endl;
+    for (auto e : permutation)
+    {
+      std::cout << e << " ";
+    }
+    std::cout << std::endl;
+
+    bdd root = n_queens_B();
+    std::cout << "Created board" << std::endl;
+
+#endif
+    
     std::chrono::steady_clock::time_point begin_new = std::chrono::steady_clock::now();
     bdd new_order = bdd_reorder(root, permutation);
     std::chrono::steady_clock::time_point end_new = std::chrono::steady_clock::now();
@@ -80,7 +145,7 @@ int main(int argc, char *argv[])
 
     adiar_printstat();
     adiar_statsreset();
-    
+
     std::chrono::steady_clock::time_point begin_back = std::chrono::steady_clock::now();
     bdd org_back = bdd_reorder(new_order, permutation_inverse);
     std::chrono::steady_clock::time_point end_back = std::chrono::steady_clock::now();
@@ -92,7 +157,7 @@ int main(int argc, char *argv[])
     output_dot(new_order, "new_order.dot", permutation);
     output_dot(org_back, "orginal_order_back.dot");
 
-    std::cout << "Reordered node count: " << bdd_nodecount(new_order) << " original_back node count: " << bdd_nodecount(org_back) << std::endl;
+    std::cout << "Input node count: " << bdd_nodecount(root) << " Reordered node count: " << bdd_nodecount(new_order) << " original_back node count: " << bdd_nodecount(org_back) << std::endl;
 
     // =====  Your code ends here  =====
   }
