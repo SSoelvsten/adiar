@@ -76,11 +76,11 @@ int main(int argc, char *argv[])
     std::chrono::steady_clock::time_point begin_new = std::chrono::steady_clock::now();
     bdd new_order = bdd_reorder(root, permutation);
     std::chrono::steady_clock::time_point end_new = std::chrono::steady_clock::now();
+    std::cout << "Time elapsed reordering = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_new - begin_new).count() << "[ms]" << std::endl;
+
     adiar_printstat();
     adiar_statsreset();
     reset_reorder_stats();
-    
-    std::cout << "Time elapsed reordering = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_new - begin_new).count() << "[ms]" << std::endl;
     
     std::chrono::steady_clock::time_point begin_back = std::chrono::steady_clock::now();
     bdd org_back = bdd_reorder(new_order, permutation_inverse);
