@@ -4,13 +4,15 @@
 #include <iostream>
 #include <cstddef>
 
+#include <adiar/internal/safe_number.h>
+
 namespace adiar
 {
   // Internal/external memory (ADIAR_STATS)
   struct memory_t
   {
-    size_t lpq_internal = 0;
-    size_t lpq_external = 0;
+    uintwide_t lpq_internal = 0;
+    uintwide_t lpq_external = 0;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -34,25 +36,25 @@ namespace adiar
     struct equality_t : public memory_t
     {
       // Early termination cases
-      size_t exit_on_same_file = 0;
-      size_t exit_on_nodecount = 0;
-      size_t exit_on_varcount = 0;
-      size_t exit_on_sinkcount = 0;
-      size_t exit_on_levels_mismatch = 0;
+      uintwide_t exit_on_same_file = 0;
+      uintwide_t exit_on_nodecount = 0;
+      uintwide_t exit_on_varcount = 0;
+      uintwide_t exit_on_sinkcount = 0;
+      uintwide_t exit_on_levels_mismatch = 0;
 
       // Statistics on non-trivial cases
       struct slow_t
       {
-        size_t runs = 0;
-        size_t exit_on_root = 0;
-        size_t exit_on_processed_on_level = 0;
-        size_t exit_on_children = 0;
+        uintwide_t runs = 0;
+        uintwide_t exit_on_root = 0;
+        uintwide_t exit_on_processed_on_level = 0;
+        uintwide_t exit_on_children = 0;
       } slow_check;
 
       struct fast_t
       {
-        size_t runs = 0;
-        size_t exit_on_mismatch = 0;
+        uintwide_t runs = 0;
+        uintwide_t exit_on_mismatch = 0;
       } fast_check;
     } equality;
 
@@ -67,8 +69,8 @@ namespace adiar
     // Levelized Priority Queue (ADIAR_STATS_EXTRA)
     struct priority_queue_t
     {
-      size_t push_bucket = 0;
-      size_t push_overflow = 0;
+      uintwide_t push_bucket = 0;
+      uintwide_t push_overflow = 0;
     } priority_queue;
 
     // Product construction
@@ -83,12 +85,12 @@ namespace adiar
     struct reduce_t : public memory_t
     {
       // (ADIAR_STATS)
-      size_t sum_node_arcs = 0;
-      size_t sum_sink_arcs = 0;
+      uintwide_t sum_node_arcs = 0;
+      uintwide_t sum_sink_arcs = 0;
 
       // (ADIAR_STATS_EXTRA)
-      size_t removed_by_rule_1 = 0;
-      size_t removed_by_rule_2 = 0;
+      uintwide_t removed_by_rule_1 = 0;
+      uintwide_t removed_by_rule_2 = 0;
     } reduce;
 
     // Substitution
