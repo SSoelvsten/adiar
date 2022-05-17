@@ -77,13 +77,20 @@ namespace adiar
     o << endl;
 
 #ifdef ADIAR_STATS_EXTRA
-    uintwide_t total_pushes = stats_priority_queue.push_bucket + stats_priority_queue.push_overflow;
-
     o << indent << bold_on << "Levelized Priority Queue" << bold_off << endl;
+
+    uintwide_t total_pushes = stats_priority_queue.push_bucket + stats_priority_queue.push_overflow;
     o << indent << indent << "pushes to bucket        " << indent << stats_priority_queue.push_bucket
       << " = " << percent_frac(stats_priority_queue.push_bucket, total_pushes) << percent << endl;
     o << indent << indent << "pushes to overflow      " << indent << stats_priority_queue.push_overflow
       << " = " << percent_frac(stats_priority_queue.push_overflow, total_pushes) << percent << endl;
+    o << endl;
+
+    o << indent << indent << "max size precision ratio" << indent
+      << stats_priority_queue.sum_actual_max_size << " / " << stats_priority_queue.sum_predicted_max_size
+      << " = " << percent_frac(stats_priority_queue.sum_actual_max_size, stats_priority_queue.sum_predicted_max_size) << percent
+      << endl;
+
     o << endl;
 
 #endif

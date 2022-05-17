@@ -354,6 +354,13 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     priority_queue_t _overflow_queue;
 
+#ifdef ADIAR_STATS_EXTRA
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The actual maximum size of the levelized priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t _actual_max_size = 0u;
+#endif
+
   private:
     static tpie::memory_size_type m_overflow_queue(tpie::memory_size_type memory_given)
     {
@@ -445,6 +452,14 @@ namespace adiar {
       }
     }
 
+  public:
+    ~levelized_priority_queue()
+    {
+#ifdef ADIAR_STATS_EXTRA
+      stats_priority_queue.sum_predicted_max_size += _max_size;
+      stats_priority_queue.sum_actual_max_size += _actual_max_size;
+#endif
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -509,6 +524,9 @@ namespace adiar {
                   "There is at least one pushable bucket (i.e. level)");
 
       _size++;
+#ifdef ADIAR_STATS_EXTRA
+      _actual_max_size = std::max(_actual_max_size, _size);
+#endif
 
       label_t bucket_offset = 1u;
       do {
