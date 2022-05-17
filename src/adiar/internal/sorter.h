@@ -64,9 +64,12 @@ namespace adiar {
     }
 
   public:
-    internal_sorter(size_t /*memory_bytes*/, size_t no_elements, size_t /*no_sorters*/, pred_t pred = pred_t())
+    internal_sorter([[maybe_unused]] size_t memory_bytes, size_t no_elements, [[maybe_unused]] size_t no_sorters, pred_t pred = pred_t())
       : _array(no_elements), _pred(pred), _size(0), _front_idx(0)
-    { }
+    {
+      adiar_debug(no_elements <= memory_fits(memory_bytes / no_sorters),
+                  "Must be instantiated with enough memory.");
+    }
 
     void push(const T& t)
     {
