@@ -1,5 +1,7 @@
 #include "statistics.h"
 
+#include <cnl/fraction.h>
+
 #include <adiar/internal/pred.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/reduce.h>
@@ -33,13 +35,21 @@ namespace adiar
   }
 
   // Helper functions for pretty printing (UNIX)
-  std::ostream& bold_on(std::ostream& os)  { return os << "\e[1m"; }
-  std::ostream& bold_off(std::ostream& os) { return os << "\e[0m"; }
-  std::ostream& percent(std::ostream& os)  { return os << "%"; }
-  std::ostream& indent(std::ostream& os)   { return os << "  "; }
-  std::ostream& endl(std::ostream& os)     { return os << std::endl; }
+  inline std::ostream& bold_on(std::ostream& os)  { return os << "\e[1m"; }
+  inline std::ostream& bold_off(std::ostream& os) { return os << "\e[0m"; }
+  inline std::ostream& percent(std::ostream& os)  { return os << "%"; }
+  inline std::ostream& indent(std::ostream& os)   { return os << "  "; }
+  inline std::ostream& endl(std::ostream& os)     { return os << std::endl; }
 
-  double compute_percent(size_t s, size_t of) { return (static_cast<double>(s) / static_cast<double>(of)) * 100; }
+  inline std::ostream& operator<< (std::ostream& os, const uintwide_t &s)
+  {
+    return os << to_string(s);
+  }
+
+  double frac_to_percent(uintwide_t nominator, uintwide_t denominator) {
+    const cnl::fraction<uintwide_t, uintwide_t> frac(nominator * 100u, denominator);
+    return cnl::convert<cnl::saturated_overflow_tag, cnl::saturated_overflow_tag, double>(frac);
+  }
 
   void adiar_printstat(std::ostream &o)
   {
@@ -69,98 +79,98 @@ namespace adiar
     o << endl;
 
 #ifdef ADIAR_STATS_EXTRA
-    size_t total_pushes = stats_priority_queue.push_bucket + stats_priority_queue.push_overflow;
+    uintwide_t total_pushes = stats_priority_queue.push_bucket + stats_priority_queue.push_overflow;
 
     o << indent << bold_on << "Levelized Priority Queue" << bold_off << endl;
     o << indent << indent << "pushes to bucket        " << indent << stats_priority_queue.push_bucket
-      << " = " << compute_percent(stats_priority_queue.push_bucket, total_pushes) << percent << endl;
+      << " = " << frac_to_percent(stats_priority_queue.push_bucket, total_pushes) << percent << endl;
     o << indent << indent << "pushes to overflow      " << indent << stats_priority_queue.push_overflow
-      << " = " << compute_percent(stats_priority_queue.push_overflow, total_pushes) << percent << endl;
+      << " = " << frac_to_percent(stats_priority_queue.push_overflow, total_pushes) << percent << endl;
     o << endl;
 
 #endif
-    size_t total_arcs = stats_reduce.sum_node_arcs + stats_reduce.sum_sink_arcs;
+    uintwide_t total_arcs = stats_reduce.sum_node_arcs + stats_reduce.sum_sink_arcs;
     o << indent << bold_on << "Reduce" << bold_off << endl;
 
     o << indent << indent << "input size              " << indent << total_arcs << " arcs = " << total_arcs / 2 << " nodes" << endl;
 
     o << indent << indent << indent << "node arcs:            " << indent
-      << stats_reduce.sum_node_arcs << " = " << compute_percent(stats_reduce.sum_node_arcs, total_arcs) << percent << endl;
+      << stats_reduce.sum_node_arcs << " = " << frac_to_percent(stats_reduce.sum_node_arcs, total_arcs) << percent << endl;
 
     o << indent << indent << indent << "sink arcs:            " << indent
-      << stats_reduce.sum_sink_arcs << " = " << compute_percent(stats_reduce.sum_sink_arcs, total_arcs) << percent << endl;
+      << stats_reduce.sum_sink_arcs << " = " << frac_to_percent(stats_reduce.sum_sink_arcs, total_arcs) << percent << endl;
 
 #ifdef ADIAR_STATS_EXTRA
-    size_t total_removed = stats_reduce.removed_by_rule_1 + stats_reduce.removed_by_rule_2;
+    uintwide_t total_removed = stats_reduce.removed_by_rule_1 + stats_reduce.removed_by_rule_2;
     o << indent << indent << "nodes removed           " << indent
-      << total_removed << " = " << compute_percent(total_removed, total_arcs) << percent << endl;
+      << total_removed << " = " << frac_to_percent(total_removed, total_arcs) << percent << endl;
 
     if (total_removed > 0) {
       o << indent << indent << indent << "rule 1:               " << indent
-        << stats_reduce.removed_by_rule_1 << " = " << compute_percent(stats_reduce.removed_by_rule_1, total_removed) << percent << endl;
+        << stats_reduce.removed_by_rule_1 << " = " << frac_to_percent(stats_reduce.removed_by_rule_1, total_removed) << percent << endl;
 
       o << indent << indent << indent << "rule 2:               " << indent
-        << stats_reduce.removed_by_rule_2 << " = " << compute_percent(stats_reduce.removed_by_rule_2, total_removed) << percent << endl;
+        << stats_reduce.removed_by_rule_2 << " = " << frac_to_percent(stats_reduce.removed_by_rule_2, total_removed) << percent << endl;
     }
     o << endl;
 #endif
 
     o << indent << bold_on << "Type of auxilliary data structures" << bold_off << endl;
-    size_t total_reduce = stats_reduce.lpq_internal + stats_reduce.lpq_external;
+    uintwide_t total_reduce = stats_reduce.lpq_internal + stats_reduce.lpq_external;
     o << indent << indent << "Reduce" << endl;
     o << indent << indent << indent << "Internal" << indent
-      << stats_reduce.lpq_internal << " = " << compute_percent(stats_reduce.lpq_internal, total_reduce) << percent << endl;
+      << stats_reduce.lpq_internal << " = " << frac_to_percent(stats_reduce.lpq_internal, total_reduce) << percent << endl;
     o << indent << indent << indent << "External" << indent
-      << stats_reduce.lpq_external << " = " << compute_percent(stats_reduce.lpq_external, total_reduce) << percent << endl;
+      << stats_reduce.lpq_external << " = " << frac_to_percent(stats_reduce.lpq_external, total_reduce) << percent << endl;
 
-    size_t total_count = stats_count.lpq_internal + stats_count.lpq_external;
+    uintwide_t total_count = stats_count.lpq_internal + stats_count.lpq_external;
     o << indent << indent << "Count" << endl;
     o << indent << indent << indent << "Internal" << indent
-      << stats_count.lpq_internal << " = " << compute_percent(stats_count.lpq_internal, total_count) << percent << endl;
+      << stats_count.lpq_internal << " = " << frac_to_percent(stats_count.lpq_internal, total_count) << percent << endl;
     o << indent << indent << indent << "External" << indent
-      << stats_count.lpq_external << " = " << compute_percent(stats_count.lpq_external, total_count) << percent << endl;
+      << stats_count.lpq_external << " = " << frac_to_percent(stats_count.lpq_external, total_count) << percent << endl;
 
-    size_t total_product = stats_product_construction.lpq_internal + stats_product_construction.lpq_external;
+    uintwide_t total_product = stats_product_construction.lpq_internal + stats_product_construction.lpq_external;
     o << indent << indent << "Product construction" << endl;
     o << indent << indent << indent << "Internal" << indent
-      << stats_product_construction.lpq_internal << " = " << compute_percent(stats_product_construction.lpq_internal, total_product) << percent << endl;
+      << stats_product_construction.lpq_internal << " = " << frac_to_percent(stats_product_construction.lpq_internal, total_product) << percent << endl;
     o << indent << indent << indent << "External" << indent
-      << stats_product_construction.lpq_external << " = " << compute_percent(stats_product_construction.lpq_external, total_product) << percent << endl;
+      << stats_product_construction.lpq_external << " = " << frac_to_percent(stats_product_construction.lpq_external, total_product) << percent << endl;
 
-    size_t total_quantify = stats_quantify.lpq_internal + stats_quantify.lpq_external;
+    uintwide_t total_quantify = stats_quantify.lpq_internal + stats_quantify.lpq_external;
     o << indent << indent << "Quantification" << endl;
     o << indent << indent << indent << "Internal" << indent
-      << stats_quantify.lpq_internal << " = " << compute_percent(stats_quantify.lpq_internal, total_quantify) << percent << endl;
+      << stats_quantify.lpq_internal << " = " << frac_to_percent(stats_quantify.lpq_internal, total_quantify) << percent << endl;
     o << indent << indent << indent << "External" << indent
-      << stats_quantify.lpq_external << " = " << compute_percent(stats_quantify.lpq_external, total_quantify) << percent << endl;
+      << stats_quantify.lpq_external << " = " << frac_to_percent(stats_quantify.lpq_external, total_quantify) << percent << endl;
 
-    size_t total_if_else = stats_if_else.lpq_internal + stats_if_else.lpq_external;
+    uintwide_t total_if_else = stats_if_else.lpq_internal + stats_if_else.lpq_external;
     o << indent << indent << "If-then-else" << endl;
     o << indent << indent << indent << "Internal" << indent
-      << stats_if_else.lpq_internal << " = " << compute_percent(stats_if_else.lpq_internal, total_if_else) << percent << endl;
+      << stats_if_else.lpq_internal << " = " << frac_to_percent(stats_if_else.lpq_internal, total_if_else) << percent << endl;
     o << indent << indent << indent << "External" << indent
-      << stats_if_else.lpq_external << " = " << compute_percent(stats_if_else.lpq_external, total_if_else) << percent << endl;
+      << stats_if_else.lpq_external << " = " << frac_to_percent(stats_if_else.lpq_external, total_if_else) << percent << endl;
 
-    size_t total_substitute = stats_substitute.lpq_internal + stats_substitute.lpq_external;
+    uintwide_t total_substitute = stats_substitute.lpq_internal + stats_substitute.lpq_external;
     o << indent << indent << "Substitution" << endl;
     o << indent << indent << indent << "Internal" << indent
-      << stats_substitute.lpq_internal << " = " << compute_percent(stats_substitute.lpq_internal, total_substitute) << percent << endl;
+      << stats_substitute.lpq_internal << " = " << frac_to_percent(stats_substitute.lpq_internal, total_substitute) << percent << endl;
     o << indent << indent << indent << "External" << indent
-      << stats_substitute.lpq_external << " = " << compute_percent(stats_substitute.lpq_external, total_substitute) << percent << endl;
+      << stats_substitute.lpq_external << " = " << frac_to_percent(stats_substitute.lpq_external, total_substitute) << percent << endl;
 
-    size_t total_compare = stats_equality.lpq_internal + stats_equality.lpq_external;
+    uintwide_t total_compare = stats_equality.lpq_internal + stats_equality.lpq_external;
     o << indent << indent << "Comparison" << endl;
     o << indent << indent << indent << "Internal" << indent
-      << stats_equality.lpq_internal << " = " << compute_percent(stats_equality.lpq_internal, total_compare) << percent << endl;
+      << stats_equality.lpq_internal << " = " << frac_to_percent(stats_equality.lpq_internal, total_compare) << percent << endl;
     o << indent << indent << indent << "External" << indent
-      << stats_equality.lpq_external << " = " << compute_percent(stats_equality.lpq_external, total_compare) << percent << endl;
+      << stats_equality.lpq_external << " = " << frac_to_percent(stats_equality.lpq_external, total_compare) << percent << endl;
 
-    size_t total_intercut = stats_intercut.lpq_internal + stats_intercut.lpq_external;
+    uintwide_t total_intercut = stats_intercut.lpq_internal + stats_intercut.lpq_external;
     o << indent << indent << "Intercut" << endl;
     o << indent << indent << indent << "Internal" << indent
-      << stats_intercut.lpq_internal << " = " << compute_percent(stats_intercut.lpq_internal, total_intercut) << percent << endl;
+      << stats_intercut.lpq_internal << " = " << frac_to_percent(stats_intercut.lpq_internal, total_intercut) << percent << endl;
     o << indent << indent << indent << "External" << indent
-      << stats_intercut.lpq_external << " = " << compute_percent(stats_intercut.lpq_external, total_intercut) << percent << endl;
+      << stats_intercut.lpq_external << " = " << frac_to_percent(stats_intercut.lpq_external, total_intercut) << percent << endl;
 
     o << endl;
 #endif
