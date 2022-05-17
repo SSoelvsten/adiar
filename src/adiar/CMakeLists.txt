@@ -29,6 +29,7 @@ set(HEADERS
   # internal
   internal/assert.h
   internal/build.h
+  internal/cnl.h
   internal/convert.h
   internal/count.h
   internal/cut.h

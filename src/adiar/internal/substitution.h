@@ -9,10 +9,10 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
+#include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
-#include <adiar/internal/safe_number.h>
 
 namespace adiar
 {
@@ -207,7 +207,7 @@ namespace adiar
   size_t __substitute_2level_upper_bound(const typename substitute_policy::reduced_t &dd)
   {
     const safe_size_t max_2level_cut = dd.max_2level_cut(cut_type::INTERNAL);
-    return unpack(max_2level_cut + 2u);
+    return to_size(max_2level_cut + 2u);
   }
 
   template<typename substitute_policy, typename substitute_act_mgr>

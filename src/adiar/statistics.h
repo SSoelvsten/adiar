@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstddef>
 
-#include <adiar/internal/safe_number.h>
+#include <adiar/internal/cnl.h>
 
 namespace adiar
 {

@@ -1,8 +1,9 @@
-#ifndef ADIAR_INTERNAL_SAFE_NUMBER_H
-#define ADIAR_INTERNAL_SAFE_NUMBER_H
+#ifndef ADIAR_INTERNAL_CNL_H
+#define ADIAR_INTERNAL_CNL_H
 
 #include <sstream>
 
+#include <cnl/fraction.h>
 #include <cnl/overflow_integer.h>
 #include <cnl/wide_integer.h>
 
@@ -16,7 +17,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Unpacks the value from a 'safe_size_t'.
   //////////////////////////////////////////////////////////////////////////////
-  inline size_t unpack(const safe_size_t s)
+  inline size_t to_size(const safe_size_t s)
   {
     return cnl::convert<cnl::saturated_overflow_tag, cnl::saturated_overflow_tag, size_t>(s);
   }
@@ -25,6 +26,14 @@ namespace adiar
   /// \brief A wide intger, i.e. suport of infinite size.
   //////////////////////////////////////////////////////////////////////////////
   typedef cnl::wide_integer<128, uint32_t> uintwide_t;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Compute (100 * nominator) / denominator as a double.
+  //////////////////////////////////////////////////////////////////////////////
+  inline double percent_frac(uintwide_t nominator, uintwide_t denominator) {
+    const cnl::fraction<uintwide_t, uintwide_t> frac(nominator * 100u, denominator);
+    return cnl::convert<cnl::saturated_overflow_tag, cnl::saturated_overflow_tag, double>(frac);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// Derivative of the 'cnl:_impl:to_chars_natural' (and 'cnl::_impl:itoc'
@@ -58,4 +67,4 @@ namespace adiar
   }
 }
 
-#endif // ADIAR_INTERNAL_SAFE_NUMBER_H
+#endif // ADIAR_INTERNAL_CNL_H

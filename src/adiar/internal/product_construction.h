@@ -12,10 +12,10 @@
 #include <adiar/bdd/bdd.h>
 
 #include <adiar/internal/build.h>
+#include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
-#include <adiar/internal/safe_number.h>
 #include <adiar/internal/tuple.h>
 
 namespace adiar
@@ -429,10 +429,10 @@ namespace adiar
     const safe_size_t right_cut_sinks = cut::get(in_2, right_ct) - right_cut_internal;
 
     // Compute cut, where we make sure not to pair sinks with sinks.
-    return unpack(left_cut_internal * right_cut_internal
-                  + left_cut_sinks * right_cut_internal
-                  + left_cut_internal * right_cut_sinks
-                  + const_size_inc);
+    return to_size(left_cut_internal * right_cut_internal
+                   + left_cut_sinks * right_cut_internal
+                   + left_cut_internal * right_cut_sinks
+                   + const_size_inc);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -464,10 +464,10 @@ namespace adiar
 
     // Compute cut, where we count the product, the input-sink pairings, and the
     // connection from the product to the input-sink pairings separately.
-    return unpack(left_2level_cut * right_2level_cut
-                  + (right_1level_cut * left_sink_arcs) + left_sink_vals * right_2level_cut
-                  + (left_1level_cut * right_sink_arcs) + right_sink_vals * left_2level_cut
-                  + 2u);
+    return to_size(left_2level_cut * right_2level_cut
+                   + (right_1level_cut * left_sink_arcs) + left_sink_vals * right_2level_cut
+                   + (left_1level_cut * right_sink_arcs) + right_sink_vals * left_2level_cut
+                   + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -487,7 +487,7 @@ namespace adiar
     const safe_size_t right_sink_vals = number_of_sinks(right_ct);
     const safe_size_t right_size = in_2->size();
 
-    return unpack((left_size + left_sink_vals) * (right_size + right_sink_vals) + 1u + 2u);
+    return to_size((left_size + left_sink_vals) * (right_size + right_sink_vals) + 1u + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////

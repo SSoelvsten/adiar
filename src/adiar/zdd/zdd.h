@@ -4,8 +4,8 @@
 #include <adiar/data.h>
 #include <adiar/file.h>
 
+#include <adiar/internal/cnl.h>
 #include <adiar/internal/decision_diagram.h>
-#include <adiar/internal/safe_number.h>
 #include <adiar/internal/util.h>
 
 namespace adiar {
@@ -133,7 +133,7 @@ namespace adiar {
       //   with.
       const size_t add_suppressed = !includes_sink(ct, false) && cut_size == ilevel_cuts[ct_excl_false];
 
-      return unpack(cut_size + add_suppressed);
+      return to_size(cut_size + add_suppressed);
     }
   };
 }

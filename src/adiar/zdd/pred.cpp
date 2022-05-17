@@ -1,9 +1,9 @@
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
+#include <adiar/internal/cnl.h>
 #include <adiar/internal/pred.h>
 #include <adiar/internal/product_construction.h>
-#include <adiar/internal/safe_number.h>
 
 namespace adiar {
   bool zdd_equal(const zdd &s1, const zdd &s2)
@@ -21,7 +21,7 @@ namespace adiar {
       const safe_size_t max_2level_cut_1 = in_1->max_2level_cut[ct_1];
       const safe_size_t max_2level_cut_2 = in_2->max_2level_cut[ct_2];
 
-      return unpack(max_2level_cut_1 * max_2level_cut_2);
+      return to_size(max_2level_cut_1 * max_2level_cut_2);
     }
 
     static constexpr size_t memory_usage()

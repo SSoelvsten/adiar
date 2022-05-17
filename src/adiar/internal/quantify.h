@@ -10,8 +10,8 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/cut.h>
+#include <adiar/internal/cnl.h>
 #include <adiar/internal/levelized_priority_queue.h>
-#include <adiar/internal/safe_number.h>
 #include <adiar/internal/tuple.h>
 
 namespace adiar
@@ -306,7 +306,7 @@ namespace adiar
     const safe_size_t max_cut_internal = cut::get(in, ct_internal);
     const safe_size_t max_cut_sinks = cut::get(in, ct_sinks);
 
-    return unpack(max_cut_internal * max_cut_sinks + const_size_inc);
+    return to_size(max_cut_internal * max_cut_sinks + const_size_inc);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -316,7 +316,7 @@ namespace adiar
   size_t __quantify_ilevel_upper_bound(const typename quantify_policy::reduced_t &in)
   {
     const safe_size_t in_size = in->size();
-    return unpack(in_size * in_size + 1u + 2u);
+    return to_size(in_size * in_size + 1u + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
