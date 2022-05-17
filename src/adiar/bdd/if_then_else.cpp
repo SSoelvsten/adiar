@@ -34,7 +34,7 @@ namespace adiar
   };
 
 #ifndef NDEBUG
-  struct ite_triple_1_lt : public std::binary_function<ite_triple_1, ite_triple_1, bool>
+  struct ite_triple_1_lt
   {
     bool operator()(const ite_triple_1 &a, const ite_triple_1 &b)
     {
@@ -60,7 +60,7 @@ namespace adiar
   };
 
 #ifndef NDEBUG
-  struct ite_triple_2_lt : public std::binary_function<ite_triple_2, ite_triple_2, bool>
+  struct ite_triple_2_lt
   {
     bool operator()(const ite_triple_2 &a, const ite_triple_2 &b)
     {
@@ -82,7 +82,7 @@ namespace adiar
   };
 
 #ifndef NDEBUG
-  struct ite_triple_3_lt : public std::binary_function<ite_triple_3, ite_triple_3, bool>
+  struct ite_triple_3_lt
   {
     bool operator()(const ite_triple_3 &a, const ite_triple_3 &b)
     {
