@@ -71,6 +71,9 @@ namespace adiar
     {
       uintwide_t push_bucket = 0;
       uintwide_t push_overflow = 0;
+
+      uintwide_t sum_predicted_max_size = 0;
+      uintwide_t sum_actual_max_size = 0;
     } priority_queue;
 
     // Product construction
