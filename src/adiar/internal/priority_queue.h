@@ -59,7 +59,7 @@ namespace adiar
     internal_priority_queue([[maybe_unused]] size_t memory_bytes, size_t max_size)
       : pq(max_size)
     {
-      adiar_debug(memory_usage(max_size) <= memory_bytes,
+      adiar_debug(max_size <= memory_fits(memory_bytes),
                   "Must be instantiated with enough memory.");
     }
 
