@@ -70,7 +70,7 @@ namespace adiar {
     }
   };
 
-  struct tuple_lt : public std::binary_function<tuple, tuple, bool>
+  struct tuple_lt
   {
     bool operator()(const tuple &a, const tuple &b)
     {
@@ -78,7 +78,7 @@ namespace adiar {
     }
   };
 
-  struct tuple_fst_lt : public std::binary_function<tuple, tuple, bool>
+  struct tuple_fst_lt
   {
     bool operator()(const tuple &a, const tuple &b)
     {
@@ -89,7 +89,7 @@ namespace adiar {
     }
   };
 
-  struct tuple_snd_lt : public std::binary_function<tuple, tuple, bool>
+  struct tuple_snd_lt
   {
     bool operator()(const tuple &a, const tuple &b)
     {
@@ -108,7 +108,7 @@ namespace adiar {
     }
   };
 
-  struct triple_lt : public std::binary_function<triple, triple, bool>
+  struct triple_lt
   {
     bool operator()(const triple &a, const triple &b)
     {
@@ -118,7 +118,7 @@ namespace adiar {
     }
   };
 
-  struct triple_fst_lt : public std::binary_function<triple, triple, bool>
+  struct triple_fst_lt
   {
     bool operator()(const triple &a, const triple &b)
     {
@@ -128,7 +128,7 @@ namespace adiar {
     }
   };
 
-  struct triple_snd_lt : public std::binary_function<triple, triple, bool>
+  struct triple_snd_lt
   {
     bool operator()(const triple &a, const triple &b)
     {
@@ -138,7 +138,7 @@ namespace adiar {
     }
   };
 
-  struct triple_trd_lt : public std::binary_function<triple, triple, bool>
+  struct triple_trd_lt
   {
     bool operator()(const triple &a, const triple &b)
     {

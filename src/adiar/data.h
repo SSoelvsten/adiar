@@ -708,7 +708,7 @@ namespace adiar {
   /// \brief Sorting predicate: First on unique identifier of the source, and
   ///        secondly on whether it is the high arc.
   //////////////////////////////////////////////////////////////////////////////
-  struct arc_source_lt : public std::binary_function<arc_t, arc_t, bool>
+  struct arc_source_lt
   {
     bool operator ()(const arc_t& a, const arc_t& b) const {
       return a.source < b.source;
@@ -718,7 +718,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Sorting predicate on the target.
   //////////////////////////////////////////////////////////////////////////////
-  struct arc_target_lt : public std::binary_function<arc_t, arc_t, bool>
+  struct arc_target_lt
   {
     bool operator ()(const arc_t& a, const arc_t& b) const {
       return a.target < b.target

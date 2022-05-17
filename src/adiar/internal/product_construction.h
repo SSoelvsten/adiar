@@ -32,7 +32,7 @@ namespace adiar
   };
 
 #ifndef NDEBUG
-  struct prod_tuple_1_lt : public std::binary_function<tuple, tuple, bool>
+  struct prod_tuple_1_lt
   {
     bool operator()(const prod_tuple_1 &a, const prod_tuple_1 &b)
     {
@@ -58,7 +58,7 @@ namespace adiar
   };
 
 #ifndef NDEBUG
-  struct prod_tuple_2_lt : public std::binary_function<tuple, tuple, bool>
+  struct prod_tuple_2_lt
   {
     bool operator()(const prod_tuple_2 &a, const prod_tuple_2 &b)
     {

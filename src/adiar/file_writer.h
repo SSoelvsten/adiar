@@ -19,7 +19,7 @@ namespace adiar {
   ///          check induces a total ordering.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T>
-  struct no_ordering : public std::binary_function<T, T, bool>
+  struct no_ordering
   {
     bool operator()(const T&, const T&) const
     { return true; }
