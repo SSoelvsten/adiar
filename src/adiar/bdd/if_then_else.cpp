@@ -4,11 +4,11 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/tuple.h>
 #include <adiar/internal/util.h>
-#include <adiar/internal/safe_number.h>
 
 #include <adiar/statistics.h>
 
@@ -509,12 +509,12 @@ namespace adiar
     const safe_size_t else_cut_all = cut::get(in_else, cut_type::ALL);
 
     // Compute 2-level cut where irrelevant pairs of sinks are not paired
-    return unpack((if_cut_internal * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all
-                                      + then_cut_falses * else_cut_trues
-                                      + then_cut_trues * else_cut_falses))
-                  + if_cut_trues  * then_cut_internal
-                  + if_cut_falses * else_cut_internal
-                  + const_size_inc);
+    return to_size((if_cut_internal * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all
+                                       + then_cut_falses * else_cut_trues
+                                       + then_cut_trues * else_cut_falses))
+                   + if_cut_trues  * then_cut_internal
+                   + if_cut_falses * else_cut_internal
+                   + const_size_inc);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -532,7 +532,7 @@ namespace adiar
     // internal node and t_then and t_else are nodes or (mismatching) sinks.
     // Then also count the copies of in_then and in_else for when in_if hits a
     // sink early.
-    return unpack(if_size * ((then_size + 2u) * (else_size + 2u) - 2u) + then_size + else_size + 1u + 2u);
+    return to_size(if_size * ((then_size + 2u) * (else_size + 2u) - 2u) + then_size + else_size + 1u + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////

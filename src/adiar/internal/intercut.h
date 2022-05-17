@@ -8,9 +8,9 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/levelized_priority_queue.h>
-#include <adiar/internal/safe_number.h>
 
 namespace adiar
 {
@@ -319,7 +319,7 @@ namespace adiar
                                       intercut_policy::cut_true_sink);
     const safe_size_t max_2level_cut = dd.max_2level_cut(ct);
 
-    return unpack((2u * max_2level_cut) + 2u);
+    return to_size((2u * max_2level_cut) + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
