@@ -23,16 +23,28 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief A wide intger, i.e. suport of infinite size.
+  /// \brief Wide intger, i.e. support of infinite size.
   //////////////////////////////////////////////////////////////////////////////
   typedef cnl::wide_integer<128, uint32_t> uintwide_t;
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Fraction using wide intger.
+  //////////////////////////////////////////////////////////////////////////////
+  typedef cnl::fraction<uintwide_t, uintwide_t> uintwide_frac_t;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Compute nominator / denominator as a double.
+  //////////////////////////////////////////////////////////////////////////////
+  inline double frac(uintwide_t numerator, uintwide_t denominator) {
+    const uintwide_frac_t frac(numerator, denominator);
+    return cnl::convert<cnl::saturated_overflow_tag, cnl::saturated_overflow_tag, double>(frac);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Compute (100 * nominator) / denominator as a double.
   //////////////////////////////////////////////////////////////////////////////
-  inline double percent_frac(uintwide_t nominator, uintwide_t denominator) {
-    const cnl::fraction<uintwide_t, uintwide_t> frac(nominator * 100u, denominator);
-    return cnl::convert<cnl::saturated_overflow_tag, cnl::saturated_overflow_tag, double>(frac);
+  inline double percent_frac(uintwide_t numerator, uintwide_t denominator) {
+    return 100.0 * frac(numerator, denominator);
   }
 
   //////////////////////////////////////////////////////////////////////////////

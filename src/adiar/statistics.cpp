@@ -86,11 +86,18 @@ namespace adiar
       << " = " << percent_frac(stats_priority_queue.push_overflow, total_pushes) << percent << endl;
     o << endl;
 
-    o << indent << indent << "max size precision ratio" << indent
-      << stats_priority_queue.sum_actual_max_size << " / " << stats_priority_queue.sum_predicted_max_size
-      << " = " << percent_frac(stats_priority_queue.sum_actual_max_size, stats_priority_queue.sum_predicted_max_size) << percent
+    o << indent << indent << "maximum size precision ratio (unweighted): "
+      << 100.0 * stats_priority_queue.sum_max_size_ratio / stats_priority_queue.sum_destructors << percent
       << endl;
+    o << indent << indent << indent << "sum of ratios:          " << stats_priority_queue.sum_max_size_ratio << endl
+      << indent << indent << indent << "number of instances:    " << stats_priority_queue.sum_destructors << endl;
+    o << endl;
 
+    o << indent << indent << "maximum size precision ratio (weighted):   "
+      << percent_frac(stats_priority_queue.sum_actual_max_size, stats_priority_queue.sum_predicted_max_size) << percent
+      << endl;
+    o << indent << indent << indent << "sum of actual size:     " << stats_priority_queue.sum_actual_max_size << endl
+      << indent << indent << indent << "sum of predictions:     " << stats_priority_queue.sum_predicted_max_size << endl;
     o << endl;
 
 #endif

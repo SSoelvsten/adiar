@@ -74,6 +74,9 @@ namespace adiar
 
       uintwide_t sum_predicted_max_size = 0;
       uintwide_t sum_actual_max_size = 0;
+
+      double sum_max_size_ratio = 0.0;
+      size_t sum_destructors = 0;
     } priority_queue;
 
     // Product construction
