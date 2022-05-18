@@ -458,6 +458,9 @@ namespace adiar {
 #ifdef ADIAR_STATS_EXTRA
       stats_priority_queue.sum_predicted_max_size += _max_size;
       stats_priority_queue.sum_actual_max_size += _actual_max_size;
+
+      stats_priority_queue.sum_max_size_ratio += frac(_actual_max_size, _max_size);
+      stats_priority_queue.sum_destructors++;
 #endif
     }
 
