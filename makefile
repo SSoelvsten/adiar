@@ -72,7 +72,7 @@ M = 1024
 
 main:
 	@mkdir -p build/
-	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug \
+	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Release \
                       -D CMAKE_C_FLAGS=$(O2_FLAGS) \
                       -D CMAKE_CXX_FLAGS=$(O2_FLAGS) \
                       -D ADIAR_STATS_EXTRA=ON \

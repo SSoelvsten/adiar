@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     // ===== Your code starts here =====
 #if EXP_BDD
     bdd root = bdd_and(bdd_ithvar(0), bdd_ithvar(1));
-    int num_of_vars = 20;
+    int num_of_vars = 28;
     for (int i = 2; i < num_of_vars; i += 2)
     {
       root = bdd_or(root, bdd_and(bdd_ithvar(i), bdd_ithvar(i + 1)));
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 #endif
 
 #if QUEENS_BDD
-    N = 7;
+    N = 8;
     
     std::vector<label_t> permutation;
     int dir = 1;
@@ -158,6 +158,7 @@ int main(int argc, char *argv[])
     output_dot(org_back, "orginal_order_back.dot");
 
     std::cout << "Input node count: " << bdd_nodecount(root) << " Reordered node count: " << bdd_nodecount(new_order) << " original_back node count: " << bdd_nodecount(org_back) << std::endl;
+    std::cout << "Input sat count: " << bdd_satcount(root) << " Reorder sat count: " << bdd_satcount(new_order) << std::endl;
 
     // =====  Your code ends here  =====
   }
