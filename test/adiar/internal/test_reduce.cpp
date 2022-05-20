@@ -1,12 +1,8 @@
-// Import Reduce algorithm
-#include <adiar/internal/reduce.h>
-
-// Import Decision Diagram policies
-#include <adiar/bdd/bdd_policy.h>
-#include <adiar/zdd/zdd_policy.h>
-
 go_bandit([]() {
   describe("adiar/internal/reduce.h", [&]() {
+    // The reduce<dd_policy> function is used within the constructors of the BDD
+    // and ZDD classes.
+
     ptr_t sink_T = create_sink_ptr(true);
     ptr_t sink_F = create_sink_ptr(false);
 
@@ -27,10 +23,9 @@ go_bandit([]() {
                / \                / \
                F T                F T
       */
-      __bdd in = bdd(x0x1_node_file, false);
 
-      // Reduce it
-      bdd out = reduce<bdd_policy>(in);
+      // Use a __bdd that stores the node file from a bdd.
+      bdd out(__bdd(bdd(x0x1_node_file, false)));
 
       AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file._file_ptr));
       AssertThat(out.is_negated(), Is().False());
@@ -44,10 +39,9 @@ go_bandit([]() {
                / \                / \
                F T                T F
       */
-      __bdd in = bdd(x0x1_node_file, true);
 
-      // Reduce it
-      bdd out = reduce<bdd_policy>(in);
+      // Use a __bdd that stores the node file from a bdd.
+      bdd out(__bdd(bdd(x0x1_node_file, true)));
 
       AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file._file_ptr));
       AssertThat(out.is_negated(), Is().True());
@@ -93,8 +87,7 @@ go_bandit([]() {
         in->max_1level_cut = 2;
 
         // Reduce it
-
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -196,7 +189,7 @@ go_bandit([]() {
         in->max_1level_cut = 2;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -303,7 +296,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -418,7 +411,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -540,7 +533,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -668,7 +661,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -773,7 +766,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -874,7 +867,7 @@ go_bandit([]() {
         in->max_1level_cut = 3;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -978,7 +971,7 @@ go_bandit([]() {
         in->max_1level_cut = 3;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1085,7 +1078,7 @@ go_bandit([]() {
         in->max_1level_cut = 4;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1174,7 +1167,7 @@ go_bandit([]() {
         in->max_1level_cut = 2;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1269,7 +1262,7 @@ go_bandit([]() {
           in->max_1level_cut = 4;
 
           // Reduce it
-          bdd out = reduce<bdd_policy>(in);
+          bdd out(in);
 
           AssertThat(is_canonical(out), Is().True());
 
@@ -1380,7 +1373,7 @@ go_bandit([]() {
         in->max_1level_cut = 3;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1437,7 +1430,7 @@ go_bandit([]() {
         in->max_1level_cut = 0;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1497,7 +1490,7 @@ go_bandit([]() {
         in->max_1level_cut = 1;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1548,7 +1541,7 @@ go_bandit([]() {
         in->max_1level_cut = 0;
 
         // Reduce it
-        bdd out = reduce<bdd_policy>(in);
+        bdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1611,7 +1604,7 @@ go_bandit([]() {
         in->max_1level_cut = 1;
 
         // Reduce it
-        zdd out = reduce<zdd_policy>(in);
+        zdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1689,7 +1682,7 @@ go_bandit([]() {
         in->max_1level_cut = 3;
 
         // Reduce it
-        zdd out = reduce<zdd_policy>(in);
+        zdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1795,7 +1788,7 @@ go_bandit([]() {
         in->max_1level_cut = 2;
 
         // Reduce it
-        zdd out = reduce<zdd_policy>(in);
+        zdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1870,7 +1863,7 @@ go_bandit([]() {
         in->max_1level_cut = 0;
 
         // Reduce it
-        zdd out = reduce<zdd_policy>(in);
+        zdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1930,7 +1923,7 @@ go_bandit([]() {
         in->max_1level_cut = 1;
 
         // Reduce it
-        zdd out = reduce<zdd_policy>(in);
+        zdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -1994,7 +1987,7 @@ go_bandit([]() {
         in->max_1level_cut = 1;
 
         // Reduce it
-        zdd out = reduce<zdd_policy>(in);
+        zdd out(in);
 
         AssertThat(out->canonical, Is().True());
 
@@ -2045,7 +2038,7 @@ go_bandit([]() {
         in->max_1level_cut = 0;
 
         // Reduce it
-        zdd out = reduce<zdd_policy>(in);
+        zdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
@@ -2099,7 +2092,7 @@ go_bandit([]() {
         in->max_1level_cut = 0;
 
         // Reduce it
-        zdd out = reduce<zdd_policy>(in);
+        zdd out(in);
 
         AssertThat(is_canonical(out), Is().True());
 
