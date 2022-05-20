@@ -124,8 +124,8 @@ namespace adiar
       o << indent << indent << indent << "rule 2:               " << indent
         << stats_reduce.removed_by_rule_2 << " = " << percent_frac(stats_reduce.removed_by_rule_2, total_removed) << percent << endl;
     }
-    o << endl;
 #endif
+    o << endl;
 
     o << indent << bold_on << "Type of auxilliary data structures" << bold_off << endl;
     uintwide_t total_reduce = stats_reduce.lpq_internal + stats_reduce.lpq_external;
