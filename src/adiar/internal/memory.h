@@ -46,15 +46,6 @@ namespace adiar
       return tpie::get_memory_manager().available();
     }
   }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// Functionality "missing" in TPIE.
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename elem_t>
-  size_t __tpie_file_stream_memory_usage()
-  {
-    return 8u + adiar::memory::get_block_size();
-  }
 }
 
 #endif // ADIAR_INTERNAL_MEMORY_H

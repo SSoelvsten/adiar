@@ -26,9 +26,9 @@ namespace adiar
   class file_stream
   {
   public:
-    static constexpr size_t memory_usage()
+    static size_t memory_usage()
     {
-      return __tpie_file_stream_memory_usage<T>();
+      return tpie::file_stream<T>::memory_usage();
     }
 
   private:
@@ -248,7 +248,7 @@ namespace adiar
     size_t _unread[2] = { 0u, 0u };
 
   public:
-    static constexpr size_t memory_usage()
+    static size_t memory_usage()
     {
       return in_order_arc_stream<REVERSE>::memory_usage()
         + out_of_order_arc_stream<REVERSE>::memory_usage();

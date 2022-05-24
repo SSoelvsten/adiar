@@ -55,7 +55,7 @@ namespace adiar {
     typedef typename label_stream_t<file_t>::stream_t stream_t;
 
   public:
-    static constexpr size_t memory_usage()
+    static size_t memory_usage()
     {
       return FILES * stream_t::memory_usage();
     }
@@ -230,14 +230,14 @@ namespace adiar {
       BUCKETS * sorter_t::DATA_STRUCTURES + priority_queue_t::DATA_STRUCTURES;
 
   public:
-    static constexpr tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
+    static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
       return internal_priority_queue<elem_t, elem_comp_t>::memory_usage(no_elements)
         + BUCKETS * internal_sorter<elem_t, elem_comp_t>::memory_usage(no_elements)
         + label_merger<file_t, level_comp_t, FILES>::memory_usage();
     }
 
-    static constexpr tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
+    static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
       const size_t const_memory_bytes = label_merger<file_t, level_comp_t, FILES>::memory_usage();
 

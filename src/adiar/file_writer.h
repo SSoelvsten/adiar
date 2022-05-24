@@ -41,9 +41,9 @@ namespace adiar {
   class simple_file_writer
   {
   public:
-    static constexpr size_t memory_usage()
+    static size_t memory_usage()
     {
-      return __tpie_file_stream_memory_usage<T>();
+      return tpie::file_stream<T>::memory_usage();
     }
 
   protected:
@@ -177,10 +177,10 @@ namespace adiar {
   class meta_file_writer
   {
   public:
-    static constexpr size_t memory_usage()
+    static size_t memory_usage()
     {
-      return FILE_CONSTANTS<T>::files * __tpie_file_stream_memory_usage<T>()
-        + __tpie_file_stream_memory_usage<level_info>();
+      return FILE_CONSTANTS<T>::files * tpie::file_stream<T>::memory_usage()
+        + tpie::file_stream<level_info>::memory_usage();
     }
 
   protected:
