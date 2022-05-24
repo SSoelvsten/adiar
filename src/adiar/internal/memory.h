@@ -2,6 +2,7 @@
 #define ADIAR_INTERNAL_MEMORY_H
 
 #include <string>
+#include <cmath>
 
 #include <tpie/tpie.h>
 #include <tpie/memory.h>
@@ -41,11 +42,6 @@ namespace adiar
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    /// \brief Minimum block size of 2 MiB.
-    //////////////////////////////////////////////////////////////////////////////
-    constexpr size_t MINIMUM_BLOCK_SIZE = 2 * 1024 * 1024;
-
-    //////////////////////////////////////////////////////////////////////////////
     /// \brief Sets the block size for TPIE.
     //////////////////////////////////////////////////////////////////////////////
     inline void set_block_size(size_t block_size_bytes)
@@ -65,9 +61,25 @@ namespace adiar
     /// \brief Computes a recommended block size to be used with a specific
     ///        amount of available internal memory.
     //////////////////////////////////////////////////////////////////////////////
-    inline size_t recommended_block_size(size_t /*memory_limit_bytes*/)
+    inline size_t recommended_block_size(size_t memory_limit_bytes)
     {
-      return MINIMUM_BLOCK_SIZE;
+      constexpr size_t MINIMUM_BLOCK_SIZE_MiB = 2;
+      constexpr size_t MAXIMUM_BLOCK_SIZE_MiB = 32;
+
+      constexpr size_t MAX_SPLITS_OF_MEMORY = 12;
+
+      constexpr size_t MiB_VS_BYTES = 1024 * 1024;
+
+      const size_t memory_limit_MiB = memory_limit_bytes / MiB_VS_BYTES;
+
+      const size_t block_size_ub = MiB_VS_BYTES *
+        std::min(static_cast<size_t>(sqrt(memory_limit_MiB / MAX_SPLITS_OF_MEMORY)), MAXIMUM_BLOCK_SIZE_MiB);
+
+      size_t block_size = MINIMUM_BLOCK_SIZE_MiB * MiB_VS_BYTES;
+      while ((block_size * 2) <= block_size_ub) {
+        block_size *= 2;
+      }
+      return block_size;
     }
 
     //////////////////////////////////////////////////////////////////////////////
