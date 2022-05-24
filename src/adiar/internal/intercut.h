@@ -366,8 +366,8 @@ namespace adiar
       stats_intercut.lpq_internal++;
 #endif
       return __intercut<intercut_policy,
-                        intercut_priority_queue_1_t<external_sorter, external_priority_queue>,
-                        intercut_priority_queue_2_t<external_sorter, external_priority_queue>>
+                        intercut_priority_queue_1_t<internal_sorter, internal_priority_queue>,
+                        intercut_priority_queue_2_t<internal_sorter, internal_priority_queue>>
         (dd, labels, pq_1_internal_memory, pq_2_internal_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
