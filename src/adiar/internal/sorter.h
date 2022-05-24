@@ -162,14 +162,12 @@ namespace adiar {
       //       slightly more than the amount of memory necessary to hold all
       //       values simultaneously.
 
-      // Quickfix: Issue #250 of thomasmoelhave/tpie
-      constexpr tpie::memory_size_type minimum_phase1 = sizeof(T) * 128 * 1024 + 5 * 1024 * 1024;
-
+      const tpie::memory_size_type minimum_phase1 = _sorter.minimum_memory_phase_1();
       const tpie::memory_size_type maximum_phase1 = (memory_bytes >> 4) / (number_of_sorters - 1);
+      const tpie::memory_size_type internal_sorter_usage = internal_sorter<T, pred_t>::memory_usage(no_elements);
 
       const tpie::memory_size_type phase1 =
-        std::max(minimum_phase1,
-          std::min(maximum_phase1, internal_sorter<T, pred_t>::memory_usage(no_elements) << 1));
+        std::max(minimum_phase1, std::min(maximum_phase1, 2*internal_sorter_usage));
 
       const tpie::memory_size_type phase2 =
         memory_bytes - phase1 * (number_of_sorters - 1);
