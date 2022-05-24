@@ -322,10 +322,6 @@ namespace adiar
     return to_size((2u * max_2level_cut) + 2u);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // TODO: If nothing changes (no new nodes are added and the current are left
-  //       as-is) then one can return the input once more.
-
   template<typename intercut_policy>
   typename intercut_policy::unreduced_t intercut(const typename intercut_policy::reduced_t &dd,
                                                  const label_file &labels)
