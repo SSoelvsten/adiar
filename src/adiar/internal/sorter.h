@@ -24,12 +24,12 @@ namespace adiar {
     size_t _front_idx;
 
   public:
-    static constexpr tpie::memory_size_type unsafe_memory_usage(tpie::memory_size_type no_elements)
+    static tpie::memory_size_type unsafe_memory_usage(tpie::memory_size_type no_elements)
     {
       return tpie::array<T>::memory_usage(no_elements);
     }
 
-    static constexpr tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
+    static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
       const tpie::memory_size_type max_value = std::numeric_limits<tpie::memory_size_type>::max();
       const tpie::memory_size_type max_elem = memory_fits(max_value);
@@ -39,7 +39,7 @@ namespace adiar {
       return unsafe_memory_usage(no_elements);
     }
 
-    static constexpr tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
+    static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
       return tpie::array<T>::memory_fits(memory_bytes);
     }

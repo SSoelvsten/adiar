@@ -40,12 +40,12 @@ namespace adiar
   class internal_priority_queue
   {
   public:
-    static constexpr tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
+    static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
       return tpie::internal_priority_queue<elem_t, comp_t>::memory_usage(no_elements);
     }
 
-    static constexpr tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
+    static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
       return tpie::internal_priority_queue<elem_t, comp_t>::memory_fits(memory_bytes);
     }
