@@ -88,6 +88,8 @@ go_bandit([]() {
         aw.unsafe_push(create_level_info(1,1u));
       }
 
+      af->max_1level_cut = 1;
+
       it("should copy-construct values from arc_file", [&]() {
         __zdd t1 = af;
         AssertThat(t1.has<arc_file>(), Is().True());
