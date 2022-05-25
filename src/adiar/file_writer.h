@@ -641,11 +641,10 @@ namespace adiar {
         for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
           // Upper bound based on 1-level cut
           const cut_size_t ub_from_1level_cut =
-            ct == cut_type::INTERNAL && _file_ptr->max_1level_cut[ct] < MAX_CUT / 3u
-            ? (_file_ptr->max_1level_cut[cut_type::INTERNAL] * 3u) / 2u
-            : (_file_ptr->max_1level_cut[ct] < MAX_CUT / 2u
-               ? _file_ptr->max_1level_cut[ct] + _file_ptr->max_1level_cut[cut_type::INTERNAL]
-               : MAX_CUT);
+            _file_ptr->max_1level_cut[ct] < MAX_CUT / 3u
+            ? ((_file_ptr->max_1level_cut[cut_type::INTERNAL] * 3u) / 2u
+               + (_file_ptr->max_1level_cut[ct] - _file_ptr->max_1level_cut[cut_type::INTERNAL]))
+            : MAX_CUT;
 
           // Use smallest sound upper bound.
           _file_ptr->max_2level_cut[ct] = std::min({
