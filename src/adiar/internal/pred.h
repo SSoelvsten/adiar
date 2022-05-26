@@ -219,10 +219,10 @@ namespace adiar
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
 
-
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
     const size_t max_pq1_size = comp_policy::level_check_t::pq1_upper_bound(f1, f2);
+    const size_t max_pq2_size = comp_policy::level_check_t::pq2_upper_bound(f1, f2);
 
     const size_t pq_1_memory_fits =
       comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
@@ -231,7 +231,7 @@ namespace adiar
       comparison_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
 
     // TODO: Only one element per node in pq_2, so maximum is width (or their product)!
-    if(max_pq1_size <= pq_1_memory_fits && max_pq1_size <= pq_2_memory_fits) {
+    if(max_pq1_size <= pq_1_memory_fits && max_pq2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_equality.lpq_internal++;
 #endif
