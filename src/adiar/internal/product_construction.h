@@ -262,7 +262,7 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_1_t prod_pq_1({in_1, in_2}, pq_1_memory, max_pq_1_size);
+    pq_1_t prod_pq_1({in_1, in_2}, pq_1_memory, max_pq_1_size, stats_product_construction.lpq);
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process root and create initial recursion requests
@@ -584,7 +584,7 @@ namespace adiar
 
     if(max_pq_1_size <= pq_1_memory_fits && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_product_construction.lpq_internal++;
+      stats_product_construction.lpq.internal++;
 #endif
       return __product_construction<prod_policy,
                                     prod_priority_queue_1_t<internal_sorter, internal_priority_queue>,
@@ -592,7 +592,7 @@ namespace adiar
         (in_1, in_2, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_product_construction.lpq_external++;
+      stats_product_construction.lpq.external++;
 #endif
       const size_t pq_1_memory = aux_available_memory / 2;
       const size_t pq_2_memory = pq_1_memory;

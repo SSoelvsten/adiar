@@ -1,5 +1,7 @@
 #include "statistics.h"
 
+#include <iomanip>
+
 #include <adiar/internal/pred.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/reduce.h>
@@ -12,17 +14,6 @@
 
 namespace adiar
 {
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Convert a wide integer to a string and push to an output stream.
-  ///
-  /// TODO: move into 'adiar/internal/cnl.h'
-  //////////////////////////////////////////////////////////////////////////////
-  inline std::ostream& operator<< (std::ostream& os, const uintwide_t &s)
-  {
-    return os << to_string(s);
-  }
-
-  // Define the available function
   stats_t adiar_stats()
   {
 #ifndef ADIAR_STATS
@@ -30,162 +21,16 @@ namespace adiar
 #endif
 
     return {
+      stats_levelized_priority_queue,
       stats_count,
       stats_equality,
       stats_if_else,
       stats_intercut,
-      stats_levelized_priority_queue,
       stats_product_construction,
       stats_quantify,
       stats_reduce,
       stats_substitute,
     };
-  }
-
-  // Helper functions for pretty printing (UNIX)
-  inline std::ostream& bold_on(std::ostream& os)  { return os << "\e[1m"; }
-  inline std::ostream& bold_off(std::ostream& os) { return os << "\e[0m"; }
-  inline std::ostream& percent(std::ostream& os)  { return os << "%"; }
-  inline std::ostream& indent(std::ostream& os)   { return os << "  "; }
-  inline std::ostream& endl(std::ostream& os)     { return os << std::endl; }
-
-  void adiar_printstat(std::ostream &o)
-  {
-    o << bold_on << "Adiar statistics" << bold_off << endl;
-    o << endl;
-#ifndef ADIAR_STATS
-    o << indent << "Not gathered; please compile with 'ADIAR_STATS' and/or 'ADIAR_STATS_EXTRA'." << endl;
-#else
-    o << std::fixed << std::setprecision(2);
-
-    o << indent << bold_on << "Equality checking" << bold_off << " (trace)" << endl;
-    o << indent << indent << "same file               " << indent << stats_equality.exit_on_same_file << endl;
-    o << indent << indent << "node count              " << indent << stats_equality.exit_on_nodecount << endl;
-    o << indent << indent << "var count               " << indent << stats_equality.exit_on_varcount << endl;
-    o << indent << indent << "sink count              " << indent << stats_equality.exit_on_sinkcount << endl;
-    o << indent << indent << "levels mismatch         " << indent << stats_equality.exit_on_levels_mismatch << endl;
-    o << endl;
-    o << indent << indent << "O(sort(N)) algorithm    " << endl;
-    o << indent << indent << indent << "runs                    " << stats_equality.slow_check.runs << endl;
-    o << indent << indent << indent << "root                    " << stats_equality.slow_check.exit_on_root << endl;
-    o << indent << indent << indent << "requests on a level     " << stats_equality.slow_check.exit_on_processed_on_level << endl;
-    o << indent << indent << indent << "child violation         " << stats_equality.slow_check.exit_on_children << endl;
-    o << endl;
-    o << indent << indent << "O(N/B) algorithm" << endl;
-    o << indent << indent << indent << "runs                    " << stats_equality.fast_check.runs << endl;
-    o << indent << indent << indent << "node mismatch           " << stats_equality.fast_check.exit_on_mismatch << endl;
-    o << endl;
-
-#ifdef ADIAR_STATS_EXTRA
-    o << indent << bold_on << "Levelized Priority Queue" << bold_off << endl;
-
-    uintwide_t total_pushes = stats_levelized_priority_queue.push_bucket + stats_levelized_priority_queue.push_overflow;
-    o << indent << indent << "pushes to bucket        " << indent << stats_levelized_priority_queue.push_bucket
-      << " = " << percent_frac(stats_levelized_priority_queue.push_bucket, total_pushes) << percent << endl;
-    o << indent << indent << "pushes to overflow      " << indent << stats_levelized_priority_queue.push_overflow
-      << " = " << percent_frac(stats_levelized_priority_queue.push_overflow, total_pushes) << percent << endl;
-    o << endl;
-
-    o << indent << indent << "maximum size precision ratio (unweighted): "
-      << 100.0 * stats_levelized_priority_queue.sum_max_size_ratio / stats_levelized_priority_queue.sum_destructors << percent
-      << endl;
-    o << indent << indent << indent << "sum of ratios:          " << stats_levelized_priority_queue.sum_max_size_ratio << endl
-      << indent << indent << indent << "number of instances:    " << stats_levelized_priority_queue.sum_destructors << endl;
-    o << endl;
-
-    o << indent << indent << "maximum size precision ratio (weighted):   "
-      << percent_frac(stats_levelized_priority_queue.sum_actual_max_size, stats_levelized_priority_queue.sum_predicted_max_size) << percent
-      << endl;
-    o << indent << indent << indent << "sum of actual size:     " << stats_levelized_priority_queue.sum_actual_max_size << endl
-      << indent << indent << indent << "sum of predictions:     " << stats_levelized_priority_queue.sum_predicted_max_size << endl;
-    o << endl;
-
-#endif
-    uintwide_t total_arcs = stats_reduce.sum_node_arcs + stats_reduce.sum_sink_arcs;
-    o << indent << bold_on << "Reduce" << bold_off << endl;
-
-    o << indent << indent << "input size              " << indent << total_arcs << " arcs = " << total_arcs / 2 << " nodes" << endl;
-
-    o << indent << indent << indent << "node arcs:            " << indent
-      << stats_reduce.sum_node_arcs << " = " << percent_frac(stats_reduce.sum_node_arcs, total_arcs) << percent << endl;
-
-    o << indent << indent << indent << "sink arcs:            " << indent
-      << stats_reduce.sum_sink_arcs << " = " << percent_frac(stats_reduce.sum_sink_arcs, total_arcs) << percent << endl;
-
-#ifdef ADIAR_STATS_EXTRA
-    uintwide_t total_removed = stats_reduce.removed_by_rule_1 + stats_reduce.removed_by_rule_2;
-    o << indent << indent << "nodes removed           " << indent
-      << total_removed << " = " << percent_frac(total_removed, total_arcs) << percent << endl;
-
-    if (total_removed > 0) {
-      o << indent << indent << indent << "rule 1:               " << indent
-        << stats_reduce.removed_by_rule_1 << " = " << percent_frac(stats_reduce.removed_by_rule_1, total_removed) << percent << endl;
-
-      o << indent << indent << indent << "rule 2:               " << indent
-        << stats_reduce.removed_by_rule_2 << " = " << percent_frac(stats_reduce.removed_by_rule_2, total_removed) << percent << endl;
-    }
-#endif
-    o << endl;
-
-    o << indent << bold_on << "Type of auxilliary data structures" << bold_off << endl;
-    uintwide_t total_reduce = stats_reduce.lpq_internal + stats_reduce.lpq_external;
-    o << indent << indent << "Reduce" << endl;
-    o << indent << indent << indent << "Internal" << indent
-      << stats_reduce.lpq_internal << " = " << percent_frac(stats_reduce.lpq_internal, total_reduce) << percent << endl;
-    o << indent << indent << indent << "External" << indent
-      << stats_reduce.lpq_external << " = " << percent_frac(stats_reduce.lpq_external, total_reduce) << percent << endl;
-
-    uintwide_t total_count = stats_count.lpq_internal + stats_count.lpq_external;
-    o << indent << indent << "Count" << endl;
-    o << indent << indent << indent << "Internal" << indent
-      << stats_count.lpq_internal << " = " << percent_frac(stats_count.lpq_internal, total_count) << percent << endl;
-    o << indent << indent << indent << "External" << indent
-      << stats_count.lpq_external << " = " << percent_frac(stats_count.lpq_external, total_count) << percent << endl;
-
-    uintwide_t total_product = stats_product_construction.lpq_internal + stats_product_construction.lpq_external;
-    o << indent << indent << "Product construction" << endl;
-    o << indent << indent << indent << "Internal" << indent
-      << stats_product_construction.lpq_internal << " = " << percent_frac(stats_product_construction.lpq_internal, total_product) << percent << endl;
-    o << indent << indent << indent << "External" << indent
-      << stats_product_construction.lpq_external << " = " << percent_frac(stats_product_construction.lpq_external, total_product) << percent << endl;
-
-    uintwide_t total_quantify = stats_quantify.lpq_internal + stats_quantify.lpq_external;
-    o << indent << indent << "Quantification" << endl;
-    o << indent << indent << indent << "Internal" << indent
-      << stats_quantify.lpq_internal << " = " << percent_frac(stats_quantify.lpq_internal, total_quantify) << percent << endl;
-    o << indent << indent << indent << "External" << indent
-      << stats_quantify.lpq_external << " = " << percent_frac(stats_quantify.lpq_external, total_quantify) << percent << endl;
-
-    uintwide_t total_if_else = stats_if_else.lpq_internal + stats_if_else.lpq_external;
-    o << indent << indent << "If-then-else" << endl;
-    o << indent << indent << indent << "Internal" << indent
-      << stats_if_else.lpq_internal << " = " << percent_frac(stats_if_else.lpq_internal, total_if_else) << percent << endl;
-    o << indent << indent << indent << "External" << indent
-      << stats_if_else.lpq_external << " = " << percent_frac(stats_if_else.lpq_external, total_if_else) << percent << endl;
-
-    uintwide_t total_substitute = stats_substitute.lpq_internal + stats_substitute.lpq_external;
-    o << indent << indent << "Substitution" << endl;
-    o << indent << indent << indent << "Internal" << indent
-      << stats_substitute.lpq_internal << " = " << percent_frac(stats_substitute.lpq_internal, total_substitute) << percent << endl;
-    o << indent << indent << indent << "External" << indent
-      << stats_substitute.lpq_external << " = " << percent_frac(stats_substitute.lpq_external, total_substitute) << percent << endl;
-
-    uintwide_t total_compare = stats_equality.lpq_internal + stats_equality.lpq_external;
-    o << indent << indent << "Comparison" << endl;
-    o << indent << indent << indent << "Internal" << indent
-      << stats_equality.lpq_internal << " = " << percent_frac(stats_equality.lpq_internal, total_compare) << percent << endl;
-    o << indent << indent << indent << "External" << indent
-      << stats_equality.lpq_external << " = " << percent_frac(stats_equality.lpq_external, total_compare) << percent << endl;
-
-    uintwide_t total_intercut = stats_intercut.lpq_internal + stats_intercut.lpq_external;
-    o << indent << indent << "Intercut" << endl;
-    o << indent << indent << indent << "Internal" << indent
-      << stats_intercut.lpq_internal << " = " << percent_frac(stats_intercut.lpq_internal, total_intercut) << percent << endl;
-    o << indent << indent << indent << "External" << indent
-      << stats_intercut.lpq_external << " = " << percent_frac(stats_intercut.lpq_external, total_intercut) << percent << endl;
-
-    o << endl;
-#endif
   }
 
   void adiar_statsreset()
@@ -199,5 +44,364 @@ namespace adiar
     stats_quantify = {};
     stats_reduce = {};
     stats_substitute = {};
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Helper functions for pretty printing (UNIX)
+  int indent_level = 0;
+
+  constexpr int FLOAT_PRECISION = 2;
+
+  const std::string bold_on  = "\e[1m";
+  const std::string bold_off = "\e[0m";
+  const std::string percent  = "%";
+
+  inline std::ostream& indent(std::ostream &os)
+  { return os << "| " << std::left << std::setw(2*indent_level) << ""; }
+
+  inline std::ostream& label(std::ostream &os)
+  {
+    constexpr int cell1_indent_level = 38;
+    return os << std::left << std::setw(cell1_indent_level - 2*indent_level);
+  }
+
+  inline std::ostream& endl(std::ostream &os)
+  { return os << std::endl; }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Convert a wide integer to a string and push to an output stream.
+  ///
+  /// TODO: move into 'adiar/internal/cnl.h'
+  //////////////////////////////////////////////////////////////////////////////
+  inline std::ostream& operator<< (std::ostream& os, const uintwide_t &s)
+  {
+    return os << to_string(s);
+  }
+
+  void __printstat_lpq(std::ostream &o, const stats_t::levelized_priority_queue_t& stats)
+  {
+#ifdef ADIAR_STATS_EXTRA
+    if (indent_level == 0) {
+      o << indent << bold_on << "Levelized Priority Queue" << bold_off << endl;
+    }
+
+    indent_level++;
+
+    if (stats.sum_destructors == 0) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    uintwide_t total_pushes = stats.push_bucket + stats.push_overflow;
+    o << indent << bold_on << label << "push(...)" << bold_off << total_pushes << endl;
+
+    indent_level++;
+    o << indent << label << "hit bucket" << stats.push_bucket
+      << " = " << percent_frac(stats.push_bucket, total_pushes) << percent
+      << endl;
+    o << indent << label << "hit overflow" << stats.push_overflow
+      << " = " << percent_frac(stats.push_overflow, total_pushes) << percent << endl;
+    indent_level--;
+
+    o << indent << endl;
+
+    o << indent << bold_on << "prediction precision ratio" << bold_off << endl;
+
+    indent_level++;
+    o << indent << label << "unweighted"
+      << stats.sum_max_size_ratio << " / " << stats.sum_destructors
+      << " = " << 100.0 * stats.sum_max_size_ratio / stats.sum_destructors << percent
+      << endl;
+
+    o << indent << label << "weighted"
+      << stats.sum_actual_max_size << " / " << stats.sum_predicted_max_size
+      << " = " << percent_frac(stats.sum_actual_max_size, stats.sum_predicted_max_size) << percent
+      << endl;
+    indent_level -= 2;
+#endif
+  }
+
+  void __printstat_alg_base(std::ostream &o, const stats_t::__alg_base& stats)
+  {
+    o << indent << bold_on << "levelized priority queue" << bold_off << endl;
+
+    const uintwide_t total_lpqs = stats.lpq.internal + stats.lpq.external;
+
+    indent_level++;
+    o << indent << label << "internal memory"
+      << stats.lpq.internal << " = " << percent_frac(stats_reduce.lpq.internal, total_lpqs) << percent << endl;
+
+    o << indent << label << "external memory"
+      << stats_reduce.lpq.external << " = " << percent_frac(stats_reduce.lpq.external, total_lpqs) << percent << endl;
+    indent_level--;
+
+    o << indent << endl;
+
+    __printstat_lpq(o, stats.lpq);
+  }
+
+
+  void __printstat_count(std::ostream &o)
+  {
+    uintwide_t total_runs = stats_count.lpq.internal + stats_count.lpq.external;
+    o << indent << bold_on << label << "Count" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    __printstat_alg_base(o, stats_count);
+    indent_level--;
+  }
+
+  void __printstat_comparison_check(std::ostream &o)
+  {
+    uintwide_t total_runs = stats_equality.lpq.internal + stats_equality.lpq.external;
+    o << indent << bold_on << label << "Comparison Check" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    __printstat_alg_base(o, stats_equality);
+    indent_level--;
+  }
+
+  void __printstat_ite(std::ostream &o)
+  {
+    uintwide_t total_runs = stats_if_else.lpq.internal + stats_if_else.lpq.external;
+    o << indent << bold_on << label << "If-Then-Else" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    __printstat_alg_base(o, stats_if_else);
+    indent_level--;
+  }
+
+  void __printstat_intercut(std::ostream &o)
+  {
+    uintwide_t total_runs = stats_intercut.lpq.internal + stats_intercut.lpq.external;
+    o << indent << bold_on << label << "Intercut" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    __printstat_alg_base(o, stats_intercut);
+    indent_level--;
+  }
+
+  void __printstat_isomorphism(std::ostream &o)
+  {
+    const uintwide_t total_runs = stats_equality.exit_on_same_file
+                                + stats_equality.exit_on_nodecount
+                                + stats_equality.exit_on_varcount
+                                + stats_equality.exit_on_sinkcount
+                                + stats_equality.exit_on_levels_mismatch
+                                + stats_equality.slow_check.runs
+                                + stats_equality.fast_check.runs;
+
+    o << indent << bold_on << label << "Isomorphism Check" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    o << indent  << bold_on << "execution trace" << bold_off << endl;
+
+    indent_level++;
+    o << indent << "O(1) termination cases" << endl;
+    indent_level++;
+    o << indent << label << "same file" << stats_equality.exit_on_same_file << endl;
+    o << indent << label << "node count mismatch" << stats_equality.exit_on_nodecount << endl;
+    o << indent << label << "var count mismatch" << stats_equality.exit_on_varcount << endl;
+    o << indent << label << "sink count mismatch" << stats_equality.exit_on_sinkcount << endl;
+    indent_level--;
+
+    o << indent << endl;
+
+    o << indent << "O(L/B) termination cases" << endl;
+    indent_level++;
+    o << indent << label << "level info mismatch" << stats_equality.exit_on_levels_mismatch << endl;
+    indent_level--;
+
+    o << indent << endl;
+
+    o << indent << label << "O(sort(N)) algorithm" << stats_equality.slow_check.runs << endl;
+    indent_level++;
+    o << indent << label << "local violation (root)" << stats_equality.slow_check.exit_on_root << endl;
+    o << indent << label << "local violation (other)" << stats_equality.slow_check.exit_on_children << endl;
+    o << indent << label << "too many requests" << stats_equality.slow_check.exit_on_processed_on_level << endl;
+    indent_level--;
+
+    o << indent << endl;
+
+    o << indent << label << "O(N/B) algorithm" << stats_equality.fast_check.runs << endl;
+    indent_level++;
+    o << indent << label << "node mismatch" << stats_equality.fast_check.exit_on_mismatch << endl;
+
+    indent_level -= 2;
+
+    o << indent << endl;
+
+    o << indent << bold_on << "levelized priority queue" << bold_off << endl;
+    indent_level++;
+    o << indent << "see 'Comparison Check'" << endl;
+
+    indent_level -= 2;
+  }
+  void __printstat_product_construction(std::ostream &o)
+  {
+    uintwide_t total_runs = stats_product_construction.lpq.internal + stats_product_construction.lpq.external;
+    o << indent << bold_on << label << "Product Construction" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    __printstat_alg_base(o, stats_product_construction);
+    indent_level--;
+  }
+
+  void __printstat_reduce(std::ostream &o)
+  {
+    uintwide_t total_runs = stats_reduce.lpq.internal + stats_reduce.lpq.external;
+    o << indent << bold_on << label << "Reduce" << bold_off << total_runs << endl;
+
+    indent_level++;
+
+    if (total_runs == 0) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+
+    uintwide_t total_arcs = stats_reduce.sum_node_arcs + stats_reduce.sum_sink_arcs;
+    o << indent << bold_on << label << "inputs size" << bold_off << total_arcs << " arcs = " << total_arcs / 2 << " nodes" << endl;
+
+    indent_level++;
+    o << indent << label << "node arcs:"
+      << stats_reduce.sum_node_arcs << " = " << percent_frac(stats_reduce.sum_node_arcs, total_arcs) << percent << endl;
+
+    o << indent << label << "sink arcs:"
+      << stats_reduce.sum_sink_arcs << " = " << percent_frac(stats_reduce.sum_sink_arcs, total_arcs) << percent << endl;
+    indent_level--;
+
+#ifdef ADIAR_STATS_EXTRA
+    o << indent << endl;
+    uintwide_t total_removed = stats_reduce.removed_by_rule_1 + stats_reduce.removed_by_rule_2;
+    o << indent << bold_on << label << "nodes removed" << bold_off;
+    if (total_removed > 0) {
+      o << total_removed << " = " << percent_frac(total_removed, total_arcs) << percent << endl;
+      indent_level++;
+      o << indent << label << "rule 1:"
+        << stats_reduce.removed_by_rule_1 << " = " << percent_frac(stats_reduce.removed_by_rule_1, total_removed) << percent << endl;
+
+      o << indent << label <<  "rule 2:"
+        << stats_reduce.removed_by_rule_2 << " = " << percent_frac(stats_reduce.removed_by_rule_2, total_removed) << percent << endl;
+      indent_level--;
+    } else {
+      o << "none" << endl;
+    }
+
+    o << indent << endl;
+    __printstat_alg_base(o, stats_reduce);
+
+    indent_level--;
+#endif
+  }
+
+  void __printstat_quantify(std::ostream &o)
+  {
+    uintwide_t total_runs = stats_quantify.lpq.internal + stats_quantify.lpq.external;
+    o << indent << bold_on << label << "Quantification" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    __printstat_alg_base(o, stats_quantify);
+    indent_level--;
+  }
+
+  void __printstat_substitute(std::ostream &o)
+  {
+    uintwide_t total_runs = stats_substitute.lpq.internal + stats_substitute.lpq.external;
+    o << indent << bold_on << label << "Substitution" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    __printstat_alg_base(o, stats_substitute);
+    indent_level--;
+  }
+
+  void adiar_printstat(std::ostream &o)
+  {
+    o << bold_on << "Adiar statistics" << bold_off << endl;
+    o << endl;
+#ifndef ADIAR_STATS
+    o << indent << "Not gathered; please compile with 'ADIAR_STATS' and/or 'ADIAR_STATS_EXTRA'." << endl;
+#else
+    o << std::fixed << std::setprecision(FLOAT_PRECISION);
+
+    __printstat_lpq(o, stats_levelized_priority_queue);
+    o << endl;
+
+    __printstat_count(o);
+    o << endl;
+
+    __printstat_comparison_check(o);
+    o << endl;
+
+    __printstat_ite(o);
+    o << endl;
+
+    __printstat_intercut(o);
+    o << endl;
+
+    __printstat_isomorphism(o);
+    o << endl;
+
+    __printstat_product_construction(o);
+    o << endl;
+
+    __printstat_reduce(o);
+    o << endl;
+
+    __printstat_quantify(o);
+    o << endl;
+
+    __printstat_substitute(o);
+#endif
   }
 }

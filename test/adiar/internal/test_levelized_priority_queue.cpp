@@ -7,6 +7,8 @@ struct pq_test_data {
   uint64_t nonce;
 };
 
+stats_t::levelized_priority_queue_t stats_lpq_tests;
+
 namespace adiar
 {
   template <>
@@ -380,7 +382,7 @@ go_bandit([]() {
       it("initialises #levels = 0", [&]() {
           pq_test_file f;
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
           AssertThat(pq.has_current_level(), Is().False());
@@ -395,7 +397,7 @@ go_bandit([]() {
             fw << 2;
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
           AssertThat(pq.has_current_level(), Is().False());
@@ -410,7 +412,7 @@ go_bandit([]() {
             fw << 1 << 2;
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
           AssertThat(pq.has_current_level(), Is().False());
@@ -428,7 +430,7 @@ go_bandit([]() {
                << 3 << 4; // buckets
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
           AssertThat(pq.has_current_level(), Is().False());
@@ -447,7 +449,7 @@ go_bandit([]() {
                << 5;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
           AssertThat(pq.has_current_level(), Is().False());
@@ -475,7 +477,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -507,7 +509,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -539,7 +541,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -570,7 +572,7 @@ go_bandit([]() {
                << 4 << 5 << 6; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -610,7 +612,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -657,7 +659,7 @@ go_bandit([]() {
                << 4 << 5; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -707,7 +709,7 @@ go_bandit([]() {
                << 9;         // overflow not yet touched
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -741,7 +743,7 @@ go_bandit([]() {
                << 8;            // overflow that will have relabelled bucket(s)
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -788,7 +790,7 @@ go_bandit([]() {
                << 5;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -816,7 +818,7 @@ go_bandit([]() {
                << 6;          // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2, 1});
           pq.setup_next_level(); // 2
@@ -845,7 +847,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -877,7 +879,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -909,7 +911,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -939,7 +941,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {3, 1});
 
@@ -966,7 +968,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -993,7 +995,7 @@ go_bandit([]() {
                  << 5;     // overflow
             }
 
-            test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+            test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
             AssertThat(pq.has_current_level(), Is().False());
 
@@ -1023,7 +1025,7 @@ go_bandit([]() {
                << 4;     // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -1055,7 +1057,7 @@ go_bandit([]() {
                << 4 << 5 << 6; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
           AssertThat(pq.can_pull(), Is().False());
@@ -1090,7 +1092,7 @@ go_bandit([]() {
                  << 11 ;           // overflow
             }
 
-            test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+            test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
             pq.push(pq_test_data {2, 1});
             pq.setup_next_level();
@@ -1124,7 +1126,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2, 1});
           pq.push(pq_test_data {2, 2});
@@ -1152,7 +1154,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2, 1});
           pq.push(pq_test_data {2, 2});
@@ -1203,7 +1205,7 @@ go_bandit([]() {
               fw.unsafe_push(create_level_info(1,1u)); // skipped
             }
 
-            test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+            test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
             pq.push(pq_test_data {4, 1});
 
@@ -1227,7 +1229,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {3, 1});
           pq.push(pq_test_data {4, 1});
@@ -1260,7 +1262,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {5, 2});
           pq.push(pq_test_data {5, 1});
@@ -1297,7 +1299,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {5, 2}); // overflow
 
@@ -1335,7 +1337,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1));
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
 
@@ -1366,7 +1368,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u));
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
 
@@ -1394,7 +1396,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2, 1}); // bucket
 
@@ -1442,7 +1444,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {3, 1}); // overflow
 
@@ -1481,7 +1483,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6 << 7; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {1, 1}); // bucket
           pq.push(pq_test_data {5, 1}); // overflow
@@ -1532,7 +1534,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6 << 7; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {5, 1}); // overflow
           pq.push(pq_test_data {6, 1}); // overflow
@@ -1579,7 +1581,7 @@ go_bandit([]() {
               << 3 << 4 << 5; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {4, 1}); // overflow
           pq.push(pq_test_data {1, 1}); // bucket
@@ -1623,7 +1625,7 @@ go_bandit([]() {
               << 4 << 5;
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {4, 1}); // overflow
           pq.push(pq_test_data {2, 1}); // bucket
@@ -1667,7 +1669,7 @@ go_bandit([]() {
               << 3 << 4; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2, 1}); // buckete
 
@@ -1710,7 +1712,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {4, 1}); // overflow
 
@@ -1748,7 +1750,7 @@ go_bandit([]() {
               << 3 << 4; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.setup_next_level(1u); // buckets: [2,3]
 
@@ -1785,7 +1787,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6 << 7; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {1, 1}); // bucket
           pq.push(pq_test_data {7, 2}); // overflow
@@ -1830,7 +1832,7 @@ go_bandit([]() {
               << 3 << 4 << 5 << 6 << 7; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {6, 1}); // overflow
           pq.push(pq_test_data {7, 2}); // overflow
@@ -1873,7 +1875,7 @@ go_bandit([]() {
               << 3 << 4 << 5; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {1, 1}); // bucket
 
@@ -1913,7 +1915,7 @@ go_bandit([]() {
               << 4 << 5;
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2, 1}); // bucket
 
@@ -1955,7 +1957,7 @@ go_bandit([]() {
               << 3;        // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2,1});
 
@@ -1978,7 +1980,7 @@ go_bandit([]() {
               << 3;        // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2,1});
           pq.push(pq_test_data {2,2});
@@ -2005,7 +2007,7 @@ go_bandit([]() {
               << 3 << 4;   // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {3,1}); // overflow
 
@@ -2028,7 +2030,7 @@ go_bandit([]() {
               << 3 << 4;   // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {3,1}); // overflow
           pq.push(pq_test_data {2,1}); // bucket
@@ -2071,14 +2073,14 @@ go_bandit([]() {
         }
 
         it("cannot pull after initialisation", [&]() {
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
           AssertThat(pq.can_pull(), Is().False());
         });
 
         it("shows element after forwarding to level", [&]() {
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data { 2,1 });
           pq.setup_next_level(); // 2
@@ -2087,7 +2089,7 @@ go_bandit([]() {
         });
 
         it("shows a level becomes empty", [&]() {
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data { 2,1 });
           pq.setup_next_level(); // 2
@@ -2104,7 +2106,7 @@ go_bandit([]() {
         });
 
         it("shows forwarding to an empty level", [&]() {
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data { 3,1 });
           pq.setup_next_level(2); // 2
@@ -2130,7 +2132,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -2164,7 +2166,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {5, 3});  // overflow
           AssertThat(pq.size(), Is().EqualTo(1u));
@@ -2196,7 +2198,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2, 1});  // bucket
           AssertThat(pq.size(), Is().EqualTo(1u));
@@ -2229,7 +2231,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2, 1});  // bucket
           AssertThat(pq.size(), Is().EqualTo(1u));
@@ -2265,7 +2267,7 @@ go_bandit([]() {
                << 1 << 2; // buckets
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -2285,7 +2287,7 @@ go_bandit([]() {
                << 1 << 2; // buckets
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -2309,7 +2311,7 @@ go_bandit([]() {
 
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -2329,7 +2331,7 @@ go_bandit([]() {
                << 1 << 2; // buckets
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {1, 1});
           pq.push(pq_test_data {1, 2});
@@ -2352,7 +2354,7 @@ go_bandit([]() {
                << 3 << 4; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {4, 1});
           pq.push(pq_test_data {4, 2});
@@ -2374,7 +2376,7 @@ go_bandit([]() {
                << 1 << 2; // buckets
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {1, 1});
           pq.push(pq_test_data {1, 2});
@@ -2397,7 +2399,7 @@ go_bandit([]() {
                << 3 << 4; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {4, 1});
           pq.push(pq_test_data {4, 2});
@@ -2419,7 +2421,7 @@ go_bandit([]() {
                << 1 << 2; // buckets
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {1, 1});
           pq.push(pq_test_data {1, 2});
@@ -2440,7 +2442,7 @@ go_bandit([]() {
                << 3 << 4; // overflow
           }
 
-          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 1> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {4, 1});
           pq.push(pq_test_data {4, 2});
@@ -2471,7 +2473,7 @@ go_bandit([]() {
                                    label_file, 1u, std::greater<label_t>,
                                    1u,
                                    1u>
-            pq({f}, memory::available(), 32);
+            pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {2, 1});
           pq.push(pq_test_data {1, 1});
@@ -2508,7 +2510,7 @@ go_bandit([]() {
                                    label_file, 1u, std::greater<label_t>,
                                    1u,
                                    1u>
-            pq({f}, memory::available(), 32);
+            pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {0, 1});
           pq.push(pq_test_data {0, 2});
@@ -2532,7 +2534,7 @@ go_bandit([]() {
                                  label_file, 1u, std::greater<label_t>,
                                  1u,
                                  1u>
-          pq({f}, memory::available(), 32);
+          pq({f}, memory::available(), 32, stats_lpq_tests);
 
         AssertThat(pq.has_current_level(), Is().False());
 
@@ -2580,7 +2582,7 @@ go_bandit([]() {
                                    label_file, 1u, std::less<label_t>,
                                    0u,
                                    1u>
-            pq({f}, memory::available(), 32);
+            pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
           AssertThat(pq.has_current_level(), Is().False());
@@ -2602,7 +2604,7 @@ go_bandit([]() {
                                    label_file, 1u, std::less<label_t>,
                                    0u,
                                    1u>
-            pq({f}, memory::available(), 32);
+            pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.has_current_level(), Is().False());
 
@@ -2624,7 +2626,7 @@ go_bandit([]() {
                                    label_file, 1u, std::less<label_t>,
                                    0u,
                                    1u>
-            pq({f}, memory::available(), 32);
+            pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
           AssertThat(pq.has_current_level(), Is().False());
@@ -2648,7 +2650,7 @@ go_bandit([]() {
                                  pq_test_file, 1u, std::less<label_t>,
                                  0u,
                                  1u>
-          pq({f}, memory::available(), 32);
+          pq({f}, memory::available(), 32, stats_lpq_tests);
 
         AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -2688,7 +2690,7 @@ go_bandit([]() {
                                  pq_test_file, 1u, std::less<label_t>,
                                  0u,
                                  1u>
-          pq({f}, memory::available(), 32);
+          pq({f}, memory::available(), 32, stats_lpq_tests);
 
         AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -2735,7 +2737,7 @@ go_bandit([]() {
                                  pq_test_file, 2u, std::less<label_t>,
                                  0u,
                                  1u>
-          pq({f1,f2}, memory::available(), 32);
+          pq({f1,f2}, memory::available(), 32, stats_lpq_tests);
 
         AssertThat(pq.has_current_level(), Is().False());
 
@@ -2789,7 +2791,7 @@ go_bandit([]() {
       it("initialises with #levels = 0", [&]() {
           pq_test_file f;
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
           AssertThat(pq.has_next_level(), Is().False());
@@ -2809,7 +2811,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
 
@@ -2828,7 +2830,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
 
@@ -2853,7 +2855,7 @@ go_bandit([]() {
           fw.unsafe_push(create_level_info(1,1u)); // skipped
         }
 
-        test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+        test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
         AssertThat(pq.can_pull(), Is().False());
 
@@ -2878,7 +2880,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3053,7 +3055,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u));  // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3094,7 +3096,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3130,7 +3132,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u));  // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3176,7 +3178,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.can_pull(), Is().False());
           AssertThat(pq.has_current_level(), Is().False());
@@ -3379,7 +3381,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(0,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3445,7 +3447,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(0,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3488,7 +3490,7 @@ go_bandit([]() {
               << 5 << 6 << 7 << 8 << 9 << 10;  // overflow
           }
 
-          test_priority_queue<label_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {5, 2}); // overflow
           AssertThat(pq.size(), Is().EqualTo(1u));
@@ -3533,7 +3535,7 @@ go_bandit([]() {
               << 5 << 6 << 7 << 8 << 9 << 10;  // overflow
           }
 
-          test_priority_queue<label_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<label_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {9, 2}); // overflow
           AssertThat(pq.size(), Is().EqualTo(1u));
@@ -3576,7 +3578,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3619,7 +3621,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(0,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           AssertThat(pq.size(), Is().EqualTo(0u));
 
@@ -3667,7 +3669,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {3, 42}); // bucket
 
@@ -3701,7 +3703,7 @@ go_bandit([]() {
             fw.unsafe_push(create_level_info(1,1u)); // skipped
           }
 
-          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32);
+          test_priority_queue<pq_test_file, 3> pq({f}, memory::available(), 32, stats_lpq_tests);
 
           pq.push(pq_test_data {7, 3});  // overflow
 

@@ -67,7 +67,7 @@ namespace adiar
 
   public:
     reduce_priority_queue(const arc_file (&files) [1u], size_t memory_given, size_t max_size)
-      : inner_lpq(files, memory_given, max_size)
+      : inner_lpq(files, memory_given, max_size, stats_reduce.lpq)
     { }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -484,13 +484,13 @@ namespace adiar
 
     if(max_cut <= lpq_memory_fits) {
 #ifdef ADIAR_STATS
-        stats_reduce.lpq_internal++;
+        stats_reduce.lpq.internal++;
 #endif
       return __reduce<dd_policy, reduce_priority_queue<internal_sorter, internal_priority_queue>>
         (in_file, lpq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
-        stats_reduce.lpq_external++;
+        stats_reduce.lpq.external++;
 #endif
       return __reduce<dd_policy, reduce_priority_queue<external_sorter, external_priority_queue>>
         (in_file, lpq_memory, sorters_memory);

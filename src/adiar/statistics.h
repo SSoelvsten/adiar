@@ -9,16 +9,6 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// Statistics for the use of a levelized priority queue per algorithm.
-  //////////////////////////////////////////////////////////////////////////////
-  struct __stats_alg_levelized_priority_queue_t
-  {
-    // ADIAR_STATS
-    uintwide_t lpq_internal = 0;
-    uintwide_t lpq_external = 0;
-  };
-
-  //////////////////////////////////////////////////////////////////////////////
   /// These numbers are always available, but they are only populated with
   /// actual statistics if Adiar is compiled with certain CMake variables set.
   /// Statistics can be gathered on two levels of detail:
@@ -31,12 +21,42 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   struct stats_t
   {
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Levelized Priority Queue (ADIAR_STATS_EXTRA)
+    //////////////////////////////////////////////////////////////////////////////
+    struct levelized_priority_queue_t
+    {
+      // ADIAR_STATS_EXTRA
+      uintwide_t push_bucket = 0;
+      uintwide_t push_overflow = 0;
+
+      uintwide_t sum_predicted_max_size = 0;
+      uintwide_t sum_actual_max_size = 0;
+
+      double sum_max_size_ratio = 0.0;
+      size_t sum_destructors = 0;
+    } levelized_priority_queue;
+
+    //////////////////////////////////////////////////////////////////////////////
+    struct __alg_base
+    {
+      struct __lpq : public levelized_priority_queue_t
+      {
+        // ADIAR_STATS
+        uintwide_t internal = 0;
+        uintwide_t external = 0;
+      } lpq;
+    };
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Top-down Sweeps
+
     // Count
-    struct count_t : public __stats_alg_levelized_priority_queue_t
+    struct count_t : public __alg_base
     { } count;
 
     // Equality Checking statistics (ADIAR_STATS)
-    struct equality_t : public __stats_alg_levelized_priority_queue_t
+    struct equality_t : public __alg_base
     {
       // Early termination cases
       uintwide_t exit_on_same_file = 0;
@@ -62,37 +82,30 @@ namespace adiar
     } equality;
 
     // If-then-else
-    struct if_else_t : public __stats_alg_levelized_priority_queue_t
+    struct if_else_t : public __alg_base
     { } if_else;
 
     // Intercut
-    struct intercut_t : public __stats_alg_levelized_priority_queue_t
+    struct intercut_t : public __alg_base
     { } intercut;
 
-    // Levelized Priority Queue (ADIAR_STATS_EXTRA)
-    struct levelized_priority_queue_t
-    {
-      // ADIAR_STATS_EXTRA
-      uintwide_t push_bucket = 0;
-      uintwide_t push_overflow = 0;
-
-      uintwide_t sum_predicted_max_size = 0;
-      uintwide_t sum_actual_max_size = 0;
-
-      double sum_max_size_ratio = 0.0;
-      size_t sum_destructors = 0;
-    } levelized_priority_queue;
-
     // Product construction
-    struct product_construction_t : public __stats_alg_levelized_priority_queue_t
+    struct product_construction_t : public __alg_base
     { } product_construction;
 
     // Quantification
-    struct quantify_t : public __stats_alg_levelized_priority_queue_t
+    struct quantify_t : public __alg_base
     { } quantify;
 
+    // Substitution
+    struct substitute_t : public __alg_base
+    { } substitute;
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Bottom-up Sweeps
+
     // Reduce
-    struct reduce_t : public __stats_alg_levelized_priority_queue_t
+    struct reduce_t : public __alg_base
     {
       // (ADIAR_STATS)
       uintwide_t sum_node_arcs = 0;
@@ -102,10 +115,6 @@ namespace adiar
       uintwide_t removed_by_rule_1 = 0;
       uintwide_t removed_by_rule_2 = 0;
     } reduce;
-
-    // Substitution
-    struct substitute_t : public __stats_alg_levelized_priority_queue_t
-    { } substitute;
   };
 
   //////////////////////////////////////////////////////////////////////////////

@@ -72,7 +72,7 @@ namespace adiar
     }
 
     // Set up priority queue for recursion
-    pq_1_t comparison_pq_1({f1, f2}, pq_1_memory, max_pq_size);
+    pq_1_t comparison_pq_1({f1, f2}, pq_1_memory, max_pq_size, stats_equality.lpq);
 
     // Check for violation on root children, or 'recurse' otherwise
     label_t level = label_of(fst(v1.uid, v2.uid));
@@ -233,7 +233,7 @@ namespace adiar
     // TODO: Only one element per node in pq_2, so maximum is width (or their product)!
     if(max_pq1_size <= pq_1_memory_fits && max_pq2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_equality.lpq_internal++;
+      stats_equality.lpq.internal++;
 #endif
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>,
@@ -241,7 +241,7 @@ namespace adiar
         (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_internal_memory, max_pq1_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_equality.lpq_external++;
+      stats_equality.lpq.external++;
 #endif
       const size_t pq_1_memory = aux_available_memory / 2;
       const size_t pq_2_memory = pq_1_memory;
