@@ -8,9 +8,12 @@
 
 namespace adiar
 {
-  // Internal/external memory (ADIAR_STATS)
-  struct memory_t
+  //////////////////////////////////////////////////////////////////////////////
+  /// Statistics for the use of a levelized priority queue per algorithm.
+  //////////////////////////////////////////////////////////////////////////////
+  struct __stats_alg_levelized_priority_queue_t
   {
+    // ADIAR_STATS
     uintwide_t lpq_internal = 0;
     uintwide_t lpq_external = 0;
   };
@@ -29,11 +32,11 @@ namespace adiar
   struct stats_t
   {
     // Count
-    struct count_t : public memory_t
+    struct count_t : public __stats_alg_levelized_priority_queue_t
     { } count;
 
-    // Equality Checking statistics  (ADIAR_STATS)
-    struct equality_t : public memory_t
+    // Equality Checking statistics (ADIAR_STATS)
+    struct equality_t : public __stats_alg_levelized_priority_queue_t
     {
       // Early termination cases
       uintwide_t exit_on_same_file = 0;
@@ -59,16 +62,17 @@ namespace adiar
     } equality;
 
     // If-then-else
-    struct if_else_t : public memory_t
+    struct if_else_t : public __stats_alg_levelized_priority_queue_t
     { } if_else;
 
     // Intercut
-    struct intercut_t : public memory_t
+    struct intercut_t : public __stats_alg_levelized_priority_queue_t
     { } intercut;
 
     // Levelized Priority Queue (ADIAR_STATS_EXTRA)
-    struct priority_queue_t
+    struct levelized_priority_queue_t
     {
+      // ADIAR_STATS_EXTRA
       uintwide_t push_bucket = 0;
       uintwide_t push_overflow = 0;
 
@@ -77,18 +81,18 @@ namespace adiar
 
       double sum_max_size_ratio = 0.0;
       size_t sum_destructors = 0;
-    } priority_queue;
+    } levelized_priority_queue;
 
     // Product construction
-    struct product_construction_t : public memory_t
+    struct product_construction_t : public __stats_alg_levelized_priority_queue_t
     { } product_construction;
 
     // Quantification
-    struct quantify_t : public memory_t
+    struct quantify_t : public __stats_alg_levelized_priority_queue_t
     { } quantify;
 
     // Reduce
-    struct reduce_t : public memory_t
+    struct reduce_t : public __stats_alg_levelized_priority_queue_t
     {
       // (ADIAR_STATS)
       uintwide_t sum_node_arcs = 0;
@@ -100,9 +104,8 @@ namespace adiar
     } reduce;
 
     // Substitution
-    struct substitute_t : public memory_t
+    struct substitute_t : public __stats_alg_levelized_priority_queue_t
     { } substitute;
-
   };
 
   //////////////////////////////////////////////////////////////////////////////
