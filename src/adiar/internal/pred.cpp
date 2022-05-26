@@ -33,6 +33,12 @@ namespace adiar
                       in_2->max_2level_cut[cut_type::INTERNAL]);
     }
 
+    static size_t pq2_upper_bound(const node_file &in_1, const node_file &in_2)
+    {
+      return std::max(in_1->max_1level_cut[cut_type::INTERNAL],
+                      in_2->max_1level_cut[cut_type::INTERNAL]);
+    }
+
     static constexpr size_t memory_usage()
     {
       return level_info_stream<node_t>::memory_usage();

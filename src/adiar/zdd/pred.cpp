@@ -24,6 +24,14 @@ namespace adiar {
       return to_size(max_2level_cut_1 * max_2level_cut_2);
     }
 
+    static size_t pq2_upper_bound(const node_file &in_1, const node_file &in_2)
+    {
+      const safe_size_t max_1level_cut_1 = in_1->max_1level_cut[ct_1];
+      const safe_size_t max_1level_cut_2 = in_2->max_1level_cut[ct_2];
+
+      return to_size(max_1level_cut_1 * max_1level_cut_2);
+    }
+
     static constexpr size_t memory_usage()
     {
       return 0u;
