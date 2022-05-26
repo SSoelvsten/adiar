@@ -359,6 +359,11 @@ namespace adiar {
     /// \brief The actual maximum size of the levelized priority queue.
     ////////////////////////////////////////////////////////////////////////////
     size_t _actual_max_size = 0u;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Reference to struct to store non-global stats into.
+    ////////////////////////////////////////////////////////////////////////////
+    stats_t::levelized_priority_queue_t &_stats;
 #endif
 
   private:
@@ -370,12 +375,16 @@ namespace adiar {
       return std::max(eight_MiB, weighted_share);
     }
 
-    levelized_priority_queue(tpie::memory_size_type memory_given, size_t max_size)
+    levelized_priority_queue(tpie::memory_size_type memory_given, size_t max_size,
+                             [[maybe_unused]] stats_t::levelized_priority_queue_t &stats)
       : _max_size(max_size),
         _memory_given(memory_given),
         _memory_occupied_by_merger(memory::available()),
         _memory_occupied_by_overflow(m_overflow_queue(memory_given)),
         _overflow_queue(m_overflow_queue(memory_given), max_size)
+#ifdef ADIAR_STATS_EXTRA
+      , _stats(stats)
+#endif
     { }
 
 
@@ -389,8 +398,9 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const file_t (& files) [FILES],
                              tpie::memory_size_type memory_given,
-                             size_t max_size)
-      : levelized_priority_queue(memory_given, max_size)
+                             size_t max_size,
+                             stats_t::levelized_priority_queue_t &stats)
+      : levelized_priority_queue(memory_given, max_size, stats)
     {
       _level_merger.hook(files);
       init_buckets();
@@ -405,8 +415,9 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     levelized_priority_queue(const decision_diagram (& dds) [FILES],
                              tpie::memory_size_type memory_given,
-                             size_t max_size)
-      : levelized_priority_queue(memory_given, max_size)
+                             size_t max_size,
+                             stats_t::levelized_priority_queue_t &stats)
+      : levelized_priority_queue(memory_given, max_size, stats)
     {
       _level_merger.hook(dds);
       init_buckets();
@@ -457,10 +468,16 @@ namespace adiar {
     {
 #ifdef ADIAR_STATS_EXTRA
       stats_levelized_priority_queue.sum_predicted_max_size += _max_size;
+      _stats.sum_predicted_max_size += _max_size;
+
       stats_levelized_priority_queue.sum_actual_max_size += _actual_max_size;
+      _stats.sum_actual_max_size += _actual_max_size;
 
       stats_levelized_priority_queue.sum_max_size_ratio += frac(_actual_max_size, _max_size);
+      _stats.sum_max_size_ratio += frac(_actual_max_size, _max_size);
+
       stats_levelized_priority_queue.sum_destructors++;
+      _stats.sum_destructors++;
 #endif
     }
 
@@ -539,6 +556,7 @@ namespace adiar {
           _buckets_sorter[bucket_idx] -> push(e);
 #ifdef ADIAR_STATS_EXTRA
           stats_levelized_priority_queue.push_bucket++;
+          _stats.push_bucket++;
 #endif
           return;
         }
@@ -546,6 +564,7 @@ namespace adiar {
 
 #ifdef ADIAR_STATS_EXTRA
       stats_levelized_priority_queue.push_overflow++;
+      _stats.push_overflow++;
 #endif
       _overflow_queue.push(e);
     }

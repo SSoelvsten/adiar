@@ -243,7 +243,7 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, pq_1_memory, max_pq_1_size);
+    pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, pq_1_memory, max_pq_1_size, stats_if_else.lpq);
     pq_2_t ite_pq_2(pq_2_memory, max_pq_2_size);
     pq_3_t ite_pq_3(pq_3_memory, max_pq_3_size);
 
@@ -626,7 +626,7 @@ namespace adiar
 
     if(max_pq_1_size <= pq_1_memory_fits && max_pq_2_size <= pq_2_memory_fits && max_pq_3_size <= pq_3_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_if_else.lpq_internal++;
+      stats_if_else.lpq.internal++;
 #endif
       return __bdd_ite<ite_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                        ite_priority_queue_2_t<internal_priority_queue>,
@@ -635,7 +635,7 @@ namespace adiar
          pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_if_else.lpq_external++;
+      stats_if_else.lpq.external++;
 #endif
       const size_t pq_1_memory = aux_available_memory / 3;
       const size_t pq_2_memory = pq_1_memory;

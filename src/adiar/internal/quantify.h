@@ -163,7 +163,7 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size);
+    pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
     pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
     label_t out_label = label_of(v.uid);
@@ -372,7 +372,7 @@ namespace adiar
 
     if(max_pq_1_size <= pq_1_memory_fits && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_quantify.lpq_internal++;
+      stats_quantify.lpq.internal++;
 #endif
       return __quantify<quantify_policy,
                         quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>,
@@ -380,7 +380,7 @@ namespace adiar
         (in, label, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_quantify.lpq_external++;
+      stats_quantify.lpq.external++;
 #endif
       const size_t pq_1_memory = aux_available_memory / 2;
       const size_t pq_2_memory = pq_1_memory;

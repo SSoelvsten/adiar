@@ -92,7 +92,7 @@ namespace adiar
   {
     node_stream<> ns(dd);
 
-    count_pq_t count_pq({dd}, pq_max_memory, pq_max_size);
+    count_pq_t count_pq({dd}, pq_max_memory, pq_max_size, stats_count.lpq);
 
     uint64_t result = 0u;
 
@@ -151,7 +151,7 @@ namespace adiar
 
     if (max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_count.lpq_internal++;
+      stats_count.lpq.internal++;
 #endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           internal_sorter,
@@ -159,7 +159,7 @@ namespace adiar
         (dd, varcount, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_count.lpq_external++;
+      stats_count.lpq.external++;
 #endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           external_sorter,

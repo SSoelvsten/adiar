@@ -197,8 +197,8 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_1_t intercut_pq_1({dd}, pq_1_memory, max_pq_size);
-    pq_2_t intercut_pq_2({labels}, pq_2_memory, max_pq_size);
+    pq_1_t intercut_pq_1({dd}, pq_1_memory, max_pq_size, stats_intercut.lpq);
+    pq_2_t intercut_pq_2({labels}, pq_2_memory, max_pq_size, stats_intercut.lpq);
 
     // Add request for root in the relevant queue
     label_t out_label = std::min(l, label_of(n));
@@ -363,7 +363,7 @@ namespace adiar
 
     if(max_pq_size <= pq_1_memory_fits && max_pq_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_intercut.lpq_internal++;
+      stats_intercut.lpq.internal++;
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_1_t<internal_sorter, internal_priority_queue>,
@@ -371,7 +371,7 @@ namespace adiar
         (dd, labels, pq_1_internal_memory, pq_2_internal_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_intercut.lpq_external++;
+      stats_intercut.lpq.external++;
 #endif
       const size_t pq_1_memory = aux_available_memory / 2;
       const size_t pq_2_memory = aux_available_memory - pq_1_memory;

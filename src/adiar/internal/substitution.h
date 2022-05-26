@@ -105,7 +105,7 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_t substitute_pq({dd}, pq_memory, pq_max_size);
+    pq_t substitute_pq({dd}, pq_memory, pq_max_size, stats_substitute.lpq);
 
     label_t level = label_of(n);
     size_t level_size = 0;
@@ -230,14 +230,14 @@ namespace adiar
 
     if(max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_substitute.lpq_internal++;
+      stats_substitute.lpq.internal++;
 #endif
       return __substitute<substitute_policy, substitute_act_mgr,
                           substitute_priority_queue_t<internal_sorter, internal_priority_queue>>
         (dd, amgr, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_substitute.lpq_external++;
+      stats_substitute.lpq.external++;
 #endif
       return __substitute<substitute_policy, substitute_act_mgr,
                           substitute_priority_queue_t<external_sorter, external_priority_queue>>
