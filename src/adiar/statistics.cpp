@@ -34,7 +34,7 @@ namespace adiar
       stats_equality,
       stats_if_else,
       stats_intercut,
-      stats_priority_queue,
+      stats_levelized_priority_queue,
       stats_product_construction,
       stats_quantify,
       stats_reduce,
@@ -79,25 +79,25 @@ namespace adiar
 #ifdef ADIAR_STATS_EXTRA
     o << indent << bold_on << "Levelized Priority Queue" << bold_off << endl;
 
-    uintwide_t total_pushes = stats_priority_queue.push_bucket + stats_priority_queue.push_overflow;
-    o << indent << indent << "pushes to bucket        " << indent << stats_priority_queue.push_bucket
-      << " = " << percent_frac(stats_priority_queue.push_bucket, total_pushes) << percent << endl;
-    o << indent << indent << "pushes to overflow      " << indent << stats_priority_queue.push_overflow
-      << " = " << percent_frac(stats_priority_queue.push_overflow, total_pushes) << percent << endl;
+    uintwide_t total_pushes = stats_levelized_priority_queue.push_bucket + stats_levelized_priority_queue.push_overflow;
+    o << indent << indent << "pushes to bucket        " << indent << stats_levelized_priority_queue.push_bucket
+      << " = " << percent_frac(stats_levelized_priority_queue.push_bucket, total_pushes) << percent << endl;
+    o << indent << indent << "pushes to overflow      " << indent << stats_levelized_priority_queue.push_overflow
+      << " = " << percent_frac(stats_levelized_priority_queue.push_overflow, total_pushes) << percent << endl;
     o << endl;
 
     o << indent << indent << "maximum size precision ratio (unweighted): "
-      << 100.0 * stats_priority_queue.sum_max_size_ratio / stats_priority_queue.sum_destructors << percent
+      << 100.0 * stats_levelized_priority_queue.sum_max_size_ratio / stats_levelized_priority_queue.sum_destructors << percent
       << endl;
-    o << indent << indent << indent << "sum of ratios:          " << stats_priority_queue.sum_max_size_ratio << endl
-      << indent << indent << indent << "number of instances:    " << stats_priority_queue.sum_destructors << endl;
+    o << indent << indent << indent << "sum of ratios:          " << stats_levelized_priority_queue.sum_max_size_ratio << endl
+      << indent << indent << indent << "number of instances:    " << stats_levelized_priority_queue.sum_destructors << endl;
     o << endl;
 
     o << indent << indent << "maximum size precision ratio (weighted):   "
-      << percent_frac(stats_priority_queue.sum_actual_max_size, stats_priority_queue.sum_predicted_max_size) << percent
+      << percent_frac(stats_levelized_priority_queue.sum_actual_max_size, stats_levelized_priority_queue.sum_predicted_max_size) << percent
       << endl;
-    o << indent << indent << indent << "sum of actual size:     " << stats_priority_queue.sum_actual_max_size << endl
-      << indent << indent << indent << "sum of predictions:     " << stats_priority_queue.sum_predicted_max_size << endl;
+    o << indent << indent << indent << "sum of actual size:     " << stats_levelized_priority_queue.sum_actual_max_size << endl
+      << indent << indent << indent << "sum of predictions:     " << stats_levelized_priority_queue.sum_predicted_max_size << endl;
     o << endl;
 
 #endif
@@ -194,7 +194,7 @@ namespace adiar
     stats_equality = {};
     stats_if_else = {};
     stats_intercut = {};
-    stats_priority_queue = {};
+    stats_levelized_priority_queue = {};
     stats_product_construction = {};
     stats_quantify = {};
     stats_reduce = {};

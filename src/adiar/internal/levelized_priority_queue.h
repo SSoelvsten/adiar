@@ -137,7 +137,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Struct holding statistics on the levelized priority queue
   //////////////////////////////////////////////////////////////////////////////
-  extern stats_t::priority_queue_t stats_priority_queue;
+  extern stats_t::levelized_priority_queue_t stats_levelized_priority_queue;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Levelized Priority Queue with a finite circular array of sorters
@@ -456,11 +456,11 @@ namespace adiar {
     ~levelized_priority_queue()
     {
 #ifdef ADIAR_STATS_EXTRA
-      stats_priority_queue.sum_predicted_max_size += _max_size;
-      stats_priority_queue.sum_actual_max_size += _actual_max_size;
+      stats_levelized_priority_queue.sum_predicted_max_size += _max_size;
+      stats_levelized_priority_queue.sum_actual_max_size += _actual_max_size;
 
-      stats_priority_queue.sum_max_size_ratio += frac(_actual_max_size, _max_size);
-      stats_priority_queue.sum_destructors++;
+      stats_levelized_priority_queue.sum_max_size_ratio += frac(_actual_max_size, _max_size);
+      stats_levelized_priority_queue.sum_destructors++;
 #endif
     }
 
@@ -538,14 +538,14 @@ namespace adiar {
         if (_buckets_level[bucket_idx] == level) {
           _buckets_sorter[bucket_idx] -> push(e);
 #ifdef ADIAR_STATS_EXTRA
-          stats_priority_queue.push_bucket++;
+          stats_levelized_priority_queue.push_bucket++;
 #endif
           return;
         }
       } while (bucket_offset <= pushable_buckets);
 
 #ifdef ADIAR_STATS_EXTRA
-      stats_priority_queue.push_overflow++;
+      stats_levelized_priority_queue.push_overflow++;
 #endif
       _overflow_queue.push(e);
     }
