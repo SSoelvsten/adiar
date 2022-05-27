@@ -46,7 +46,7 @@ jobs:
       env:
         C_FLAGS: "-g -O0 -Wall -fprofile-arcs -ftest-coverage"
         EXE_LINKER_FLAGS: "-fprofile-arcs -ftest-coverage"
-      run: cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=DEBUG -D CMAKE_C_FLAGS="${C_FLAGS}" -D CMAKE_CXX_FLAGS="${C_FLAGS}" -D CMAKE_EXE_LINKER_FLAGS="${EXE_LINKER_FLAGS}" ..
+      run: cmake $GITHUB_WORKSPACE -D CMAKE_BUILD_TYPE=DEBUG -D CMAKE_C_FLAGS="${C_FLAGS}" -D CMAKE_CXX_FLAGS="${C_FLAGS}" -D CMAKE_EXE_LINKER_FLAGS="${EXE_LINKER_FLAGS}" -D ADIAR_STATS_EXTRA=ON..
 
     - name: CMake | build unit tests
       working-directory: ${{runner.workspace}}/build
