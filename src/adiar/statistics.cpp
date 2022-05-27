@@ -130,10 +130,10 @@ namespace adiar
 
     indent_level++;
     o << indent << label << "internal memory"
-      << stats.lpq.internal << " = " << percent_frac(stats_reduce.lpq.internal, total_lpqs) << percent << endl;
+      << stats.lpq.internal << " = " << percent_frac(stats.lpq.internal, total_lpqs) << percent << endl;
 
     o << indent << label << "external memory"
-      << stats_reduce.lpq.external << " = " << percent_frac(stats_reduce.lpq.external, total_lpqs) << percent << endl;
+      << stats.lpq.external << " = " << percent_frac(stats.lpq.external, total_lpqs) << percent << endl;
     indent_level--;
 
     o << indent << endl;
