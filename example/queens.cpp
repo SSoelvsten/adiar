@@ -458,6 +458,9 @@ int main(int argc, char* argv[])
   }
 
   // ===== ADIAR =====
+  // Print statistics, if compiled with those flags.
+  adiar::adiar_printstat();
+
   // Close all of Adiar down again
   adiar::adiar_deinit();
 

@@ -422,6 +422,9 @@ int main(int argc, char* argv[])
             << "|  | Final ZDD: " << zdd_nodecount(paths) << " nodes" << std::endl;
 
   // ===== ADIAR =====
+  // Print statistics, if compiled with those flags.
+  adiar::adiar_printstat();
+
   // Close all of Adiar down again
   adiar::adiar_deinit();
 
