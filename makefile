@@ -47,6 +47,7 @@ coverage:
                       -D CMAKE_C_FLAGS=$(COV_C_FLAGS) \
                       -D CMAKE_CXX_FLAGS=$(COV_C_FLAGS) \
                       -D CMAKE_EXE_LINKER_FLAGS=$(COV_EXE_LINKER_FLAGS) \
+                      -D ADIAR_STATS_EXTRA=ON \
                 ..
 	@cd build/ && make $(MAKE_FLAGS) test_unit
 
