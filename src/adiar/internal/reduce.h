@@ -182,8 +182,6 @@ namespace adiar
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
     tpie::file_stream<mapping> red1_mapping;
 
-    size_t red1_sinks[2] = { 0u, 0u };
-
     // Sorter to find Reduction Rule 2 mappings
     sorter_t<node_t, reduce_node_children_lt>
       child_grouping(sorters_memory, level_width, 2);
@@ -208,9 +206,6 @@ namespace adiar
 #ifdef ADIAR_STATS_EXTRA
         stats_reduce.removed_by_rule_1++;
 #endif
-        red1_sinks[false] += is_false(reduction_rule_ret);
-        red1_sinks[true] += is_true(reduction_rule_ret);
-
         red1_mapping.write({ n.uid, reduction_rule_ret });
       } else {
         child_grouping.push(n);
@@ -220,14 +215,10 @@ namespace adiar
     // Count number of arcs that cross this level
     size_t one_level_cut[4] = { 0u, 0u, 0u, 0u };
 
-    const size_t red1_internal = red1_mapping.is_open()
-      ? red1_mapping.size() - red1_sinks[false] - red1_sinks[true]
-      : 0u;
-
     __reduce_cut_add(one_level_cut,
-                     reduce_pq.size_without_sinks() + red1_internal,
-                     reduce_pq.sinks(false) + red1_sinks[false] + sink_arcs.unread(false),
-                     reduce_pq.sinks(true) + red1_sinks[true] + sink_arcs.unread(true));
+                     reduce_pq.size_without_sinks(),
+                     reduce_pq.sinks(false) + sink_arcs.unread(false),
+                     reduce_pq.sinks(true) + sink_arcs.unread(true));
 
     // Sort and apply Reduction rule 2
     child_grouping.sort();
@@ -262,9 +253,6 @@ namespace adiar
       out_writer.unsafe_push(create_level_info(label, MAX_ID - out_id));
     }
 
-    // Update with 1-level cut below current level
-    out_writer.inc_1level_cut(one_level_cut);
-
     // Sort mappings for Reduction rule 2 back in order of node_arcs
     red2_mapping.sort();
 
@@ -293,14 +281,21 @@ namespace adiar
                       "Mapping forwarded in sync with node_arcs");
 
       // Find all arcs that have sources that match the current mapping's old_uid
+      size_t indegree = 0u;
       while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target) {
         // The is_high flag is included in arc_t.source
         arc_t new_arc = { node_arcs.pull().source, current_map.new_uid };
         reduce_pq.push(new_arc);
+        indegree++;
       }
 
       // Update the mapping that was used
       if (is_red1_current) {
+        __reduce_cut_add(one_level_cut,
+                         is_node(next_red1.new_uid) * indegree,
+                         is_false(next_red1.new_uid) * indegree,
+                         is_true(next_red1.new_uid) * indegree);
+
         has_next_red1 = red1_mapping.can_read();
         if (has_next_red1) {
           next_red1 = red1_mapping.read();
@@ -315,6 +310,9 @@ namespace adiar
 
     // Move on to the next level
     red1_mapping.close();
+
+    // Update with 1-level cut below current level
+    out_writer.inc_1level_cut(one_level_cut);
 
     if (!reduce_pq.empty()) {
       adiar_debug(!sink_arcs.can_pull() || label_of(sink_arcs.peek().source) < label,
