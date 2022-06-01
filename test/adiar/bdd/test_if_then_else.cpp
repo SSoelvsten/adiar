@@ -1936,7 +1936,12 @@ go_bandit([]() {
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
+
+        AssertThat(out.get<node_file>()->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out.get<node_file>()->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
 
         AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(3u));
         AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(2u));
@@ -2080,8 +2085,13 @@ go_bandit([]() {
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(8u));
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(8u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(7u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(11u));
+
+        AssertThat(out.get<node_file>()->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<node_file>()->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<node_file>()->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(7u));
+        AssertThat(out.get<node_file>()->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(11u));
 
         AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(4u));
         AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(7u));

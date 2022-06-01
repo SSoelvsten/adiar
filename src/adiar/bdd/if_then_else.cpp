@@ -151,6 +151,15 @@ namespace adiar
       nw << n;
     }
 
+    for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
+      out_nodes->max_1level_cut[ct] =
+        std::max(bdd_if.file_ptr()->max_1level_cut[cut_type::ALL],
+                 bdd_then.file_ptr()->max_1level_cut[ct] + bdd_else.file_ptr()->max_1level_cut[ct]);
+      out_nodes->max_2level_cut[ct] =
+        std::max(bdd_if.file_ptr()->max_2level_cut[cut_type::ALL],
+                 bdd_then.file_ptr()->max_2level_cut[ct] + bdd_else.file_ptr()->max_2level_cut[ct]);
+    }
+
     return out_nodes;
   }
 
