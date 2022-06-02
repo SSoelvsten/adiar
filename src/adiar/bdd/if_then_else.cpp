@@ -49,9 +49,9 @@ namespace adiar
   template<template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
   using ite_priority_queue_1_t =
-  levelized_node_priority_queue<ite_triple_1, triple_label, ite_triple_1_lt,
-                                external_sorter, external_priority_queue,
-                                3>;
+  levelized_node_priority_queue<ite_triple_1, triple_label,
+                                ADIAR_LPQ_LOOKAHEAD, ite_triple_1_lt,
+                                external_sorter, external_priority_queue, 3>;
 
   struct ite_triple_2 : ite_triple_1
   {

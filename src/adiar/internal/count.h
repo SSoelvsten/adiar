@@ -48,7 +48,8 @@ namespace adiar
             template<typename, typename> typename sorter_template = external_sorter,
             template<typename, typename> typename priority_queue_template = external_priority_queue>
   using count_priority_queue_t =
-    levelized_node_priority_queue<elem_t, count_queue_label, count_queue_lt<elem_t>,
+    levelized_node_priority_queue<elem_t, count_queue_label,
+                                  ADIAR_LPQ_LOOKAHEAD, count_queue_lt<elem_t>,
                                   sorter_template, priority_queue_template>;
 
   //////////////////////////////////////////////////////////////////////////////

@@ -177,16 +177,17 @@ namespace adiar {
   /// \param LOOK_AHEAD   The number of levels (ahead of the current)
   ///                     explicitly handle with a sorting algorithm
   //////////////////////////////////////////////////////////////////////////////
+
   template <typename elem_t,
             typename elem_level_t,
+            label_t  LOOK_AHEAD = ADIAR_LPQ_LOOKAHEAD,
             typename elem_comp_t  = std::less<elem_t>,
             template<typename, typename> typename sorter_template = external_sorter,
             template<typename, typename> typename priority_queue_template = external_priority_queue,
             typename file_t       = meta_file<elem_t>,
             size_t   FILES        = 1u,
             typename level_comp_t = std::less<label_t>,
-            label_t  INIT_LEVEL   = 1u,
-            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD
+            label_t  INIT_LEVEL   = 1u
             >
   class levelized_priority_queue
   {
@@ -969,45 +970,457 @@ namespace adiar {
 
   template <typename elem_t,
             typename elem_level_t,
+            typename elem_comp_t,
+            template<typename, typename> typename sorter_template,
+            template<typename, typename> typename priority_queue_template,
+            typename file_t,
+            size_t   FILES,
+            typename level_comp_t,
+            label_t  INIT_LEVEL
+            >
+  class levelized_priority_queue<elem_t, elem_level_t, 0u, elem_comp_t, sorter_template, priority_queue_template, file_t, FILES, level_comp_t, INIT_LEVEL>
+  {
+  private:
+    static constexpr label_t NO_LABEL = MAX_LABEL+1;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef priority_queue_template<elem_t, elem_comp_t> priority_queue_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Total number of data structures in Levelized Priority Queue.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr size_t DATA_STRUCTURES = priority_queue_t::DATA_STRUCTURES;
+
+  public:
+    static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
+    {
+      return internal_priority_queue<elem_t, elem_comp_t>::memory_usage(no_elements)
+        + label_merger<file_t, level_comp_t, FILES>::memory_usage();
+    }
+
+    static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
+    {
+      const size_t const_memory_bytes = label_merger<file_t, level_comp_t, FILES>::memory_usage();
+
+      if (memory_bytes < const_memory_bytes) {
+        return 0u;
+      }
+
+      // HACK: the 'internal_priority_queue' can take (two) fewer elements than
+      // the 'internal_sorter'. So, this is a slight under-approximation of what
+      // we truly could do with this amount of memory.
+      return internal_priority_queue<elem_t, elem_comp_t>
+        ::memory_fits((memory_bytes - const_memory_bytes) / DATA_STRUCTURES);
+    }
+
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Instantiation of the comparator between levels.
+    ////////////////////////////////////////////////////////////////////////////
+    label_t _current_level = NO_LABEL;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Instantiation of the comparator between levels.
+    ////////////////////////////////////////////////////////////////////////////
+    level_comp_t _level_comparator = level_comp_t();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Instantiation of the comparator between elements.
+    ////////////////////////////////////////////////////////////////////////////
+    elem_comp_t _e_comparator = elem_comp_t();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Maximum size of levelized priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    const size_t _max_size;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Total memory given in constructor.
+    ////////////////////////////////////////////////////////////////////////////
+    const tpie::memory_size_type _memory_given;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Memory used by the label merger.
+    ////////////////////////////////////////////////////////////////////////////
+    tpie::memory_size_type _memory_occupied_by_merger;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Memory to be used for the priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    tpie::memory_size_type _memory_occupied_by_priority_queue;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Provides the levels to distribute all elements across.
+    ////////////////////////////////////////////////////////////////////////////
+    mutable label_merger<file_t, level_comp_t, FILES> _level_merger;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Overflow priority queue used for elements pushed to a level where
+    ///        a bucket is (yet) not created.
+    ////////////////////////////////////////////////////////////////////////////
+    priority_queue_t _priority_queue;
+
+#ifdef ADIAR_STATS_EXTRA
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The actual maximum size of the levelized priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t _actual_max_size = 0u;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Reference to struct to store non-global stats into.
+    ////////////////////////////////////////////////////////////////////////////
+    stats_t::levelized_priority_queue_t &_stats;
+#endif
+
+  private:
+    static tpie::memory_size_type m_priority_queue(tpie::memory_size_type memory_given)
+    {
+      const tpie::memory_size_type eight_MiB = 8 * 1024; //hvorfor må den maks. få 8 Mib?
+
+      return std::max(eight_MiB, memory_given);
+    }
+
+    levelized_priority_queue(tpie::memory_size_type memory_given, size_t max_size,
+                             [[maybe_unused]] stats_t::levelized_priority_queue_t &stats)
+      : _max_size(max_size),
+        _memory_given(memory_given),
+        _memory_occupied_by_merger(memory::available()),
+        _memory_occupied_by_priority_queue(m_priority_queue(memory_given)),
+        _priority_queue(m_priority_queue(memory_given), max_size)
+#ifdef ADIAR_STATS_EXTRA
+      , _stats(stats)
+#endif
+    { }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief              Instantiate with the given amount of memory.
+    ///
+    /// \param files        Files to follow the levels of
+    ///
+    /// \param memory_given Total amount of memory to use
+    ////////////////////////////////////////////////////////////////////////////
+    levelized_priority_queue(const file_t (& files) [FILES],
+                             tpie::memory_size_type memory_given,
+                             size_t max_size,
+                             stats_t::levelized_priority_queue_t &stats)
+      : levelized_priority_queue(memory_given, max_size, stats)
+    {
+      _level_merger.hook(files);
+      init();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief              Instantiate with the given amount of memory.
+    ///
+    /// \param dds          Decision Diagrams to follow the levels of
+    ///
+    /// \param memory_given Total amount of memory to use
+    ////////////////////////////////////////////////////////////////////////////
+    levelized_priority_queue(const decision_diagram (& dds) [FILES],
+                             tpie::memory_size_type memory_given,
+                             size_t max_size,
+                             stats_t::levelized_priority_queue_t &stats)
+      : levelized_priority_queue(memory_given, max_size, stats)
+    {
+      _level_merger.hook(dds);
+      init();
+    }
+
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief  Computes final memory usage of internal data structures to then
+    ///         distribute the remaining memory when initialising the buckets.
+    ///
+    /// \remark Call this function at the end of the constructor after the
+    ///         level_merger has hooked into the input.
+    ////////////////////////////////////////////////////////////////////////////
+    void init()
+    {
+      label_t skip_level = 0;
+      while(_level_merger.can_pull() && level_cmp_lt(skip_level, INIT_LEVEL)) {
+        _level_merger.pull();
+        skip_level++;
+      }
+    }
+
+  public:
+    ~levelized_priority_queue()
+    {
+#ifdef ADIAR_STATS_EXTRA
+      stats_levelized_priority_queue.sum_predicted_max_size += _max_size;
+      _stats.sum_predicted_max_size += _max_size;
+
+      stats_levelized_priority_queue.sum_actual_max_size += _actual_max_size;
+      _stats.sum_actual_max_size += _actual_max_size;
+
+      stats_levelized_priority_queue.sum_max_size_ratio += frac(_actual_max_size, _max_size);
+      _stats.sum_max_size_ratio += frac(_actual_max_size, _max_size);
+
+      stats_levelized_priority_queue.sum_destructors++;
+      _stats.sum_destructors++;
+#endif
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether there is any current level to pull elements from.
+    ////////////////////////////////////////////////////////////////////////////
+    bool has_current_level() const
+    {
+      return _current_level != NO_LABEL;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The label of the current level.
+    ////////////////////////////////////////////////////////////////////////////
+    label_t current_level()
+    {
+      adiar_debug(has_current_level(),
+                  "Needs to have a 'current' level to read the level from");
+
+      return _current_level;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether there are any more (possibly all empty) levels.
+    ////////////////////////////////////////////////////////////////////////////
+    bool has_next_level() const
+    {
+      label_t next_label_from_queue = elem_level_t::label_of(_priority_queue.top());
+      return _level_merger.can_pull() || (has_current_level() && level_cmp_lt(_current_level, next_label_from_queue));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The label of the next (possibly empty) level.
+    ////////////////////////////////////////////////////////////////////////////
+    label_t next_level() const
+    {
+      return _level_merger.peek();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether one can push elements.
+    ////////////////////////////////////////////////////////////////////////////
+    bool can_push() const
+    {
+      return has_next_level();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Push an element into the priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    void push(const elem_t &e)
+    {
+#ifdef ADIAR_STATS_EXTRA
+      _actual_max_size = std::max(_actual_max_size, _priority_queue.size());
+#endif
+      _priority_queue.push(e);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief            Set up the next nonempty level to which some requests
+    ///                   have been pushed before the given stop_level.
+    ///
+    /// \param stop_level The level that should be furthest forwarded to. If no
+    ///                   stop level is given then the next level is based on
+    ///                   the next existing element in the priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    void setup_next_level(label_t stop_level = NO_LABEL)
+    {
+      adiar_debug(stop_level <= MAX_LABEL || stop_level == NO_LABEL,
+                  "The stop level should be a legal value (or not given)");
+
+      adiar_debug(!has_current_level() || empty_level(),
+                  "Level is empty before moving on to the next");
+
+      const bool has_stop_level = stop_level != NO_LABEL;
+
+      adiar_debug(has_stop_level || !empty(),
+                  "Either a stop level is given or we have some non-empty level to forward to");
+
+      adiar_debug(has_next_level(),
+                  "There should be a next level to go to");
+
+      // Edge Case: ---------------------------------------------------------- :
+      //   The given stop_level is prior to the next level
+      if (has_stop_level && level_cmp_lt(stop_level, next_level())) {
+        return;
+      }
+
+      // Edge Case: ---------------------------------------------------------- :
+      //   There is nothing in the queue - get the next level from the level_merger
+      if(_priority_queue.empty()) {
+        _current_level = _level_merger.pull();
+        return;
+      }
+
+      // Edge Case: ---------------------------------------------------------- :
+      //   The stop level is before the next level of the queue - forward the
+      //   level_merger until it is at the stop level
+      label_t next_label_from_queue = elem_level_t::label_of(_priority_queue.top());
+      if(has_stop_level && level_cmp_le(stop_level, next_label_from_queue)) {
+        while(_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), stop_level)) {
+          _current_level = _level_merger.pull();
+        }
+        return;
+      }
+
+      // Primary Case: ------------------------------------------------------- :
+      //   Set the level to be the next from the queue, and forward the level_merger
+      _current_level = next_label_from_queue;
+      while(_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), _current_level)) {
+        _level_merger.pull();
+      }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the current level is empty. Is false, if there is no
+    ///       'current' level.
+    ////////////////////////////////////////////////////////////////////////////
+    bool empty_level()
+    {
+      // TODO: change semantics to require 'has_current_level'
+      return !has_current_level() ||
+        (_priority_queue.empty()
+             || current_level() != elem_level_t::label_of(_priority_queue.top()));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether any elements can be pulled (from the current level).
+    ///
+    /// \sa    levelized_priority_queue::empty_level
+    ////////////////////////////////////////////////////////////////////////////
+    bool can_pull()
+    {
+      return !empty_level();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the top element of the current level.
+    ////////////////////////////////////////////////////////////////////////////
+    elem_t top()
+    {
+      adiar_debug (can_pull(), "Can only obtain top element on non-empty level");
+      return _priority_queue.top();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the top element of the current level.
+    ///
+    /// \sa    levelized_priority_queue::top
+    ////////////////////////////////////////////////////////////////////////////
+    elem_t peek()
+    {
+      return top();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the top element on the current level and remove it.
+    ////////////////////////////////////////////////////////////////////////////
+    elem_t pull()
+    {
+      adiar_debug (!empty_level(), "Can only pull on non-empty level");
+
+      const elem_t ret = _priority_queue.top();
+      _priority_queue.pop();
+      return ret;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Remove the top element of the current level.
+    ///
+    /// \sa    levelized_priority_queue::pull
+    ////////////////////////////////////////////////////////////////////////////
+    void pop()
+    {
+      pull();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The total number of elements (across all levels).
+    ////////////////////////////////////////////////////////////////////////////
+    size_t size() const
+    {
+      return _priority_queue.size();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief  Whether the entire priority queue (across all levels) is empty.
+    ///
+    /// \remark If you only want to know if it is empty for the current level,
+    ///         then use <tt>empty_level</tt> (or <tt>can_pull</tt>) instead.
+    ///
+    /// \sa     levelized_priority_queue::empty_level
+    //          levelized_priority_queue::can_pull
+    ////////////////////////////////////////////////////////////////////////////
+    bool empty() const
+    {
+      return _priority_queue.empty();
+    }
+
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Strictly less ' < ' between two levels.
+    ////////////////////////////////////////////////////////////////////////////
+    bool level_cmp_lt(const label_t l1, const label_t l2) const
+    {
+      return _level_comparator(l1, l2);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Less or equal ' <= ' between two levels.
+    ////////////////////////////////////////////////////////////////////////////
+    bool level_cmp_le(const label_t l1, const label_t l2) const
+    {
+      return _level_comparator(l1, l2) || l1 == l2;
+    }
+  };
+
+  template <typename elem_t,
+            typename elem_level_t,
+            label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
             typename elem_comp_t = std::less<elem_t>,
             template<typename, typename> typename sorter_template = external_sorter,
             template<typename, typename> typename priority_queue_template = external_priority_queue,
             size_t   FILES       = 1u,
-            label_t  INIT_LEVEL  = 1u,
-            label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD>
-  using levelized_node_priority_queue = levelized_priority_queue<elem_t, elem_level_t, elem_comp_t,
+            label_t  INIT_LEVEL  = 1u>
+  using levelized_node_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
+                                                                 LOOK_AHEAD, elem_comp_t,
                                                                  sorter_template, priority_queue_template,
                                                                  node_file, FILES, std::less<label_t>,
-                                                                 INIT_LEVEL,
-                                                                 LOOK_AHEAD>;
+                                                                 INIT_LEVEL>;
 
   template <typename elem_t,
             typename elem_level_t,
+            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD,
             typename elem_comp_t  = std::less<elem_t>,
             template<typename, typename> typename sorter_template = external_sorter,
             template<typename, typename> typename priority_queue_template = external_priority_queue,
             size_t   FILES        = 1u,
-            label_t  INIT_LEVEL   = 1u,
-            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD>
-  using levelized_arc_priority_queue = levelized_priority_queue<elem_t, elem_level_t, elem_comp_t,
+            label_t  INIT_LEVEL   = 1u>
+  using levelized_arc_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
+                                                                LOOK_AHEAD, elem_comp_t,
                                                                 sorter_template, priority_queue_template,
                                                                 arc_file, FILES, std::greater<label_t>,
-                                                                INIT_LEVEL,
-                                                                LOOK_AHEAD>;
+                                                                INIT_LEVEL>;
 
   template <typename elem_t,
             typename elem_level_t,
+            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD,
             typename elem_comp_t  = std::less<elem_t>,
             template<typename, typename> typename sorter_template = external_sorter,
             template<typename, typename> typename priority_queue_template = external_priority_queue,
             size_t   FILES        = 1u,
-            label_t  INIT_LEVEL   = 1u,
-            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD>
-  using levelized_label_priority_queue = levelized_priority_queue<elem_t, elem_level_t, elem_comp_t,
+            label_t  INIT_LEVEL   = 1u>
+  using levelized_label_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
+                                                                  LOOK_AHEAD, elem_comp_t,
                                                                   sorter_template, priority_queue_template,
                                                                   label_file, FILES, std::less<label_t>,
-                                                                  INIT_LEVEL,
-                                                                  LOOK_AHEAD>;
+                                                                  INIT_LEVEL>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// TODO: Make a levelized_priority_queue that does not have any buckets
