@@ -53,11 +53,13 @@ namespace adiar
   ////////////////////////////////////////////////////////////////////////////
   template<template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
-  class reduce_priority_queue : public levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt,
-                                                                      sorter_template, priority_queue_template>
+  class reduce_priority_queue : public levelized_arc_priority_queue<arc_t, reduce_queue_label,
+                                                                    ADIAR_LPQ_LOOKAHEAD, reduce_queue_lt,
+                                                                    sorter_template, priority_queue_template>
   {
   private:
-    using inner_lpq = levelized_arc_priority_queue<arc_t, reduce_queue_label, reduce_queue_lt,
+    using inner_lpq = levelized_arc_priority_queue<arc_t, reduce_queue_label,
+                                                   ADIAR_LPQ_LOOKAHEAD, reduce_queue_lt,
                                                    sorter_template, priority_queue_template>;
 
     ////////////////////////////////////////////////////////////////////////////

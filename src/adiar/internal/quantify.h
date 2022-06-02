@@ -69,7 +69,8 @@ namespace adiar
   template<template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
   using quantify_priority_queue_1_t =
-    levelized_node_priority_queue<quantify_tuple, tuple_label, quantify_1_lt,
+    levelized_node_priority_queue<quantify_tuple, tuple_label,
+                                  ADIAR_LPQ_LOOKAHEAD, quantify_1_lt,
                                   sorter_template, priority_queue_template>;
 
   template<template<typename, typename> typename priority_queue_template>

@@ -40,7 +40,8 @@ namespace adiar
   template<template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
   using comparison_priority_queue_1_t =
-    levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt,
+    levelized_node_priority_queue<tuple, tuple_label,
+                                  ADIAR_LPQ_LOOKAHEAD, tuple_fst_lt,
                                   sorter_template, priority_queue_template,
                                   2>;
 
