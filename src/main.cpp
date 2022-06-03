@@ -12,8 +12,9 @@
 #include <queens.h>
 
 #define EXP_BDD 0
-#define QUEENS_BDD 1
+#define QUEENS_BDD 0
 #define OUR_BDD 0
+#define HASH_CASE 1
 
 using namespace adiar;
 
@@ -79,22 +80,31 @@ int main(int argc, char *argv[])
 
 #if QUEENS_BDD
     N = 8;
-    
+
     std::vector<label_t> permutation;
     int dir = 1;
 
-    auto walk = [&](int dir, int dist, int start) {
-      for (int j = 1; j <= dist; j++) {
-        if (dir % 4 == 0) {
+    auto walk = [&](int dir, int dist, int start)
+    {
+      for (int j = 1; j <= dist; j++)
+      {
+        if (dir % 4 == 0)
+        {
           // right
           permutation.push_back(start + j);
-        } else if (dir % 4 == 1) {
+        }
+        else if (dir % 4 == 1)
+        {
           // down
           permutation.push_back(start + j * N);
-        } else if (dir % 4 == 2) {
+        }
+        else if (dir % 4 == 2)
+        {
           // left
           permutation.push_back(start - j);
-        } else if (dir % 4 == 3) {
+        }
+        else if (dir % 4 == 3)
+        {
           // up
           permutation.push_back(start - j * N);
         }
@@ -105,8 +115,8 @@ int main(int argc, char *argv[])
     {
       if (i == N)
       {
-          for (int j = 0; j < N; j++)
-            permutation.push_back(j);
+        for (int j = 0; j < N; j++)
+          permutation.push_back(j);
       }
       else
       {
@@ -117,7 +127,7 @@ int main(int argc, char *argv[])
         }
       }
     }
-    
+
     std::reverse(permutation.begin(), permutation.end());
 
     std::vector<label_t> permutation_inverse = std::vector<label_t>(permutation.size(), 0);
@@ -133,11 +143,40 @@ int main(int argc, char *argv[])
     }
     std::cout << std::endl;
 
+    std::chrono::steady_clock::time_point begin_new1 = std::chrono::steady_clock::now();
+
     bdd root = n_queens_B();
-    std::cout << "Created board" << std::endl;
+
+    std::chrono::steady_clock::time_point end_new1 = std::chrono::steady_clock::now();
+    std::cout << "Time elapsed generating cheesboard: " << std::chrono::duration_cast<std::chrono::milliseconds>(end_new1 - begin_new1).count() << "[ms]" << std::endl;
 
 #endif
-    
+
+#if HASH_CASE
+    int vars = 100;
+    bdd root = bdd_ithvar(0);
+
+    for (int i = 1; i < vars; i++)
+    {
+      root = bdd_and(root, bdd_ithvar(i));
+    }
+    for (int i = 0; i < vars - 1; i++)
+    {
+      root = bdd_or(root, bdd_and(bdd_nithvar(i), bdd_nithvar(vars - 1)));
+    }
+
+    std::vector<label_t> permutation;
+    for (int i = vars - 1; i >= 0; i--)
+    {
+      permutation.push_back(i);
+    }
+    std::vector<label_t> permutation_inverse = std::vector<label_t>(permutation.size(), 0);
+    for (unsigned long i = 0; i < permutation.size(); i++)
+    {
+      permutation_inverse[permutation[i]] = i;
+    }
+#endif
+
     std::chrono::steady_clock::time_point begin_new = std::chrono::steady_clock::now();
     bdd new_order = bdd_reorder(root, permutation);
     std::chrono::steady_clock::time_point end_new = std::chrono::steady_clock::now();
@@ -158,7 +197,6 @@ int main(int argc, char *argv[])
     output_dot(org_back, "orginal_order_back.dot");
 
     std::cout << "Input node count: " << bdd_nodecount(root) << " Reordered node count: " << bdd_nodecount(new_order) << " original_back node count: " << bdd_nodecount(org_back) << std::endl;
-    std::cout << "Input sat count: " << bdd_satcount(root) << " Reorder sat count: " << bdd_satcount(new_order) << std::endl;
 
     // =====  Your code ends here  =====
   }
