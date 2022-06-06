@@ -14,7 +14,7 @@
 #define EXP_BDD 0
 #define QUEENS_BDD 0
 #define OUR_BDD 0
-#define HASH_CASE 1
+#define WORST_CASE 1
 
 using namespace adiar;
 
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 
 #endif
 
-#if HASH_CASE
+#if WORST_CASE
     int vars = 100;
     bdd root = bdd_ithvar(0);
 
