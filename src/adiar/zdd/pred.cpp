@@ -56,6 +56,12 @@ namespace adiar {
     typedef ignore_levels<cut_type::INTERNAL_TRUE, cut_type::INTERNAL_TRUE> level_check_t;
 
   public:
+    static constexpr size_t lookahead_bound()
+    {
+      return 1;
+    }
+
+  public:
     static bool resolve_sinks(const node_t &v1, const node_t &v2, bool &ret_value)
     {
       if (is_sink(v1) && is_sink(v2)) {
@@ -123,6 +129,12 @@ namespace adiar {
   {
   public:
     typedef ignore_levels<cut_type::ALL, cut_type::ALL> level_check_t;
+
+  public:
+    static constexpr size_t lookahead_bound()
+    {
+      return 2;
+    }
 
   public:
     static bool resolve_sinks(const node_t &v1, const node_t &v2, bool &ret_value)

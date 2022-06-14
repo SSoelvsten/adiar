@@ -37,6 +37,12 @@ namespace adiar {
     typedef label_stream<> stream_t;
   };
 
+  constexpr size_t no_lookahead_bound(const size_t degree = 1)
+  {
+    size_t result = 8 * std::pow(2, degree);
+    return result;
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Merges the labels from one or more files.
   ///
@@ -1078,7 +1084,7 @@ namespace adiar {
   private:
     static tpie::memory_size_type m_priority_queue(tpie::memory_size_type memory_given)
     {
-      const tpie::memory_size_type eight_MiB = 8 * 1024; //hvorfor må den maks. få 8 Mib?
+      const tpie::memory_size_type eight_MiB = 8 * 1024;
 
       return std::max(eight_MiB, memory_given);
     }
@@ -1188,7 +1194,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether there are any more (possibly all empty) levels.
     ////////////////////////////////////////////////////////////////////////////
-    bool has_next_level() const
+    bool has_next_level() /*const*/
     {
       label_t next_label_from_queue = elem_level_t::label_of(_priority_queue.top());
       return _level_merger.can_pull() || (has_current_level() && level_cmp_lt(_current_level, next_label_from_queue));
@@ -1205,7 +1211,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether one can push elements.
     ////////////////////////////////////////////////////////////////////////////
-    bool can_push() const
+    bool can_push() /*const*/
     {
       return has_next_level();
     }
