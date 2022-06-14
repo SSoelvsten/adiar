@@ -43,6 +43,7 @@ namespace adiar
       struct __lpq : public levelized_priority_queue_t
       {
         // ADIAR_STATS
+        uintwide_t unbucketed = 0;
         uintwide_t internal = 0;
         uintwide_t external = 0;
       } lpq;

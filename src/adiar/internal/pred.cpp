@@ -81,6 +81,12 @@ namespace adiar
     typedef input_bound_levels<false> level_check_t;
 
   public:
+    static constexpr size_t lookahead_bound()
+    {
+      return 2;
+    }
+
+  public:
     static bool resolve_sinks(const node_t &v1, const node_t &v2, bool &ret_value)
     {
       ret_value = is_sink(v1) && is_sink(v2) && value_of(v1) == value_of(v2);

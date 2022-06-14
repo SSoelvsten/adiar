@@ -29,10 +29,10 @@ namespace adiar
     void push(const elem_t &e)
     { pq.push(e); }
 
-    size_t size()
+    size_t size() const
     { return pq.size(); }
 
-    bool empty()
+    bool empty() const
     { return pq.empty(); }
   };
 

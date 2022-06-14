@@ -37,11 +37,12 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  template<template<typename, typename> typename sorter_template,
+  template<size_t LOOK_AHEAD,
+           template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
   using comparison_priority_queue_1_t =
     levelized_node_priority_queue<tuple, tuple_label,
-                                  ADIAR_LPQ_LOOKAHEAD, tuple_fst_lt,
+                                  LOOK_AHEAD, tuple_fst_lt,
                                   sorter_template, priority_queue_template,
                                   2>;
 
@@ -212,7 +213,7 @@ namespace adiar
       - comp_policy::level_check_t::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
+      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
 
     constexpr size_t data_structures_in_pq_2 =
       comparison_priority_queue_2_t<internal_priority_queue>::DATA_STRUCTURES;
@@ -223,12 +224,13 @@ namespace adiar
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
     const size_t pq_1_memory_fits =
-      comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
+      comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_memory_fits =
       comparison_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
 
     const bool internal_only = memory::mode == memory::INTERNAL;
+    const bool external_only = memory::mode == memory::EXTERNAL;
 
     const size_t pq_1_bound = comp_policy::level_check_t::pq1_upper_bound(f1, f2);
 
@@ -239,13 +241,21 @@ namespace adiar
     const size_t max_pq_2_size = internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
 
     // TODO: Only one element per node in pq_2, so maximum is width (or their product)!
-    if(memory::mode != memory::EXTERNAL && max_pq_1_size <= pq_1_memory_fits
-                                        && max_pq_2_size <= pq_2_memory_fits) {
+    if(!external_only && max_pq_1_size <= no_lookahead_bound(comp_policy::lookahead_bound())) {
+#ifdef ADIAR_STATS
+      stats_equality.lpq.unbucketed++;
+#endif
+      return __comparison_check<comp_policy,
+                                comparison_priority_queue_1_t<0, internal_sorter, internal_priority_queue>,
+                                comparison_priority_queue_2_t<internal_priority_queue>>
+        (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
+    } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
+                             && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_equality.lpq.internal++;
 #endif
       return __comparison_check<comp_policy,
-                                comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>,
+                                comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>,
                                 comparison_priority_queue_2_t<internal_priority_queue>>
         (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
     } else {
@@ -256,7 +266,7 @@ namespace adiar
       const size_t pq_2_memory = pq_1_memory;
 
       return __comparison_check<comp_policy,
-                                comparison_priority_queue_1_t<external_sorter, external_priority_queue>,
+                                comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, external_sorter, external_priority_queue>,
                                 comparison_priority_queue_2_t<external_priority_queue>>
         (f1, f2, negate1, negate2, pq_1_memory, pq_2_memory, max_pq_1_size);
     }
