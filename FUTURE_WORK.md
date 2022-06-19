@@ -539,10 +539,6 @@ keep the disk usage close to what otherwise would be used.
 
 ## References
 
-- [[Bern05](https://link.springer.com/chapter/10.1007/3-540-60045-0_36)]
-  Jochen Bern, Christoph Meinel, Anna Slobodová. “_Global rebuilding of OBDDs
-  avoiding memory requirement maxima_”. In: _Computer Aided Verification_ (2005)
-
 - [[Blum80](https://www.sciencedirect.com/science/article/pii/S0020019080900782)]
   Manuel Blum, Ashok K. Chandra, and Mark N.Wegman. “_Equivalence of free
   boolean graphs can be decided probabilistically in polynomial time_”. In:
@@ -615,11 +611,6 @@ keep the disk usage close to what otherwise would be used.
   report, _Department of Information Technology, Technical University of
   Denmark_, 1999.
 
-- [[Meinel94](https://link.springer.com/chapter/10.1007/3-540-58338-6_98)]
-  Christoph Meinel, Anna Slobodová. “_On the complexity of constructing optimal
-  ordered binary decision diagrams_”. In: _International Symposium on
-  Mathematical Foundations of Computer Science_ (1994)
-
 - [[Minato93](https://dl.acm.org/doi/pdf/10.1145/157485.164890)]
   S. Minato. “_Zero-suppressed BDDs for set manipulation in combinatorial
   problems_”. In: _DAC '93: Proceedings of the 30th international Design
@@ -644,11 +635,6 @@ keep the disk usage close to what otherwise would be used.
   Sangiovanni-Vincentelli. “_High performance BDD package by exploiting
   memory hierarchy_”. In: _Proceedings of the 33rd Annual Design
   Automation Conference_ (1996)
-
-- [[Savický97](https://link.springer.com/article/10.1007/s002360050083)
-  Petr Savický, Ingo Wegener. “_Efficient algorithms for the transformation
-  between different types of binary decision diagrams_”. In: _Acta Informatica
-  volume 34_ (1997)
 
 - [[Somenzi15](https://docplayer.net/34293942-Cudd-cu-decision-diagram-package-release-3-0-0.html)]
   Fabio Somenzi. “_CUDD: CU decision diagram package, 3.0_”. University of
