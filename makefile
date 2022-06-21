@@ -5,8 +5,17 @@ MAKE_FLAGS=-j $$(nproc)
 # ============================================================================ #
 #  BUILD
 # ============================================================================ #
+BUILD_TYPE = "Release"
+
 build:
-	@mkdir -p build/ && cd build/ && cmake -D CMAKE_BUILD_TYPE=Release ..
+	$(MAKE) build/static
+
+build/static:
+	@mkdir -p build/ && cd build/ && cmake -D CMAKE_BUILD_TYPE=$(BUILD_TYPE) ..
+	@cd build/ && make adiar
+
+build/shared:
+	@echo "Not supportd (See Issue #200)"
 
 # ============================================================================ #
 #  CLEAN
