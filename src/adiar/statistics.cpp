@@ -78,9 +78,9 @@ namespace adiar
     return os << to_string(s);
   }
 
+#ifdef ADIAR_STATS_EXTRA
   void __printstat_lpq(std::ostream &o, const stats_t::levelized_priority_queue_t& stats)
   {
-#ifdef ADIAR_STATS_EXTRA
     if (indent_level == 0) {
       o << indent << bold_on << "Levelized Priority Queue" << bold_off << endl;
     }
@@ -119,8 +119,11 @@ namespace adiar
       << " = " << percent_frac(stats.sum_actual_max_size, stats.sum_predicted_max_size) << percent
       << endl;
     indent_level -= 2;
-#endif
   }
+#else
+  void __printstat_lpq(std::ostream &, const stats_t::levelized_priority_queue_t&)
+  { }
+#endif
 
   void __printstat_alg_base(std::ostream &o, const stats_t::__alg_base& stats)
   {
