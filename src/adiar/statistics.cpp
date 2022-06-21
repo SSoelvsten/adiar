@@ -148,7 +148,7 @@ namespace adiar
     o << indent << bold_on << label << "Count" << bold_off << total_runs << endl;
 
     indent_level++;
-    if (total_runs == 0) {
+    if (total_runs == 0u) {
       o << indent << "Not used" << endl;
       indent_level--;
       return;
@@ -164,7 +164,7 @@ namespace adiar
     o << indent << bold_on << label << "Comparison Check" << bold_off << total_runs << endl;
 
     indent_level++;
-    if (total_runs == 0) {
+    if (total_runs == 0u) {
       o << indent << "Not used" << endl;
       indent_level--;
       return;
@@ -180,7 +180,7 @@ namespace adiar
     o << indent << bold_on << label << "If-Then-Else" << bold_off << total_runs << endl;
 
     indent_level++;
-    if (total_runs == 0) {
+    if (total_runs == 0u) {
       o << indent << "Not used" << endl;
       indent_level--;
       return;
@@ -196,7 +196,7 @@ namespace adiar
     o << indent << bold_on << label << "Intercut" << bold_off << total_runs << endl;
 
     indent_level++;
-    if (total_runs == 0) {
+    if (total_runs == 0u) {
       o << indent << "Not used" << endl;
       indent_level--;
       return;
@@ -219,7 +219,7 @@ namespace adiar
     o << indent << bold_on << label << "Isomorphism Check" << bold_off << total_runs << endl;
 
     indent_level++;
-    if (total_runs == 0) {
+    if (total_runs == 0u) {
       o << indent << "Not used" << endl;
       indent_level--;
       return;
@@ -274,7 +274,7 @@ namespace adiar
     o << indent << bold_on << label << "Product Construction" << bold_off << total_runs << endl;
 
     indent_level++;
-    if (total_runs == 0) {
+    if (total_runs == 0u) {
       o << indent << "Not used" << endl;
       indent_level--;
       return;
@@ -291,7 +291,7 @@ namespace adiar
 
     indent_level++;
 
-    if (total_runs == 0) {
+    if (total_runs == 0u) {
       o << indent << "Not used" << endl;
       indent_level--;
       return;
@@ -313,7 +313,7 @@ namespace adiar
     o << indent << endl;
     uintwide_t total_removed = stats_reduce.removed_by_rule_1 + stats_reduce.removed_by_rule_2;
     o << indent << bold_on << label << "nodes removed" << bold_off;
-    if (total_removed > 0) {
+    if (total_removed > 0u) {
       o << total_removed << " = " << percent_frac(total_removed, total_arcs) << percent << endl;
       indent_level++;
       o << indent << label << "rule 1:"
@@ -339,7 +339,7 @@ namespace adiar
     o << indent << bold_on << label << "Quantification" << bold_off << total_runs << endl;
 
     indent_level++;
-    if (total_runs == 0) {
+    if (total_runs == 0u) {
       o << indent << "Not used" << endl;
       indent_level--;
       return;
@@ -355,7 +355,7 @@ namespace adiar
     o << indent << bold_on << label << "Substitution" << bold_off << total_runs << endl;
 
     indent_level++;
-    if (total_runs == 0) {
+    if (total_runs == 0u) {
       o << indent << "Not used" << endl;
       indent_level--;
       return;
