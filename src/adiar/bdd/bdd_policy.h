@@ -20,7 +20,10 @@ namespace adiar
   public:
     static inline ptr_t reduction_rule(const node_t &n)
     {
-      if (n.low == n.high) { return n.low; }
+      // If adding attributed edges, i.e. complement edges:
+      //    remove the 'unflag' below. Currently, it removes any forwarding of
+      //    applying Reduction Rule.
+      if (unflag(n.low) == unflag(n.high)) { return n.low; }
       return n.uid;
     }
 
