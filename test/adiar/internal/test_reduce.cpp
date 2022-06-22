@@ -2066,6 +2066,79 @@ go_bandit([]() {
         AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
         AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
       });
+
+      it("Merges nodes, despite of reduction rule 1 flag on child", [&]() {
+        /*
+                _1_                       ---- x0
+               /   \
+               2   3     =>        2      ---- x1
+              / \ / \             / \
+              F 4 F T             F T     ---- x2
+               / \
+               T T
+         */
+
+        const ptr_t n1  = create_node_ptr(0,0);
+        const ptr_t n2  = create_node_ptr(1,0);
+        const ptr_t n3  = create_node_ptr(1,1);
+        const ptr_t n4  = create_node_ptr(2,0);
+
+        arc_file in;
+
+        { // Garbage collect writer to free write-lock
+          arc_writer aw(in);
+
+          aw.unsafe_push_node({ n1,n2 });
+          aw.unsafe_push_node({ flag(n1),n3 });
+          aw.unsafe_push_node({ flag(n2),n4 });
+
+          aw.unsafe_push_sink({ n2,sink_F });
+          aw.unsafe_push_sink({ n3,sink_F });
+          aw.unsafe_push_sink({ flag(n3),sink_T });
+          aw.unsafe_push_sink({ n4,sink_T });
+          aw.unsafe_push_sink({ flag(n4),sink_T });
+
+          aw.unsafe_push(create_level_info(0,1u));
+          aw.unsafe_push(create_level_info(1,2u));
+          aw.unsafe_push(create_level_info(2,1u));
+        }
+
+        in->max_1level_cut = 2;
+
+        // Reduce it
+        bdd out(in);
+
+        AssertThat(is_canonical(out), Is().True());
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // n2
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID, sink_F, sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+      });
     });
 
     describe("Reduction Rule 1: ZDD", [&]() {
@@ -2783,6 +2856,93 @@ go_bandit([]() {
 
         AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
         AssertThat(out->number_of_sinks[1], Is().EqualTo(3u));
+      });
+
+      it("Merges nodes, despite of reduction rule 1 flag on child", [&]() {
+        /*
+                _1_                1      ---- x0
+               /   \               ||
+               2   3     =>        2      ---- x1
+              / \ / \             / \
+              F 4 F T             F T     ---- x2
+               / \
+               T F
+         */
+
+        const ptr_t n1  = create_node_ptr(0,0);
+        const ptr_t n2  = create_node_ptr(1,0);
+        const ptr_t n3  = create_node_ptr(1,1);
+        const ptr_t n4  = create_node_ptr(2,0);
+
+        arc_file in;
+
+        { // Garbage collect writer to free write-lock
+          arc_writer aw(in);
+
+          aw.unsafe_push_node({ n1,n2 });
+          aw.unsafe_push_node({ flag(n1),n3 });
+          aw.unsafe_push_node({ flag(n2),n4 });
+
+          aw.unsafe_push_sink({ n2,sink_F });
+          aw.unsafe_push_sink({ n3,sink_F });
+          aw.unsafe_push_sink({ flag(n3),sink_T });
+          aw.unsafe_push_sink({ n4,sink_T });
+          aw.unsafe_push_sink({ flag(n4),sink_F });
+
+          aw.unsafe_push(create_level_info(0,1u));
+          aw.unsafe_push(create_level_info(1,2u));
+          aw.unsafe_push(create_level_info(2,1u));
+        }
+
+        in->max_1level_cut = 2;
+
+        // Reduce it
+        zdd out(in);
+
+        AssertThat(is_canonical(out), Is().True());
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // n2
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID, sink_F, sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // n1
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+
+        // Over-approximation: arc (2) to T is counted globally
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(3u));
+
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
+
+        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
       });
     });
   });

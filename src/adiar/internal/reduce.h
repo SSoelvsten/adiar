@@ -250,7 +250,7 @@ namespace adiar
     while (child_grouping.can_pull()) {
       const node_t next_node = child_grouping.pull();
 
-      if (out_node.low != next_node.low || out_node.high != next_node.high) {
+      if (out_node.low != unflag(next_node.low) || out_node.high != unflag(next_node.high)) {
         out_node = create_node(label, out_id, unflag(next_node.low), unflag(next_node.high));
         out_writer.unsafe_push(out_node);
 
