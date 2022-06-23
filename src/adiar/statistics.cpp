@@ -329,11 +329,11 @@ namespace adiar
       o << "none" << endl;
     }
 
+#endif
     o << indent << endl;
     __printstat_alg_base(o, stats_reduce);
 
     indent_level--;
-#endif
   }
 
   void __printstat_quantify(std::ostream &o)
