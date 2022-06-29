@@ -41,24 +41,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: 'Queens'
-            exec: adiar_queens
+          - name: 'Knights Tour (ZDD)'
+            exec: adiar_queens_zdd
+            N: '8 9 10 11'
+
+          - name: 'Queens (BDD)'
+            exec: adiar_queens_bdd
             N: '8 9 10 11 12 13 14'
 
           - name: 'Queens (ZDD)'
             exec: adiar_queens_zdd
             N: '8 9 10 11 12 13 14'
 
-          - name: 'SAT: Pigeonhole Princiople'
-            exec: adiar_sat_pigeonhole_principle
-            N: '1 2 3 4 5 6 7 8 9 10'
-
-          - name: 'SAT: Queens'
-            exec: adiar_sat_queens
-            N: '5 6 7 8'
-
-          - name: 'Tic-Tac-Toe'
-            exec: adiar_tic_tac_toe
+          - name: 'Tic-Tac-Toe (BDD)'
+            exec: adiar_tic_tac_toe_bdd
             N: '18 19 20 21 22'
 
     steps:
@@ -135,13 +131,13 @@ jobs:
       run: |
         cmake -E make_directory build
         cd build
-        cmake ../ -D CMAKE_BUILD_TYPE=Release && cmake --build . --target adiar_picotrav
+        cmake ../ -D CMAKE_BUILD_TYPE=Release && cmake --build . --target adiar_picotrav_bdd
 
     - name: Run Benchmarks
       run: |
         for spec in ${{ matrix.circuits }} ; do \
           for opt in benchmarks/epfl/best_results/**/$spec* ; do \
-            build/src/adiar_picotrav -f benchmarks/epfl/${{ matrix.name }}/$spec.blif -f $opt -o ${{ matrix.order }} -M 1024 ; \
+            build/src/adiar_picotrav_bdd -f benchmarks/epfl/${{ matrix.name }}/$spec.blif -f $opt -o ${{ matrix.order }} -M 1024 ; \
           done ; \
         done
 
@@ -155,11 +151,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: 'Queens'
+          - name: 'Queens (BDD)'
           - name: 'Queens (ZDD)'
-          - name: 'SAT: Pigeonhole Princiople'
-          - name: 'SAT: Queens'
-          - name: 'Tic-Tac-Toe'
+          - name: 'Tic-Tac-Toe (BDD)'
           - name: 'Picotrav (arithmetic)'
           - name: 'Picotrav (random_control)'
 
