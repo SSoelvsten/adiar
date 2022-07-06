@@ -506,8 +506,23 @@ namespace adiar {
     /// \brief Attach to a file
     ////////////////////////////////////////////////////////////////////////////
     void attach(const node_file &f) {
-      // TODO: set _latest_node etc. when opening file
       meta_file_writer::attach(f);
+
+      //Reset all meta-data
+      _latest_node = { NIL, NIL, NIL };
+
+      _canonical = true;
+
+      _level_size = 0u;
+
+      _sinks_at_bottom[0] = 0u;
+      _sinks_at_bottom[1] = 0u;
+
+      _max_1level_short_internal = 0u;
+      _curr_1level_short_internal = 0u;
+
+      _long_internal_uid = NIL;
+      _number_of_long_internal_arcs = 0u;
     }
 
     ////////////////////////////////////////////////////////////////////////////

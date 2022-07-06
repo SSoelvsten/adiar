@@ -6,6 +6,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set(HEADERS
   # core files
   adiar.h
+  builder.h
   data.h
   domain.h
   file.h

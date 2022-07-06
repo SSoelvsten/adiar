@@ -127,6 +127,8 @@ namespace snowhouse
 
 #include "adiar/test_file.cpp"
 
+#include "adiar/test_builder.cpp"
+
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR Internal unit tests
 #include "adiar/internal/test_levelized_priority_queue.cpp"
