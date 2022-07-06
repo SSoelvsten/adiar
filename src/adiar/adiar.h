@@ -9,6 +9,7 @@
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
+#include <adiar/builder.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Decision Diagrams
