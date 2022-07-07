@@ -266,9 +266,25 @@ go_bandit([]() {
         {
           node_writer nw(zdd_x3);
           nw << create_node(3, MAX_ID, sink_F, sink_T);
+          /*
+                 1        ---- x3
+                / \
+                F T
+           */
         }
 
         __zdd out = zdd_complement(zdd_x3, dom_0123);
+        /*
+                     *    ---- x0
+                    / \
+                   *   *  ---- x1
+                  / \ //
+                  *   *   ---- x2
+                 / \ //
+                1   *     ---- x3
+               / \  ||
+               T F  T
+         */
 
         node_arc_test_stream node_arcs(out);
 
