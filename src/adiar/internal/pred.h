@@ -221,24 +221,32 @@ namespace adiar
 
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
-    const size_t max_pq1_size = comp_policy::level_check_t::pq1_upper_bound(f1, f2);
-    const size_t max_pq2_size = comp_policy::level_check_t::pq2_upper_bound(f1, f2);
-
     const size_t pq_1_memory_fits =
       comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_memory_fits =
       comparison_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
 
+    const bool internal_only = memory::mode == memory::INTERNAL;
+
+    const size_t pq_1_bound = comp_policy::level_check_t::pq1_upper_bound(f1, f2);
+
+    const size_t max_pq_1_size = internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
+
+    const size_t pq_2_bound = comp_policy::level_check_t::pq2_upper_bound(f1, f2);
+
+    const size_t max_pq_2_size = internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
+
     // TODO: Only one element per node in pq_2, so maximum is width (or their product)!
-    if(max_pq1_size <= pq_1_memory_fits && max_pq2_size <= pq_2_memory_fits) {
+    if(memory::mode != memory::EXTERNAL && max_pq_1_size <= pq_1_memory_fits
+                                        && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_equality.lpq.internal++;
 #endif
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_1_t<internal_sorter, internal_priority_queue>,
                                 comparison_priority_queue_2_t<internal_priority_queue>>
-        (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_internal_memory, max_pq1_size);
+        (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
     } else {
 #ifdef ADIAR_STATS
       stats_equality.lpq.external++;
@@ -249,7 +257,7 @@ namespace adiar
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_1_t<external_sorter, external_priority_queue>,
                                 comparison_priority_queue_2_t<external_priority_queue>>
-        (f1, f2, negate1, negate2, pq_1_memory, pq_2_memory, max_pq1_size);
+        (f1, f2, negate1, negate2, pq_1_memory, pq_2_memory, max_pq_1_size);
     }
   }
 

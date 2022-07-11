@@ -304,14 +304,18 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t max_pq_size = __intercut_2level_upper_bound<intercut_policy>(dd);
-
     const size_t pq_internal_memory = aux_available_memory;
 
     const size_t pq_memory_fits =
       intercut_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(pq_internal_memory);
 
-    if(max_pq_size <= pq_memory_fits) {
+    const bool internal_only = memory::mode == memory::INTERNAL;
+
+    const size_t pq_bound = __intercut_2level_upper_bound<intercut_policy>(dd);
+
+    const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
+
+    if(memory::mode != memory::EXTERNAL && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_intercut.lpq.internal++;
 #endif

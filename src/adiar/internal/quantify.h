@@ -344,14 +344,6 @@ namespace adiar
       // Output stream
       - arc_writer::memory_usage();
 
-    const size_t max_pq_1_size = std::min({
-        __quantify_ilevel_upper_bound<quantify_policy, get_2level_cut, 2u>(in,op),
-        __quantify_ilevel_upper_bound<quantify_policy>(in)
-      });
-
-    const size_t max_pq_2_size =
-      __quantify_ilevel_upper_bound<quantify_policy, get_1level_cut, 0u>(in,op);
-
     constexpr size_t data_structures_in_pq_1 =
       quantify_priority_queue_1_t<internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
 
@@ -370,7 +362,19 @@ namespace adiar
     const size_t pq_2_memory_fits =
       quantify_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
 
-    if(max_pq_1_size <= pq_1_memory_fits && max_pq_2_size <= pq_2_memory_fits) {
+    const bool internal_only = memory::mode == memory::INTERNAL;
+
+    const size_t pq_1_bound = std::min({__quantify_ilevel_upper_bound<quantify_policy, get_2level_cut, 2u>(in,op),
+                                        __quantify_ilevel_upper_bound<quantify_policy>(in)});
+
+    const size_t max_pq_1_size = internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
+
+    const size_t pq_2_bound = __quantify_ilevel_upper_bound<quantify_policy, get_1level_cut, 0u>(in,op);
+
+    const size_t max_pq_2_size = internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
+
+    if(memory::mode != memory::EXTERNAL && max_pq_1_size <= pq_1_memory_fits
+                                        && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_quantify.lpq.internal++;
 #endif

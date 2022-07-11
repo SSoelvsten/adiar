@@ -73,7 +73,7 @@ int main()
   {
     // do your stuff here...
   }
-  
+
   adiar::adiar_deinit();
 }
 ```
@@ -92,3 +92,10 @@ The `adiar_init` function initialises the BDD library given the following argume
 If you create any [bdd](bdd.md) or [zdd](zdd.md) objects then remember to have
 them garbage collected (for example, by letting a local variable go out of scope
 as shown above) before calling `adiar::adiar_deinit()`.
+
+By default *Adiar* decides whether to use internal or external memory for each
+algorithm based on the size of the inputs. However, if you want to force using
+always internal or external memory set the global variable `adiar::memory::mode`
+to `adiar::memory::INTERNAL` or `adiar::memory::EXTERNAL` (default is
+`adiar::memory::AUTO`). Setting `adiar::memory::mode` to `adiar::memory::INTERNAL`
+is at your own risk and may crash if the input is too large.
