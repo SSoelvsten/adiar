@@ -567,22 +567,26 @@ namespace adiar
 
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
-    const size_t max_pq_1_size = std::min({
-        __prod_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_1, in_2, op),
-        __prod_2level_upper_bound<prod_policy>(in_1, in_2, op),
-        __prod_ilevel_upper_bound<prod_policy>(in_1, in_2, op)
-      });
-
-    const size_t max_pq_2_size =
-      __prod_ilevel_upper_bound<prod_policy, get_1level_cut, 0u>(in_1, in_2, op);
-
     const size_t pq_1_memory_fits =
       prod_priority_queue_1_t<internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_memory_fits =
       prod_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
 
-    if(max_pq_1_size <= pq_1_memory_fits && max_pq_2_size <= pq_2_memory_fits) {
+    const bool internal_only = memory::mode == memory::INTERNAL;
+
+    const size_t pq_1_bound = std::min({__prod_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_1, in_2, op),
+                                        __prod_2level_upper_bound<prod_policy>(in_1, in_2, op),
+                                        __prod_ilevel_upper_bound<prod_policy>(in_1, in_2, op)});
+
+    const size_t max_pq_1_size = internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
+
+    const size_t pq_2_bound = __prod_ilevel_upper_bound<prod_policy, get_1level_cut, 0u>(in_1, in_2, op);
+
+    const size_t max_pq_2_size = internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
+
+    if(memory::mode != memory::EXTERNAL && max_pq_1_size <= pq_1_memory_fits
+                                        && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
       stats_product_construction.lpq.internal++;
 #endif

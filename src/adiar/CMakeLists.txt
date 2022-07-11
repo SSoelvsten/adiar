@@ -90,6 +90,7 @@ set(SOURCES
   # internal
   internal/count.cpp
   internal/intercut.cpp
+  internal/memory.cpp
   internal/pred.cpp
   internal/product_construction.cpp
   internal/levelized_priority_queue.cpp

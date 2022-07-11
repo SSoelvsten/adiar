@@ -223,12 +223,16 @@ namespace adiar
     const tpie::memory_size_type aux_available_memory = memory::available()
       - node_stream<>::memory_usage() - arc_writer::memory_usage();
 
-    const size_t max_pq_size = __substitute_2level_upper_bound<substitute_policy>(dd);
-
     const tpie::memory_size_type pq_memory_fits =
       substitute_priority_queue_t<internal_sorter, internal_priority_queue>::memory_fits(aux_available_memory);
 
-    if(max_pq_size <= pq_memory_fits) {
+    const bool internal_only = memory::mode == memory::INTERNAL;
+
+    const size_t pq_bound = __substitute_2level_upper_bound<substitute_policy>(dd);
+
+    const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
+
+    if(memory::mode != memory::EXTERNAL && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_substitute.lpq.internal++;
 #endif

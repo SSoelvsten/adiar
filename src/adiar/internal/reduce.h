@@ -501,25 +501,30 @@ namespace adiar
       // Output streams
       - node_writer::memory_usage();
 
-    const size_t lpq_memory = aux_available_memory / 2;
-    const size_t sorters_memory = aux_available_memory - lpq_memory - tpie::file_stream<mapping>::memory_usage();
+    const size_t pq_memory = aux_available_memory / 2;
+    const size_t sorters_memory = aux_available_memory - pq_memory - tpie::file_stream<mapping>::memory_usage();
 
-    const size_t max_cut = in_file->max_1level_cut;
-    const tpie::memory_size_type lpq_memory_fits =
-      reduce_priority_queue<internal_sorter, internal_priority_queue>::memory_fits(lpq_memory);
+    const tpie::memory_size_type pq_memory_fits =
+      reduce_priority_queue<internal_sorter, internal_priority_queue>::memory_fits(pq_memory);
 
-    if(max_cut <= lpq_memory_fits) {
+    const bool internal_only = memory::mode == memory::INTERNAL;
+
+    const size_t pq_bound = in_file->max_1level_cut;
+
+    const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
+
+    if(memory::mode != memory::EXTERNAL && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
         stats_reduce.lpq.internal++;
 #endif
       return __reduce<dd_policy, reduce_priority_queue<internal_sorter, internal_priority_queue>>
-        (in_file, lpq_memory, sorters_memory);
+        (in_file, pq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
         stats_reduce.lpq.external++;
 #endif
       return __reduce<dd_policy, reduce_priority_queue<external_sorter, external_priority_queue>>
-        (in_file, lpq_memory, sorters_memory);
+        (in_file, pq_memory, sorters_memory);
     }
   }
 }
