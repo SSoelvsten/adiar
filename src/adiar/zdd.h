@@ -191,6 +191,7 @@ namespace adiar
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_offset(const zdd &A, const label_file &vars);
+  __zdd zdd_offset(const zdd &A, const label_t &var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
@@ -203,6 +204,7 @@ namespace adiar
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_onset(const zdd &A, const label_file &vars);
+  __zdd zdd_onset(const zdd &A, const label_t &var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every

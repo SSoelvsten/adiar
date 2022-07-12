@@ -114,6 +114,17 @@ namespace adiar
     return substitute<zdd_offset_policy<zdd_subset_label_act<substitute_act::FIX_FALSE>>>(dd, amgr);
   }
 
+  __zdd zdd_offset(const zdd &dd, const label_t &var)
+  {
+    label_file lf;
+    {
+      label_writer lw(lf);
+      lw << var;
+    }
+
+    return zdd_offset(dd, lf);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   template<typename zdd_subset_act>
   class zdd_onset_policy : public zdd_policy
@@ -169,5 +180,16 @@ namespace adiar
 
     zdd_subset_label_act<substitute_act::FIX_TRUE> amgr(l);
     return substitute<zdd_onset_policy<zdd_subset_label_act<substitute_act::FIX_TRUE>>>(dd, amgr);
+  }
+
+  __zdd zdd_onset(const zdd &dd, const label_t &var)
+  {
+    label_file lf;
+    {
+      label_writer lw(lf);
+      lw << var;
+    }
+
+    return zdd_onset(dd, lf);
   }
 }

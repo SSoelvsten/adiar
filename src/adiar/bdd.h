@@ -260,6 +260,7 @@ namespace adiar
   /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_restrict(const bdd &f, const assignment_file &xs);
+  __bdd bdd_restrict(const bdd &f, const label_t &x, const bool &x_val);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existentially quantify a single variable.

@@ -328,14 +328,7 @@ go_bandit([]() {
       });
 
       it("should skip 'dead' nodes in [1] without (1)", [&]() {
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1;
-        }
-
-        __zdd out = zdd_offset(zdd_1, labels);
+        __zdd out = zdd_offset(zdd_1, 1);
 
         node_arc_test_stream node_arcs(out);
         AssertThat(node_arcs.can_pull(), Is().True());
@@ -473,14 +466,7 @@ go_bandit([]() {
             << create_node(1, MAX_ID, sink_T, create_node_ptr(2, MAX_ID));
         }
 
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1;
-        }
-
-        __zdd out = zdd_offset(in, labels);
+        __zdd out = zdd_offset(in, 1);
 
         node_test_stream out_nodes(out);
 
@@ -501,14 +487,7 @@ go_bandit([]() {
       });
 
       it("should bridge levels in [2] on (3)", [&]() {
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 3;
-        }
-
-        __zdd out = zdd_offset(zdd_2, labels);
+        __zdd out = zdd_offset(zdd_2, 3);
 
         node_arc_test_stream node_arcs(out);
         AssertThat(node_arcs.can_pull(), Is().True());
@@ -585,14 +564,7 @@ go_bandit([]() {
         });
 
       it("should return Ø when given { Ø } for (0)", [&]() {
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 0;
-        }
-
-        __zdd out = zdd_onset(zdd_T, labels);
+        __zdd out = zdd_onset(zdd_T, 0);
 
         node_test_stream out_nodes(out);
 
@@ -678,14 +650,7 @@ go_bandit([]() {
           w << n;
         }
 
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 0;
-        }
-
-        __zdd out = zdd_onset(in, labels);
+        __zdd out = zdd_onset(in, 0);
 
         node_arc_test_stream node_arcs(out);
         AssertThat(node_arcs.can_pull(), Is().False());
@@ -861,14 +826,7 @@ go_bandit([]() {
       });
 
       it("should keep root of [1] but shortcut its low for (0)", [&]() {
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 0;
-        }
-
-        __zdd out = zdd_onset(zdd_1, labels);
+        __zdd out = zdd_onset(zdd_1, 0);
 
         node_arc_test_stream node_arcs(out);
         AssertThat(node_arcs.can_pull(), Is().True());
@@ -1032,14 +990,7 @@ go_bandit([]() {
             << create_node(0, MAX_ID, sink_T, create_node_ptr(2, MAX_ID));
         }
 
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1;
-        }
-
-        __zdd out = zdd_onset(in, labels);
+        __zdd out = zdd_onset(in, 1);
 
         node_test_stream out_nodes(out);
 
@@ -1080,14 +1031,7 @@ go_bandit([]() {
           w << n3 << n2 << n1;
         }
 
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1;
-        }
-
-        __zdd out = zdd_onset(in, labels);
+        __zdd out = zdd_onset(in, 1);
 
         node_arc_test_stream node_arcs(out);
         AssertThat(node_arcs.can_pull(), Is().True());
@@ -1156,14 +1100,7 @@ go_bandit([]() {
           w << n3 << n2 << n1;
         }
 
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1;
-        }
-
-        __zdd out = zdd_onset(in, labels);
+        __zdd out = zdd_onset(in, 1);
 
         node_arc_test_stream node_arcs(out);
 
@@ -1202,14 +1139,7 @@ go_bandit([]() {
       });
 
       it("should falsify early sinks in [2] for (3)", [&]() {
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 3;
-        }
-
-        __zdd out = zdd_onset(zdd_2, labels);
+        __zdd out = zdd_onset(zdd_2, 3);
 
         node_arc_test_stream node_arcs(out);
         AssertThat(node_arcs.can_pull(), Is().True());
@@ -1266,15 +1196,8 @@ go_bandit([]() {
         AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
       });
 
-      it("should skip root in [2] due to cut on high edge for (1,3)", [&]() {
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 1;
-        }
-
-        __zdd out = zdd_onset(zdd_2, labels);
+      it("should skip root in [2] due to cut on high edge for (1)", [&]() {
+        __zdd out = zdd_onset(zdd_2, 1);
 
         node_arc_test_stream node_arcs(out);
         AssertThat(node_arcs.can_pull(), Is().True());
@@ -1323,14 +1246,7 @@ go_bandit([]() {
       });
 
       it("should falsify early sink and bridge over removed node in [1] for (4)", [&]() {
-        label_file labels;
-
-        { // Garbage collect writer to free write-lock
-          label_writer lw(labels);
-          lw << 4;
-        }
-
-        __zdd out = zdd_onset(zdd_1, labels);
+        __zdd out = zdd_onset(zdd_1, 4);
 
         node_arc_test_stream node_arcs(out);
         AssertThat(node_arcs.can_pull(), Is().True());

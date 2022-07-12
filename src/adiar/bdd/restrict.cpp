@@ -42,4 +42,16 @@ namespace adiar
     substitute_assignment_act amgr(a);
     return substitute<bdd_restrict_policy>(dd, amgr);
   }
+
+  __bdd bdd_restrict(const bdd &dd, const label_t &var, const bool &val)
+  {
+    assignment_t var_assignment = { var, val };
+    assignment_file af;
+    {
+      assignment_writer aw(af);
+      aw << var_assignment;
+    }
+
+    return bdd_restrict(dd, af);
+  }
 }
