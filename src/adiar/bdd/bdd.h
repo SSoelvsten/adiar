@@ -1,6 +1,8 @@
 #ifndef ADIAR_BDD_BDD_H
 #define ADIAR_BDD_BDD_H
 
+#include <string_view>
+
 #include <adiar/data.h>
 #include <adiar/file.h>
 
@@ -46,6 +48,10 @@ namespace adiar {
 
     friend class apply_prod_policy;
     friend __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else);
+
+  public:
+    static constexpr std::string_view false_print = "0";
+    static constexpr std::string_view true_print = "1";
 
   public:
     bdd();

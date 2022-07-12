@@ -483,6 +483,10 @@ namespace adiar
   class node_file : public meta_file<node_t>
   {
   public:
+    static constexpr std::string_view false_print = "0";
+    static constexpr std::string_view true_print = "1";
+
+  public:
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
 

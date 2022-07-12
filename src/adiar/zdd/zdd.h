@@ -1,6 +1,8 @@
 #ifndef ADIAR_ZDD_ZDD_H
 #define ADIAR_ZDD_ZDD_H
 
+#include <string_view>
+
 #include <adiar/data.h>
 #include <adiar/file.h>
 
@@ -50,6 +52,10 @@ namespace adiar {
 
     friend bool zdd_subseteq(const zdd&, const zdd&);
     friend bool zdd_disjoint(const zdd &, const zdd &);
+
+  public:
+    static constexpr std::string_view false_print = "Ø";
+    static constexpr std::string_view true_print = "{Ø}";
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
