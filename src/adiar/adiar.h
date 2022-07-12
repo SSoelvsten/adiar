@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// Core
 #include <adiar/data.h>
+#include <adiar/domain.h>
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>

@@ -160,6 +160,7 @@ namespace adiar
   /// \f$ 2^{\mathit{dom}} \setminus A \f$
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_complement(const zdd &A, const label_file &dom);
+  __zdd zdd_complement(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Expands the domain of the given ZDD to also include the given
@@ -357,6 +358,7 @@ namespace adiar
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_from(const bdd &f, const label_file &dom);
+  __zdd zdd_from(const bdd &f);
 
   /* ================================= DEBUG ================================ */
 

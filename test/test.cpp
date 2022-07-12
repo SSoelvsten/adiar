@@ -123,6 +123,7 @@ namespace snowhouse
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR Core unit tests
 #include "adiar/test_data.cpp"
+#include "adiar/test_domain.cpp"
 
 #include "adiar/test_file.cpp"
 

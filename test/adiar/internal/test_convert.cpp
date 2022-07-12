@@ -51,47 +51,53 @@ go_bandit([]() {
       nw << create_node(2, MAX_ID, sink_F, sink_T);
     }
 
-    describe("bdd_from(const zdd&)", [&]() {
-      zdd zdd_F(nf_F);
-      zdd zdd_T(nf_T);
+    zdd zdd_F(nf_F);
+    zdd zdd_T(nf_T);
 
-      zdd zdd_x0(nf_x0);
-      zdd zdd_x1(nf_x1);
-      zdd zdd_x2(nf_x2);
+    zdd zdd_x0(nf_x0);
+    zdd zdd_x1(nf_x1);
+    zdd zdd_x2(nf_x2);
 
-      node_file nf_x0_null;
-      {
-        node_writer nw(nf_x0_null);
-        nw << create_node(0, MAX_ID, sink_T, sink_T);
-      }
-      zdd zdd_x0_null(nf_x0_null);
+    node_file nf_x0_null;
+    {
+      node_writer nw(nf_x0_null);
+      nw << create_node(0, MAX_ID, sink_T, sink_T);
+    }
+    zdd zdd_x0_null(nf_x0_null);
 
-      node_file nf_x1_null;
-      {
-        node_writer nw(nf_x1_null);
-        nw << create_node(1, MAX_ID, sink_T, sink_T);
-      }
-      zdd zdd_x1_null(nf_x1_null);
+    node_file nf_x1_null;
+    {
+      node_writer nw(nf_x1_null);
+      nw << create_node(1, MAX_ID, sink_T, sink_T);
+    }
+    zdd zdd_x1_null(nf_x1_null);
 
-      node_file nf_x2_null;
-      {
-        node_writer nw(nf_x2_null);
-        nw << create_node(2, MAX_ID, sink_T, sink_T);
-      }
-      zdd zdd_x2_null(nf_x2_null);
+    node_file nf_x2_null;
+    {
+      node_writer nw(nf_x2_null);
+      nw << create_node(2, MAX_ID, sink_T, sink_T);
+    }
+    zdd zdd_x2_null(nf_x2_null);
 
-      // Fig. 5 from Minato: "Zero-suppressed BDDs and their applications". This
-      // is the ZDD version of Fig. 3 in the same paper.
-      node_file nf_minato_fig5;
-      {
-        const node_t n2 = create_node(1, MAX_ID, sink_F, sink_T);
-        const node_t n1 = create_node(0, MAX_ID, n2.uid, sink_T);
+    // Fig. 5 from Minato: "Zero-suppressed BDDs and their applications". This
+    // is the ZDD version of Fig. 3 in the same paper.
+    node_file nf_minato_fig5;
+    {
+      const node_t n2 = create_node(1, MAX_ID, sink_F, sink_T);
+      const node_t n1 = create_node(0, MAX_ID, n2.uid, sink_T);
 
-        node_writer nw(nf_minato_fig5);
-        nw << n2 << n1;
-      }
-      zdd zdd_minato_fig5(nf_minato_fig5);
+      node_writer nw(nf_minato_fig5);
+      nw << n2 << n1;
+    }
+    zdd zdd_minato_fig5(nf_minato_fig5);
 
+    bdd bdd_F(nf_F);
+    bdd bdd_T(nf_T);
+
+    bdd bdd_x0(nf_x0);
+    bdd bdd_x2(nf_x2);
+
+    describe("bdd_from(const zdd&, const label_file&)", [&]() {
       it("returns F sink on Ø with dom = Ø", [&]() {
         label_file dom_empty;
         __bdd out = bdd_from(zdd_F, dom_empty);
@@ -312,40 +318,6 @@ go_bandit([]() {
         AssertThat(level_info.can_pull(), Is().False());
       });
 
-      it("kills root on { Ø, { 2 } } with dom = { 0,1,2 }", [&]() {
-        __bdd out = bdd_from(zdd_x2_null, dom_012);
-
-        node_arc_test_stream node_arcs(out);
-
-        AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
-
-        AssertThat(node_arcs.can_pull(), Is().False());
-
-        sink_arc_test_stream sink_arcs(out);
-
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), sink_F }));
-
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), sink_T }));
-
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), sink_F }));
-
-        AssertThat(sink_arcs.can_pull(), Is().False());
-
-        level_info_test_stream<arc_t> level_info(out);
-
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
-
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
-
-        AssertThat(level_info.can_pull(), Is().False());
-      });
-
       it("kills root and bridges over it on { Ø, { 1 } } with dom = { 0,1,2 }", [&]() {
         __bdd out = bdd_from(zdd_x1_null, dom_012);
 
@@ -467,13 +439,13 @@ go_bandit([]() {
       it("bridges internal arcs on { { 0,2 }, { 1,2 } { 0,1,2 } } with dom = { 0,1,2 } ", [&]() {
         /*
                   _1_     ---- x0
-                 /   \
-                 2   3    ---- x1
+                /   \
+                2   3    ---- x1
                 / \ //
                 F  4      ---- x2
                   / \
                   F T
-         */
+        */
 
         node_file nf;
         {
@@ -490,13 +462,13 @@ go_bandit([]() {
         __bdd out = bdd_from(in, dom_012);
         /*
                 _1_     ---- x0
-               /   \
-               2   /    ---- x1
+              /   \
+              2   /    ---- x1
               / \ /
               F  4      ---- x2
                 / \
                 F T
-         */
+        */
 
         node_arc_test_stream node_arcs(out);
 
@@ -779,8 +751,8 @@ go_bandit([]() {
         // In dom = { 0,1,2 }
         /*
               _1_      ---- x0
-             /   \
-             2   3     ---- x1
+            /   \
+            2   3     ---- x1
             / \ / \
             T  4  T    ---- x2
               / \
@@ -863,20 +835,20 @@ go_bandit([]() {
         /*
                               ---- x0
 
-                     1        ---- x1
+                    1        ---- x1
                     / \
                     | |       ---- x2
                     \ /
                     _2_       ---- x3
-                   /   \
-                   3   4      ---- x4
+                  /   \
+                  3   4      ---- x4
                   / \ / \
                   5  6  T     ---- x5
-                 / \//
-                 F  7         ---- x6
-                   / \
-                   T T
-         */
+                / \//
+                F  7         ---- x6
+                  / \
+                  T T
+        */
         {
           const node_t n7 = create_node(6, MAX_ID,   sink_T, sink_T);
           const node_t n6 = create_node(5, MAX_ID,   n7.uid, n7.uid);
@@ -893,21 +865,21 @@ go_bandit([]() {
         __bdd out = bdd_from(in, dom);
         /*
                       1       ---- x0
-                     / \
-                     | F      ---- x1
-                     |
+                    / \
+                    | F      ---- x1
+                    |
                     _2_       ---- x2
-                   /   \
+                  /   \
                   _3_  F      ---- x3
-                 /   \
-                 4   5        ---- x4
+                /   \
+                4   5        ---- x4
                 / \ / \
                 6 T T 7       ---- x5
-               / \   / \
-               F T   8 F      ---- x6
+              / \   / \
+              F T   8 F      ---- x6
                     / \
                     T F
-         */
+        */
 
         node_arc_test_stream node_arcs(out);
 
@@ -989,13 +961,83 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_from(const bdd&)", [&]() {
-      bdd bdd_F(nf_F);
-      bdd bdd_T(nf_T);
+    describe("bdd_from(const zdd&)", [&]() {
+      it("returns check-false chain to T sink on { Ø } with set dom = { 0,1,2 }", [&]() {
+        adiar_set_domain(dom_012);
 
-      bdd bdd_x0(nf_x0);
-      bdd bdd_x2(nf_x2);
+        __bdd out = bdd_from(zdd_T);
 
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+                                                              sink_T,
+                                                              sink_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                              create_node_ptr(2, MAX_ID),
+                                                              sink_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                              create_node_ptr(1, MAX_ID),
+                                                              sink_F)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+      });
+
+      it("kills root and bridges over it on { Ø, { 2 } } with set dom = { 0,2,4 }", [&]() {
+        adiar_set_domain(dom_024);
+
+        __bdd out = bdd_from(zdd_x2_null);
+
+        node_arc_test_stream node_arcs(out);
+
+        AssertThat(node_arcs.can_pull(), Is().True());
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(4,0) }));
+
+        AssertThat(node_arcs.can_pull(), Is().False());
+
+        sink_arc_test_stream sink_arcs(out);
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), sink_F }));
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { create_node_ptr(4,0), sink_T }));
+
+        AssertThat(sink_arcs.can_pull(), Is().True());
+        AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(4,0)), sink_F }));
+
+        AssertThat(sink_arcs.can_pull(), Is().False());
+
+        level_info_test_stream<arc_t> level_info(out);
+
+        AssertThat(level_info.can_pull(), Is().True());
+        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+        AssertThat(level_info.can_pull(), Is().True());
+        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(4,1u)));
+
+        AssertThat(level_info.can_pull(), Is().False());
+      });
+    });
+
+    describe("zdd_from(const bdd&, const label_file&)", [&]() {
       it("returns Ø on F sink with dom = Ø", [&]() {
         label_file dom_empty;
         __zdd out = zdd_from(bdd_F, dom_empty);
@@ -1460,5 +1502,72 @@ go_bandit([]() {
         AssertThat(level_info.can_pull(), Is().False());
       });
     });
+
+    describe("zdd_from(const bdd&)", [&]() {
+      it("returns pow(dom) on T sink with set dom = { 0,1,2 }", [&]() {
+        adiar_set_domain(dom_012);
+
+        __zdd out = zdd_from(bdd_T);
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+                                                              sink_T,
+                                                              sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                              create_node_ptr(2, MAX_ID),
+                                                              create_node_ptr(2, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                              create_node_ptr(1, MAX_ID),
+                                                              create_node_ptr(1, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+      });
+
+      it("collapses false-chain into { Ø } on with set dom = { 0,2,4 }", [&]() {
+        node_file nf;
+        {
+          const node_t n3 = create_node(4, MAX_ID, sink_T, sink_F);
+          const node_t n2 = create_node(2, MAX_ID, n3.uid, sink_F);
+          const node_t n1 = create_node(0, MAX_ID, n2.uid, sink_F);
+
+          node_writer nw(nf);
+          nw << n3 << n2 << n1;
+        }
+        bdd in(nf);
+
+        adiar_set_domain(dom_024);
+
+        __zdd out = zdd_from(in);
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+      });
+    });
   });
- });
+});

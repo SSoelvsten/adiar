@@ -5,6 +5,7 @@
 #include <memory>
 
 #include <adiar/data.h>
+#include <adiar/domain.h>
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/convert.h>
@@ -141,6 +142,12 @@ namespace adiar {
   // Conversion
   __bdd bdd_from(const zdd &A, const label_file &dom)
   {
+    return intercut<convert_decision_diagram_policy<bdd_policy, zdd_policy>>(A, dom);
+  }
+
+  __bdd bdd_from(const zdd &A)
+  {
+    const label_file dom = adiar_get_domain();
     return intercut<convert_decision_diagram_policy<bdd_policy, zdd_policy>>(A, dom);
   }
 

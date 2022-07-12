@@ -7,6 +7,7 @@ set(HEADERS
   # core files
   adiar.h
   data.h
+  domain.h
   file.h
   file_stream.h
   file_writer.h
@@ -56,6 +57,7 @@ set(HEADERS
 set(SOURCES
   # core files
   adiar.cpp
+  domain.cpp
   file.cpp
 
   # bdd files
