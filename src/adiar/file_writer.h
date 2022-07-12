@@ -374,18 +374,10 @@ namespace adiar {
       if (is_nil(_latest_node.uid)) { // First node pushed
         _canonical = is_sink(n) || id_of(n) == MAX_ID;
       } else { // Check validity of input based on prior written node
-        adiar_assert(!is_sink(_latest_node),
+        adiar_debug(!is_sink(_latest_node),
                      "Cannot push a node after having pushed a sink");
-        adiar_assert(!is_sink(n),
+        adiar_debug(!is_sink(n),
                      "Cannot push a sink into non-empty file");
-
-        // Check it is topologically sorted
-        adiar_assert(n.uid < _latest_node.uid,
-                     "Pushed node is required to be prior to the existing nodes");
-        adiar_assert(!is_node(n.low) || label_of(n.uid) < label_of(n.low),
-                     "Low child must point to a node with a higher label");
-        adiar_assert(!is_node(n.high) || label_of(n.uid) < label_of(n.high),
-                     "High child must point to a node with a higher label");
 
         // Check it is canonically sorted
         if (_canonical) {
@@ -417,15 +409,8 @@ namespace adiar {
         }
       }
 
-      const bool is_pushing_to_bottom = _long_internal_uid == NIL;
-      if (is_pushing_to_bottom && !is_sink(n)) {
-        adiar_assert(is_sink(n.low),
-                     "When pushing to bottom-most level then low must be a sink");
-        adiar_assert(is_sink(n.high),
-                     "When pushing to bottom-most level then high must be a sink");
-      }
-
       // 1-level cut
+      const bool is_pushing_to_bottom = _long_internal_uid == NIL;
       if (is_pushing_to_bottom && !is_sink(n)) {
         _sinks_at_bottom[value_of(n.low)]++;
         _sinks_at_bottom[value_of(n.high)]++;
