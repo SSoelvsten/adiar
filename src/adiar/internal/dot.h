@@ -40,8 +40,8 @@ namespace adiar {
             << std::endl;
       }
 
-      out << "\tn" << create_sink_ptr(false) << " [label=\"0\"];" << std::endl;
-      out << "\tn" << create_sink_ptr(true) << " [label=\"1\"];" << std::endl;
+      out << "\tn" << create_sink_ptr(false) << " [label=\"" << T::false_print << "\"];" << std::endl;
+      out << "\tn" << create_sink_ptr(true) << " [label=\"" << T::true_print << "\"];" << std::endl;
 
       out <<  std::endl << "\t// Arcs" << std::endl;
 

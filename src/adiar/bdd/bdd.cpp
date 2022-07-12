@@ -112,7 +112,7 @@ namespace adiar {
     return bdd_equal(lhs, rhs);
   }
 
-  bool operator!= (const bdd &lhs, const bdd &rhs) 
+  bool operator!= (const bdd &lhs, const bdd &rhs)
   { return bdd_unequal(lhs, rhs); }
 
   bdd operator~ (const bdd &f)
