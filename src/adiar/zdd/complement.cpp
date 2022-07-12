@@ -2,6 +2,7 @@
 #include <adiar/zdd/zdd_policy.h>
 
 #include <adiar/data.h>
+#include <adiar/domain.h>
 
 #include <adiar/internal/build.h>
 #include <adiar/internal/intercut.h>
@@ -69,6 +70,12 @@ namespace adiar
 
   __zdd zdd_complement(const zdd &dd, const label_file &universe)
   {
+    return intercut<zdd_complement_policy>(dd, universe);
+  }
+
+  __zdd zdd_complement(const zdd &dd)
+  {
+    const label_file universe = adiar_get_domain();
     return intercut<zdd_complement_policy>(dd, universe);
   }
 }

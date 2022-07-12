@@ -451,6 +451,7 @@ namespace adiar
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_from(const zdd &A, const label_file &dom);
+  __bdd bdd_from(const zdd &A);
 
   /* ================================= DEBUG ================================ */
 
