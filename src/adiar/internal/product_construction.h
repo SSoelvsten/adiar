@@ -50,7 +50,7 @@ namespace adiar
            template<typename, typename> typename priority_queue_template>
   using prod_priority_queue_1_t =
     levelized_node_priority_queue<prod_tuple_1, tuple_label,
-                                  LOOK_AHEAD, prod_tuple_1_lt,
+                                  prod_tuple_1_lt, LOOK_AHEAD,
                                   sorter_template, priority_queue_template,
                                   2>;
 

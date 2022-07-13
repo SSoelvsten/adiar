@@ -186,8 +186,8 @@ namespace adiar {
 
   template <typename elem_t,
             typename elem_level_t,
-            label_t  LOOK_AHEAD = ADIAR_LPQ_LOOKAHEAD,
             typename elem_comp_t  = std::less<elem_t>,
+            label_t  LOOK_AHEAD = ADIAR_LPQ_LOOKAHEAD,
             template<typename, typename> typename sorter_template = external_sorter,
             template<typename, typename> typename priority_queue_template = external_priority_queue,
             typename file_t       = meta_file<elem_t>,
@@ -984,7 +984,9 @@ namespace adiar {
             typename level_comp_t,
             label_t  INIT_LEVEL
             >
-  class levelized_priority_queue<elem_t, elem_level_t, 0u, elem_comp_t, sorter_template, priority_queue_template, file_t, FILES, level_comp_t, INIT_LEVEL>
+  class levelized_priority_queue<elem_t, elem_level_t, elem_comp_t, 0u,
+                                 sorter_template, priority_queue_template,
+                                 file_t, FILES, level_comp_t, INIT_LEVEL>
   {
   private:
     static constexpr label_t NO_LABEL = MAX_LABEL+1;
@@ -1388,48 +1390,45 @@ namespace adiar {
 
   template <typename elem_t,
             typename elem_level_t,
-            label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
             typename elem_comp_t = std::less<elem_t>,
+            label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
             template<typename, typename> typename sorter_template = external_sorter,
             template<typename, typename> typename priority_queue_template = external_priority_queue,
             size_t   FILES       = 1u,
             label_t  INIT_LEVEL  = 1u>
   using levelized_node_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
-                                                                 LOOK_AHEAD, elem_comp_t,
+                                                                 elem_comp_t, LOOK_AHEAD,
                                                                  sorter_template, priority_queue_template,
                                                                  node_file, FILES, std::less<label_t>,
                                                                  INIT_LEVEL>;
 
   template <typename elem_t,
             typename elem_level_t,
-            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD,
             typename elem_comp_t  = std::less<elem_t>,
+            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD,
             template<typename, typename> typename sorter_template = external_sorter,
             template<typename, typename> typename priority_queue_template = external_priority_queue,
             size_t   FILES        = 1u,
             label_t  INIT_LEVEL   = 1u>
   using levelized_arc_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
-                                                                LOOK_AHEAD, elem_comp_t,
+                                                                elem_comp_t, LOOK_AHEAD,
                                                                 sorter_template, priority_queue_template,
                                                                 arc_file, FILES, std::greater<label_t>,
                                                                 INIT_LEVEL>;
 
   template <typename elem_t,
             typename elem_level_t,
-            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD,
             typename elem_comp_t  = std::less<elem_t>,
+            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD,
             template<typename, typename> typename sorter_template = external_sorter,
             template<typename, typename> typename priority_queue_template = external_priority_queue,
             size_t   FILES        = 1u,
             label_t  INIT_LEVEL   = 1u>
   using levelized_label_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
-                                                                  LOOK_AHEAD, elem_comp_t,
+                                                                  elem_comp_t, LOOK_AHEAD,
                                                                   sorter_template, priority_queue_template,
                                                                   label_file, FILES, std::less<label_t>,
                                                                   INIT_LEVEL>;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// TODO: Make a levelized_priority_queue that does not have any buckets
 }
 
 #endif // ADIAR_INTERNAL_LEVELIZED_PRIORITY_QUEUE_H
