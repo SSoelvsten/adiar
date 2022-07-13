@@ -37,10 +37,30 @@ namespace adiar {
     typedef label_stream<> stream_t;
   };
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Number of items for which the unbucketed queue can be used
+  ////////////////////////////////////////////////////////////////////////////
   constexpr size_t no_lookahead_bound(const size_t degree = 1)
   {
-    size_t result = 8 * std::pow(2, degree);
-    return result;
+    return 8 * std::pow(2, degree);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Strictly less ' < ' between two levels.
+  ////////////////////////////////////////////////////////////////////////////
+  template<typename level_comp_t>
+  inline bool level_cmp_lt(const label_t l1, const label_t l2, level_comp_t &level_comp)
+  {
+    return level_comp(l1, l2);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Less or equal ' <= ' between two levels.
+  ////////////////////////////////////////////////////////////////////////////
+  template<typename level_comp_t>
+  inline bool level_cmp_le(const label_t l1, const label_t l2, level_comp_t &level_comp)
+  {
+    return level_comp(l1, l2) || l1 == l2;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -542,7 +562,7 @@ namespace adiar {
 
       const label_t level = elem_level_t::label_of(e);
 
-      adiar_debug(level_cmp_le(next_bucket_level(), level),
+      adiar_debug(level_cmp_le<level_comp_t>(next_bucket_level(), level, _level_comparator),
                   "Can only push element to next bucket or later.");
 
       const size_t pushable_buckets = active_buckets() - has_front_bucket();
@@ -599,7 +619,7 @@ namespace adiar {
         ? elem_level_t::label_of(_overflow_queue.top())
         : stop_level;
 
-      stop_level = stop_level == NO_LABEL || level_cmp_lt(overflow_level, stop_level)
+      stop_level = stop_level == NO_LABEL || level_cmp_lt<level_comp_t>(overflow_level, stop_level, _level_comparator)
         ? overflow_level
         : stop_level;
 
@@ -609,18 +629,18 @@ namespace adiar {
                   "There should be a next level to go to");
 
       adiar_debug(!has_stop_level || !has_front_bucket()
-                  || level_cmp_lt(front_bucket_level(), stop_level),
+                  || level_cmp_lt<level_comp_t>(front_bucket_level(), stop_level, _level_comparator),
                   "'stop_level' should be past the current front bucket (if it exists)");
 
       adiar_debug(!has_front_bucket() ||
-                  level_cmp_lt(front_bucket_level(), back_bucket_level()),
+                  level_cmp_lt<level_comp_t>(front_bucket_level(), back_bucket_level(), _level_comparator),
                   "Back bucket should be (strictly) ahead of the back bucket");
 
       // TODO: Add statistics on what case is hit.
 
       // Edge Case: ---------------------------------------------------------- :
       //   The given stop_level is prior to the next bucket
-      if (has_stop_level && level_cmp_lt(stop_level, next_bucket_level())) {
+      if (has_stop_level && level_cmp_lt<level_comp_t>(stop_level, next_bucket_level(), _level_comparator)) {
         return;
       }
 
@@ -760,22 +780,6 @@ namespace adiar {
 
   private:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Strictly less ' < ' between two levels.
-    ////////////////////////////////////////////////////////////////////////////
-    bool level_cmp_lt(const label_t l1, const label_t l2)
-    {
-      return _level_comparator(l1, l2);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Less or equal ' <= ' between two levels.
-    ////////////////////////////////////////////////////////////////////////////
-    bool level_cmp_le(const label_t l1, const label_t l2)
-    {
-      return _level_comparator(l1, l2) || l1 == l2;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief  The number of active buckets, incl. the (possibly existing)
     ///         read-only bucket.
     ///
@@ -858,12 +862,12 @@ namespace adiar {
                         "At least one more bucket can be forwarded to");
 
         // Is the next bucket past the 'stop_level'?
-        if (has_stop_level && level_cmp_lt(stop_level, next_bucket_level())) {
+        if (has_stop_level && level_cmp_lt<level_comp_t>(stop_level, next_bucket_level(), _level_comparator)) {
           break;
         }
 
         adiar_invariant(!has_front_bucket()
-                        || level_cmp_lt(front_bucket_level(), back_bucket_level()),
+                        || level_cmp_lt<level_comp_t>(front_bucket_level(), back_bucket_level(), _level_comparator),
                         "Inconsistency in has_next_bucket predicate");
 
         // Replace the current read-only bucket, if there is one
@@ -879,7 +883,7 @@ namespace adiar {
         _front_bucket_idx = (_front_bucket_idx + 1) % BUCKETS;
 
         adiar_debug(!has_next_bucket() || !has_front_bucket()
-                    || level_cmp_lt(front_bucket_level(), back_bucket_level()),
+                    || level_cmp_lt<level_comp_t>(front_bucket_level(), back_bucket_level(), _level_comparator),
                     "Inconsistency in has_next_bucket predicate");
 
         adiar_debug(has_next_bucket() || !has_front_bucket()
@@ -900,12 +904,12 @@ namespace adiar {
       adiar_debug(has_front_bucket(), "Ends with a front bucket");
 
       adiar_debug((has_stop_level
-                   && (level_cmp_le(stop_level, front_bucket_level())
-                       || (!has_next_bucket() || level_cmp_lt(stop_level, next_bucket_level()))) )
+                   && (level_cmp_le<level_comp_t>(stop_level, front_bucket_level(), _level_comparator)
+                       || (!has_next_bucket() || level_cmp_lt<level_comp_t>(stop_level, next_bucket_level(), _level_comparator))) )
                   || _has_next_from_bucket,
                   "Either we stopped early or we found a non-bucket");
 
-      adiar_debug(level_cmp_le(front_bucket_level(), back_bucket_level()),
+      adiar_debug(level_cmp_le<level_comp_t>(front_bucket_level(), back_bucket_level(), _level_comparator),
                   "Consistent bucket levels");
     }
 
@@ -935,9 +939,9 @@ namespace adiar {
 
         adiar_debug(has_front_bucket(), "After increment the front bucket will 'exist'");
 
-        if (level_cmp_le(front_bucket_level(), stop_level)) {
+        if (level_cmp_le<level_comp_t>(front_bucket_level(), stop_level, _level_comparator)) {
           _current_level = front_bucket_level();
-        } else { // level_cmp_lt(stop_level, front_bucket_level())
+        } else { // level_cmp_lt<level_comp_t>(stop_level, front_bucket_level(), _level_comparator)
           new_levels[++_back_bucket_idx] = front_bucket_level();
         }
       } while (_front_bucket_idx != old_back_bucket_idx);
@@ -945,7 +949,7 @@ namespace adiar {
       _front_bucket_idx = OUT_OF_BUCKETS_IDX;
 
       // Add as many levels from the level_merger as we can fit in
-      while (_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), stop_level)) {
+      while (_level_merger.can_pull() && level_cmp_le<level_comp_t>(_level_merger.peek(), stop_level, _level_comparator)) {
         _current_level = _level_merger.pull();
       }
 
@@ -1149,7 +1153,7 @@ namespace adiar {
     void init()
     {
       label_t skip_level = 0;
-      while(_level_merger.can_pull() && level_cmp_lt(skip_level, INIT_LEVEL)) {
+      while(_level_merger.can_pull() && level_cmp_lt(skip_level, INIT_LEVEL, _level_comparator)) {
         _level_merger.pull();
         skip_level++;
       }
@@ -1199,7 +1203,8 @@ namespace adiar {
     bool has_next_level() /*const*/
     {
       label_t next_label_from_queue = elem_level_t::label_of(_priority_queue.top());
-      return _level_merger.can_pull() || (has_current_level() && level_cmp_lt(_current_level, next_label_from_queue));
+      return _level_merger.can_pull() || (has_current_level()
+                                          && level_cmp_lt(_current_level, next_label_from_queue, _level_comparator));
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1255,7 +1260,7 @@ namespace adiar {
 
       // Edge Case: ---------------------------------------------------------- :
       //   The given stop_level is prior to the next level
-      if (has_stop_level && level_cmp_lt(stop_level, next_level())) {
+      if (has_stop_level && level_cmp_lt(stop_level, next_level(), _level_comparator)) {
         return;
       }
 
@@ -1270,8 +1275,8 @@ namespace adiar {
       //   The stop level is before the next level of the queue - forward the
       //   level_merger until it is at the stop level
       label_t next_label_from_queue = elem_level_t::label_of(_priority_queue.top());
-      if(has_stop_level && level_cmp_le(stop_level, next_label_from_queue)) {
-        while(_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), stop_level)) {
+      if(has_stop_level && level_cmp_le(stop_level, next_label_from_queue, _level_comparator)) {
+        while(_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), stop_level, _level_comparator)) {
           _current_level = _level_merger.pull();
         }
         return;
@@ -1280,7 +1285,7 @@ namespace adiar {
       // Primary Case: ------------------------------------------------------- :
       //   Set the level to be the next from the queue, and forward the level_merger
       _current_level = next_label_from_queue;
-      while(_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), _current_level)) {
+      while(_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), _current_level, _level_comparator)) {
         _level_merger.pull();
       }
     }
@@ -1368,23 +1373,6 @@ namespace adiar {
     bool empty() const
     {
       return _priority_queue.empty();
-    }
-
-  private:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Strictly less ' < ' between two levels.
-    ////////////////////////////////////////////////////////////////////////////
-    bool level_cmp_lt(const label_t l1, const label_t l2) const
-    {
-      return _level_comparator(l1, l2);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Less or equal ' <= ' between two levels.
-    ////////////////////////////////////////////////////////////////////////////
-    bool level_cmp_le(const label_t l1, const label_t l2) const
-    {
-      return _level_comparator(l1, l2) || l1 == l2;
     }
   };
 
