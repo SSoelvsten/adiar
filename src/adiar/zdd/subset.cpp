@@ -19,7 +19,7 @@ namespace adiar
 
     bool has_excl = false;
 
-    // We will rememeber how far the algorithm in substitution.h has got
+    // We will remember how far the algorithm in substitution.h has got
     label_t alg_level = 0;
 
   public:
@@ -80,6 +80,44 @@ namespace adiar
     }
   };
 
+  template<substitute_act FIX_VALUE>
+  class zdd_subset_predicate_act
+  {
+    label_predicate pred;
+
+    // We will remember how far the algorithm in substitution.h has got
+    label_t alg_level = 0;
+
+  public:
+    zdd_subset_predicate_act(const label_predicate &lp) : pred(lp)
+    { }
+
+  public:
+    substitute_act action_for_level(const label_t new_level) {
+      alg_level = new_level;
+      return pred(new_level) ? FIX_VALUE : substitute_act::KEEP;
+    }
+
+  public:
+    bool has_level_incl() {
+      return false;
+    }
+
+    label_t level_incl()
+    {
+      adiar_unreachable();
+    }
+
+    bool has_level_excl() {
+      return false;
+    }
+
+    label_t level_excl()
+    {
+      adiar_unreachable();
+    }
+  };
+
   //////////////////////////////////////////////////////////////////////////////
   template<typename zdd_subset_act>
   class zdd_offset_policy : public zdd_policy
@@ -98,9 +136,20 @@ namespace adiar
 
   public:
     static inline zdd sink(bool sink_val,
-                           zdd_subset_label_act<substitute_act::FIX_FALSE>& /*amgr*/)
+                           zdd_subset_act &/*amgr*/)
     { return zdd_sink(sink_val); }
   };
+
+  __zdd zdd_offset(const zdd &dd, const label_t &var)
+  {
+    label_file lf;
+    {
+      label_writer lw(lf);
+      lw << var;
+    }
+
+    return zdd_offset(dd, lf);
+  }
 
   __zdd zdd_offset(const zdd &dd, const label_file &l)
   {
@@ -114,15 +163,14 @@ namespace adiar
     return substitute<zdd_offset_policy<zdd_subset_label_act<substitute_act::FIX_FALSE>>>(dd, amgr);
   }
 
-  __zdd zdd_offset(const zdd &dd, const label_t &var)
+  __zdd zdd_offset(const zdd &dd, const label_predicate &lp)
   {
-    label_file lf;
-    {
-      label_writer lw(lf);
-      lw << var;
+    if (is_sink(dd)) {
+      return dd;
     }
 
-    return zdd_offset(dd, lf);
+    zdd_subset_predicate_act<substitute_act::FIX_FALSE> amgr(lp);
+    return substitute<zdd_offset_policy<zdd_subset_predicate_act<substitute_act::FIX_FALSE>>>(dd, amgr);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -165,11 +213,22 @@ namespace adiar
 
   public:
     static inline zdd sink(bool sink_val,
-                           zdd_subset_label_act<substitute_act::FIX_TRUE>& amgr)
+                           zdd_subset_act &amgr)
     {
       return zdd_sink(!amgr.has_level_excl() && sink_val);
     }
   };
+
+  __zdd zdd_onset(const zdd &dd, const label_t &var)
+  {
+    label_file lf;
+    {
+      label_writer lw(lf);
+      lw << var;
+    }
+
+    return zdd_onset(dd, lf);
+  }
 
   __zdd zdd_onset(const zdd &dd, const label_file &l)
   {
@@ -182,14 +241,13 @@ namespace adiar
     return substitute<zdd_onset_policy<zdd_subset_label_act<substitute_act::FIX_TRUE>>>(dd, amgr);
   }
 
-  __zdd zdd_onset(const zdd &dd, const label_t &var)
+  __zdd zdd_onset(const zdd &dd, const label_predicate &lp)
   {
-    label_file lf;
-    {
-      label_writer lw(lf);
-      lw << var;
+    if (is_sink(dd)) {
+      return dd;
     }
 
-    return zdd_onset(dd, lf);
+    zdd_subset_predicate_act<substitute_act::FIX_TRUE> amgr(lp);
+    return substitute<zdd_onset_policy<zdd_subset_predicate_act<substitute_act::FIX_TRUE>>>(dd, amgr);
   }
 }

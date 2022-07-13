@@ -79,6 +79,7 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
+  //////////////////////////////////////////////////////////////////////////////
   template<typename quantify_policy, typename pq_1_t>
   inline void __quantify_resolve_request(pq_1_t &quantify_pq_1,
                                          arc_writer &aw,
@@ -405,6 +406,28 @@ namespace adiar
                         quantify_priority_queue_2_t<external_priority_queue>>
         (in, label, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
+  }
+
+template<typename quantify_policy, typename quantify_label_handler>
+  inline typename quantify_policy::unreduced_t multi_quantify(typename quantify_policy::reduced_t &dd_var,
+                                                              quantify_label_handler &label_handler,
+                                                              const bool_op op) {
+    if(is_sink(dd_var)) { return dd_var; }
+
+    while(label_handler.has_next_label()) {
+      if(is_sink(dd_var)) { return dd_var; }
+
+      label_t label = label_handler.get_next_label();
+      bool use_label = label_handler.use_label(label);
+      if(use_label) {
+        if (label_handler.has_next_label()) {
+          dd_var = quantify<quantify_policy>(dd_var, label, op);
+        } else {
+          return quantify<quantify_policy>(dd_var, label, op);
+        }
+      }
+    }
+    return dd_var;
   }
 }
 

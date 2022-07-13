@@ -534,6 +534,554 @@ go_bandit([]() {
         AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
         AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
+
+      describe("zdd_offset with predicates", [&]() {
+        it("should return input unchanged when given Ø using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 21 || label == 42;
+          };
+
+          __zdd out = zdd_offset(zdd_F, pred);
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_F._file_ptr));
+        });
+
+        it("should return input unchanged when given { Ø } using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 21 || label == 7;
+          };
+
+          __zdd out = zdd_offset(zdd_T, pred);
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_T._file_ptr));
+        });
+
+        it("should return input unchanged when given empty set of labels using predicate", [&]() {
+          const label_predicate pred = [](label_t /*label*/) -> bool
+          {
+            return false;
+          };
+
+          __zdd out = zdd_offset(zdd_1, pred);
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_1.uid, n1_2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_2.uid, n1_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_3.uid, n1_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_5.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_5.uid, n1_6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_4.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_5.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,2u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(4,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        });
+
+        it("should return input unchanged when given { { 2 }, { 1,2 } } without (0,3,4,5,6) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0 || (label >= 3 && label <= 6);
+          };
+
+          node_file in;
+          node_t n2 = create_node(2, MAX_ID, sink_F, sink_T);
+          node_t n1 = create_node(1, MAX_ID, sink_T, create_node_ptr(2, MAX_ID));
+          {
+            node_writer nw(in);
+            nw << n2 << n1;
+          }
+
+          __zdd out = zdd_offset(in, pred);
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid), n2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+
+        it("should return { Ø } when given { Ø, { 1,2 } } without 'even' predicate", [&]() {
+          node_file in;
+
+          node_t n2 = create_node(2, MAX_ID, sink_F, sink_T);
+          node_t n1 = create_node(1, MAX_ID, sink_T, n2.uid);;
+
+          {
+            node_writer nw(in);
+            nw << n2 << n1;
+          }
+
+          __zdd out = zdd_offset(in, even_pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1.uid), sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should return { Ø, { 1 } } when given { Ø, { 1 }, { 2 }, { 1, 2 } } without 'even' predicate", [&]() {
+          node_file in;
+
+          node_t n2 = create_node(2, MAX_ID-1, sink_T, sink_T);
+          node_t n1 = create_node(1, MAX_ID, n2.uid, n2.uid);;
+
+          {
+            node_writer nw(in);
+            nw << n2 << n1;
+          }
+
+          __zdd out = zdd_offset(in, even_pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(0u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+
+        it("should return { Ø, { 2 } } when given { Ø, { 1 }, { 2 }, { 1, 2 } } without 'odd' predicate", [&]() {
+          node_file in;
+
+          node_t n2 = create_node(2, MAX_ID, sink_T, sink_T);
+          node_t n1 = create_node(1, MAX_ID, n2.uid, n2.uid);;
+
+          {
+            node_writer nw(in);
+            nw << n2 << n1;
+          }
+
+          __zdd out = zdd_offset(in, odd_pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(0u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+
+        it("should skip root of [1] without (0,42) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0 || label == 42;
+          };
+
+          __zdd out = zdd_offset(zdd_1, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_2.uid, n1_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_3.uid, n1_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_5.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_5.uid, n1_6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_4.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_5.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,2u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(4,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        });
+
+        it("should skip 'dead' nodes in [1] without (1) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __zdd out = zdd_offset(zdd_1, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_1.uid, n1_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_4.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(4,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+
+        it("should restrict to a sink in [1] without (0,1,3) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0 || label == 1 || label == 3;
+          };
+
+          __zdd out = zdd_offset(zdd_1, pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> meta_arcs(out);
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        });
+
+        it("should restrict to a sink in { Ø, { 1 }, { 2, 3 } } without 'interval' predicate with (1,2)", [&]() {
+          /*
+                    1       ---- x1
+                  / \
+                  2 T      ---- x2
+                  / \
+                  T 3
+                  / \
+                  F T
+          */
+          node_file in;
+
+          {
+            node_writer w(in);
+            w << create_node(3, MAX_ID, sink_F, sink_T)
+              << create_node(2, MAX_ID, sink_T, create_node_ptr(3, MAX_ID))
+              << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), sink_T);
+          }
+
+         __zdd out = zdd_offset(in, interval_pred(1,2));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> meta_arcs(out);
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should restrict to a sink from root using predicate", [&]() {
+          /*
+                  1       ---- x1
+                  / \
+                  T 2      ---- x2
+                  / \
+                  T T
+          */
+          node_file in;
+
+          {
+            node_writer w(in);
+            w << create_node(2, MAX_ID, sink_T, sink_T)
+              << create_node(1, MAX_ID, sink_T, create_node_ptr(2, MAX_ID));
+          }
+
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __zdd out = zdd_offset(in, pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> meta_arcs(out);
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should bridge levels in [2] on (3) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 3;
+          };
+
+          __zdd out = zdd_offset(zdd_2, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n2_1.uid, n2_2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_1.uid), n2_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_2.uid), n2_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_2.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+      });
     });
 
     describe("zdd_onset", [&]() {
@@ -557,11 +1105,11 @@ go_bandit([]() {
       });
 
       it("should return input unchanged when given [1] for ()", [&]() {
-          label_file labels;
+        label_file labels;
 
-          __zdd out = zdd_onset(zdd_1, labels);
-          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_1._file_ptr));
-        });
+        __zdd out = zdd_onset(zdd_1, labels);
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_1._file_ptr));
+      });
 
       it("should return Ø when given { Ø } for (0)", [&]() {
         __zdd out = zdd_onset(zdd_T, 0);
@@ -613,32 +1161,32 @@ go_bandit([]() {
       });
 
       it("should return Ø when given disjoint labels", [&]() {
-          label_file labels;
+        label_file labels;
 
-          { // Garbage collect writer to free write-lock
-            label_writer lw(labels);
-            lw << 5 << 6;
-          }
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 5 << 6;
+        }
 
-          __zdd out = zdd_onset(zdd_1, labels);
+        __zdd out = zdd_onset(zdd_1, labels);
 
-          node_test_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
-          AssertThat(out_nodes.can_pull(), Is().True());
-          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
-          AssertThat(out_nodes.can_pull(), Is().False());
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream<node_t> meta_arcs(out);
-          AssertThat(meta_arcs.can_pull(), Is().False());
+        level_info_test_stream<node_t> meta_arcs(out);
+        AssertThat(meta_arcs.can_pull(), Is().False());
 
-          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
-          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
-          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
-        });
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+      });
 
       it("should return { { 0 } } when given { Ø, { 0 } } for (0)", [&]() {
         node_file in;
@@ -1401,6 +1949,884 @@ go_bandit([]() {
         AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
         AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
       });
+
+      describe("zdd_onset with predicates", [&]() {
+        it("should return input unchanged when given Ø using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 21 || label == 42;
+          };
+
+          __zdd out = zdd_onset(zdd_F, pred);
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_F._file_ptr));
+        });
+
+        it("should return input unchanged when given { Ø } for () using predicate", [&]() {
+          const label_predicate pred = [](label_t /*label*/) -> bool
+          {
+            return false;
+          };
+
+          __zdd out = zdd_onset(zdd_T, pred);
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_T._file_ptr));
+        });
+
+        it("should return input unchanged when given [1] for () using predicate", [&]() {
+          const label_predicate pred = [](label_t /*label*/) -> bool
+          {
+            return false;
+          };
+
+          __zdd out = zdd_onset(zdd_1, pred);
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_1._file_ptr));
+        });
+
+        it("should return Ø when given { Ø } for (0) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0;
+          };
+
+          __zdd out = zdd_onset(zdd_T, pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> meta_arcs(out);
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        });
+
+        it("should return Ø when given { Ø } for (21,42) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 21 || label == 42;
+          };
+
+          __zdd out = zdd_onset(zdd_T, pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> meta_arcs(out);
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        });
+
+        it("should return Ø when given disjoint labels using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 5 || label == 6;
+          };
+
+          __zdd out = zdd_onset(zdd_1, pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> meta_arcs(out);
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        });
+
+        it("should return { { 0 } } when given { Ø, { 0 } } for (0) using predicate", [&]() {
+          node_file in;
+
+          const node_t n = create_node(0, MAX_ID, sink_T, sink_T);
+
+          { // Garbage collect writer to free write-lock
+            node_writer w(in);
+            w << n;
+          }
+
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0;
+          };
+
+          __zdd out = zdd_onset(in, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should return Ø when given { Ø, { 0 } } for 'interval' predicate with (0,1)", [&]() {
+          node_file in;
+
+          { // Garbage collect writer to free write-lock
+            node_writer w(in);
+            w << create_node(0, MAX_ID, sink_T, sink_T);
+          }
+
+          __zdd out = zdd_onset(in, interval_pred(0,1));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> meta_arcs(out);
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        });
+
+        it("should return { Ø } in [2] for predicate with (0,2,3)", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0 || label == 2 || label == 3;
+          };
+
+          __zdd out = zdd_onset(zdd_2, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_1.uid), n2_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), n2_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_1.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_4.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_4.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should return Ø in [2] for predicate with (0,2,3,4)", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0 || label == 2 || label == 3 || label == 4;
+          };
+
+          __zdd out = zdd_onset(zdd_2, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_1.uid), n2_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_1.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        });
+
+        it("should keep root of [1] but shortcut its low for (0) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0;
+          };
+
+          __zdd out = zdd_onset(zdd_1, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_2.uid, n1_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_3.uid, n1_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_5.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_5.uid, n1_6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_1.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_4.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_5.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,2u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(4,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        });
+
+        it("should skip 'dead' nodes of [1] for 'interval' predicate using (1,2)", [&]() {
+          __zdd out = zdd_onset(zdd_1, interval_pred(1,2));
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_1.uid, n1_2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_5.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_5.uid, n1_6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_2.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_3.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_5.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(4,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        });
+
+        it("should return Ø in { Ø, {0}, {0,2} } for (1) using predicate", [&]() {
+            /*
+              1       ---- x0
+              / \
+              T |      ---- x1
+                |
+                2      ---- x2
+              / \
+              T T
+            */
+          node_file in;
+
+          { // Garbage collect writer to free write-lock
+            node_writer w(in);
+            w << create_node(2, MAX_ID, sink_T, sink_T)
+              << create_node(0, MAX_ID, sink_T, create_node_ptr(2, MAX_ID));
+          }
+
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __zdd out = zdd_onset(in, pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> meta_arcs(out);
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        });
+
+        it("should cut edge going across onset label in { {2}, {0,1}, {0,2}, {0,1,2} } for (1) using predicate", [&]() {
+            /*
+                1       ---- x0
+                / \
+                |  2     ---- x1
+                \ //
+                3       ---- x2
+                / \
+                F T
+            */
+          node_file in;
+
+          const node_t n3 = create_node(2, MAX_ID, sink_F, sink_T);
+          const node_t n2 = create_node(1, MAX_ID, n3.uid, n3.uid);
+          const node_t n1 = create_node(0, MAX_ID, n3.uid, n2.uid);
+
+          { // Garbage collect writer to free write-lock
+            node_writer w(in);
+            w << n3 << n2 << n1;
+          }
+
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __zdd out = zdd_onset(in, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid), n2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2.uid), n3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n3.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n3.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should cut edge and ignore 'dead' node in { {2}, {0,1}, {0,2} } for (1) using predicate", [&]() {
+          /*
+                1       ---- x0
+                / \
+                |  2     ---- x1
+                \ / \
+                3  T    ---- x2
+                / \
+                F T
+          */
+          node_file in;
+
+          const node_t n3 = create_node(2, MAX_ID, sink_F, sink_T);
+          const node_t n2 = create_node(1, MAX_ID, n3.uid, sink_T);
+          const node_t n1 = create_node(0, MAX_ID, n3.uid, n2.uid);
+
+          { // Garbage collect writer to free write-lock
+            node_writer w(in);
+            w << n3 << n2 << n1;
+          }
+
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __zdd out = zdd_onset(in, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid), n2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should falsify early sinks in [2] for (3) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 3;
+          };
+
+          __zdd out = zdd_onset(zdd_2, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n2_1.uid, n2_2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_1.uid), n2_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_2.uid), n2_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), n2_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_2.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_4.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_4.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should skip root in [2] due to cut on high edge for (1) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __zdd out = zdd_onset(zdd_2, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_2.uid), n2_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2_3.uid), n2_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_2.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_3.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n2_4.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n2_4.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+
+        it("should falsify early sink and bridge over removed node in [1] for (4) using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 4;
+          };
+
+          __zdd out = zdd_onset(zdd_1, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_1.uid, n1_2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_1.uid), n1_2.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_2.uid), n1_3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_2.uid, n1_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1_3.uid, n1_4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_3.uid), n1_6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1_4.uid), n1_6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_4.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1_6.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n1_6.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(4,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(3u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should cut high edge on restricted node, if it goes past the next label using 'interval' predicate with (1,2)", [&]() {
+          /*
+                    _1_       ---- x0
+                    /   \
+                    2   3      ---- x1
+                  / \ / \
+                  T  |  4     ---- x2
+                      \ / \
+                      5  6    ---- x3
+                      / \/ \
+                      F T  T
+          */
+          node_file in;
+
+          node_t n6 = create_node(3, MAX_ID,   sink_T, sink_T);
+          node_t n5 = create_node(3, MAX_ID-1, sink_F, sink_T);
+          node_t n4 = create_node(2, MAX_ID,   n5.uid, n6.uid);
+          node_t n3 = create_node(1, MAX_ID,   n5.uid, n4.uid);
+          node_t n2 = create_node(1, MAX_ID-1, sink_T, n5.uid);
+          node_t n1 = create_node(0, MAX_ID,   n2.uid, n3.uid);
+
+          { // Garbage collect writer to free write-lock
+            node_writer w(in);
+            w << n6 << n5 << n4 << n3 << n2 << n1;
+          }
+
+          __zdd out = zdd_onset(in, interval_pred(1,2));
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().True());
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid), n3.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n3.uid), n4.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n4.uid), n6.uid }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n1.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n3.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n4.uid, sink_F }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { n6.uid, sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), Is().EqualTo(arc { flag(n6.uid), sink_T }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> meta_arcs(out);
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().True());
+          AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,1u)));
+
+          AssertThat(meta_arcs.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+      });
     });
   });
- });
+});

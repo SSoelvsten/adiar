@@ -261,6 +261,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_restrict(const bdd &f, const assignment_file &xs);
   __bdd bdd_restrict(const bdd &f, const label_t &x, const bool &x_val);
+  __bdd bdd_restrict(const bdd &f, const act_predicate &pred);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existentially quantify a single variable.
@@ -289,6 +290,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_exists(const bdd &f, const label_file &vars);
   __bdd bdd_exists(bdd &&f, const label_file &vars);
+  __bdd bdd_exists(const bdd &f, const label_predicate &var_predicate);
+  __bdd bdd_exists(bdd &&f, const label_predicate &var_predicate);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Forall quantify a single variable.
@@ -317,6 +320,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_forall(const bdd &f, const label_file &vars);
   __bdd bdd_forall(bdd &&f, const label_file &vars);
+  __bdd bdd_forall(const bdd &f, const label_predicate &var_predicate);
+  __bdd bdd_forall(bdd &&f, const label_predicate &var_predicate);
 
   /* ============================ BDD PREDICATES ============================ */
 
@@ -333,7 +338,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether f and g represent different functions.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool bdd_unequal(const bdd& f, const bdd& g) 
+  inline bool bdd_unequal(const bdd& f, const bdd& g)
     { return !bdd_equal(f, g); }
 
   bool operator!= (const bdd& f, const bdd& g);

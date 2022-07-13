@@ -247,7 +247,8 @@ go_bandit([]() {
       });
 
       it("should shortcut quantification of root into T sink [BDD 1]", [&]() {
-        __bdd out = bdd_exists(bdd_1, 0);
+        label_t label = 0;
+        __bdd out = bdd_exists(bdd_1, label);
 
         node_test_stream out_nodes(out);
 
@@ -326,7 +327,8 @@ go_bandit([]() {
       });
 
       it("should quantify root without sink arcs [BDD 2]", [&]() {
-        __bdd out = bdd_exists(bdd_2, 0);
+        label_t label = 0;
+        __bdd out = bdd_exists(bdd_2, label);
 
         node_arc_test_stream node_arcs(out);
 
@@ -1192,6 +1194,967 @@ go_bandit([]() {
         __bdd out = bdd_exists(in_bdd, labels);
         AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
       });
+
+      describe("bdd_exists with label predicates", [&]() {
+        it("should quantify T sink-only BDD as itself using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 42;
+          };
+
+          __bdd out = bdd_exists(sink_T, pred);
+
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+          AssertThat(out.negate, Is().False());
+        });
+
+        it("should quantify F sink-only BDD as itself using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 21;
+          };
+
+          __bdd out = bdd_exists(sink_F, pred);
+
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_F._file_ptr));
+          AssertThat(out.negate, Is().False());
+        });
+
+        it("should shortcut quantification of root into T sink using predicate [BDD 1]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0;
+          };
+
+          __bdd out = bdd_exists(bdd_1, pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should shortcut quantification of root into T sink using predicate [x2]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 2;
+          };
+
+          __bdd out = bdd_exists(bdd_x2, pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should shortcut quantification on non-existent label in input using predicate [BDD 1]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 42;
+          };
+
+          __bdd out = bdd_exists(bdd_1, pred);
+
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_1._file_ptr));
+          AssertThat(out.negate, Is().False());
+        });
+
+        it("should quantify bottom-most nodes using predicate [BDD 1]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          tpie::file_stream<arc_t> reduce_node_arcs;
+          __bdd out = bdd_exists(bdd_1, pred);
+
+          node_arc_test_stream node_arcs(out);
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(0,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(0,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(0u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+
+        it("should quantify root without sink arcs using predicate [BDD 2]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0;
+          };
+
+          __bdd out = bdd_exists(bdd_2, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(1,0), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // (4,5)
+                    Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // (5,_)
+                    Is().EqualTo(arc_t { create_node_ptr(2,1), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,2u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        });
+
+        it("should quantify nodes with sink or nodes as children using predicate [BDD 2]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __bdd out = bdd_exists(bdd_2, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(0,0)), create_node_ptr(2,1) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // (4,5)
+                    Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // (5,_)
+                    Is().EqualTo(arc_t { create_node_ptr(2,1), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,2u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        });
+
+        it("should output sink arcs in order, despite the order of resolvement using predicate [BDD 2]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 2;
+          };
+
+          __bdd out = bdd_exists(bdd_2, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(0,0), create_node_ptr(1,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 4.low
+                    Is().EqualTo(arc_t { create_node_ptr(1,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 5.high
+                    Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 5.high
+                    Is().EqualTo(arc_t { create_node_ptr(1,1), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // false due to its own leaf
+                    Is().EqualTo(arc_t { flag(create_node_ptr(1,1)), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,2u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        });
+
+        it("should keep nodes as is when skipping quantified level using predicate [BDD 3]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __bdd out = bdd_exists(bdd_3, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          // Note, that node (2,0) reflects (3,NIL) since while n4 < NIL we process this
+          // request without forwarding n3 through the secondary priority queue
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(0,0)), create_node_ptr(2,1) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // n3
+                    Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // n3
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 3.low
+                    Is().EqualTo(arc_t { create_node_ptr(2,1), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 4.high
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,2u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        });
+
+        it("should output sink arcs in order, despite the order of resolvement using predicate [BDD 3]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 2;
+          };
+
+          __bdd out = bdd_exists(bdd_3, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          // Note, that node (2,0) reflects (3,NIL) while n4 < NIL since we process this
+          // request without forwarding n3 through the secondary priority queue
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 3.low
+                    Is().EqualTo(arc_t { create_node_ptr(0,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 3.low
+                    Is().EqualTo(arc_t { create_node_ptr(1,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 4.high
+                    Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(0u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        });
+
+        it("should resolve sink-sink requests using predicate [BDD 5]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __bdd out = bdd_exists(bdd_5, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          // Note, that node (2,0) reflects (3,NIL) while n4 < NIL since we process this
+          // request without forwarding n3 through the secondary priority queue
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(0,0), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 4.low
+                    Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 3.high
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+
+        it("can shortcut/prune irrelevant subtrees using predicate [OR-chain]", [&]() {
+          node_file bdd_chain;
+
+          node_t n4 = create_node(3,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
+          node_t n3 = create_node(2,MAX_ID, n4.uid, create_sink_ptr(true));
+          node_t n2 = create_node(1,MAX_ID, n3.uid, create_sink_ptr(true));
+          node_t n1 = create_node(0,MAX_ID, n2.uid, create_sink_ptr(true));
+
+          { // Garbage collect writer to free write-lock
+            node_writer bdd_chain_w(bdd_chain);
+            bdd_chain_w << n4 << n3 << n2 << n1;
+          }
+
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 2;
+          };
+
+          __bdd out = bdd_exists(bdd_chain, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(0,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to quantification of x2
+                    Is().EqualTo(arc_t { create_node_ptr(1,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(0u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        });
+
+        it("can forward information across a level using predicate [BDD 6]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __bdd out = bdd_exists(bdd_6, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (4,6)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (5,6)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,1) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (7,8)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(2,1), create_node_ptr(3,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (8,F)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(2,0), create_node_ptr(3,1) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (4,6)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (5,6)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (7,8)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(true) }));
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (8,F)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(3,1), create_sink_ptr(false) }));
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(3,1)), create_sink_ptr(true) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,2u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,2u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(5u));
+        });
+
+        it("can forward multiple arcs to the same node across a level using predicate [BDD 7]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __bdd out = bdd_exists(bdd_7, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (4,5)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (4,5)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (4,5)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(0u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+
+        it("should collapse tuple requests of the same node back into request on a single node using predicate [BDD 8a]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __bdd out = bdd_exists(bdd_8a, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (3,4)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (5,_)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(3,0) }));
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (3,4)
+          AssertThat(sink_arcs.pull(), // true due to 3.low
+                    Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (5,_)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+
+        it("should collapse tuple requests of the same node back into request on a single node using predicate [BDD 8b]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __bdd out = bdd_exists(bdd_8b, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (3,4)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (5,_)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(3,0) }));
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(2,0), create_node_ptr(3,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (3,4)
+          AssertThat(sink_arcs.pull(), // true due to 3.low
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (5,_)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        });
+
+        it("can quantify 'interval' predicate with (1,2) in sink-only BDD [&&bdd]", [&]() {
+          __bdd out = bdd_exists(sink_T, interval_pred(1,2));
+
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+          AssertThat(out.negate, Is().False());
+        });
+
+        it("can quantify 'interval' predicate with (1,2) in sink-only BDD [const &bdd]", [&]() {
+          bdd in_bdd = sink_T;
+          __bdd out = bdd_exists(in_bdd, interval_pred(1,2));
+
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+          AssertThat(out.negate, Is().False());
+        });
+
+        it("can quantify 'interval' predicate with (1,2) [BDD 4 : &&bdd]", [&]() {
+          bdd out = bdd_exists(bdd_4, interval_pred(1,2));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
+                                                                create_sink_ptr(false),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0,MAX_ID,
+                                                                create_node_ptr(3,MAX_ID),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("should quantify singleton predicate [x2] [BDD 4 : &&bdd]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 2;
+          };
+
+          bdd out = bdd_exists(bdd_4, pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
+                                                                create_sink_ptr(false),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1,MAX_ID,
+                                                                create_node_ptr(3,MAX_ID),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0,MAX_ID,
+                                                                create_node_ptr(3,MAX_ID),
+                                                                create_node_ptr(1,MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("should quantify 'odd' predicate [BDD 4 : &&bdd]", [&]() {
+          bdd out = bdd_exists(bdd_4, odd_pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2,MAX_ID,
+                                                                create_sink_ptr(false),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0,MAX_ID,
+                                                                create_node_ptr(2,MAX_ID),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("should quantify 'even' predicate [BDD 4 : &&bdd]", [&]() {
+          bdd out = bdd_exists(bdd_4, even_pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
+                                                                create_sink_ptr(false),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1,MAX_ID,
+                                                                create_node_ptr(3,MAX_ID),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("should quantify 'even' predicate [BDD 4 : const &bdd]", [&]() {
+          bdd in_bdd = bdd_4;
+          bdd out = bdd_exists(in_bdd, even_pred);
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
+                                                                create_sink_ptr(false),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1,MAX_ID,
+                                                                create_node_ptr(3,MAX_ID),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1u,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+        });
+
+        it("should quantify 'le' predicate with (3) [BDD 4 : &&bdd]", [&]() {
+          bdd out = bdd_exists(bdd_4, le_pred(3));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> ms(out);
+          AssertThat(ms.can_pull(), Is().False());
+        });
+
+        it("should quantify 'interval' predicate with (1,2) into T sink [x2 : &&bdd]", [&]() {
+          bdd out = bdd_exists(bdd_x2, interval_pred(1,2));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> ms(out);
+          AssertThat(ms.can_pull(), Is().False());
+        });
+
+        it("should quantify list [] into the original file using predicate [BDD 3 : &&bdd]", [&]() {
+          const label_predicate pred = [](label_t /*label*/) -> bool
+          {
+            return false;
+          };
+
+          // __bdd is used to access the node_file
+          __bdd out = bdd_exists(bdd_3, pred);
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+        });
+
+        it("should quantify list [] into the original file using predicate [BDD 3 : const &bdd]", [&]() {
+          const label_predicate pred = [](label_t /*label*/) -> bool
+          {
+            return false;
+          };
+
+          bdd in_bdd = bdd_3;
+          __bdd out = bdd_exists(in_bdd, pred);
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+        });
+      });
     });
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1213,7 +2176,8 @@ go_bandit([]() {
       });
 
       it("should quantify root with non-shortcutting sink [BDD 1]", [&]() {
-        __bdd out = bdd_forall(bdd_1, 0);
+        label_t label = 0;
+        __bdd out = bdd_forall(bdd_1, label);
 
         node_arc_test_stream node_arcs(out);
 
@@ -1245,7 +2209,8 @@ go_bandit([]() {
       });
 
       it("should quantify root of [BDD 3]", [&]() {
-        __bdd out = bdd_forall(bdd_3, 0);
+        label_t label = 0;
+        __bdd out = bdd_forall(bdd_3, label);
 
         node_arc_test_stream node_arcs(out);
 
@@ -1612,6 +2577,436 @@ go_bandit([]() {
         AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
         AssertThat(out.negate, Is().False());
       });
+
+      describe("bdd_forall with label predicates", [&]() {
+        it("should quantify T sink-only BDD as itself using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 42;
+          };
+
+          __bdd out = bdd_forall(sink_T, pred);
+
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+          AssertThat(out.negate, Is().False());
+        });
+
+        it("should quantify F sink-only BDD as itself using predicate", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 21;
+          };
+
+          __bdd out = bdd_forall(sink_F, pred);
+
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_F._file_ptr));
+          AssertThat(out.negate, Is().False());
+        });
+
+        it("should quantify root with non-shortcutting sink using predicate [BDD 1]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0;
+          };
+
+          __bdd out = bdd_forall(bdd_1, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(1,0), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should quantify root using predicate [BDD 3]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 0;
+          };
+
+          __bdd out = bdd_forall(bdd_3, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(1,0), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(2,1), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,2u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should prune shortcuttable requests using predicate [BDD 4]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 2;
+          };
+
+          __bdd out = bdd_forall(bdd_4, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_node_ptr(3,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // false due to 3.low
+                    Is().EqualTo(arc_t { create_node_ptr(0,0), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // false due to 3.low
+                    Is().EqualTo(arc_t { create_node_ptr(1,0), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // false due to 5.low
+                    Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(), // true due to 5.high and 4.high
+                    Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("can forward information across a level using predicate [BDD 6]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __bdd out = bdd_forall(bdd_6, pred);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (4,6)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (5,6)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,1) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (7,8)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(2,1), create_node_ptr(3,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (8,T)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,1) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (4,6)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (5,6)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (7,8)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (8,T)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(3,1), create_sink_ptr(false) }));
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(3,1)), create_sink_ptr(true) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,2u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,2u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(5u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should collapse tuple requests of the same node back into request on a single node using predicate [BDD 8a]", [&]() {
+          const label_predicate pred = [](label_t label) -> bool
+          {
+            return label == 1;
+          };
+
+          __bdd out = bdd_forall(bdd_8a, 1);
+
+          node_arc_test_stream node_arcs(out);
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (3,4)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(2,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().True()); // (5,_)
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(3,0) }));
+          AssertThat(node_arcs.can_pull(), Is().True());
+          AssertThat(node_arcs.pull(),
+                    Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,0) }));
+
+          AssertThat(node_arcs.can_pull(), Is().False());
+
+          sink_arc_test_stream sink_arcs(out);
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (3,4)
+          AssertThat(sink_arcs.pull(), // false due to 4.low
+                    Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(false) }));
+
+          AssertThat(sink_arcs.can_pull(), Is().True()); // (5,_)
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
+          AssertThat(sink_arcs.can_pull(), Is().True());
+          AssertThat(sink_arcs.pull(),
+                    Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+
+
+          AssertThat(sink_arcs.can_pull(), Is().False());
+
+          level_info_test_stream<arc_t> level_info(out);
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().True());
+          AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3u,1u)));
+
+          AssertThat(level_info.can_pull(), Is().False());
+
+          AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+
+          AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
+          AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        });
+
+        it("should quantify 'le' predicate with 2 [BDD 4 : &&bdd]", [&]() {
+          __bdd out = bdd_forall(bdd_4, le_pred(2));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> ms(out);
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        });
+
+        it("should quantify 'le' predicate with 2 [BDD 4 : const &bdd]", [&]() {
+          bdd in_bdd = bdd_4;
+          __bdd out = bdd_forall(in_bdd, le_pred(2));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> ms(out);
+          AssertThat(ms.can_pull(), Is().False());
+
+          AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+          AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        });
+
+        it("should quantify 'eq' predicate with 1 [BDD 4 : &&bdd]", [&]() {
+          bdd out = bdd_forall(bdd_4, eq_pred(1));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
+                                                                create_sink_ptr(false),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3,_) / (3,4)
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2,MAX_ID,
+                                                                create_sink_ptr(false),
+                                                                create_node_ptr(3,MAX_ID))));
+
+          // The node (1,_) is reduced away due to its low child is (3,_)
+          // and its high child is (3,4)
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(create_level_info(3u,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(create_level_info(2u,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+        });
+
+        it("should quantify 'eq' predicate with 1 [BDD 4 : const &bdd]", [&]() {
+          bdd in_bdd = bdd_4;
+          bdd out = bdd_forall(in_bdd, eq_pred(1));
+
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
+                                                                create_sink_ptr(false),
+                                                                create_sink_ptr(true))));
+
+          AssertThat(out_nodes.can_pull(), Is().True()); // (3,_) / (3,4)
+          AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2,MAX_ID,
+                                                                create_sink_ptr(false),
+                                                                create_node_ptr(3,MAX_ID))));
+
+          // The node (1,_) is reduced away due to its low child is (3,_)
+          // and its high child is (3,4)
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream<node_t> ms(out);
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(create_level_info(3u,1u)));
+
+          AssertThat(ms.can_pull(), Is().True());
+          AssertThat(ms.pull(), Is().EqualTo(create_level_info(2u,1u)));
+
+          AssertThat(ms.can_pull(), Is().False());
+        });
+
+        it("should quantify list [] into the original file using predicate [BDD 3 : &&bdd]", [&]() {
+          const label_predicate pred = [](label_t /*label*/) -> bool
+          {
+            return false;
+          };
+
+          // __bdd is used to access the node_file
+          __bdd out = bdd_forall(bdd_3, pred);
+
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+          AssertThat(out.negate, Is().False());
+        });
+
+        it("should quantify list [] into the original file using predicate [BDD 3 : const &bdd]", [&]() {
+          const label_predicate pred = [](label_t /*label*/) -> bool
+          {
+            return false;
+          };
+
+          bdd in_bdd = bdd_3;
+          __bdd out = bdd_forall(in_bdd, pred);
+
+          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+          AssertThat(out.negate, Is().False());
+        });
+      });
     });
   });
- });
+});

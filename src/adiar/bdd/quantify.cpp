@@ -53,20 +53,56 @@ namespace adiar
     }
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-# define multi_quantify_macro(bdd_var, labels, op)                  \
-  if (labels.size() == 0) { return bdd_var; }                       \
-  label_stream<> ls(labels);                                        \
-  while(true) {                                                     \
-    if (is_sink(bdd_var)) { return bdd_var; }                       \
-                                                                    \
-    label_t label = ls.pull();                                      \
-    if (!ls.can_pull()) {                                           \
-      return quantify<bdd_quantify_policy>(bdd_var, label, op);     \
-    } else {                                                        \
-      bdd_var = quantify<bdd_quantify_policy>(bdd_var, label, op);  \
-    }                                                               \
-  }                                                                 \
+  class bdd_quantify_label_file
+  {
+    label_stream<> ls;
+    bool empty;
+
+  public:
+    bdd_quantify_label_file(const label_file &lf) : ls(lf)
+    {
+      empty = !ls.can_pull();
+    }
+
+  public:
+    bool has_next_label() {
+      return empty ? false : ls.can_pull();
+    }
+
+    label_t get_next_label() {
+      return ls.pull();
+    }
+
+    bool use_label(label_t /*label*/) {
+      return true;
+    }
+  };
+
+  class bdd_quantify_label_pred
+  {
+    label_stream<> ls;
+    label_predicate pred;
+    bool empty;
+
+  public:
+    bdd_quantify_label_pred(const bdd &bdd_var, const label_predicate &lp) : ls(varprofile(bdd_var)), pred(lp)
+    {
+      empty = !ls.can_pull();
+    }
+
+  public:
+    bool has_next_label() {
+      return empty ? false : ls.can_pull();
+    }
+
+    label_t get_next_label() {
+      return ls.pull();
+    }
+
+    bool use_label(label_t label) {
+      return pred(label);
+    }
+  };
 
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_exists(const bdd &in_bdd, label_t label)
@@ -77,14 +113,30 @@ namespace adiar
   __bdd bdd_exists(const bdd &in_bdd, const label_file &labels)
   {
     bdd out = in_bdd;
-    multi_quantify_macro(out, labels, or_op);
+    bdd_quantify_label_file lf(labels);
+    return multi_quantify<bdd_quantify_policy, bdd_quantify_label_file>(out, lf, or_op);
   }
 
   __bdd bdd_exists(bdd &&in_bdd, const label_file &labels)
   {
-    multi_quantify_macro(in_bdd, labels, or_op);
+    bdd_quantify_label_file lf(labels);
+    return multi_quantify<bdd_quantify_policy, bdd_quantify_label_file>(in_bdd, lf, or_op);
   }
 
+  __bdd bdd_exists(const bdd &in_bdd, const label_predicate &label_pred)
+  {
+    bdd out = in_bdd;
+    bdd_quantify_label_pred lp(out, label_pred);
+    return multi_quantify<bdd_quantify_policy, bdd_quantify_label_pred>(out, lp, or_op);
+  }
+
+  __bdd bdd_exists(bdd &&in_bdd, const label_predicate &label_pred)
+  {
+    bdd_quantify_label_pred lp(in_bdd, label_pred);
+    return multi_quantify<bdd_quantify_policy, bdd_quantify_label_pred>(in_bdd, lp, or_op);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_forall(const bdd &in_bdd, label_t label)
   {
     return quantify<bdd_quantify_policy>(in_bdd, label, and_op);
@@ -93,11 +145,26 @@ namespace adiar
   __bdd bdd_forall(const bdd &in_bdd, const label_file &labels)
   {
     bdd out = in_bdd;
-    multi_quantify_macro(out, labels, and_op);
+    bdd_quantify_label_file lf(labels);
+    return multi_quantify<bdd_quantify_policy, bdd_quantify_label_file>(out, lf, and_op);
   }
 
   __bdd bdd_forall(bdd &&in_bdd, const label_file &labels)
   {
-    multi_quantify_macro(in_bdd, labels, and_op);
+    bdd_quantify_label_file lf(labels);
+    return multi_quantify<bdd_quantify_policy, bdd_quantify_label_file>(in_bdd, lf, and_op);
+  }
+
+  __bdd bdd_forall(const bdd &in_bdd, const label_predicate &label_pred)
+  {
+    bdd out = in_bdd;
+    bdd_quantify_label_pred lp(out, label_pred);
+    return multi_quantify<bdd_quantify_policy, bdd_quantify_label_pred>(out, lp, and_op);
+  }
+
+  __bdd bdd_forall(bdd &&in_bdd, const label_predicate &label_pred)
+  {
+    bdd_quantify_label_pred lp(in_bdd, label_pred);
+    return multi_quantify<bdd_quantify_policy, bdd_quantify_label_pred>(in_bdd, lp, and_op);
   }
 }

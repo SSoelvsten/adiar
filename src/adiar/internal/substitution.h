@@ -35,35 +35,6 @@ namespace adiar
 
   typedef std::variant<substitute_rec_output, substitute_rec_skipto> substitute_rec;
 
-  enum substitute_act { KEEP, FIX_FALSE, FIX_TRUE };
-
-  //////////////////////////////////////////////////////////////////////////////
-  class substitute_assignment_act
-  {
-    assignment_stream<> as;
-    assignment_t a;
-
-  public:
-    typedef assignment_file action_t;
-
-    substitute_assignment_act(const action_t &af) : as(af)
-    {
-      a = as.pull();
-    }
-
-    substitute_act action_for_level(label_t level) {
-      while (label_of(a) < level && as.can_pull()) {
-        a = as.pull();
-      }
-
-      if (label_of(a) == level) {
-        return value_of(a) ? substitute_act::FIX_TRUE : substitute_act::FIX_FALSE;
-      } else {
-        return substitute_act::KEEP;
-      }
-    }
-  };
-
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   template<typename substitute_policy, typename substitute_act_mgr>

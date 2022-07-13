@@ -12,21 +12,62 @@
 
 namespace adiar
 {
+  class substitute_assignment_act
+  {
+    assignment_stream<> as;
+    assignment_t a;
+
+  public:
+    typedef assignment_file action_t;
+
+    substitute_assignment_act(const action_t &af) : as(af)
+    {
+      a = as.pull();
+    }
+
+    substitute_act action_for_level(label_t level) {
+      while (label_of(a) < level && as.can_pull()) {
+        a = as.pull();
+      }
+
+      if (label_of(a) == level) {
+        return value_of(a) ? substitute_act::FIX_TRUE : substitute_act::FIX_FALSE;
+      } else {
+        return substitute_act::KEEP;
+      }
+    }
+  };
+
+  class substitute_predicate_act
+  {
+    act_predicate pred;
+
+  public:
+    substitute_predicate_act(const act_predicate &ap) : pred(ap)
+    { }
+
+    substitute_act action_for_level(label_t level) {
+      return pred(level);
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename bdd_restrict_act>
   class bdd_restrict_policy : public bdd_policy
   {
   public:
-    static substitute_rec keep_node(const node_t &n, substitute_assignment_act &/*amgr*/)
+    static substitute_rec keep_node(const node_t &n, bdd_restrict_act &/*amgr*/)
     { return substitute_rec_output { n }; }
 
-    static substitute_rec fix_false(const node_t &n, substitute_assignment_act &/*amgr*/)
+    static substitute_rec fix_false(const node_t &n, bdd_restrict_act &/*amgr*/)
     { return substitute_rec_skipto { n.low }; }
 
-    static substitute_rec fix_true(const node_t &n, substitute_assignment_act &/*amgr*/)
+    static substitute_rec fix_true(const node_t &n, bdd_restrict_act &/*amgr*/)
     { return substitute_rec_skipto { n.high }; }
 
   public:
     static inline bdd sink(bool sink_val,
-                           substitute_assignment_act &/*amgr*/)
+                           bdd_restrict_act &/*amgr*/)
     { return bdd_sink(sink_val); }
   };
 
@@ -40,7 +81,17 @@ namespace adiar
     }
 
     substitute_assignment_act amgr(a);
-    return substitute<bdd_restrict_policy>(dd, amgr);
+    return substitute<bdd_restrict_policy<substitute_assignment_act>>(dd, amgr);
+  }
+
+  __bdd bdd_restrict(const bdd &dd, const act_predicate &lp)
+  {
+    if (is_sink(dd)) {
+      return dd;
+    }
+
+    substitute_predicate_act amgr(lp);
+    return substitute<bdd_restrict_policy<substitute_predicate_act>>(dd, amgr);
   }
 
   __bdd bdd_restrict(const bdd &dd, const label_t &var, const bool &val)

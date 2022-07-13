@@ -74,35 +74,84 @@ namespace adiar
     return dom_inv;
   }
 
+  class zdd_project_label_file
+  {
+    label_stream<> ls;
+    bool empty;
+
+  public:
+    zdd_project_label_file(const zdd &zdd_var, const label_file &dom) : ls(extract_non_dom(zdd_var, dom))
+    {
+      empty = !ls.can_pull();
+    }
+
+  public:
+    bool has_next_label() {
+      return empty ? false : ls.can_pull();
+    }
+
+    label_t get_next_label() {
+      return ls.pull();
+    }
+
+    bool use_label(label_t /*label*/) {
+      return true;
+    }
+  };
+
+  class zdd_project_label_pred
+  {
+    label_stream<> ls;
+    label_predicate pred;
+    bool empty;
+
+  public:
+    zdd_project_label_pred(const zdd &zdd_var, const label_predicate &lp) : ls(varprofile(zdd_var)), pred(lp)
+    {
+      empty = !ls.can_pull();
+    }
+
+  public:
+    bool has_next_label() {
+      return empty ? false : ls.can_pull();
+    }
+
+    label_t get_next_label() {
+      return ls.pull();
+    }
+
+    bool use_label(label_t label) {
+      return !pred(label);
+    }
+  };
+
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Empty domain. Check whether Ø is in dd, i.e. the all-false path is
   // set to true.
 
-# define multi_project_macro(zdd_var, dom)                            \
-  if (is_sink(zdd_var)) { return zdd_var; }                           \
-                                                                      \
-  if (dom.size() == 0) { return zdd_null(); }                         \
-                                                                      \
-  label_file dom_inv = extract_non_dom(zdd_var, dom);                 \
-                                                                      \
-  if (dom_inv.size() == zdd_varcount(zdd_var)) { return zdd_null(); } \
-                                                                      \
-  label_stream<> ls(dom_inv);                                         \
-  while (ls.can_pull()) {                                             \
-    if (is_sink(zdd_var)) { return zdd_var; };                        \
-                                                                      \
-    zdd_var = quantify<zdd_project_policy>(dd, ls.pull(), or_op);     \
-  }                                                                   \
-  return zdd_var;                                                     \
-
   zdd zdd_project(const zdd &dd, const label_file &dom)
   {
     zdd temp = dd;
-    multi_project_macro(temp, dom);
+    zdd_project_label_file lf(temp, dom);
+    return multi_quantify<zdd_project_policy, zdd_project_label_file>(temp, lf, or_op);
   }
 
   zdd zdd_project(zdd &&dd, const label_file &dom)
   {
-    multi_project_macro(dd, dom);
+    zdd_project_label_file lf(dd, dom);
+    return multi_quantify<zdd_project_policy, zdd_project_label_file>(dd, lf, or_op);
+  }
+
+  zdd zdd_project(const zdd &dd, const label_predicate &label_pred)
+  {
+    zdd temp = dd;
+    zdd_project_label_pred lf(temp, label_pred);
+    return multi_quantify<zdd_project_policy, zdd_project_label_pred>(temp, lf, or_op);
+  }
+
+  zdd zdd_project(zdd &&dd, const label_predicate &label_pred)
+  {
+    zdd_project_label_pred lf(dd, label_pred);
+    return multi_quantify<zdd_project_policy, zdd_project_label_pred>(dd, lf, or_op);
   }
 }

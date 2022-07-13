@@ -621,5 +621,506 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
       AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
     });
+
+    describe("zdd_project with label predicates", [&]() {
+      it("computes Ø with dom = {2,4,6} using predicate [const &]", [&](){
+        const label_predicate pred = [](label_t label) -> bool
+        {
+          return label == 2 || label == 4 || label == 6;
+        };
+
+        __zdd out = zdd_project(zdd_empty, pred);
+
+        node_test_stream out_nodes(out);
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+      });
+
+      it("computes { Ø } with dom = {1,3,5} using predicate [&&]", [&](){
+        const label_predicate pred = [](label_t label) -> bool
+        {
+          return label == 1 || label == 3 || label == 5;
+        };
+
+        __zdd out = zdd_project(zdd(zdd_null), pred);
+
+        node_test_stream out_nodes(out);
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      });
+
+      it("computes with dom = Ø to be Ø for Ø as input using predicate [&&]", [&](){
+        const label_predicate pred = [](label_t /*label*/) -> bool
+        {
+          return false;
+        };
+
+        __zdd out = zdd_project(zdd(zdd_empty), pred);
+
+        node_test_stream out_nodes(out);
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+      });
+
+      it("computes with dom = Ø to be { Ø } for { Ø } as input using predicate [const &]", [&](){
+        const label_predicate pred = [](label_t /*label*/) -> bool
+        {
+          return false;
+        };
+
+        __zdd out = zdd_project(zdd_null, pred);
+
+        node_test_stream out_nodes(out);
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      });
+
+      it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1] using predicate [const &]", [&](){
+        const label_predicate pred = [](label_t /*label*/) -> bool
+        {
+          return false;
+        };
+
+        __zdd out = zdd_project(zdd_1, pred);
+
+        node_test_stream out_nodes(out);
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      });
+
+      it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2] using predicate [&&]", [&](){
+        const label_predicate pred = [](label_t /*label*/) -> bool
+        {
+          return false;
+        };
+
+        __zdd out = zdd_project(zdd(zdd_2), pred);
+
+        node_test_stream out_nodes(out);
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      });
+
+      it("computes with dom = Ø to be { Ø } for non-empty input [zdd_3] using predicate [const &]", [&](){
+        const label_predicate pred = [](label_t /*label*/) -> bool
+        {
+          return false;
+        };
+
+        __zdd out = zdd_project(zdd_3, pred);
+
+        node_test_stream out_nodes(out);
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      });
+
+      it("computes with disjoint dom to be { Ø } [zdd_2] using predicate [const &]", [&](){
+        const label_predicate pred = [](label_t label) -> bool
+        {
+          return label == 1;
+        };
+
+        __zdd out = zdd_project(zdd_2, pred);
+
+        node_test_stream out_nodes(out);
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      });
+
+      it("computes with disjoint dom to be { Ø } [zdd_3] using predicate [&&]", [&](){
+        const label_predicate pred = [](label_t label) -> bool
+        {
+          return label == 3 || label == 4 || label == 5;
+        };
+
+        __zdd out = zdd_project(zdd(zdd_3), pred);
+
+        node_test_stream out_nodes(out);
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      });
+
+      it("computes zdd_1 using 'ge' predicate with 2 [const &]", [&](){
+        /* Expected: { Ø, {2}, {3}, {3,4} }
+
+                            1    ---- x2
+                            / \
+                            2 T   ---- x3
+                          / \
+                          T 3    ---- x4
+                            / \
+                            T T
+        */
+
+        __zdd out = zdd_project(zdd_1, ge_pred(2));
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
+                                                              sink_T,
+                                                              sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID,
+                                                              sink_T,
+                                                              create_node_ptr(4, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+                                                              create_node_ptr(3, MAX_ID),
+                                                              sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,1u)));
+
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(4u));
+      });
+
+      it("computes zdd_2 using 'gt' predicate with 1 [&&]", [&](){
+        /* Expected: { Ø, {2}, {3}, {2,4} }
+
+                          1      ---- x2
+                        / \
+                        2  \    ---- x3
+                        / \ |
+                        T T 3    ---- x4
+                          / \
+                          T T
+
+        */
+
+        __zdd out = zdd_project(zdd_2, gt_pred(1));
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
+                                                              sink_T,
+                                                              sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID,
+                                                              sink_T,
+                                                              sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+                                                              create_node_ptr(3, MAX_ID),
+                                                              create_node_ptr(4, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,1u)));
+
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(4u));
+      });
+
+      it("computes zdd_3 with 'even' predicate", [&](){
+        /* Expected: { {0}, {2}, {0,2} }
+
+                            1    ---- x0
+                            / \
+                            | |   ---- x1
+                            \ /
+                            2    ---- x2
+                            / \
+                            T T
+        */
+
+        __zdd out = zdd_project(zdd_3, even_pred);
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+                                                              sink_T,
+                                                              sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                              create_node_ptr(2, MAX_ID),
+                                                              create_node_ptr(2, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(2u));
+      });
+
+      it("computes zdd_4 with dom = {0,4} using predicate", [&](){
+        /* Expected: { {0}, {4}, {0,4} }
+
+                          1     ---- x0
+                          / \
+                        /   \   ---- x2
+                        |   |
+                        2   3   ---- x4
+                        / \ / \
+                        F T T T
+        */
+        const label_predicate pred = [](label_t label) -> bool
+        {
+          return label == 0 || label == 4;
+        };
+
+        __zdd out = zdd_project(zdd_4, pred);
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
+                                                              sink_T,
+                                                              sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID-1,
+                                                              sink_F,
+                                                              sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                              create_node_ptr(4, MAX_ID-1),
+                                                              create_node_ptr(4, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,2u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(3u));
+      });
+
+      it("computes zdd_4 with dom = {2,4} using predicate", [&](){
+        /* Expected: { {2}, {4}, {2,4} }
+
+                          1     ---- x2
+                          ||
+                          2     ---- x4
+                          / \
+                          F T
+        */
+        const label_predicate pred = [](label_t label) -> bool
+        {
+          return label == 2 || label == 4;
+        };
+
+        __zdd out = zdd_project(zdd_4, pred);
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
+                                                              sink_F,
+                                                              sink_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+                                                              create_node_ptr(4, MAX_ID),
+                                                              create_node_ptr(4, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> ms(out);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,1u)));
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+
+        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      });
+    });
   });
- });
+});

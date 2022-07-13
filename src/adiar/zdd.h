@@ -192,6 +192,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_offset(const zdd &A, const label_file &vars);
   __zdd zdd_offset(const zdd &A, const label_t &var);
+  __zdd zdd_offset(const zdd &A, const label_predicate &pred);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
@@ -205,6 +206,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_onset(const zdd &A, const label_file &vars);
   __zdd zdd_onset(const zdd &A, const label_t &var);
+  __zdd zdd_onset(const zdd &A, const label_predicate &pred);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every
@@ -219,6 +221,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_project(const zdd &A, const label_file &dom);
   zdd zdd_project(zdd &&A, const label_file &dom);
+  zdd zdd_project(const zdd &A, const label_predicate &dom_predicate);
+  zdd zdd_project(zdd &&A, const label_predicate &dom_predicate);
 
   /* ============================ ZDD PREDICATES ============================ */
 
