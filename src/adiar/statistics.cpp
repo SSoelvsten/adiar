@@ -133,14 +133,16 @@ namespace adiar
     const uintwide_t total_internal_lpqs = stats.lpq.unbucketed + stats.lpq.internal;
 
     indent_level++;
-    o << indent << label << "internal memory"
-      << total_internal_lpqs << " = " << percent_frac(total_internal_lpqs, total_lpqs) << percent << endl;
-
-    o << indent << label << "unbucketed / internal memory"
-      << stats.lpq.unbucketed << " = " << percent_frac(stats.lpq.unbucketed, total_internal_lpqs) << percent << endl;
 
     o << indent << label << "external memory"
       << stats.lpq.external << " = " << percent_frac(stats.lpq.external, total_lpqs) << percent << endl;
+
+    o << indent << label << "internal memory"
+      << total_internal_lpqs << " = " << percent_frac(total_internal_lpqs, total_lpqs) << percent << endl;
+
+    o << indent << label << "  unbucketed"
+      << stats.lpq.unbucketed << " = " << percent_frac(stats.lpq.unbucketed, total_internal_lpqs) << percent << endl;
+
     indent_level--;
 
     o << indent << endl;
