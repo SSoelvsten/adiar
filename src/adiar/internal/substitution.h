@@ -27,7 +27,7 @@ namespace adiar
            template<typename, typename> typename priority_queue_template>
   using substitute_priority_queue_t =
     levelized_node_priority_queue<arc_t, arc_target_label,
-                                  LOOK_AHEAD, arc_target_lt,
+                                  arc_target_lt, LOOK_AHEAD,
                                   sorter_template, priority_queue_template>;
 
   struct substitute_rec_output { node_t out; };

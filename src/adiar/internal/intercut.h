@@ -51,8 +51,8 @@ namespace adiar
            template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
   using intercut_priority_queue_t =
-    levelized_label_priority_queue<intercut_req, intercut_req_label,
-                                   LOOK_AHEAD, intercut_req_lt,
+    levelized_label_priority_queue<intercut_req, intercut_req_label, intercut_req_lt,
+                                   LOOK_AHEAD,
                                    sorter_template, priority_queue_template,
                                    2u,
                                    0u>;

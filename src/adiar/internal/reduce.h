@@ -55,12 +55,12 @@ namespace adiar
            template<typename, typename> typename sorter_template,
            template<typename, typename> typename priority_queue_template>
   class reduce_priority_queue : public levelized_arc_priority_queue<arc_t, reduce_queue_label,
-                                                                    LOOK_AHEAD, reduce_queue_lt,
+                                                                    reduce_queue_lt, LOOK_AHEAD,
                                                                     sorter_template, priority_queue_template>
   {
   private:
     using inner_lpq = levelized_arc_priority_queue<arc_t, reduce_queue_label,
-                                                   LOOK_AHEAD, reduce_queue_lt,
+                                                   reduce_queue_lt, LOOK_AHEAD,
                                                    sorter_template, priority_queue_template>;
 
     ////////////////////////////////////////////////////////////////////////////
