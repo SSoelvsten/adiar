@@ -49,7 +49,7 @@ namespace adiar {
   /// \brief Strictly less ' < ' between two levels.
   ////////////////////////////////////////////////////////////////////////////
   template<typename level_comp_t>
-  inline bool level_cmp_lt(const label_t l1, const label_t l2, level_comp_t &level_comp)
+  inline bool level_cmp_lt(const label_t l1, const label_t l2, const level_comp_t &level_comp)
   {
     return level_comp(l1, l2);
   }
@@ -58,7 +58,7 @@ namespace adiar {
   /// \brief Less or equal ' <= ' between two levels.
   ////////////////////////////////////////////////////////////////////////////
   template<typename level_comp_t>
-  inline bool level_cmp_le(const label_t l1, const label_t l2, level_comp_t &level_comp)
+  inline bool level_cmp_le(const label_t l1, const label_t l2, const level_comp_t &level_comp)
   {
     return level_comp(l1, l2) || l1 == l2;
   }
@@ -1009,23 +1009,12 @@ namespace adiar {
   public:
     static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
-      return internal_priority_queue<elem_t, elem_comp_t>::memory_usage(no_elements)
-        + label_merger<file_t, level_comp_t, FILES>::memory_usage();
+      return internal_priority_queue<elem_t, elem_comp_t>::memory_usage(no_elements);
     }
 
     static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
-      const size_t const_memory_bytes = label_merger<file_t, level_comp_t, FILES>::memory_usage();
-
-      if (memory_bytes < const_memory_bytes) {
-        return 0u;
-      }
-
-      // HACK: the 'internal_priority_queue' can take (two) fewer elements than
-      // the 'internal_sorter'. So, this is a slight under-approximation of what
-      // we truly could do with this amount of memory.
-      return internal_priority_queue<elem_t, elem_comp_t>
-        ::memory_fits((memory_bytes - const_memory_bytes) / DATA_STRUCTURES);
+      return internal_priority_queue<elem_t, elem_comp_t>::memory_fits(memory_bytes);
     }
 
   private:
@@ -1055,21 +1044,6 @@ namespace adiar {
     const tpie::memory_size_type _memory_given;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Memory used by the label merger.
-    ////////////////////////////////////////////////////////////////////////////
-    tpie::memory_size_type _memory_occupied_by_merger;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Memory to be used for the priority queue.
-    ////////////////////////////////////////////////////////////////////////////
-    tpie::memory_size_type _memory_occupied_by_priority_queue;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Provides the levels to distribute all elements across.
-    ////////////////////////////////////////////////////////////////////////////
-    mutable label_merger<file_t, level_comp_t, FILES> _level_merger;
-
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief Overflow priority queue used for elements pushed to a level where
     ///        a bucket is (yet) not created.
     ////////////////////////////////////////////////////////////////////////////
@@ -1088,20 +1062,11 @@ namespace adiar {
 #endif
 
   private:
-    static tpie::memory_size_type m_priority_queue(tpie::memory_size_type memory_given)
-    {
-      const tpie::memory_size_type eight_MiB = 8 * 1024;
-
-      return std::max(eight_MiB, memory_given);
-    }
-
     levelized_priority_queue(tpie::memory_size_type memory_given, size_t max_size,
                              [[maybe_unused]] stats_t::levelized_priority_queue_t &stats)
       : _max_size(max_size),
         _memory_given(memory_given),
-        _memory_occupied_by_merger(memory::available()),
-        _memory_occupied_by_priority_queue(m_priority_queue(memory_given)),
-        _priority_queue(m_priority_queue(memory_given), max_size)
+        _priority_queue(memory_given, max_size)
 #ifdef ADIAR_STATS_EXTRA
       , _stats(stats)
 #endif
@@ -1115,15 +1080,12 @@ namespace adiar {
     ///
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const file_t (& files) [FILES],
+    levelized_priority_queue(const file_t (& /*files*/) [FILES],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)
       : levelized_priority_queue(memory_given, max_size, stats)
-    {
-      _level_merger.hook(files);
-      init();
-    }
+    { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief              Instantiate with the given amount of memory.
@@ -1132,32 +1094,12 @@ namespace adiar {
     ///
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const decision_diagram (& dds) [FILES],
+    levelized_priority_queue(const decision_diagram (& /*dds*/) [FILES],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)
       : levelized_priority_queue(memory_given, max_size, stats)
-    {
-      _level_merger.hook(dds);
-      init();
-    }
-
-  private:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief  Computes final memory usage of internal data structures to then
-    ///         distribute the remaining memory when initialising the buckets.
-    ///
-    /// \remark Call this function at the end of the constructor after the
-    ///         level_merger has hooked into the input.
-    ////////////////////////////////////////////////////////////////////////////
-    void init()
-    {
-      label_t skip_level = 0;
-      while(_level_merger.can_pull() && level_cmp_lt(skip_level, INIT_LEVEL, _level_comparator)) {
-        _level_merger.pull();
-        skip_level++;
-      }
-    }
+    { }
 
   public:
     ~levelized_priority_queue()
@@ -1202,17 +1144,20 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     bool has_next_level() /*const*/
     {
+      if(_priority_queue.empty()) {
+        return false;
+      }
       label_t next_label_from_queue = elem_level_t::label_of(_priority_queue.top());
-      return _level_merger.can_pull() || (has_current_level()
-                                          && level_cmp_lt(_current_level, next_label_from_queue, _level_comparator));
+      return (has_current_level() && level_cmp_lt<level_comp_t>(_current_level, next_label_from_queue, _level_comparator))
+              || (!has_current_level() && !_priority_queue.empty());
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The label of the next (possibly empty) level.
     ////////////////////////////////////////////////////////////////////////////
-    label_t next_level() const
+    label_t next_level() /*const*/
     {
-      return _level_merger.peek();
+      return elem_level_t::label_of(_priority_queue.top());
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1220,7 +1165,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     bool can_push() /*const*/
     {
-      return has_next_level();
+      return true;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1255,39 +1200,26 @@ namespace adiar {
       adiar_debug(has_stop_level || !empty(),
                   "Either a stop level is given or we have some non-empty level to forward to");
 
+      // Edge Case: ---------------------------------------------------------- :
+      //   The given stop_level is prior to the next level or there is nothing in the queue
+      if ((has_stop_level && level_cmp_lt<level_comp_t>(stop_level, next_level(), _level_comparator)) || _priority_queue.empty()) {
+        _current_level = stop_level;
+        return;
+      }
+
+      // Edge Case: ---------------------------------------------------------- :
+      //   The stop level is before the next level of the queue
       adiar_debug(has_next_level(),
                   "There should be a next level to go to");
-
-      // Edge Case: ---------------------------------------------------------- :
-      //   The given stop_level is prior to the next level
-      if (has_stop_level && level_cmp_lt(stop_level, next_level(), _level_comparator)) {
-        return;
-      }
-
-      // Edge Case: ---------------------------------------------------------- :
-      //   There is nothing in the queue - get the next level from the level_merger
-      if(_priority_queue.empty()) {
-        _current_level = _level_merger.pull();
-        return;
-      }
-
-      // Edge Case: ---------------------------------------------------------- :
-      //   The stop level is before the next level of the queue - forward the
-      //   level_merger until it is at the stop level
-      label_t next_label_from_queue = elem_level_t::label_of(_priority_queue.top());
-      if(has_stop_level && level_cmp_le(stop_level, next_label_from_queue, _level_comparator)) {
-        while(_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), stop_level, _level_comparator)) {
-          _current_level = _level_merger.pull();
-        }
+      label_t next_level_from_queue = next_level();
+      if(has_stop_level && level_cmp_le<level_comp_t>(stop_level, next_level_from_queue, _level_comparator)) {
+        _current_level = stop_level;
         return;
       }
 
       // Primary Case: ------------------------------------------------------- :
-      //   Set the level to be the next from the queue, and forward the level_merger
-      _current_level = next_label_from_queue;
-      while(_level_merger.can_pull() && level_cmp_le(_level_merger.peek(), _current_level, _level_comparator)) {
-        _level_merger.pull();
-      }
+      //   Set the level to be the next from the queue
+      _current_level = next_level_from_queue;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1298,8 +1230,8 @@ namespace adiar {
     {
       // TODO: change semantics to require 'has_current_level'
       return !has_current_level() ||
-        (_priority_queue.empty()
-             || current_level() != elem_level_t::label_of(_priority_queue.top()));
+             _priority_queue.empty() ||
+             current_level() != elem_level_t::label_of(_priority_queue.top());
     }
 
     ////////////////////////////////////////////////////////////////////////////
