@@ -279,9 +279,9 @@ namespace adiar
   {
     const cut_type ct = cut_type_with(intercut_policy::cut_false_sink,
                                       intercut_policy::cut_true_sink);
-    const safe_size_t max_2level_cut = dd.max_2level_cut(ct);
+    const safe_size_t max_1level_cut = dd.max_1level_cut(ct);
 
-    return to_size((2u * max_2level_cut) + 2u);
+    return to_size((3 * intercut_policy::mult_factor * max_1level_cut) / 2 + 2);
   }
 
   template<typename intercut_policy>

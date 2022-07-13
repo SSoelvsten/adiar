@@ -26,6 +26,8 @@ namespace adiar
     static constexpr bool cut_true_sink  = true;
     static constexpr bool cut_false_sink = false;
 
+    static constexpr size_t mult_factor = 2u;
+
   public:
     static typename to_policy::reduced_t
     on_empty_labels(const typename from_policy::reduced_t& dd)
