@@ -19,7 +19,7 @@ namespace adiar
 
   uint64_t zdd_size(const zdd &zdd)
   {
-    return is_sink(zdd)
+    return is_terminal(zdd)
       ? value_of(zdd)
       : count<path_count_policy>(zdd, zdd_varcount(zdd));
   }

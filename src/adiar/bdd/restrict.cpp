@@ -25,16 +25,16 @@ namespace adiar
     { return substitute_rec_skipto { n.high }; }
 
   public:
-    static inline bdd sink(bool sink_val,
+    static inline bdd terminal(bool terminal_val,
                            substitute_assignment_act &/*amgr*/)
-    { return bdd_sink(sink_val); }
+    { return bdd_terminal(terminal_val); }
   };
 
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_restrict(const bdd &dd, const assignment_file &a)
   {
     if (a.size() == 0
-        || is_sink(dd)
+        || is_terminal(dd)
         || disjoint_labels<assignment_file, assignment_stream<>>(a, dd)) {
       return dd;
     }

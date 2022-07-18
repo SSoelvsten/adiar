@@ -30,50 +30,50 @@ namespace adiar
     const size_t labels_size = labels.size();
 
     if (labels_size == 0) {
-      return zdd_sink(pred(0,set_size));
+      return zdd_terminal(pred(0,set_size));
     }
 
-    const bool lt_sink_val = pred(set_size, set_size+1);
-    const ptr_t lt_sink = create_sink_ptr(lt_sink_val);
+    const bool lt_terminal_val = pred(set_size, set_size+1);
+    const ptr_t lt_terminal = create_terminal_ptr(lt_terminal_val);
 
     if (labels_size < set_size) {
-      return lt_sink_val ? zdd_powerset(labels) : zdd_empty();
+      return lt_terminal_val ? zdd_powerset(labels) : zdd_empty();
     }
 
-    const bool eq_sink_val = pred(set_size, set_size);
-    const ptr_t eq_sink = create_sink_ptr(eq_sink_val);
+    const bool eq_terminal_val = pred(set_size, set_size);
+    const ptr_t eq_terminal = create_terminal_ptr(eq_terminal_val);
 
     if (labels_size == set_size) {
-      if (lt_sink_val == eq_sink_val) {
-        return eq_sink_val ? zdd_powerset(labels) : zdd_empty();
+      if (lt_terminal_val == eq_terminal_val) {
+        return eq_terminal_val ? zdd_powerset(labels) : zdd_empty();
       }
-      if (eq_sink_val) { return zdd_vars(labels); }
+      if (eq_terminal_val) { return zdd_vars(labels); }
       // Notice, we don't return in the case of lt = T and eq = F.
     }
 
-    const bool gt_sink_val = pred(set_size + 1, set_size);
-    const ptr_t gt_sink = create_sink_ptr(gt_sink_val);
+    const bool gt_terminal_val = pred(set_size + 1, set_size);
+    const ptr_t gt_terminal = create_terminal_ptr(gt_terminal_val);
 
-    if (lt_sink_val && eq_sink_val && gt_sink_val) {
+    if (lt_terminal_val && eq_terminal_val && gt_terminal_val) {
       return zdd_powerset(labels);
     }
-    if (!lt_sink_val && !eq_sink_val && !gt_sink_val) {
+    if (!lt_terminal_val && !eq_terminal_val && !gt_terminal_val) {
       return zdd_empty();
     }
 
-    adiar_debug(lt_sink_val || eq_sink_val || gt_sink_val,
+    adiar_debug(lt_terminal_val || eq_terminal_val || gt_terminal_val,
                 "Some set size must be allowed to exist");
 
     // Take care of the edge cases, where the construction below would collapse.
     if (set_size == 0) {
-      if (!gt_sink_val) { return zdd_sink(eq_sink_val); }
+      if (!gt_terminal_val) { return zdd_terminal(eq_terminal_val); }
     }
 
-    adiar_debug(set_size > 0 || gt_sink_val,
+    adiar_debug(set_size > 0 || gt_terminal_val,
                 "Set size is only 0 if we accept a non-negative number of elements");
 
     if (set_size == 1) {
-      if (!eq_sink_val && !gt_sink_val) { return zdd_null(); }
+      if (!eq_terminal_val && !gt_terminal_val) { return zdd_null(); }
     }
 
     node_file nf;
@@ -88,15 +88,15 @@ namespace adiar
     // Compute the maximal id (i.e. the maximal number of elements to count)
     // that should be accounted for in the ZDD. Anything past this should be
     // "reduced" away.
-    const id_t max_id = set_size == 0              ? gt_sink_val    // gt_sink_val == 1
-                      : set_size == 1              ? 2*gt_sink_val
-                      : gt_sink_val && eq_sink_val ? set_size
-                      : gt_sink_val                ? set_size + 1u  // ~eq_sink
-                      : eq_sink_val                ? set_size - 1u  // ~gt_sink
-                                                   : set_size - 2u  // ~eq_sink /\ ~gt_sink
+    const id_t max_id = set_size == 0                      ? gt_terminal_val   // gt_terminal_val == 1
+                      : set_size == 1                      ? 2*gt_terminal_val
+                      : gt_terminal_val && eq_terminal_val ? set_size
+                      : gt_terminal_val                    ? set_size + 1u     // ~eq_terminal
+                      : eq_terminal_val                    ? set_size - 1u     // ~gt_terminal
+                                                           : set_size - 2u     // ~eq_terminal /\ ~gt_terminal
       ;
 
-    const bool not_equal = lt_sink_val && !eq_sink_val && gt_sink_val;
+    const bool not_equal = lt_terminal_val && !eq_terminal_val && gt_terminal_val;
 
     id_t prior_min_id = MAX_ID; // <-- dummy value to squelch the compiler
 
@@ -116,7 +116,7 @@ namespace adiar
       // is still possible to reach the last node before the last label?
       const id_t curr_level_width = processed_levels
         // Add node for reached-equality/-greater on high
-        + ((eq_sink_val && gt_sink_val) || gt_sink_val)
+        + ((eq_terminal_val && gt_terminal_val) || gt_terminal_val)
         // Add node for almost-never-reach-equality
         + (not_equal && processed_levels > 0)
         ;
@@ -126,18 +126,18 @@ namespace adiar
       do {
         ptr_t low;
         if (processed_levels == 0) { // lowest level
-          low = curr_id == set_size+1 ? gt_sink
-              : curr_id == set_size   ? eq_sink
-              : lt_sink;
+          low = curr_id == set_size+1 ? gt_terminal
+              : curr_id == set_size   ? eq_terminal
+              : lt_terminal;
         } else if (curr_id < prior_min_id) { // guaranteed to be in lt case
           if (not_equal) {
             low = curr_id == min_id
               ? create_node_ptr(prior_label, max_id)
-              : lt_sink; // <- When processed_levels == 1 and happens twice
+              : lt_terminal; // <- When processed_levels == 1 and happens twice
           } else {
-            low = lt_sink_val
+            low = lt_terminal_val
               ? create_node_ptr(prior_label, prior_min_id)
-              : lt_sink;
+              : lt_terminal;
           }
         } else {
           low = create_node_ptr(prior_label, curr_id);
@@ -145,20 +145,20 @@ namespace adiar
 
         ptr_t high;
         if (processed_levels == 0) {
-          high = curr_id >= set_size    ? gt_sink
-               : curr_id == set_size-1u ? eq_sink
-               : lt_sink;
+          high = curr_id >= set_size    ? gt_terminal
+               : curr_id == set_size-1u ? eq_terminal
+               : lt_terminal;
         } else if (curr_id == max_id) {
-          high = gt_sink_val ? low
-               : eq_sink_val ? eq_sink
-               : lt_sink;
+          high = gt_terminal_val ? low
+               : eq_terminal_val ? eq_terminal
+               : lt_terminal;
         } else if (not_equal && processed_levels == 1 && curr_id == min_id){
-          high = lt_sink; // <-- true sink
+          high = lt_terminal; // <-- true terminal
         } else {
           high = create_node_ptr(prior_label, curr_id + 1u);
         }
 
-        adiar_debug(high != create_sink_ptr(false), "Should not create a reducible node");
+        adiar_debug(high != create_terminal_ptr(false), "Should not create a reducible node");
 
         nw.unsafe_push(create_node(curr_label, curr_id, low, high));
 

@@ -3,20 +3,20 @@
 go_bandit([]() {
   describe("adiar/internal/util.h", []() {
     describe("varprofile", []() {
-      node_file sink_F;
+      node_file terminal_F;
       {
-        node_writer writer(sink_F);
-        writer << create_sink(false);
+        node_writer writer(terminal_F);
+        writer << create_terminal(false);
       }
 
-      node_file sink_T;
+      node_file terminal_T;
       {
-        node_writer writer(sink_T);
-        writer << create_sink(true);
+        node_writer writer(terminal_T);
+        writer << create_terminal(true);
       }
 
-      ptr_t false_ptr = create_sink_ptr(false);
-      ptr_t true_ptr = create_sink_ptr(true);
+      ptr_t false_ptr = create_terminal_ptr(false);
+      ptr_t true_ptr = create_terminal_ptr(true);
 
       node_file x42;
       {
@@ -43,16 +43,16 @@ go_bandit([]() {
         writer << n4 << n3 << n2 << n1;
       }
 
-      it("returns empty file for a BDD false sink", [&]() {
-        label_file label_file_out = bdd_varprofile(sink_F);
+      it("returns empty file for a BDD false terminal", [&]() {
+        label_file label_file_out = bdd_varprofile(terminal_F);
 
         label_stream<> out_labels(label_file_out);
 
         AssertThat(out_labels.can_pull(), Is().False());
       });
 
-      it("returns empty file for a ZDD true sink", [&]() {
-        label_file label_file_out = zdd_varprofile(sink_T);
+      it("returns empty file for a ZDD true terminal", [&]() {
+        label_file label_file_out = zdd_varprofile(terminal_T);
 
         label_stream<> out_labels(label_file_out);
 

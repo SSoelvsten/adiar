@@ -16,11 +16,11 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The BDD representing a constant value.
   ///
-  /// \param value The constant sink value
+  /// \param value The constant terminal value
   ///
   /// \sa          bdd_false bdd_true
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_sink(bool value);
+  bdd bdd_terminal(bool value);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The BDD representing the constant false BDD.
@@ -102,8 +102,8 @@ namespace adiar
   /// \brief   Negation of a BDD.
   ///
   /// \details Flips the negation flag such that reading nodes with
-  ///          <tt>node_stream<></tt> will on-the-fly change the false sink into
-  ///          the true sink.
+  ///          <tt>node_stream<></tt> will on-the-fly change the false terminal into
+  ///          the true terminal.
   ///
   /// \returns \f$ \neg f \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -355,7 +355,7 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Count all unique (but not necessarily disjoint) paths to the true
-  ///        sink.
+  ///        terminal.
   ///
   /// \returns The number of unique paths.
   //////////////////////////////////////////////////////////////////////////////
@@ -388,7 +388,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest x such that f(x) is true.
   ///
-  /// \details Outputs the trace of the low-most path to the true sink. The
+  /// \details Outputs the trace of the low-most path to the true terminal. The
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
@@ -400,7 +400,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
   ///
-  /// \details Outputs the trace of the high-most path to the true sink. The
+  /// \details Outputs the trace of the high-most path to the true terminal. The
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///

@@ -36,23 +36,23 @@ create a [`node_file`](core/files.md#nodes) and write the nodes bottom-up with
 the [`node_writer`](core/files.md#node-writer). The `bdd` object can then be
 copy-constructed from the `node_file`.
 
-### `bdd bdd_sink(bool v)`
+### `bdd bdd_terminal(bool v)`
 {: .no_toc }
 
-Create a sink-only BDD with the provided boolean value *v*. Alternatives are
+Create a terminal-only BDD with the provided boolean value *v*. Alternatives are
 `bdd_true()` and `bdd_false()` or to assign a *bool* directly to a BDD.
-  
+
 ### `bdd bdd_ithvar(label_t var)`
 {: .no_toc }
 
 Create a BDD representing the literal with the given label *var*.
-  
+
 ### `bdd bdd_nithvar(label_t var)`
 {: .no_toc }
 
 Create a BDD representing the negation of the literal with the given label
 *var*.
-  
+
 ### `bdd bdd_and(label_file vars)`
 {: .no_toc }
 
@@ -78,50 +78,50 @@ interval [*min_var*; *max_var*] are true.
 
 Construct a BDD representing the *op* applied onto the BDDs for *f* and *g*. For
 each operator, we provide the following alias functions:
-  
+
 - `bdd bdd_and(bdd f, bdd g)` (operator `&`)
-  
+
   Same as `bdd_apply(f, g, and_op)` and computes *f ∧ g*.
-  
+
 - `bdd bdd_nand(bdd f, bdd g)`
-  
+
   Same as `bdd_apply(f, g, nand_op)` and computes *¬(f ∧ g)*.
-  
+
 - `bdd bdd_or(bdd f, bdd g)` (operator `|`)
 
   Same as `bdd_apply(f, g, or_op)` and computes *f ∨ g*.
 
 - `bdd bdd_nor(bdd f, bdd g)`
-  
+
   Same as `bdd_apply(f, g, nor_op)` and computes *¬(f ∨ g)*.
-  
+
 - `bdd bdd_xor(bdd f, bdd g)` (operator `^`)
-  
+
   Same as `bdd_apply(f, g, xor_op)` and computes *f ⊕ g*.
 
 - `bdd bdd_xnor(bdd f, bdd g)`
-  
+
   Same as `bdd_apply(f, g, xnor_op)` and computes *¬(f ⊕ g)*.
-  
+
 - `bdd bdd_imp(bdd f, bdd g)`
-  
+
   Same as `bdd_apply(f, g, imp_op)` and computes *f ⇒ g*.
-  
+
 - `bdd bdd_invimp(bdd f, bdd g)`
-  
+
   Same as `bdd_apply(f, g, invimp_op)` and computes *g ⇒ f*.
-  
+
 - `bdd bdd_equiv(bdd f, bdd g)`
-  
+
   Same as `bdd_apply(f, g, equiv_op)` and computes *f = g* which is equivalent
   to *xnor*.
-    
+
 - `bdd bdd_diff(bdd f, bdd g)`
-  
+
   Same as `bdd_apply(f, g, diff_op)` and computes *f ∧ ¬g*.
-  
+
 - `bdd bdd_less(bdd f, bdd g)`
-    
+
   Same as `bdd_apply(f, g, less_op)` and computes *¬f ∧ g*.
 
 ### `bdd bdd_exists(bdd f, label_t var)`
@@ -129,7 +129,7 @@ each operator, we provide the following alias functions:
 
 Existential quantification of the variable with label *var* in the BDD for *f*,
 i.e. *∃v : f[x<sub>var</sub> / v]*.
-     
+
 ### `bdd bdd_exists(bdd f, label_file vars)`
 {: .no_toc }
 
@@ -141,7 +141,7 @@ variables are provided.
 
 Forall quantification of the variable with label *var* in the BDD for _f_, i.e.
 *∀v : f[x<sub>var</sub> / v]*.
-     
+
 ### `bdd bdd_forall(bdd f, label_file ls)`
 {: .no_toc }
 
@@ -175,7 +175,7 @@ increasing order wrt. the label.
 ### `uint64_t bdd_nodecount(bdd f)`
 {: .no_toc }
 
-Return the number of nodes (not counting sink nodes) in the BDD for *f*.
+Return the number of nodes (not counting terminal nodes) in the BDD for *f*.
 
 ### `uint64_t bdd_varcount(bdd f)`
 {: .no_toc }
@@ -186,7 +186,7 @@ Return the number of variables present in the BDD for *f*.
 {: .no_toc }
 
 Return the number of unique (but not necessarily disjoint) paths in the BDD for
-*f* that lead to a *true* sink.
+*f* that lead to a *true* terminal.
 
 ### `uint64_t bdd_satcount(bdd f, size_t varcount)`
 {: .no_toc }
@@ -208,29 +208,29 @@ Returns whether *f* ≡ *g*.
 
 Returns whether *f* and *g* are different functions.
 
-### `bool is_sink(bdd f)`
+### `bool is_terminal(bdd f)`
 {: .no_toc }
 
-Whether the BDD for *f* only consists of a sink, i.e. *f* is a constant
+Whether the BDD for *f* only consists of a terminal, i.e. *f* is a constant
 function.
 
 ### `bool value_of(bdd f)`
 {: .no_toc }
 
-Assuming that `is_sink(f)` evaluates to true, i.e. *f* is a constant
+Assuming that `is_terminal(f)` evaluates to true, i.e. *f* is a constant
 function *v*, then returns the value *v*.
 
 ### `bool is_false(bdd f)`
 {: .no_toc }
 
 Whether *f* is the always false constant function. This is merely shorthand for
-`is_sink(f) && !value_of(f)`.
+`is_terminal(f) && !value_of(f)`.
 
 ### `bool is_true(bdd f)`
 {: .no_toc }
 
 Whether *f* is the always true constant function. This is merely shorthand for
-`is_sink(f) && value_of(f)`.
+`is_terminal(f) && value_of(f)`.
 
 ## Input variables
 

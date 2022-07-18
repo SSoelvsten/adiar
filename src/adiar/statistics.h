@@ -63,7 +63,7 @@ namespace adiar
       uintwide_t exit_on_same_file = 0;
       uintwide_t exit_on_nodecount = 0;
       uintwide_t exit_on_varcount = 0;
-      uintwide_t exit_on_sinkcount = 0;
+      uintwide_t exit_on_terminalcount = 0;
       uintwide_t exit_on_levels_mismatch = 0;
 
       // Statistics on non-trivial cases
@@ -110,7 +110,7 @@ namespace adiar
     {
       // (ADIAR_STATS)
       uintwide_t sum_node_arcs = 0;
-      uintwide_t sum_sink_arcs = 0;
+      uintwide_t sum_terminal_arcs = 0;
 
       // (ADIAR_STATS_EXTRA)
       uintwide_t removed_by_rule_1 = 0;

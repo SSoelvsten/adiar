@@ -10,13 +10,13 @@
 
 namespace adiar
 {
-  inline node_file build_sink(bool value)
+  inline node_file build_terminal(bool value)
   {
     node_file nf;
     node_writer nw(nf);
-    nw.unsafe_push(create_sink(value));
+    nw.unsafe_push(create_terminal(value));
 
-    nf->number_of_sinks[value] = 1;
+    nf->number_of_terminals[value] = 1;
 
     return nf;
   }
@@ -28,8 +28,8 @@ namespace adiar
     node_file nf;
     node_writer nw(nf);
     nw.unsafe_push(create_node(label, MAX_ID,
-                               create_sink_ptr(false),
-                               create_sink_ptr(true)));
+                               create_terminal_ptr(false),
+                               create_terminal_ptr(true)));
 
     nw.unsafe_push(create_level_info(label,1u));
 
@@ -37,17 +37,17 @@ namespace adiar
   }
 
   template<bool on_empty, bool link_low, bool link_high,
-    bool low_sink_value = false,
-    bool high_sink_value = true>
+    bool low_terminal_value = false,
+    bool high_terminal_value = true>
   inline node_file build_chain(const label_file &labels)
     {
       const size_t number_of_levels = labels.size();
       if (number_of_levels == 0) {
-        return build_sink(on_empty);
+        return build_terminal(on_empty);
       }
 
-      ptr_t low = create_sink_ptr(low_sink_value);
-      ptr_t high = create_sink_ptr(high_sink_value);
+      ptr_t low = create_terminal_ptr(low_terminal_value);
+      ptr_t high = create_terminal_ptr(high_terminal_value);
 
       node_file nf;
       node_writer nw(nf);
@@ -58,7 +58,7 @@ namespace adiar
         node_t next_node = create_node(next_label, MAX_ID, low, high);
 
         adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
-        adiar_assert(is_sink(high) || next_label < label_of(high),
+        adiar_assert(is_terminal(high) || next_label < label_of(high),
                      "Labels not given in increasing order");
 
         if constexpr(link_low) {
@@ -78,17 +78,17 @@ namespace adiar
       nf->max_1level_cut[cut_type::INTERNAL] = internal_arcs;
 
       const size_t false_arcs_pre_end =
-        (number_of_levels - 1) * ((!link_low && !low_sink_value) + (!link_high && !high_sink_value));
+        (number_of_levels - 1) * ((!link_low && !low_terminal_value) + (!link_high && !high_terminal_value));
 
-      const size_t false_arcs_end = false_arcs_pre_end + !low_sink_value + !high_sink_value;
+      const size_t false_arcs_end = false_arcs_pre_end + !low_terminal_value + !high_terminal_value;
 
       nf->max_1level_cut[cut_type::INTERNAL_FALSE] = std::max(internal_arcs + false_arcs_pre_end,
                                                               false_arcs_end);
 
       const size_t true_arcs_pre_end  =
-      (number_of_levels - 1) * ((!link_low && low_sink_value) + (!link_high && high_sink_value));
+      (number_of_levels - 1) * ((!link_low && low_terminal_value) + (!link_high && high_terminal_value));
 
-      const size_t true_arcs_end = true_arcs_pre_end + low_sink_value + high_sink_value;
+      const size_t true_arcs_end = true_arcs_pre_end + low_terminal_value + high_terminal_value;
 
       nf->max_1level_cut[cut_type::INTERNAL_TRUE] = std::max(internal_arcs + true_arcs_pre_end,
                                                              true_arcs_end);

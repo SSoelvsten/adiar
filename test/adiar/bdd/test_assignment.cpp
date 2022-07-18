@@ -1,7 +1,7 @@
 go_bandit([]() {
   describe("adiar/bdd/assignment.cpp", []() {
-    ptr_t sink_T = create_sink_ptr(true);
-    ptr_t sink_F = create_sink_ptr(false);
+    ptr_t terminal_T = create_terminal_ptr(true);
+    ptr_t terminal_F = create_terminal_ptr(false);
 
     node_file bdd_1;
     /*
@@ -17,9 +17,9 @@ go_bandit([]() {
     */
 
     {
-      node_t n5 = create_node(3,0, sink_F, sink_T);
-      node_t n4 = create_node(2,1, sink_T, sink_F);
-      node_t n3 = create_node(2,0, sink_F, n5.uid);
+      node_t n5 = create_node(3,0, terminal_F, terminal_T);
+      node_t n4 = create_node(2,1, terminal_T, terminal_F);
+      node_t n3 = create_node(2,0, terminal_F, n5.uid);
       node_t n2 = create_node(1,0, n3.uid, n4.uid);
       node_t n1 = create_node(0,0, n2.uid, n4.uid);
 
@@ -43,10 +43,10 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node_t n6 = create_node(3,0, sink_T, sink_F);
-      node_t n5 = create_node(2,2, n6.uid, sink_T);
-      node_t n4 = create_node(2,1, sink_T, sink_F);
-      node_t n3 = create_node(2,0, sink_F, n6.uid);
+      node_t n6 = create_node(3,0, terminal_T, terminal_F);
+      node_t n5 = create_node(2,2, n6.uid, terminal_T);
+      node_t n4 = create_node(2,1, terminal_T, terminal_F);
+      node_t n3 = create_node(2,0, terminal_F, n6.uid);
       node_t n2 = create_node(1,0, n3.uid, n4.uid);
       node_t n1 = create_node(0,0, n2.uid, n5.uid);
 
@@ -67,8 +67,8 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node_t n4 = create_node(5,1, sink_F, sink_T);
-      node_t n3 = create_node(5,0, sink_T, sink_F);
+      node_t n4 = create_node(5,1, terminal_F, terminal_T);
+      node_t n3 = create_node(5,0, terminal_T, terminal_F);
       node_t n2 = create_node(3,0, n3.uid, n4.uid);
       node_t n1 = create_node(1,0, n2.uid, n4.uid);
 
@@ -77,11 +77,11 @@ go_bandit([]() {
     }
 
     describe("bdd_satmin(f)", [&]() {
-      it("should retrieve assignment from true sink", [&]() {
+      it("should retrieve assignment from true terminal", [&]() {
         node_file T;
         {
           node_writer nw(T);
-          nw << create_sink(true);
+          nw << create_terminal(true);
         }
 
         assignment_file result = bdd_satmin(T);
@@ -90,11 +90,11 @@ go_bandit([]() {
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
-      it("should retrieve assignment from false sink", [&]() {
+      it("should retrieve assignment from false terminal", [&]() {
         node_file F;
         {
           node_writer nw(F);
-          nw << create_sink(false);
+          nw << create_terminal(false);
         }
 
         assignment_file result = bdd_satmin(false);

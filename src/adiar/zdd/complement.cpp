@@ -14,8 +14,8 @@ namespace adiar
   public:
     static constexpr bool may_skip = false;
 
-    static constexpr bool cut_true_sink = true;
-    static constexpr bool cut_false_sink = true;
+    static constexpr bool cut_true_terminal = true;
+    static constexpr bool cut_false_terminal = true;
 
     static constexpr size_t mult_factor = 2u;
 
@@ -25,9 +25,9 @@ namespace adiar
       return dd;
     }
 
-    static zdd on_sink_input(const bool sink_value, const zdd& /*dd*/, const label_file &universe)
+    static zdd on_terminal_input(const bool terminal_value, const zdd& /*dd*/, const label_file &universe)
     {
-      return sink_value
+      return terminal_value
         // The entire universe minus Ø
         ? build_chain<false, true, true, false, true>(universe)
         // The entire universe
@@ -35,7 +35,7 @@ namespace adiar
     }
 
     // LCOV_EXCL_START
-    static zdd sink(const bool /*sink_value*/)
+    static zdd terminal(const bool /*terminal_value*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_END
 
@@ -47,8 +47,8 @@ namespace adiar
     // shortcutting in branch-prediction probably offsets this?
     static intercut_rec_output hit_existing(const node_t &n)
     {
-      const ptr_t low = is_sink(n.low) ? negate(n.low) : n.low;
-      const ptr_t high = is_sink(n.high) ? negate(n.high) : n.high;
+      const ptr_t low = is_terminal(n.low) ? negate(n.low) : n.low;
+      const ptr_t high = is_terminal(n.high) ? negate(n.high) : n.high;
 
       return intercut_rec_output { low, high };
     }
@@ -61,7 +61,7 @@ namespace adiar
       }
 
       // Otherwise, check whether this variable is true and so we move to the T chain
-      return intercut_rec_output { target, create_sink_ptr(true) };
+      return intercut_rec_output { target, create_terminal_ptr(true) };
     }
 
     // LCOV_EXCL_START

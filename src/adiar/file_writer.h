@@ -341,7 +341,7 @@ namespace adiar {
     //
     // While for each level we can safely count
     // - The number of (short) arcs from a single level to the next
-    size_t _sinks_at_bottom[2] = { 0u, 0u };
+    size_t _terminals_at_bottom[2] = { 0u, 0u };
 
     cut_size_t _max_1level_short_internal = 0u;
     cut_size_t _curr_1level_short_internal = 0u;
@@ -372,12 +372,12 @@ namespace adiar {
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
       if (is_nil(_latest_node.uid)) { // First node pushed
-        _canonical = is_sink(n) || id_of(n) == MAX_ID;
+        _canonical = is_terminal(n) || id_of(n) == MAX_ID;
       } else { // Check validity of input based on prior written node
-        adiar_debug(!is_sink(_latest_node),
-                     "Cannot push a node after having pushed a sink");
-        adiar_debug(!is_sink(n),
-                     "Cannot push a sink into non-empty file");
+        adiar_debug(!is_terminal(_latest_node),
+                     "Cannot push a node after having pushed a terminal");
+        adiar_debug(!is_terminal(n),
+                     "Cannot push a terminal into non-empty file");
 
         // Check it is canonically sorted
         if (_canonical) {
@@ -411,9 +411,9 @@ namespace adiar {
 
       // 1-level cut
       const bool is_pushing_to_bottom = _long_internal_uid == NIL;
-      if (is_pushing_to_bottom && !is_sink(n)) {
-        _sinks_at_bottom[value_of(n.low)]++;
-        _sinks_at_bottom[value_of(n.high)]++;
+      if (is_pushing_to_bottom && !is_terminal(n)) {
+        _terminals_at_bottom[value_of(n.low)]++;
+        _terminals_at_bottom[value_of(n.high)]++;
       }
 
       if (is_node(n.low)) {
@@ -426,10 +426,10 @@ namespace adiar {
         else { _curr_1level_short_internal++; }
       }
 
-      // Update sink counters
-      if (is_sink(n.low)) { _file_ptr->number_of_sinks[value_of(n.low)]++; }
-      if (is_sink(n.high)) { _file_ptr->number_of_sinks[value_of(n.high)]++; }
-      if (is_sink(n.uid)) { _file_ptr->number_of_sinks[value_of(n.uid)]++; }
+      // Update terminal counters
+      if (is_terminal(n.low)) { _file_ptr->number_of_terminals[value_of(n.low)]++; }
+      if (is_terminal(n.high)) { _file_ptr->number_of_terminals[value_of(n.high)]++; }
+      if (is_terminal(n.uid)) { _file_ptr->number_of_terminals[value_of(n.uid)]++; }
 
       // Write node to file
       _latest_node = n;
@@ -456,17 +456,17 @@ namespace adiar {
     {
       meta_file_writer::unsafe_push(n, 0);
 
-      if (is_sink(n.low)) { _file_ptr->number_of_sinks[value_of(n.low)]++; }
-      if (is_sink(n.high)) { _file_ptr->number_of_sinks[value_of(n.high)]++; }
+      if (is_terminal(n.low)) { _file_ptr->number_of_terminals[value_of(n.low)]++; }
+      if (is_terminal(n.high)) { _file_ptr->number_of_terminals[value_of(n.high)]++; }
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Overwrite the number of false and true arcs.
     ////////////////////////////////////////////////////////////////////////////
-    void set_number_of_sinks(size_t number_of_false, size_t number_of_true)
+    void set_number_of_terminals(size_t number_of_false, size_t number_of_true)
     {
-      _file_ptr->number_of_sinks[false] = number_of_false;
-      _file_ptr->number_of_sinks[true]  = number_of_true;
+      _file_ptr->number_of_terminals[false] = number_of_false;
+      _file_ptr->number_of_terminals[true]  = number_of_true;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -500,8 +500,8 @@ namespace adiar {
 
       _level_size = 0u;
 
-      _sinks_at_bottom[0] = 0u;
-      _sinks_at_bottom[1] = 0u;
+      _terminals_at_bottom[0] = 0u;
+      _terminals_at_bottom[1] = 0u;
 
       _max_1level_short_internal = 0u;
       _curr_1level_short_internal = 0u;
@@ -528,7 +528,7 @@ namespace adiar {
       // Has '.push' been used?
       if (!is_nil(_latest_node.uid)) {
         // Output level information of the final level
-        if (!is_sink(_latest_node)) {
+        if (!is_terminal(_latest_node)) {
           meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
                                                           _level_size));
         }
@@ -544,22 +544,22 @@ namespace adiar {
 
         _file_ptr->max_1level_cut[cut_type::INTERNAL] = max_1level_internal_cut;
 
-        const size_t sinks_above_bottom[2] = {
-          _file_ptr->number_of_sinks[false] - _sinks_at_bottom[false],
-          _file_ptr->number_of_sinks[true]  - _sinks_at_bottom[true]
+        const size_t terminals_above_bottom[2] = {
+          _file_ptr->number_of_terminals[false] - _terminals_at_bottom[false],
+          _file_ptr->number_of_terminals[true]  - _terminals_at_bottom[true]
         };
 
         _file_ptr->max_1level_cut[cut_type::INTERNAL_FALSE] =
-          std::max(max_1level_internal_cut + sinks_above_bottom[false],
-                   _file_ptr->number_of_sinks[false]);
+          std::max(max_1level_internal_cut + terminals_above_bottom[false],
+                   _file_ptr->number_of_terminals[false]);
 
         _file_ptr->max_1level_cut[cut_type::INTERNAL_TRUE] =
-          std::max(max_1level_internal_cut + sinks_above_bottom[true],
-                   _file_ptr->number_of_sinks[true]);
+          std::max(max_1level_internal_cut + terminals_above_bottom[true],
+                   _file_ptr->number_of_terminals[true]);
 
         _file_ptr->max_1level_cut[cut_type::ALL] =
-          std::max(max_1level_internal_cut + sinks_above_bottom[false] + sinks_above_bottom[true],
-                   _file_ptr->number_of_sinks[false] + _file_ptr->number_of_sinks[true]);
+          std::max(max_1level_internal_cut + terminals_above_bottom[false] + terminals_above_bottom[true],
+                   _file_ptr->number_of_terminals[false] + _file_ptr->number_of_terminals[true]);
       }
 
       // Run final i-level cut computations
@@ -588,8 +588,8 @@ namespace adiar {
     void fixup_ilevel_cuts()
     {
       const size_t number_of_nodes = meta_file_writer::size();
-      const size_t number_of_false = _file_ptr->number_of_sinks[false];
-      const size_t number_of_true = _file_ptr->number_of_sinks[true];
+      const size_t number_of_false = _file_ptr->number_of_terminals[false];
+      const size_t number_of_true = _file_ptr->number_of_terminals[true];
 
       // -----------------------------------------------------------------------
       // Upper bound for any directed cut based on number of internal nodes.
@@ -597,7 +597,7 @@ namespace adiar {
 
       // -----------------------------------------------------------------------
       // Upper bound on just 'all arcs'. This is better than 'max_cut' above, if
-      // there are 'number_of_nodes' or more arcs to sinks.
+      // there are 'number_of_nodes' or more arcs to terminals.
       const bool noa_overflow_safe = number_of_nodes <= MAX_CUT / 2u;
       const size_t number_of_arcs = 2u * number_of_nodes;
 
@@ -610,16 +610,16 @@ namespace adiar {
 
       // -----------------------------------------------------------------------
       // Maximum 1-level cuts
-      const bool is_sink = number_of_false + number_of_true == 1;
+      const bool is_terminal = number_of_false + number_of_true == 1;
 
-      if (is_sink) {
+      if (is_terminal) {
         _file_ptr->max_1level_cut[cut_type::INTERNAL]       = 0u;
         _file_ptr->max_1level_cut[cut_type::INTERNAL_FALSE] = number_of_false;
         _file_ptr->max_1level_cut[cut_type::INTERNAL_TRUE]  = number_of_true;
         _file_ptr->max_1level_cut[cut_type::ALL]            = 1u;
       } else {
         for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
-          // Use smallest sound upper bound. Since it is not a sink, then there
+          // Use smallest sound upper bound. Since it is not a terminal, then there
           // must be at least one in-going arc to the root.
           _file_ptr->max_1level_cut[ct] = std::max(1lu, std::min({
                 _file_ptr->max_1level_cut[ct],
@@ -633,7 +633,7 @@ namespace adiar {
       // Maximum 2-level cut
       const size_t number_of_levels = meta_file_writer::levels();
 
-      if (is_sink || number_of_nodes == number_of_levels) {
+      if (is_terminal || number_of_nodes == number_of_levels) {
         for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
           _file_ptr->max_2level_cut[ct] = _file_ptr->max_1level_cut[ct];
         }
@@ -673,8 +673,8 @@ namespace adiar {
   class arc_writer: public meta_file_writer<arc_t>
   {
   private:
-    bool __has_latest_sink = false;
-    arc_t __latest_sink;
+    bool __has_latest_terminal = false;
+    arc_t __latest_terminal;
 
   public:
     arc_writer() { }
@@ -698,14 +698,14 @@ namespace adiar {
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Write an arc to the relevant underlying file without any checks
     ///
-    /// \sa unsafe_push_node unsafe_push_sink
+    /// \sa unsafe_push_node unsafe_push_terminal
     //////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const arc_t &a)
     {
       if (is_node(a.target)) {
         unsafe_push_node(a);
-      } else { // is_sink(a.target)
-        unsafe_push_sink(a);
+      } else { // is_terminal(a.target)
+        unsafe_push_terminal(a);
       }
     }
 
@@ -719,21 +719,21 @@ namespace adiar {
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    /// \brief Write a sink arc to its file, i.e. where the target is a sink.
+    /// \brief Write a terminal arc to its file, i.e. where the target is a terminal.
     //////////////////////////////////////////////////////////////////////////////
-    void unsafe_push_sink(const arc_t &a)
+    void unsafe_push_terminal(const arc_t &a)
     {
-      adiar_debug(is_sink(a.target), "pushing non-sink into sink file");
+      adiar_debug(is_terminal(a.target), "pushing non-terminal into terminal file");
 
-      if (!__has_latest_sink || a.source > __latest_sink.source) { // in-order
-        __has_latest_sink = true;
-        __latest_sink = a;
+      if (!__has_latest_terminal || a.source > __latest_terminal.source) { // in-order
+        __has_latest_terminal = true;
+        __latest_terminal = a;
         meta_file_writer::unsafe_push(a, 1);
       } else { // out-of-order
         meta_file_writer::unsafe_push(a, 2);
       }
 
-      _file_ptr->number_of_sinks[value_of(a.target)]++;
+      _file_ptr->number_of_terminals[value_of(a.target)]++;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -751,7 +751,7 @@ namespace adiar {
     { return meta_file_writer::attached(); }
 
     //////////////////////////////////////////////////////////////////////////////
-    /// \brief Sort the out-of-order sink arcs and then detach from a file (if
+    /// \brief Sort the out-of-order terminal arcs and then detach from a file (if
     ///        need be).
     //////////////////////////////////////////////////////////////////////////////
     void detach() {

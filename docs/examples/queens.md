@@ -66,9 +66,9 @@ of variables in `label_of_position` we have to deal with (1) queens on the row
 _i_ and (2) queens on other rows. For (1) we have to check all variables,
 whereas for (2) we only need to check on column _j_ and the diagonals. All nodes
 but the one for x<sub>ij</sub> are connected to by their _low_ edge to the node
-generated before them (or to the _true_ sink if said node is first one
+generated before them (or to the _true_ terminal if said node is first one
 generated). The x<sub>ij</sub> variable is, on the other hand, connected to the
-prior generated node by its high edge. All other edges go the to _false_ sink.
+prior generated node by its high edge. All other edges go the to _false_ terminal.
 
 ```cpp
 bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
@@ -77,7 +77,7 @@ bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
   node_writer out_writer(out);
 
   uint64_t row = N - 1;
-  ptr_t next = create_sink_ptr(true);
+  ptr_t next = create_terminal_ptr(true);
 
   do {
     uint64_t row_diff = std::max(row,i) - std::min(row,i);
@@ -96,7 +96,7 @@ bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
           label_t label = label_of_position(N, i, j);
           node_t queen = create_node(label,
                                      0,
-                                     create_sink_ptr(false),
+                                     create_terminal_ptr(false),
                                      next);
 
           out_writer << queen;
@@ -107,7 +107,7 @@ bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
         node_t out_node = create_node(label,
                                       0,
                                       next,
-                                      create_sink_ptr(false));
+                                      create_terminal_ptr(false));
 
         out_writer << out_node;
         next = out_node.uid;
@@ -120,7 +120,7 @@ bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
         node_t out_node = create_node(label,
                                       0,
                                       next,
-                                      create_sink_ptr(false));
+                                      create_terminal_ptr(false));
 
         out_writer << out_node;
         next = out_node.uid;
@@ -131,7 +131,7 @@ bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
       node_t out_node = create_node(label,
                                     0,
                                     next,
-                                    create_sink_ptr(false));
+                                    create_terminal_ptr(false));
 
       out_writer << out_node;
       next = out_node.uid;
@@ -142,7 +142,7 @@ bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
         node_t out_node = create_node(label,
                                       0,
                                       next,
-                                      create_sink_ptr(false));
+                                      create_terminal_ptr(false));
 
         out_writer << out_node;
         next = out_node.uid;
@@ -259,7 +259,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
                        std::vector<uint64_t>& partial_assignment,
                        const bdd& constraints)
 {
-  if (is_sink(constraints, is_false)) {
+  if (is_terminal(constraints, is_false)) {
     return 0;
   }
   uint64_t solutions = 0;
@@ -324,7 +324,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       for (uint64_t c = N-1; c > column; c--) {
         partial_assignment.pop_back();
       }
-    } else if (is_sink(restricted_constraints, is_true)) {
+    } else if (is_terminal(restricted_constraints, is_true)) {
       n_queens_print_solution(partial_assignment);
       solutions += 1;
     } else {

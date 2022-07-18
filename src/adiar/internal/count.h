@@ -68,7 +68,7 @@ namespace adiar
     {
       adiar_debug(request.sum > 0, "No 'empty' request should be created");
 
-      if (is_sink(child_to_resolve)) {
+      if (is_terminal(child_to_resolve)) {
         return value_of(child_to_resolve) ? request.sum : 0u;
       } else {
         count_pq.push({ child_to_resolve, request.sum });
@@ -135,8 +135,8 @@ namespace adiar
   template<typename count_policy>
   uint64_t count(const decision_diagram &dd, const label_t varcount)
   {
-    adiar_debug(!is_sink(dd),
-                "Count algorithm does not work on sink-only edge case");
+    adiar_debug(!is_terminal(dd),
+                "Count algorithm does not work on terminal-only edge case");
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.

@@ -18,11 +18,11 @@ namespace adiar {
   ///
   /// Where these three parts represent the following variables:
   ///
-  ///  - S : the is_sink flag. If the sink flag is set, the L and I areas differ
-  ///        (see below for the sink type description).
+  ///  - S : the is_terminal flag. If the terminal flag is set, the L and I areas differ
+  ///        (see below for the terminal type description).
   ///
   ///  - ? : The layout of these 62 bits change based on whether it describes a
-  ///        sink, an internal node, or NIL.
+  ///        terminal, an internal node, or NIL.
   ///
   ///  - F : A boolean flag. This is currently only used in arcs to identify
   ///        high and low arcs (see below).
@@ -31,8 +31,8 @@ namespace adiar {
   /// aliases for the unsigned 64 bit integer. They are merely supposed to
   /// support code readability, but the type checker does actually not care.
   ///
-  /// We ensure, that the S and ? areas combined uniquely identify all sinks and
-  /// nodes. We also notice, that sorting these pointers directly enforce sink
+  /// We ensure, that the S and ? areas combined uniquely identify all terminals and
+  /// nodes. We also notice, that sorting these pointers directly enforce terminal
   /// pointers are sorted after nodes. Finally, two pointers for the same uid
   /// will finally be sorted by the flag.
   //////////////////////////////////////////////////////////////////////////////
@@ -77,20 +77,20 @@ namespace adiar {
   constexpr uint64_t MAX_ID  = (1ull << ID_BITS) - 1;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// When the sink flag is set, then we interpret the middle bits as the value
-  /// of the sink.
+  /// When the terminal flag is set, then we interpret the middle bits as the
+  /// value of the terminal.
   ///
   ///     | S | VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV | F |
   ///
   /// Notice, that this means we will never have to actually visit to retrieve
-  /// its value. That is, the only time a sink has to be explicitly represented
-  /// as a node is when the BDD only consists of said sink.
+  /// its value. That is, the only time a terminal has to be explicitly represented
+  /// as a node is when the BDD only consists of said terminal.
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief The bit representation of a sink.
+  /// \brief The bit representation of a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  constexpr uint64_t SINK_BIT = 0x8000000000000000ull;
+  constexpr uint64_t TERMINAL_BIT = 0x8000000000000000ull;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The bit representation of the high/low flag.
@@ -100,12 +100,12 @@ namespace adiar {
   /* =============================== POINTERS =============================== */
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief A (possibly flagged) identifier of a sink, an internal node
+  /// \brief A (possibly flagged) identifier of a terminal, an internal node
   ///        (uid_t), or nothing (NIL).
   ///
   /// \remark The layout of a pointer is such, that unique identifiers precede
-  ///         sinks which in turn precede NIL. The ordering on unique
-  ///         identifiers and sinks are lifted to pointers.
+  ///         terminals which in turn precede NIL. The ordering on unique
+  ///         identifiers and terminals are lifted to pointers.
   ///
   /// \remark A pointer may be flagged. For an arc's source this marks the arc
   ///         being a 'high' rather than a 'low' arc.
@@ -140,7 +140,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   A pointer to nothing.
   ///
-  /// \details Due to how we create the identifiers for all nodes and sinks, we
+  /// \details Due to how we create the identifiers for all nodes and terminals, we
   ///          cannot use the common null with value 0. So, instead we provide a
   ///          special value that works with this specific setup.
   ///
@@ -162,7 +162,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_node(ptr_t p)
   {
-    return p <= ~SINK_BIT;
+    return p <= ~TERMINAL_BIT;
   }
 
   /* ================ UNIQUE IDENTIFIERS : INTERNAL NODES =================== */
@@ -230,73 +230,73 @@ namespace adiar {
     return (p >> 1) & MAX_ID;
   }
 
-  /* ================== UNIQUE IDENTIFIERS : SINK NODES ===================== */
+  /* ================ UNIQUE IDENTIFIERS : TERMINAL NODES==================== */
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a pointer is for a sink.
+  /// \brief Whether a pointer is for a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_sink(ptr_t p)
+  inline bool is_terminal(ptr_t p)
   {
-    return !is_nil(p) && p >= SINK_BIT;
+    return !is_nil(p) && p >= TERMINAL_BIT;
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create the unique identifier for a sink with the given value.
+  /// \brief Create the unique identifier for a terminal with the given value.
   //////////////////////////////////////////////////////////////////////////////
-  inline uid_t create_sink_uid(bool v)
+  inline uid_t create_terminal_uid(bool v)
   {
-    return SINK_BIT + (v << 1);
+    return TERMINAL_BIT + (v << 1);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create a pointer to a sink with the given value.
+  /// \brief Create a pointer to a terminal with the given value.
   //////////////////////////////////////////////////////////////////////////////
-  inline ptr_t create_sink_ptr(bool v)
+  inline ptr_t create_terminal_ptr(bool v)
   {
-    return create_sink_uid(v);
+    return create_terminal_uid(v);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Extract the value from a sink.
+  /// \brief Extract the value from a terminal.
   //////////////////////////////////////////////////////////////////////////////
   inline bool value_of(ptr_t p)
   {
-    adiar_debug(is_sink(p), "Cannot extract value of non-sink");
+    adiar_debug(is_terminal(p), "Cannot extract value of non-terminal");
 
-    return (p & ~SINK_BIT) >> 1;
+    return (p & ~TERMINAL_BIT) >> 1;
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a pointer is the false sink.
+  /// \brief Whether a pointer is the false terminal.
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_false(ptr_t p)
   {
-    return is_sink(p) && !value_of(p);
+    return is_terminal(p) && !value_of(p);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a pointer is the true sink.
+  /// \brief Whether a pointer is the true terminal.
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_true(ptr_t p)
   {
-    return is_sink(p) && value_of(p);
+    return is_terminal(p) && value_of(p);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Negate the value of a sink.
+  /// \brief Negate the value of a terminal.
   //////////////////////////////////////////////////////////////////////////////
   uid_t negate(uid_t u);
 
   inline ptr_t negate(ptr_t n)
   {
-    adiar_debug(is_sink(n), "Cannot negate non-sink");
+    adiar_debug(is_terminal(n), "Cannot negate non-terminal");
 
     return 2u ^ n;
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief   Computes the unique identifier of the resulting sink based on the
-  ///          pointers to two sinks.
+  /// \brief   Computes the unique identifier of the resulting terminal based on the
+  ///          pointers to two terminals.
   ///
   /// \details By abusing our knowledge of the bit-layout, we can implement all
   ///          common operations merely as a few fast bit operations.
@@ -309,65 +309,65 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'and' operator, i.e. the truth table: [1,0,0,0].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op and_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op and_op = [](ptr_t terminal1, ptr_t terminal2) -> ptr_t
   {
-    return unflag(sink1 & sink2);
+    return unflag(terminal1 & terminal2);
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'not and' operator, i.e. the truth table: [0,1,1,1].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op nand_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op nand_op = [](ptr_t terminal1, ptr_t terminal2) -> ptr_t
   {
-    return negate(and_op(sink1, sink2));
+    return negate(and_op(terminal1, terminal2));
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'or' operator, i.e. the truth table: [1,1,1,0].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op or_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op or_op = [](ptr_t terminal1, ptr_t terminal2) -> ptr_t
   {
-    return unflag(sink1 | sink2);
+    return unflag(terminal1 | terminal2);
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'not or' operator, i.e. the truth table: [0,0,0,1].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op nor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op nor_op = [](ptr_t terminal1, ptr_t terminal2) -> ptr_t
   {
-    return negate(or_op(sink1, sink2));
+    return negate(or_op(terminal1, terminal2));
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'xor' operator, i.e. the truth table: [0,1,1,0].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op xor_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op xor_op = [](ptr_t terminal1, ptr_t terminal2) -> ptr_t
   {
-    return SINK_BIT | unflag(sink1 ^ sink2);
+    return TERMINAL_BIT | unflag(terminal1 ^ terminal2);
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'xor' operator, i.e. the truth table: [1,0,0,1].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op xnor_op  = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op xnor_op  = [](ptr_t terminal1, ptr_t terminal2) -> ptr_t
   {
-    return negate(xor_op(sink1, sink2));
+    return negate(xor_op(terminal1, terminal2));
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'implication' operator, i.e. the truth table: [1,0,1,1].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op imp_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op imp_op = [](ptr_t terminal1, ptr_t terminal2) -> ptr_t
   {
-    return create_sink_ptr(unflag(sink1) <= unflag(sink2));
+    return create_terminal_ptr(unflag(terminal1) <= unflag(terminal2));
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'implication' operator, i.e. the truth table: [1,1,0,1].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op invimp_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op invimp_op = [](ptr_t terminal1, ptr_t terminal2) -> ptr_t
   {
-    return create_sink_ptr(unflag(sink2) <= unflag(sink1));
+    return create_terminal_ptr(unflag(terminal2) <= unflag(terminal1));
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -378,75 +378,75 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'set difference' operator, i.e. the truth table [0,1,0,0].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op diff_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op diff_op = [](ptr_t terminal1, ptr_t terminal2) -> ptr_t
   {
-    return and_op(sink1, negate(sink2));
+    return and_op(terminal1, negate(terminal2));
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'less' operator, i.e. the truth table [0,0,1,0].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op less_op = [](ptr_t sink1, ptr_t sink2) -> ptr_t
+  const bool_op less_op = [](ptr_t terminal1, ptr_t terminal2) -> ptr_t
   {
-    return and_op(negate(sink1), sink2);
+    return and_op(negate(terminal1), terminal2);
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the sink shortcuts the operator from the right,
-  ///        i.e. op(T,sink) = op(F,sink).
+  /// \brief Whether the terminal shortcuts the operator from the right,
+  ///        i.e. op(T,terminal) = op(F,terminal).
   //////////////////////////////////////////////////////////////////////////////
-  inline bool can_right_shortcut(const bool_op &op, const ptr_t sink)
+  inline bool can_right_shortcut(const bool_op &op, const ptr_t terminal)
   {
-    return op(create_sink_ptr(false), sink) == op(create_sink_ptr(true), sink);
+    return op(create_terminal_ptr(false), terminal) == op(create_terminal_ptr(true), terminal);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the sink shortcuts the operator from the left,
-  ///        i.e. op(sink, T) = op(sink, F).
+  /// \brief Whether the terminal shortcuts the operator from the left,
+  ///        i.e. op(terminal, T) = op(terminal, F).
   //////////////////////////////////////////////////////////////////////////////
-  inline bool can_left_shortcut(const bool_op &op, const ptr_t sink)
+  inline bool can_left_shortcut(const bool_op &op, const ptr_t terminal)
   {
-    return op(sink, create_sink_ptr(false)) == op(sink, create_sink_ptr(true));
+    return op(terminal, create_terminal_ptr(false)) == op(terminal, create_terminal_ptr(true));
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the sink is irrelevant for the operator from the right,
-  ///        i.e. op(X, sink) = X.
+  /// \brief Whether the terminal is irrelevant for the operator from the right,
+  ///        i.e. op(X, terminal) = X.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_right_irrelevant(const bool_op &op, const ptr_t sink)
+  inline bool is_right_irrelevant(const bool_op &op, const ptr_t terminal)
   {
-    return op(create_sink_ptr(false), sink) == create_sink_ptr(false)
-      && op(create_sink_ptr(true), sink) == create_sink_ptr(true);
+    return op(create_terminal_ptr(false), terminal) == create_terminal_ptr(false)
+      && op(create_terminal_ptr(true), terminal) == create_terminal_ptr(true);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the sink is irrelevant for the operator from the left,
-  ///        i.e. op(sink, X) = X.
+  /// \brief Whether the terminal is irrelevant for the operator from the left,
+  ///        i.e. op(terminal, X) = X.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_left_irrelevant(const bool_op &op, const ptr_t sink)
+  inline bool is_left_irrelevant(const bool_op &op, const ptr_t terminal)
   {
-    return op(sink, create_sink_ptr(false)) == create_sink_ptr(false)
-      && op(sink, create_sink_ptr(true)) == create_sink_ptr(true);
+    return op(terminal, create_terminal_ptr(false)) == create_terminal_ptr(false)
+      && op(terminal, create_terminal_ptr(true)) == create_terminal_ptr(true);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the sink for this operator negates the value of the other
-  ///        from the right, i.e. op(X, sink) = ~X.
+  /// \brief Whether the terminal for this operator negates the value of the other
+  ///        from the right, i.e. op(X, terminal) = ~X.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_right_negating(const bool_op &op, const ptr_t sink)
+  inline bool is_right_negating(const bool_op &op, const ptr_t terminal)
   {
-    return op(sink, create_sink_ptr(false)) == create_sink_ptr(true)
-      && op(sink, create_sink_ptr(true)) == create_sink_ptr(false);
+    return op(terminal, create_terminal_ptr(false)) == create_terminal_ptr(true)
+      && op(terminal, create_terminal_ptr(true)) == create_terminal_ptr(false);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether the sink for this operator negates the value of the other
-  ///        from the left, i.e. op(sink, X) = ~X
+  /// \brief Whether the terminal for this operator negates the value of the other
+  ///        from the left, i.e. op(terminal, X) = ~X
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_left_negating(const bool_op &op, const ptr_t sink)
+  inline bool is_left_negating(const bool_op &op, const ptr_t terminal)
   {
-    return op(sink, create_sink_ptr(false)) == create_sink_ptr(true)
-      && op(sink, create_sink_ptr(true)) == create_sink_ptr(false);
+    return op(terminal, create_terminal_ptr(false)) == create_terminal_ptr(true)
+      && op(terminal, create_terminal_ptr(true)) == create_terminal_ptr(false);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -454,10 +454,10 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_commutative(const bool_op &op)
   {
-    ptr_t sink_T = create_sink_ptr(true);
-    ptr_t sink_F = create_sink_ptr(false);
+    ptr_t terminal_T = create_terminal_ptr(true);
+    ptr_t terminal_F = create_terminal_ptr(false);
 
-    return op(sink_T, sink_F) == op(sink_F, sink_T);
+    return op(terminal_T, terminal_F) == op(terminal_F, terminal_T);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -465,7 +465,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline bool on_level(ptr_t p, label_t level)
   {
-    return is_sink(p) ? false : label_of(p) == level;
+    return is_terminal(p) ? false : label_of(p) == level;
   }
 
   /* ================================ NODES ================================= */
@@ -477,7 +477,7 @@ namespace adiar {
   ///         together with pointers to its children in <tt>low</tt> and
   ///         <tt>high</tt>.
   ///
-  /// \remark If a node is a sink, then <tt>low</tt> and <tt>high</tt> are NIL.
+  /// \remark If a node is a terminal, then <tt>low</tt> and <tt>high</tt> are NIL.
   ///         Otherwise, they are always \em not NIL.
   //////////////////////////////////////////////////////////////////////////////
   struct node
@@ -495,31 +495,31 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create a terminal node representing the given boolean value.
   //////////////////////////////////////////////////////////////////////////////
-  inline node_t create_sink(bool value)
+  inline node_t create_terminal(bool value)
   {
-    return { create_sink_ptr(value) , NIL, NIL };
+    return { create_terminal_ptr(value) , NIL, NIL };
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a given node represents a sink.
+  /// \brief Whether a given node represents a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_sink(const node_t& n)
+  inline bool is_terminal(const node_t& n)
   {
-    return n.uid >= SINK_BIT;
+    return n.uid >= TERMINAL_BIT;
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Extract the value from a sink.
+  /// \brief Extract the value from a terminal.
   //////////////////////////////////////////////////////////////////////////////
   inline bool value_of(const node_t &n)
   {
-    adiar_debug(is_sink(n), "Cannot extract value from non-sink");
+    adiar_debug(is_terminal(n), "Cannot extract value from non-terminal");
 
     return value_of(n.uid);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a pointer is the false sink.
+  /// \brief Whether a pointer is the false terminal.
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_false(const node_t &n)
   {
@@ -527,7 +527,7 @@ namespace adiar {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a pointer is the true sink.
+  /// \brief Whether a pointer is the true terminal.
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_true(const node_t &n)
   {
@@ -551,11 +551,11 @@ namespace adiar {
   {
     // TODO: Should these be adiar_assert instead to check validity of user input?
     adiar_debug(!is_nil(low), "Cannot create a node with NIL child");
-    adiar_debug(is_sink(low) || label < label_of(low),
+    adiar_debug(is_terminal(low) || label < label_of(low),
                 "Node is not prior to given low child");
 
     adiar_debug(!is_nil(high), "Cannot create a node with NIL child");
-    adiar_debug(is_sink(high) || label < label_of(high),
+    adiar_debug(is_terminal(high) || label < label_of(high),
                 "Node is not prior to given high child");
 
     return create_node(create_node_uid(label, id), low, high);
@@ -581,7 +581,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline label_t label_of(const node_t &n)
   {
-    adiar_debug(!is_sink(n), "Cannot extract label of a sink");
+    adiar_debug(!is_terminal(n), "Cannot extract label of a terminal");
 
     return label_of(n.uid);
   }
@@ -591,7 +591,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline id_t id_of(const node_t &n)
   {
-    adiar_debug(!is_sink(n), "Cannot extract id of a sink");
+    adiar_debug(!is_terminal(n), "Cannot extract id of a terminal");
 
     return id_of(n.uid);
   }
@@ -606,17 +606,17 @@ namespace adiar {
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create the node representing the (locally) negated function:
-  ///        pointers to sink children are negated while pointers to other nodes
+  ///        pointers to terminal children are negated while pointers to other nodes
   ///        are left unchanged.
   //////////////////////////////////////////////////////////////////////////////
   inline node_t negate(const node_t &n)
   {
-    if (is_sink(n)) {
+    if (is_terminal(n)) {
       return { negate(n.uid), NIL, NIL };
     }
 
-    uint64_t low =  is_sink(n.low)  ? negate(n.low)  : n.low;
-    uint64_t high = is_sink(n.high) ? negate(n.high) : n.high;
+    uint64_t low =  is_terminal(n.low)  ? negate(n.low)  : n.low;
+    uint64_t high = is_terminal(n.high) ? negate(n.high) : n.high;
     return { n.uid, low, high };
   }
 
@@ -681,11 +681,11 @@ namespace adiar {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Negates the target value, if it is a sink.
+  /// \brief Negates the target value, if it is a terminal.
   //////////////////////////////////////////////////////////////////////////////
   inline arc_t negate(const arc_t &a)
   {
-    uint64_t target = is_sink(a.target) ? negate(a.target) : a.target;
+    uint64_t target = is_terminal(a.target) ? negate(a.target) : a.target;
     return { a.source, target };
   }
 

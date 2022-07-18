@@ -71,8 +71,8 @@ namespace adiar {
     node_file nf;
     node_writer nw;
 
-    bool created_sink = false;
-    bool sink_val = false;
+    bool created_terminal = false;
+    bool terminal_val = false;
 
     label_t current_label = MAX_LABEL;
     id_t current_id = MAX_ID;
@@ -88,11 +88,11 @@ namespace adiar {
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Add a terminal node with a given value.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(bool sink_value) {
-      created_sink = true;
-      sink_val = sink_value;
+    builder_ptr<dd_policy> add_node(bool terminal_value) {
+      created_terminal = true;
+      terminal_val = terminal_value;
 
-      return make_ptr(create_sink_ptr(sink_value));
+      return make_ptr(create_terminal_ptr(terminal_value));
     }
 
     /////////////////////////////////////////////////////////////////////////////
@@ -135,12 +135,12 @@ namespace adiar {
 
       //Update count of unreferenced nodes
       bool& low_unref = *low.unreferenced;
-      if(low_unref && !is_sink(low.ptr)) {
+      if(low_unref && !is_terminal(low.ptr)) {
         low_unref = false;
         unref_nodes--;
       }
       bool& high_unref = *high.unreferenced;
-      if(high_unref && !is_sink(high.ptr)) {
+      if(high_unref && !is_terminal(high.ptr)) {
         high_unref = false;
         unref_nodes--;
       }
@@ -150,20 +150,20 @@ namespace adiar {
 
     builder_ptr<dd_policy> add_node(label_t label, bool low, builder_ptr<dd_policy> &high)
     {
-      builder_ptr<dd_policy> low_ptr = make_ptr(create_sink_ptr(low));
+      builder_ptr<dd_policy> low_ptr = make_ptr(create_terminal_ptr(low));
       return add_node(label, low_ptr, high);
     }
 
     builder_ptr<dd_policy> add_node(label_t label, builder_ptr<dd_policy> &low, bool high)
     {
-      builder_ptr<dd_policy> high_ptr = make_ptr(create_sink_ptr(high));
+      builder_ptr<dd_policy> high_ptr = make_ptr(create_terminal_ptr(high));
       return add_node(label, low, high_ptr);
     }
 
     builder_ptr<dd_policy> add_node(label_t label, bool low, bool high)
     {
-      builder_ptr<dd_policy> low_ptr = make_ptr(create_sink_ptr(low));
-      builder_ptr<dd_policy> high_ptr = make_ptr(create_sink_ptr(high));
+      builder_ptr<dd_policy> low_ptr = make_ptr(create_terminal_ptr(low));
+      builder_ptr<dd_policy> high_ptr = make_ptr(create_terminal_ptr(high));
       return add_node(label, low_ptr, high_ptr);
     }
 
@@ -173,10 +173,10 @@ namespace adiar {
     typename dd_policy::reduced_t create()
     {
       if(!nw.has_pushed()) {
-        if(created_sink) {
-          nw.push(create_sink(sink_val));
+        if(created_terminal) {
+          nw.push(create_terminal(terminal_val));
         } else {
-          throw std::domain_error("There must be at least one node or sink in the decision diagram");
+          throw std::domain_error("There must be at least one node or terminal in the decision diagram");
         }
       }
       if(unref_nodes > 1) {
@@ -197,8 +197,8 @@ namespace adiar {
 
       current_label = MAX_LABEL;
       current_id = MAX_ID;
-      created_sink = false;
-      sink_val = false;
+      created_terminal = false;
+      terminal_val = false;
       builder_ref = std::make_shared<builder_shared>();
       unref_nodes = 0;
     }

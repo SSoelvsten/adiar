@@ -21,7 +21,7 @@ permalink: core/data_types
 ## Nodes
 
 ### Identifiers and Ordering
-A non-sink node is uniquely identified by two values: its _label_ and its _id_.
+A non-terminal node is uniquely identified by two values: its _label_ and its _id_.
 The prior is the variable it represents, whereas _id_ is a unique number
 specific to the number's _label_. Together they create a unique identifier _uid_
 of a node. This identifier is supposed to reflect the following total ordering.
@@ -50,37 +50,37 @@ Here `id_t`, `uid_t`, and `ptr_t` are aliases for an unsigned 64-bit integer and
 algorithms by extension) only works as intended, if the label, resp. id, is less
 or equal to `MAX_LABEL`, resp. `MAX_ID`.
 
-A unique identifier for a sink is recognised by a single bit-flag within the
+A unique identifier for a terminal is recognised by a single bit-flag within the
 64-bit number of the identifer. One can create, read from, and manipulate
-sink-identifiers by using the following functions.
+terminal-identifiers by using the following functions.
 
-- `uid_t create_sink_uid(bool v)`
+- `uid_t create_terminal_uid(bool v)`
 
-  Create the unique identifier to a sink with a given boolean value. We also
-  provide `ptr_t create_sink_ptr(v)` as an alternative.
+  Create the unique identifier to a terminal with a given boolean value. We also
+  provide `ptr_t create_terminal_ptr(v)` as an alternative.
 
 - `bool value_of(ptr_t p)`
 
-  Extract the boolean value of the given sink identifier.
+  Extract the boolean value of the given terminal identifier.
 
 - `uid_t negate(ptr_t p)`
 
-  Negate the value of the sink
+  Negate the value of the terminal
 
-One can identify whether a given `ptr_t` or `uid_t` is to a node or a sink with
+One can identify whether a given `ptr_t` or `uid_t` is to a node or a terminal with
 the following two predicates.
 
 - `bool is_node(uid_t p)`
 
-- `bool is_sink(uid_t p)`
+- `bool is_terminal(uid_t p)`
 
   - `bool is_false(uid_t p)`
 
-    Shorthand for `is_sink(p) && !value_of(p)`.
+    Shorthand for `is_terminal(p) && !value_of(p)`.
 
   - `bool is_true(uid_t p)`
 
-    Shorthand for `is_sink(p) && value_of(p)`.
+    Shorthand for `is_terminal(p) && value_of(p)`.
 
 ### The Node Struct
 
@@ -105,32 +105,32 @@ node with the following function.
 
 - `label_t label_of(node_t n)`
 
-  Extract the label from within the uid of a non-sink node.
+  Extract the label from within the uid of a non-terminal node.
 
 - `id_t id_of(node_t n)`
 
-  Extract the id from within the uid of a non-sink node.
+  Extract the id from within the uid of a non-terminal node.
 
-- `node_t create_sink(bool value)`
+- `node_t create_terminal(bool value)`
 
-  Create a sink node with a specific boolean value.
+  Create a terminal node with a specific boolean value.
 
-- `bool is_sink(node_t n)`
+- `bool is_terminal(node_t n)`
 
-  Assert whether the node is a sink node.
+  Assert whether the node is a terminal node.
 
 - `bool value_of(node_t n)`
 
-  Extract the value of the given sink node.
+  Extract the value of the given terminal node.
 
-  To evaluate whether a node *n* is specifically the *v* sink then you may use
+  To evaluate whether a node *n* is specifically the *v* terminal then you may use
   the `is_false(n)` and `is_true(n)` functions which are shorthand for
-  `is_sink(n) && value_of(n) == v`.
+  `is_terminal(n) && value_of(n) == v`.
 
 - `node_t negate(node_t n)` (operator `!`)
 
-  Negates the content of a node. If the node is a sink, then its value is
-  negated, otherwise if it has a pointer to a sink, then that pointer is
+  Negates the content of a node. If the node is a terminal, then its value is
+  negated, otherwise if it has a pointer to a terminal, then that pointer is
   negated.
 
 

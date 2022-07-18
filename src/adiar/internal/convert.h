@@ -23,8 +23,8 @@ namespace adiar
   public:
     static constexpr bool may_skip = true;
 
-    static constexpr bool cut_true_sink  = true;
-    static constexpr bool cut_false_sink = false;
+    static constexpr bool cut_true_terminal  = true;
+    static constexpr bool cut_false_terminal = false;
 
     static constexpr size_t mult_factor = 2u;
 
@@ -32,18 +32,18 @@ namespace adiar
     static typename to_policy::reduced_t
     on_empty_labels(const typename from_policy::reduced_t& dd)
     {
-      adiar_assert(is_sink(dd), "Only a pure sink can be part of an empty domain");
+      adiar_assert(is_terminal(dd), "Only a pure terminal can be part of an empty domain");
       return typename to_policy::reduced_t(dd.file, dd.negate);
     }
 
     static typename to_policy::reduced_t
-    on_sink_input(const bool sink_value,
+    on_terminal_input(const bool terminal_value,
                   const typename from_policy::reduced_t& /*dd*/,
                   const label_file &dom)
     {
-      adiar_debug(dom.size() > 0, "Emptiness check is before sink check");
+      adiar_debug(dom.size() > 0, "Emptiness check is before terminal check");
 
-      ptr_t prior_node = create_sink_ptr(sink_value);
+      ptr_t prior_node = create_terminal_ptr(terminal_value);
 
       node_file nf;
 
@@ -56,7 +56,7 @@ namespace adiar
         const label_t next_label = ls.pull();
 
         adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
-        adiar_assert(is_sink(prior_node) || next_label < label_of(prior_node),
+        adiar_assert(is_terminal(prior_node) || next_label < label_of(prior_node),
                      "Labels not given in increasing order");
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
@@ -77,16 +77,16 @@ namespace adiar
       }
 
       if (!has_output) {
-        nw.unsafe_push(create_sink(sink_value));
+        nw.unsafe_push(create_terminal(terminal_value));
       }
       return nf;
     }
 
     static typename to_policy::reduced_t
-    sink(const bool sink_value)
+    terminal(const bool terminal_value)
     {
       // Notice, that both bdd_t and zdd_t have bool constructors
-      return sink_value;
+      return terminal_value;
     }
 
     static intercut_rec hit_existing(const node_t &n)

@@ -12,8 +12,8 @@ namespace adiar
   public:
     static constexpr bool may_skip = false;
 
-    static constexpr bool cut_true_sink = true;
-    static constexpr bool cut_false_sink = false;
+    static constexpr bool cut_true_terminal = true;
+    static constexpr bool cut_false_terminal = false;
 
     static constexpr size_t mult_factor = 2u;
 
@@ -24,13 +24,13 @@ namespace adiar
     }
 
 
-    static zdd on_sink_input(const bool sink_value, const zdd& dd, const label_file &labels)
+    static zdd on_terminal_input(const bool terminal_value, const zdd& dd, const label_file &labels)
     {
-      return sink_value ? zdd_powerset(labels) : dd;
+      return terminal_value ? zdd_powerset(labels) : dd;
     }
 
     // LCOV_EXCL_START
-    static zdd sink(const bool /*sink_value*/)
+    static zdd terminal(const bool /*terminal_value*/)
     {
       adiar_unreachable();
     }

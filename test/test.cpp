@@ -35,12 +35,12 @@ public:
   node_arc_test_stream(__zdd &zdd): node_arc_stream<true>(zdd.get<arc_file>()) { }
 };
 
-class sink_arc_test_stream: public sink_arc_stream<true>
+class terminal_arc_test_stream: public terminal_arc_stream<true>
 {
 public:
-  sink_arc_test_stream(arc_file &f): sink_arc_stream<true>(f) { }
-  sink_arc_test_stream(__bdd &bdd): sink_arc_stream<true>(bdd.get<arc_file>()) { }
-  sink_arc_test_stream(__zdd &zdd): sink_arc_stream<true>(zdd.get<arc_file>()) { }
+  terminal_arc_test_stream(arc_file &f): terminal_arc_stream<true>(f) { }
+  terminal_arc_test_stream(__bdd &bdd): terminal_arc_stream<true>(bdd.get<arc_file>()) { }
+  terminal_arc_test_stream(__zdd &zdd): terminal_arc_stream<true>(zdd.get<arc_file>()) { }
 };
 ////////////////////////////////////////////////////////////////////////////////
 // To improve the error messages
@@ -52,7 +52,7 @@ namespace snowhouse
     std::stringstream stream;
     if (is_nil(p)) {
       stream << "NIL";
-    } else if (is_sink(p)) {
+    } else if (is_terminal(p)) {
       stream << value_of(p);
     } else { // is_node(p)
       stream << "(x" << label_of(p) << ", " << id_of(p) << ")" ;
@@ -81,7 +81,7 @@ namespace snowhouse
     static std::string ToString(const node_t& n)
     {
       std::stringstream stream;
-      if (is_sink(n)) {
+      if (is_terminal(n)) {
         stream << "node: " << value_of(n);
       } else {
         stream << "node: ("

@@ -62,14 +62,14 @@ namespace adiar
     node_t v1 = in_nodes_1.pull();
     node_t v2 = in_nodes_2.pull();
 
-    if (is_sink(v1) || is_sink(v2)) {
+    if (is_terminal(v1) || is_terminal(v2)) {
       bool ret_value;
-      if (comp_policy::resolve_sinks(v1, v2, ret_value)) {
+      if (comp_policy::resolve_terminals(v1, v2, ret_value)) {
         return ret_value;
       }
     }
 
-    if (is_sink(v1.low) && is_sink(v1.high) && is_sink(v2.low) && is_sink(v2.high)) {
+    if (is_terminal(v1.low) && is_terminal(v1.high) && is_terminal(v2.low) && is_terminal(v2.high)) {
       return comp_policy::resolve_singletons(v1, v2);
     }
 
@@ -142,7 +142,7 @@ namespace adiar
 
       // Forward information across the level
       if (!with_data
-          && !is_sink(t1) && !is_sink(t2) && label_of(t1) == label_of(t2)
+          && !is_terminal(t1) && !is_terminal(t2) && label_of(t1) == label_of(t2)
           && (v1.uid != t1 || v2.uid != t2)) {
         node_t v0 = prod_from_1(t1,t2) ? v1 : v2;
 
@@ -176,7 +176,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// Behaviour can be changed with the 'comp_policy'.
   ///
-  /// - The 'resolve_sinks' function resolves the case of being given two sinks.
+  /// - The 'resolve_terminals' function resolves the case of being given two terminals.
   ///
   /// - The 'resolve_request' function checks for early termination and places
   ///   new recursion requests in the priority queue if more recursions are needed.

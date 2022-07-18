@@ -42,7 +42,7 @@ nodes on disk to delay recursion.
 
    The underlying *data types* and *files* that you can use to construct larger
    decision diagrams programmatically.
-   
+
 6. [Examples](examples.md)
 
    Examples that cover the functionalities of *Adiar*.

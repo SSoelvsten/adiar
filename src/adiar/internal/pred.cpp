@@ -87,9 +87,9 @@ namespace adiar
     }
 
   public:
-    static bool resolve_sinks(const node_t &v1, const node_t &v2, bool &ret_value)
+    static bool resolve_terminals(const node_t &v1, const node_t &v2, bool &ret_value)
     {
-      ret_value = is_sink(v1) && is_sink(v2) && value_of(v1) == value_of(v2);
+      ret_value = is_terminal(v1) && is_terminal(v2) && value_of(v1) == value_of(v2);
 #ifdef ADIAR_STATS
       stats_equality.slow_check.exit_on_root++;
 #endif
@@ -110,9 +110,9 @@ namespace adiar
     template<typename pq_1_t>
     static bool resolve_request(pq_1_t &pq, ptr_t r1, ptr_t r2)
     {
-      // Are they both a sink (and the same sink)?
-      if (is_sink(r1) || is_sink(r2)) {
-        if (is_sink(r1) && is_sink(r2) && value_of(r1) == value_of(r2)) {
+      // Are they both a terminal (and the same terminal)?
+      if (is_terminal(r1) || is_terminal(r2)) {
+        if (is_terminal(r1) && is_terminal(r2) && value_of(r1) == value_of(r2)) {
           return false;
         } else {
 #ifdef ADIAR_STATS
@@ -212,11 +212,11 @@ namespace adiar
     }
 
     // Are they trivially not the same, since they have different number of
-    // sink arcs?
-    if(f1->number_of_sinks[negate1] != f2->number_of_sinks[negate2] ||
-       f1->number_of_sinks[!negate1] != f2->number_of_sinks[!negate2]) {
+    // terminal arcs?
+    if(f1->number_of_terminals[negate1] != f2->number_of_terminals[negate2] ||
+       f1->number_of_terminals[!negate1] != f2->number_of_terminals[!negate2]) {
 #ifdef ADIAR_STATS
-      stats_equality.exit_on_sinkcount++;
+      stats_equality.exit_on_terminalcount++;
 #endif
       return false;
     }

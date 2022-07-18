@@ -87,8 +87,8 @@ namespace adiar
                                          pq_t &pq,
                                          arc_writer &aw)
   {
-    if(is_sink(request.target)) {
-      aw.unsafe_push_sink(request);
+    if(is_terminal(request.target)) {
+      aw.unsafe_push_terminal(request);
     } else {
       pq.push(request);
     }
@@ -128,8 +128,8 @@ namespace adiar
       } else { // std::holds_alternative<substitute_rec_skipto>(n_res)
         const ptr_t rec_child = std::get<substitute_rec_skipto>(rec_res).child;;
 
-        if(is_sink(rec_child)) {
-          return substitute_policy::sink(value_of(rec_child), amgr);
+        if(is_terminal(rec_child)) {
+          return substitute_policy::terminal(value_of(rec_child), amgr);
         }
 
         substitute_pq.push({ NIL, rec_child });
@@ -186,9 +186,9 @@ namespace adiar
           const arc_t parent_arc = substitute_pq.pull();
           const arc_t request = { parent_arc.source, rec_child };
 
-          if(is_sink(rec_child) && is_nil(parent_arc.source)) {
-            // we have restricted ourselves to a sink
-            return substitute_policy::sink(value_of(rec_child), amgr);
+          if(is_terminal(rec_child) && is_nil(parent_arc.source)) {
+            // we have restricted ourselves to a terminal
+            return substitute_policy::terminal(value_of(rec_child), amgr);
           }
 
           __substitute_resolve_request(request, substitute_pq, aw);

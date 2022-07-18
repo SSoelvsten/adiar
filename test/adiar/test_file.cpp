@@ -44,17 +44,17 @@ go_bandit([]() {
 
     node_file node_test_file;
 
-    node_t n2 = create_node(1,1, create_sink_ptr(false), create_sink_ptr(true));
-    node_t n1 = create_node(1,0, create_sink_ptr(true), create_sink_ptr(false));
+    node_t n2 = create_node(1,1, create_terminal_ptr(false), create_terminal_ptr(true));
+    node_t n1 = create_node(1,0, create_terminal_ptr(true), create_terminal_ptr(false));
     node_t n0 = create_node(0,0, create_node_ptr(1,1), create_node_ptr(1,0));
 
     arc_file arc_test_file;
 
     arc_t node_arc_1 = { create_node_ptr(0,0), create_node_ptr(1,0) };
-    arc_t sink_arc_1 = { flag(create_node_ptr(0,0)), create_sink_ptr(false) };
+    arc_t terminal_arc_1 = { flag(create_node_ptr(0,0)), create_terminal_ptr(false) };
 
-    arc_t sink_arc_2 = { create_node_ptr(1,0), create_sink_ptr(true) };
-    arc_t sink_arc_3 = { flag(create_node_ptr(1,0)), create_sink_ptr(false) };
+    arc_t terminal_arc_2 = { create_node_ptr(1,0), create_terminal_ptr(true) };
+    arc_t terminal_arc_3 = { flag(create_node_ptr(1,0)), create_terminal_ptr(false) };
 
     describe("adiar/file_writer", [&]() {
       describe("simple_file_writer", [&]() {
@@ -140,8 +140,8 @@ go_bandit([]() {
         });
 
         describe("node_writer", [&]() {
-          const ptr_t sink_F = create_sink_ptr(false);
-          const ptr_t sink_T = create_sink_ptr(true);
+          const ptr_t terminal_F = create_terminal_ptr(false);
+          const ptr_t terminal_T = create_terminal_ptr(true);
 
           it("can hook into and write to node_test_file", [&]() {
             AssertThat(node_test_file.is_read_only(), Is().False());
@@ -161,7 +161,7 @@ go_bandit([]() {
           node_file nf_F;
           {
             node_writer nw(nf_F);
-            nw << create_sink(false);
+            nw << create_terminal(false);
           }
 
           /*
@@ -170,7 +170,7 @@ go_bandit([]() {
           node_file nf_T;
           {
             node_writer nw(nf_T);
-            nw << create_sink(true);
+            nw << create_terminal(true);
           }
 
           /*
@@ -181,7 +181,7 @@ go_bandit([]() {
           node_file nf_42;
           {
             node_writer nw(nf_42);
-            nw << create_node(42, MAX_ID, sink_F, sink_T);
+            nw << create_node(42, MAX_ID, terminal_F, terminal_T);
           }
 
           /*
@@ -192,7 +192,7 @@ go_bandit([]() {
           node_file nf_not42;
           {
             node_writer nw(nf_not42);
-            nw << create_node(42, MAX_ID, sink_F, sink_T);
+            nw << create_node(42, MAX_ID, terminal_F, terminal_T);
           }
 
           /*
@@ -205,8 +205,8 @@ go_bandit([]() {
           node_file nf_0and1;
           {
             node_writer nw(nf_0and1);
-            nw << create_node(1, MAX_ID, sink_F, sink_T)
-               << create_node(0, MAX_ID, sink_F, create_node_ptr(1,MAX_ID));
+            nw << create_node(1, MAX_ID, terminal_F, terminal_T)
+               << create_node(0, MAX_ID, terminal_F, create_node_ptr(1,MAX_ID));
           }
 
           /*
@@ -221,9 +221,9 @@ go_bandit([]() {
           node_file nf_0and1and2;
           {
             node_writer nw(nf_0and1and2);
-            nw << create_node(2, MAX_ID, sink_F, sink_T)
-               << create_node(1, MAX_ID, sink_F, create_node_ptr(2,MAX_ID))
-               << create_node(0, MAX_ID, sink_F, create_node_ptr(1,MAX_ID));
+            nw << create_node(2, MAX_ID, terminal_F, terminal_T)
+               << create_node(1, MAX_ID, terminal_F, create_node_ptr(2,MAX_ID))
+               << create_node(0, MAX_ID, terminal_F, create_node_ptr(1,MAX_ID));
           }
 
           /*
@@ -238,8 +238,8 @@ go_bandit([]() {
           node_file nf_0and1_or_2;
           {
             node_writer nw(nf_0and1_or_2);
-            nw << create_node(2, MAX_ID, sink_F, sink_T)
-               << create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), sink_T)
+            nw << create_node(2, MAX_ID, terminal_F, terminal_T)
+               << create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), terminal_T)
                << create_node(0, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID));
           }
 
@@ -253,8 +253,8 @@ go_bandit([]() {
           node_file nf_21xor42;
           {
             node_writer nw(nf_21xor42);
-            nw << create_node(42, MAX_ID, sink_F, sink_T)
-               << create_node(42, MAX_ID-1, sink_T, sink_F)
+            nw << create_node(42, MAX_ID, terminal_F, terminal_T)
+               << create_node(42, MAX_ID-1, terminal_T, terminal_F)
                << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
           }
 
@@ -270,9 +270,9 @@ go_bandit([]() {
           node_file nf_0xnor1_or_2;
           {
             node_writer nw(nf_0xnor1_or_2);
-            nw << create_node(2, MAX_ID, sink_F, sink_T)
-               << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), sink_T)
-               << create_node(1, MAX_ID-1, sink_T, create_node_ptr(2, MAX_ID))
+            nw << create_node(2, MAX_ID, terminal_F, terminal_T)
+               << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), terminal_T)
+               << create_node(1, MAX_ID-1, terminal_T, create_node_ptr(2, MAX_ID))
                << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID-1), create_node_ptr(1, MAX_ID));
           }
 
@@ -288,9 +288,9 @@ go_bandit([]() {
           node_file nf_0xor1_or_2;
           {
             node_writer nw(nf_0xor1_or_2);
-            nw << create_node(2, MAX_ID, sink_F, sink_T)
-               << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), sink_T)
-               << create_node(1, MAX_ID-1, sink_T, create_node_ptr(2, MAX_ID))
+            nw << create_node(2, MAX_ID, terminal_F, terminal_T)
+               << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), terminal_T)
+               << create_node(1, MAX_ID-1, terminal_T, create_node_ptr(2, MAX_ID))
                << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID-1));
           }
 
@@ -312,8 +312,8 @@ go_bandit([]() {
             // In comments, we provide the sum (mod 2) before adding the
             // respective variable.
             node_writer nw(nf_sum01234_mod2);
-            nw << create_node(4, MAX_ID,   sink_F, sink_T)                                            // 0
-               << create_node(4, MAX_ID-1, sink_T, sink_F)                                            // 1
+            nw << create_node(4, MAX_ID,   terminal_F, terminal_T)                                            // 0
+               << create_node(4, MAX_ID-1, terminal_T, terminal_F)                                            // 1
                << create_node(3, MAX_ID,   create_node_ptr(4,MAX_ID-1), create_node_ptr(4,MAX_ID))    // 1
                << create_node(3, MAX_ID-1, create_node_ptr(4,MAX_ID),   create_node_ptr(4,MAX_ID-1))  // 0
                << create_node(2, MAX_ID,   create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))    // 0
@@ -338,18 +338,18 @@ go_bandit([]() {
                   / \/ \
                   T  F T
 
-                When ignoring arcs to sinks:
+                When ignoring arcs to terminals:
                   The maximum 1-level cut: 3
                   The maximum 2-level cut: 4 (1 extra in-going edge to (5))
            */
           node_file nf_larger_2level_cut_A;
           {
             node_writer nw(nf_larger_2level_cut_A);
-            nw << create_node(3, MAX_ID,   sink_F, sink_T)
-               << create_node(3, MAX_ID-1, sink_T, sink_F)
-               << create_node(2, MAX_ID,   create_node_ptr(3,MAX_ID),   sink_T)
+            nw << create_node(3, MAX_ID,   terminal_F, terminal_T)
+               << create_node(3, MAX_ID-1, terminal_T, terminal_F)
+               << create_node(2, MAX_ID,   create_node_ptr(3,MAX_ID),   terminal_T)
                << create_node(2, MAX_ID-1, create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))
-               << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID-1), sink_T)
+               << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID-1), terminal_T)
                << create_node(1, MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
                << create_node(0, MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
           }
@@ -366,26 +366,26 @@ go_bandit([]() {
                        / \
                        F T
 
-               When ignoring arcs to sinks:
+               When ignoring arcs to terminals:
                   The maximum 1-level cut: 3
                   The maximum 2-level cut: 4 (1 in-going edge to (4))
            */
           node_file nf_larger_2level_cut_B;
           {
             node_writer nw(nf_larger_2level_cut_B);
-            nw << create_node(3, MAX_ID,   sink_F, sink_T)
-               << create_node(2, MAX_ID,   sink_F, sink_T)
+            nw << create_node(3, MAX_ID,   terminal_F, terminal_T)
+               << create_node(2, MAX_ID,   terminal_F, terminal_T)
                << create_node(2, MAX_ID-1, create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID))
                << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
                << create_node(0, MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(3,MAX_ID));
           }
 
           describe("canonicity", [&]() {
-            it("is true for False sink", [&]() {
+            it("is true for False terminal", [&]() {
               AssertThat(is_canonical(nf_F), Is().True());
             });
 
-            it("is true for True sink", [&]() {
+            it("is true for True terminal", [&]() {
               AssertThat(is_canonical(nf_T), Is().True());
             });
 
@@ -401,7 +401,7 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(21, 42, sink_F, sink_T);
+                nw << create_node(21, 42, terminal_F, terminal_T);
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -411,12 +411,12 @@ go_bandit([]() {
               AssertThat(is_canonical(nf_21xor42), Is().True());
             });
 
-            it("is false if child ordering with sinks are mismatching", [&]() {
+            it("is false if child ordering with terminals are mismatching", [&]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(42, MAX_ID, sink_T, sink_F)
-                   << create_node(42, MAX_ID-1, sink_F, sink_T)
+                nw << create_node(42, MAX_ID, terminal_T, terminal_F)
+                   << create_node(42, MAX_ID-1, terminal_F, terminal_T)
                    << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
               }
 
@@ -427,8 +427,8 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(42, MAX_ID, sink_F, sink_T)
-                   << create_node(42, MAX_ID-1, sink_T, sink_F)
+                nw << create_node(42, MAX_ID, terminal_F, terminal_T)
+                   << create_node(42, MAX_ID-1, terminal_T, terminal_F)
                    << create_node(21, MAX_ID-2, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
               }
 
@@ -439,8 +439,8 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(42, MAX_ID, sink_F, sink_T)
-                   << create_node(42, MAX_ID-2, sink_T, sink_F)
+                nw << create_node(42, MAX_ID, terminal_F, terminal_T)
+                   << create_node(42, MAX_ID-2, terminal_T, terminal_F)
                    << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-2));
               }
 
@@ -455,13 +455,13 @@ go_bandit([]() {
               AssertThat(is_canonical(nf_0xor1_or_2), Is().True());
             });
 
-            it("is false due to internal uid child is out-of-order compared to a sink child", [&]() {
+            it("is false due to internal uid child is out-of-order compared to a terminal child", [&]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(2, MAX_ID, sink_F, sink_T)
-                   << create_node(1, MAX_ID, sink_T, create_node_ptr(2, MAX_ID))
-                   << create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID), sink_F)
+                nw << create_node(2, MAX_ID, terminal_F, terminal_T)
+                   << create_node(1, MAX_ID, terminal_T, create_node_ptr(2, MAX_ID))
+                   << create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID), terminal_F)
                    << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID-1));
               }
 
@@ -472,9 +472,9 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(3, MAX_ID,   sink_F, sink_T)
-                   << create_node(2, MAX_ID,   sink_F, sink_T)
-                   << create_node(2, MAX_ID-1, sink_T, create_node_ptr(3, MAX_ID))
+                nw << create_node(3, MAX_ID,   terminal_F, terminal_T)
+                   << create_node(2, MAX_ID,   terminal_F, terminal_T)
+                   << create_node(2, MAX_ID-1, terminal_T, create_node_ptr(3, MAX_ID))
                    << create_node(1, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID))
                    << create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID),   create_node_ptr(2, MAX_ID))
                    << create_node(0, MAX_ID,   create_node_ptr(1, MAX_ID),   create_node_ptr(1, MAX_ID-1));
@@ -487,9 +487,9 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(3, MAX_ID,   sink_F, sink_T)
-                   << create_node(2, MAX_ID,   sink_F, sink_T)
-                   << create_node(2, MAX_ID-1, sink_T, create_node_ptr(3, MAX_ID))
+                nw << create_node(3, MAX_ID,   terminal_F, terminal_T)
+                   << create_node(2, MAX_ID,   terminal_F, terminal_T)
+                   << create_node(2, MAX_ID-1, terminal_T, create_node_ptr(3, MAX_ID))
                    << create_node(1, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID-1))
                    << create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID))
                    << create_node(0, MAX_ID,   create_node_ptr(1, MAX_ID),   create_node_ptr(1, MAX_ID-1));
@@ -687,10 +687,10 @@ go_bandit([]() {
             aw.unsafe_push(create_level_info(1,1u));
           });
 
-          it("can hook into arc_test_file and  write sink arcs out of order", [&]() {
-            aw.unsafe_push_sink(sink_arc_3);
-            aw.unsafe_push_sink(sink_arc_1);
-            aw.unsafe_push_sink(sink_arc_2);
+          it("can hook into arc_test_file and  write terminal arcs out of order", [&]() {
+            aw.unsafe_push_terminal(terminal_arc_3);
+            aw.unsafe_push_terminal(terminal_arc_1);
+            aw.unsafe_push_terminal(terminal_arc_2);
           });
         });
       });
@@ -947,18 +947,18 @@ go_bandit([]() {
             AssertThat(as.can_pull(), Is().False());
           });
 
-          it("can read sink arcs of arc_test_file", [&]() {
-            sink_arc_stream<> as(arc_test_file);
+          it("can read terminal arcs of arc_test_file", [&]() {
+            terminal_arc_stream<> as(arc_test_file);
 
             // The stream has been sorted 1, 2, 3 yet the
-            // sink_arc_stream is per default in reverse, so we will
+            // terminal_arc_stream is per default in reverse, so we will
             // expect 3, 2, 1.
             AssertThat(as.can_pull(), Is().True());
-            AssertThat(as.pull(), Is().EqualTo(sink_arc_3));
+            AssertThat(as.pull(), Is().EqualTo(terminal_arc_3));
             AssertThat(as.can_pull(), Is().True());
-            AssertThat(as.pull(), Is().EqualTo(sink_arc_2));
+            AssertThat(as.pull(), Is().EqualTo(terminal_arc_2));
             AssertThat(as.can_pull(), Is().True());
-            AssertThat(as.pull(), Is().EqualTo(sink_arc_1));
+            AssertThat(as.pull(), Is().EqualTo(terminal_arc_1));
             AssertThat(as.can_pull(), Is().False());
           });
         });
@@ -1134,8 +1134,8 @@ go_bandit([]() {
           {
             node_writer nw_0(x0);
             nw_0 << create_node(0,MAX_ID,
-                                create_sink_ptr(false),
-                                create_sink_ptr(true));
+                                create_terminal_ptr(false),
+                                create_terminal_ptr(true));
           }
 
           node_file x0_and_x1;
@@ -1144,26 +1144,26 @@ go_bandit([]() {
             node_writer nw_01(x0_and_x1);
 
             nw_01 << create_node(1, MAX_ID,
-                                 create_sink_ptr(false),
-                                 create_sink_ptr(true));
+                                 create_terminal_ptr(false),
+                                 create_terminal_ptr(true));
 
             nw_01 << create_node(0, MAX_ID,
-                                 create_sink_ptr(false),
+                                 create_terminal_ptr(false),
                                  create_node_ptr(1, MAX_ID));
           }
 
-          node_file sink_T;
+          node_file terminal_T;
 
           {
-            node_writer nw_T(sink_T);
-            nw_T << create_sink(true);
+            node_writer nw_T(terminal_T);
+            nw_T << create_terminal(true);
           }
 
-          node_file sink_F;
+          node_file terminal_F;
 
           {
-            node_writer nw_F(sink_F);
-            nw_F << create_sink(false);
+            node_writer nw_F(terminal_F);
+            nw_F << create_terminal(false);
           }
 
           describe("size computation", [&]() {
@@ -1185,30 +1185,30 @@ go_bandit([]() {
               AssertThat(x0_and_x1.file_size(), Is().EqualTo(2u * sizeof(node_t) + 2u * sizeof(level_info_t)));
             });
 
-            it("can compute size of sink_T", [&]() {
-              AssertThat(sink_T.size(), Is().EqualTo(1u));
-              AssertThat(sink_T.meta_size(), Is().EqualTo(0u));
-              AssertThat(sink_T.file_size(), Is().EqualTo(1u * sizeof(node_t) + 0u * sizeof(level_info_t)));
+            it("can compute size of terminal_T", [&]() {
+              AssertThat(terminal_T.size(), Is().EqualTo(1u));
+              AssertThat(terminal_T.meta_size(), Is().EqualTo(0u));
+              AssertThat(terminal_T.file_size(), Is().EqualTo(1u * sizeof(node_t) + 0u * sizeof(level_info_t)));
             });
           });
 
-          describe("is_sink predicate", [&]() {
-            it("should reject x0 as a sink file", [&]() {
-              AssertThat(is_sink(x0), Is().False());
+          describe("is_terminal predicate", [&]() {
+            it("should reject x0 as a terminal file", [&]() {
+              AssertThat(is_terminal(x0), Is().False());
             });
 
-            it("should reject x0 & x1 as a sink file", [&]() {
-              AssertThat(is_sink(x0_and_x1), Is().False());
+            it("should reject x0 & x1 as a terminal file", [&]() {
+              AssertThat(is_terminal(x0_and_x1), Is().False());
             });
 
-            it("should recognise a true sink", [&]() {
-              AssertThat(is_sink(sink_T), Is().True());
-              AssertThat(value_of(sink_T), Is().True());
+            it("should recognise a true terminal", [&]() {
+              AssertThat(is_terminal(terminal_T), Is().True());
+              AssertThat(value_of(terminal_T), Is().True());
             });
 
-            it("should recognise a false sink", [&]() {
-              AssertThat(is_sink(sink_F), Is().True());
-              AssertThat(value_of(sink_F), Is().False());
+            it("should recognise a false terminal", [&]() {
+              AssertThat(is_terminal(terminal_F), Is().True());
+              AssertThat(value_of(terminal_F), Is().False());
             });
           });
 

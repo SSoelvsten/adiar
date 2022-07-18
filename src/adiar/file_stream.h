@@ -227,21 +227,21 @@ namespace adiar
   template<bool REVERSE = false>
   using node_arc_stream = meta_file_stream<arc_t, 0, !REVERSE>;
 
-  // TODO: Move inside of sink_arc_stream below ?
+  // TODO: Move inside of terminal_arc_stream below ?
   template<bool REVERSE = false>
   using in_order_arc_stream = meta_file_stream<arc_t, 1, !REVERSE>;
 
-  // TODO: Move inside of sink_arc_stream below ?
+  // TODO: Move inside of terminal_arc_stream below ?
   template<bool REVERSE = false>
   using out_of_order_arc_stream = meta_file_stream<arc_t, 2, !REVERSE>;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Stream for sink arcs of an arc file.
+  /// \brief Stream for terminal arcs of an arc file.
   ///
   /// \sa arc_file
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  class sink_arc_stream
+  class terminal_arc_stream
     : private in_order_arc_stream<REVERSE>, private out_of_order_arc_stream<REVERSE>
   {
   private:
@@ -255,16 +255,16 @@ namespace adiar
     }
 
   public:
-    sink_arc_stream(const arc_file &file, bool negate = false)
+    terminal_arc_stream(const arc_file &file, bool negate = false)
       : in_order_arc_stream<REVERSE>(file, negate),
         out_of_order_arc_stream<REVERSE>(file, negate),
-        _unread{ file->number_of_sinks[false], file->number_of_sinks[true] }
+        _unread{ file->number_of_terminals[false], file->number_of_terminals[true] }
     { }
 
   public:
-    const size_t& unread(const bool sink_value) const
+    const size_t& unread(const bool terminal_value) const
     {
-      return _unread[sink_value];
+      return _unread[terminal_value];
     }
 
   private:

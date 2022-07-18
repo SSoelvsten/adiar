@@ -41,10 +41,10 @@ namespace adiar
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Get the desired <tt>cut_type</tt> based on whether to
-  ///        respectively include the false and true sinks.
+  ///        respectively include the false and true terminals.
   ///
-  /// \param incl_false Whether to include arcs to the false sink.
-  /// \param incl_true  Whether to include arcs to the true sink.
+  /// \param incl_false Whether to include arcs to the false terminal.
+  /// \param incl_true  Whether to include arcs to the true terminal.
   ////////////////////////////////////////////////////////////////////////////
   inline cut_type cut_type_with(const bool incl_false, const bool incl_true)
   {
@@ -52,31 +52,31 @@ namespace adiar
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a type of cut includes arcs to the desired sink.
+  /// \brief Whether a type of cut includes arcs to the desired terminal.
   ////////////////////////////////////////////////////////////////////////////
-  inline bool includes_sink(const cut_type cut, const bool sink_val)
+  inline bool includes_terminal(const cut_type cut, const bool terminal_val)
   {
-    return sink_val
+    return terminal_val
       ? cut >= cut_type::INTERNAL_TRUE
       : cut <= cut_type::INTERNAL_FALSE;
   }
 
-  inline bool includes_sink(const size_t cut, const bool sink_val)
+  inline bool includes_terminal(const size_t cut, const bool terminal_val)
   {
-    return includes_sink(static_cast<cut_type>(cut), sink_val);
+    return includes_terminal(static_cast<cut_type>(cut), terminal_val);
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  /// \brief The number of sinks included in a cut type.
+  /// \brief The number of terminals included in a cut type.
   ////////////////////////////////////////////////////////////////////////////
-  inline size_t number_of_sinks(const cut_type cut)
+  inline size_t number_of_terminals(const cut_type cut)
   {
-    return includes_sink(cut, false) + includes_sink(cut, true);
+    return includes_terminal(cut, false) + includes_terminal(cut, true);
   }
 
-  inline size_t number_of_sinks(const size_t cut)
+  inline size_t number_of_terminals(const size_t cut)
   {
-    return number_of_sinks(static_cast<cut_type>(cut));
+    return number_of_terminals(static_cast<cut_type>(cut));
   }
 
   ////////////////////////////////////////////////////////////////////////////

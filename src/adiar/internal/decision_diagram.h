@@ -103,7 +103,7 @@ namespace adiar
     template<typename comp_policy>
     friend bool comparison_check(const decision_diagram &in_1, const decision_diagram &in_2);
 
-    friend bool is_sink(const decision_diagram &dd);
+    friend bool is_terminal(const decision_diagram &dd);
     friend bool value_of(const decision_diagram &dd);
     friend label_t min_label(const decision_diagram &dd);
     friend label_t max_label(const decision_diagram &dd);
@@ -229,15 +229,15 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a given decision diagram represents a sink.
+  /// \brief Whether a given decision diagram represents a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_sink(const decision_diagram &dd)
+  inline bool is_terminal(const decision_diagram &dd)
   {
-    return is_sink(dd.file);
+    return is_terminal(dd.file);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtain the sink's value (if 'is_sink' is true).
+  /// \brief Obtain the terminal's value (if 'is_terminal' is true).
   //////////////////////////////////////////////////////////////////////////////
   inline bool value_of(const decision_diagram &dd)
   {
@@ -245,19 +245,19 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a given decision diagram represents the false sink.
+  /// \brief Whether a given decision diagram represents the false terminal.
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_false(const decision_diagram &dd)
   {
-    return is_sink(dd) && !value_of(dd);
+    return is_terminal(dd) && !value_of(dd);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a given decision diagram represents the true sink.
+  /// \brief Whether a given decision diagram represents the true terminal.
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_true(const decision_diagram &dd)
   {
-    return is_sink(dd) && value_of(dd);
+    return is_terminal(dd) && value_of(dd);
   }
 
   //////////////////////////////////////////////////////////////////////////////

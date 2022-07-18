@@ -7,14 +7,14 @@ go_bandit([]() {
     node_file zdd_empty;
     {
       node_writer nw(zdd_empty);
-      nw << create_sink(false);
+      nw << create_terminal(false);
     }
 
     // { Ø }
     node_file zdd_null;
     {
       node_writer nw(zdd_null);
-      nw << create_sink(true);
+      nw << create_terminal(true);
     }
 
     // TODO: Turn 'GreaterThanOrEqualTo' in max 1-level cuts below into an
@@ -31,7 +31,7 @@ go_bandit([]() {
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -43,8 +43,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(0u));
     });
 
     it("computes { Ø } with dom = {1,3,5} [&&]", [&](){
@@ -58,7 +58,7 @@ go_bandit([]() {
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -70,8 +70,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("computes with dom = Ø to be Ø for Ø as input [&&]", [&](){
@@ -81,7 +81,7 @@ go_bandit([]() {
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -93,8 +93,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(0u));
     });
 
     it("computes with dom = Ø to be { Ø } for { Ø } as input [const &]", [&](){
@@ -104,7 +104,7 @@ go_bandit([]() {
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -116,14 +116,14 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     //////////////////////
-    // Non-sink edge cases
-    ptr_t sink_F = create_sink_ptr(false);
-    ptr_t sink_T = create_sink_ptr(true);
+    // Non-terminal edge cases
+    ptr_t terminal_F = create_terminal_ptr(false);
+    ptr_t terminal_T = create_terminal_ptr(true);
 
     // { Ø, {0}, {1}, {1,2}, {1,3}, {1,3,4} }
     /*
@@ -142,11 +142,11 @@ go_bandit([]() {
     node_file zdd_1;
     {
       node_writer nw(zdd_1);
-      nw << create_node(4, MAX_ID, sink_T, sink_T)
-         << create_node(3, MAX_ID, sink_F, create_node_ptr(4, MAX_ID))
-         << create_node(2, MAX_ID, create_node_ptr(3, MAX_ID), sink_T)
+      nw << create_node(4, MAX_ID, terminal_T, terminal_T)
+         << create_node(3, MAX_ID, terminal_F, create_node_ptr(4, MAX_ID))
+         << create_node(2, MAX_ID, create_node_ptr(3, MAX_ID), terminal_T)
          << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), create_node_ptr(2, MAX_ID))
-         << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID), sink_T)
+         << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID), terminal_T)
         ;
     }
 
@@ -167,9 +167,9 @@ go_bandit([]() {
     node_file zdd_2;
     {
       node_writer nw(zdd_2);
-      nw << create_node(4, MAX_ID, sink_T, sink_T)
-         << create_node(3, MAX_ID, sink_T, sink_T)
-         << create_node(2, MAX_ID, sink_F, create_node_ptr(4, MAX_ID))
+      nw << create_node(4, MAX_ID, terminal_T, terminal_T)
+         << create_node(3, MAX_ID, terminal_T, terminal_T)
+         << create_node(2, MAX_ID, terminal_F, create_node_ptr(4, MAX_ID))
          << create_node(0, MAX_ID, create_node_ptr(2, MAX_ID), create_node_ptr(3, MAX_ID))
         ;
     }
@@ -187,8 +187,8 @@ go_bandit([]() {
     node_file zdd_3;
     {
       node_writer nw(zdd_3);
-      nw << create_node(2, MAX_ID,   sink_T, sink_T)
-         << create_node(2, MAX_ID-1, sink_F, sink_T)
+      nw << create_node(2, MAX_ID,   terminal_T, terminal_T)
+         << create_node(2, MAX_ID-1, terminal_F, terminal_T)
          << create_node(1, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID))
          << create_node(0, MAX_ID,   create_node_ptr(1, MAX_ID), create_node_ptr(2, MAX_ID))
         ;
@@ -207,8 +207,8 @@ go_bandit([]() {
     node_file zdd_4;
     {
       node_writer nw(zdd_4);
-      nw << create_node(4, MAX_ID,   sink_T, sink_T)
-         << create_node(4, MAX_ID-1, sink_F, sink_T)
+      nw << create_node(4, MAX_ID,   terminal_T, terminal_T)
+         << create_node(4, MAX_ID-1, terminal_F, terminal_T)
          << create_node(2, MAX_ID,   create_node_ptr(4, MAX_ID-1), create_node_ptr(4, MAX_ID))
          << create_node(2, MAX_ID-1, create_node_ptr(4, MAX_ID-1), create_node_ptr(4, MAX_ID-1))
          << create_node(0, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID))
@@ -222,7 +222,7 @@ go_bandit([]() {
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -234,8 +234,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2] [&&]", [&](){
@@ -245,7 +245,7 @@ go_bandit([]() {
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -257,8 +257,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("computes with dom = Ø to be { Ø } for non-empty input [zdd_3] [const &]", [&](){
@@ -268,7 +268,7 @@ go_bandit([]() {
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -280,8 +280,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("computes with disjoint dom to be { Ø } [zdd_2] [const &]", [&](){
@@ -294,7 +294,7 @@ go_bandit([]() {
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -306,8 +306,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("computes with disjoint dom to be { Ø } [zdd_3] [&&]", [&](){
@@ -320,7 +320,7 @@ go_bandit([]() {
 
       node_test_stream out_nodes(out);
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -332,14 +332,14 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     // TODO: Shortcut on nothing to do
 
     //////////////////////
-    // Non-sink general case
+    // Non-terminal general case
     it("computes zdd_1 with dom = {2,3,4} [const &]", [&](){
       label_file dom;
       { label_writer lw(dom);
@@ -363,18 +363,18 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
-                                                            sink_T,
-                                                            sink_T)));
+                                                            terminal_T,
+                                                            terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID,
-                                                            sink_T,
+                                                            terminal_T,
                                                             create_node_ptr(4, MAX_ID))));
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
                                                             create_node_ptr(3, MAX_ID),
-                                                            sink_T)));
+                                                            terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -397,8 +397,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(4u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(4u));
     });
 
     it("computes zdd_2 with dom = {2,3,4} [&&]", [&](){
@@ -425,13 +425,13 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
-                                                            sink_T,
-                                                            sink_T)));
+                                                            terminal_T,
+                                                            terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID,
-                                                            sink_T,
-                                                            sink_T)));
+                                                            terminal_T,
+                                                            terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
@@ -459,8 +459,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(4u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(4u));
     });
 
     it("computes zdd_3 with dom = {0,2,4}", [&](){
@@ -486,8 +486,8 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
-                                                            sink_T,
-                                                            sink_T)));
+                                                            terminal_T,
+                                                            terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
@@ -511,8 +511,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(2u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(2u));
     });
 
     it("computes zdd_4 with dom = {0,4}", [&](){
@@ -538,13 +538,13 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
-                                                            sink_T,
-                                                            sink_T)));
+                                                            terminal_T,
+                                                            terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID-1,
-                                                            sink_F,
-                                                            sink_T)));
+                                                            terminal_F,
+                                                            terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
@@ -568,8 +568,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(3u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(3u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(3u));
     });
 
     it("computes zdd_4 with dom = {2,4}", [&](){
@@ -593,8 +593,8 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
-                                                            sink_F,
-                                                            sink_T)));
+                                                            terminal_F,
+                                                            terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
@@ -618,8 +618,8 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
     });
   });
  });

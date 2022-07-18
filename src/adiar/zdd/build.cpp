@@ -8,19 +8,19 @@
 
 namespace adiar
 {
-  zdd zdd_sink(bool value)
+  zdd zdd_terminal(bool value)
   {
-    return build_sink(value);
+    return build_terminal(value);
   }
 
   zdd zdd_empty()
   {
-    return build_sink(false);
+    return build_terminal(false);
   }
 
   zdd zdd_null()
   {
-    return build_sink(true);
+    return build_terminal(true);
   }
 
   zdd zdd_ithvar(label_t label)

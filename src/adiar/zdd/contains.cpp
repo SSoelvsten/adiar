@@ -20,7 +20,7 @@ namespace adiar
     // Remember what we saw the last time
     label_t visited_label;
 
-    bool sink_val = false;
+    bool terminal_val = false;
 
   public:
     zdd_contains_visitor(const label_file &labels) : ls(labels)
@@ -49,10 +49,10 @@ namespace adiar
     }
 
     inline void visit(const bool s)
-    { sink_val = s; }
+    { terminal_val = s; }
 
     inline bool get_result()
-    { return sink_val && (!has_l || l <= visited_label) && !ls.can_pull(); }
+    { return terminal_val && (!has_l || l <= visited_label) && !ls.can_pull(); }
   };
 
   bool zdd_contains(const zdd &zdd, const label_file &labels)

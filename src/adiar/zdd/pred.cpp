@@ -62,9 +62,9 @@ namespace adiar {
     }
 
   public:
-    static bool resolve_sinks(const node_t &v1, const node_t &v2, bool &ret_value)
+    static bool resolve_terminals(const node_t &v1, const node_t &v2, bool &ret_value)
     {
-      if (is_sink(v1) && is_sink(v2)) {
+      if (is_terminal(v1) && is_terminal(v2)) {
         ret_value = !value_of(v1) || value_of(v2);
         return true;
       } if (is_false(v1)) {
@@ -88,10 +88,10 @@ namespace adiar {
     template<typename pq_1_t>
     static bool resolve_request(pq_1_t &pq, ptr_t r1, ptr_t r2)
     {
-      // Are they both a sink? If so, check whether the left-hand side is true
+      // Are they both a terminal? If so, check whether the left-hand side is true
       // and not the right, which would contradict being an implication (i.e.
       // representing a subset).
-      if (is_sink(r1) && is_sink(r2)) {
+      if (is_terminal(r1) && is_terminal(r2)) {
         return unflag(r1) > unflag(r2);
       }
 
@@ -137,10 +137,10 @@ namespace adiar {
     }
 
   public:
-    static bool resolve_sinks(const node_t &v1, const node_t &v2, bool &ret_value)
+    static bool resolve_terminals(const node_t &v1, const node_t &v2, bool &ret_value)
     {
       ret_value = is_false(v1) || is_false(v2);
-      return (is_sink(v1) && is_sink(v2)) || ret_value;
+      return (is_terminal(v1) && is_terminal(v2)) || ret_value;
     }
 
   public:
@@ -155,10 +155,10 @@ namespace adiar {
   template<typename pq_1_t>
     static bool resolve_request(pq_1_t &pq, ptr_t r1, ptr_t r2)
     {
-      // Are they both a sink? If so, check whether they both are true, which
+      // Are they both a terminal? If so, check whether they both are true, which
       // verify there is a satisfiying conjunction (i.e. representing a shared
       // path/element).
-      if (is_sink(r1) && is_sink(r2)) {
+      if (is_terminal(r1) && is_terminal(r2)) {
         return value_of(r1) && value_of(r2);
       }
 

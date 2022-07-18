@@ -1,7 +1,7 @@
 go_bandit([]() {
   describe("adiar/bdd/evaluate.cpp", []() {
-    ptr_t sink_T = create_sink_ptr(true);
-    ptr_t sink_F = create_sink_ptr(false);
+    ptr_t terminal_T = create_terminal_ptr(true);
+    ptr_t terminal_F = create_terminal_ptr(false);
 
     node_file bdd;
     /*
@@ -16,9 +16,9 @@ go_bandit([]() {
                   F T
     */
 
-    node_t n5 = create_node(3,0, sink_F, sink_T);
-    node_t n4 = create_node(2,1, sink_T, n5.uid);
-    node_t n3 = create_node(2,0, sink_F, sink_T);
+    node_t n5 = create_node(3,0, terminal_F, terminal_T);
+    node_t n4 = create_node(2,1, terminal_T, n5.uid);
+    node_t n3 = create_node(2,0, terminal_F, terminal_T);
     node_t n2 = create_node(1,0, n3.uid, n4.uid);
     node_t n1 = create_node(0,0, n3.uid, n2.uid);
 
@@ -42,9 +42,9 @@ go_bandit([]() {
                F T
     */
 
-    node_t skip_n4 = create_node(4,0, sink_F, sink_T);
-    node_t skip_n3 = create_node(2,1, sink_T, skip_n4.uid);
-    node_t skip_n2 = create_node(2,0, sink_F, sink_T);
+    node_t skip_n4 = create_node(4,0, terminal_F, terminal_T);
+    node_t skip_n3 = create_node(2,1, terminal_T, skip_n4.uid);
+    node_t skip_n2 = create_node(2,0, terminal_F, terminal_T);
     node_t skip_n1 = create_node(0,0, skip_n2.uid, skip_n3.uid);
 
     { // Garbage collect writer to free write-lock
@@ -63,19 +63,19 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw(non_zero_bdd);
-      nw << create_node(1,0, sink_F, sink_T);
+      nw << create_node(1,0, terminal_F, terminal_T);
     }
 
     node_file bdd_F;
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_F);
-      nw << create_sink(false);
+      nw << create_terminal(false);
     }
 
     node_file bdd_T;
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_T);
-      nw << create_sink(true);
+      nw << create_terminal(true);
     }
 
     describe("bdd_eval(bdd, assignment_file)", [&]() {
@@ -243,7 +243,7 @@ go_bandit([]() {
         AssertThat(bdd_eval(non_zero_bdd, assignment), Is().True());
       });
 
-      it("returns F on F sink-only BDD", [&]() {
+      it("returns F on F terminal-only BDD", [&]() {
         assignment_file assignment;
 
         { // Garbage collect writer to free write-lock
@@ -258,13 +258,13 @@ go_bandit([]() {
         AssertThat(bdd_eval(bdd_F, assignment), Is().False());
       });
 
-      it("returns F on F sink-only BDD with empty assignment", [&]() {
+      it("returns F on F terminal-only BDD with empty assignment", [&]() {
         assignment_file assignment;
 
         AssertThat(bdd_eval(bdd_F, assignment), Is().False());
       });
 
-      it("returns T on T sink-only BDD", [&]() {
+      it("returns T on T terminal-only BDD", [&]() {
         assignment_file assignment;
 
         { // Garbage collect writer to free write-lock
@@ -279,7 +279,7 @@ go_bandit([]() {
         AssertThat(bdd_eval(bdd_T, assignment), Is().True());
       });
 
-      it("returns T on T sink-only BDD with empty assignment", [&]() {
+      it("returns T on T terminal-only BDD with empty assignment", [&]() {
         assignment_file assignment;
 
         AssertThat(bdd_eval(bdd_T, assignment), Is().True());
@@ -342,12 +342,12 @@ go_bandit([]() {
         AssertThat(bdd_eval(non_zero_bdd, af), Is().True());
       });
 
-      it("returns F on F sink-only BDD with assignment '_ -> true'", [&]() {
+      it("returns F on F terminal-only BDD with assignment '_ -> true'", [&]() {
         assignment_func af = [](const label_t) { return true; };
         AssertThat(bdd_eval(bdd_F, af), Is().False());
       });
 
-      it("returns T on T sink-only BDD with assignment '_ -> false'", [&]() {
+      it("returns T on T terminal-only BDD with assignment '_ -> false'", [&]() {
         assignment_func af = [](const label_t) { return false; };
         AssertThat(bdd_eval(bdd_T, af), Is().True());
       });

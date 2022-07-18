@@ -2,18 +2,18 @@ go_bandit([]() {
   describe("adiar/bdd/quantify.cpp", []() {
     ////////////////////////////////////////////////////////////////////////
     // Sink only BDDs
-    node_file sink_F;
+    node_file terminal_F;
 
     { // Garbage collect writer to free write-lock}
-      node_writer nw_F(sink_F);
-      nw_F << create_sink(false);
+      node_writer nw_F(terminal_F);
+      nw_F << create_terminal(false);
     }
 
-    node_file sink_T;
+    node_file terminal_T;
 
     { // Garbage collect writer to free write-lock
-      node_writer nw_T(sink_T);
-      nw_T << create_sink(true);
+      node_writer nw_T(terminal_T);
+      nw_T << create_terminal(true);
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -27,8 +27,8 @@ go_bandit([]() {
     */
     node_file bdd_1;
 
-    node_t n1_2 = create_node(1,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
-    node_t n1_1 = create_node(0,MAX_ID, create_sink_ptr(true), n1_2.uid);
+    node_t n1_2 = create_node(1,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true));
+    node_t n1_1 = create_node(0,MAX_ID, create_terminal_ptr(true), n1_2.uid);
 
     { // Garbage collect writer to free write-lock
       node_writer nw_1(bdd_1);
@@ -48,9 +48,9 @@ go_bandit([]() {
     */
     node_file bdd_2;
 
-    node_t n2_5 = create_node(2,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
-    node_t n2_4 = create_node(2,MAX_ID-1, create_sink_ptr(true), create_sink_ptr(false));
-    node_t n2_3 = create_node(1,MAX_ID, n2_5.uid, create_sink_ptr(false));
+    node_t n2_5 = create_node(2,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true));
+    node_t n2_4 = create_node(2,MAX_ID-1, create_terminal_ptr(true), create_terminal_ptr(false));
+    node_t n2_3 = create_node(1,MAX_ID, n2_5.uid, create_terminal_ptr(false));
     node_t n2_2 = create_node(1,MAX_ID-1, n2_4.uid, n2_5.uid);
     node_t n2_1 = create_node(0,MAX_ID, n2_2.uid, n2_3.uid);
 
@@ -72,8 +72,8 @@ go_bandit([]() {
     */
     node_file bdd_3;
 
-    node_t n3_4 = create_node(2,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
-    node_t n3_3 = create_node(2,MAX_ID-1, create_sink_ptr(true), create_sink_ptr(false));
+    node_t n3_4 = create_node(2,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true));
+    node_t n3_3 = create_node(2,MAX_ID-1, create_terminal_ptr(true), create_terminal_ptr(false));
     node_t n3_2 = create_node(1,MAX_ID, n3_3.uid, n3_4.uid);
     node_t n3_1 = create_node(0,MAX_ID, n3_3.uid, n3_2.uid);
 
@@ -97,9 +97,9 @@ go_bandit([]() {
     */
     node_file bdd_4;
 
-    node_t n4_5 = create_node(3,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
-    node_t n4_4 = create_node(2,MAX_ID, n4_5.uid, create_sink_ptr(true));
-    node_t n4_3 = create_node(2,MAX_ID-1, create_sink_ptr(false), n4_5.uid);
+    node_t n4_5 = create_node(3,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true));
+    node_t n4_4 = create_node(2,MAX_ID, n4_5.uid, create_terminal_ptr(true));
+    node_t n4_3 = create_node(2,MAX_ID-1, create_terminal_ptr(false), n4_5.uid);
     node_t n4_2 = create_node(1,MAX_ID, n4_3.uid, n4_4.uid);
     node_t n4_1 = create_node(0,MAX_ID, n4_3.uid, n4_2.uid);
 
@@ -121,10 +121,10 @@ go_bandit([]() {
     */
     node_file bdd_5;
 
-    node_t n5_4 = create_node(2,MAX_ID, create_sink_ptr(true), create_sink_ptr(false));
-    node_t n5_3 = create_node(2,MAX_ID-1, create_sink_ptr(false), create_sink_ptr(true));
+    node_t n5_4 = create_node(2,MAX_ID, create_terminal_ptr(true), create_terminal_ptr(false));
+    node_t n5_3 = create_node(2,MAX_ID-1, create_terminal_ptr(false), create_terminal_ptr(true));
     node_t n5_2 = create_node(1,MAX_ID, n5_3.uid, n5_4.uid);
-    node_t n5_1 = create_node(0,MAX_ID, create_sink_ptr(false), n5_2.uid);
+    node_t n5_1 = create_node(0,MAX_ID, create_terminal_ptr(false), n5_2.uid);
 
     { // Garbage collect writer to free write-lock
       node_writer nw_5(bdd_5);
@@ -137,7 +137,7 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_x2(bdd_x2);
-      nw_x2 << create_node(2,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
+      nw_x2 << create_node(2,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true));
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -158,11 +158,11 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_6(bdd_6);
-      nw_6 << create_node(3,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))       // 8
-           << create_node(3,MAX_ID-1, create_sink_ptr(true),       create_sink_ptr(false))      // 7
-           << create_node(2,MAX_ID,   create_node_ptr(3,MAX_ID),   create_sink_ptr(true))       // 6
-           << create_node(2,MAX_ID-1, create_node_ptr(3,MAX_ID-1), create_sink_ptr(false))      // 5
-           << create_node(2,MAX_ID-2, create_sink_ptr(false),      create_node_ptr(3,MAX_ID))   // 4
+      nw_6 << create_node(3,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(true))       // 8
+           << create_node(3,MAX_ID-1, create_terminal_ptr(true),       create_terminal_ptr(false))      // 7
+           << create_node(2,MAX_ID,   create_node_ptr(3,MAX_ID),   create_terminal_ptr(true))       // 6
+           << create_node(2,MAX_ID-1, create_node_ptr(3,MAX_ID-1), create_terminal_ptr(false))      // 5
+           << create_node(2,MAX_ID-2, create_terminal_ptr(false),      create_node_ptr(3,MAX_ID))   // 4
            << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-2), create_node_ptr(2,MAX_ID))   // 3
            << create_node(1,MAX_ID-1, create_node_ptr(2,MAX_ID),   create_node_ptr(2,MAX_ID-1)) // 2
            << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(1,MAX_ID-1)) // 1
@@ -186,8 +186,8 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_7(bdd_7);
-      nw_7 << create_node(2,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))       // 5
-           << create_node(2,MAX_ID-1, create_sink_ptr(true),       create_sink_ptr(false))      // 4
+      nw_7 << create_node(2,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(true))       // 5
+           << create_node(2,MAX_ID-1, create_terminal_ptr(true),       create_terminal_ptr(false))      // 4
            << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_node_ptr(2,MAX_ID-1)) // 3
            << create_node(1,MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))   // 2
            << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(1,MAX_ID-1)) // 1
@@ -214,17 +214,17 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_8a(bdd_8a);
-      nw_8a << create_node(3,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))       // 5
-            << create_node(2,MAX_ID,   create_sink_ptr(false),      create_node_ptr(3,MAX_ID))   // 4
-            << create_node(2,MAX_ID-1, create_sink_ptr(true),       create_node_ptr(3,MAX_ID))   // 3
+      nw_8a << create_node(3,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(true))       // 5
+            << create_node(2,MAX_ID,   create_terminal_ptr(false),      create_node_ptr(3,MAX_ID))   // 4
+            << create_node(2,MAX_ID-1, create_terminal_ptr(true),       create_node_ptr(3,MAX_ID))   // 3
             << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))   // 2
             << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(3,MAX_ID))   // 1
         ;
 
       node_writer nw_8b(bdd_8b);
-      nw_8b << create_node(3,MAX_ID,   create_sink_ptr(false),      create_sink_ptr(true))       // 5
-            << create_node(2,MAX_ID,   create_node_ptr(3,MAX_ID),   create_sink_ptr(false))      // 4
-            << create_node(2,MAX_ID-1, create_node_ptr(3,MAX_ID),   create_sink_ptr(true))       // 3
+      nw_8b << create_node(3,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(true))       // 5
+            << create_node(2,MAX_ID,   create_node_ptr(3,MAX_ID),   create_terminal_ptr(false))      // 4
+            << create_node(2,MAX_ID-1, create_node_ptr(3,MAX_ID),   create_terminal_ptr(true))       // 3
             << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))   // 2
             << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(3,MAX_ID))   // 1
         ;
@@ -232,27 +232,27 @@ go_bandit([]() {
 
     ////////////////////////////////////////////////////////////////////////////
     describe("bdd_exists", [&]() {
-      it("should quantify T sink-only BDD as itself", [&]() {
-        __bdd out = bdd_exists(sink_T, 42);
+      it("should quantify T terminal-only BDD as itself", [&]() {
+        __bdd out = bdd_exists(terminal_T, 42);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_T._file_ptr));
         AssertThat(out.negate, Is().False());
       });
 
-      it("should quantify F sink-only BDD as itself", [&]() {
-        __bdd out = bdd_exists(sink_F, 21);
+      it("should quantify F terminal-only BDD as itself", [&]() {
+        __bdd out = bdd_exists(terminal_F, 21);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_F._file_ptr));
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_F._file_ptr));
         AssertThat(out.negate, Is().False());
       });
 
-      it("should shortcut quantification of root into T sink [BDD 1]", [&]() {
+      it("should shortcut quantification of root into T terminal [BDD 1]", [&]() {
         __bdd out = bdd_exists(bdd_1, 0);
 
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
@@ -262,17 +262,17 @@ go_bandit([]() {
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
-      it("should shortcut quantification of root into T sink [x2]", [&]() {
+      it("should shortcut quantification of root into T terminal [x2]", [&]() {
         __bdd out = bdd_exists(bdd_x2, 2);
 
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
@@ -282,8 +282,8 @@ go_bandit([]() {
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should shortcut quantification on non-existent label in input [BDD 1]", [&]() {
@@ -300,17 +300,17 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(0,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(0,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(0,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(0,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -321,11 +321,11 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
-      it("should quantify root without sink arcs [BDD 2]", [&]() {
+      it("should quantify root without terminal arcs [BDD 2]", [&]() {
         __bdd out = bdd_exists(bdd_2, 0);
 
         node_arc_test_stream node_arcs(out);
@@ -340,25 +340,25 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // (4,5)
-                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // (4,5)
+                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // (5,_)
-                   Is().EqualTo(arc_t { create_node_ptr(2,1), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // (5,_)
+                   Is().EqualTo(arc_t { create_node_ptr(2,1), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -372,11 +372,11 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
-      it("should quantify nodes with sink or nodes as children [BDD 2]", [&]() {
+      it("should quantify nodes with terminal or nodes as children [BDD 2]", [&]() {
         __bdd out = bdd_exists(bdd_2, 1);
 
         node_arc_test_stream node_arcs(out);
@@ -391,25 +391,25 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // (4,5)
-                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // (4,5)
+                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // (5,_)
-                   Is().EqualTo(arc_t { create_node_ptr(2,1), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // (5,_)
+                   Is().EqualTo(arc_t { create_node_ptr(2,1), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -423,11 +423,11 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
-      it("should output sink arcs in order, despite the order of resolvement [BDD 2]", [&]() {
+      it("should output terminal arcs in order, despite the order of resolvement [BDD 2]", [&]() {
         __bdd out = bdd_exists(bdd_2, 2);
 
         node_arc_test_stream node_arcs(out);
@@ -442,25 +442,25 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 4.low
-                   Is().EqualTo(arc_t { create_node_ptr(1,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 4.low
+                   Is().EqualTo(arc_t { create_node_ptr(1,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 5.high
-                   Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 5.high
+                   Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 5.high
-                   Is().EqualTo(arc_t { create_node_ptr(1,1), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 5.high
+                   Is().EqualTo(arc_t { create_node_ptr(1,1), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // false due to its own leaf
-                   Is().EqualTo(arc_t { flag(create_node_ptr(1,1)), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // false due to its own leaf
+                   Is().EqualTo(arc_t { flag(create_node_ptr(1,1)), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -474,8 +474,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("should keep nodes as is when skipping quantified level [BDD 3]", [&]() {
@@ -495,25 +495,25 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // n3
-                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // n3
+                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // n3
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // n3
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 3.low
-                   Is().EqualTo(arc_t { create_node_ptr(2,1), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 3.low
+                   Is().EqualTo(arc_t { create_node_ptr(2,1), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 4.high
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 4.high
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -527,11 +527,11 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
-      it("should output sink arcs in order, despite the order of resolvement [BDD 3]", [&]() {
+      it("should output terminal arcs in order, despite the order of resolvement [BDD 3]", [&]() {
         __bdd out = bdd_exists(bdd_3, 2);
 
         node_arc_test_stream node_arcs(out);
@@ -544,21 +544,21 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 3.low
-                   Is().EqualTo(arc_t { create_node_ptr(0,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 3.low
+                   Is().EqualTo(arc_t { create_node_ptr(0,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 3.low
-                   Is().EqualTo(arc_t { create_node_ptr(1,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 3.low
+                   Is().EqualTo(arc_t { create_node_ptr(1,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 4.high
-                   Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 4.high
+                   Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -572,11 +572,11 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
-      it("should resolve sink-sink requests in [BDD 5]", [&]() {
+      it("should resolve terminal-terminal requests in [BDD 5]", [&]() {
         __bdd out = bdd_exists(bdd_5, 1);
 
         node_arc_test_stream node_arcs(out);
@@ -589,21 +589,21 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(0,0), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(0,0), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 4.low
-                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 4.low
+                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 3.high
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 3.high
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -617,17 +617,17 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
         node_file bdd_chain;
 
-        node_t n4 = create_node(3,MAX_ID, create_sink_ptr(false), create_sink_ptr(true));
-        node_t n3 = create_node(2,MAX_ID, n4.uid, create_sink_ptr(true));
-        node_t n2 = create_node(1,MAX_ID, n3.uid, create_sink_ptr(true));
-        node_t n1 = create_node(0,MAX_ID, n2.uid, create_sink_ptr(true));
+        node_t n4 = create_node(3,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true));
+        node_t n3 = create_node(2,MAX_ID, n4.uid, create_terminal_ptr(true));
+        node_t n2 = create_node(1,MAX_ID, n3.uid, create_terminal_ptr(true));
+        node_t n1 = create_node(0,MAX_ID, n2.uid, create_terminal_ptr(true));
 
         { // Garbage collect writer to free write-lock
           node_writer bdd_chain_w(bdd_chain);
@@ -644,20 +644,20 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(0,0)), create_sink_ptr(true) }));
+        terminal_arc_test_stream terminal_arcs(out);
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(0,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to quantification of x2
-                   Is().EqualTo(arc_t { create_node_ptr(1,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to quantification of x2
+                   Is().EqualTo(arc_t { create_node_ptr(1,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -671,8 +671,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -698,28 +698,28 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (4,6)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+        terminal_arc_test_stream terminal_arcs(out);
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (4,6)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (5,6)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (5,6)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (7,8)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(true) }));
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (7,8)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_terminal_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (8,F)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(3,1), create_sink_ptr(false) }));
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(3,1)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (8,F)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(3,1), create_terminal_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(3,1)), create_terminal_ptr(true) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
@@ -738,8 +738,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(5u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(5u));
       });
 
       it("can forward multiple arcs to the same node across a level [BDD 7]", [&]() {
@@ -757,13 +757,13 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (4,5)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (4,5)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+        terminal_arc_test_stream terminal_arcs(out);
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (4,5)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_terminal_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (4,5)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_terminal_ptr(true) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
@@ -779,8 +779,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -801,21 +801,21 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (3,4)
-        AssertThat(sink_arcs.pull(), // true due to 3.low
-                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (3,4)
+        AssertThat(terminal_arcs.pull(), // true due to 3.low
+                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (5,_)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (5,_)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_terminal_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_terminal_ptr(true) }));
 
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -832,8 +832,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8b]", [&]() {
@@ -854,21 +854,21 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (3,4)
-        AssertThat(sink_arcs.pull(), // true due to 3.low
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (3,4)
+        AssertThat(terminal_arcs.pull(), // true due to 3.low
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (5,_)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (5,_)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_terminal_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_terminal_ptr(true) }));
 
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -885,11 +885,11 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
-      it("can quantify list [x1, x2] in sink-only BDD [&&bdd]", [&]() {
+      it("can quantify list [x1, x2] in terminal-only BDD [&&bdd]", [&]() {
         label_file labels;
 
         { // Garbage collect writer to free write-lock
@@ -897,13 +897,13 @@ go_bandit([]() {
           lw << 1 << 2;
         }
 
-        __bdd out = bdd_exists(sink_T, labels);
+        __bdd out = bdd_exists(terminal_T, labels);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_T._file_ptr));
         AssertThat(out.negate, Is().False());
       });
 
-      it("can quantify list [x1, x2] in sink-only BDD [const &bdd]", [&]() {
+      it("can quantify list [x1, x2] in terminal-only BDD [const &bdd]", [&]() {
         label_file labels;
 
         { // Garbage collect writer to free write-lock
@@ -911,10 +911,10 @@ go_bandit([]() {
           lw << 1 << 2;
         }
 
-        bdd in_bdd = sink_T;
+        bdd in_bdd = terminal_T;
         __bdd out = bdd_exists(in_bdd, labels);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_T._file_ptr));
         AssertThat(out.negate, Is().False());
       });
 
@@ -932,13 +932,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
-                                                              create_sink_ptr(false),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(false),
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0,MAX_ID,
                                                               create_node_ptr(3,MAX_ID),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -967,13 +967,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
-                                                              create_sink_ptr(false),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(false),
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0,MAX_ID,
                                                               create_node_ptr(3,MAX_ID),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1002,13 +1002,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
-                                                              create_sink_ptr(false),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(false),
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1,MAX_ID,
                                                               create_node_ptr(3,MAX_ID),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0,MAX_ID,
@@ -1045,13 +1045,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2,MAX_ID,
-                                                              create_sink_ptr(false),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(false),
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0,MAX_ID,
                                                               create_node_ptr(2,MAX_ID),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1080,13 +1080,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
-                                                              create_sink_ptr(false),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(false),
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1,MAX_ID,
                                                               create_node_ptr(3,MAX_ID),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1116,13 +1116,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
-                                                              create_sink_ptr(false),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(false),
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1,MAX_ID,
                                                               create_node_ptr(3,MAX_ID),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1137,7 +1137,7 @@ go_bandit([]() {
         AssertThat(out_meta.can_pull(), Is().False());
       });
 
-      it("should quantify list [x3, x1, x0, x2] where it is sink-only already before x2 [BDD 4 : &&bdd]", [&]() {
+      it("should quantify list [x3, x1, x0, x2] where it is terminal-only already before x2 [BDD 4 : &&bdd]", [&]() {
         label_file labels;
 
         { // Garbage collect writer to free write-lock
@@ -1150,14 +1150,14 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(out);
         AssertThat(ms.can_pull(), Is().False());
       });
 
-      it("should quantify list [x2, x1] into T sink [x2 : &&bdd]", [&]() {
+      it("should quantify list [x2, x1] into T terminal [x2 : &&bdd]", [&]() {
         label_file labels;
 
         { // Garbage collect writer to free write-lock
@@ -1170,7 +1170,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(out);
@@ -1198,38 +1198,38 @@ go_bandit([]() {
     // We will not test the Forall operator as much, since it is the same
     // underlying algorithm, but just with the AND operator.
     describe("bdd_forall", [&]() {
-      it("should quantify T sink-only BDD as itself", [&]() {
-        __bdd out = bdd_forall(sink_T, 42);
+      it("should quantify T terminal-only BDD as itself", [&]() {
+        __bdd out = bdd_forall(terminal_T, 42);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_T._file_ptr));
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_T._file_ptr));
         AssertThat(out.negate, Is().False());
       });
 
-      it("should quantify F sink-only BDD as itself", [&]() {
-        __bdd out = bdd_forall(sink_F, 21);
+      it("should quantify F terminal-only BDD as itself", [&]() {
+        __bdd out = bdd_forall(terminal_F, 21);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(sink_F._file_ptr));
+        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_F._file_ptr));
         AssertThat(out.negate, Is().False());
       });
 
-      it("should quantify root with non-shortcutting sink [BDD 1]", [&]() {
+      it("should quantify root with non-shortcutting terminal [BDD 1]", [&]() {
         __bdd out = bdd_forall(bdd_1, 0);
 
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(1,0), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(1,0), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(1,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -1240,8 +1240,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should quantify root of [BDD 3]", [&]() {
@@ -1259,25 +1259,25 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,0)), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(2,1), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(2,1), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -1291,8 +1291,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should prune shortcuttable requests [BDD 4]", [&]() {
@@ -1310,25 +1310,25 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // false due to 3.low
-                   Is().EqualTo(arc_t { create_node_ptr(0,0), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // false due to 3.low
+                   Is().EqualTo(arc_t { create_node_ptr(0,0), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // false due to 3.low
-                   Is().EqualTo(arc_t { create_node_ptr(1,0), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // false due to 3.low
+                   Is().EqualTo(arc_t { create_node_ptr(1,0), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // false due to 5.low
-                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // false due to 5.low
+                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(), // true due to 5.high and 4.high
-                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(), // true due to 5.high and 4.high
+                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_terminal_ptr(true) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -1345,8 +1345,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(3u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -1372,28 +1372,28 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (4,6)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(false) }));
+        terminal_arc_test_stream terminal_arcs(out);
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (4,6)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (5,6)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (5,6)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(2,1)), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (7,8)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (7,8)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_terminal_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (8,T)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(3,1), create_sink_ptr(false) }));
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(3,1)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (8,T)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(3,1), create_terminal_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(3,1)), create_terminal_ptr(true) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
@@ -1412,8 +1412,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(5u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(5u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -1434,21 +1434,21 @@ go_bandit([]() {
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
-        sink_arc_test_stream sink_arcs(out);
+        terminal_arc_test_stream terminal_arcs(out);
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (3,4)
-        AssertThat(sink_arcs.pull(), // false due to 4.low
-                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_sink_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (3,4)
+        AssertThat(terminal_arcs.pull(), // false due to 4.low
+                   Is().EqualTo(arc_t { create_node_ptr(2,0), create_terminal_ptr(false) }));
 
-        AssertThat(sink_arcs.can_pull(), Is().True()); // (5,_)
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_sink_ptr(false) }));
-        AssertThat(sink_arcs.can_pull(), Is().True());
-        AssertThat(sink_arcs.pull(),
-                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_sink_ptr(true) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True()); // (5,_)
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { create_node_ptr(3,0), create_terminal_ptr(false) }));
+        AssertThat(terminal_arcs.can_pull(), Is().True());
+        AssertThat(terminal_arcs.pull(),
+                   Is().EqualTo(arc_t { flag(create_node_ptr(3,0)), create_terminal_ptr(true) }));
 
 
-        AssertThat(sink_arcs.can_pull(), Is().False());
+        AssertThat(terminal_arcs.can_pull(), Is().False());
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -1465,8 +1465,8 @@ go_bandit([]() {
 
         AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should quantify list [x0, x2, x1] [BDD 4 : &&bdd]", [&]() {
@@ -1482,14 +1482,14 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("should quantify list [x0, x2, x1] [BDD 4 : const &bdd]", [&]() {
@@ -1506,14 +1506,14 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("should quantify list [x1] [BDD 4 : &&bdd]", [&]() {
@@ -1530,12 +1530,12 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
-                                                              create_sink_ptr(false),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(false),
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (3,_) / (3,4)
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2,MAX_ID,
-                                                              create_sink_ptr(false),
+                                                              create_terminal_ptr(false),
                                                               create_node_ptr(3,MAX_ID))));
 
         // The node (1,_) is reduced away due to its low child is (3,_)
@@ -1569,12 +1569,12 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3,MAX_ID,
-                                                              create_sink_ptr(false),
-                                                              create_sink_ptr(true))));
+                                                              create_terminal_ptr(false),
+                                                              create_terminal_ptr(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (3,_) / (3,4)
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2,MAX_ID,
-                                                              create_sink_ptr(false),
+                                                              create_terminal_ptr(false),
                                                               create_node_ptr(3,MAX_ID))));
 
         // The node (1,_) is reduced away due to its low child is (3,_)

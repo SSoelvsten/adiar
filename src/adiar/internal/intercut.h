@@ -75,12 +75,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   template<typename intercut_policy>
-  bool cut_sink(const label_t curr_level, const label_t cut_level, const bool sink_value)
+  bool cut_terminal(const label_t curr_level, const label_t cut_level, const bool terminal_value)
   {
     return curr_level < cut_level
       && cut_level <= MAX_LABEL
-      && (!sink_value || intercut_policy::cut_true_sink)
-      && (sink_value || intercut_policy::cut_false_sink);
+      && (!terminal_value || intercut_policy::cut_true_terminal)
+      && (terminal_value || intercut_policy::cut_false_terminal);
   }
 
   template<typename intercut_policy>
@@ -96,8 +96,8 @@ namespace adiar
                                const label_t curr_level, const label_t next_cut)
     {
       const label_t target_level = is_node(target) ? label_of(target) : MAX_LABEL+1;
-      if (is_sink(target) && !cut_sink<intercut_policy>(curr_level, next_cut, value_of(target))) {
-        aw.unsafe_push_sink({ source, target });
+      if (is_terminal(target) && !cut_terminal<intercut_policy>(curr_level, next_cut, value_of(target))) {
+        aw.unsafe_push_terminal({ source, target });
         return;
       }
       pq.push({ source, target, std::min(target_level, next_cut) });
@@ -164,8 +164,8 @@ namespace adiar
     node_stream<> in_nodes(dd);
     node_t n = in_nodes.pull();
 
-    if (is_sink(n)) {
-      return intercut_policy::on_sink_input(value_of(n), dd, labels);
+    if (is_terminal(n)) {
+      return intercut_policy::on_terminal_input(value_of(n), dd, labels);
     }
 
     label_stream<> ls(labels);
@@ -221,13 +221,13 @@ namespace adiar
         if (intercut_policy::may_skip && std::holds_alternative<intercut_rec_skipto>(r)) {
           const intercut_rec_skipto rs = std::get<intercut_rec_skipto>(r);
 
-          if (is_sink(rs.tgt)
+          if (is_terminal(rs.tgt)
               && is_nil(intercut_pq.top().source)
-              && !cut_sink<intercut_policy>(out_label, l, value_of(rs.tgt))) {
-            return intercut_policy::sink(value_of(rs.tgt));
+              && !cut_terminal<intercut_policy>(out_label, l, value_of(rs.tgt))) {
+            return intercut_policy::terminal(value_of(rs.tgt));
           }
-          // TODO: The 'is_sink(rs.tgt) && cut_sink(...)' case can be handled even
-          //       better with 'intercut_policy::on_sink_input' but where the
+          // TODO: The 'is_terminal(rs.tgt) && cut_terminal(...)' case can be handled even
+          //       better with 'intercut_policy::on_terminal_input' but where the
           //       label file are only of the remaining labels.
 
           intercut_in__pq<intercut_policy, intercut_out__pq<intercut_policy>>
@@ -279,8 +279,8 @@ namespace adiar
   template<typename intercut_policy>
   size_t __intercut_2level_upper_bound(const typename intercut_policy::reduced_t &dd)
   {
-    const cut_type ct = cut_type_with(intercut_policy::cut_false_sink,
-                                      intercut_policy::cut_true_sink);
+    const cut_type ct = cut_type_with(intercut_policy::cut_false_terminal,
+                                      intercut_policy::cut_true_terminal);
     const safe_size_t max_1level_cut = dd.max_1level_cut(ct);
 
     return to_size((3 * intercut_policy::mult_factor * max_1level_cut) / 2 + 2);

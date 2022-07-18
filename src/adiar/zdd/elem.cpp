@@ -65,7 +65,7 @@ namespace adiar
     static constexpr bool keep_dont_cares = true;
 
     inline ptr_t visit(const node_t &n) {
-      adiar_debug(!is_sink(n.high) || value_of(n.high), "high sinks are never false");
+      adiar_debug(!is_terminal(n.high) || value_of(n.high), "high terminals are never false");
       return n.high;
     }
 

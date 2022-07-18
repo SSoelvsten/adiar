@@ -132,7 +132,7 @@ namespace adiar
       nw << n;
     }
 
-    // push all nodes from 'if' conditional and remap its sinks
+    // push all nodes from 'if' conditional and remap its terminals
     adiar_debug(!is_nil(root_then), "Did not obtain root from then stream");
     adiar_debug(!is_nil(root_else), "Did not obtain root from else stream");
 
@@ -141,11 +141,11 @@ namespace adiar
     while (in_nodes_if.can_pull()) {
       node_t n = in_nodes_if.pull();
 
-      n.low = is_sink(n.low)
+      n.low = is_terminal(n.low)
         ? (value_of(n.low) ? root_then : root_else)
         : n.low;
 
-      n.high = is_sink(n.high)
+      n.high = is_terminal(n.high)
         ? (value_of(n.high) ? root_then : root_else)
         : n.high;
 
@@ -193,12 +193,12 @@ namespace adiar
                                   arc_writer &aw,
                                   ptr_t source, ptr_t r_if, ptr_t r_then, ptr_t r_else)
   {
-    // Early shortcut an ite, if the sinks of both cases have collapsed to the
+    // Early shortcut an ite, if the terminals of both cases have collapsed to the
     // same anyway
-    if (is_sink(r_then) && is_sink(r_else) &&
+    if (is_terminal(r_then) && is_terminal(r_else) &&
         value_of(r_then) == value_of(r_else)) {
 
-      aw.unsafe_push_sink(arc_t { source, r_then });
+      aw.unsafe_push_terminal(arc_t { source, r_then });
       return;
     }
     // Remove irrelevant parts of a request to prune requests similar to
@@ -206,12 +206,12 @@ namespace adiar
     r_then = is_false(r_if) ? NIL : r_then;
     r_else = is_true(r_if)  ? NIL : r_else;
 
-    if (is_sink(r_if) && is_sink(r_then)) {
-      // => ~NIL => r_if is a sink with the 'true' value
-      aw.unsafe_push_sink(arc_t { source, r_then });
-    } else if (is_sink(r_if) && is_sink(r_else)) {
-      // => ~NIL => r_if is a sink with the 'false' value
-      aw.unsafe_push_sink(arc_t { source, r_else });
+    if (is_terminal(r_if) && is_terminal(r_then)) {
+      // => ~NIL => r_if is a terminal with the 'true' value
+      aw.unsafe_push_terminal(arc_t { source, r_then });
+    } else if (is_terminal(r_if) && is_terminal(r_else)) {
+      // => ~NIL => r_if is a terminal with the 'false' value
+      aw.unsafe_push_terminal(arc_t { source, r_else });
     } else {
       ite_pq_1.push({ r_if, r_then, r_else, source });
     }
@@ -229,7 +229,7 @@ namespace adiar
     node_stream<> in_nodes_if(bdd_if);
     node_t v_if = in_nodes_if.pull();
 
-    if (is_sink(v_if)) {
+    if (is_terminal(v_if)) {
       return value_of(v_if) ? bdd_then : bdd_else;
     }
 
@@ -420,14 +420,14 @@ namespace adiar
       }
 
       // Resolve current node and recurse
-      if (is_sink(t_if) || out_label < label_of(t_if)) {
+      if (is_terminal(t_if) || out_label < label_of(t_if)) {
         low_if = high_if = t_if;
       } else {
         low_if = t_if == v_if.uid ? v_if.low : data_1_low;
         high_if = t_if == v_if.uid ? v_if.high : data_1_high;
       }
 
-      if (is_nil(t_then) || is_sink(t_then) || out_label < label_of(t_then)) {
+      if (is_nil(t_then) || is_terminal(t_then) || out_label < label_of(t_then)) {
         low_then = high_then = t_then;
       } else if (t_then == v_then.uid) {
         low_then = v_then.low;
@@ -440,7 +440,7 @@ namespace adiar
         high_then = data_2_high;
       }
 
-      if (is_nil(t_else) || is_sink(t_else) || out_label < label_of(t_else)) {
+      if (is_nil(t_else) || is_terminal(t_else) || out_label < label_of(t_else)) {
         low_else = high_else = t_else;
       } else if (t_else == v_else.uid) {
         low_else = v_else.low;
@@ -518,7 +518,7 @@ namespace adiar
     const safe_size_t else_cut_trues = cut::get(in_else, cut_type::INTERNAL_TRUE) - else_cut_internal;
     const safe_size_t else_cut_all = cut::get(in_else, cut_type::ALL);
 
-    // Compute 2-level cut where irrelevant pairs of sinks are not paired
+    // Compute 2-level cut where irrelevant pairs of terminals are not paired
     return to_size((if_cut_internal * (then_cut_all * else_cut_internal + then_cut_internal * else_cut_all
                                        + then_cut_falses * else_cut_trues
                                        + then_cut_trues * else_cut_falses))
@@ -539,9 +539,9 @@ namespace adiar
     const safe_size_t else_size = in_else->size();
 
     // Compute the number of triples (t_if, t_then, t_else) where t_if is an
-    // internal node and t_then and t_else are nodes or (mismatching) sinks.
+    // internal node and t_then and t_else are nodes or (mismatching) terminals.
     // Then also count the copies of in_then and in_else for when in_if hits a
-    // sink early.
+    // terminal early.
     return to_size(if_size * ((then_size + 2u) * (else_size + 2u) - 2u) + then_size + else_size + 1u + 2u);
   }
 
@@ -574,12 +574,12 @@ namespace adiar
         : bdd_imp(bdd_if, bdd_then);
     }
 
-    // Resolve being given a sink in one of the cases
-    if (is_sink(bdd_then)) {
+    // Resolve being given a terminal in one of the cases
+    if (is_terminal(bdd_then)) {
       return bdd_apply(value_of(bdd_then) ? bdd_if : bdd_not(bdd_if),
                        bdd_else,
                        value_of(bdd_then) ? or_op : and_op);
-    } else if (is_sink(bdd_else))  {
+    } else if (is_terminal(bdd_else))  {
       return bdd_apply(bdd_if,
                        bdd_then,
                        value_of(bdd_else) ? imp_op : and_op);

@@ -220,7 +220,7 @@ namespace adiar
     const uintwide_t total_runs = stats_equality.exit_on_same_file
                                 + stats_equality.exit_on_nodecount
                                 + stats_equality.exit_on_varcount
-                                + stats_equality.exit_on_sinkcount
+                                + stats_equality.exit_on_terminalcount
                                 + stats_equality.exit_on_levels_mismatch
                                 + stats_equality.slow_check.runs
                                 + stats_equality.fast_check.runs;
@@ -242,7 +242,7 @@ namespace adiar
     o << indent << label << "same file" << stats_equality.exit_on_same_file << endl;
     o << indent << label << "node count mismatch" << stats_equality.exit_on_nodecount << endl;
     o << indent << label << "var count mismatch" << stats_equality.exit_on_varcount << endl;
-    o << indent << label << "sink count mismatch" << stats_equality.exit_on_sinkcount << endl;
+    o << indent << label << "terminal count mismatch" << stats_equality.exit_on_terminalcount << endl;
     indent_level--;
 
     o << indent << endl;
@@ -307,15 +307,15 @@ namespace adiar
     }
 
 
-    uintwide_t total_arcs = stats_reduce.sum_node_arcs + stats_reduce.sum_sink_arcs;
+    uintwide_t total_arcs = stats_reduce.sum_node_arcs + stats_reduce.sum_terminal_arcs;
     o << indent << bold_on << label << "inputs size" << bold_off << total_arcs << " arcs = " << total_arcs / 2 << " nodes" << endl;
 
     indent_level++;
     o << indent << label << "node arcs:"
       << stats_reduce.sum_node_arcs << " = " << percent_frac(stats_reduce.sum_node_arcs, total_arcs) << percent << endl;
 
-    o << indent << label << "sink arcs:"
-      << stats_reduce.sum_sink_arcs << " = " << percent_frac(stats_reduce.sum_sink_arcs, total_arcs) << percent << endl;
+    o << indent << label << "terminal arcs:"
+      << stats_reduce.sum_terminal_arcs << " = " << percent_frac(stats_reduce.sum_terminal_arcs, total_arcs) << percent << endl;
     indent_level--;
 
 #ifdef ADIAR_STATS_EXTRA

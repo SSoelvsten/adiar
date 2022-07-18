@@ -15,14 +15,14 @@ namespace adiar
   class bdd_quantify_policy : public bdd_policy
   {
   public:
-    static __bdd resolve_sink_root(const node_t v, const bool_op &op)
+    static __bdd resolve_terminal_root(const node_t v, const bool_op &op)
     {
-      if (is_sink(v.low) && can_left_shortcut(op, v.low)) {
-        return bdd_sink(value_of(v.low));
+      if (is_terminal(v.low) && can_left_shortcut(op, v.low)) {
+        return bdd_terminal(value_of(v.low));
       }
 
-      if (is_sink(v.high) && can_right_shortcut(op, v.high)) {
-        return bdd_sink(value_of(v.high));
+      if (is_terminal(v.high) && can_right_shortcut(op, v.high)) {
+        return bdd_terminal(value_of(v.high));
       }
 
       return __bdd(); // return nothing
@@ -36,18 +36,18 @@ namespace adiar
       ptr_t r_fst = fst(r1,r2);
       ptr_t r_snd = snd(r1,r2);
 
-      if (is_sink(r_snd) && can_right_shortcut(op, r_snd)) {
-        r_fst = create_sink_ptr(false);
+      if (is_terminal(r_snd) && can_right_shortcut(op, r_snd)) {
+        r_fst = create_terminal_ptr(false);
       }
 
       return { r_fst, r_snd };
     }
 
   public:
-    static cut_type cut_with_sinks(const bool_op &op)
+    static cut_type cut_with_terminals(const bool_op &op)
     {
-      const bool incl_false = !can_right_shortcut(op, create_sink_ptr(false));
-      const bool incl_true = !can_right_shortcut(op, create_sink_ptr(true));
+      const bool incl_false = !can_right_shortcut(op, create_terminal_ptr(false));
+      const bool incl_true = !can_right_shortcut(op, create_terminal_ptr(true));
 
       return cut_type_with(incl_false, incl_true);
     }
@@ -58,7 +58,7 @@ namespace adiar
   if (labels.size() == 0) { return bdd_var; }                       \
   label_stream<> ls(labels);                                        \
   while(true) {                                                     \
-    if (is_sink(bdd_var)) { return bdd_var; }                       \
+    if (is_terminal(bdd_var)) { return bdd_var; }                   \
                                                                     \
     label_t label = ls.pull();                                      \
     if (!ls.can_pull()) {                                           \

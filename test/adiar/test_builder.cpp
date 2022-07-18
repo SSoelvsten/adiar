@@ -1,10 +1,10 @@
 go_bandit([]() {
   describe("adiar/builder.h", []() {
 
-    ptr_t sink_T = create_sink_ptr(true);
-    ptr_t sink_F = create_sink_ptr(false);
+    ptr_t terminal_T = create_terminal_ptr(true);
+    ptr_t terminal_F = create_terminal_ptr(false);
 
-    it("can create a false sink-only BDD", [&]() {
+    it("can create a false terminal-only BDD", [&]() {
       bdd_builder b;
 
       b.add_node(false);
@@ -16,7 +16,7 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
 
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream<node_t> out_meta(out);
@@ -33,11 +33,11 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-      AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-      AssertThat(out->number_of_sinks[1], Is().EqualTo(0u));
+      AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
     });
 
-    it("can create a true sink-only BDD", [&]() {
+    it("can create a true terminal-only BDD", [&]() {
       bdd_builder b;
 
       b.add_node(true);
@@ -49,7 +49,7 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
 
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream<node_t> out_meta(out);
@@ -66,11 +66,11 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-      AssertThat(out->number_of_sinks[0], Is().EqualTo(0u));
-      AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
     });
 
-    it("creates the last pushed sink if no nodes are pushed", [&]() {
+    it("creates the last pushed terminal if no nodes are pushed", [&]() {
       bdd_builder b;
 
       b.add_node(true);
@@ -84,7 +84,7 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
 
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream<node_t> out_meta(out);
@@ -101,8 +101,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-      AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-      AssertThat(out->number_of_sinks[1], Is().EqualTo(0u));
+      AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
     });
 
     it("throws an exception when create is called on an empty file", [&]() {
@@ -124,8 +124,8 @@ go_bandit([]() {
       AssertThat(out_nodes.can_pull(), Is().True());
 
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
-                                                            sink_F,
-                                                            sink_T)));
+                                                            terminal_F,
+                                                            terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream<node_t> out_meta(out);
@@ -149,8 +149,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-      AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-      AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("throws an exception if pointers are used from a different builder [1]", [&]() {
@@ -243,14 +243,14 @@ go_bandit([]() {
 
       // n3
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
-                                                            sink_F,
-                                                            sink_T)));
+                                                            terminal_F,
+                                                            terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n2
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
                                                             create_node_ptr(2,MAX_ID),
-                                                            sink_T)));
+                                                            terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
@@ -286,8 +286,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-      AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-      AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+      AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
     });
 
     it("can create several nodes on the same level", [&]() {
@@ -317,17 +317,17 @@ go_bandit([]() {
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n5
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, sink_T, sink_F)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_T, terminal_F)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n4
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID-1, sink_F, sink_T)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID-1, terminal_F, terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n3
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
                                                             create_node_ptr(2, MAX_ID),
-                                                            sink_T)));
+                                                            terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n2
@@ -370,8 +370,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
 
-      AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-      AssertThat(out->number_of_sinks[1], Is().EqualTo(3u));
+      AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+      AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
     });
 
     it("can reset and create new nodes", [&]() {
@@ -391,8 +391,8 @@ go_bandit([]() {
       AssertThat(out_nodes.can_pull(), Is().True());
 
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
-                                                            sink_T,
-                                                            sink_F)));
+                                                            terminal_T,
+                                                            terminal_F)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream<node_t> out_meta(out);
@@ -416,8 +416,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-      AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-      AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("is empty after reset", [&]() {
@@ -497,17 +497,17 @@ go_bandit([]() {
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n5
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(5, MAX_ID, sink_T, sink_F)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(5, MAX_ID, terminal_T, terminal_F)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n4
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID, sink_T, sink_F)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID, terminal_T, terminal_F)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n3
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID-1,
                                                             create_node_ptr(5, MAX_ID),
-                                                            sink_T)));
+                                                            terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
@@ -543,8 +543,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
 
-      AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-      AssertThat(out->number_of_sinks[1], Is().EqualTo(3u));
+      AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+      AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
     });
 
     describe("bdd_builder", [&]() {
@@ -563,8 +563,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -588,8 +588,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("uses the BDD reduction rule with copies of nodes", [&]() {
@@ -609,8 +609,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -634,8 +634,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("does not allow multiple roots when using BDD reduction rule", [&]() {
@@ -671,8 +671,8 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -696,8 +696,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("does not allow multiple roots when using ZDD reduction rule", [&]() {
