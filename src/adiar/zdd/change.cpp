@@ -12,8 +12,8 @@ namespace adiar
   public:
     static constexpr bool may_skip = true;
 
-    static constexpr bool cut_true_sink = true;
-    static constexpr bool cut_false_sink = false;
+    static constexpr bool cut_true_terminal = true;
+    static constexpr bool cut_false_terminal = false;
 
     static constexpr size_t mult_factor = 1u;
 
@@ -23,14 +23,14 @@ namespace adiar
       return dd;
     }
 
-    static zdd on_sink_input(const bool sink_value, const zdd& dd, const label_file &labels)
+    static zdd on_terminal_input(const bool terminal_value, const zdd& dd, const label_file &labels)
     {
-      return sink_value ? zdd_vars(labels) : dd;
+      return terminal_value ? zdd_vars(labels) : dd;
     }
 
-    static zdd sink(const bool sink_value)
+    static zdd terminal(const bool terminal_value)
     {
-      return zdd_sink(sink_value);
+      return zdd_terminal(terminal_value);
     }
 
     static intercut_rec hit_existing(const node_t &n)
@@ -44,7 +44,7 @@ namespace adiar
 
     static intercut_rec_output hit_cut(const ptr_t target)
     {
-      return intercut_rec_output { create_sink_ptr(false), target };
+      return intercut_rec_output { create_terminal_ptr(false), target };
     }
 
     static intercut_rec_output miss_existing(const node_t &n)

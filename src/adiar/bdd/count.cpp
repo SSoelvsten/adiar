@@ -45,7 +45,7 @@ namespace adiar
 
       label_t levels_visited = request.levels_visited + 1u;
 
-      if (is_sink(child_to_resolve)) {
+      if (is_terminal(child_to_resolve)) {
         return value_of(child_to_resolve)
           ? request.sum * (1u << (varcount - levels_visited))
           : 0u;
@@ -84,14 +84,14 @@ namespace adiar
 
   uint64_t bdd_pathcount(const bdd &bdd)
   {
-    return is_sink(bdd)
+    return is_terminal(bdd)
       ? 0
       : count<path_count_policy>(bdd, bdd_varcount(bdd));
   }
 
   uint64_t bdd_satcount(const bdd& bdd, label_t varcount)
   {
-    if (is_sink(bdd)) {
+    if (is_terminal(bdd)) {
       return value_of(bdd) ? std::min(1u, varcount) << varcount : 0u;
     }
 

@@ -91,8 +91,8 @@ namespace adiar
     if (is_node(r2) && r1 == r2) { r2 = NIL; }
 
     if (is_nil(r2)) {
-      if (is_sink(r1)) {
-        aw.unsafe_push_sink({ source, r1 });
+      if (is_terminal(r1)) {
+        aw.unsafe_push_terminal({ source, r1 });
       } else {
         quantify_pq_1.push({ r1, r2, source });
       }
@@ -101,9 +101,9 @@ namespace adiar
       tuple rec = quantify_policy::resolve_request(op, r1, r2);
       adiar_debug(fst(rec) == rec.t1 && snd(rec) == rec.t2, "Request recursion should be created in-order");
 
-      if (is_sink(rec.t1) /* && is_sink(rec.t2) */) {
+      if (is_terminal(rec.t1) /* && is_terminal(rec.t2) */) {
         arc_t out_arc = { source, op(rec.t1, rec.t2) };
-        aw.unsafe_push_sink(out_arc);
+        aw.unsafe_push_terminal(out_arc);
       } else {
         quantify_pq_1.push({ rec.t1, rec.t2, source });
       }
@@ -149,12 +149,12 @@ namespace adiar
                                                    const size_t pq_1_memory, const size_t max_pq_1_size,
                                                    const size_t pq_2_memory, const size_t max_pq_2_size)
   {
-    // Check for trivial sink-only return on shortcutting the root
+    // Check for trivial terminal-only return on shortcutting the root
     node_stream<> in_nodes(in);
     node_t v = in_nodes.pull();
 
-    if (label_of(v) == label && (is_sink(v.low) || is_sink(v.high))) {
-      typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_sink_root(v, op);
+    if (label_of(v) == label && (is_terminal(v.low) || is_terminal(v.high))) {
+      typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_terminal_root(v, op);
 
       if (!maybe_resolved.empty()) {
         return maybe_resolved;
@@ -172,18 +172,18 @@ namespace adiar
     id_t out_id = 0;
 
     if (label_of(v.uid) == label) {
-      // Precondition: The input is reduced and will not collapse to a sink
+      // Precondition: The input is reduced and will not collapse to a terminal
       quantify_pq_1.push({ fst(v.low, v.high), snd(v.low, v.high), NIL });
     } else {
       uid_t out_uid = create_node_uid(out_label, out_id++);
 
-      if (is_sink(v.low)) {
-        aw.unsafe_push_sink({ out_uid, v.low });
+      if (is_terminal(v.low)) {
+        aw.unsafe_push_terminal({ out_uid, v.low });
       } else {
         quantify_pq_1.push({ v.low, NIL, out_uid });
       }
-      if (is_sink(v.high)) {
-        aw.unsafe_push_sink({ flag(out_uid), v.high });
+      if (is_terminal(v.high)) {
+        aw.unsafe_push_terminal({ flag(out_uid), v.high });
       } else {
         quantify_pq_1.push({ v.high, NIL, flag(out_uid) });
       }
@@ -236,7 +236,7 @@ namespace adiar
       }
 
       // Forward information of v.uid == t1 across the level if needed
-      if (!with_data && !is_nil(t2) && !is_sink(t2) && label_of(t1) == label_of(t2)) {
+      if (!with_data && !is_nil(t2) && !is_terminal(t2) && label_of(t1) == label_of(t2)) {
         quantify_pq_2.push({ t1, t2, v.low, v.high, source });
 
         while (quantify_pq_1.can_pull() && (quantify_pq_1.top().t1 == t1 && quantify_pq_1.top().t2 == t2)) {
@@ -303,12 +303,12 @@ namespace adiar
                                        const bool_op &op)
   {
     const cut_type ct_internal = cut_type::INTERNAL;
-    const cut_type ct_sinks = quantify_policy::cut_with_sinks(op);
+    const cut_type ct_terminals = quantify_policy::cut_with_terminals(op);
 
     const safe_size_t max_cut_internal = cut::get(in, ct_internal);
-    const safe_size_t max_cut_sinks = cut::get(in, ct_sinks);
+    const safe_size_t max_cut_terminals = cut::get(in, ct_terminals);
 
-    return to_size(max_cut_internal * max_cut_sinks + const_size_inc);
+    return to_size(max_cut_internal * max_cut_terminals + const_size_inc);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -330,7 +330,7 @@ namespace adiar
     adiar_debug(is_commutative(op), "Noncommutative operator used");
 
     // Check if there is no need to do any computation
-    if (is_sink(in) || !quantify_has_label(label, in)) {
+    if (is_terminal(in) || !quantify_has_label(label, in)) {
       return in;
     }
 

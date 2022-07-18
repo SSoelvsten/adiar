@@ -15,7 +15,7 @@ namespace adiar
     node_t n = in_nodes.pull();
     ptr_t tgt = n.uid;
 
-    while (!is_sink(tgt) && !is_nil(tgt)) {
+    while (!is_terminal(tgt) && !is_nil(tgt)) {
       while (n.uid < tgt) { n = in_nodes.pull(); }
 
       adiar_debug(n.uid == tgt,
@@ -36,7 +36,7 @@ namespace adiar
   public:
     inline ptr_t visit(const node_t &n)
     {
-      // Only pick high, if low is the false sink
+      // Only pick high, if low is the false terminal
       return is_false(n.low) ? n.high : n.low;
     }
 
@@ -49,7 +49,7 @@ namespace adiar
   public:
     inline ptr_t visit(const node_t &n)
     {
-      // Pick high as long it is not the false sink
+      // Pick high as long it is not the false terminal
       return is_node(n.high) || value_of(n.high) ? n.high : n.low;
     }
 

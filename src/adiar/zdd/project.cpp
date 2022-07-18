@@ -12,10 +12,10 @@ namespace adiar
   class zdd_project_policy : public zdd_policy
   {
   public:
-    static inline __zdd resolve_sink_root(const node_t v, const bool_op &/* op */)
+    static inline __zdd resolve_terminal_root(const node_t v, const bool_op &/* op */)
     {
-      if (is_sink(v.low) && is_sink(v.high)) {
-        // Only or_op and at least one of the sinks should be true
+      if (is_terminal(v.low) && is_terminal(v.high)) {
+        // Only or_op and at least one of the terminals should be true
         return zdd_null();
       }
 
@@ -40,7 +40,7 @@ namespace adiar
     }
 
   public:
-    static cut_type cut_with_sinks(const bool_op &/*op*/)
+    static cut_type cut_with_terminals(const bool_op &/*op*/)
     {
       return cut_type::ALL;
     }
@@ -79,7 +79,7 @@ namespace adiar
   // set to true.
 
 # define multi_project_macro(zdd_var, dom)                            \
-  if (is_sink(zdd_var)) { return zdd_var; }                           \
+  if (is_terminal(zdd_var)) { return zdd_var; }                       \
                                                                       \
   if (dom.size() == 0) { return zdd_null(); }                         \
                                                                       \
@@ -89,7 +89,7 @@ namespace adiar
                                                                       \
   label_stream<> ls(dom_inv);                                         \
   while (ls.can_pull()) {                                             \
-    if (is_sink(zdd_var)) { return zdd_var; };                        \
+    if (is_terminal(zdd_var)) { return zdd_var; };                    \
                                                                       \
     zdd_var = quantify<zdd_project_policy>(dd, ls.pull(), or_op);     \
   }                                                                   \

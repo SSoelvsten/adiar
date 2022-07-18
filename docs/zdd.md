@@ -36,10 +36,10 @@ create a [`node_file`](core/files.md#nodes) and write the nodes bottom-up with
 the [`node_writer`](core/files.md#node-writer). The `zdd` object can then be
 copy-constructed from the `node_file`.
 
-### `zdd zdd_sink(bool v)`
+### `zdd zdd_terminal(bool v)`
 {: .no_toc }
 
-Create a sink-only ZDD with the provided boolean value *v*. More meaningful
+Create a terminal-only ZDD with the provided boolean value *v*. More meaningful
 alternatives are:
 - `zdd_empty()` to create Ø
 - `zdd_null()` to create {Ø}
@@ -84,15 +84,15 @@ operator whether to include a set *s* based on whether they are included in *A*
 and/or *B*. Some operators are also provided with an alias function:
 
 - `zdd zdd_union(zdd A, zdd B)` (operator `|`)
-  
+
   Same as `zdd_binop(A, B, or_op)` and computes *A ∪ B*.
 
 - `zdd zdd_intsec(zdd A, zdd B)` (operator `&`)
-  
+
   Same as `zdd_binop(A, B, and_op)` and computes *A ∩ B*.
 
 - `zdd zdd_diff(zdd A, zdd B)` (operator `-`)
-  
+
   Same as `zdd_binop(A, B, diff_op)` and computes *A* \ *B*.
 
 ### `zdd zdd_change(zdd A, label_file vars)`
@@ -140,7 +140,7 @@ the same sets, but where only the elements in the new domain *dom* are kept.
 ### `uint64_t zdd_nodecount(zdd A)`
 {: .no_toc }
 
-Return the number of nodes (not counting sink nodes) in the ZDD for *A*.
+Return the number of nodes (not counting terminal nodes) in the ZDD for *A*.
 
 ### `uint64_t zdd_varcount(zdd A)`
 {: .no_toc }
@@ -179,29 +179,29 @@ Return whether *A ⊂ B*.
 
 Return whether *A ∩ B = Ø*.
 
-### `bool is_sink(zdd A)`
+### `bool is_terminal(zdd A)`
 {: .no_toc }
 
-Whether the ZDD for *A* only consists of a sink, i.e. *A* is represents a
+Whether the ZDD for *A* only consists of a terminal, i.e. *A* is represents a
 constant function.
 
 ### `bool value_of(zdd A)`
 {: .no_toc }
 
-Assuming that `is_sink(A)` evaluates to true, i.e. *A* can be interpreted as a
+Assuming that `is_terminal(A)` evaluates to true, i.e. *A* can be interpreted as a
 constant function *v*, then returns the value *v*.
 
 ### `bool is_empty(zdd A)`
 {: .no_toc }
 
 Whether *A* is the empty set Ø. This is merely shorthand for
-`is_false(A)`, i.e. `is_sink(A) && !value_of(A)`.
+`is_false(A)`, i.e. `is_terminal(A) && !value_of(A)`.
 
 ### `bool is_null(zdd A)`
 {: .no_toc }
 
 Whether *A* is the is the null set {Ø}. This is merely shorthand for
-`is_true(A)`, i.e. `is_sink(A) && value_of(A)`.
+`is_true(A)`, i.e. `is_terminal(A) && value_of(A)`.
 
 ## Set elements
 

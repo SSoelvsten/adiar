@@ -14,7 +14,7 @@ namespace adiar
     node_stream<reverse> ns(file);
     node_t n = ns.pull();
 
-    adiar_debug(!is_sink(n), "Cannot extract label from sink-only file");
+    adiar_debug(!is_terminal(n), "Cannot extract label from terminal-only file");
 
     return label_of(n);
   }

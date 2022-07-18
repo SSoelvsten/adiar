@@ -5,14 +5,14 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(zdd_F);
-      nw_F << create_sink(false);
+      nw_F << create_terminal(false);
 
       node_writer nw_T(zdd_T);
-      nw_T << create_sink(true);
+      nw_T << create_terminal(true);
     }
 
-    const ptr_t sink_T = create_sink_ptr(true);
-    const ptr_t sink_F = create_sink_ptr(false);
+    const ptr_t terminal_T = create_terminal_ptr(true);
+    const ptr_t terminal_F = create_terminal_ptr(false);
 
     node_file zdd_1;
     // { { 0 }, { 1 }, { 0,2 }, { 1,2 } }
@@ -27,8 +27,8 @@ go_bandit([]() {
      */
 
     {
-      const node_t n3 = create_node(2, MAX_ID, sink_T, sink_T);
-      const node_t n2 = create_node(1, MAX_ID, sink_F, n3.uid);
+      const node_t n3 = create_node(2, MAX_ID, terminal_T, terminal_T);
+      const node_t n2 = create_node(1, MAX_ID, terminal_F, n3.uid);
       const node_t n1 = create_node(0, MAX_ID, n2.uid, n3.uid);
 
       node_writer nw(zdd_1);
@@ -49,9 +49,9 @@ go_bandit([]() {
      */
 
     {
-      const node_t n3 = create_node(3, MAX_ID, sink_T, sink_T);
-      const node_t n2 = create_node(2, MAX_ID, sink_T, n3.uid);
-      const node_t n1 = create_node(1, MAX_ID, n2.uid, sink_T);
+      const node_t n3 = create_node(3, MAX_ID, terminal_T, terminal_T);
+      const node_t n2 = create_node(2, MAX_ID, terminal_T, n3.uid);
+      const node_t n1 = create_node(1, MAX_ID, n2.uid, terminal_T);
 
       node_writer nw(zdd_2);
       nw << n3 << n2 << n1;
@@ -69,9 +69,9 @@ go_bandit([]() {
             F T
      */
     {
-      const node_t n4 = create_node(4, MAX_ID,   sink_F, sink_T);
-      const node_t n3 = create_node(2, MAX_ID,   n4.uid, sink_T);
-      const node_t n2 = create_node(2, MAX_ID-1, sink_F, n4.uid);
+      const node_t n4 = create_node(4, MAX_ID,   terminal_F, terminal_T);
+      const node_t n3 = create_node(2, MAX_ID,   n4.uid, terminal_T);
+      const node_t n2 = create_node(2, MAX_ID-1, terminal_F, n4.uid);
       const node_t n1 = create_node(1, MAX_ID,   n2.uid, n3.uid);
 
       node_writer nw(zdd_3);
@@ -89,7 +89,7 @@ go_bandit([]() {
 
      */
     {
-      const node_t n2 = create_node(1, MAX_ID, sink_F, sink_T);
+      const node_t n2 = create_node(1, MAX_ID, terminal_F, terminal_T);
       const node_t n1 = create_node(0, MAX_ID, n2.uid, n2.uid);
 
       node_writer nw(zdd_4);

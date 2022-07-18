@@ -5,8 +5,8 @@ go_bandit([]() {
     {
       node_writer nw_0(x0_nf);
       nw_0 << create_node(0,MAX_ID,
-                          create_sink_ptr(false),
-                          create_sink_ptr(true));
+                          create_terminal_ptr(false),
+                          create_terminal_ptr(true));
     }
 
     bdd x0(x0_nf);
@@ -16,8 +16,8 @@ go_bandit([]() {
     {
       node_writer nw_1(x1_nf);
       nw_1 << create_node(1,MAX_ID,
-                          create_sink_ptr(false),
-                          create_sink_ptr(true));
+                          create_terminal_ptr(false),
+                          create_terminal_ptr(true));
     }
 
     bdd x1(x1_nf);
@@ -28,34 +28,34 @@ go_bandit([]() {
       node_writer nw_01(x0_and_x1_nf);
 
       nw_01 << create_node(1, MAX_ID,
-                           create_sink_ptr(false),
-                           create_sink_ptr(true));
+                           create_terminal_ptr(false),
+                           create_terminal_ptr(true));
 
       nw_01 << create_node(0, MAX_ID,
-                           create_sink_ptr(false),
+                           create_terminal_ptr(false),
                            create_node_ptr(1, MAX_ID));
     }
 
     bdd x0_and_x1(x0_and_x1_nf);
     bdd x0_nand_x1(x0_and_x1_nf, true);
 
-    node_file sink_T_nf;
+    node_file terminal_T_nf;
 
     {
-      node_writer nw_T(sink_T_nf);
-      nw_T << create_sink(true);
+      node_writer nw_T(terminal_T_nf);
+      nw_T << create_terminal(true);
     }
 
-    bdd sink_T(sink_T_nf);
+    bdd terminal_T(terminal_T_nf);
 
-    node_file sink_F_nf;
+    node_file terminal_F_nf;
 
     {
-      node_writer nw_F(sink_F_nf);
-      nw_F << create_sink(false);
+      node_writer nw_F(terminal_F_nf);
+      nw_F << create_terminal(false);
     }
 
-    bdd sink_F(sink_F_nf);
+    bdd terminal_F(terminal_F_nf);
 
     describe("__bdd", [&]() {
       it("should copy-construct values from bdd", [&]() {
@@ -93,9 +93,9 @@ go_bandit([]() {
         arc_writer aw(af);
         aw.unsafe_push_node(arc {flag(create_node_ptr(0,0)), create_node_ptr(1,0)});
 
-        aw.unsafe_push_sink(arc {create_node_ptr(0,0), create_sink_ptr(false)});
-        aw.unsafe_push_sink(arc {create_node_ptr(1,0), create_sink_ptr(true)});
-        aw.unsafe_push_sink(arc {flag(create_node_ptr(1,0)), create_sink_ptr(true)});
+        aw.unsafe_push_terminal(arc {create_node_ptr(0,0), create_terminal_ptr(false)});
+        aw.unsafe_push_terminal(arc {create_node_ptr(1,0), create_terminal_ptr(true)});
+        aw.unsafe_push_terminal(arc {flag(create_node_ptr(1,0)), create_terminal_ptr(true)});
 
         aw.unsafe_push(create_level_info(0,1u));
         aw.unsafe_push(create_level_info(1,1u));
@@ -116,14 +116,14 @@ go_bandit([]() {
       });
     });
 
-    it("should copy-construct boolean 'true' value as a T sink", [&]() {
+    it("should copy-construct boolean 'true' value as a T terminal", [&]() {
       bdd t1 = true;
-      AssertThat(t1, Is().EqualTo(sink_T));
+      AssertThat(t1, Is().EqualTo(terminal_T));
     });
 
-    it("should copy-construct boolean 'false' value as an F sink", [&]() {
+    it("should copy-construct boolean 'false' value as an F terminal", [&]() {
       bdd t2 = false;
-      AssertThat(t2, Is().EqualTo(sink_F));
+      AssertThat(t2, Is().EqualTo(terminal_F));
     });
 
     it("should copy-construct node_file and negation back to bdd", [&]() {
@@ -133,16 +133,16 @@ go_bandit([]() {
     });
 
     describe("operators", [&]() {
-      it("should check sink_F != sink_T", [&]() {
-        AssertThat(sink_F, Is().Not().EqualTo(sink_T));
+      it("should check terminal_F != terminal_T", [&]() {
+        AssertThat(terminal_F, Is().Not().EqualTo(terminal_T));
       });
 
-      it("should check sink_F != ~sink_F", [&]() {
-        AssertThat(sink_F, Is().Not().EqualTo(~sink_F));
+      it("should check terminal_F != ~terminal_F", [&]() {
+        AssertThat(terminal_F, Is().Not().EqualTo(~terminal_F));
       });
 
-      it("should check sink_F == ~sink_T", [&]() {
-        AssertThat(sink_F, Is().EqualTo(~sink_T));
+      it("should check terminal_F == ~terminal_T", [&]() {
+        AssertThat(terminal_F, Is().EqualTo(~terminal_T));
       });
 
       it("should check ~(x0 & x1) != (x0 & x1)", [&]() {
@@ -155,11 +155,11 @@ go_bandit([]() {
         node_writer nw_01(x0_and_x1_nf2);
 
         nw_01 << create_node(1, MAX_ID,
-                             create_sink_ptr(false),
-                             create_sink_ptr(true));
+                             create_terminal_ptr(false),
+                             create_terminal_ptr(true));
 
         nw_01 << create_node(0, MAX_ID,
-                             create_sink_ptr(false),
+                             create_terminal_ptr(false),
                              create_node_ptr(1, MAX_ID));
       }
 
@@ -200,17 +200,17 @@ go_bandit([]() {
       });
 
       it("should compute with __bdd&& and bdd& in operators [1]", [&]() {
-        // Notice, that the two expressions with sink_T and sink_F
+        // Notice, that the two expressions with terminal_T and terminal_F
         // shortcut with the operator for a bdd with the negation flag
         // set correctly.
-        bdd out = ((x0 & x1) | (~x0 & x1)) ^ ((sink_T ^ x0) & (sink_F | x1));
+        bdd out = ((x0 & x1) | (~x0 & x1)) ^ ((terminal_T ^ x0) & (terminal_F | x1));
         AssertThat((x0 & x1) == out, Is().True());
         AssertThat((x0 & x1) != out, Is().False());
       });
 
       it("should compute with __bdd&& and bdd& in operators [2]", [&]() {
-        // The right-hand-side will evaluate to a bdd, since sink_F negates.
-        bdd out = ((~x0 | (x0 & x1)) ^ (sink_T ^ (x1 ^ x0)));
+        // The right-hand-side will evaluate to a bdd, since terminal_F negates.
+        bdd out = ((~x0 | (x0 & x1)) ^ (terminal_T ^ (x1 ^ x0)));
         AssertThat((~x0 & x1) == out, Is().True());
         AssertThat((~x0 & x1) != out, Is().False());
       });
@@ -233,100 +233,100 @@ go_bandit([]() {
       });
     });
 
-    describe("sink predicates", [&]() {
-      describe("is_sink", [&]() {
-        it("rejects x0 as a sink file", [&]() {
-          AssertThat(is_sink(x0), Is().False());
+    describe("terminal predicates", [&]() {
+      describe("is_terminal", [&]() {
+        it("rejects x0 as a terminal file", [&]() {
+          AssertThat(is_terminal(x0), Is().False());
         });
 
-        it("rejects x0 & x1 as a sink file", [&]() {
-          AssertThat(is_sink(x0_and_x1), Is().False());
+        it("rejects x0 & x1 as a terminal file", [&]() {
+          AssertThat(is_terminal(x0_and_x1), Is().False());
         });
 
-        it("accepts a true sink", [&]() {
-          AssertThat(is_sink(sink_T), Is().True());
+        it("accepts a true terminal", [&]() {
+          AssertThat(is_terminal(terminal_T), Is().True());
         });
 
-        it("accepts a false sink", [&]() {
-          AssertThat(is_sink(sink_F), Is().True());
+        it("accepts a false terminal", [&]() {
+          AssertThat(is_terminal(terminal_F), Is().True());
         });
 
-        it("accepts negation of a false sink", [&]() {
-          AssertThat(is_sink(~ sink_F), Is().True());
+        it("accepts negation of a false terminal", [&]() {
+          AssertThat(is_terminal(~ terminal_F), Is().True());
         });
 
-        it("accepts negation of a true sink", [&]() {
-          AssertThat(is_sink(~ sink_T), Is().True());
+        it("accepts negation of a true terminal", [&]() {
+          AssertThat(is_terminal(~ terminal_T), Is().True());
         });
       });
 
       describe("value_of", [&]() {
-        it("extracts from a true sink", [&]() {
-          AssertThat(value_of(sink_T), Is().True());
+        it("extracts from a true terminal", [&]() {
+          AssertThat(value_of(terminal_T), Is().True());
         });
 
-        it("extracts from a false sink", [&]() {
-          AssertThat(value_of(sink_F), Is().False());
+        it("extracts from a false terminal", [&]() {
+          AssertThat(value_of(terminal_F), Is().False());
         });
 
-        it("extracts from a negation of a false sink", [&]() {
-          AssertThat(value_of(~ sink_F), Is().True());
+        it("extracts from a negation of a false terminal", [&]() {
+          AssertThat(value_of(~ terminal_F), Is().True());
         });
 
-        it("extracts from a negation of a true sink", [&]() {
-          AssertThat(value_of(~ sink_T), Is().False());
+        it("extracts from a negation of a true terminal", [&]() {
+          AssertThat(value_of(~ terminal_T), Is().False());
         });
       });
 
       describe("is_false", [&]() {
-        it("rejects x0 as a false sink file", [&]() {
+        it("rejects x0 as a false terminal file", [&]() {
           AssertThat(is_false(x0), Is().False());
         });
 
-        it("rejects x0 & x1 as a false sink file", [&]() {
+        it("rejects x0 & x1 as a false terminal file", [&]() {
           AssertThat(is_false(x0_and_x1), Is().False());
         });
 
-        it("rejects a true sink", [&]() {
-          AssertThat(is_false(sink_T), Is().False());
+        it("rejects a true terminal", [&]() {
+          AssertThat(is_false(terminal_T), Is().False());
         });
 
-        it("accepts a false sink", [&]() {
-          AssertThat(is_false(sink_F), Is().True());
+        it("accepts a false terminal", [&]() {
+          AssertThat(is_false(terminal_F), Is().True());
         });
 
-        it("rejects negation of a false sink", [&]() {
-          AssertThat(is_false(~ sink_F), Is().False());
+        it("rejects negation of a false terminal", [&]() {
+          AssertThat(is_false(~ terminal_F), Is().False());
         });
 
-        it("accepts negation of a true sink", [&]() {
-          AssertThat(is_false(~ sink_T), Is().True());
+        it("accepts negation of a true terminal", [&]() {
+          AssertThat(is_false(~ terminal_T), Is().True());
         });
       });
 
       describe("is_true", [&]() {
-        it("rejects x0 as a true sink file", [&]() {
+        it("rejects x0 as a true terminal file", [&]() {
           AssertThat(is_true(x0), Is().False());
         });
 
-        it("rejects x0 & x1 as a sink file", [&]() {
+        it("rejects x0 & x1 as a terminal file", [&]() {
           AssertThat(is_true(x0_and_x1), Is().False());
         });
 
-        it("accepts a true sink", [&]() {
-          AssertThat(is_true(sink_T), Is().True());
+        it("accepts a true terminal", [&]() {
+          AssertThat(is_true(terminal_T), Is().True());
         });
 
-        it("rejects a false sink", [&]() {
-          AssertThat(is_true(sink_F), Is().False());
+        it("rejects a false terminal", [&]() {
+          AssertThat(is_true(terminal_F), Is().False());
         });
 
-        it("accepts negation of a false sink", [&]() {
-          AssertThat(is_true(~ sink_F), Is().True());
+        it("accepts negation of a false terminal", [&]() {
+          AssertThat(is_true(~ terminal_F), Is().True());
         });
 
-        it("rejects negation of a true sink", [&]() {
-          AssertThat(is_true(~ sink_T), Is().False());
+        it("rejects negation of a true terminal", [&]() {
+          AssertThat(is_true(~ terminal_T), Is().False());
         });
       });
     });

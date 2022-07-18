@@ -1,60 +1,60 @@
 go_bandit([]() {
   describe("adiar/zdd/pred.cpp", [&]() {
-    ptr_t sink_T = create_sink_ptr(true);
-    ptr_t sink_F = create_sink_ptr(false);
+    ptr_t terminal_T = create_terminal_ptr(true);
+    ptr_t terminal_F = create_terminal_ptr(false);
 
     // Ø
     node_file zdd_empty_nf;
     { node_writer nw(zdd_empty_nf);
-      nw << create_sink(false);
+      nw << create_terminal(false);
     }
 
     node_file zdd_empty_nf_copy;
     { node_writer nw(zdd_empty_nf_copy);
-      nw << create_sink(false);
+      nw << create_terminal(false);
     }
 
     // { Ø }
     node_file zdd_null_nf;
     { node_writer nw(zdd_null_nf);
-      nw << create_sink(true);
+      nw << create_terminal(true);
     }
 
     node_file zdd_null_nf_copy;
     { node_writer nw(zdd_null_nf_copy);
-      nw << create_sink(true);
+      nw << create_terminal(true);
     }
 
     // { {1} }
     node_file zdd_A_nf;
     { node_writer nw(zdd_A_nf);
-      nw << create_node(1,MAX_ID, sink_F, sink_T);
+      nw << create_node(1,MAX_ID, terminal_F, terminal_T);
     }
 
     node_file zdd_A_nf_copy;
     { node_writer nw(zdd_A_nf_copy);
-      nw << create_node(1,MAX_ID, sink_F, sink_T);
+      nw << create_node(1,MAX_ID, terminal_F, terminal_T);
     }
 
     // { {1}, {1,2} }
     node_file zdd_B_nf;
     { node_writer nw(zdd_B_nf);
-      nw << create_node(2,MAX_ID, sink_T, sink_T)
-         << create_node(1,MAX_ID, sink_F, create_node_ptr(2,MAX_ID))
+      nw << create_node(2,MAX_ID, terminal_T, terminal_T)
+         << create_node(1,MAX_ID, terminal_F, create_node_ptr(2,MAX_ID))
         ;
     }
 
     // { Ø, {1}, {2}, {1,2} }
     node_file zdd_C_nf;
     { node_writer nw(zdd_C_nf);
-      nw << create_node(2,MAX_ID, sink_T,                    sink_T)
+      nw << create_node(2,MAX_ID, terminal_T,                    terminal_T)
          << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))
         ;
     }
 
     node_file zdd_C_nf_copy;
     { node_writer nw(zdd_C_nf_copy);
-      nw << create_node(2,MAX_ID, sink_T,                    sink_T)
+      nw << create_node(2,MAX_ID, terminal_T,                    terminal_T)
          << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))
         ;
     }
@@ -62,20 +62,20 @@ go_bandit([]() {
     // { {1}, {1,2}, {0,1,3} }
     node_file zdd_D_nf;
     { node_writer nw(zdd_D_nf);
-      nw << create_node(3,MAX_ID,   sink_F,                      sink_T)
-         << create_node(2,MAX_ID,   sink_T,                      sink_T)
-         << create_node(1,MAX_ID,   sink_F,                      create_node_ptr(3,MAX_ID))
-         << create_node(1,MAX_ID-1, sink_F,                      create_node_ptr(2,MAX_ID))
+      nw << create_node(3,MAX_ID,   terminal_F,                      terminal_T)
+         << create_node(2,MAX_ID,   terminal_T,                      terminal_T)
+         << create_node(1,MAX_ID,   terminal_F,                      create_node_ptr(3,MAX_ID))
+         << create_node(1,MAX_ID-1, terminal_F,                      create_node_ptr(2,MAX_ID))
          << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID))
         ;
     }
 
     node_file zdd_D_nf_copy;
     { node_writer nw(zdd_D_nf_copy);
-      nw << create_node(3,MAX_ID,   sink_F,                      sink_T)
-         << create_node(2,MAX_ID,   sink_T,                      sink_T)
-         << create_node(1,MAX_ID,   sink_F,                      create_node_ptr(3,MAX_ID))
-         << create_node(1,MAX_ID-1, sink_F,                      create_node_ptr(2,MAX_ID))
+      nw << create_node(3,MAX_ID,   terminal_F,                      terminal_T)
+         << create_node(2,MAX_ID,   terminal_T,                      terminal_T)
+         << create_node(1,MAX_ID,   terminal_F,                      create_node_ptr(3,MAX_ID))
+         << create_node(1,MAX_ID-1, terminal_F,                      create_node_ptr(2,MAX_ID))
          << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID))
         ;
     }
@@ -83,22 +83,22 @@ go_bandit([]() {
     // { Ø, {0,3} }
     node_file zdd_E_nf;
     { node_writer nw(zdd_E_nf);
-      nw << create_node(3,MAX_ID, sink_F, sink_T)
-         << create_node(0,MAX_ID, sink_T, create_node_ptr(3,MAX_ID))
+      nw << create_node(3,MAX_ID, terminal_F, terminal_T)
+         << create_node(0,MAX_ID, terminal_T, create_node_ptr(3,MAX_ID))
         ;
     }
 
     node_file zdd_E_nf_copy;
     { node_writer nw(zdd_E_nf_copy);
-      nw << create_node(3,MAX_ID, sink_F, sink_T)
-         << create_node(0,MAX_ID, sink_T, create_node_ptr(3,MAX_ID))
+      nw << create_node(3,MAX_ID, terminal_F, terminal_T)
+         << create_node(0,MAX_ID, terminal_T, create_node_ptr(3,MAX_ID))
         ;
     }
 
     // { {2} }
     node_file zdd_F_nf;
     { node_writer nw(zdd_F_nf);
-      nw << create_node(2,MAX_ID, sink_F, sink_T);
+      nw << create_node(2,MAX_ID, terminal_F, terminal_T);
     }
 
     // Equal and unequal will not be tested, since it merely is a call to

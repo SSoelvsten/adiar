@@ -49,7 +49,7 @@ namespace adiar
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Decorator on the levelized priority queue to also keep track of
-  ///        the number of arcs to each sink.
+  ///        the number of arcs to each terminal.
   ////////////////////////////////////////////////////////////////////////////
   template<size_t LOOK_AHEAD,
            template<typename, typename> typename sorter_template,
@@ -64,9 +64,9 @@ namespace adiar
                                                    sorter_template, priority_queue_template>;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of sinks (of each type) placed within the priority queue.
+    /// \brief Number of terminals (of each type) placed within the priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    size_t _sinks[2] = { 0u, 0u };
+    size_t _terminals[2] = { 0u, 0u };
 
   public:
     reduce_priority_queue(const arc_file (&files) [1u], size_t memory_given, size_t max_size)
@@ -78,8 +78,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     void push(const arc_t &a)
     {
-      _sinks[false] += is_false(a.target);
-      _sinks[true]  += is_true(a.target);
+      _terminals[false] += is_false(a.target);
+      _terminals[true]  += is_true(a.target);
 
       inner_lpq::push(a);
     }
@@ -91,8 +91,8 @@ namespace adiar
     {
       arc_t a = inner_lpq::pull();
 
-      _sinks[false] -= is_false(a.target);
-      _sinks[true]  -= is_true(a.target);
+      _terminals[false] -= is_false(a.target);
+      _terminals[true]  -= is_true(a.target);
 
       return a;
     }
@@ -106,19 +106,19 @@ namespace adiar
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of sinks (of each type) placed within the priority queue.
+    /// \brief Number of terminals (of each type) placed within the priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    const size_t& sinks(const bool sink_value) const
+    const size_t& terminals(const bool terminal_value) const
     {
-      return _sinks[sink_value];
+      return _terminals[terminal_value];
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Total number of arcs (across all levels) ignoring sinks.
+    /// \brief Total number of arcs (across all levels) ignoring terminals.
     ////////////////////////////////////////////////////////////////////////////
-    size_t size_without_sinks()
+    size_t size_without_terminals()
     {
-      return inner_lpq::size() - _sinks[false] - _sinks[true];
+      return inner_lpq::size() - _terminals[false] - _terminals[true];
     }
   };
 
@@ -158,14 +158,14 @@ namespace adiar
   // Helper functions
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Merging priority queue with sink_arc stream.
+  /// \brief Merging priority queue with terminal_arc stream.
   //////////////////////////////////////////////////////////////////////////////
   template <typename pq_t>
-  inline arc_t __reduce_get_next(pq_t &reduce_pq, sink_arc_stream<> &sink_arcs)
+  inline arc_t __reduce_get_next(pq_t &reduce_pq, terminal_arc_stream<> &terminal_arcs)
   {
     if (!reduce_pq.can_pull()
-        || (sink_arcs.can_pull() && sink_arcs.peek().source > reduce_pq.top().source)) {
-      return sink_arcs.pull();
+        || (terminal_arcs.can_pull() && terminal_arcs.peek().source > reduce_pq.top().source)) {
+      return terminal_arcs.pull();
     } else {
       return reduce_pq.pull();
     }
@@ -194,7 +194,7 @@ namespace adiar
   }
 
   template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
-  void __reduce_level(sink_arc_stream<> &sink_arcs,
+  void __reduce_level(terminal_arc_stream<> &terminal_arcs,
                       node_arc_stream<> &node_arcs,
                       const label_t label,
                       pq_t &reduce_pq,
@@ -213,11 +213,11 @@ namespace adiar
     sorter_t<mapping, reduce_uid_lt>
       red2_mapping(sorters_memory, level_width, 2);
 
-    // Pull out all nodes from reduce_pq and sink_arcs for this level
-    while ((sink_arcs.can_pull() && label_of(sink_arcs.peek().source) == label)
+    // Pull out all nodes from reduce_pq and terminal_arcs for this level
+    while ((terminal_arcs.can_pull() && label_of(terminal_arcs.peek().source) == label)
             || reduce_pq.can_pull()) {
-      const arc_t e_high = __reduce_get_next(reduce_pq, sink_arcs);
-      const arc_t e_low = __reduce_get_next(reduce_pq, sink_arcs);
+      const arc_t e_high = __reduce_get_next(reduce_pq, terminal_arcs);
+      const arc_t e_low = __reduce_get_next(reduce_pq, terminal_arcs);
 
       node_t n = node_of(e_low, e_high);
 
@@ -240,9 +240,9 @@ namespace adiar
     cuts_t local_1level_cut = { 0u, 0u, 0u, 0u };
 
     __reduce_cut_add(local_1level_cut,
-                     reduce_pq.size_without_sinks(),
-                     reduce_pq.sinks(false) + sink_arcs.unread(false),
-                     reduce_pq.sinks(true) + sink_arcs.unread(true));
+                     reduce_pq.size_without_terminals(),
+                     reduce_pq.terminals(false) + terminal_arcs.unread(false),
+                     reduce_pq.terminals(true) + terminal_arcs.unread(true));
 
     // Sort and apply Reduction rule 2
     child_grouping.sort();
@@ -336,8 +336,8 @@ namespace adiar
     out_writer.inc_1level_cut(local_1level_cut);
 
     if (!reduce_pq.empty()) {
-      adiar_debug(!sink_arcs.can_pull() || label_of(sink_arcs.peek().source) < label,
-                  "All sink arcs for 'label' should be processed");
+      adiar_debug(!terminal_arcs.can_pull() || label_of(terminal_arcs.peek().source) < label,
+                  "All terminal arcs for 'label' should be processed");
 
       adiar_debug(!node_arcs.can_pull() || label_of(node_arcs.peek().target) < label,
                   "All node arcs for 'label' should be processed");
@@ -345,25 +345,25 @@ namespace adiar
       adiar_debug(reduce_pq.empty() || !reduce_pq.can_pull(),
                   "All forwarded arcs for 'label' should be processed");
 
-      if (sink_arcs.can_pull()) {
-        reduce_pq.setup_next_level(label_of(sink_arcs.peek().source));
+      if (terminal_arcs.can_pull()) {
+        reduce_pq.setup_next_level(label_of(terminal_arcs.peek().source));
       } else {
         reduce_pq.setup_next_level();
       }
     } else if (!out_writer.has_pushed()) {
-      adiar_debug(!node_arcs.can_pull() && !sink_arcs.can_pull(),
+      adiar_debug(!node_arcs.can_pull() && !terminal_arcs.can_pull(),
                   "All nodes should be processed at this point");
 
       adiar_debug(reduce_pq.empty(),
                   "Nothing has been pushed to a 'parent'");
 
       adiar_debug(!out_writer.has_pushed(),
-                  "No nodes are pushed when it collapses to a sink");
+                  "No nodes are pushed when it collapses to a terminal");
 
-      const bool sink_val = value_of(next_red1.new_uid);
+      const bool terminal_val = value_of(next_red1.new_uid);
 
-      out_writer.unsafe_push(create_sink(sink_val));
-      out_writer.set_number_of_sinks(!sink_val, sink_val);
+      out_writer.unsafe_push(create_terminal(terminal_val));
+      out_writer.set_number_of_terminals(!terminal_val, terminal_val);
     }
   }
 
@@ -373,11 +373,11 @@ namespace adiar
   {
 #ifdef ADIAR_STATS
     stats_reduce.sum_node_arcs += in_file->_files[0].size();
-    stats_reduce.sum_sink_arcs += in_file->_files[1].size();
+    stats_reduce.sum_terminal_arcs += in_file->_files[1].size();
 #endif
 
     node_arc_stream<> node_arcs(in_file);
-    sink_arc_stream<> sink_arcs(in_file);
+    terminal_arc_stream<> terminal_arcs(in_file);
     level_info_stream<arc_t> level_info(in_file);
 
     // Set up output
@@ -393,8 +393,8 @@ namespace adiar
 
     // Trivial single-node case
     if (!node_arcs.can_pull()) {
-      const arc_t e_high = sink_arcs.pull();
-      const arc_t e_low = sink_arcs.pull();
+      const arc_t e_high = terminal_arcs.pull();
+      const arc_t e_low = terminal_arcs.pull();
 
       // Apply reduction rule 1, if applicable
       const ptr_t reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
@@ -402,12 +402,12 @@ namespace adiar
 #ifdef ADIAR_STATS_EXTRA
         stats_reduce.removed_by_rule_1++;
 #endif
-        const bool sink_val = value_of(reduction_rule_ret);
-        const node_t out_node = create_sink(sink_val);
+        const bool terminal_val = value_of(reduction_rule_ret);
+        const node_t out_node = create_terminal(terminal_val);
         out_writer.unsafe_push(out_node);
 
-        out_writer.set_number_of_sinks(!sink_val, sink_val);
-        __reduce_cut_add(out_file->max_1level_cut, 0u, !sink_val, sink_val);
+        out_writer.set_number_of_terminals(!terminal_val, terminal_val);
+        __reduce_cut_add(out_file->max_1level_cut, 0u, !terminal_val, terminal_val);
       } else {
         const label_t label = label_of(e_low.source);
 
@@ -445,7 +445,7 @@ namespace adiar
     const size_t internal_sorter_can_fit = internal_sorter<node_t>::memory_fits(sorters_memory / 2);
 
     // Process bottom-up each level
-    while (sink_arcs.can_pull() || !reduce_pq.empty()) {
+    while (terminal_arcs.can_pull() || !reduce_pq.empty()) {
       const level_info_t current_level_info = level_info.pull();
       const label_t label = label_of(current_level_info);
 
@@ -456,10 +456,10 @@ namespace adiar
 
       if(level_width <= internal_sorter_can_fit) {
         __reduce_level<dd_policy, pq_t, internal_sorter>
-          (sink_arcs, node_arcs, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
+          (terminal_arcs, node_arcs, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
       } else {
         __reduce_level<dd_policy, pq_t, external_sorter>
-          (sink_arcs, node_arcs, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
+          (terminal_arcs, node_arcs, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
       }
     }
 
@@ -500,7 +500,7 @@ namespace adiar
     // memory variant.
     const size_t aux_available_memory = memory::available()
       // Input streams
-      - node_arc_stream<>::memory_usage() - sink_arc_stream<>::memory_usage() - level_info_stream<arc_t>::memory_usage()
+      - node_arc_stream<>::memory_usage() - terminal_arc_stream<>::memory_usage() - level_info_stream<arc_t>::memory_usage()
       // Output streams
       - node_writer::memory_usage();
 

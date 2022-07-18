@@ -26,13 +26,13 @@ namespace adiar
 
     static inline tuple reduction_rule_inv(const ptr_t &child)
     {
-      return { child, create_sink_ptr(false) };
+      return { child, create_terminal_ptr(false) };
     }
 
   public:
     static inline void compute_cofactor(bool on_curr_level, ptr_t &, ptr_t &high)
     {
-      if (!on_curr_level) { high = create_sink_ptr(false); }
+      if (!on_curr_level) { high = create_terminal_ptr(false); }
     }
   };
 }

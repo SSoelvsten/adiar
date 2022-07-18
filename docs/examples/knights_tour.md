@@ -111,8 +111,8 @@ adiar::zdd constraint_closed(uint64_t N)
                                                                  closed_squares[2][1],
                                                                  N*N-1),
                                                adiar::MAX_ID,
-                                               adiar::create_sink_ptr(false),
-                                               adiar::create_sink_ptr(true));
+                                               adiar::create_terminal_ptr(false),
+                                               adiar::create_terminal_ptr(true));
     out_writer << n_t_end;
 
     // Create don't care on all intermediate steps
@@ -125,7 +125,7 @@ adiar::zdd constraint_closed(uint64_t N)
                                                                closed_squares[1][1],
                                                                1),
                                              adiar::MAX_ID,
-                                             adiar::create_sink_ptr(false),
+                                             adiar::create_terminal_ptr(false),
                                              curr_root);
     out_writer << n_t_1;
 
@@ -135,7 +135,7 @@ adiar::zdd constraint_closed(uint64_t N)
                                                                closed_squares[0][1],
                                                                0),
                                              adiar::MAX_ID,
-                                             adiar::create_sink_ptr(false),
+                                             adiar::create_terminal_ptr(false),
                                              n_t_1.uid);
     out_writer << n_t_0;
   }
@@ -190,7 +190,7 @@ adiar::ptr_t ptr_to_first(int N, int i_from, int j_from, int t)
 
     return adiar::create_node_ptr(to_label, from_label);
   }
-  return adiar::create_sink_ptr(false);
+  return adiar::create_terminal_ptr(false);
 }
 
 adiar::ptr_t ptr_to_next(int N, int i_from, int j_from, int i_to, int j_to, int t)
@@ -211,7 +211,7 @@ adiar::ptr_t ptr_to_next(int N, int i_from, int j_from, int i_to, int j_to, int 
     }
     seen_move = i == i_to && j == j_to;
   }
-  return adiar::create_sink_ptr(false);
+  return adiar::create_terminal_ptr(false);
 }
 ```
 
@@ -233,7 +233,7 @@ adiar::zdd constraint_transition(int N, int t)
     // on garbage collection, which is why we add an inner scope.
     adiar::node_writer out_writer(out);
 
-    adiar::ptr_t curr_root = adiar::create_sink_ptr(true);
+    adiar::ptr_t curr_root = adiar::create_terminal_ptr(true);
 
     // "Don't care" for future time steps
     constraint_dont_care<>(out_writer, curr_root, N, N*N-1, t+2);
@@ -265,7 +265,7 @@ adiar::zdd constraint_transition(int N, int t)
     }
 
     // Node chain at time step t
-    curr_root = adiar::create_sink_ptr(false);
+    curr_root = adiar::create_terminal_ptr(false);
 
     for (int i = N-1; i >= 0; i--) {
       for (int j = N-1; j >= 0; j--) {
@@ -300,8 +300,8 @@ adiar::zdd constraint_exactly_once(uint64_t N, uint64_t i, uint64_t j)
 
   { adiar::node_writer out_writer(out);
 
-    adiar::ptr_t next0 = adiar::create_sink_ptr(false);
-    adiar::ptr_t next1 = adiar::create_sink_ptr(true);
+    adiar::ptr_t next0 = adiar::create_terminal_ptr(false);
+    adiar::ptr_t next1 = adiar::create_terminal_ptr(true);
 
     for (int curr_t = N*N-1; curr_t >= 0; curr_t--) {
       for (int curr_i = N-1; curr_i >= 0; curr_i--) {

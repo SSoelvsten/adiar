@@ -2,10 +2,10 @@
 
 go_bandit([]() {
   describe("adiar/dot.h", [&]() {
-    it("can output .dot for a sink-only BDD", [&]() {
-      bdd sink_T = bdd_sink(true);
-      output_dot(sink_T, "dot_test_sink.dot");
-      int exit_value = system("dot -O -Tpng dot_test_sink.dot");
+    it("can output .dot for a terminal-only BDD", [&]() {
+      bdd terminal_T = bdd_terminal(true);
+      output_dot(terminal_T, "dot_test_terminal.dot");
+      int exit_value = system("dot -O -Tpng dot_test_terminal.dot");
       AssertThat(exit_value, Is().EqualTo(0));
     });
 
@@ -15,10 +15,10 @@ go_bandit([]() {
       { // Garbage collect writer early
         node_writer rw(reduced_bdd);
 
-        rw << create_node(42,1, create_sink_ptr(false), create_sink_ptr(true))
-           << create_node(42,0, create_sink_ptr(true), create_sink_ptr(false))
+        rw << create_node(42,1, create_terminal_ptr(false), create_terminal_ptr(true))
+           << create_node(42,0, create_terminal_ptr(true), create_terminal_ptr(false))
            << create_node(1,2, create_node_ptr(42,0), create_node_ptr(42,1))
-           << create_node(0,1, create_node_ptr(1,2), create_sink_ptr(false))
+           << create_node(0,1, create_node_ptr(1,2), create_terminal_ptr(false))
           ;
       }
 
@@ -33,9 +33,9 @@ go_bandit([]() {
       { // Garbage collect writer early
         arc_writer uw(unreduced_bdd);
 
-        uw.unsafe_push_sink({ flag(create_node_ptr(2,0)), create_sink_ptr(true) });
-        uw.unsafe_push_sink({ create_node_ptr(2,0), create_sink_ptr(true) });
-        uw.unsafe_push_sink({ create_node_ptr(1,1), create_sink_ptr(true) });
+        uw.unsafe_push_terminal({ flag(create_node_ptr(2,0)), create_terminal_ptr(true) });
+        uw.unsafe_push_terminal({ create_node_ptr(2,0), create_terminal_ptr(true) });
+        uw.unsafe_push_terminal({ create_node_ptr(1,1), create_terminal_ptr(true) });
 
         uw.unsafe_push_node({ create_node_ptr(0,0), create_node_ptr(1,0) });
         uw.unsafe_push_node({ create_node_ptr(0,0), create_node_ptr(1,1) });

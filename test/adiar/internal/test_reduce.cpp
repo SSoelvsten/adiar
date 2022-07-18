@@ -3,16 +3,16 @@ go_bandit([]() {
     // The reduce<dd_policy> function is used within the constructors of the BDD
     // and ZDD classes.
 
-    ptr_t sink_T = create_sink_ptr(true);
-    ptr_t sink_F = create_sink_ptr(false);
+    ptr_t terminal_T = create_terminal_ptr(true);
+    ptr_t terminal_F = create_terminal_ptr(false);
 
     node_file x0x1_node_file;
 
     { // Garbage collect writer to free write-lock
       node_writer nw(x0x1_node_file);
 
-      nw << create_node(1,MAX_ID, sink_F, sink_T)
-         << create_node(0,MAX_ID, sink_F, create_node_ptr(1,MAX_ID));
+      nw << create_node(1,MAX_ID, terminal_F, terminal_T)
+         << create_node(0,MAX_ID, terminal_F, create_node_ptr(1,MAX_ID));
     }
 
     it("preserves negation flag on reduced input [1]", [&]() {
@@ -48,7 +48,7 @@ go_bandit([]() {
     });
 
     describe("Reduction Rule 2", [&]() {
-      it("applies to sink arcs [1]", [&]() {
+      it("applies to terminal arcs [1]", [&]() {
         /*
                    1                  1      ---- x0
                   / \                / \
@@ -73,11 +73,11 @@ go_bandit([]() {
           aw.unsafe_push_node({ n1,n3 });
           aw.unsafe_push_node({ n2,n4 });
 
-          aw.unsafe_push_sink({ flag(n2),sink_T });
-          aw.unsafe_push_sink({ n3,sink_F });
-          aw.unsafe_push_sink({ flag(n3),sink_T });
-          aw.unsafe_push_sink({ n4,sink_F });
-          aw.unsafe_push_sink({ flag(n4),sink_T });
+          aw.unsafe_push_terminal({ flag(n2),terminal_T });
+          aw.unsafe_push_terminal({ n3,terminal_F });
+          aw.unsafe_push_terminal({ flag(n3),terminal_T });
+          aw.unsafe_push_terminal({ n4,terminal_F });
+          aw.unsafe_push_terminal({ flag(n4),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -98,14 +98,14 @@ go_bandit([]() {
 
         // n4
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
                                                               create_node_ptr(2,MAX_ID),
-                                                              sink_T)));
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
@@ -141,11 +141,11 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(4u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
-      it("applies to sink arcs [2]", [&]() {
+      it("applies to terminal arcs [2]", [&]() {
         /*
                     1      ---- x0            1
                    / \                       / \
@@ -174,12 +174,12 @@ go_bandit([]() {
           aw.unsafe_push_node({ n3, n4 });
           aw.unsafe_push_node({ flag(n2), n5 });
 
-          aw.unsafe_push_sink({ n2, sink_F });
-          aw.unsafe_push_sink({ flag(n3), sink_T });
-          aw.unsafe_push_sink({ n4, sink_F });
-          aw.unsafe_push_sink({ flag(n4), sink_T });
-          aw.unsafe_push_sink({ n5, sink_F });
-          aw.unsafe_push_sink({ flag(n5), sink_T });
+          aw.unsafe_push_terminal({ n2, terminal_F });
+          aw.unsafe_push_terminal({ flag(n3), terminal_T });
+          aw.unsafe_push_terminal({ n4, terminal_F });
+          aw.unsafe_push_terminal({ flag(n4), terminal_T });
+          aw.unsafe_push_terminal({ n5, terminal_F });
+          aw.unsafe_push_terminal({ flag(n5), terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(2,2u));
@@ -198,16 +198,16 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
                                                               create_node_ptr(3, MAX_ID),
-                                                              sink_T)));
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID-1,
-                                                              sink_F,
+                                                              terminal_F,
                                                               create_node_ptr(3, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -244,8 +244,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -281,11 +281,11 @@ go_bandit([]() {
           aw.unsafe_push_node({ flag(n3),n6 });
           aw.unsafe_push_node({ flag(n4),n6 });
 
-          aw.unsafe_push_sink({ flag(n2),sink_T });
-          aw.unsafe_push_sink({ n5,sink_F });
-          aw.unsafe_push_sink({ flag(n5),sink_T });
-          aw.unsafe_push_sink({ n6,sink_T });
-          aw.unsafe_push_sink({ flag(n6),sink_F });
+          aw.unsafe_push_terminal({ flag(n2),terminal_T });
+          aw.unsafe_push_terminal({ n5,terminal_F });
+          aw.unsafe_push_terminal({ flag(n5),terminal_T });
+          aw.unsafe_push_terminal({ n6,terminal_T });
+          aw.unsafe_push_terminal({ flag(n6),terminal_F });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -306,11 +306,11 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n5
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n6
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID-1, sink_T, sink_F)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID-1, terminal_T, terminal_F)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n4
@@ -322,7 +322,7 @@ go_bandit([]() {
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
                                                               create_node_ptr(2,MAX_ID),
-                                                              sink_T)));
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
@@ -362,11 +362,11 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(6u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
       });
 
-      it("applies to both node and sink arcs", [&]() {
+      it("applies to both node and terminal arcs", [&]() {
         /*
                     1                  1     ---- x0
                    / \                / \
@@ -396,11 +396,11 @@ go_bandit([]() {
           aw.unsafe_push_node({ n3,n5 });
           aw.unsafe_push_node({ n4,n5 });
 
-          aw.unsafe_push_sink({ flag(n2),sink_T });
-          aw.unsafe_push_sink({ flag(n3),sink_T });
-          aw.unsafe_push_sink({ flag(n4),sink_T });
-          aw.unsafe_push_sink({ n5,sink_F });
-          aw.unsafe_push_sink({ flag(n5),sink_T });
+          aw.unsafe_push_terminal({ flag(n2),terminal_T });
+          aw.unsafe_push_terminal({ flag(n3),terminal_T });
+          aw.unsafe_push_terminal({ flag(n4),terminal_T });
+          aw.unsafe_push_terminal({ n5,terminal_F });
+          aw.unsafe_push_terminal({ flag(n5),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -421,19 +421,19 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n5
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n4
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
                                                               create_node_ptr(3,MAX_ID),
-                                                              sink_T)));
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
                                                               create_node_ptr(2,MAX_ID),
-                                                              sink_T)));
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
@@ -461,7 +461,7 @@ go_bandit([]() {
         AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
         AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
 
-        // Over-approximation, since T-sink from level (3) is removed
+        // Over-approximation, since T-terminal from level (3) is removed
         AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(3u));
         AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(5u));
 
@@ -477,8 +477,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("applies to 'disjoint' branches", [&]() {
@@ -516,13 +516,13 @@ go_bandit([]() {
           aw.unsafe_push_node({ flag(n3),n6 });
           aw.unsafe_push_node({ n5,n7 });
 
-          aw.unsafe_push_sink({ n4,sink_F });
-          aw.unsafe_push_sink({ flag(n4),sink_T });
-          aw.unsafe_push_sink({ flag(n5),sink_T });
-          aw.unsafe_push_sink({ n6,sink_F });
-          aw.unsafe_push_sink({ flag(n6),sink_T });
-          aw.unsafe_push_sink({ n7,sink_F });
-          aw.unsafe_push_sink({ flag(n7),sink_T });
+          aw.unsafe_push_terminal({ n4,terminal_F });
+          aw.unsafe_push_terminal({ flag(n4),terminal_T });
+          aw.unsafe_push_terminal({ flag(n5),terminal_T });
+          aw.unsafe_push_terminal({ n6,terminal_F });
+          aw.unsafe_push_terminal({ flag(n6),terminal_T });
+          aw.unsafe_push_terminal({ n7,terminal_F });
+          aw.unsafe_push_terminal({ flag(n7),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,2u));
@@ -544,20 +544,20 @@ go_bandit([]() {
 
         // n7
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n6
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n5
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID-1,
                                                               create_node_ptr(3, MAX_ID),
-                                                              sink_T)));
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n3
@@ -612,8 +612,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(7u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("does forward the correct children [1]", [&]() {
@@ -646,12 +646,12 @@ go_bandit([]() {
           aw.unsafe_push_node({ n3,n5 });
           aw.unsafe_push_node({ flag(n3),n6 });
 
-          aw.unsafe_push_sink({ n4,sink_F });
-          aw.unsafe_push_sink({ flag(n4),sink_T });
-          aw.unsafe_push_sink({ n5,sink_F });
-          aw.unsafe_push_sink({ flag(n5),sink_T });
-          aw.unsafe_push_sink({ n6,sink_T });
-          aw.unsafe_push_sink({ flag(n6),sink_F });
+          aw.unsafe_push_terminal({ n4,terminal_F });
+          aw.unsafe_push_terminal({ flag(n4),terminal_T });
+          aw.unsafe_push_terminal({ n5,terminal_F });
+          aw.unsafe_push_terminal({ flag(n5),terminal_T });
+          aw.unsafe_push_terminal({ n6,terminal_T });
+          aw.unsafe_push_terminal({ flag(n6),terminal_F });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,2u));
@@ -670,13 +670,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 5
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 6
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID-1,
-                                                              sink_T,
-                                                              sink_F)));
+                                                              terminal_T,
+                                                              terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 3
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
@@ -720,8 +720,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("does forward the correct children [2]", [&]() {
@@ -754,12 +754,12 @@ go_bandit([]() {
           aw.unsafe_push_node({ n3,n5 });
           aw.unsafe_push_node({ flag(n3),n6 });
 
-          aw.unsafe_push_sink({ n4,sink_T });
-          aw.unsafe_push_sink({ flag(n4),sink_F });
-          aw.unsafe_push_sink({ n5,sink_T });
-          aw.unsafe_push_sink({ flag(n5),sink_F });
-          aw.unsafe_push_sink({ n6,sink_F });
-          aw.unsafe_push_sink({ flag(n6),sink_T });
+          aw.unsafe_push_terminal({ n4,terminal_T });
+          aw.unsafe_push_terminal({ flag(n4),terminal_F });
+          aw.unsafe_push_terminal({ n5,terminal_T });
+          aw.unsafe_push_terminal({ flag(n5),terminal_F });
+          aw.unsafe_push_terminal({ n6,terminal_F });
+          aw.unsafe_push_terminal({ flag(n6),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,2u));
@@ -778,13 +778,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 6
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 5
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID-1,
-                                                              sink_T,
-                                                              sink_F)));
+                                                              terminal_T,
+                                                              terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 3
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
@@ -827,13 +827,13 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(5u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(5u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
     });
 
     describe("Reduction Rule 1: BDD", [&]() {
-      it("applies to sink arcs", [&]() {
+      it("applies to terminal arcs", [&]() {
         /*
                     1                  1     ---- x0
                    / \                / \
@@ -859,10 +859,10 @@ go_bandit([]() {
           aw.unsafe_push_node({ n2,n3 });
           aw.unsafe_push_node({ flag(n2),n4 });
 
-          aw.unsafe_push_sink({ n3,sink_F });
-          aw.unsafe_push_sink({ flag(n3),sink_T });
-          aw.unsafe_push_sink({ n4,sink_T });
-          aw.unsafe_push_sink({ flag(n4),sink_T });
+          aw.unsafe_push_terminal({ n3,terminal_F });
+          aw.unsafe_push_terminal({ flag(n3),terminal_T });
+          aw.unsafe_push_terminal({ n4,terminal_T });
+          aw.unsafe_push_terminal({ flag(n4),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -883,14 +883,14 @@ go_bandit([]() {
 
         // n3
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
                                                               create_node_ptr(2,MAX_ID),
-                                                              sink_T)));
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
@@ -927,8 +927,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(4u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -962,10 +962,10 @@ go_bandit([]() {
           aw.unsafe_push_node({ n4,n5 });
           aw.unsafe_push_node({ flag(n4),n5 });
 
-          aw.unsafe_push_sink({ n3,sink_F });
-          aw.unsafe_push_sink({ flag(n3),sink_T });
-          aw.unsafe_push_sink({ n5,sink_F });
-          aw.unsafe_push_sink({ flag(n5),sink_T });
+          aw.unsafe_push_terminal({ n3,terminal_F });
+          aw.unsafe_push_terminal({ flag(n3),terminal_T });
+          aw.unsafe_push_terminal({ n5,terminal_F });
+          aw.unsafe_push_terminal({ flag(n5),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -986,11 +986,11 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n5
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n3
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
@@ -1039,8 +1039,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("works with two reductions on the same level", [&]() {
@@ -1073,10 +1073,10 @@ go_bandit([]() {
           aw.unsafe_push_node({ n3,n5 });
           aw.unsafe_push_node({ flag(n3),n5 });
 
-          aw.unsafe_push_sink({ n4,sink_F });
-          aw.unsafe_push_sink({ flag(n4),sink_T });
-          aw.unsafe_push_sink({ n5,sink_T });
-          aw.unsafe_push_sink({ flag(n5),sink_F });
+          aw.unsafe_push_terminal({ n4,terminal_F });
+          aw.unsafe_push_terminal({ flag(n4),terminal_T });
+          aw.unsafe_push_terminal({ n5,terminal_T });
+          aw.unsafe_push_terminal({ flag(n5),terminal_F });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,2u));
@@ -1096,11 +1096,11 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n5
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n4
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID-1, sink_T, sink_F)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID-1, terminal_T, terminal_F)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
@@ -1138,8 +1138,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2 [1]", [&]() {
@@ -1167,11 +1167,11 @@ go_bandit([]() {
           aw.unsafe_push_node({ n2,n3 });
           aw.unsafe_push_node({ flag(n2),n4 });
 
-          aw.unsafe_push_sink({ flag(n1),sink_T });
-          aw.unsafe_push_sink({ n3,sink_F });
-          aw.unsafe_push_sink({ flag(n3),sink_T });
-          aw.unsafe_push_sink({ n4,sink_F });
-          aw.unsafe_push_sink({ flag(n4),sink_T });
+          aw.unsafe_push_terminal({ flag(n1),terminal_T });
+          aw.unsafe_push_terminal({ n3,terminal_F });
+          aw.unsafe_push_terminal({ flag(n3),terminal_T });
+          aw.unsafe_push_terminal({ n4,terminal_F });
+          aw.unsafe_push_terminal({ flag(n4),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -1192,14 +1192,14 @@ go_bandit([]() {
 
         // n4
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
                                                               create_node_ptr(2,MAX_ID),
-                                                              sink_T)));
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -1230,8 +1230,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(3u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2 [2]", [&]() {
@@ -1266,12 +1266,12 @@ go_bandit([]() {
             aw.unsafe_push_node({ flag(n3), n5 });
             aw.unsafe_push_node({ n2, n6 });
 
-            aw.unsafe_push_sink({ n4, sink_F });
-            aw.unsafe_push_sink({ flag(n4), sink_T });
-            aw.unsafe_push_sink({ n5, sink_F });
-            aw.unsafe_push_sink({ flag(n5), sink_T });
-            aw.unsafe_push_sink({ n6, sink_F });
-            aw.unsafe_push_sink({ flag(n6), sink_T });
+            aw.unsafe_push_terminal({ n4, terminal_F });
+            aw.unsafe_push_terminal({ flag(n4), terminal_T });
+            aw.unsafe_push_terminal({ n5, terminal_F });
+            aw.unsafe_push_terminal({ flag(n5), terminal_T });
+            aw.unsafe_push_terminal({ n6, terminal_F });
+            aw.unsafe_push_terminal({ flag(n6), terminal_T });
 
             aw.unsafe_push(create_level_info(0,1u));
             aw.unsafe_push(create_level_info(1,2u));
@@ -1292,14 +1292,14 @@ go_bandit([]() {
           // n6
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID,
-                                                                sink_F,
-                                                                sink_T)));
+                                                                terminal_F,
+                                                                terminal_T)));
 
           // n4
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
-                                                                sink_F,
-                                                                sink_T)));
+                                                                terminal_F,
+                                                                terminal_T)));
 
           // n2
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1355,8 +1355,8 @@ go_bandit([]() {
           AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
           AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-          AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-          AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+          AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+          AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
         });
 
       it("can reduce the root", [&]() {
@@ -1385,10 +1385,10 @@ go_bandit([]() {
           aw.unsafe_push_node({ n2,n3 });
           aw.unsafe_push_node({ flag(n2),n4 });
 
-          aw.unsafe_push_sink({ n3,sink_F });
-          aw.unsafe_push_sink({ flag(n3),sink_T });
-          aw.unsafe_push_sink({ n4,sink_F });
-          aw.unsafe_push_sink({ flag(n4),sink_T });
+          aw.unsafe_push_terminal({ n3,terminal_F });
+          aw.unsafe_push_terminal({ flag(n3),terminal_T });
+          aw.unsafe_push_terminal({ n4,terminal_F });
+          aw.unsafe_push_terminal({ flag(n4),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -1408,7 +1408,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n4
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -1428,8 +1428,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("accounts for multiple ingoing arcs to reduction rule 1 node", [&]() {
@@ -1464,12 +1464,12 @@ go_bandit([]() {
           aw.unsafe_push_node({ flag(n1),n6 });
           aw.unsafe_push_node({ flag(n2),n6 });
 
-          aw.unsafe_push_sink({ n4,sink_T });
-          aw.unsafe_push_sink({ flag(n4),sink_F });
-          aw.unsafe_push_sink({ n5,sink_F });
-          aw.unsafe_push_sink({ flag(n5),sink_T });
-          aw.unsafe_push_sink({ n6,sink_T });
-          aw.unsafe_push_sink({ flag(n6),sink_T });
+          aw.unsafe_push_terminal({ n4,terminal_T });
+          aw.unsafe_push_terminal({ flag(n4),terminal_F });
+          aw.unsafe_push_terminal({ n5,terminal_F });
+          aw.unsafe_push_terminal({ flag(n5),terminal_T });
+          aw.unsafe_push_terminal({ n6,terminal_T });
+          aw.unsafe_push_terminal({ flag(n6),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -1490,13 +1490,13 @@ go_bandit([]() {
           // n4
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID,
-                                                                sink_F,
-                                                                sink_T)));
+                                                                terminal_F,
+                                                                terminal_T)));
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID-1,
-                                                                sink_T,
-                                                                sink_F)));
+                                                                terminal_T,
+                                                                terminal_F)));
 
           // n4
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1508,13 +1508,13 @@ go_bandit([]() {
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
                                                                 create_node_ptr(2, MAX_ID),
-                                                                sink_T)));
+                                                                terminal_T)));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
                                                                 create_node_ptr(1,MAX_ID),
-                                                                sink_T)));
+                                                                terminal_T)));
           AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -1554,8 +1554,8 @@ go_bandit([]() {
 
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(6u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(4u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(4u));
       });
 
       it("can apply reduction rule 1 to a single node", [&]() {
@@ -1572,8 +1572,8 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_sink({ n1,sink_F });
-          aw.unsafe_push_sink({ flag(n1),sink_F });
+          aw.unsafe_push_terminal({ n1,terminal_F });
+          aw.unsafe_push_terminal({ flag(n1),terminal_F });
 
           aw.unsafe_push(create_level_info(0,1u));
         }
@@ -1591,7 +1591,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // F
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -1607,11 +1607,11 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
       });
 
-      it("can propagate reduction rule 1 up to a sink", [&]() {
+      it("can propagate reduction rule 1 up to a terminal", [&]() {
         /*
                    1                  T
                   / \
@@ -1630,9 +1630,9 @@ go_bandit([]() {
 
           aw.unsafe_push_node({ flag(n1),n2 });
 
-          aw.unsafe_push_sink({ n1,sink_T });
-          aw.unsafe_push_sink({ n2,sink_T });
-          aw.unsafe_push_sink({ flag(n2),sink_T });
+          aw.unsafe_push_terminal({ n1,terminal_T });
+          aw.unsafe_push_terminal({ n2,terminal_T });
+          aw.unsafe_push_terminal({ flag(n2),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -1649,7 +1649,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -1665,8 +1665,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can return non-reducible single-node variable with MAX_ID", [&]() {
@@ -1683,8 +1683,8 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_sink({ n1,sink_F });
-          aw.unsafe_push_sink({ flag(n1),sink_T });
+          aw.unsafe_push_terminal({ n1,terminal_F });
+          aw.unsafe_push_terminal({ flag(n1),terminal_T });
 
           aw.unsafe_push(create_level_info(0u,1u));
         }
@@ -1700,7 +1700,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -1719,8 +1719,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can account for a chain of don't cares contributing to the maximum cut [1]", [&]() {
@@ -1776,10 +1776,10 @@ go_bandit([]() {
           aw.unsafe_push_node({ n9,n10 });
           aw.unsafe_push_node({ flag(n9),n11 });
 
-          aw.unsafe_push_sink({ n10,sink_T });
-          aw.unsafe_push_sink({ flag(n10),sink_F });
-          aw.unsafe_push_sink({ n11,sink_F });
-          aw.unsafe_push_sink({ flag(n11),sink_T });
+          aw.unsafe_push_terminal({ n10,terminal_T });
+          aw.unsafe_push_terminal({ flag(n10),terminal_F });
+          aw.unsafe_push_terminal({ n11,terminal_F });
+          aw.unsafe_push_terminal({ flag(n11),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,2u));
@@ -1801,13 +1801,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n11
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(5, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n10
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(5, MAX_ID-1,
-                                                              sink_T,
-                                                              sink_F)));
+                                                              terminal_T,
+                                                              terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n9
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
@@ -1877,8 +1877,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can account for a chain of don't cares contributing to the maximum cut [2]", [&]() {
@@ -1943,10 +1943,10 @@ go_bandit([]() {
           aw.unsafe_push_node({ n10,n14 });
           aw.unsafe_push_node({ flag(n12),n14 });
 
-          aw.unsafe_push_sink({ n13,sink_T });
-          aw.unsafe_push_sink({ flag(n13),sink_F });
-          aw.unsafe_push_sink({ n14,sink_F });
-          aw.unsafe_push_sink({ flag(n14),sink_T });
+          aw.unsafe_push_terminal({ n13,terminal_T });
+          aw.unsafe_push_terminal({ flag(n13),terminal_F });
+          aw.unsafe_push_terminal({ n14,terminal_F });
+          aw.unsafe_push_terminal({ flag(n14),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,2u));
@@ -1968,13 +1968,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n14
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(5, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n13
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(5, MAX_ID-1,
-                                                              sink_T,
-                                                              sink_F)));
+                                                              terminal_T,
+                                                              terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n12
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
@@ -2063,8 +2063,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(10u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(15u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("Merges nodes, despite of reduction rule 1 flag on child", [&]() {
@@ -2092,11 +2092,11 @@ go_bandit([]() {
           aw.unsafe_push_node({ flag(n1),n3 });
           aw.unsafe_push_node({ flag(n2),n4 });
 
-          aw.unsafe_push_sink({ n2,sink_F });
-          aw.unsafe_push_sink({ n3,sink_F });
-          aw.unsafe_push_sink({ flag(n3),sink_T });
-          aw.unsafe_push_sink({ n4,sink_T });
-          aw.unsafe_push_sink({ flag(n4),sink_T });
+          aw.unsafe_push_terminal({ n2,terminal_F });
+          aw.unsafe_push_terminal({ n3,terminal_F });
+          aw.unsafe_push_terminal({ flag(n3),terminal_T });
+          aw.unsafe_push_terminal({ n4,terminal_T });
+          aw.unsafe_push_terminal({ flag(n4),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,2u));
@@ -2114,7 +2114,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -2136,13 +2136,13 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
     });
 
     describe("Reduction Rule 1: ZDD", [&]() {
-      it("applies to sink arcs", [&]() {
+      it("applies to terminal arcs", [&]() {
         /*
                    1                  1     ---- x0
                   / \                / \
@@ -2161,9 +2161,9 @@ go_bandit([]() {
 
           aw.unsafe_push_node({ flag(n1),n2 });
 
-          aw.unsafe_push_sink({ n1,sink_T });
-          aw.unsafe_push_sink({ n2,sink_T });
-          aw.unsafe_push_sink({ flag(n2),sink_F });
+          aw.unsafe_push_terminal({ n1,terminal_T });
+          aw.unsafe_push_terminal({ n2,terminal_T });
+          aw.unsafe_push_terminal({ flag(n2),terminal_F });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -2180,7 +2180,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID, sink_T, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID, terminal_T, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -2201,8 +2201,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -2235,11 +2235,11 @@ go_bandit([]() {
           aw.unsafe_push_node({ flag(n2),n4 });
           aw.unsafe_push_node({ n4,n5 });
 
-          aw.unsafe_push_sink({ n3,sink_F });
-          aw.unsafe_push_sink({ flag(n3),sink_T });
-          aw.unsafe_push_sink({ flag(n4),sink_F });
-          aw.unsafe_push_sink({ n5,sink_F });
-          aw.unsafe_push_sink({ flag(n5),sink_T });
+          aw.unsafe_push_terminal({ n3,terminal_F });
+          aw.unsafe_push_terminal({ flag(n3),terminal_T });
+          aw.unsafe_push_terminal({ flag(n4),terminal_F });
+          aw.unsafe_push_terminal({ n5,terminal_F });
+          aw.unsafe_push_terminal({ flag(n5),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -2260,11 +2260,11 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n5
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(3, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n3
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
@@ -2318,8 +2318,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2", [&]() {
@@ -2347,11 +2347,11 @@ go_bandit([]() {
           aw.unsafe_push_node({ flag(n1),n3 });
           aw.unsafe_push_node({ flag(n3),n4 });
 
-          aw.unsafe_push_sink({ n2,sink_F });
-          aw.unsafe_push_sink({ flag(n2),sink_T });
-          aw.unsafe_push_sink({ n3,sink_F });
-          aw.unsafe_push_sink({ n4,sink_T });
-          aw.unsafe_push_sink({ flag(n4),sink_F });
+          aw.unsafe_push_terminal({ n2,terminal_F });
+          aw.unsafe_push_terminal({ flag(n2),terminal_T });
+          aw.unsafe_push_terminal({ n3,terminal_F });
+          aw.unsafe_push_terminal({ n4,terminal_T });
+          aw.unsafe_push_terminal({ flag(n4),terminal_F });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,2u));
@@ -2372,8 +2372,8 @@ go_bandit([]() {
 
         // n3
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
@@ -2412,8 +2412,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("applies to a single node", [&]() {
@@ -2430,8 +2430,8 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_sink({ n1,sink_T });
-          aw.unsafe_push_sink({ flag(n1),sink_F });
+          aw.unsafe_push_terminal({ n1,terminal_T });
+          aw.unsafe_push_terminal({ flag(n1),terminal_F });
 
           aw.unsafe_push(create_level_info(0,1u));
         }
@@ -2449,7 +2449,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // F
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -2465,8 +2465,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can reduce the root", [&]() {
@@ -2488,9 +2488,9 @@ go_bandit([]() {
 
           aw.unsafe_push_node({ n1,n2 });
 
-          aw.unsafe_push_sink({ flag(n1),sink_F });
-          aw.unsafe_push_sink({ n2,sink_F });
-          aw.unsafe_push_sink({ flag(n2),sink_T });
+          aw.unsafe_push_terminal({ flag(n1),terminal_F });
+          aw.unsafe_push_terminal({ n2,terminal_F });
+          aw.unsafe_push_terminal({ flag(n2),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -2509,7 +2509,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -2529,11 +2529,11 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
-      it("can propagate reduction rule 1 up to a sink", [&]() {
+      it("can propagate reduction rule 1 up to a terminal", [&]() {
         /*
                    1                  F
                   / \
@@ -2552,9 +2552,9 @@ go_bandit([]() {
 
           aw.unsafe_push_node({ flag(n1),n2 });
 
-          aw.unsafe_push_sink({ n1,sink_F });
-          aw.unsafe_push_sink({ n2,sink_F });
-          aw.unsafe_push_sink({ flag(n2),sink_F });
+          aw.unsafe_push_terminal({ n1,terminal_F });
+          aw.unsafe_push_terminal({ n2,terminal_F });
+          aw.unsafe_push_terminal({ flag(n2),terminal_F });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,1u));
@@ -2571,7 +2571,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -2587,8 +2587,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("can return non-reducible single-node variable with MAX_ID [1]", [&]() {
@@ -2605,8 +2605,8 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_sink({ n1,sink_F });
-          aw.unsafe_push_sink({ flag(n1),sink_T });
+          aw.unsafe_push_terminal({ n1,terminal_F });
+          aw.unsafe_push_terminal({ flag(n1),terminal_T });
 
           aw.unsafe_push(create_level_info(42,1u));
         }
@@ -2622,7 +2622,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(42, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -2641,8 +2641,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can return non-reducible single-node variable with MAX_ID [2]", [&]() {
@@ -2659,8 +2659,8 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_sink({ n1,sink_T });
-          aw.unsafe_push_sink({ flag(n1),sink_T });
+          aw.unsafe_push_terminal({ n1,terminal_T });
+          aw.unsafe_push_terminal({ flag(n1),terminal_T });
 
           aw.unsafe_push(create_level_info(12,1u));
         }
@@ -2676,7 +2676,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(12, MAX_ID, sink_T, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(12, MAX_ID, terminal_T, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -2695,8 +2695,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
       });
 
 
@@ -2749,14 +2749,14 @@ go_bandit([]() {
           aw.unsafe_push_node({ flag(n8),n11 });
           aw.unsafe_push_node({ n9,n11 });
 
-          aw.unsafe_push_sink({ flag(n3),sink_F });
-          aw.unsafe_push_sink({ flag(n5),sink_F });
-          aw.unsafe_push_sink({ flag(n7),sink_F });
-          aw.unsafe_push_sink({ flag(n9),sink_F });
-          aw.unsafe_push_sink({ n10,sink_F });
-          aw.unsafe_push_sink({ flag(n10),sink_T });
-          aw.unsafe_push_sink({ n11,sink_T });
-          aw.unsafe_push_sink({ flag(n11),sink_T });
+          aw.unsafe_push_terminal({ flag(n3),terminal_F });
+          aw.unsafe_push_terminal({ flag(n5),terminal_F });
+          aw.unsafe_push_terminal({ flag(n7),terminal_F });
+          aw.unsafe_push_terminal({ flag(n9),terminal_F });
+          aw.unsafe_push_terminal({ n10,terminal_F });
+          aw.unsafe_push_terminal({ flag(n10),terminal_T });
+          aw.unsafe_push_terminal({ n11,terminal_T });
+          aw.unsafe_push_terminal({ flag(n11),terminal_T });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,2u));
@@ -2778,13 +2778,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n11
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(5, MAX_ID,
-                                                              sink_T,
-                                                              sink_T)));
+                                                              terminal_T,
+                                                              terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n10
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(5, MAX_ID-1,
-                                                              sink_F,
-                                                              sink_T)));
+                                                              terminal_F,
+                                                              terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n9
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
@@ -2854,8 +2854,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("Merges nodes, despite of reduction rule 1 flag on child", [&]() {
@@ -2883,11 +2883,11 @@ go_bandit([]() {
           aw.unsafe_push_node({ flag(n1),n3 });
           aw.unsafe_push_node({ flag(n2),n4 });
 
-          aw.unsafe_push_sink({ n2,sink_F });
-          aw.unsafe_push_sink({ n3,sink_F });
-          aw.unsafe_push_sink({ flag(n3),sink_T });
-          aw.unsafe_push_sink({ n4,sink_T });
-          aw.unsafe_push_sink({ flag(n4),sink_F });
+          aw.unsafe_push_terminal({ n2,terminal_F });
+          aw.unsafe_push_terminal({ n3,terminal_F });
+          aw.unsafe_push_terminal({ flag(n3),terminal_T });
+          aw.unsafe_push_terminal({ n4,terminal_T });
+          aw.unsafe_push_terminal({ flag(n4),terminal_F });
 
           aw.unsafe_push(create_level_info(0,1u));
           aw.unsafe_push(create_level_info(1,2u));
@@ -2905,7 +2905,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n2
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID, sink_F, sink_T)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID))));
@@ -2941,8 +2941,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
     });
   });

@@ -20,7 +20,7 @@ namespace adiar {
 
     node_stream<> ns(nodes);
 
-    if (is_sink(nodes)) {
+    if (is_terminal(nodes)) {
       out << "\t"
           << value_of(ns.pull())
           << " [shape=box];" << std::endl;
@@ -40,8 +40,8 @@ namespace adiar {
             << std::endl;
       }
 
-      out << "\tn" << create_sink_ptr(false) << " [label=\"" << T::false_print << "\"];" << std::endl;
-      out << "\tn" << create_sink_ptr(true) << " [label=\"" << T::true_print << "\"];" << std::endl;
+      out << "\tn" << create_terminal_ptr(false) << " [label=\"" << T::false_print << "\"];" << std::endl;
+      out << "\tn" << create_terminal_ptr(true) << " [label=\"" << T::true_print << "\"];" << std::endl;
 
       out <<  std::endl << "\t// Arcs" << std::endl;
 
@@ -104,7 +104,7 @@ namespace adiar {
     out << "\ts0 [shape=box, label=\"0\"];" << std::endl;
     out << "\ts1 [shape=box, label=\"1\"];" << std::endl;
 
-    sink_arc_stream<> sas(arcs);
+    terminal_arc_stream<> sas(arcs);
     while (sas.can_pull()) {
       arc_t a = sas.pull();
       out << "\t"

@@ -1,15 +1,15 @@
 go_bandit([]() {
   describe("adiar/zdd/build.cpp", [&]() {
-    ptr_t sink_T = create_sink_ptr(true);
-    ptr_t sink_F = create_sink_ptr(false);
+    ptr_t terminal_T = create_terminal_ptr(true);
+    ptr_t terminal_F = create_terminal_ptr(false);
 
-    describe("zdd_sink", [&]() {
-      it("can create { Ø } [zdd_sink]", [&]() {
-        zdd res = zdd_sink(true);
+    describe("zdd_terminal", [&]() {
+      it("can create { Ø } [zdd_terminal]", [&]() {
+        zdd res = zdd_terminal(true);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -27,8 +27,8 @@ go_bandit([]() {
 
         AssertThat(res->canonical, Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can create { Ø } [zdd_null]", [&]() {
@@ -36,7 +36,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -54,16 +54,16 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
-      it("can create Ø [zdd_sink]", [&]() {
-        zdd res = zdd_sink(false);
+      it("can create Ø [zdd_terminal]", [&]() {
+        zdd res = zdd_terminal(false);
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -81,8 +81,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("can create Ø [zdd_empty]", [&]() {
@@ -90,7 +90,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -108,8 +108,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
       });
     });
 
@@ -119,7 +119,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, MAX_ID, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(0, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -140,8 +140,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can create { {42} }", [&]() {
@@ -149,7 +149,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -170,8 +170,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
     });
 
@@ -183,7 +183,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -201,8 +201,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can create { {42} }", [&]() {
@@ -217,7 +217,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -238,8 +238,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can create { {1,2,5} }", [&]() {
@@ -254,11 +254,11 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, sink_F, create_node_ptr(5,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_F, create_node_ptr(5,MAX_ID))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID, sink_F, create_node_ptr(2,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID, terminal_F, create_node_ptr(2,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -284,8 +284,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(3u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
     });
 
@@ -297,7 +297,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -315,8 +315,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("can create { {42} }", [&]() {
@@ -331,7 +331,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -352,8 +352,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can create { {1}, {2}, {5} }", [&]() {
@@ -368,11 +368,11 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, create_node_ptr(5,MAX_ID), sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, create_node_ptr(5,MAX_ID), terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -398,8 +398,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
       });
     });
 
@@ -411,7 +411,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -422,8 +422,8 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can create { Ø, {42} }", [&]() {
@@ -438,7 +438,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, sink_T, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -459,8 +459,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can create { Ø, {1}, {2}, {5}, {1,2}, {1,5}, {2,5}, {1,2,5} }", [&]() {
@@ -475,7 +475,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID, sink_T, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID,
                                                        create_node_ptr(5,MAX_ID),
@@ -509,8 +509,8 @@ go_bandit([]() {
 
         AssertThat(is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
       });
     });
 
@@ -522,7 +522,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -538,8 +538,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can compute { s <= Ø | |s| > 0 } to be Ø", [&]() {
@@ -548,7 +548,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -564,8 +564,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("can compute { s <= {1,2,3} | |s| < 0 } to be Ø", [&]() {
@@ -580,7 +580,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -596,8 +596,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("can compute { s <= {0,2,4,6} | |s| <= 0 } to be { Ø }", [&]() {
@@ -612,7 +612,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -628,8 +628,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can compute { s <= {0,2,4,6} | |s| < 42 } to be the powerset", [&]() {
@@ -644,7 +644,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, MAX_ID, sink_T, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(6, MAX_ID, terminal_T, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, MAX_ID,
@@ -685,8 +685,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can compute { s <= {0,2,4,6} | |s| > 42 } to be Ø", [&]() {
@@ -701,7 +701,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -717,8 +717,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("can compute { s <= {0,1,2} | |s| <= 3 } to be the powerset", [&]() {
@@ -733,7 +733,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, sink_T, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_T, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID,
@@ -767,8 +767,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can compute { s <= {0,1,2} | |s| == 3 } to be the { {0,1,2} }", [&]() {
@@ -783,16 +783,16 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID,
-                                                       sink_F,
+                                                       terminal_F,
                                                        create_node_ptr(2,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(0, MAX_ID,
-                                                       sink_F,
+                                                       terminal_F,
                                                        create_node_ptr(1,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
@@ -817,8 +817,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(3u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can compute { s <= {0,2,3} | |s| > 3 } to be Ø", [&]() {
@@ -833,7 +833,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(false)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -844,8 +844,8 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("can compute { s <= {0,1,2} | |s| < 1 } to be { Ø }", [&]() {
@@ -860,7 +860,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_sink(true)));
+        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -876,8 +876,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       // TODO: More edge cases
@@ -900,15 +900,15 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(3, 1,
                                                        create_node_ptr(5,1),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(3, 0,
-                                                       sink_F,
+                                                       terminal_F,
                                                        create_node_ptr(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
@@ -942,8 +942,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can create { s <= {1,2,3,4,6} | |s| == 3 }", [&]() {
@@ -958,28 +958,28 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 2, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 2, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, 2,
                                                        create_node_ptr(6,2),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
-                                                       sink_F,
+                                                       terminal_F,
                                                        create_node_ptr(6,2))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(3, 2,
                                                        create_node_ptr(4,2),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(3, 1,
                                                        create_node_ptr(4,1),
                                                        create_node_ptr(4,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(3, 0,
-                                                       sink_F,
+                                                       terminal_F,
                                                        create_node_ptr(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1026,8 +1026,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(3u));
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(3u));
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| >= 2 }", [&]() {
@@ -1042,9 +1042,9 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 2, sink_T, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 2, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 1, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 1, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(6, 2,
@@ -1056,7 +1056,7 @@ go_bandit([]() {
                                                        create_node_ptr(8,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(6, 0,
-                                                       sink_F,
+                                                       terminal_F,
                                                        create_node_ptr(8,1))));
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1116,8 +1116,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("can create { s <= {0,1,2,3,4,5} | |s| > 0 }", [&]() {
@@ -1132,9 +1132,9 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1, sink_T, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 0, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 0, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
@@ -1209,8 +1209,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("can create { s <= {0,1,2,3,5} | |s| > 1 }", [&]() {
@@ -1225,9 +1225,9 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 2, sink_T, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 2, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(3, 2,
@@ -1239,7 +1239,7 @@ go_bandit([]() {
                                                        create_node_ptr(5,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(3, 0,
-                                                       sink_F,
+                                                       terminal_F,
                                                        create_node_ptr(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1299,8 +1299,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(2u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| < 2 }", [&]() {
@@ -1316,28 +1316,28 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(8, 0,
-                                                       sink_T,
-                                                       sink_T)));
+                                                       terminal_T,
+                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(6, 0,
                                                        create_node_ptr(8,0),
-                                                       sink_T)));
+                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, 0,
                                                        create_node_ptr(6,0),
-                                                       sink_T)));
+                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
                                                        create_node_ptr(4,0),
-                                                       sink_T)));
+                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0,
                                                        create_node_ptr(2,0),
-                                                       sink_T)));
+                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1369,8 +1369,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(6u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(6u));
       });
 
       it("can create { s <= {0,2,4,6} | |s| < 3 }", [&]() {
@@ -1386,13 +1386,13 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(6, 1,
-                                                       sink_T,
-                                                       sink_T)));
+                                                       terminal_T,
+                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
                                                        create_node_ptr(6,1),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, 0,
                                                        create_node_ptr(6,1),
@@ -1401,7 +1401,7 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(2, 1,
                                                        create_node_ptr(4,1),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
                                                        create_node_ptr(4,0),
@@ -1440,8 +1440,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(4u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(4u));
       });
 
       it("can create { s <= {1,2,3,4,5,6,7,8,9} | |s| < 5 }", [&]() {
@@ -1457,13 +1457,13 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(9, 3,
-                                                       sink_T,
-                                                       sink_T)));
+                                                       terminal_T,
+                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(8, 3,
                                                        create_node_ptr(9,3),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(8, 2,
                                                        create_node_ptr(9,3),
@@ -1472,7 +1472,7 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(7, 3,
                                                        create_node_ptr(8,3),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(7, 2,
                                                        create_node_ptr(8,2),
@@ -1485,7 +1485,7 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(6, 3,
                                                        create_node_ptr(7,3),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(6, 2,
                                                        create_node_ptr(7,2),
@@ -1502,7 +1502,7 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(5, 3,
                                                        create_node_ptr(6,3),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(5, 2,
                                                        create_node_ptr(6,2),
@@ -1519,7 +1519,7 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, 3,
                                                        create_node_ptr(5,3),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, 2,
                                                        create_node_ptr(5,2),
@@ -1598,8 +1598,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(7u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(7u));
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| <= 2 }", [&]() {
@@ -1614,12 +1614,12 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 1, sink_T, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 1, terminal_T, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(6, 1,
                                                        create_node_ptr(8,1),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(6, 0,
                                                        create_node_ptr(8,1),
@@ -1628,7 +1628,7 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
                                                        create_node_ptr(6,1),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(4, 0,
                                                        create_node_ptr(6,0),
@@ -1637,7 +1637,7 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(2, 1,
                                                        create_node_ptr(4,1),
-                                                       sink_T)));
+                                                       terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
                                                        create_node_ptr(4,0),
@@ -1678,8 +1678,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(5u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(5u));
       });
 
       it("can create { s <= {0,1,...,9} | |s| != 4 }", [&]() {
@@ -1694,9 +1694,9 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(9, 5, sink_T, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(9, 5, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(9, 4, sink_F, sink_T)));
+        AssertThat(ns.pull(), Is().EqualTo(create_node(9, 4, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(8, 5,
@@ -1708,12 +1708,12 @@ go_bandit([]() {
                                                        create_node_ptr(9,5))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(8, 3,
-                                                       sink_T,
+                                                       terminal_T,
                                                        create_node_ptr(9,4))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(8, 2,
                                                        create_node_ptr(9,5),
-                                                       sink_T)));
+                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(create_node(7, 5,
@@ -1891,8 +1891,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_sinks[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_sinks[1], Is().EqualTo(5u));
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(5u));
       });
     });
   });

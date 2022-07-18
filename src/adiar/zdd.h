@@ -15,13 +15,13 @@ namespace adiar
   /* =========================== ZDD CONSTRUCTION =========================== */
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief       The ZDD of only a single sink.
+  /// \brief       The ZDD of only a single terminal.
   ///
-  /// \param value The constant sink value.
+  /// \param value The constant terminal value.
   ///
   /// \sa          zdd_empty zdd_null
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_sink(bool value);
+  zdd zdd_terminal(bool value);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The empty family, i.e. Ø .
@@ -324,7 +324,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically smallest set a in A.
   ///
-  /// \details Outputs the trace of the low-most path to the true sink. The
+  /// \details Outputs the trace of the low-most path to the true terminal. The
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   //////////////////////////////////////////////////////////////////////////////
@@ -333,7 +333,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically largest set a in A.
   ///
-  /// \details Outputs the trace of the high-most path to the true sink. The
+  /// \details Outputs the trace of the high-most path to the true terminal. The
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   //////////////////////////////////////////////////////////////////////////////

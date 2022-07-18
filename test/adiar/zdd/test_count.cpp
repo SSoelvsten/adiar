@@ -1,7 +1,7 @@
 go_bandit([]() {
   describe("adiar/zdd/count.cpp", [&]() {
-    ptr_t sink_T = create_sink_ptr(true);
-    ptr_t sink_F = create_sink_ptr(false);
+    ptr_t terminal_T = create_terminal_ptr(true);
+    ptr_t terminal_F = create_terminal_ptr(false);
 
     node_file zdd_1;
     /*
@@ -16,8 +16,8 @@ go_bandit([]() {
              F T
     */
     { // Garbage collect writer to free write-lock
-      node_t n4 = create_node(3,0, sink_F, sink_T);
-      node_t n3 = create_node(2,0, sink_F, n4.uid);
+      node_t n4 = create_node(3,0, terminal_F, terminal_T);
+      node_t n3 = create_node(2,0, terminal_F, n4.uid);
       node_t n2 = create_node(1,0, n3.uid, n4.uid);
       node_t n1 = create_node(0,0, n3.uid, n2.uid);
 
@@ -36,8 +36,8 @@ go_bandit([]() {
            F  T
     */
     { // Garbage collect writer to free write-lock
-      node_t n2 = create_node(2,0, sink_F, sink_T);
-      node_t n1 = create_node(1,0, n2.uid, sink_T);
+      node_t n2 = create_node(2,0, terminal_F, terminal_T);
+      node_t n1 = create_node(1,0, n2.uid, terminal_T);
 
       node_writer nw_2(zdd_2);
       nw_2 << n2 << n1;
@@ -51,7 +51,7 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_T(zdd_T);
-      nw_T << create_sink(true);
+      nw_T << create_terminal(true);
     }
 
     node_file zdd_F;
@@ -62,7 +62,7 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_F(zdd_F);
-      nw_F << create_sink(false);
+      nw_F << create_terminal(false);
     }
 
     node_file zdd_root_1;
@@ -75,7 +75,7 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_root_1(zdd_root_1);
-      nw_root_1 << create_node(1,0, sink_F, sink_T);
+      nw_root_1 << create_node(1,0, terminal_F, terminal_T);
     }
 
     describe("zdd_nodecount", [&]() {

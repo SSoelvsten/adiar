@@ -137,7 +137,7 @@ namespace adiar {
       // - If the cut size is strictly larger than the corresponding cut_type
       //   excluding false. In this case, we already have a false arc to pair
       //   with.
-      const size_t add_suppressed = !includes_sink(ct, false) && cut_size == ilevel_cuts[ct_excl_false];
+      const size_t add_suppressed = !includes_terminal(ct, false) && cut_size == ilevel_cuts[ct_excl_false];
 
       return to_size(cut_size + add_suppressed);
     }

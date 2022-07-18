@@ -30,7 +30,7 @@ namespace adiar {
   zdd::zdd(const node_file &f, bool negate) : decision_diagram(f, negate) { }
 
   zdd::zdd() : zdd(zdd_empty()) { }
-  zdd::zdd(bool v) : zdd(zdd_sink(v)) { }
+  zdd::zdd(bool v) : zdd(zdd_terminal(v)) { }
 
   zdd::zdd(const zdd &o) : decision_diagram(o) { }
   zdd::zdd(zdd &&o) : decision_diagram(o) { }

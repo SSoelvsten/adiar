@@ -33,7 +33,7 @@ namespace adiar {
 
   bdd::bdd(__bdd &&o) : decision_diagram(reduce<bdd_policy>(std::forward<__bdd>(o))) { }
 
-  bdd::bdd(bool v) : bdd(bdd_sink(v)) { }
+  bdd::bdd(bool v) : bdd(bdd_terminal(v)) { }
   bdd::bdd() : bdd(false) { }
 
   //////////////////////////////////////////////////////////////////////////////

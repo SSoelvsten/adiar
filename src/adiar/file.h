@@ -158,7 +158,7 @@ namespace adiar
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum 1-level cut of the DAG (with or
-      ///        without arcs to each respective sink). Use <tt>cut_type</tt> to
+      ///        without arcs to each respective terminal). Use <tt>cut_type</tt> to
       ///        index the desired variant of the type.
       ///
       /// \sa    cut_type
@@ -167,7 +167,7 @@ namespace adiar
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum 2-level cut of the DAG (with or
-      ///        without arcs to each respective sink). Use <tt>cut_type</tt> to
+      ///        without arcs to each respective terminal). Use <tt>cut_type</tt> to
       ///        index the desired variant of the type.
       ///
       /// \sa    cut_type
@@ -180,8 +180,8 @@ namespace adiar
   /// An unreduced Decision Diagram is given by a three files of arcs:
   ///
   /// - [0] : node-to-node arcs (sorted by <tt>target</tt>)
-  /// - [1] : node-to-sink arcs (sorted by <tt>source</tt>).
-  /// - [2] : node-to-sink arcs (not sorted)
+  /// - [1] : node-to-terminal arcs (sorted by <tt>source</tt>).
+  /// - [2] : node-to-terminal arcs (not sorted)
   //////////////////////////////////////////////////////////////////////////////
   template <>
   struct FILE_CONSTANTS<arc_t>
@@ -192,7 +192,7 @@ namespace adiar
     {
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum one-level cut of the DAG (not
-      ///        counting any arcs to sinks).
+      ///        counting any arcs to terminals).
       ///
       /// TODO: use array of size 1?
       //////////////////////////////////////////////////////////////////////////
@@ -227,11 +227,11 @@ namespace adiar
 
   public:
     ///////////////////////////////////////////////////////////////////////////
-    /// \brief The number of false and true sinks in the file.
-    ///        Index 0 gives the number of false sinks and index 1 gives the
-    ///        number of true sinks.
+    /// \brief The number of false and true terminals in the file.
+    ///        Index 0 gives the number of false terminals and index 1 gives the
+    ///        number of true terminals.
     ////////////////////////////////////////////////////////////////////////////
-    size_t number_of_sinks[2] = { 0, 0 };
+    size_t number_of_terminals[2] = { 0, 0 };
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Meta information on a level by level granularity.
@@ -506,30 +506,30 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Check whether a given node_file represents a sink-only DAG.
+  /// \brief      Check whether a given node_file represents a terminal-only DAG.
   ///
   /// \param file The node_file to check its content
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_sink(const node_file &file)
+  inline bool is_terminal(const node_file &file)
   {
-    // A node_file only contains a sink iff the number of arcs to a sink value
+    // A node_file only contains a terminal iff the number of arcs to a terminal value
     // in its meta information is exactly one.
-    return (file->number_of_sinks[false] + file->number_of_sinks[true]) == 1;
+    return (file->number_of_terminals[false] + file->number_of_terminals[true]) == 1;
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Obtain the sink value of a node_file where 'is_sink' is true.
+  /// \brief      Obtain the terminal value of a node_file where 'is_terminal' is true.
   ///
   /// \param file The node_file to check its content
   //////////////////////////////////////////////////////////////////////////////
   inline bool value_of(const node_file &file)
   {
-    adiar_debug(is_sink(file), "Must be a sink to extract its value");
+    adiar_debug(is_terminal(file), "Must be a terminal to extract its value");
 
-    // Since the sum of the number of sinks is exactly one, then we can use the
-    // value of the number of true sinks to indirectly derive the value of the
-    // sink.
-    return file._file_ptr -> number_of_sinks[true];
+    // Since the sum of the number of terminals is exactly one, then we can use the
+    // value of the number of true terminals to indirectly derive the value of the
+    // terminal.
+    return file._file_ptr -> number_of_terminals[true];
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -547,7 +547,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   inline uint64_t nodecount(const node_file &nodes)
   {
-    return is_sink(nodes) ? 0u : nodes.size();
+    return is_terminal(nodes) ? 0u : nodes.size();
   }
 
   //////////////////////////////////////////////////////////////////////////////

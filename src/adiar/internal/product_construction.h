@@ -92,9 +92,9 @@ namespace adiar
                                const bool_op &op,
                                ptr_t source, tuple target)
   {
-    if (is_sink(target.t1) && is_sink(target.t2)) {
+    if (is_terminal(target.t1) && is_terminal(target.t2)) {
       arc_t out_arc = { source, op(target.t1, target.t2) };
-      aw.unsafe_push_sink(out_arc);
+      aw.unsafe_push_terminal(out_arc);
     } else {
       adiar_debug(label_of(source) < label_of(std::min(target.t1, target.t2)),
                   "should always push recursion for 'later' level");
@@ -130,13 +130,13 @@ namespace adiar
     }
   };
 
-  struct prod_recurse_in__output_sink
+  struct prod_recurse_in__output_terminal
   {
     template<typename pq_1_t>
     static inline void go(pq_1_t& /*prod_pq_1*/, arc_writer &aw,
-                          ptr_t out_sink, ptr_t source)
+                          ptr_t out_terminal, ptr_t source)
     {
-      aw.unsafe_push_sink({ source, out_sink });
+      aw.unsafe_push_terminal({ source, out_terminal });
     }
   };
 
@@ -150,10 +150,10 @@ namespace adiar
     }
   };
 
-  inline node_file prod_sink(ptr_t t1, ptr_t t2, const bool_op &op)
+  inline node_file prod_terminal(ptr_t t1, ptr_t t2, const bool_op &op)
   {
     // TODO: Abuse that op(t1,t2) already is a pointer.
-    return build_sink(value_of(op(t1,t2)));
+    return build_terminal(value_of(op(t1,t2)));
   }
 
   inline bool prod_from_1(ptr_t t1, ptr_t t2)
@@ -196,7 +196,7 @@ namespace adiar
     static void __merge_root(const node_t &v, label_t level,
                              ptr_t &low, ptr_t &high)
     {
-      if (!is_sink(v) && label_of(v) == level) {
+      if (!is_terminal(v) && label_of(v) == level) {
         low = v.low;
         high = v.high;
       } else {
@@ -219,12 +219,12 @@ namespace adiar
                            const node_t &v1, const node_t &v2,
                            ptr_t data_low, ptr_t data_high)
     {
-      if (is_sink(t1) || is_sink(t2) || label_of(t1) != label_of(t2)) {
-        if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_sink(t2)
+      if (is_terminal(t1) || is_terminal(t2) || label_of(t1) != label_of(t2)) {
+        if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_terminal(t2)
           low1 = v1.low;
           high1 = v1.high;
           low2 = high2 = t2;
-        } else { // ==> label_of(t1) > label_of(t2) || is_sink(t1)
+        } else { // ==> label_of(t1) > label_of(t2) || is_terminal(t1)
           low1 = high1 = t1;
           low2 = v2.low;
           high2 = v2.high;
@@ -252,8 +252,8 @@ namespace adiar
     node_t v1 = in_nodes_1.pull();
     node_t v2 = in_nodes_2.pull();
 
-    if (is_sink(v1) || is_sink(v2)) {
-      typename prod_policy::unreduced_t maybe_resolved = prod_policy::resolve_sink_root(v1, in_1, v2, in_2, op);
+    if (is_terminal(v1) || is_terminal(v2)) {
+      typename prod_policy::unreduced_t maybe_resolved = prod_policy::resolve_terminal_root(v1, in_1, v2, in_2, op);
 
       if (!(maybe_resolved.template has<no_file>())) {
         return maybe_resolved;
@@ -290,8 +290,8 @@ namespace adiar
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(root_rec);
 
-        if (is_sink(r.t1) && is_sink(r.t2)) {
-          return prod_sink(r.t1, r.t2, op);
+        if (is_terminal(r.t1) && is_terminal(r.t2)) {
+          return prod_terminal(r.t1, r.t2, op);
         } else {
           prod_pq_1.push({ r.t1, r.t2, NIL });
         }
@@ -335,9 +335,9 @@ namespace adiar
         data_high = prod_pq_2.top().data_high;
       }
 
-      adiar_invariant(is_sink(t1) || out_label <= label_of(t1),
+      adiar_invariant(is_terminal(t1) || out_label <= label_of(t1),
                       "Request should never level-wise be behind current position");
-      adiar_invariant(is_sink(t2) || out_label <= label_of(t2),
+      adiar_invariant(is_terminal(t2) || out_label <= label_of(t2),
                       "Request should never level-wise be behind current position");
 
       // Seek request partially in stream
@@ -387,12 +387,12 @@ namespace adiar
 
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(rec_res);
-        if (is_sink(r.t1) && is_sink(r.t2)) {
+        if (is_terminal(r.t1) && is_terminal(r.t2)) {
           if (is_nil(source)) {
-            // Skipped in both DAGs all the way from the root until a pair of sinks.
-            return prod_sink(r.t1, r.t2, op);
+            // Skipped in both DAGs all the way from the root until a pair of terminals.
+            return prod_terminal(r.t1, r.t2, op);
           }
-          prod_recurse_in<prod_recurse_in__output_sink>(prod_pq_1, prod_pq_2, aw, op(r.t1, r.t2), t1, t2);
+          prod_recurse_in<prod_recurse_in__output_terminal>(prod_pq_1, prod_pq_2, aw, op(r.t1, r.t2), t1, t2);
         } else {
           prod_recurse_in<prod_recurse_in__forward>(prod_pq_1, prod_pq_2, aw, r, t1, t2);
         }
@@ -422,24 +422,24 @@ namespace adiar
     const safe_size_t left_cut_internal = cut::get(in_1, cut_type::INTERNAL);
 
     const cut_type left_ct = prod_policy::left_cut(op);
-    const safe_size_t left_cut_sinks = cut::get(in_1, left_ct) - left_cut_internal;
+    const safe_size_t left_cut_terminals = cut::get(in_1, left_ct) - left_cut_internal;
 
     // Cuts for right-hand side
     const safe_size_t right_cut_internal = cut::get(in_2, cut_type::INTERNAL);
 
     const cut_type right_ct = prod_policy::right_cut(op);
-    const safe_size_t right_cut_sinks = cut::get(in_2, right_ct) - right_cut_internal;
+    const safe_size_t right_cut_terminals = cut::get(in_2, right_ct) - right_cut_internal;
 
-    // Compute cut, where we make sure not to pair sinks with sinks.
+    // Compute cut, where we make sure not to pair terminals with terminals.
     return to_size(left_cut_internal * right_cut_internal
-                   + left_cut_sinks * right_cut_internal
-                   + left_cut_internal * right_cut_sinks
+                   + left_cut_terminals * right_cut_internal
+                   + left_cut_internal * right_cut_terminals
                    + const_size_inc);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// Derives an upper bound on the output's maximum 2-level cut based on both
-  /// using the max 1 and 2-level cuts and the number of relevant sinks.
+  /// using the max 1 and 2-level cuts and the number of relevant terminals.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
   size_t __prod_2level_upper_bound(const typename prod_policy::reduced_t &in_1,
@@ -451,24 +451,24 @@ namespace adiar
     const safe_size_t left_1level_cut = in_1.max_1level_cut(cut_type::INTERNAL);
 
     const cut_type left_ct = prod_policy::left_cut(op);
-    const safe_size_t left_sink_vals = number_of_sinks(left_ct);
+    const safe_size_t left_terminal_vals = number_of_terminals(left_ct);
 
-    const safe_size_t left_sink_arcs =  in_1.max_1level_cut(left_ct) - left_1level_cut;
+    const safe_size_t left_terminal_arcs =  in_1.max_1level_cut(left_ct) - left_1level_cut;
 
     // Right-hand side
     const safe_size_t right_2level_cut = in_2.max_2level_cut(cut_type::INTERNAL);
     const safe_size_t right_1level_cut = in_2.max_1level_cut(cut_type::INTERNAL);
 
     const cut_type right_ct = prod_policy::right_cut(op);
-    const safe_size_t right_sink_vals = number_of_sinks(right_ct);
+    const safe_size_t right_terminal_vals = number_of_terminals(right_ct);
 
-    const safe_size_t right_sink_arcs = in_2.max_1level_cut(right_ct) - right_1level_cut;
+    const safe_size_t right_terminal_arcs = in_2.max_1level_cut(right_ct) - right_1level_cut;
 
-    // Compute cut, where we count the product, the input-sink pairings, and the
-    // connection from the product to the input-sink pairings separately.
+    // Compute cut, where we count the product, the input-terminal pairings, and the
+    // connection from the product to the input-terminal pairings separately.
     return to_size(left_2level_cut * right_2level_cut
-                   + (right_1level_cut * left_sink_arcs) + left_sink_vals * right_2level_cut
-                   + (left_1level_cut * right_sink_arcs) + right_sink_vals * left_2level_cut
+                   + (right_1level_cut * left_terminal_arcs) + left_terminal_vals * right_2level_cut
+                   + (left_1level_cut * right_terminal_arcs) + right_terminal_vals * left_2level_cut
                    + 2u);
   }
 
@@ -482,14 +482,14 @@ namespace adiar
                                    const bool_op &op)
   {
     const cut_type left_ct = prod_policy::left_cut(op);
-    const safe_size_t left_sink_vals = number_of_sinks(left_ct);
+    const safe_size_t left_terminal_vals = number_of_terminals(left_ct);
     const safe_size_t left_size = in_1->size();
 
     const cut_type right_ct = prod_policy::right_cut(op);
-    const safe_size_t right_sink_vals = number_of_sinks(right_ct);
+    const safe_size_t right_terminal_vals = number_of_terminals(right_ct);
     const safe_size_t right_size = in_2->size();
 
-    return to_size((left_size + left_sink_vals) * (right_size + right_sink_vals) + 1u + 2u);
+    return to_size((left_size + left_terminal_vals) * (right_size + right_terminal_vals) + 1u + 2u);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -502,9 +502,9 @@ namespace adiar
   ///   Creates the output based on knowing both inputs refer to the same
   ///   underlying file.
   ///
-  /// - resolve_sink_root:
+  /// - resolve_terminal_root:
   ///   Resolves (if possible) the cases for one of the two DAGs only being a
-  ///   sink. Uses the _union in the 'out_t' to trigger an early termination. If
+  ///   terminal. Uses the _union in the 'out_t' to trigger an early termination. If
   ///   it holds an 'adiar::no_file', then the algorithm proceeds to the actual
   ///   product construction.
   ///
