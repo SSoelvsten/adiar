@@ -3,12 +3,12 @@ go_bandit([]() {
 
     describe("NIL", [&](){
       it("should recognise NIL (unflagged)", [&]() {
-        auto some_value = NIL;
+        const ptr_t some_value = NIL;
         AssertThat(is_nil(some_value), Is().True());
       });
 
       it("should recognise NIL (flagged)", [&]() {
-        auto some_value = flag(NIL);
+        const ptr_t some_value = flag(NIL);
         AssertThat(is_nil(some_value), Is().True());
       });
 
@@ -24,7 +24,7 @@ go_bandit([]() {
 
     describe("ptr_t (terminals)", [&](){
       it("should take up 8 bytes of memory", [&]() {
-        ptr_t terminal = create_terminal_ptr(false);
+        const ptr_t terminal = create_terminal_ptr(false);
         AssertThat(sizeof(terminal), Is().EqualTo(8u));
       });
 
@@ -58,11 +58,11 @@ go_bandit([]() {
 
       describe("is_terminal", []() {
         it("should recognise Sinks as such", [&]() {
-          ptr_t terminal_f = create_terminal_ptr(false);
-          ptr_t terminal_t = create_terminal_ptr(true);
+          const ptr_t terminal_F = create_terminal_ptr(false);
+          const ptr_t terminal_T = create_terminal_ptr(true);
 
-          AssertThat(is_terminal(terminal_f), Is().True());
-          AssertThat(is_terminal(terminal_t), Is().True());
+          AssertThat(is_terminal(terminal_F), Is().True());
+          AssertThat(is_terminal(terminal_T), Is().True());
         });
 
         it("should not be confused with Node Ptr (unflagged)", [&]() {
@@ -122,18 +122,18 @@ go_bandit([]() {
 
       describe("is_false", []() {
         it("should accept false terminal", [&]() {
-          ptr_t terminal_f = create_terminal_ptr(false);
-          AssertThat(is_false(terminal_f), Is().True());
+          ptr_t terminal_F = create_terminal_ptr(false);
+          AssertThat(is_false(terminal_F), Is().True());
         });
 
         it("should accept false terminal (flagged)", [&]() {
-          ptr_t terminal_f = flag(create_terminal_ptr(false));
-          AssertThat(is_false(terminal_f), Is().True());
+          ptr_t terminal_F = flag(create_terminal_ptr(false));
+          AssertThat(is_false(terminal_F), Is().True());
         });
 
         it("should reject terminal", [&]() {
-          ptr_t terminal_t = create_terminal_ptr(true);
-          AssertThat(is_false(terminal_t), Is().False());
+          ptr_t terminal_T = create_terminal_ptr(true);
+          AssertThat(is_false(terminal_T), Is().False());
         });
 
         it("should reject non-terminal", [&]() {
@@ -149,18 +149,18 @@ go_bandit([]() {
 
       describe("is_true", []() {
         it("should reject false terminal", [&]() {
-          ptr_t terminal_f = create_terminal_ptr(false);
-          AssertThat(is_true(terminal_f), Is().False());
+          ptr_t terminal_F = create_terminal_ptr(false);
+          AssertThat(is_true(terminal_F), Is().False());
         });
 
         it("should accept true terminal", [&]() {
-          ptr_t terminal_t = create_terminal_ptr(true);
-          AssertThat(is_true(terminal_t), Is().True());
+          ptr_t terminal_T = create_terminal_ptr(true);
+          AssertThat(is_true(terminal_T), Is().True());
         });
 
         it("should accept true terminal (flagged)", [&]() {
-          ptr_t terminal_t = flag(create_terminal_ptr(true));
-          AssertThat(is_true(terminal_t), Is().True());
+          ptr_t terminal_T = flag(create_terminal_ptr(true));
+          AssertThat(is_true(terminal_T), Is().True());
         });
 
         it("should reject non-terminal", [&]() {
@@ -193,229 +193,184 @@ go_bandit([]() {
       });
 
       describe("bool_op", []() {
-        it("and_op", []() {
-          AssertThat(and_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(and_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(and_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(and_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
+        const ptr_t terminal_F = create_terminal_ptr(false);
+        const ptr_t terminal_T = create_terminal_ptr(true);
+
+        it("and_op", [&]() {
+          AssertThat(and_op(terminal_T, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(and_op(terminal_T, terminal_F), Is().EqualTo(terminal_F));
+          AssertThat(and_op(terminal_F, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(and_op(terminal_F, terminal_F), Is().EqualTo(terminal_F));
         });
 
-        it("nand_op", []() {
-          AssertThat(nand_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(nand_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(nand_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(nand_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
+        it("nand_op", [&]() {
+          AssertThat(nand_op(terminal_T, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(nand_op(terminal_T, terminal_F), Is().EqualTo(terminal_T));
+          AssertThat(nand_op(terminal_F, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(nand_op(terminal_F, terminal_F), Is().EqualTo(terminal_T));
         });
 
-        it("or_op", []() {
-          AssertThat(or_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(or_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(or_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(or_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
+        it("or_op", [&]() {
+          AssertThat(or_op(terminal_T, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(or_op(terminal_T, terminal_F), Is().EqualTo(terminal_T));
+          AssertThat(or_op(terminal_F, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(or_op(terminal_F, terminal_F), Is().EqualTo(terminal_F));
         });
 
-        it("nor_op", []() {
-          AssertThat(nor_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(nor_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(nor_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(nor_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
+        it("nor_op", [&]() {
+          AssertThat(nor_op(terminal_T, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(nor_op(terminal_T, terminal_F), Is().EqualTo(terminal_F));
+          AssertThat(nor_op(terminal_F, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(nor_op(terminal_F, terminal_F), Is().EqualTo(terminal_T));
         });
 
-        it("xor_op", []() {
-          AssertThat(xor_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(xor_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(xor_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(xor_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
+        it("xor_op", [&]() {
+          AssertThat(xor_op(terminal_T, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(xor_op(terminal_T, terminal_F), Is().EqualTo(terminal_T));
+          AssertThat(xor_op(terminal_F, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(xor_op(terminal_F, terminal_F), Is().EqualTo(terminal_F));
         });
 
-        it("xnor_op", []() {
-          AssertThat(xnor_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(xnor_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(xnor_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(xnor_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
+        it("xnor_op", [&]() {
+          AssertThat(xnor_op(terminal_T, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(xnor_op(terminal_T, terminal_F), Is().EqualTo(terminal_F));
+          AssertThat(xnor_op(terminal_F, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(xnor_op(terminal_F, terminal_F), Is().EqualTo(terminal_T));
         });
 
-        it("imp_op", []() {
-          AssertThat(imp_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(imp_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(imp_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(imp_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
+        it("imp_op", [&]() {
+          AssertThat(imp_op(terminal_T, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(imp_op(terminal_T, terminal_F), Is().EqualTo(terminal_F));
+          AssertThat(imp_op(terminal_F, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(imp_op(terminal_F, terminal_F), Is().EqualTo(terminal_T));
         });
 
-        it("invimp_op", []() {
-          AssertThat(invimp_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(invimp_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(invimp_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(invimp_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
+        it("invimp_op", [&]() {
+          AssertThat(invimp_op(terminal_T, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(invimp_op(terminal_T, terminal_F), Is().EqualTo(terminal_T));
+          AssertThat(invimp_op(terminal_F, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(invimp_op(terminal_F, terminal_F), Is().EqualTo(terminal_T));
         });
 
-        it("equiv_op", []() {
-          AssertThat(equiv_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(equiv_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(equiv_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(equiv_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
+        it("equiv_op", [&]() {
+          AssertThat(equiv_op(terminal_T, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(equiv_op(terminal_T, terminal_F), Is().EqualTo(terminal_F));
+          AssertThat(equiv_op(terminal_F, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(equiv_op(terminal_F, terminal_F), Is().EqualTo(terminal_T));
         });
 
-        it("equiv_op (flags)", []() {
-          AssertThat(equiv_op(flag(create_terminal_ptr(true)), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(equiv_op(create_terminal_ptr(true), flag(create_terminal_ptr(false))),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(equiv_op(flag(create_terminal_ptr(false)), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(equiv_op(create_terminal_ptr(false), flag(create_terminal_ptr(false))),
-                     Is().EqualTo(create_terminal_ptr(true)));
+        it("equiv_op (flags)", [&]() {
+          AssertThat(equiv_op(flag(terminal_T), terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(equiv_op(terminal_T, flag(terminal_F)), Is().EqualTo(terminal_F));
+          AssertThat(equiv_op(flag(terminal_F), terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(equiv_op(terminal_F, flag(terminal_F)), Is().EqualTo(terminal_T));
         });
 
-        it("diff_op", []() {
-          AssertThat(diff_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(diff_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(diff_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(diff_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
+        it("diff_op", [&]() {
+          AssertThat(diff_op(terminal_T, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(diff_op(terminal_T, terminal_F), Is().EqualTo(terminal_T));
+          AssertThat(diff_op(terminal_F, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(diff_op(terminal_F, terminal_F), Is().EqualTo(terminal_F));
         });
 
-        it("less_op", []() {
-          AssertThat(less_op(create_terminal_ptr(true), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(less_op(create_terminal_ptr(true), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
-          AssertThat(less_op(create_terminal_ptr(false), create_terminal_ptr(true)),
-                     Is().EqualTo(create_terminal_ptr(true)));
-          AssertThat(less_op(create_terminal_ptr(false), create_terminal_ptr(false)),
-                     Is().EqualTo(create_terminal_ptr(false)));
+        it("less_op", [&]() {
+          AssertThat(less_op(terminal_T, terminal_T), Is().EqualTo(terminal_F));
+          AssertThat(less_op(terminal_T, terminal_F), Is().EqualTo(terminal_F));
+          AssertThat(less_op(terminal_F, terminal_T), Is().EqualTo(terminal_T));
+          AssertThat(less_op(terminal_F, terminal_F), Is().EqualTo(terminal_F));
         });
 
-        describe("can_shortcut", []() {
+        describe("can_shortcut", [&]() {
           it("can check on T terminal on the left", [&]() {
-            AssertThat(can_left_shortcut(and_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(can_left_shortcut(or_op, create_terminal_ptr(true)), Is().True());
-            AssertThat(can_left_shortcut(xor_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(can_left_shortcut(imp_op, create_terminal_ptr(true)), Is().False());
+            AssertThat(can_left_shortcut(and_op, terminal_T), Is().False());
+            AssertThat(can_left_shortcut(or_op, terminal_T), Is().True());
+            AssertThat(can_left_shortcut(xor_op, terminal_T), Is().False());
+            AssertThat(can_left_shortcut(imp_op, terminal_T), Is().False());
           });
 
           it("can check on F terminal on the left", [&]() {
-            AssertThat(can_left_shortcut(and_op, create_terminal_ptr(false)), Is().True());
-            AssertThat(can_left_shortcut(or_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(can_left_shortcut(xor_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(can_left_shortcut(imp_op, create_terminal_ptr(false)), Is().True());
+            AssertThat(can_left_shortcut(and_op, terminal_F), Is().True());
+            AssertThat(can_left_shortcut(or_op, terminal_F), Is().False());
+            AssertThat(can_left_shortcut(xor_op, terminal_F), Is().False());
+            AssertThat(can_left_shortcut(imp_op, terminal_F), Is().True());
           });
 
           it("can check on T terminal on the right", [&]() {
-            AssertThat(can_right_shortcut(and_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(can_right_shortcut(or_op, create_terminal_ptr(true)), Is().True());
-            AssertThat(can_right_shortcut(xor_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(can_right_shortcut(imp_op, create_terminal_ptr(true)), Is().True());
+            AssertThat(can_right_shortcut(and_op, terminal_T), Is().False());
+            AssertThat(can_right_shortcut(or_op, terminal_T), Is().True());
+            AssertThat(can_right_shortcut(xor_op, terminal_T), Is().False());
+            AssertThat(can_right_shortcut(imp_op, terminal_T), Is().True());
           });
 
           it("can check on F terminal on the right", [&]() {
-            AssertThat(can_right_shortcut(and_op, create_terminal_ptr(false)), Is().True());
-            AssertThat(can_right_shortcut(or_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(can_right_shortcut(xor_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(can_right_shortcut(imp_op, create_terminal_ptr(false)), Is().False());
+            AssertThat(can_right_shortcut(and_op, terminal_F), Is().True());
+            AssertThat(can_right_shortcut(or_op, terminal_F), Is().False());
+            AssertThat(can_right_shortcut(xor_op, terminal_F), Is().False());
+            AssertThat(can_right_shortcut(imp_op, terminal_F), Is().False());
           });
         });
 
-        describe("is_irrelevant", []() {
+        describe("is_irrelevant", [&]() {
           it("can check on T terminal on the left", [&]() {
-            AssertThat(is_left_irrelevant(and_op, create_terminal_ptr(true)), Is().True());
-            AssertThat(is_left_irrelevant(or_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(is_left_irrelevant(xor_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(is_left_irrelevant(imp_op, create_terminal_ptr(true)), Is().True());
+            AssertThat(is_left_irrelevant(and_op, terminal_T), Is().True());
+            AssertThat(is_left_irrelevant(or_op, terminal_T), Is().False());
+            AssertThat(is_left_irrelevant(xor_op, terminal_T), Is().False());
+            AssertThat(is_left_irrelevant(imp_op, terminal_T), Is().True());
           });
 
           it("can check on F terminal on the left", [&]() {
-            AssertThat(is_left_irrelevant(and_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(is_left_irrelevant(or_op, create_terminal_ptr(false)), Is().True());
-            AssertThat(is_left_irrelevant(xor_op, create_terminal_ptr(false)), Is().True());
-            AssertThat(is_left_irrelevant(imp_op, create_terminal_ptr(false)), Is().False());
+            AssertThat(is_left_irrelevant(and_op, terminal_F), Is().False());
+            AssertThat(is_left_irrelevant(or_op, terminal_F), Is().True());
+            AssertThat(is_left_irrelevant(xor_op, terminal_F), Is().True());
+            AssertThat(is_left_irrelevant(imp_op, terminal_F), Is().False());
           });
 
           it("can check on T terminal on the right", [&]() {
-            AssertThat(is_right_irrelevant(and_op, create_terminal_ptr(true)), Is().True());
-            AssertThat(is_right_irrelevant(or_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(is_right_irrelevant(xor_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(is_right_irrelevant(imp_op, create_terminal_ptr(true)), Is().False());
+            AssertThat(is_right_irrelevant(and_op, terminal_T), Is().True());
+            AssertThat(is_right_irrelevant(or_op, terminal_T), Is().False());
+            AssertThat(is_right_irrelevant(xor_op, terminal_T), Is().False());
+            AssertThat(is_right_irrelevant(imp_op, terminal_T), Is().False());
           });
 
           it("can check on F terminal on the right", [&]() {
-            AssertThat(is_right_irrelevant(and_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(is_right_irrelevant(or_op, create_terminal_ptr(false)), Is().True());
-            AssertThat(is_right_irrelevant(xor_op, create_terminal_ptr(false)), Is().True());
-            AssertThat(is_right_irrelevant(imp_op, create_terminal_ptr(false)), Is().False());
+            AssertThat(is_right_irrelevant(and_op, terminal_F), Is().False());
+            AssertThat(is_right_irrelevant(or_op, terminal_F), Is().True());
+            AssertThat(is_right_irrelevant(xor_op, terminal_F), Is().True());
+            AssertThat(is_right_irrelevant(imp_op, terminal_F), Is().False());
           });
         });
 
-        describe("is_negating", []() {
+        describe("is_negating", [&]() {
           it("can check on T terminal on the left", [&]() {
-            AssertThat(is_left_negating(and_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(is_left_negating(or_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(is_left_negating(xor_op, create_terminal_ptr(true)), Is().True());
-            AssertThat(is_left_negating(imp_op, create_terminal_ptr(true)), Is().False());
+            AssertThat(is_left_negating(and_op, terminal_T), Is().False());
+            AssertThat(is_left_negating(or_op, terminal_T), Is().False());
+            AssertThat(is_left_negating(xor_op, terminal_T), Is().True());
+            AssertThat(is_left_negating(imp_op, terminal_T), Is().False());
           });
 
           it("can check on F terminal on the left", [&]() {
-            AssertThat(is_left_negating(and_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(is_left_negating(or_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(is_left_negating(xor_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(is_left_negating(imp_op, create_terminal_ptr(false)), Is().False());
+            AssertThat(is_left_negating(and_op, terminal_F), Is().False());
+            AssertThat(is_left_negating(or_op, terminal_F), Is().False());
+            AssertThat(is_left_negating(xor_op, terminal_F), Is().False());
+            AssertThat(is_left_negating(imp_op, terminal_F), Is().False());
           });
 
           it("can check on T terminal on the right", [&]() {
-            AssertThat(is_right_negating(and_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(is_right_negating(or_op, create_terminal_ptr(true)), Is().False());
-            AssertThat(is_right_negating(xor_op, create_terminal_ptr(true)), Is().True());
-            AssertThat(is_right_negating(imp_op, create_terminal_ptr(true)), Is().False());
+            AssertThat(is_right_negating(and_op, terminal_T), Is().False());
+            AssertThat(is_right_negating(or_op, terminal_T), Is().False());
+            AssertThat(is_right_negating(xor_op, terminal_T), Is().True());
+            AssertThat(is_right_negating(imp_op, terminal_T), Is().False());
           });
 
           it("can check on F terminal on the right", [&]() {
-            AssertThat(is_right_negating(and_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(is_right_negating(or_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(is_right_negating(xor_op, create_terminal_ptr(false)), Is().False());
-            AssertThat(is_right_negating(imp_op, create_terminal_ptr(false)), Is().False());
+            AssertThat(is_right_negating(and_op, terminal_F), Is().False());
+            AssertThat(is_right_negating(or_op, terminal_F), Is().False());
+            AssertThat(is_right_negating(xor_op, terminal_F), Is().False());
+            AssertThat(is_right_negating(imp_op, terminal_F), Is().False());
           });
         });
 
-        it("can check the operators for being commutative", [&]() {
+        it("can check the operators for being commutative", []() {
           AssertThat(is_commutative(and_op), Is().True());
           AssertThat(is_commutative(nand_op), Is().True());
           AssertThat(is_commutative(or_op), Is().True());
@@ -431,8 +386,11 @@ go_bandit([]() {
     });
 
     describe("ptr_t (nodes)", [&]() {
+      const ptr_t terminal_F = create_terminal_ptr(false);
+      const ptr_t terminal_T = create_terminal_ptr(true);
+
       it("should take up 8 bytes of memory", [&]() {
-        ptr_t node_ptr = create_node_ptr(42,2);
+        const ptr_t node_ptr = create_node_ptr(42,2);
         AssertThat(sizeof(node_ptr), Is().EqualTo(8u));
       });
 
@@ -456,72 +414,72 @@ go_bandit([]() {
 
       describe("create_node_ptr, label_of, id_of", [&]() {
         it("should store and retrieve label for Ptr with maximal id (unflagged)", [&]() {
-          ptr_t p = create_node_ptr(12,MAX_ID);
+          const ptr_t p = create_node_ptr(12,MAX_ID);
           AssertThat(label_of(p), Is().EqualTo(12u));
         });
 
         it("should store and retrieve 42 label Ptr (unflagged)", [&]() {
-          ptr_t p = create_node_ptr(42,2);
+          const ptr_t p = create_node_ptr(42,2);
           AssertThat(label_of(p), Is().EqualTo(42u));
         });
 
         it("should store and retrieve 21 label Ptr (unflagged)", [&]() {
-          ptr_t p = create_node_ptr(21,2);
+          const ptr_t p = create_node_ptr(21,2);
           AssertThat(label_of(p), Is().EqualTo(21u));
         });
 
         it("should store and retrieve MAX label Ptr (unflagged)", [&]() {
-          ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
+          const ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
           AssertThat(label_of(p), Is().EqualTo(MAX_LABEL));
         });
 
         it("should store and retrieve label for Ptr with maximal id (flagged)", [&]() {
-          ptr_t p = flag(create_node_ptr(12,MAX_ID));
+          const ptr_t p = flag(create_node_ptr(12,MAX_ID));
           AssertThat(label_of(p), Is().EqualTo(12u));
         });
 
         it("should store and retrieve 42 label Ptr (flagged)", [&]() {
-          ptr_t p = flag(create_node_ptr(42,2));
+          const ptr_t p = flag(create_node_ptr(42,2));
           AssertThat(label_of(p), Is().EqualTo(42u));
         });
 
         it("should store and retrieve 21 label Ptr (flagged)", [&]() {
-          ptr_t p = flag(create_node_ptr(21,2));
+          const ptr_t p = flag(create_node_ptr(21,2));
           AssertThat(label_of(p), Is().EqualTo(21u));
         });
 
         it("should store and retrieve MAX label Ptr (flagged)", [&]() {
-          ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
+          const ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
           AssertThat(label_of(p), Is().EqualTo(MAX_LABEL));
         });
 
         it("should store and retrieve 42 id (unflagged)", [&]() {
-          ptr_t p = create_node_ptr(2,42);
+          const ptr_t p = create_node_ptr(2,42);
           AssertThat(id_of(p), Is().EqualTo(42u));
         });
 
         it("should store and retrieve 21 id (unflagged)", [&]() {
-          ptr_t p = create_node_ptr(2,21);
+          const ptr_t p = create_node_ptr(2,21);
           AssertThat(id_of(p), Is().EqualTo(21u));
         });
 
         it("should store and retrieve MAX id (unflagged)", [&]() {
-          ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
+          const ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
           AssertThat(id_of(p), Is().EqualTo(MAX_ID));
         });
 
         it("should store and retrieve 42 id (flagged)", [&]() {
-          ptr_t p = flag(create_node_ptr(2,42));
+          const  ptr_t p = flag(create_node_ptr(2,42));
           AssertThat(id_of(p), Is().EqualTo(42u));
         });
 
         it("should store and retrieve 21 id (flagged)", [&]() {
-          ptr_t p = flag(create_node_ptr(2,21));
+          const ptr_t p = flag(create_node_ptr(2,21));
           AssertThat(id_of(p), Is().EqualTo(21u));
         });
 
         it("should store and retrieve MAX id (flagged)", [&]() {
-          ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
+          const ptr_t p = create_node_ptr(MAX_LABEL, MAX_ID);
           AssertThat(id_of(p), Is().EqualTo(MAX_ID));
         });
 
@@ -536,66 +494,64 @@ go_bandit([]() {
 
       describe("ordering ( < )", [&]() {
         it("should sort by label, then by id", [&]() {
-          ptr_t node_1_2 = create_node_ptr(1,2);
-          ptr_t node_2_1 = create_node_ptr(2,1);
-          ptr_t node_2_2 = create_node_ptr(2,2);
+          const ptr_t node_1_2 = create_node_ptr(1,2);
+          const ptr_t node_2_1 = create_node_ptr(2,1);
+          const ptr_t node_2_2 = create_node_ptr(2,2);
 
           AssertThat(node_1_2 < node_2_1, Is().True());
           AssertThat(node_2_1 < node_2_2, Is().True());
         });
 
-        it("should sort Sink arcs after Node Ptr (unflagged)", [&]() {
+        it("should sort F terminal after internal node", [&]() {
           // Create a node pointer with the highest possible raw value
-          ptr_t p_node = create_node_ptr(MAX_LABEL,MAX_ID);
+          const ptr_t p_node = create_node_ptr(MAX_LABEL,MAX_ID);
 
-          // Create a terminal pointer with the lowest raw value
-          ptr_t p_terminal = create_terminal_ptr(false);
-
-          AssertThat(p_node < p_terminal, Is().True());
-          AssertThat(flag(p_node) < p_terminal, Is().True());
+          AssertThat(p_node < terminal_F, Is().True());
+          AssertThat(flag(p_node) < terminal_F, Is().True());
+          AssertThat(p_node < flag(terminal_F), Is().True());
+          AssertThat(flag(p_node) < flag(terminal_F), Is().True());
         });
 
-        it("should sort Sink arcs after Node Ptr (flagged)", [&]() {
+        it("should sort T terminal after internal node (unflagged)", [&]() {
           // Create a node pointer with the highest possible raw value
-          ptr_t p_node = flag(create_node_ptr(MAX_LABEL,MAX_ID));
+          const ptr_t p_node = create_node_ptr(MAX_LABEL,MAX_ID);
 
-          // Create a terminal pointer with the lowest raw value
-          ptr_t p_terminal = create_terminal_ptr(false);
-
-          AssertThat(p_node < p_terminal, Is().True());
-          AssertThat(flag(p_node) < p_terminal, Is().True());
+          AssertThat(p_node < terminal_T, Is().True());
+          AssertThat(flag(p_node) < terminal_T, Is().True());
+          AssertThat(p_node < flag(terminal_T), Is().True());
+          AssertThat(flag(p_node) < flag(terminal_T), Is().True());
         });
       });
 
       describe("is_node", [&]() {
         it("should recognise Node Ptr (unflagged)", [&]() {
-          ptr_t p_node_max = create_node_ptr(MAX_LABEL,MAX_ID);
+          const ptr_t p_node_max = create_node_ptr(MAX_LABEL,MAX_ID);
           AssertThat(is_node(p_node_max), Is().True());
 
-          ptr_t p_node_min = create_node_ptr(0,0);
+          const ptr_t p_node_min = create_node_ptr(0,0);
           AssertThat(is_node(p_node_min), Is().True());
 
-          ptr_t p_node = create_node_ptr(42,18);
+          const ptr_t p_node = create_node_ptr(42,18);
           AssertThat(is_node(p_node), Is().True());
         });
 
         it("should recognise Node Ptr (flagged)", [&]() {
-          ptr_t p_node_max = flag(create_node_ptr(MAX_LABEL,MAX_ID));
+          const ptr_t p_node_max = flag(create_node_ptr(MAX_LABEL,MAX_ID));
           AssertThat(is_node(p_node_max), Is().True());
 
-          ptr_t p_node_min = flag(create_node_ptr(0,0));
+          const ptr_t p_node_min = flag(create_node_ptr(0,0));
           AssertThat(is_node(p_node_min), Is().True());
 
-          ptr_t p_node = flag(create_node_ptr(42,18));
+          const ptr_t p_node = flag(create_node_ptr(42,18));
           AssertThat(is_node(p_node), Is().True());
         });
 
         it("should not be confused with Sinks", [&]() {
-          ptr_t terminal_f = create_terminal_ptr(false);
-          ptr_t terminal_t = create_terminal_ptr(true);
+          const ptr_t terminal_F = create_terminal_ptr(false);
+          const ptr_t terminal_T = create_terminal_ptr(true);
 
-          AssertThat(is_node(terminal_f), Is().False());
-          AssertThat(is_node(terminal_t), Is().False());
+          AssertThat(is_node(terminal_F), Is().False());
+          AssertThat(is_node(terminal_T), Is().False());
         });
 
         it("should not be confused with Nil (unflagged)", [&]() {
@@ -609,53 +565,46 @@ go_bandit([]() {
     });
 
     describe("node_t", [&]() {
+      const ptr_t terminal_F = create_terminal_ptr(false);
+      const ptr_t terminal_T = create_terminal_ptr(true);
+
       it("should be a POD", [&]() {
         AssertThat(std::is_pod<node>::value, Is().True());
       });
 
       it("should take up 24 bytes of memory", [&]() {
-        ptr_t node_ptr = create_node_ptr(42,2);
-        ptr_t terminal = create_terminal_ptr(false);
-        node_t node = create_node(1, 8, node_ptr, terminal);
+        const ptr_t node_ptr = create_node_ptr(42,2);
+        const node_t node = create_node(1,8, node_ptr, terminal_F);
 
         AssertThat(sizeof(node), Is().EqualTo(3u * 8u));
       });
 
       describe("create_node, label_of, id_of", [&]() {
         it("should create node [label_t, id_t, ptr_t, ptr_t] [1]", [&]() {
-          ptr_t terminal_f = create_terminal_ptr(false);
-          ptr_t terminal_t = create_terminal_ptr(true);
-
-          node_t n1 = create_node(3,12,terminal_f,terminal_t);
+          const node_t n1 = create_node(3,12, terminal_F, terminal_T);
           AssertThat(n1.uid, Is().EqualTo(create_node_ptr(3,12)));
           AssertThat(label_of(n1), Is().EqualTo(3u));
           AssertThat(id_of(n1), Is().EqualTo(12u));
 
-          AssertThat(n1.low, Is().EqualTo(terminal_f));
-          AssertThat(n1.high, Is().EqualTo(terminal_t));
+          AssertThat(n1.low, Is().EqualTo(terminal_F));
+          AssertThat(n1.high, Is().EqualTo(terminal_T));
         });
 
         it("should create node [label_t, id_t, ptr_t, ptr_t] [2]", [&]() {
-          ptr_t terminal_f = create_terminal_ptr(false);
-          ptr_t terminal_t = create_terminal_ptr(true);
-
-          node_t n2 = create_node(3,42,terminal_t,terminal_f);
+          const node_t n2 = create_node(3,42, terminal_T, terminal_F);
           AssertThat(n2.uid, Is().EqualTo(create_node_ptr(3,42)));
           AssertThat(label_of(n2), Is().EqualTo(3u));
           AssertThat(id_of(n2), Is().EqualTo(42u));
 
-          AssertThat(n2.low, Is().EqualTo(terminal_t));
-          AssertThat(n2.high, Is().EqualTo(terminal_f));
+          AssertThat(n2.low, Is().EqualTo(terminal_T));
+          AssertThat(n2.high, Is().EqualTo(terminal_F));
         });
 
         it("should create node [label_t, id_t, node_t&, node_t&]", [&]() {
-          ptr_t terminal_f = create_terminal_ptr(false);
-          ptr_t terminal_t = create_terminal_ptr(true);
+          const node_t n_child1 = create_node(3,12, terminal_F, terminal_T);
+          const node_t n_child2 = create_node(3,42, terminal_T, terminal_F);
 
-          node_t n_child1 = create_node(3,12,terminal_f,terminal_t);
-          node_t n_child2 = create_node(3,42,terminal_t,terminal_f);
-
-          node_t n = create_node(2,2,n_child1,n_child2);
+          const node_t n = create_node(2,2, n_child1, n_child2);
           AssertThat(n.uid, Is().EqualTo(create_node_ptr(2,2)));
           AssertThat(label_of(n), Is().EqualTo(2u));
           AssertThat(id_of(n), Is().EqualTo(2u));
@@ -665,71 +614,56 @@ go_bandit([]() {
         });
 
         it("should create node [label_t, id_t, node_t&, ptr_t]", [&]() {
-          ptr_t terminal_f = create_terminal_ptr(false);
-          ptr_t terminal_t = create_terminal_ptr(true);
+          const node_t n_child = create_node(2,2, terminal_F, terminal_T);
 
-          node_t n_child = create_node(2,2,terminal_f,terminal_t);
-
-          node_t n = create_node(1,7,terminal_t,n_child);
+          const node_t n = create_node(1,7,terminal_T,n_child);
           AssertThat(n.uid, Is().EqualTo(create_node_ptr(1,7)));
           AssertThat(label_of(n), Is().EqualTo(1u));
           AssertThat(id_of(n), Is().EqualTo(7u));
 
-          AssertThat(n.low, Is().EqualTo(terminal_t));
+          AssertThat(n.low, Is().EqualTo(terminal_T));
           AssertThat(n.high, Is().EqualTo(n_child.uid));
         });
 
         it("should create node [label_t, id_t, ptr_t, node_t&]", [&]() {
-          ptr_t terminal_f = create_terminal_ptr(false);
-          ptr_t terminal_t = create_terminal_ptr(true);
+          const node_t n_child = create_node(2,2,terminal_F,terminal_T);
 
-          node_t n_child = create_node(2,2,terminal_f,terminal_t);
-
-          node_t n = create_node(0,3,terminal_t,n_child);
+          const node_t n = create_node(0,3,terminal_T,n_child);
           AssertThat(n.uid, Is().EqualTo(create_node_ptr(0,3)));
           AssertThat(label_of(n), Is().EqualTo(0u));
           AssertThat(id_of(n), Is().EqualTo(3u));
 
-          AssertThat(n.low, Is().EqualTo(terminal_t));
+          AssertThat(n.low, Is().EqualTo(terminal_T));
           AssertThat(n.high, Is().EqualTo(n_child.uid));
         });
       });
 
       it("should sort by label, then by id", [&]() {
-        auto terminal_f = create_terminal_ptr(false);
-        auto terminal_t = create_terminal_ptr(true);
-
-        auto node_1_2 = create_node(1,2,terminal_f,terminal_t);
-        auto node_2_1 = create_node(2,1,terminal_t,terminal_f);
+        const node_t node_1_2 = create_node(1,2, terminal_F, terminal_T);
+        const node_t node_2_1 = create_node(2,1, terminal_T, terminal_F);
 
         AssertThat(node_1_2 < node_2_1, Is().True());
         AssertThat(node_2_1 > node_1_2, Is().True());
 
-        auto node_2_2 = create_node(2,2,terminal_f,terminal_f);
+        const node_t node_2_2 = create_node(2,2, terminal_F, terminal_F);
 
         AssertThat(node_2_1 < node_2_2, Is().True());
         AssertThat(node_2_2 > node_2_1, Is().True());
       });
 
       it("should be equal by their content", [&]() {
-        auto terminal_f = create_terminal_ptr(false);
-        auto terminal_t = create_terminal_ptr(true);
-
-        auto node_1_v1 = create_node(42,2,terminal_f,terminal_t);
-        auto node_1_v2 = create_node(42,2,terminal_f,terminal_t);
+        const node_t node_1_v1 = create_node(42,2, terminal_F, terminal_T);
+        const node_t node_1_v2 = create_node(42,2, terminal_F, terminal_T);
 
         AssertThat(node_1_v1 == node_1_v2, Is().True());
         AssertThat(node_1_v1 != node_1_v2, Is().False());
       });
 
       it("should be unequal by their content", [&]() {
-        auto terminal_f = create_terminal_ptr(false);
-        auto terminal_t = create_terminal_ptr(true);
-
-        auto node_1 = create_node(42,2,terminal_f,terminal_t);
-        auto node_2 = create_node(42,2,terminal_f,terminal_f);
-        auto node_3 = create_node(42,3,terminal_f,terminal_t);
-        auto node_4 = create_node(21,2,terminal_f,terminal_t);
+        const node_t node_1 = create_node(42,2, terminal_F, terminal_T);
+        const node_t node_2 = create_node(42,2, terminal_F, terminal_F);
+        const node_t node_3 = create_node(42,3, terminal_F, terminal_T);
+        const node_t node_4 = create_node(21,2, terminal_F, terminal_T);
 
         AssertThat(node_1 == node_2, Is().False());
         AssertThat(node_1 != node_2, Is().True());
@@ -742,79 +676,70 @@ go_bandit([]() {
       });
 
       describe("terminal nodes", [&]() {
+        const node_t terminal_node_T = create_terminal(true);
+        const node_t terminal_node_F = create_terminal(false);
+
         describe("is_terminal", [&]() {
           it("accepts true terminal", [&]() {
-            node_t terminal_node_T = create_terminal(true);
             AssertThat(is_terminal(terminal_node_T), Is().True());
           });
 
           it("accepts false terminal", [&]() {
-            node_t terminal_node_F = create_terminal(false);
             AssertThat(is_terminal(terminal_node_F), Is().True());
           });
 
           it("rejects non-terminal nodes [1]", [&]() {
-            node_t node_1 = create_node(42,2, create_terminal_ptr(false), create_terminal_ptr(true));
+            const node_t node_1 = create_node(42,2, terminal_F, terminal_T);
             AssertThat(is_terminal(node_1), Is().False());
           });
 
           it("rejects non-terminal nodes [2]", [&]() {
-            node_t almost_F_terminal = create_node(0,0,
-                                               create_terminal_ptr(true),
-                                               create_node_ptr(42,2));
+            const node_t almost_F_terminal = create_node(0,0, terminal_T, create_node_ptr(42,2));
             AssertThat(is_terminal(almost_F_terminal), Is().False());
           });
 
           it("rejects non-terminal nodes [2]", [&]() {
-            node_t almost_T_terminal = create_node(0,1,
-                                               create_terminal_ptr(true),
-                                               create_node_ptr(42,2));
+            const node_t almost_T_terminal = create_node(0,1, terminal_T, create_node_ptr(42,2));
             AssertThat(is_terminal(almost_T_terminal), Is().False());
           });
         });
 
         describe("value_of", [&]() {
-          it("retrives value of a true terminal node", [&]() {
-            node_t terminal_node_T = create_terminal(true);
+          it("retrieves value of a true terminal node", [&]() {
             AssertThat(value_of(terminal_node_T), Is().True());
           });
 
-          it("retrives value of a false terminal node", [&]() {
-            node_t terminal_node_F = create_terminal(false);
+          it("retrieves value of a false terminal node", [&]() {
             AssertThat(value_of(terminal_node_F), Is().False());
           });
         });
 
         describe("is_false", [&]() {
           it("rejects true terminal", [&]() {
-            node_t terminal_node_T = create_terminal(true);
             AssertThat(is_false(terminal_node_T), Is().False());
           });
 
           it("accepts false terminal", [&]() {
-            node_t terminal_node_F = create_terminal(false);
             AssertThat(is_false(terminal_node_F), Is().True());
           });
 
           it("rejects non-terminal nodes", [&]() {
-            node_t n = create_node(0,0,create_node_ptr(42,2),create_terminal_ptr(false));
+            const node_t n = create_node(0,0, create_node_ptr(42,2), terminal_F);
             AssertThat(is_false(n), Is().False());
           });
         });
 
         describe("is_true", [&]() {
           it("accepts true terminal", [&]() {
-            node_t terminal_node_T = create_terminal(true);
             AssertThat(is_true(terminal_node_T), Is().True());
           });
 
           it("rejects false terminal", [&]() {
-            node_t terminal_node_F = create_terminal(false);
             AssertThat(is_true(terminal_node_F), Is().False());
           });
 
           it("rejects non-terminal nodes", [&]() {
-            node_t n = create_node(0,1,create_terminal_ptr(true),create_node_ptr(2,3));
+            const node_t n = create_node(0,1, terminal_T, create_node_ptr(2,3));
             AssertThat(is_true(n), Is().False());
           });
         });
@@ -822,31 +747,21 @@ go_bandit([]() {
 
       describe("negate (!)", [&]() {
         it("should leave node_ptr children unchanged", [&]() {
-          auto node = create_node(2,2,
-                                  create_node_ptr(42,3),
-                                  create_node_ptr(8,2));
+          const node_t node = create_node(2,2, create_node_ptr(42,3), create_node_ptr(8,2));
 
           AssertThat(!node, Is().EqualTo(node));
         });
 
         it("should negate terminal_ptr child", [&]() {
-          auto node = create_node(2,2,
-                                  create_terminal_ptr(false),
-                                  create_node_ptr(8,2));
+          const node_t node = create_node(2,2, terminal_F, create_node_ptr(8,2));
 
-          AssertThat(!node, Is().EqualTo(create_node(2,2,
-                                                     create_terminal_ptr(true),
-                                                     create_node_ptr(8,2))));
+          AssertThat(!node, Is().EqualTo(create_node(2,2, terminal_T, create_node_ptr(8,2))));
         });
 
         it("should negate terminal_ptr children while preserving flags", [&]() {
-          auto node = create_node(2,2,
-                                  create_terminal_ptr(false),
-                                  flag(create_terminal_ptr(true)));
+          const node_t node = create_node(2,2, terminal_F, flag(terminal_T));
 
-          AssertThat(!node, Is().EqualTo(create_node(2,2,
-                                                     create_terminal_ptr(true),
-                                                     flag(create_terminal_ptr(false)))));
+          AssertThat(!node, Is().EqualTo(create_node(2,2, terminal_T, flag(terminal_F))));
         });
 
         it("should negate terminal node", [&]() {
@@ -857,70 +772,73 @@ go_bandit([]() {
     });
 
     describe("arc_t", [&]() {
-      it("should be equal by their content", [&]() {
-        ptr_t source = create_node_ptr(4,2);
-        ptr_t target = create_node_ptr(42,3);
+      const ptr_t terminal_F = create_terminal_ptr(false);
+      const ptr_t terminal_T = create_terminal_ptr(true);
 
-        arc_t arc_1 = { source, target };
-        arc_t arc_2 = { source, target };
+      it("should be equal by their content", [&]() {
+        const ptr_t source = create_node_ptr(4,2);
+        const ptr_t target = create_node_ptr(42,3);
+
+        const arc_t arc_1 = { source, target };
+        const arc_t arc_2 = { source, target };
 
         AssertThat(arc_1 == arc_2, Is().True());
         AssertThat(arc_1 != arc_2, Is().False());
       });
 
       it("should unequal by their content", [&]() {
-        ptr_t node_ptr_1 = create_node_ptr(4,2);
-        ptr_t node_ptr_2 = create_node_ptr(4,3);
-        ptr_t node_ptr_3 = create_node_ptr(3,2);
+        const ptr_t node_ptr_1 = create_node_ptr(4,2);
+        const ptr_t node_ptr_2 = create_node_ptr(4,3);
+        const ptr_t node_ptr_3 = create_node_ptr(3,2);
 
-        arc_t arc_1 = { node_ptr_1, node_ptr_2 };
-        arc_t arc_2 = { node_ptr_1, node_ptr_3 };
+        const arc_t arc_1 = { node_ptr_1, node_ptr_2 };
+        const arc_t arc_2 = { node_ptr_1, node_ptr_3 };
 
         AssertThat(arc_1 == arc_2, Is().False());
         AssertThat(arc_1 != arc_2, Is().True());
 
-        arc_t arc_3 = { node_ptr_1, node_ptr_2 };
-        arc_t arc_4 = { flag(node_ptr_1), node_ptr_2 };
+        const arc_t arc_3 = { node_ptr_1, node_ptr_2 };
+        const arc_t arc_4 = { flag(node_ptr_1), node_ptr_2 };
 
         AssertThat(arc_3 == arc_4, Is().False());
         AssertThat(arc_3 != arc_4, Is().True());
 
-        arc_t arc_5 = { node_ptr_1, node_ptr_2 };
-        arc_t arc_6 = { node_ptr_3, node_ptr_2 };
+        const arc_t arc_5 = { node_ptr_1, node_ptr_2 };
+        const arc_t arc_6 = { node_ptr_3, node_ptr_2 };
 
         AssertThat(arc_5 == arc_6, Is().False());
         AssertThat(arc_5 != arc_6, Is().True());
       });
 
       it("should recognise low arcs from bit-flag on source", [&]() {
-        ptr_t node_ptr_1 = create_node_ptr(4,2);
-        ptr_t node_ptr_2 = create_node_ptr(4,3);
+        const ptr_t node_ptr_1 = create_node_ptr(4,2);
+        const ptr_t node_ptr_2 = create_node_ptr(4,3);
 
-        arc_t arc_low = { node_ptr_1, node_ptr_2 };
+        const arc_t arc_low = { node_ptr_1, node_ptr_2 };
         AssertThat(is_high(arc_low), Is().False());
       });
 
       it("should recognise high arcs from bit-flag on source", [&]() {
-        ptr_t node_ptr_1 = create_node_ptr(4,2);
-        ptr_t node_ptr_2 = create_node_ptr(4,3);
+        const ptr_t node_ptr_1 = create_node_ptr(4,2);
+        const ptr_t node_ptr_2 = create_node_ptr(4,3);
 
-        arc_t arc_high = { flag(node_ptr_1), node_ptr_2 };
+        const arc_t arc_high = { flag(node_ptr_1), node_ptr_2 };
         AssertThat(is_high(arc_high), Is().True());
       });
 
       it("should leave node_ptr target unchanged", [&]() {
-        arc_t a = { create_node_ptr(1,0), create_node_ptr(2,0) };
+        const arc_t a = { create_node_ptr(1,0), create_node_ptr(2,0) };
         AssertThat(!a, Is().EqualTo(a));
       });
 
       it("should negate unflagged terminal_ptr target", [&]() {
-        arc_t a = { create_node_ptr(1,0), create_terminal_ptr(true) };
-        AssertThat(!a, Is().EqualTo(arc { create_node_ptr(1,0), create_terminal_ptr(false) }));
+        const arc_t a = { create_node_ptr(1,0), terminal_T };
+        AssertThat(!a, Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
       });
 
       it("should negate flagged terminal_ptr target", [&]() {
-        arc_t a = { create_node_ptr(1,0), flag(create_terminal_ptr(false)) };
-        AssertThat(!a, Is().EqualTo(arc { create_node_ptr(1,0), flag(create_terminal_ptr(true)) }));
+        const arc_t a = { create_node_ptr(1,0), flag(terminal_F) };
+        AssertThat(!a, Is().EqualTo(arc { create_node_ptr(1,0), flag(terminal_T) }));
       });
 
       it("should be a POD", [&]() {
@@ -928,21 +846,18 @@ go_bandit([]() {
       });
 
       it("should take up 16 bytes of memory", [&]() {
-        ptr_t node_ptr = create_node_ptr(42,2);
-        ptr_t terminal = create_terminal_ptr(false);
-        arc_t arc = { node_ptr, terminal };
-
+        const arc_t arc = { create_node_ptr(42,2), terminal_F };
         AssertThat(sizeof(arc), Is().EqualTo(2u * 8u));
       });
     });
 
     describe("low_arc_of, high_arc_of, node_of", [&]() {
       it("should extract low arc from node", [&]() {
-        node_t node = create_node(7,42,
-                                  create_node_ptr(8,21),
-                                  create_node_ptr(9,8));
+        const node_t node = create_node(7,42,
+                                        create_node_ptr(8,21),
+                                        create_node_ptr(9,8));
 
-        arc_t arc = low_arc_of(node);
+        const arc_t arc = low_arc_of(node);
 
         AssertThat(label_of(arc.source), Is().EqualTo(7u));
         AssertThat(id_of(arc.source), Is().EqualTo(42u));
@@ -951,11 +866,11 @@ go_bandit([]() {
       });
 
       it("should extract high arc from node", [&]() {
-        node_t node = create_node(6,13,
-                                  create_node_ptr(8,21),
-                                  create_node_ptr(9,8));
+        const node_t node = create_node(6,13,
+                                        create_node_ptr(8,21),
+                                        create_node_ptr(9,8));
 
-        arc_t arc = high_arc_of(node);
+        const arc_t arc = high_arc_of(node);
 
         AssertThat(label_of(arc.source), Is().EqualTo(6u));
         AssertThat(id_of(arc.source), Is().EqualTo(13u));
@@ -964,10 +879,10 @@ go_bandit([]() {
       });
 
       it("should combine low and high arcs into single node", [&]() {
-        arc_t low_arc = { create_node_ptr(17,42), create_node_ptr(9,8) };
-        arc_t high_arc = { flag(create_node_ptr(17,42)), create_node_ptr(8,21) };
+        const arc_t low_arc = { create_node_ptr(17,42), create_node_ptr(9,8) };
+        const arc_t high_arc = { flag(create_node_ptr(17,42)), create_node_ptr(8,21) };
 
-        node_t node = node_of(low_arc, high_arc);
+        const node_t node = node_of(low_arc, high_arc);
 
         AssertThat(label_of(node), Is().EqualTo(17u));
         AssertThat(id_of(node), Is().EqualTo(42u));
@@ -981,9 +896,9 @@ go_bandit([]() {
     });
 
     describe("assignment_t", [&]() {
-      assignment_t a1 = create_assignment(2, false);
-      assignment_t a2 = create_assignment(2, true);
-      assignment_t a3 = create_assignment(3, false);
+      const assignment_t a1 = create_assignment(2, false);
+      const assignment_t a2 = create_assignment(2, true);
+      const assignment_t a3 = create_assignment(3, false);
 
       it("is sorted first by label", [&]() {
         // Less than
@@ -1007,9 +922,9 @@ go_bandit([]() {
         AssertThat(a2 > a1, Is().False());
       });
 
-      assignment_t b1 = create_assignment(2, false);
-      assignment_t b2 = create_assignment(2, true);
-      assignment_t b3 = create_assignment(3, false);
+      const assignment_t b1 = create_assignment(2, false);
+      const assignment_t b2 = create_assignment(2, true);
+      const assignment_t b3 = create_assignment(3, false);
 
       it("should be equal by content", [&]() {
         AssertThat(a1 == b1, Is().True());
