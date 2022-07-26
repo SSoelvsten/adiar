@@ -632,6 +632,108 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
+      it("can collapse BDD reduction rule to a false terminal", [&]() {
+        bdd_builder b;
+
+        const bdd_ptr p2 = b.add_node(2,false,false);
+        const bdd_ptr p1 = b.add_node(1,false,p2);
+
+        bdd out = b.create();
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
+      });
+
+      it("can collapse BDD reduction rule to a true terminal [1]", [&]() {
+        bdd_builder b;
+
+        const bdd_ptr p2 = b.add_node(2,true,true);
+        const bdd_ptr p1 = b.add_node(1,p2,p2);
+
+        bdd out = b.create();
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+      });
+
+      it("can collapse BDD reduction rule to a true terminal [2]", [&]() {
+        bdd_builder b;
+
+        const bdd_ptr p2 = b.add_node(2,true,true);
+        const bdd_ptr p1 = b.add_node(1,p2,true);
+
+        bdd out = b.create();
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+      });
+
       it("does not decrement 'id' when applying the BDD reduction rule", [&]() {
         bdd_builder b;
 
@@ -805,6 +907,74 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
         AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+      });
+
+      it("can collapse ZDD reduction rule to a false terminal", [&]() {
+        zdd_builder b;
+
+        const zdd_ptr p2 = b.add_node(2,false,false);
+        const zdd_ptr p1 = b.add_node(1,p2,false);
+
+        zdd out = b.create();
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
+      });
+
+      it("can collapse ZDD reduction rule to a true terminal", [&]() {
+        zdd_builder b;
+
+        const zdd_ptr p2 = b.add_node(2,true,false);
+        const zdd_ptr p1 = b.add_node(1,p2,false);
+
+        zdd out = b.create();
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
         AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
