@@ -149,7 +149,7 @@ namespace adiar {
       }
 
       // Create potential node
-      node_t node = create_node(label, current_id--, low.uid, high.uid);
+      node_t node = create_node(label, current_id, low.uid, high.uid);
 
       // Check whether this node is 'redundant'
       uid_t res_uid = dd_policy::reduction_rule(node);
@@ -159,6 +159,7 @@ namespace adiar {
       // Push node to file
       nw.push(node);
       unref_nodes++;
+      current_id--;
 
       // Update count of unreferenced nodes
       bool& low_unref = *low.unreferenced;

@@ -632,12 +632,84 @@ go_bandit([]() {
         AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
       });
 
+      it("does not decrement 'id' when applying the BDD reduction rule", [&]() {
+        bdd_builder b;
+
+        /*
+                 _1_      ---- x0
+                /   \
+                2   3     ---- x1
+               / \ //
+               F  4       ---- x2
+                 / \
+                 F T
+         */
+        const bdd_ptr p4 = b.add_node(2, false, true);
+        const bdd_ptr p3 = b.add_node(1, p4, p4);
+        const bdd_ptr p2 = b.add_node(1, false, p4);
+        const bdd_ptr p1 = b.add_node(0, p3, p2);
+
+        bdd out = b.create();
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+                                                              terminal_F,
+                                                              terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                              terminal_F,
+                                                              create_node_uid(2, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                              create_node_uid(2, MAX_ID),
+                                                              create_node_uid(1, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(4u));
+
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+      });
+
       it("uses the BDD reduction rule with copies of nodes", [&]() {
         bdd_builder b;
 
-        bdd_ptr p1 = b.add_node(1,false,true);
-
-        bdd_ptr p2 = p1;
+        const bdd_ptr p1 = b.add_node(1,false,true);
+        const bdd_ptr p2 = p1;
 
         b.add_node(0,p1,p2);
 
@@ -731,6 +803,79 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
+
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+      });
+
+      it("does not decrement 'id' when applying the ZDD reduction rule", [&]() {
+        zdd_builder b;
+
+        /*
+                 _1_      ---- x0
+                /   \
+                2   3     ---- x1
+                \\ / \
+                  4  F    ---- x2
+                 / \
+                 F T
+         */
+        const zdd_ptr p4 = b.add_node(2, false, true);
+        const zdd_ptr p3 = b.add_node(1, p4, false);
+        const zdd_ptr p2 = b.add_node(1, p4, p4);
+        const zdd_ptr p1 = b.add_node(0, p3, p2);
+
+        zdd out = b.create();
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+                                                              terminal_F,
+                                                              terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                              create_node_uid(2, MAX_ID),
+                                                              create_node_uid(2, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                              create_node_uid(2, MAX_ID),
+                                                              create_node_uid(1, MAX_ID))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(4u));
 
         AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
         AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
