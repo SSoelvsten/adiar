@@ -220,16 +220,27 @@ namespace adiar {
           throw std::domain_error("There must be at least one node or terminal in the decision diagram");
         }
       }
+      nw.detach();
+
       if(unref_nodes > 1) {
         throw std::domain_error("Decision diagram has more than one root");
       }
-      nw.detach();
-      return nf;
+
+      const typename dd_policy::reduced_t res(nf);
+      reset();
+      return res;
     }
 
     /////////////////////////////////////////////////////////////////////////////
-    /// \brief Reset to create a new decision diagram.
+    /// \brief Discards all current content and sets up for creating a new
+    ///        decision diagram.
     /////////////////////////////////////////////////////////////////////////////
+    void abort()
+    {
+      reset();
+    }
+
+  private:
     void reset()
     {
       nw.detach();

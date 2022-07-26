@@ -161,6 +161,15 @@ go_bandit([]() {
       AssertThrows(std::domain_error, b.create());
     });
 
+    it("throws an exception when calling create a second time with no new nodes in between", [&]() {
+      bdd_builder b;
+
+      b.add_node(0,false,true);
+      b.create();
+
+      AssertThrows(std::domain_error, b.create());
+    });
+
     it("can create a single-node BDD", [&]() {
       bdd_builder b;
 
@@ -219,6 +228,24 @@ go_bandit([]() {
       builder_ptr p = b1.add_node(1,true,false);
 
       AssertThrows(std::invalid_argument, b2.add_node(0,p,false));
+    });
+
+    it("throws an exception if pointers are used after reset", [&]() {
+      bdd_builder b;
+
+      builder_ptr p = b.add_node(1,true,false);
+      b.reset();
+
+      AssertThrows(std::invalid_argument, b.add_node(0,p,false));
+    });
+
+    it("throws an exception if pointers are used after create", [&]() {
+      bdd_builder b;
+
+      builder_ptr p = b.add_node(1,true,false);
+      b.create();
+
+      AssertThrows(std::invalid_argument, b.add_node(0,p,false));
     });
 
     it("throws an exception when label > MAX_LABEL", [&]() {
@@ -478,6 +505,89 @@ go_bandit([]() {
       b.reset();
 
       AssertThrows(std::domain_error, b.create());
+    });
+
+    it("can create two different BDDs", [&]() {
+      bdd_builder b;
+
+      { // FIRST
+        b.add_node(0,false,true);
+        bdd out = b.create();
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                              terminal_F,
+                                                              terminal_T)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
+
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+      }
+
+      { // SECOND
+        b.add_node(1,true,false);
+
+        bdd out = b.create();
+
+        // Check it looks all right
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                              terminal_T,
+                                                              terminal_F)));
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream<node_t> out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
+
+        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+      }
     });
 
     it("throws an exception when there is more than one root [1]", [&]() {
