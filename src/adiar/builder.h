@@ -253,7 +253,7 @@ namespace adiar {
     /// \throws std::domain_error If (a) add_node has not been called or (b) if
     ///                           there are more than one root in the diagram.
     /////////////////////////////////////////////////////////////////////////////
-    typename dd_policy::reduced_t create()
+    typename dd_policy::reduced_t build()
     {
       if(!nw.has_pushed()) {
         if(created_terminal) {
@@ -277,13 +277,16 @@ namespace adiar {
     /// \brief Clear builder of all its current content, discarding all nodes
     ///        and invalidating any pointers to them.
     /////////////////////////////////////////////////////////////////////////////
-    void abort()
+    void clear() noexcept
     {
       reset();
     }
 
   private:
-    void reset()
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Reset all internal values to their initial.
+    /////////////////////////////////////////////////////////////////////////////
+    void reset() noexcept
     {
       nw.detach();
       nf = node_file();
@@ -297,8 +300,11 @@ namespace adiar {
       unref_nodes = 0;
     }
 
-  private:
-    builder_ptr<dd_policy> make_ptr(ptr_t p) {
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Create a builder_ptr with 'this' builder as its parent.
+    /////////////////////////////////////////////////////////////////////////////
+    builder_ptr<dd_policy> make_ptr(const ptr_t p) noexcept
+    {
       return builder_ptr<dd_policy>(p, builder_ref);
     }
   };
