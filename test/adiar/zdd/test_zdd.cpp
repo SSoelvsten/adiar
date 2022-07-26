@@ -108,7 +108,7 @@ go_bandit([]() {
         AssertThat(terminal_F, Is().Not().EqualTo(terminal_T));
       });
 
-      it("should accept {{x0}} == {{x0}} (different files)", [&]() {
+      it("should accept {{0}} == {{0}} (different files)", [&]() {
         node_file x0_nf_2;
 
         { node_writer nw_0(x0_nf_2);
@@ -122,15 +122,15 @@ go_bandit([]() {
         AssertThat(x0, Is().EqualTo(x0_2));
       });
 
-      it("should compute {{x0}} /\\ {{x1}} == {{x0}, {x1}}", [&]() {
+      it("should compute {{0}} /\\ {{1}} == {{0}, {1}}", [&]() {
         AssertThat((x0 | x1) == x0_or_x1, Is().True());
       });
 
-      it("should compute {{x0}} \\/ {{x0},{x1}} == {{x0}}", [&]() {
+      it("should compute {{0}} \\/ {{0},{1}} == {{0}}", [&]() {
         AssertThat((x0 & x0_or_x1) == x0, Is().True());
       });
 
-      it("should compute {{x0},{x1}} \\ {{x0} == {{x0}}", [&]() {
+      it("should compute {{0},{1}} \\ {{0} == {{0}}", [&]() {
         AssertThat((x0_or_x1 - x0) == x1, Is().True());
       });
 
