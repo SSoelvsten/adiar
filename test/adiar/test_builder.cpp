@@ -1,8 +1,58 @@
 go_bandit([]() {
   describe("adiar/builder.h", []() {
+    const ptr_t terminal_T = create_terminal_ptr(true);
+    const ptr_t terminal_F = create_terminal_ptr(false);
 
-    ptr_t terminal_T = create_terminal_ptr(true);
-    ptr_t terminal_F = create_terminal_ptr(false);
+    describe("builder_ptr", [&]() {
+      it("supports copy-construction", [&]() {
+         bdd_builder b;
+
+         const bdd_ptr p1 = b.add_node(1,false,true);
+         const bdd_ptr p2 = p1;
+
+         const bdd_ptr p3 = b.add_node(0,p2,true);
+
+         bdd out = b.create();
+         node_test_stream out_nodes(out);
+
+         AssertThat(out_nodes.can_pull(), Is().True());
+
+         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                               terminal_F,
+                                                               terminal_T)));
+
+         AssertThat(out_nodes.can_pull(), Is().True());
+
+         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                               create_node_ptr(1,MAX_ID),
+                                                               terminal_T)));
+
+         AssertThat(out_nodes.can_pull(), Is().False());
+      });
+
+      it("supports move-semantics", [&]() {
+        bdd_builder b;
+
+        b.add_node(0,b.add_node(1,false,true),true);
+
+        bdd out = b.create();
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+                                                              terminal_F,
+                                                              terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().True());
+
+        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+                                                              create_node_ptr(1,MAX_ID),
+                                                              terminal_T)));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+      });
+    });
 
     it("can create a false terminal-only BDD", [&]() {
       bdd_builder b;
@@ -188,7 +238,7 @@ go_bandit([]() {
     it("throws an exception when label_of(low) >= label [1]", [&]() {
       bdd_builder b;
 
-      bdd_ptr p = b.add_node(0,false,true);
+      const bdd_ptr p = b.add_node(0,false,true);
 
       AssertThrows(std::invalid_argument, b.add_node(0,p,true));
     });
@@ -196,7 +246,7 @@ go_bandit([]() {
     it("throws an exception when label_of(low) >= label [2]", [&]() {
       bdd_builder b;
 
-      bdd_ptr p = b.add_node(3,false,true);
+      const bdd_ptr p = b.add_node(3,false,true);
 
       AssertThrows(std::invalid_argument, b.add_node(3,p,true));
     });
@@ -204,7 +254,7 @@ go_bandit([]() {
     it("throws an exception when label_of(high) >= label [1]", [&]() {
       bdd_builder b;
 
-      bdd_ptr p = b.add_node(0,false,true);
+      const bdd_ptr p = b.add_node(0,false,true);
 
       AssertThrows(std::invalid_argument, b.add_node(0,false,p));
     });
@@ -212,7 +262,7 @@ go_bandit([]() {
     it("throws an exception when label_of(high) >= label [2]", [&]() {
       bdd_builder b;
 
-      bdd_ptr p = b.add_node(6,false,true);
+      const bdd_ptr p = b.add_node(6,false,true);
 
       AssertThrows(std::invalid_argument, b.add_node(6,false,p));
     });
@@ -230,9 +280,9 @@ go_bandit([]() {
 
       bdd_builder b;
 
-      bdd_ptr p3 = b.add_node(2,false,true);
-      bdd_ptr p2 = b.add_node(1,p3,true);
-      bdd_ptr p1 = b.add_node(0,p3,p2);
+      const bdd_ptr p3 = b.add_node(2,false,true);
+      const bdd_ptr p2 = b.add_node(1,p3,true);
+      const bdd_ptr p1 = b.add_node(0,p3,p2);
 
       bdd out = b.create();
 
@@ -303,11 +353,11 @@ go_bandit([]() {
 
       bdd_builder b;
 
-      bdd_ptr p5 = b.add_node(2,true,false);
-      bdd_ptr p4 = b.add_node(2,false,true);
-      bdd_ptr p3 = b.add_node(1,p5,true);
-      bdd_ptr p2 = b.add_node(1,p4,p5);
-      bdd_ptr p1 = b.add_node(0,p2,p3);
+      const bdd_ptr p5 = b.add_node(2,true,false);
+      const bdd_ptr p4 = b.add_node(2,false,true);
+      const bdd_ptr p3 = b.add_node(1,p5,true);
+      const bdd_ptr p2 = b.add_node(1,p4,p5);
+      const bdd_ptr p1 = b.add_node(0,p2,p3);
 
       bdd out = b.create();
 
@@ -434,7 +484,6 @@ go_bandit([]() {
       bdd_builder b;
 
       b.add_node(0,false,true);
-
       b.add_node(0,true,false);
 
       AssertThrows(std::domain_error, b.create());
@@ -444,7 +493,6 @@ go_bandit([]() {
       bdd_builder b;
 
       b.add_node(4,false,true);
-
       b.add_node(2,true,false);
 
       AssertThrows(std::domain_error, b.create());
@@ -453,15 +501,11 @@ go_bandit([]() {
     it("throws an exception when there is more than one root [3]", [&]() {
       bdd_builder b;
 
-      bdd_ptr p5 = b.add_node(5,true,false);
-
-      bdd_ptr p4 = b.add_node(4,false,true);
-
-      bdd_ptr p3 = b.add_node(4,p5,true);
-
-      bdd_ptr p2 = b.add_node(2,p3,p4);
-
-      b.add_node(1,p3,p5);
+      const bdd_ptr p5 = b.add_node(5,true,false);
+      const bdd_ptr p4 = b.add_node(4,false,true);
+      const bdd_ptr p3 = b.add_node(4,p5,true);
+      const bdd_ptr p2 = b.add_node(2,p3,p4);
+      const bdd_ptr p1 = b.add_node(1,p3,p5);
 
       AssertThrows(std::domain_error, b.create());
     });
@@ -479,15 +523,11 @@ go_bandit([]() {
 
       bdd_builder b;
 
-      bdd_ptr p5 = b.add_node(5,true,false);
-
-      bdd_ptr p4 = b.add_node(4,true,false);
-
-      bdd_ptr p3 = b.add_node(4,p5,true);
-
-      bdd_ptr p2 = p3;
-
-      b.add_node(2,p2,p4);
+      const bdd_ptr p5 = b.add_node(5,true,false);
+      const bdd_ptr p4 = b.add_node(4,true,false);
+      const bdd_ptr p3 = b.add_node(4,p5,true);
+      const bdd_ptr p2 = p3;
+      const bdd_ptr p1 = b.add_node(2,p2,p4);
 
       bdd out = b.create();
 
@@ -551,7 +591,7 @@ go_bandit([]() {
       it("uses the BDD reduction rule", [&]() {
         bdd_builder b;
 
-        bdd_ptr p = b.add_node(1,false,true);
+        const bdd_ptr p = b.add_node(1,false,true);
 
         b.add_node(0,p,p);
 
@@ -641,15 +681,11 @@ go_bandit([]() {
       it("does not allow multiple roots when using BDD reduction rule", [&]() {
         bdd_builder b;
 
-        bdd_ptr p4 = b.add_node(2,true,false);
-
-        bdd_ptr p3 = b.add_node(2,false,true);
-
-        bdd_ptr p2 = b.add_node(1,p4,true);
-
-        bdd_ptr p1 = b.add_node(1,p3,p4);
-
-        b.add_node(0,p2,p2);
+        const bdd_ptr p4 = b.add_node(2,true,false);
+        const bdd_ptr p3 = b.add_node(2,false,true);
+        const bdd_ptr p2 = b.add_node(1,p4,true);
+        const bdd_ptr p1 = b.add_node(1,p3,p4); // root
+        const bdd_ptr p0 = b.add_node(0,p2,p2); // root
 
         AssertThrows(std::domain_error, b.create());
       });
@@ -659,7 +695,7 @@ go_bandit([]() {
       it("uses the ZDD reduction rule", [&]() {
         zdd_builder b;
 
-        zdd_ptr p = b.add_node(1,false,true);
+        const zdd_ptr p = b.add_node(1,false,true);
 
         b.add_node(0,p,false);
 
@@ -703,19 +739,14 @@ go_bandit([]() {
       it("does not allow multiple roots when using ZDD reduction rule", [&]() {
         zdd_builder b;
 
-        zdd_ptr p4 = b.add_node(2,true,false);
-
-        zdd_ptr p3 = b.add_node(2,false,true);
-
-        zdd_ptr p2 = b.add_node(1,p4,true);
-
-        zdd_ptr p1 = b.add_node(1,p3,p4);
-
-        b.add_node(0,p2,false);
+        const zdd_ptr p4 = b.add_node(2,true,false);
+        const zdd_ptr p3 = b.add_node(2,false,true);
+        const zdd_ptr p2 = b.add_node(1,p4,true);
+        const zdd_ptr p1 = b.add_node(1,p3,p4);    // root
+        const zdd_ptr p0 = b.add_node(0,p2,false); // root
 
         AssertThrows(std::domain_error, b.create());
       });
     });
-
   });
 });

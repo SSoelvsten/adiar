@@ -29,29 +29,41 @@ namespace adiar {
   friend class builder<dd_policy>;
 
   private:
-    const ptr_t ptr;
-    const std::shared_ptr<builder_shared> builder_ref;
-    std::shared_ptr<bool> unreferenced = std::make_shared<bool>(true);
+    ///////////////////////////////////////////////////////////////////////////////
+    /// \brief The unique identifier of a prior node.
+    ///////////////////////////////////////////////////////////////////////////////
+    // TODO: rename to 'ptr_t ptr' when using complement edges
+    /*const*/ uid_t uid;
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// \brief Unique shared reference for the parent builder object.
+    ///////////////////////////////////////////////////////////////////////////////
+    /*const*/ std::shared_ptr<builder_shared> builder_ref;
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// \brief Reference for this specific 'uid' recording whether it is a child
+    ///        of a node created later than itself.
+    ///////////////////////////////////////////////////////////////////////////////
+    /*const*/ std::shared_ptr<bool> unreferenced = std::make_shared<bool>(true);
 
   public:
     builder_ptr() = default;
     builder_ptr(const builder_ptr&) = default;
 
   private:
-    builder_ptr(ptr_t &p, std::shared_ptr<builder_shared> &sp) : ptr(p), builder_ref(sp)
+    builder_ptr(uid_t &p, std::shared_ptr<builder_shared> &sp) : uid(p), builder_ref(sp)
     { }
-
   };
 
   ///////////////////////////////////////////////////////////////////////////////
-  /// \brief The pointer type for BDD nodes that builders use
+  /// \brief Pointer for a BDD node created by a BDD builder.
   ///
   /// \sa builder_ptr builder
   ///////////////////////////////////////////////////////////////////////////////
   typedef builder_ptr<bdd_policy> bdd_ptr;
 
   ///////////////////////////////////////////////////////////////////////////////
-  /// \brief The pointer type for ZDD nodes that builders use
+  /// \brief Pointer for a ZDD node created by a ZDD builder.
   ///
   /// \sa builder_ptr builder
   ///////////////////////////////////////////////////////////////////////////////
@@ -98,10 +110,22 @@ namespace adiar {
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Add an internal node with a given label, id, and children.
     ///        Children are either pointers to other nodes or booleans.
+    ///
+    /// \param label The variable label for the node to create.
+    ///
+    /// \param low   Pointer or Terminal value for when the variable for the given
+    ///              label evaluates to false.
+    ///
+    /// \param high  Pointer or Terminal value for when the variable for the given
+    ///              label evaluates to true.
+    ///
+    /// \returns     Pointer to the (possibly new) BDD node for the desired function.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(label_t label, builder_ptr<dd_policy> &low, builder_ptr<dd_policy> &high)
+    builder_ptr<dd_policy> add_node(label_t label,
+                                    const builder_ptr<dd_policy> &low,
+                                    const builder_ptr<dd_policy> &high)
     {
-      //Check validity of input
+      // Check validity of input
       if(low.builder_ref != builder_ref || high.builder_ref != builder_ref) {
         throw std::invalid_argument("Cannot use pointers from a different builder");
       }
@@ -111,56 +135,66 @@ namespace adiar {
       if(label > current_label) {
         throw std::invalid_argument("Nodes must be added bottom-up");
       }
-      if(is_node(low.ptr) && label_of(low.ptr) <= label) {
+      if(is_node(low.uid) && label_of(low.uid) <= label) {
         throw std::invalid_argument("Low child must point to a node with higher label");
       }
-      if(is_node(high.ptr) && label_of(high.ptr) <= label) {
+      if(is_node(high.uid) && label_of(high.uid) <= label) {
         throw std::invalid_argument("High child must point to a node with higher label");
       }
 
-      //Update label and ID if necessary
+      // Update label and ID if necessary
       if(label < current_label) {
         current_label = label;
         current_id = MAX_ID;
       }
 
-      //Create and push new node
-      node_t node = create_node(label, current_id--, low.ptr, high.ptr);
-      ptr_t ptr = dd_policy::reduction_rule(node);
-      if(ptr == low.ptr) { return low; }
-      if(ptr == high.ptr) { return high; }
+      // Create potential node
+      node_t node = create_node(label, current_id--, low.uid, high.uid);
 
+      // Check whether this node is 'redundant'
+      uid_t res_uid = dd_policy::reduction_rule(node);
+      if(res_uid == low.uid) { return low; }
+      if(res_uid == high.uid) { return high; }
+
+      // Push node to file
       nw.push(node);
       unref_nodes++;
 
-      //Update count of unreferenced nodes
+      // Update count of unreferenced nodes
       bool& low_unref = *low.unreferenced;
-      if(low_unref && !is_terminal(low.ptr)) {
+      if(low_unref && !is_terminal(low.uid)) {
         low_unref = false;
         unref_nodes--;
       }
+
       bool& high_unref = *high.unreferenced;
-      if(high_unref && !is_terminal(high.ptr)) {
+      if(high_unref && !is_terminal(high.uid)) {
         high_unref = false;
         unref_nodes--;
       }
 
-      return make_ptr(ptr);
+      return make_ptr(res_uid);
     }
 
-    builder_ptr<dd_policy> add_node(label_t label, bool low, builder_ptr<dd_policy> &high)
+    builder_ptr<dd_policy> add_node(const label_t label,
+                                    const bool low,
+                                    const builder_ptr<dd_policy> &high)
     {
       builder_ptr<dd_policy> low_ptr = make_ptr(create_terminal_ptr(low));
       return add_node(label, low_ptr, high);
     }
 
-    builder_ptr<dd_policy> add_node(label_t label, builder_ptr<dd_policy> &low, bool high)
+    builder_ptr<dd_policy> add_node(const label_t label,
+                                    const builder_ptr<dd_policy> &low,
+                                    const bool high)
     {
       builder_ptr<dd_policy> high_ptr = make_ptr(create_terminal_ptr(high));
       return add_node(label, low, high_ptr);
     }
 
-    builder_ptr<dd_policy> add_node(label_t label, bool low, bool high)
+    builder_ptr<dd_policy> add_node(const label_t label,
+                                    const bool low,
+                                    const bool high)
     {
       builder_ptr<dd_policy> low_ptr = make_ptr(create_terminal_ptr(low));
       builder_ptr<dd_policy> high_ptr = make_ptr(create_terminal_ptr(high));
