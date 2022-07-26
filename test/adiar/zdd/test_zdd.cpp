@@ -174,7 +174,7 @@ go_bandit([]() {
 
       it("should ?= __zdd&&", [&]() {
         zdd out = x0_or_x1;
-        out -= x1;
+        out -= x0_or_x1 & x1;
         AssertThat(out, Is().EqualTo(x0));
 
         out |= x0_or_x1 & x1;
