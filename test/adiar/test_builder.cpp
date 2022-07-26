@@ -12,7 +12,7 @@ go_bandit([]() {
 
          const bdd_ptr p3 = b.add_node(0,p2,true);
 
-         bdd out = b.create();
+         bdd out = b.build();
          node_test_stream out_nodes(out);
 
          AssertThat(out_nodes.can_pull(), Is().True());
@@ -35,7 +35,7 @@ go_bandit([]() {
 
         b.add_node(0,b.add_node(1,false,true),true);
 
-        bdd out = b.create();
+        bdd out = b.build();
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -59,7 +59,7 @@ go_bandit([]() {
 
       b.add_node(false);
 
-      bdd out = b.create();
+      bdd out = b.build();
 
       // Check it looks all right
       node_test_stream out_nodes(out);
@@ -92,7 +92,7 @@ go_bandit([]() {
 
       b.add_node(true);
 
-      bdd out = b.create();
+      bdd out = b.build();
 
       // Check it looks all right
       node_test_stream out_nodes(out);
@@ -127,7 +127,7 @@ go_bandit([]() {
 
       b.add_node(false);
 
-      bdd out = b.create();
+      bdd out = b.build();
 
       // Check it looks all right
       node_test_stream out_nodes(out);
@@ -158,16 +158,16 @@ go_bandit([]() {
     it("throws an exception when create is called on an empty file", [&]() {
       bdd_builder b;
 
-      AssertThrows(std::domain_error, b.create());
+      AssertThrows(std::domain_error, b.build());
     });
 
     it("throws an exception when calling create a second time with no new nodes in between", [&]() {
       bdd_builder b;
 
       b.add_node(0,false,true);
-      b.create();
+      b.build();
 
-      AssertThrows(std::domain_error, b.create());
+      AssertThrows(std::domain_error, b.build());
     });
 
     it("can create a single-node BDD", [&]() {
@@ -175,7 +175,7 @@ go_bandit([]() {
 
       b.add_node(0,false,true);
 
-      bdd out = b.create();
+      bdd out = b.build();
 
       // Check it looks all right
       node_test_stream out_nodes(out);
@@ -234,7 +234,7 @@ go_bandit([]() {
       bdd_builder b;
 
       builder_ptr p = b.add_node(1,true,false);
-      b.reset();
+      b.clear();
 
       AssertThrows(std::invalid_argument, b.add_node(0,p,false));
     });
@@ -243,7 +243,7 @@ go_bandit([]() {
       bdd_builder b;
 
       builder_ptr p = b.add_node(1,true,false);
-      b.create();
+      b.build();
 
       AssertThrows(std::invalid_argument, b.add_node(0,p,false));
     });
@@ -311,7 +311,7 @@ go_bandit([]() {
       const bdd_ptr p2 = b.add_node(1,p3,true);
       const bdd_ptr p1 = b.add_node(0,p3,p2);
 
-      bdd out = b.create();
+      bdd out = b.build();
 
       // Check it looks all right
       node_test_stream out_nodes(out);
@@ -386,7 +386,7 @@ go_bandit([]() {
       const bdd_ptr p2 = b.add_node(1,p4,p5);
       const bdd_ptr p1 = b.add_node(0,p2,p3);
 
-      bdd out = b.create();
+      bdd out = b.build();
 
       // Check it looks all right
       node_test_stream out_nodes(out);
@@ -456,11 +456,11 @@ go_bandit([]() {
 
       b.add_node(0,false,true);
 
-      b.reset();
+      b.clear();
 
       b.add_node(1,true,false);
 
-      bdd out = b.create();
+      bdd out = b.build();
 
       // Check it looks all right
       node_test_stream out_nodes(out);
@@ -502,9 +502,9 @@ go_bandit([]() {
 
       b.add_node(0,false,true);
 
-      b.reset();
+      b.clear();
 
-      AssertThrows(std::domain_error, b.create());
+      AssertThrows(std::domain_error, b.build());
     });
 
     it("can create two different BDDs", [&]() {
@@ -512,7 +512,7 @@ go_bandit([]() {
 
       { // FIRST
         b.add_node(0,false,true);
-        bdd out = b.create();
+        bdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -552,7 +552,7 @@ go_bandit([]() {
       { // SECOND
         b.add_node(1,true,false);
 
-        bdd out = b.create();
+        bdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -596,7 +596,7 @@ go_bandit([]() {
       b.add_node(0,false,true);
       b.add_node(0,true,false);
 
-      AssertThrows(std::domain_error, b.create());
+      AssertThrows(std::domain_error, b.build());
     });
 
     it("throws an exception when there is more than one root [2]", [&]() {
@@ -605,7 +605,7 @@ go_bandit([]() {
       b.add_node(4,false,true);
       b.add_node(2,true,false);
 
-      AssertThrows(std::domain_error, b.create());
+      AssertThrows(std::domain_error, b.build());
     });
 
     it("throws an exception when there is more than one root [3]", [&]() {
@@ -617,7 +617,7 @@ go_bandit([]() {
       const bdd_ptr p2 = b.add_node(2,p3,p4);
       const bdd_ptr p1 = b.add_node(1,p3,p5);
 
-      AssertThrows(std::domain_error, b.create());
+      AssertThrows(std::domain_error, b.build());
     });
 
     it("recognizes copies of nodes", [&]() {
@@ -639,7 +639,7 @@ go_bandit([]() {
       const bdd_ptr p2 = p3;
       const bdd_ptr p1 = b.add_node(2,p2,p4);
 
-      bdd out = b.create();
+      bdd out = b.build();
 
       // Check it looks all right
       node_test_stream out_nodes(out);
@@ -705,7 +705,7 @@ go_bandit([]() {
 
         b.add_node(0,p,p);
 
-        bdd out = b.create();
+        bdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -748,7 +748,7 @@ go_bandit([]() {
         const bdd_ptr p2 = b.add_node(2,false,false);
         const bdd_ptr p1 = b.add_node(1,false,p2);
 
-        bdd out = b.create();
+        bdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -782,7 +782,7 @@ go_bandit([]() {
         const bdd_ptr p2 = b.add_node(2,true,true);
         const bdd_ptr p1 = b.add_node(1,p2,p2);
 
-        bdd out = b.create();
+        bdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -816,7 +816,7 @@ go_bandit([]() {
         const bdd_ptr p2 = b.add_node(2,true,true);
         const bdd_ptr p1 = b.add_node(1,p2,true);
 
-        bdd out = b.create();
+        bdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -861,7 +861,7 @@ go_bandit([]() {
         const bdd_ptr p2 = b.add_node(1, false, p4);
         const bdd_ptr p1 = b.add_node(0, p3, p2);
 
-        bdd out = b.create();
+        bdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -925,7 +925,7 @@ go_bandit([]() {
 
         b.add_node(0,p1,p2);
 
-        bdd out = b.create();
+        bdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -971,7 +971,7 @@ go_bandit([]() {
         const bdd_ptr p1 = b.add_node(1,p3,p4); // root
         const bdd_ptr p0 = b.add_node(0,p2,p2); // root
 
-        AssertThrows(std::domain_error, b.create());
+        AssertThrows(std::domain_error, b.build());
       });
     });
 
@@ -983,7 +983,7 @@ go_bandit([]() {
 
         b.add_node(0,p,false);
 
-        zdd out = b.create();
+        zdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1026,7 +1026,7 @@ go_bandit([]() {
         const zdd_ptr p2 = b.add_node(2,false,false);
         const zdd_ptr p1 = b.add_node(1,p2,false);
 
-        zdd out = b.create();
+        zdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1060,7 +1060,7 @@ go_bandit([]() {
         const zdd_ptr p2 = b.add_node(2,true,false);
         const zdd_ptr p1 = b.add_node(1,p2,false);
 
-        zdd out = b.create();
+        zdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1105,7 +1105,7 @@ go_bandit([]() {
         const zdd_ptr p2 = b.add_node(1, p4, p4);
         const zdd_ptr p1 = b.add_node(0, p3, p2);
 
-        zdd out = b.create();
+        zdd out = b.build();
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1170,7 +1170,7 @@ go_bandit([]() {
         const zdd_ptr p1 = b.add_node(1,p3,p4);    // root
         const zdd_ptr p0 = b.add_node(0,p2,false); // root
 
-        AssertThrows(std::domain_error, b.create());
+        AssertThrows(std::domain_error, b.build());
       });
     });
   });
