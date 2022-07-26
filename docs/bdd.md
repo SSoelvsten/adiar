@@ -276,7 +276,8 @@ Return a file with the labels of the existing levels in *f*.
 {: .no_toc }
 
 Converts a [ZDD](zdd.md) into a BDD interpreted within the variable domain
-*dom*. The domain should be a superset of the variables in the given ZDD.
+*dom*. The domain should be a superset of the variables in the given ZDD. By
+default, `dom` is the globally set domain.
 
 
 ## DOT Output
