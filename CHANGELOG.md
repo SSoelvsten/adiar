@@ -1,3 +1,102 @@
+# v1.2.0
+
+**Date: 26th of July, 2022**
+
+## Performance
+
+This new release's primary focus is to drastically improve performance for smaller instances.To this end, we still use the very same algorithms, but if the input is small enough then we soundly can use purely internal memory auxiliary data structures within each algorithm. Prior to this version we could only guarantee up to a 3x performance difference compared to other BDD libraries when the largest constructed decision diagram is 9.5 GiB or larger. Now, we are able to now guarantee the same when the largest is only a few hundred KiB or larger.
+
+## Domain
+
+One may now set a *label_file* as the global domain over which one works.
+
+- `adiar_set_domain(label_file dom)`
+  sets the global domain variable.
+- `adiar_has_domain()`
+  checks whether a global domain already is set.
+- `adiar_get_domain()`
+  provides the current *label_file* that acts as the global domain (assuming `adiar_has_domain()` evaluates to `true`).
+
+## Binary Decision Diagrams
+
+### New Features
+
+- `bdd_builder`
+  is a new class to replace using the *node_writer* directly. This allows you to much more naturally construct BDDs bottom-up by hiding away several details. Furthermore, it makes use of exceptions rather than immediately terminating assertions.
+- `bdd_from(zdd A)`
+  converts from a ZDD to a BDD using the global domain.
+- `bdd_equal(bdd f, bdd g)`
+  is an alternative to using the `==` operator.
+- `bdd_unequal(bdd f, bdd g)`
+  is an alternative to using the `!=` operator.
+- `bdd_varprofile(bdd f)`
+  obtains a *label_file* containing all of the variables present in a BDD.
+
+### Bug Fixes
+
+- Results from `bdd_nithvar(label_t i)` and `bdd_ithvar(label_t i)`
+  are now marked as *canonical* and so can be used with the linear-scan equality checking.
+- Fixed the reduction phase may use 2 MiB more memory than is available.
+
+## Zero-suppressed Decision Diagrams
+
+### New Features
+
+- `zdd_builder`
+  is a new class to replace using the *node_writer* directly. This allows you to much more naturally construct ZDDs bottom-up by hiding away several details. Furthermore, it makes use of exceptions rather than immediately terminating assertions.
+- `zdd_complement(zdd A)`
+  Complementation within the global domain.
+- `zdd_from(bdd f)`
+  Converts from a BDD to a ZDD using the global domain.
+- `zdd_varprofile(zdd A)`
+  Obtain a *label_file* containing all of the variables present in a ZDD.
+
+### Bug Fixes
+
+- `zdd_ithvar(label_t i)`
+  Is now marked as *canonical* and so can be used with the linear-scan equality checking.
+- Fixed the reduction phase may use 2 MiB more memory than is available.
+- DOT files are now with the terminals properly printed as *Ø* and *{Ø}*.
+
+## Statistics
+
+### New Features
+
+- Statistics have been heavily extended with information on how often each type of auxiliary data structures (internal or external) have been used.
+- All statistics variables are now fixed-precision numbers (using the [CNL library](https://github.com/johnmcfarlane/cnl)) making sure there are no overflows in the provided numbers.
+- `adiar_statsreset()`
+  resets all statistics values back to 0.
+
+### Bug Fixes
+
+- Fixed fine grained statistics (*ADIAR_STATS_EXTRA*) are turned on if only coarse-grained statistics (*ADIAR_STATS*) was desired.
+
+## Deprecations
+
+The word *sink* has been replaced with the word *terminal* that is more commonly used in the context of decision diagrams.
+
+- *adiar/data.h*
+  - `create_sink_uid(bool val)` -> `create_terminal_uid(bool val)`
+  - `create_sink_ptr(bool val)` -> `create_terminal_ptr(bool val)`
+  - `create_sink(bool val)` -> `create_terminal(bool val)`
+- *adiar/bdd.h*
+  - `is_sink(bdd f)` -> `is_terminal(bdd f)`
+  - `bdd_sink(bool val)` -> `bdd_terminal(bool val)`
+- *adiar/zdd.h*
+  - `is_sink(zdd A)` -> `is_terminal(zdd A)`
+  - `zdd_sink(bool val)` -> `zdd_terminal(bool val)`
+
+## Breaking Changes
+
+The *terminal predicates* `is_any`, `is_true` and `is_false` with the prior `is_sink(zdd A, pred)` functions were too complicated. The above performance improvements allows us for a much simpler (and faster) implementation. Deprecation was not possible due to name conflicts with their replacements below.
+
+- *adiar/data.h*
+  - `is_sink(ptr_t p)`, `is_true(ptr_t p)`, and `is_false(ptr_t p)`.
+- *adiar/bdd.h*
+  - `is_sink(bdd f)`, `is_true(bdd f)` and `is_false(bdd f)`.
+- *adiar/zdd.h*
+  - `is_sink(zdd A)`, `is_null(zdd A)` and `is_empty(zdd A)`.
+
 # v1.1.0
 
 **Date: 25th of January, 2022**
