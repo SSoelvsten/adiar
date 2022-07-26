@@ -80,17 +80,47 @@ namespace adiar {
   class builder
   {
   private:
+    // TODO: code duplication with .reset().
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief File containing all prior pushed nodes.
+    /////////////////////////////////////////////////////////////////////////////
     node_file nf;
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Node writer to push new nodes into 'nf'.
+    /////////////////////////////////////////////////////////////////////////////
     node_writer nw;
 
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether a terminal value has been returned in 'add_node'.
+    /////////////////////////////////////////////////////////////////////////////
     bool created_terminal = false;
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief The value of the latest terminal value returned in 'add_node'.
+    /////////////////////////////////////////////////////////////////////////////
     bool terminal_val = false;
 
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Label of the current level.
+    /////////////////////////////////////////////////////////////////////////////
     label_t current_label = MAX_LABEL;
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Next available level identifier for the current level.
+    /////////////////////////////////////////////////////////////////////////////
     id_t current_id = MAX_ID;
 
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Unique struct for this builder's current phase.
+    /////////////////////////////////////////////////////////////////////////////
     std::shared_ptr<builder_shared> builder_ref = std::make_shared<builder_shared>();
-    size_t unref_nodes = 0;
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of yet unreferenced nodes.
+    /////////////////////////////////////////////////////////////////////////////
+    size_t unref_nodes = 0u;
 
   public:
     builder() : nw(nf)
@@ -100,7 +130,8 @@ namespace adiar {
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Add a terminal node with a given value.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(bool terminal_value) {
+    builder_ptr<dd_policy> add_node(bool terminal_value)
+    {
       created_terminal = true;
       terminal_val = terminal_value;
 
@@ -113,13 +144,18 @@ namespace adiar {
     ///
     /// \param label The variable label for the node to create.
     ///
-    /// \param low   Pointer or Terminal value for when the variable for the given
-    ///              label evaluates to false.
+    /// \param low   Pointer or Terminal value for when the variable for the
+    ///              given label evaluates to false.
     ///
-    /// \param high  Pointer or Terminal value for when the variable for the given
-    ///              label evaluates to true.
+    /// \param high  Pointer or Terminal value for when the variable for the
+    ///              given label evaluates to true.
     ///
-    /// \returns     Pointer to the (possibly new) BDD node for the desired function.
+    /// \returns     Pointer to the (possibly new) BDD node for the desired
+    ///              function.
+    ///
+    /// \throws std::invalid_argument If a node is malformed or not added in
+    ///                               bottom-up order and if pointers from
+    ///                               another builder is used.
     /////////////////////////////////////////////////////////////////////////////
     builder_ptr<dd_policy> add_node(label_t label,
                                     const builder_ptr<dd_policy> &low,
@@ -209,7 +245,13 @@ namespace adiar {
     }
 
     /////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain the final decision diagram.
+    /// \brief Builds the decision diagram with the added nodes and is then
+    ///        fully cleared.
+    ///
+    /// \sa clear
+    ///
+    /// \throws std::domain_error If (a) add_node has not been called or (b) if
+    ///                           there are more than one root in the diagram.
     /////////////////////////////////////////////////////////////////////////////
     typename dd_policy::reduced_t create()
     {
@@ -232,8 +274,8 @@ namespace adiar {
     }
 
     /////////////////////////////////////////////////////////////////////////////
-    /// \brief Discards all current content and sets up for creating a new
-    ///        decision diagram.
+    /// \brief Clear builder of all its current content, discarding all nodes
+    ///        and invalidating any pointers to them.
     /////////////////////////////////////////////////////////////////////////////
     void abort()
     {
