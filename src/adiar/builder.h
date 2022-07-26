@@ -38,7 +38,7 @@ namespace adiar {
     ///////////////////////////////////////////////////////////////////////////////
     /// \brief Unique shared reference for the parent builder object.
     ///////////////////////////////////////////////////////////////////////////////
-    /*const*/ std::shared_ptr<builder_shared> builder_ref;
+    /*const*/ std::shared_ptr<const builder_shared> builder_ref;
 
     ///////////////////////////////////////////////////////////////////////////////
     /// \brief Reference for this specific 'uid' recording whether it is a child
@@ -51,7 +51,8 @@ namespace adiar {
     builder_ptr(const builder_ptr&) = default;
 
   private:
-    builder_ptr(uid_t &p, std::shared_ptr<builder_shared> &sp) : uid(p), builder_ref(sp)
+    builder_ptr(const uid_t p, const std::shared_ptr<const builder_shared> &sp)
+      : uid(p), builder_ref(sp)
     { }
   };
 
