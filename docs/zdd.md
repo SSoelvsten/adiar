@@ -102,11 +102,12 @@ Constructs the ZDD for *{ vars Δ a | a ∈ A }*, where Δ is the symmetric
 difference between the two sets of variables *a* and *vars*. In other words, for
 each set in *A* the value of each variable *i* from *vars* is flipped.
 
-### `zdd zdd_complement(zdd A, label_file dom)`
+### `zdd zdd_complement(zdd A, label_file dom)` (operator `~`)
 {: .no_toc }
 
 Constructs the ZDD for *pow(dom)* \ *A*, i.e. the complement of *A* with respect
 to the variable domain, *dom*. The variables in *A* have to exist in *dom* too.
+By default, `dom` is the globally set domain.
 
 ### `zdd zdd_expand(zdd A, label_file vars)`
 {: .no_toc }
@@ -245,7 +246,8 @@ Return a file with the labels of the existing levels in *A*.
 {: .no_toc }
 
 Converts a [BDD](bdd.md) into a ZDD interpreted within the variable domain
-*dom*. The domain should be a superset of the variables in the given BDD.
+*dom*. The domain should be a superset of the variables in the given BDD. By
+default, `dom` is the globally set domain.
 
 ## DOT Output
 

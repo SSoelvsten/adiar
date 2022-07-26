@@ -76,6 +76,16 @@ namespace adiar {
     return (*this = reduce<zdd_policy>(std::forward<__zdd>(other)));
   }
 
+  __zdd operator~ (const zdd &A)
+  {
+    return zdd_complement(A);
+  }
+
+  __zdd operator~ (__zdd &&A)
+  {
+    return ~zdd(std::forward<__zdd>(A));
+  }
+
   __zdd operator& (const zdd& lhs, const zdd& rhs)
   {
     return zdd_intsec(lhs, rhs);

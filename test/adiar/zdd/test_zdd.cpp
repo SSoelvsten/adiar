@@ -134,10 +134,43 @@ go_bandit([]() {
         AssertThat((x0_or_x1 - x0) == x1, Is().True());
       });
 
-      it("should compute with __zdd&& operators", [&]() {
+      it("should compute {{0},{1}}' == {Ø,{0,1}} with dom {0,1}", [&]() {
+        label_file dom;
+        {
+          label_writer lw(dom);
+          lw << 0 << 1;
+        }
+
+        adiar_set_domain(dom);
+
+        node_file expected;
+        {
+          node_writer nw(expected);
+          nw << create_node(1,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true))
+             << create_node(0,MAX_ID, create_terminal_ptr(true), create_node_uid(1,MAX_ID));
+        }
+
+        AssertThat(~x0_or_x1 == zdd(expected), Is().True());
+      });
+
+      it("should compute with __zdd&& operators [|,&,-]", [&]() {
         zdd out = ((x0_or_x1 - x0) | ((x0 | x1) & (x0_or_x1 - x1))) - (x0_or_x1 - x0);
         AssertThat(x0, Is().EqualTo(out));
       });
+
+      it("should compute with __zdd&& operators [|,~,-,]", [&]() {
+          label_file dom;
+          {
+            label_writer lw(dom);
+            lw << 0 << 1;
+          }
+
+          adiar_set_domain(dom);
+
+          zdd out = ~(~(x0 | x1) - terminal_T);
+          zdd expected = x0 | x1 | terminal_T;
+          AssertThat(expected, Is().EqualTo(out));
+        });
 
       it("should ?= __zdd&&", [&]() {
         zdd out = x0_or_x1;
