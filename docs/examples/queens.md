@@ -60,24 +60,23 @@ conflicting positions.
 
 We could construct the BDD with the builders and algorithms of _Adiar_. But, we
 can do even better than that, because the resulting BDD is well structured. So,
-we can explicitly construct in one go with a [node stream](../core/files.md#node-stream)!
-Remember that nodes are to be written bottom-up and in reverse. By the ordering
-of variables in `label_of_position` we have to deal with (1) queens on the row
-_i_ and (2) queens on other rows. For (1) we have to check all variables,
-whereas for (2) we only need to check on column _j_ and the diagonals. All nodes
-but the one for x<sub>ij</sub> are connected to by their _low_ edge to the node
-generated before them (or to the _true_ terminal if said node is first one
-generated). The x<sub>ij</sub> variable is, on the other hand, connected to the
-prior generated node by its high edge. All other edges go the to _false_ terminal.
+we can explicitly construct in one go with a `bdd_builder`! Remember that nodes
+are to be written bottom-up. By the ordering of variables in `label_of_position`
+we have to deal with (1) queens on the row _i_ and (2) queens on other rows. For
+(1) we have to check all variables, whereas for (2) we only need to check on
+column _j_ and the diagonals. All nodes but the one for x<sub>ij</sub> are
+connected to by their _low_ edge to the node generated before them (or to the
+_true_ terminal if said node is first one generated). The x<sub>ij</sub>
+variable is, on the other hand, connected to the prior generated node by its
+high edge. All other edges go the to _false_ terminal.
 
 ```cpp
-bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
+adiar::bdd n_queens_S(int i, int j)
 {
-  node_file out;
-  node_writer out_writer(out);
+  adiar::bdd_builder builder;
 
   uint64_t row = N - 1;
-  ptr_t next = create_terminal_ptr(true);
+  adiar::bdd_ptr next = builder.add_node(true);
 
   do {
     uint64_t row_diff = std::max(row,i) - std::min(row,i);
@@ -86,77 +85,41 @@ bdd n_queens_S(uint64_t N, uint64_t i, uint64_t j)
       // On row of the queen in question
       uint64_t column = N - 1;
       do {
-        label_t label = label_of_position(N, row, column);
+        adiar::label_t label = label_of_position(N, row, column);
 
         // If (row, column) == (i,j), then the chain goes through high
-        if (column == j) {
-          // Node to check whether the queen actually is placed, and
-          // if so whether all remaining possible conflicts have to
-          // be checked.
-          label_t label = label_of_position(N, i, j);
-          node_t queen = create_node(label,
-                                     0,
-                                     create_terminal_ptr(false),
-                                     next);
-
-          out_writer << queen;
-          next = queen.uid;
-          continue;
-        }
-
-        node_t out_node = create_node(label,
-                                      0,
-                                      next,
-                                      create_terminal_ptr(false));
-
-        out_writer << out_node;
-        next = out_node.uid;
+        // such we check the queen actually is placed here.
+        next = column == j
+          ? builder.add_node(label, false, next)
+          : builder.add_node(label, next, false);
       } while (column-- > 0);
     } else {
       // On another row
       if (j + row_diff < N) {
         // Diagonal to the right is within bounds
-        label_t label = label_of_position(N, row, j+row_diff);
-        node_t out_node = create_node(label,
-                                      0,
-                                      next,
-                                      create_terminal_ptr(false));
-
-        out_writer << out_node;
-        next = out_node.uid;
+        next = builder.add_node(label_of_position(N, row, j + row_diff),
+                                next,
+                                false);
       }
 
       // Column
-      label_t label = label_of_position(N, row, j);
-      node_t out_node = create_node(label,
-                                    0,
-                                    next,
-                                    create_terminal_ptr(false));
-
-      out_writer << out_node;
-      next = out_node.uid;
+      next = builder.add_node(label_of_position(N, row, j), next, false);
 
       if (row_diff <= j) {
         // Diagonal to the left is within bounds
-        label_t label = label_of_position(N, row, j-row_diff);
-        node_t out_node = create_node(label,
-                                      0,
-                                      next,
-                                      create_terminal_ptr(false));
-
-        out_writer << out_node;
-        next = out_node.uid;
+        next = builder.add_node(label_of_position(N, row, j - row_diff),
+                                next,
+                                false);
       }
     }
   } while (row-- > 0);
 
-  return out;
+  adiar::bdd res = builder.build();
+
+  largest_nodes = std::max(largest_nodes, bdd_nodecount(res));
+  return res;
 }
 ```
-
-Notice above, that we return a value of type `node_file` but the function
-returns `bdd`. The `bdd` object provides a copy-constructor that creates a BDD
-given an underlying `node_file`.
 
 ### Constructing the entire board
 
@@ -167,11 +130,11 @@ placed then this ensures at-least-one queen is placed on the row. Since
 immediately contains the at-most-one queen constraint for said row.
 
 ```cpp
-bdd n_queens_R(uint64_t N, uint64_t row)
+bdd n_queens_R(int N, intt row)
 {
   bdd out = n_queens_S(N, row, 0);
 
-  for (uint64_t j = 1; j < N; j++) {
+  for (int j = 1; j < N; j++) {
     out |= n_queens_S(N, row, j);
   }
   return out;
@@ -183,13 +146,13 @@ that all rows are satisfied at the same time. That is, we need to combine the
 BDDs constructed in `n_queens_R` with an AND.
 
 ```cpp
-bdd n_queens_B(uint64_t N)
+bdd n_queens_B(int N)
 {
   if (N == 1) { return n_queens_S(N, 0, 0); }
 
   bdd out = n_queens_R(N, 0);
 
-  for (uint64_t i = 1; i < N; i++) {
+  for (int i = 1; i < N; i++) {
     out &= n_queens_R(N, i);
   }
   return out;
