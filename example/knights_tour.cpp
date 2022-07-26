@@ -18,16 +18,16 @@ size_t largest_nodes = 1;
 /*******************************************************************************
  *                             Variable ordering
  *
- *                          (N^2 * t) + (N * i) + j.
+ *                          (N^2 * t) + (N * r) + c.
  *
  * That is, we encode the entire information about position and time-step into
- * the very variable label. This ordering is first by row, second by column, and
+ * the very variable label. This ordering is first by column, second by row, and
  * finally by time. Most importantly, this means that any "snapshot" of the
  * board at a specific time-step are grouped together.
  */
-inline adiar::label_t label_of_position(int N, int i, int j, int t)
+inline adiar::label_t int_of_position(int N, int r, int c, int t = 0)
 {
-  return (N * N * t) + (N * i) + j;
+  return (N * N * t) + (N * r) + c;
 }
 
 /*******************************************************************************
@@ -43,93 +43,80 @@ inline adiar::label_t label_of_position(int N, int i, int j, int t)
  */
 const int closed_squares [3][2] = {{0,0}, {1,2}, {2,1}};
 
-bool is_closed_square(int i, int j)
+bool is_closed_square(int r, int c)
 {
-  return (i == closed_squares[0][0] && j == closed_squares[0][1])
-      || (i == closed_squares[1][0] && j == closed_squares[1][1])
-      || (i == closed_squares[2][0] && j == closed_squares[2][1]);
-}
-
-/*******************************************************************************
- * Creates a long "don't care" chain for all the positions and times, that we do
- * not care about. If we are working with the closed tour, then we can safely
- * skip these to make the intermediate ZDDs smaller.
- */
-template<bool filter_closed_squares = false>
-void constraint_dont_care(adiar::node_writer &out_writer, adiar::ptr_t &curr_root,
-                          int N, int max_t, int min_t)
-{
-  for (int curr_t = max_t; curr_t >= min_t; curr_t--) {
-    for (int i = N - 1; i >= 0; i--) {
-      for (int j = N - 1; j >= 0; j--) {
-        if (filter_closed_squares && is_closed_square(i,j)) {
-          continue;
-        }
-
-        adiar::node_t out_node = adiar::create_node(label_of_position(N,i,j,curr_t),
-                                                    0,
-                                                    curr_root,
-                                                    curr_root);
-
-        out_writer << out_node;
-        curr_root = out_node.uid;
-      }
-    }
-  }
+  return (r == closed_squares[0][0] && c == closed_squares[0][1])
+      || (r == closed_squares[1][0] && c == closed_squares[1][1])
+      || (r == closed_squares[2][0] && c == closed_squares[2][1]);
 }
 
 /*******************************************************************************
  * Combining the above, we can construct the ZDD that fixes the initial
- * position, the second position, and the final position.
+ * position, the second position, and the final position while allowing any
+ * possibilities for anything in between.
+ *
+ *                              *          ---- position (0,0) at time 0
+ *                             / \
+ *                             F *         ---- position (1,2) at time 1
+ *                              / \
+ *                              F *
+ *                                ||
+ *                                         ---- positions at time 2 ... N*N-2
+ *                                ||
+ *                                *        ---- position (2,1) at time N*N-1
+ *                               / \
+ *                               F T
  */
-adiar::zdd constraint_closed(uint64_t N)
+adiar::zdd constraint_closed(int N)
 {
-  adiar::node_file out;
+  adiar::zdd_builder builder;
 
-  { adiar::node_writer out_writer(out);
+  // Fix t = max_time to be (1,2)
+  const int max_time = N*N-1;
 
-    // Set final time step to (2,1)
-    adiar::node_t n_t_end = adiar::create_node(label_of_position(N,
-                                                                 closed_squares[2][0],
-                                                                 closed_squares[2][1],
-                                                                 N*N-1),
-                                               adiar::MAX_ID,
-                                               adiar::create_sink_ptr(false),
-                                               adiar::create_sink_ptr(true));
-    out_writer << n_t_end;
+  const int stepMax_position = int_of_position(N,
+                                               closed_squares[2][0],
+                                               closed_squares[2][1],
+                                               max_time);
 
-    // Create don't care on all intermediate steps
-    adiar::ptr_t curr_root = n_t_end.uid;
-    constraint_dont_care<true>(out_writer, curr_root, N, N*N-2, 2);
+  typename adiar::zdd_ptr root = builder.add_node(stepMax_position, false, true);
 
-    // Set t = 1 to (1,2)
-    adiar::node_t n_t_1 = adiar::create_node(label_of_position(N,
-                                                               closed_squares[1][0],
-                                                               closed_squares[1][1],
-                                                               1),
-                                             adiar::MAX_ID,
-                                             adiar::create_sink_ptr(false),
-                                             curr_root);
-    out_writer << n_t_1;
+  // All in between is as-is but take the hamiltonian constraint into account.
+  for (int t = max_time - 1; t > 1; t--) {
+    for (int r = N-1; r >= 0; r--) {
+      for (int c = N-1; c >= 0; c--) {
+        if (is_closed_square(r,c)) { continue; }
 
-    // Set t = 0 to (0,0)
-    adiar::node_t n_t_0 = adiar::create_node(label_of_position(N,
-                                                               closed_squares[0][0],
-                                                               closed_squares[0][1],
-                                                               0),
-                                             adiar::MAX_ID,
-                                             adiar::create_sink_ptr(false),
-                                             n_t_1.uid);
-    out_writer << n_t_0;
+        root = builder.add_node(int_of_position(N,r,c,t), root, root);
+      }
+    }
   }
 
-  largest_nodes = std::max(largest_nodes, out.size());
+  // Fix t = 1 to be (2,1)
+  const int step1_position = int_of_position(N,
+                                             closed_squares[1][0],
+                                             closed_squares[1][1],
+                                             1);
+  root = builder.add_node(step1_position, false, root);
+
+  // Fix t = 0 to be (0,0)
+  const int step0_position = int_of_position(N,
+                                             closed_squares[0][0],
+                                             closed_squares[0][1],
+                                             0);
+  root = builder.add_node(step0_position, false, root);
+
+  // Finalize
+  adiar::zdd out = builder.build();
+
+  const size_t nodecount = zdd_nodecount(out);
+  largest_nodes = std::max(largest_nodes, nodecount);
+
   return out;
 }
 
-
 /*******************************************************************************
- *                      Move Logic for Transition Function
+ *                              Legal Moves
  *
  * We need a little bit of logic to compute the different parts of a move. This
  * is not the bottleneck, so we will do something somewhat easily comprehensible
@@ -141,120 +128,137 @@ adiar::zdd constraint_closed(uint64_t N)
 constexpr int row_moves[8]    = { -2, -2, -1, -1,  1,  1,  2,  2 };
 constexpr int column_moves[8] = { -1,  1, -2,  2, -2,  2, -1,  1 };
 
-bool is_move(int i_from, int j_from, int i_to, int j_to)
+bool is_legal_move(int /*N*/, int r_from, int c_from, int r_to, int c_to)
 {
   for (int idx = 0; idx < 8; idx++) {
-    if (i_from + row_moves[idx] == i_to &&
-        j_from + column_moves[idx] == j_to) {
+    if (r_from + row_moves[idx] == r_to &&
+        c_from + column_moves[idx] == c_to) {
       return true;
     }
   }
   return false;
 }
 
-adiar::ptr_t ptr_to_first(int N, int i_from, int j_from, int t)
+bool is_legal_position(int N, int r, int c, int t = 0)
 {
-  for (int idx = 0; idx < 8; idx++) {
-    int i_to = i_from + row_moves[idx];
-    int j_to = j_from + column_moves[idx];
+  if (r < 0 || N-1 < r)  { return false; }
+  if (c < 0 || N-1 < c)  { return false; }
+  if (t < 0 || N*N-1 < t) { return false; }
 
-    if (i_to < 0 || N <= i_to || j_to < 0 || N <= j_to) { continue; }
-    adiar::label_t from_label = label_of_position(N, i_from, j_from, t);
-    adiar::label_t to_label = label_of_position(N, i_to, j_to, t+1);
-
-    return adiar::create_node_ptr(to_label, from_label);
-  }
-  return adiar::create_sink_ptr(false);
+  return true;
 }
 
-/* When we have the latest 'legal' move we then also want to obtain the next
-   'legal' move, or 'false' if there is none.
- */
-adiar::ptr_t ptr_to_next(int N, int i_from, int j_from, int i_to, int j_to, int t)
+bool is_reachable(int /*N*/, int r, int c)
 {
-  bool seen_move = false;
-
   for (int idx = 0; idx < 8; idx++) {
-    int i = i_from + row_moves[idx];
-    int j = j_from + column_moves[idx];
-
-    if (i < 0 || N <= i || j < 0 || N <= j) { continue; }
-
-    if (seen_move) {
-      adiar::label_t from_label = label_of_position(N, i_from, j_from, t);
-      adiar::label_t to_label = label_of_position(N, i, j, t+1);
-
-      return adiar::create_node_ptr(to_label, from_label);
+    if (is_legal_position(N, r + row_moves[idx], c + column_moves[idx])) {
+      return true;
     }
-    seen_move = i == i_to && j == j_to;
   }
-  return adiar::create_sink_ptr(false);
+  return false;
 }
 
 /*******************************************************************************
- *                            Transition System
+ * With the above, we can encode what the legal transitions from one state of
+ * one time step to the next. To this end, we have a "don't care" chain for time
+ * steps prior and past the two time steps of interest. At time step t we may
+ * ask exactly where the Knight is placed to then check whether it is placed in
+ * any legal position at the next time step.
+ *
+ *                       *
+ *                       ||
+ *                                 ---- positions at time t-1 and earlier
+ *                       ||
+ *                       *         ---- pos (0,0) at time t
+ *                      / \
+ *                      *  \       ---- pos (1,0) at time t
+ *                     / \  \
+ *                    .  .  |
+ *                   .   .  |
+ *                  .    .  |
+ *                          *      ---- pos (1,2) at time t+1
+ *                         / \
+ *                        *   \    ---- pos (2,1) at time t+1
+ *                       / \  |
+ *                       F  \ /
+ *                           *
+ *                           ||
+ *                                 ---- positions at time t+2 and later
+ *                           ||
+ *                           T
  */
 adiar::zdd constraint_transition(int N, int t)
 {
-  adiar::node_file out;
+  adiar::zdd_builder builder;
 
-  { // When calling `out.size()` below, we have to make it read-only. So, we
-    // have to detach the node_writer before we do. This is automatically done
-    // on garbage collection, which is why we add an inner scope.
-    adiar::node_writer out_writer(out);
+  const int max_cell = N-1;
 
-    adiar::ptr_t curr_root = adiar::create_sink_ptr(true);
+  // Time steps t' > t+1:
+  adiar::zdd_ptr post_chain_root = builder.add_node(true);
 
-    // "Don't care" for future time steps
-    constraint_dont_care<>(out_writer, curr_root, N, N*N-1, t+2);
+  const int max_time = N*N-1;
 
-    // Node chains at time-step t+1 where exactly one possible square (i',j') is
-    // visited for every possible one (i,j) at time step t.
-    for (int i_t1 = N-1; i_t1 >= 0; i_t1--) {
-      for (int j_t1 = N-1; j_t1 >= 0; j_t1--) {
-        adiar::label_t next_pos = label_of_position(N, i_t1, j_t1, t+1);
+  for (int time = max_time; time > t+1; time--) {
+    for (int row = max_cell; row >= 0; row--) {
+      for (int col = max_cell; col >= 0; col--) {
+        if (!is_reachable(N, row, col)) { continue; }
 
-        // We encode the (i,j) inside of the node id to make linking easy.
-        for (int i_t = N-1; i_t >= 0; i_t--) {
-          for (int j_t = N-1; j_t >= 0; j_t--) {
+        const int this_label = int_of_position(N, row, col, time);
+        post_chain_root = builder.add_node(this_label, post_chain_root, post_chain_root);
+      }
+    }
+  }
 
-            // Is (i',j') reachable from (i,j)?
-            if (is_move(i_t, j_t, i_t1, j_t1)) {
-              adiar::label_t curr_pos = label_of_position(N, i_t, j_t, t);
-              adiar::ptr_t low = ptr_to_next(N, i_t, j_t, i_t1, j_t1, t);
+  // Time step t+1:
+  //   Chain with each possible position reachable from some position at time 't'.
+  std::vector<adiar::zdd_ptr> to_chains(N*N, builder.add_node(false));
 
-              adiar::node_t out_node = adiar::create_node(next_pos,
-                                                          curr_pos,
-                                                          low,
-                                                          curr_root);
-              out_writer << out_node;
-            }
-          }
+  for (int row = max_cell; row >= 0; row--) {
+    for (int col = max_cell; col >= 0; col--) {
+      const int this_label = int_of_position(N, row, col, t+1);
+
+      for (int row_t = max_cell; row_t >= 0; row_t--) {
+        for (int col_t = max_cell; col_t >= 0; col_t--) {
+          if (!is_reachable(N, row_t, col_t)) { continue; }
+          if (!is_legal_move(N, row_t, col_t, row, col)) { continue; }
+
+          const int vector_idx = int_of_position(N, row_t, col_t);
+
+          to_chains.at(vector_idx) = builder.add_node(this_label,
+                                                      to_chains.at(vector_idx),
+                                                      post_chain_root);
         }
       }
     }
-
-    // Node chain at time step t
-    curr_root = adiar::create_sink_ptr(false);
-
-    for (int i = N-1; i >= 0; i--) {
-      for (int j = N-1; j >= 0; j--) {
-        adiar::label_t out_label = label_of_position(N, i, j, t);
-
-        adiar::ptr_t high = ptr_to_first(N, i, j, t);
-
-        adiar::node_t out_node = adiar::create_node(out_label, 0, curr_root, high);
-
-        out_writer << out_node;
-        curr_root = out_node.uid;
-      }
-    }
-
-    // "Don't care" for previous time steps
-    constraint_dont_care<>(out_writer, curr_root, N, t-1, 0);
   }
 
-  largest_nodes = std::max(largest_nodes, out.size());
+  // Time step t:
+  //   For each position at time step 't', check whether we are "here" and go to
+  //   the chain checking "where we go to" at 't+1'.
+  typename adiar::zdd_ptr root = builder.add_node(false);
+
+  for (int row = max_cell; row >= 0; row--) {
+    for (int col = max_cell; col >= 0; col--) {
+      if (!is_reachable(N, row, col)) { continue; }
+
+      const int this_label = int_of_position(N, row, col, t);
+      const int to_chain_idx = int_of_position(N, row, col);
+      root = builder.add_node(this_label, root, to_chains.at(to_chain_idx));
+    }
+  }
+
+  // Time-step t' < t:
+  //   Just allow everything, i.e. add no constraints
+  for (int pos = int_of_position(N, max_cell, max_cell, t-1); pos >= 0; pos--) {
+    root = builder.add_node(pos, root, root);
+  }
+
+  // Finalize
+  adiar::zdd out = builder.build();
+
+  const size_t nodecount = zdd_nodecount(out);
+  largest_nodes = std::max(largest_nodes, nodecount);
+
   return out;
 }
 
@@ -269,41 +273,39 @@ adiar::zdd constraint_transition(int N, int t)
  * the position is 'seen' as taken then one goes to a second chain of nodes,
  * where it may not be seen again.
  */
-adiar::zdd constraint_exactly_once(uint64_t N, uint64_t i, uint64_t j)
+adiar::zdd constraint_exactly_once(int N, int r, int c)
 {
-  adiar::node_file out;
+  adiar::zdd_builder builder;
 
-  { adiar::node_writer out_writer(out);
+  adiar::zdd_ptr out_never = builder.add_node(false);
+  adiar::zdd_ptr out_once = builder.add_node(true);
 
-    adiar::ptr_t next0 = adiar::create_sink_ptr(false);
-    adiar::ptr_t next1 = adiar::create_sink_ptr(true);
+  const int max_time = N*N-1;
+  const int max_cell = N-1;
 
-    for (int curr_t = N*N-1; curr_t >= 0; curr_t--) {
-      for (int curr_i = N-1; curr_i >= 0; curr_i--) {
-        for (int curr_j = N-1; curr_j >= 0; curr_j--) {
-          adiar::label_t out_label = label_of_position(N, curr_i, curr_j, curr_t);
+  for (int this_t = max_time; this_t >= 0; this_t--) {
+    for (int this_r = max_cell; this_r >= 0; this_r--) {
+      for (int this_c = max_cell; this_c >= 0; this_c--) {
+        const int this_label = int_of_position(N, this_r, this_c, this_t);
+        const bool is_rc = r == this_r && c == this_c;
 
-          bool is_ij = i == curr_i && j == curr_j;
-
-          // If we are talking about (i,j) and we already have counted it once, then
-          // it is forced to zero. In ZDDs this is represented by skipping it.
-          if (!is_ij && (curr_t > 0 || curr_i > i)) {
-            adiar::node_t out_n1 = adiar::create_node(out_label, 1, next1, next1);
-            out_writer << out_n1;
-            next1 = out_n1.uid;
-          }
-
-          adiar::node_t out_n0 = adiar::create_node(out_label, 0,
-                                                    next0,
-                                                    is_ij ? next1 : next0);
-          out_writer << out_n0;
-          next0 = out_n0.uid;
+        if (!is_rc && (this_t > 0 || this_r > r)) {
+          out_once = builder.add_node(this_label, out_once, out_once);
         }
+
+        out_never = builder.add_node(this_label,
+                                     out_never,
+                                     is_rc ? out_once : out_never);
       }
     }
   }
 
-  largest_nodes = std::max(largest_nodes, out.size());
+  // Finalize
+  adiar::zdd out = builder.build();
+
+  const size_t nodecount = zdd_nodecount(out);
+  largest_nodes = std::max(largest_nodes, nodecount);
+
   return out;
 }
 
@@ -347,7 +349,7 @@ int main(int argc, char* argv[])
       switch(c) {
       case 'c':
         // HACK: 'constraint_closed' only works for 3x3 boards and bigger.
-        only_closed = 3u <= N;
+        only_closed = 3 <= N;
         continue;
 
       case 'h':
