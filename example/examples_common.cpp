@@ -19,7 +19,7 @@ inline double duration_of(timestamp_t &before, timestamp_t &after) {
 #include <adiar/adiar.h>
 
 // Command-line arguments
-uint64_t N = std::numeric_limits<uint64_t>::max();
+int N = -1;
 size_t M = 0;
 
 bool init_cl_arguments(int argc, char* argv[])
@@ -61,7 +61,7 @@ bool init_cl_arguments(int argc, char* argv[])
     }
   }
 
-  if (N == std::numeric_limits<uint64_t>::max()) {
+  if (N == -1) {
     std::cout << "  Must specify instance size (-N)" << std::endl;
     exit = true;
   }

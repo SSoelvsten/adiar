@@ -69,76 +69,49 @@ inline adiar::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
  * down to only O(N) time and O(N/B) I/Os rather than O(sort(N)) in both time
  * and I/Os. One pretty much cannot do this base case faster.
  */
-adiar::bdd n_queens_S(uint64_t i, uint64_t j)
+adiar::bdd n_queens_S(int i, int j)
 {
-  adiar::node_file out;
+  adiar::bdd_builder builder;
 
-  { // When calling `out.size()` below, we have to make it read-only. So, we
-    // have to detach the node_writer before we do. This is automatically done
-    // on garbage collection, which is why we add an inner scope.
-    adiar::node_writer out_writer(out);
+  int row = N - 1;
+  adiar::bdd_ptr next = builder.add_node(true);
 
-    uint64_t row = N - 1;
-    adiar::ptr_t next = adiar::create_sink_ptr(true);
+  do {
+    int row_diff = std::max(row,i) - std::min(row,i);
 
-    do {
-      uint64_t row_diff = std::max(row,i) - std::min(row,i);
+    if (row_diff == 0) {
+      // On row of the queen in question
+      int column = N - 1;
+      do {
+        adiar::label_t label = label_of_position(N, row, column);
 
-      if (row_diff == 0) {
-        // On row of the queen in question
-        uint64_t column = N - 1;
-        do {
-          adiar::label_t label = label_of_position(N, row, column);
-
-          // If (row, column) == (i,j), then the chain goes through high.
-          if (column == j) {
-            // Node to check whether the queen actually is placed, and if so
-            // whether all remaining possible conflicts have to be checked.
-            adiar::label_t label = label_of_position(N, i, j);
-            adiar::node_t queen = adiar::create_node(label, 0, adiar::create_sink_ptr(false), next);
-
-            out_writer << queen;
-            next = queen.uid;
-            continue;
-          }
-
-          adiar::node_t out_node = adiar::create_node(label, 0, next, adiar::create_sink_ptr(false));
-
-          out_writer << out_node;
-          next = out_node.uid;
-        } while (column-- > 0);
-      } else {
-        // On another row
-        if (j + row_diff < N) {
-          // Diagonal to the right is within bounds
-          adiar::label_t label = label_of_position(N, row, j + row_diff);
-          adiar::node_t out_node = adiar::create_node(label, 0, next, adiar::create_sink_ptr(false));
-
-          out_writer << out_node;
-          next = out_node.uid;
-        }
-
-        // Column
-        adiar::label_t label = label_of_position(N, row, j);
-        adiar::node_t out_node = adiar::create_node(label, 0, next, adiar::create_sink_ptr(false));
-
-        out_writer << out_node;
-        next = out_node.uid;
-
-        if (row_diff <= j) {
-          // Diagonal to the left is within bounds
-          adiar::label_t label = label_of_position(N, row, j - row_diff);
-          adiar::node_t out_node = adiar::create_node(label, 0, next, adiar::create_sink_ptr(false));
-
-          out_writer << out_node;
-          next = out_node.uid;
-        }
+        // If (row, column) == (i,j), then the chain goes through high because
+        // then we need to check the queen actually is placed here.
+        next = column == j
+          ? builder.add_node(label, false, next)
+          : builder.add_node(label, next, false);
+      } while (column-- > 0);
+    } else {
+      // On another row
+      if (j + row_diff < N) {
+        // Diagonal to the right is within bounds
+        next = builder.add_node(label_of_position(N, row, j + row_diff), next, false);
       }
-    } while (row-- > 0);
-  }
 
-  largest_nodes = std::max(largest_nodes, out.size());
-  return out;
+      // Column
+      next = builder.add_node(label_of_position(N, row, j), next, false);
+
+      if (row_diff <= j) {
+        // Diagonal to the left is within bounds
+        next = builder.add_node(label_of_position(N, row, j - row_diff), next, false);
+      }
+    }
+  } while (row-- > 0);
+
+  adiar::bdd res = builder.build();
+
+  largest_nodes = std::max(largest_nodes, bdd_nodecount(res));
+  return res;
 }
 
 /*******************************************************************************
@@ -163,11 +136,11 @@ adiar::bdd n_queens_S(uint64_t i, uint64_t j)
  * active BDDs. In other words, each BDD is completely separate and no memory is
  * saved, if there is a major overlap. So, we will choose to do it iteratively.
  */
-adiar::bdd n_queens_R(uint64_t i)
+adiar::bdd n_queens_R(int i)
 {
   adiar::bdd out = n_queens_S(i, 0);
 
-  for (uint64_t j = 1; j < N; j++) {
+  for (int j = 1; j < N; j++) {
     out |= n_queens_S(i, j);
     largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
   }
@@ -187,7 +160,7 @@ adiar::bdd n_queens_B()
 
   adiar::bdd out = n_queens_R(0);
 
-  for (uint64_t i = 1; i < N; i++) {
+  for (int i = 1; i < N; i++) {
     out &= n_queens_R(i);
     largest_nodes = std::max(largest_nodes, bdd_nodecount(out));
   }
