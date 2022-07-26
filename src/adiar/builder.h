@@ -149,10 +149,16 @@ namespace adiar {
       }
 
       // Create potential node
-      node_t node = create_node(label, current_id, low.uid, high.uid);
+      const node_t node = create_node(label, current_id, low.uid, high.uid);
 
       // Check whether this node is 'redundant'
-      uid_t res_uid = dd_policy::reduction_rule(node);
+      const uid_t res_uid = dd_policy::reduction_rule(node);
+
+      if (is_terminal(res_uid)) {
+        created_terminal = true;
+        terminal_val = value_of(res_uid);
+      }
+
       if(res_uid == low.uid) { return low; }
       if(res_uid == high.uid) { return high; }
 
