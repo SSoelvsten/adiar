@@ -32,8 +32,6 @@ namespace adiar
     }
 
   private:
-    bool _has_peeked = false;
-    T _peeked;
     bool _negate = false;
 
     typename tpie::file_stream<T> _stream;
@@ -100,8 +98,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     bool can_pull()
     {
-      return _has_peeked
-        || (REVERSE ? _stream.can_read_back() : _stream.can_read());
+      return REVERSE ? _stream.can_read_back() : _stream.can_read();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -109,11 +106,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     const T pull()
     {
-      if (_has_peeked) {
-        _has_peeked = false;
-        return _peeked;
-      }
-      T t = REVERSE ? _stream.read_back() : _stream.read();
+      const T t = REVERSE ? _stream.read_back() : _stream.read();
       return _negate ? !t : t;
     }
 
@@ -122,11 +115,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     const T peek()
     {
-      if (!_has_peeked) {
-        _peeked = pull();
-        _has_peeked = true;
-      }
-      return _peeked;
+      const T t = REVERSE ? _stream.peek_back() : _stream.peek();
+      return _negate ? !t : t;
     }
 
     ////////////////////////////////////////////////////////////////////////////
