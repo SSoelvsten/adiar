@@ -21,6 +21,11 @@ build/
 *.dot
 *.png
 
+# ---------------------
+# Documentation Exceptions
+!docs/*.png
+!docs/**/*.png
+
 ################################################################################
 # LCOV reports
 *.info

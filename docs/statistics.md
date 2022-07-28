@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Statistics
-nav_order: 4
+nav_order: 6
 description: "Gathering statistics"
 permalink: /statistics
 ---
@@ -14,6 +14,8 @@ permalink: /statistics
 
 1. TOC
 {:toc}
+
+---
 
 ## Activate Gathering of Statistics
 Statistics are by default **not** gathered due to a concern of the performance

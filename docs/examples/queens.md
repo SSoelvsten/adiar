@@ -46,7 +46,7 @@ inline label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 }
 ```
 
-### Explicitly constructing base cases
+### Explicitly Constructing Base Cases
 
 Let us first restrict our attention to the base case of expressing the state of
 a single field (_i_,_j_). We need to express that a single queen is placed here,
@@ -60,15 +60,17 @@ conflicting positions.
 
 We could construct the BDD with the builders and algorithms of _Adiar_. But, we
 can do even better than that, because the resulting BDD is well structured. So,
-we can explicitly construct in one go with a `bdd_builder`! Remember that nodes
-are to be written bottom-up. By the ordering of variables in `label_of_position`
-we have to deal with (1) queens on the row _i_ and (2) queens on other rows. For
-(1) we have to check all variables, whereas for (2) we only need to check on
-column _j_ and the diagonals. All nodes but the one for x<sub>ij</sub> are
-connected to by their _low_ edge to the node generated before them (or to the
-_true_ terminal if said node is first one generated). The x<sub>ij</sub>
-variable is, on the other hand, connected to the prior generated node by its
-high edge. All other edges go the to _false_ terminal.
+we can explicitly construct in one go with a
+[`bdd_builder`](../manual_construction/builder.md#builderdd_policy-class)!
+Remember that nodes are to be constructed bottom-up. By the ordering of
+variables in `label_of_position` we have to deal with (1) queens on the row _i_
+and (2) queens on other rows. For (1) we have to check all variables, whereas
+for (2) we only need to check on column _j_ and the diagonals. All nodes but the
+one for x<sub>ij</sub> are connected to by their _low_ edge to the node
+generated before them (or to the _true_ terminal if said node is first one
+generated). The x<sub>ij</sub> variable is, on the other hand, connected to the
+prior generated node by its high edge. All other edges go the to _false_
+terminal.
 
 ```cpp
 adiar::bdd n_queens_S(int i, int j)
@@ -121,7 +123,7 @@ adiar::bdd n_queens_S(int i, int j)
 }
 ```
 
-### Constructing the entire board
+### Constructing the Entire Board
 
 From the formula in `n_queens_S` we can construct the formula for the entire row
 by combining them with an OR. Since the formula is _true_ only when the queen is
@@ -159,7 +161,7 @@ bdd n_queens_B(int N)
 }
 ```
 
-## Counting the number of solutions
+## Counting the Number of Solutions
 
 When the entire board is constructed as described above, then we merely need to
 count the number of satisfying solutions to the generated BDD.
@@ -174,9 +176,10 @@ int main(int argc, char* argv[])
 }
 ```
 
-## Printing each solution
+## Printing each Solution
 
-The following is based on a [report by Martin Faartoft](github.com/MartinFaartoft/n-queens-bdd/blob/master/report.tex).
+The following is based on a [report by Martin
+Faartoft](github.com/MartinFaartoft/n-queens-bdd/blob/master/report.tex).
 
 If we want to list all the assignments then we have to do something more than
 merely count the number of satisfying assignments. But, given the BDD we just

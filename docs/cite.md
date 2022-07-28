@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Citing this project
-nav_order: 7
+nav_order: 8
 description: "Citations"
 permalink: /cite
 ---
@@ -19,6 +19,7 @@ some of your academic work.
 1. TOC
 {:toc}
 
+---
 
 ## Lars Arge
 

@@ -26,22 +26,22 @@ nodes on disk to delay recursion.
    Dependencies and installation of *Adiar* and how to initialise it in your C++
    application.
 
-2. [BDD](bdd.md)
+2. [Data Structures](data_structures.md)
+   1. [Binary Decision Diagrams (BDD)](data_structures/bdd.md)
+   2. [Zero-suppressed Decision Diagrams (ZDD)](data_structures/zdd.md)
+   3. [Labels and Assignments](data_structures/labels_and_assignments.md)
 
-   Binary Decision Diagrams and its supported functions.
+3. [Manual Construction](manual_construction.md)
 
-3. [ZDD](zdd.md)
-
-   Zero-suppressed Decision Diagrams and its supported functions.
+   How to construct BDDs and ZDDs bottom-up by hand.
 
 4. [Statistics](statistics.md)
 
    Statistics on the internal algorithms and data structures.
 
-5. [Core](core.md)
+5. [Settings](settings.md)
 
-   The underlying *data types* and *files* that you can use to construct larger
-   decision diagrams programmatically.
+   Global settings of *Adiar* that can be set at run or at compile-time.
 
 6. [Examples](examples.md)
 

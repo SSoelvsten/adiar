@@ -79,6 +79,10 @@ All remaining time steps remains one long "don't care" chain in between. Yet,
 inside of this chain we can encode the hamiltonian constraint for these three
 cells on the board by skipping them within the chain.
 
+Hence, we can create the ZDD by hand using the
+[`zdd_builder`](../manual_construction/builder.md#builderdd_policy-class) as
+follows.
+
 ```cpp
 adiar::zdd constraint_closed(int N)
 {

@@ -1,9 +1,10 @@
 ---
 layout: default
 title: ZDD
-nav_order: 3
+nav_order: 2
+parent: Data Structures
 description: "Zero-suppressed Decision Diagrams"
-permalink: /zdd
+permalink: data_structures/zdd
 ---
 
 # ZDD
@@ -17,9 +18,9 @@ A Zero-suppressed Decision Diagram (ZDD) represents a family of set of numbers
 </p>
 
 The `zdd` class takes care of reference counting and optimal garbage collection
-of the underlying files (cf. [Core/Files](core/files.md#nodes)). To ensure the
-most disk-space is available, try to garbage collect the `zdd` objects as
-quickly as possible and/or minimise the number of lvalues of said type.
+of the underlying files. To ensure the most disk-space is available, try to
+garbage collect the `zdd` objects as quickly as possible and/or minimise the
+number of lvalues of said type.
 
 ## Table of Contents
 {: .no_toc .text-delta }
@@ -31,10 +32,8 @@ quickly as possible and/or minimise the number of lvalues of said type.
 
 ## Basic Constructors
 
-To construct a more complex but well-structured `zdd` than what follows below,
-create a [`node_file`](core/files.md#nodes) and write the nodes bottom-up with
-the [`node_writer`](core/files.md#node-writer). The `zdd` object can then be
-copy-constructed from the `node_file`.
+To construct a more complex but well-structured `zdd` by hand see the section on
+[Manual Construction](../manual_construction).
 
 ### `zdd zdd_terminal(bool v)`
 {: .no_toc }
@@ -58,21 +57,23 @@ The labels in *vars* must be sorted in increasing order.
 ### `zdd zdd_singletons(label_file vars)`
 {: .no_toc }
 
-Create a ZDD representing the family *{ {vars<sub>1</sub>}, {vars<sub>2</sub>}, ..., {vars<sub>k</sub>} }*.
-The labels in *vars* must be sorted in increasing order.
+Create a ZDD representing the family *{ {vars<sub>1</sub>}, {vars<sub>2</sub>},
+..., {vars<sub>k</sub>} }*. The [labels](./labels_and_assignments.md#labels) in
+*vars* must be sorted in increasing order.
 
 ### `zdd zdd_powerset(label_file vars)`
 {: .no_toc }
 
-Create a ZDD representing the family *pow(vars) = 2<sup>vars</sup>*. The labels
-in *vars* must be sorted in increasing order.
+Create a ZDD representing the family *pow(vars) = 2<sup>vars</sup>*. The
+[labels](./labels_and_assignments.md#labels) in *vars* must be sorted in
+increasing order.
 
 ### `zdd zdd_sized_set<pred_t>(label_file vars, k, pred)`
 {: .no_toc }
 
-Create a ZDD representing the family *{ s ∈ pow(vars) | pred(|s|, k) }*, where pred
-is a comparison predicate such as `std::less`, `std::greater`, and
-`std::equal_to`.
+Create a ZDD representing the family *{ s ∈ pow(vars) | pred(|s|, k) }* of
+[labels](./labels_and_assignments.md#labels), where pred is a comparison
+predicate such as `std::less`, `std::greater`, and `std::equal_to`.
 
 ## Basic Manipulation
 
@@ -99,56 +100,61 @@ and/or *B*. Some operators are also provided with an alias function:
 {: .no_toc }
 
 Constructs the ZDD for *{ vars Δ a | a ∈ A }*, where Δ is the symmetric
-difference between the two sets of variables *a* and *vars*. In other words, for
-each set in *A* the value of each variable *i* from *vars* is flipped.
+difference between the two [sets of variables](./labels_and_assignments.md#labels)
+*a* and *vars*. In other words, for each set in *A* the value of each variable
+*i* from *vars* is flipped.
 
 ### `zdd zdd_complement(zdd A, label_file dom)` (operator `~`)
 {: .no_toc }
 
 Constructs the ZDD for *pow(dom)* \ *A*, i.e. the complement of *A* with respect
-to the variable domain, *dom*. The variables in *A* have to exist in *dom* too.
-By default, `dom` is the globally set domain.
+to the [set of variable domain](./labels_and_assignments.md#labels), *dom*. The
+variables in *A* have to exist in *dom* too. If not provided, then `dom` is set
+to the [globally set domain](../settings/domain.md).
 
 ### `zdd zdd_expand(zdd A, label_file vars)`
 {: .no_toc }
 
 Expands the domain of A to also include the variables in *vars*, i.e. it
-computes the set *U<sub>a ∈ A, i ∈ pow(vars)</sub> (a ∪ i)*. The variables in
-*vars* are not allowed to be present in *A*.
+computes the set *U<sub>a ∈ A, i ∈ pow(vars)</sub> (a ∪ i)*. The
+[variables](./labels_and_assignments.md#labels) in *vars* are not allowed to be
+present in *A*.
 
 ### `zdd zdd_offset(zdd A, label_file vars)`
 {: .no_toc }
 
 Computes the ZDD for the subset *{ a ∈ A | ∀i ∈ vars : i ∉ a }*, i.e. where the
-variables *i* in *vars* are set to 0.
+[variables](./labels_and_assignments.md#labels) *i* in *vars* are set to 0.
 
 ### `zdd zdd_onset(zdd A, label_file vars)`
 {: .no_toc }
 
 Computes the ZDD for the subset *{ a ∈ A | ∀i ∈ vars : i ∈ a }*, i.e. where the
-variables *i* in *vars* are set to 1.
+[variables](./labels_and_assignments.md#labels) *i* in *vars* are set to 1.
 
 ### `zdd zdd_project(zdd A, label_file dom)`
 {: .no_toc }
 
 Construct the ZDD for π<sub>i<sub>1</sub>, ..., i<sub>k</sub></sub>(A) = { s \ {
 i<sub>1</sub>, ..., i<sub>k</sub> }<sup>c</sup> | s ∈ A }, where i<sub>1</sub>,
-..., i<sub>k</sub> are the elements in *vars*. That is, this constructs a ZDD of
-the same sets, but where only the elements in the new domain *dom* are kept.
+..., i<sub>k</sub> are the elements in the [set of variable
+domain](./labels_and_assignments.md#labels), *dom*. That is, this constructs a
+ZDD of the same sets, but where only the elements in the new domain *dom* are
+kept.
 
 ## Counting Operations
 
-### `uint64_t zdd_nodecount(zdd A)`
+### `size_t zdd_nodecount(zdd A)`
 {: .no_toc }
 
 Return the number of nodes (not counting terminal nodes) in the ZDD for *A*.
 
-### `uint64_t zdd_varcount(zdd A)`
+### `size_t zdd_varcount(zdd A)`
 {: .no_toc }
 
 Return the number of variables present in the ZDD for *A*.
 
-### `uint64_t zdd_size(zdd A)`
+### `size_t zdd_size(zdd A)`
 {: .no_toc }
 
 Return \|*A*\|, i.e. the number of sets of elements in the family of sets *A*.
@@ -214,14 +220,16 @@ Return whether *a ∈ A*.
 ### `std::optional<label_file> zdd_minelem(zdd A)`
 {: .no_toc }
 
-Finds the *a ∈ A* (if any) that is lexicographically smallest when interpreting
-*a* as a binary number with 0 being the most significant bit.
+Finds the [set of variables](./labels_and_assignments.md#labels) *a ∈ A* (if
+any) that is lexicographically smallest when interpreting *a* as a binary number
+with 0 being the most significant bit.
 
 ### `std::optional<label_file> zdd_maxelem(zdd A)`
 {: .no_toc }
 
-Finds the *a ∈ A* (if any) that is lexicographically largest when interpreting
-*a as a binary number with 0 being the most significant bit.
+Finds the [set of variables](./labels_and_assignments.md#labels) *a ∈ A* (if
+any) that is lexicographically largest when interpreting *a as a binary number
+with 0 being the most significant bit.
 
 ### `label_t min_label(zdd A)`
 {: .no_toc }
@@ -238,16 +246,17 @@ the deepest node of the DAG in the ZDD.
 ### `label_file zdd_varprofile(zdd A)`
 {: .no_toc }
 
-Return a file with the labels of the existing levels in *A*.
+Obtain a [file of labels](./labels_and_assignments.md#labels) with the existing
+levels in *A*.
 
 ## Other Functions
 
 ### `zdd zdd_from(bdd f, label_file dom)`
 {: .no_toc }
 
-Converts a [BDD](bdd.md) into a ZDD interpreted within the variable domain
-*dom*. The domain should be a superset of the variables in the given BDD. By
-default, `dom` is the globally set domain.
+Converts a [`bdd`](bdd.md) into a `zdd` interpreted within the variable domain
+*dom*. The domain should be a superset of the variables in the given BDD. If not
+provided, then `dom` is set to the [globally set domain](../settings/domain.md).
 
 ## DOT Output
 
