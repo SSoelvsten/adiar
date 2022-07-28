@@ -23,6 +23,7 @@ namespace adiar
     tpie::tpie_init();
 
     // Memory management
+    memory::mode = memory::AUTO;
     memory::set_path(temp_dir);
     memory::set_limit(memory_limit_bytes);
     memory::set_block_size(memory::recommended_block_size(memory_limit_bytes));
