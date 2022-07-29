@@ -1,4 +1,4 @@
-.PHONY: clean build test coverage
+.PHONY: build clean coverage docs test
 
 MAKE_FLAGS=-j $$(nproc)
 
@@ -74,6 +74,15 @@ coverage:
 	@lcov --list coverage.info
   # print report to html file
 	@genhtml coverage.info -o test/report/
+
+# ============================================================================ #
+#  DOCUMENTATION
+# ============================================================================ #
+docs:
+	@mkdir -p build/
+	@cd build/ && cmake ..
+
+	@cd build/ && $(MAKE) adiar_docs
 
 # ============================================================================ #
 #  MAIN program for small tests
