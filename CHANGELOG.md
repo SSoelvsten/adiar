@@ -1,6 +1,6 @@
 # v1.2.0
 
-**Date: 26th of July, 2022**
+**Date: 29th of July, 2022**
 
 ## Performance
 
