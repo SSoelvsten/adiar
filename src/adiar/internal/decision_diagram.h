@@ -23,13 +23,15 @@ namespace adiar
   /// will call the correct reduce algorithm.
   ///
   /// An algorithm may return a node-based decision diagram in a
-  /// <tt>node_file</tt> or a yet to-be reduced decision diagram in an
-  /// <tt>arc_file</tt>. So, we use a <tt>std::variant</tt> to hold the the
-  /// <tt>node_file</tt> or <tt>arc_file</tt> without having to pay for the
+  /// \ref node_file or a yet to-be reduced decision diagram in an
+  /// \ref arc_file. So, we use a `std::variant` to hold the the
+  /// \ref node_file or \ref arc_file without having to pay for the
   /// expensive constructors and use a lot of space. The implicit
   ///
-  /// We also include a <tt>std::monostate</tt> to allow an algorithm to return
-  /// None, though that will lead to an exception in most cases.
+  /// A third possiblity is for it to contain a `std::monostate`, i.e. \ref
+  /// no_file, such that an algorithm can return 'null' in some specific places.
+  /// In most cases, this should be ignored and will otherwise lead to
+  /// exceptions.
   //////////////////////////////////////////////////////////////////////////////
   class __decision_diagram
   {
@@ -120,11 +122,13 @@ namespace adiar
     node_file file;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether to negate the leaves when reading <tt>file</tt>.
+    /// \brief Whether to negate the leaves when reading nodes from the file.
     ////////////////////////////////////////////////////////////////////////////
     bool negate = false;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \internal
+    ///
     /// \brief Release claim on the underlying file and (possibly) garbage
     ///        collect it.
     ////////////////////////////////////////////////////////////////////////////
@@ -162,7 +166,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Read-only access to the members of the raw files and meta
     ///        information, i.e. this is similar to writing
-    ///        <tt>.file_ptr()-></tt>.
+    ///        `.file_ptr()->`.
     ////////////////////////////////////////////////////////////////////////////
     const __meta_file<node_t>* operator->() const
     {
@@ -217,11 +221,10 @@ namespace adiar
   /// - Nodes within a level are effectively sorted based on their children:
   ///   high first, then low.
   ///
-  /// - Identifiers are from MAX_ID and down (when read bottom-up)
+  /// - Identifiers are from \ref MAX_ID and down (when read bottom-up)
   ///
-  /// If this is true, then equality checking (see 'internal/pred.h') can be
-  /// done in a single cheap linear scan rather than with an O(N log N)
-  /// time-forwarding algorithm.
+  /// If this is true, then equality checking can be done in a single cheap
+  /// linear scan rather than with an *O(N log N)* time-forwarding algorithm.
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_canonical(const decision_diagram &dd)
   {

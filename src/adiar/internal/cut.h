@@ -15,8 +15,7 @@ namespace adiar
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Available types of cuts. This should be used with the
-  ///        <tt>max_ilevel_cut</tt> variables in <tt>node_file</tt> and
-  ///        <tt>arc_file</tt>.
+  ///        `max_ilevel_cut` variables in \ref node_file and \ref arc_file.
   ////////////////////////////////////////////////////////////////////////////
   enum cut_type {
     /** Internal arcs only */
@@ -40,8 +39,8 @@ namespace adiar
   typedef cut_size_t cuts_t[CUT_TYPES];
 
   ////////////////////////////////////////////////////////////////////////////
-  /// \brief Get the desired <tt>cut_type</tt> based on whether to
-  ///        respectively include the false and true terminals.
+  /// \brief Get the desired \ref cut_type based on whether to respectively
+  ///        include the false and true terminals.
   ///
   /// \param incl_false Whether to include arcs to the false terminal.
   /// \param incl_true  Whether to include arcs to the true terminal.
