@@ -1,6 +1,19 @@
 #ifndef ADIAR_BDD_H
 #define ADIAR_BDD_H
 
+////////////////////////////////////////////////////////////////////////////////
+/// \defgroup module__bdd Binary Decision Diagrams
+///
+/// \brief A Binary Decision Diagram (BDD) represents a boolean function
+/// \f$ \{ 0,1 \}^n \rightarrow \{ 0,1 \} \f$ over a finite domain of
+/// \f$ n \f$ boolean input variables.
+///
+/// The \ref bdd class takes care of reference counting and optimal garbage
+/// collection of the underlying files. To ensure the most disk-space is
+/// available, try to garbage collect the \ref bdd objects as quickly as
+/// possible and/or minimise the number of lvalues of said type.
+////////////////////////////////////////////////////////////////////////////////
+
 #include <string>
 
 #include <adiar/data.h>
@@ -11,24 +24,35 @@
 
 namespace adiar
 {
-  /* =========================== BDD CONSTRUCTION =========================== */
+  //////////////////////////////////////////////////////////////////////////////
+  /// \addtogroup module__bdd
+  ///
+  /// \{
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Basic Constructors
+  ///
+  /// To construct a more complex but well-structured \ref bdd by hand, please
+  /// use the \ref bdd_builder (see \ref builder) instead.
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The BDD representing a constant value.
   ///
   /// \param value The constant terminal value
   ///
-  /// \sa          bdd_false bdd_true
+  /// \see         bdd_false bdd_true
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_terminal(bool value);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief The BDD representing the constant false BDD.
+  /// \brief The BDD representing the constant `false` BDD.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_false();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief The BDD representing the constant true BDD.
+  /// \brief The BDD representing the constant `true` BDD.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_true();
 
@@ -37,7 +61,7 @@ namespace adiar
   ///
   /// \details   Creates a BDD of a single node with label <tt>var</tt> and the
   ///            children false and true. The given label must be smaller than
-  ///            <tt>MAX_LABEL</tt>.
+  ///            \ref MAX_LABEL.
   ///
   /// \param var The label of the desired variable
   ///
@@ -50,7 +74,7 @@ namespace adiar
   ///
   /// \details   Creates a BDD of a single node with label <tt>var</tt> and the
   ///            children true and false. The given label must be smaller than
-  ///            or equal to <tt>MAX_LABEL</tt>.
+  ///            or equal to \ref MAX_LABEL.
   ///
   /// \param var Label of the desired variable
   ///
@@ -64,7 +88,7 @@ namespace adiar
   ///
   /// \details    Creates a BDD with a chain of nodes on the 'high' arc to the
   ///             true child, and false otherwise. The given labels must be
-  ///             smaller than or equal to <tt>MAX_LABEL</tt>.
+  ///             smaller than or equal to \ref MAX_LABEL.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   ///
@@ -78,7 +102,7 @@ namespace adiar
   ///
   /// \details    Creates a BDD with a chain of nodes on the 'low' arc to the
   ///             true child, and false otherwise. The given labels must be
-  ///             smaller than or equal to <tt>MAX_LABEL</tt>.
+  ///             smaller than or equal to \ref MAX_LABEL.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   ///
@@ -96,23 +120,32 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_counter(label_t min_var, label_t max_var, label_t threshold);
 
-  /* =========================== BDD MANIPULATION =========================== */
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Basic Manipulation
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Negation of a BDD.
   ///
-  /// \details Flips the negation flag such that reading nodes with
-  ///          <tt>node_stream<></tt> will on-the-fly change the false terminal into
-  ///          the true terminal.
+  /// \details Flips the negation flag such that reading nodes with a \ref
+  ///          node_stream within Adiar's algorithms will on-the-fly change the
+  ///          `false` terminals into the `true` terminals and vica versa.
   ///
   /// \returns \f$ \neg f \f$
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_not(const bdd &f);
-  bdd bdd_not(bdd &&f);
 
   bdd operator~ (const bdd& f);
-  bdd operator~ (__bdd&& f);
+
+  /// \cond
+  bdd bdd_not(bdd &&f);
   bdd operator~ (bdd&& f);
+  bdd operator~ (__bdd&& f);
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Apply a binary operator between two BDDs.
@@ -121,7 +154,7 @@ namespace adiar
   /// \param g  BDD for the right-hand-side of the operator
   /// \param op Binary boolean operator to be applied. See 'adiar/data.h'
   ///
-  /// \returns  The product construction of <tt>f</tt> <tt>op</tt> <tt>g</tt>.
+  /// \returns  The product construction of \f$ f \mathbin{\mathit{op}} g\f$
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_apply(const bdd &f, const bdd &g, const bool_op &op);
 
@@ -129,6 +162,8 @@ namespace adiar
   /// \brief   Logical 'and' operator.
   ///
   /// \returns \f$ f \land g \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_and(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, and_op); }
@@ -142,6 +177,8 @@ namespace adiar
   /// \brief   Logical 'nand' operator.
   ///
   /// \returns \f$ \neg (f \land g) \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_nand(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, nand_op); };
@@ -150,6 +187,8 @@ namespace adiar
   /// \brief   Logical 'or' operator.
   ///
   /// \returns \f$ f \lor g \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_or(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, or_op); };
@@ -163,6 +202,8 @@ namespace adiar
   /// \brief   Logical 'nor' operator.
   ///
   /// \returns \f$ \neg (f \lor g) \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_nor(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, nor_op); };
@@ -171,6 +212,8 @@ namespace adiar
   /// \brief   Logical 'xor' operator.
   ///
   /// \returns \f$ f \oplus g \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_xor(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, xor_op); };
@@ -184,6 +227,8 @@ namespace adiar
   /// \brief   Logical 'xnor' operator.
   ///
   /// \returns \f$ \neg (f \oplus g) \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_xnor(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, xnor_op); };
@@ -191,7 +236,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'implication' operator.
   ///
-  /// \returns \f$ f \implies g \f$
+  /// \returns \f$ f \rightarrow g \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_imp(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, imp_op); };
@@ -199,7 +246,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Logical 'inverse implication' operator.
   ///
-  /// \returns \f$ f \impliedby g \f$
+  /// \returns \f$ f \leftarrow g \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_invimp(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, invimp_op); };
@@ -208,6 +257,8 @@ namespace adiar
   /// \brief   Logical 'equivalence' operator.
   ///
   /// \returns \f$ f = g \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_equiv(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, equiv_op); };
@@ -216,6 +267,8 @@ namespace adiar
   /// \brief   Logical 'difference'  operator.
   ///
   /// \returns \f$ f \setminus g \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_diff(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, diff_op); };
@@ -224,6 +277,8 @@ namespace adiar
   /// \brief   Logical 'less than' operator.
   ///
   /// \returns \f$ f < g \f$
+  ///
+  /// \see     bdd_apply
   //////////////////////////////////////////////////////////////////////////////
   inline __bdd bdd_less(const bdd &f, const bdd &g)
   { return bdd_apply(f, g, less_op); };
@@ -242,6 +297,12 @@ namespace adiar
   /// \param h BDD for the else case
   ///
   /// \returns \f$ f ? g : h \f$
+  ///
+  /// \remark In other BDD packages this function is good for manually
+  ///         constructing a BDD bottom-up. But, in Adiar you should use the
+  ///         \ref bdd_builder class (see \ref builder) instead
+  ///
+  /// \se     bdd_apply builder bdd_builder
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_ite(const bdd &f, const bdd &g, const bdd &h);
 
@@ -287,7 +348,10 @@ namespace adiar
   /// \returns    \f$ \exists x_{i_1}, \dots, x_{i_k} : f \f$
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_exists(const bdd &f, const label_file &vars);
+
+  /// \cond
   __bdd bdd_exists(bdd &&f, const label_file &vars);
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Forall quantify a single variable.
@@ -315,9 +379,18 @@ namespace adiar
   /// \returns    \f$ \forall x_{i_1}, \dots, x_{i_k} : f \f$
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_forall(const bdd &f, const label_file &vars);
-  __bdd bdd_forall(bdd &&f, const label_file &vars);
 
-  /* ============================ BDD PREDICATES ============================ */
+  /// \cond
+  __bdd bdd_forall(bdd &&f, const label_file &vars);
+  /// \endcond
+
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Predicates
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether f and g represent the same function.
@@ -332,7 +405,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether f and g represent different functions.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool bdd_unequal(const bdd& f, const bdd& g) 
+  inline bool bdd_unequal(const bdd& f, const bdd& g)
     { return !bdd_equal(f, g); }
 
   bool operator!= (const bdd& f, const bdd& g);
@@ -340,7 +413,13 @@ namespace adiar
   bool operator!= (__bdd &&f, const bdd &g);
   bool operator!= (__bdd &&f, __bdd &&g);
 
-  /* ============================= BDD COUNTING ============================= */
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Counting Operations
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The number of (internal) nodes used to represent the function.
@@ -383,7 +462,20 @@ namespace adiar
   inline uint64_t bdd_satcount(const bdd &f)
   { return bdd_satcount(f, bdd_varcount(f)); };
 
-  /* ========================= BDD  INPUT VARIABLES ========================= */
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   Function that computs Boolean assignment to variables with given
+  ///          label.
+  //////////////////////////////////////////////////////////////////////////////
+  typedef std::function<bool(label_t)> assignment_func;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Input Variables
+
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest x such that f(x) is true.
@@ -408,8 +500,6 @@ namespace adiar
   ///          mentioned by the given BDD.
   //////////////////////////////////////////////////////////////////////////////
   assignment_file bdd_satmax(const bdd &f);
-
-  typedef std::function<bool(label_t)> assignment_func;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment
@@ -437,7 +527,13 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   label_file bdd_varprofile(const bdd &f);
 
-  /* ============================== CONVERSION ============================== */
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Conversion
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the BDD that represents the same function/set as the
@@ -451,15 +547,38 @@ namespace adiar
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_from(const zdd &A, const label_file &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \copybrief bdd_from
+  ///
+  /// \param A   Family of a set (within the given global domain)
+  ///
+  /// \returns   BDD that is true for the exact same assignments to variables in
+  ///            the global domain.
+  ///
+  /// \see       adiar_set_domain adiar_has_domain
+  //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_from(const zdd &A);
 
-  /* ================================= DEBUG ================================ */
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name DOT Files
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Output a DOT drawing a decision diagram to an output stream or a
   ///        file with the given file name.
   //////////////////////////////////////////////////////////////////////////////
   void output_dot(const bdd &f, const std::string &file_name);
+
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
 }
 
 #endif // ADIAR_BDD_H

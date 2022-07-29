@@ -13,11 +13,11 @@ namespace adiar {
   class bdd;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \internal \brief A (possibly non-reduced) Ordered Binary Decision Diagram.
+  /// \ingroup module__bdd
+  ///
+  /// \brief A (possibly) unreduced Binary Decision Diagram.
   ///
   /// \relates bdd
-  ///
-  /// \extends __decision_diagram
   ///
   /// \copydoc __decision_diagram
   //////////////////////////////////////////////////////////////////////////////
@@ -31,9 +31,9 @@ namespace adiar {
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Reduced Ordered Binary Decision Diagram.
+  /// \ingroup module__bdd
   ///
-  /// \extends decision_diagram
+  /// \brief A reduced Binary Decision Diagram.
   ///
   /// \copydoc decision_diagram
   //////////////////////////////////////////////////////////////////////////////
