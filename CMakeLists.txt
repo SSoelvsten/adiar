@@ -72,6 +72,15 @@ install(DIRECTORY src/adiar
         FILES_MATCHING REGEX "\\.h$")
 
 # ============================================================================ #
+# Documentation
+# ============================================================================ #
+option(ADIAR_DOCS "Build Documentation for Adiar" ON)
+
+if (ADIAR_DOCS)
+  add_subdirectory(docs)
+endif (AIDAR_DOCS)
+
+# ============================================================================ #
 # Unit Tests
 # ============================================================================ #
 if (ADIAR_TEST)
