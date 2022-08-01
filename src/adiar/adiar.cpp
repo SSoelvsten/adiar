@@ -29,7 +29,7 @@ namespace adiar
     memory::set_block_size(memory::recommended_block_size(memory_limit_bytes));
   }
 
-  bool adiar_initialized()
+  bool adiar_initialized() noexcept
   {
     return _adiar_initialized;
   }
