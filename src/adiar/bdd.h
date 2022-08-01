@@ -30,7 +30,7 @@ namespace adiar
   /// \{
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \name Basic Constructors
+  /// \name Basic BDD Constructors
   ///
   /// To construct a more complex but well-structured \ref bdd by hand, please
   /// use the \ref bdd_builder (see \ref builder) instead.
@@ -93,6 +93,8 @@ namespace adiar
   /// \param vars Labels of the desired variables (in ascending order)
   ///
   /// \returns    \f$ \bigwedge_{x \in \mathit{vars}} x \f$
+  ///
+  /// \pre        Labels in `vars` are provided in ascending order.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_and(const label_file &vars);
 
@@ -107,6 +109,8 @@ namespace adiar
   /// \param vars Labels of the desired variables (in ascending order)
   ///
   /// \returns    \f$ \bigvee_{x \in \mathit{vars}} x \f$
+  ///
+  /// \pre        Labels in `vars` are provided in ascending order.
   //////////////////////////////////////////////////////////////////////////////
   bdd bdd_or(const label_file &vars);
 
@@ -124,7 +128,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \name Basic Manipulation
+  /// \name Basic BDD Manipulation
   ///
   /// \{
 
@@ -388,7 +392,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \name Predicates
+  /// \name BDD Predicates
   ///
   /// \{
 
@@ -417,7 +421,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \name Counting Operations
+  /// \name BDD Counting Operations
   ///
   /// \{
 
@@ -509,7 +513,8 @@ namespace adiar
   ///
   /// \param f  The BDD to evaluate
   ///
-  /// \param xs An assignment function of the type <tt>label_t -> bool</tt>
+  /// \param xs An assignment function of the type \f$ \texttt{label\_t}
+  ///           \rightarrow \texttt{bool} \f$.
   //////////////////////////////////////////////////////////////////////////////
   bool bdd_eval(const bdd &f, const assignment_func &xs);
 
@@ -518,7 +523,9 @@ namespace adiar
   ///
   /// \param f  The BDD to evaluate
   ///
-  /// \param xs A list of tuples<tt>(i,v)</tt> in ascending order
+  /// \param xs A list of tuples `(i,v)` in ascending order
+  ///
+  /// \pre      Assignment tuples in `xs` is in ascending order
   //////////////////////////////////////////////////////////////////////////////
   bool bdd_eval(const bdd &f, const assignment_file &xs);
 
@@ -531,7 +538,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \name Conversion
+  /// \name Conversion to BDDs
   ///
   /// \{
 
@@ -545,18 +552,23 @@ namespace adiar
   ///
   /// \returns   BDD that is true for the exact same assignments to variables in
   ///            the given domain.
+  ///
+  /// \pre       Labels in `dom` are provided in ascending order.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_from(const zdd &A, const label_file &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \copybrief bdd_from
   ///
-  /// \param A   Family of a set (within the given global domain)
+  /// \param A   Family of a set (within the given global \ref module__domain)
   ///
   /// \returns   BDD that is true for the exact same assignments to variables in
   ///            the global domain.
   ///
   /// \see       adiar_set_domain adiar_has_domain
+  ///
+  /// \pre       The global \ref module__domain is set to a set of variables
+  ///            that is equals to or a superset of the variables in `A`.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_from(const zdd &A);
 
@@ -564,7 +576,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \name DOT Files
+  /// \name DOT Files of BDDs
   ///
   /// \{
 

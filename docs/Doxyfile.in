@@ -866,6 +866,7 @@ WARN_LOGFILE           =
 
 INPUT                  = @CMAKE_SOURCE_DIR@/src/adiar/ \
                          @CMAKE_SOURCE_DIR@/src/adiar/bdd/bdd.h \
+                         @CMAKE_SOURCE_DIR@/src/adiar/zdd/zdd.h \
                          @CMAKE_SOURCE_DIR@/src/adiar/internal/decision_diagram.h \
                          @CMAKE_SOURCe_DIR@/docs/
 
