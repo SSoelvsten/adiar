@@ -1,6 +1,18 @@
 #ifndef ADIAR_ZDD_H
 #define ADIAR_ZDD_H
 
+////////////////////////////////////////////////////////////////////////////////
+/// \defgroup module__zdd Zero-suppressed Decision Diagrams
+///
+/// \brief A Zero-suppressed Decision Diagram (ZDD) represents a family of a set
+/// of \f$ n \f$ numbers, i.e. an \f$ S \subseteq 2^{\{ 0, 1, \dots, n-1 \}} \f$.
+///
+/// The \ref zdd class takes care of reference counting and optimal garbage
+/// collection of the underlying files. To ensure the most disk-space is
+/// available, try to garbage collect the \ref zdd objects as quickly as
+/// possible and/or minimise the number of lvalues of said type.
+////////////////////////////////////////////////////////////////////////////////
+
 #include <optional>
 #include <string>
 
@@ -12,7 +24,18 @@
 
 namespace adiar
 {
-  /* =========================== ZDD CONSTRUCTION =========================== */
+  //////////////////////////////////////////////////////////////////////////////
+  /// \addtogroup module__zdd
+  ///
+  /// \{
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Basic ZDD Constructors
+  ///
+  /// To construct a more complex but well-structured \ref zdd by hand, please
+  /// use the \ref zdd_builder (see \ref builder) instead.
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief       The ZDD of only a single terminal.
@@ -79,7 +102,13 @@ namespace adiar
 
   // For templated constructors see 'adiar/zdd/build.h'
 
-  /* =========================== ZDD MANIPULATION =========================== */
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Basic ZDD Manipulation
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Apply a binary operator between the sets of two families.
@@ -156,14 +185,29 @@ namespace adiar
   ///
   /// \param dom Labels of the domain (in ascending order)
   ///
-  /// \returns
-  /// \f$ 2^{\mathit{dom}} \setminus A \f$
+  /// \returns    \f$ 2^{\mathit{dom}} \setminus A \f$
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_complement(const zdd &A, const label_file &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Complement of A within the global \ref module__domain
+  ///
+  /// \param A   family of sets to complement
+  ///
+  /// \returns   \f$ 2^{\mathit{dom}} \setminus A \f$
+  ///
+  /// \see adiar_set_domain adiar_has_domain
+  ///
+  /// \pre       The global \ref module__domain is set to a set of variables
+  ///            that is equals to or a superset of the variables in `A`.
+  //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_complement(const zdd &A);
 
   __zdd operator~ (const zdd& A);
+
+  /// \cond
   __zdd operator~ (__zdd&& A);
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Expands the domain of the given ZDD to also include the given
@@ -219,24 +263,33 @@ namespace adiar
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_project(const zdd &A, const label_file &dom);
-  zdd zdd_project(zdd &&A, const label_file &dom);
 
-  /* ============================ ZDD PREDICATES ============================ */
+  /// \cond
+  zdd zdd_project(zdd &&A, const label_file &dom);
+  /// \endcond
+
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name ZDD Predicates
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether it is the empty family, i.e. Ø .
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_empty(const zdd &dd)
+  inline bool is_empty(const zdd &A)
   {
-    return is_false(dd);
+    return is_false(A);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether it is the null family, i.e. { Ø } .
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_null(const decision_diagram &dd)
+  inline bool is_null(const decision_diagram &A)
   {
-    return is_true(dd);
+    return is_true(A);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -296,7 +349,13 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   bool zdd_disjoint(const zdd &A, const zdd &B);
 
-  /* ============================= ZDD COUNTING ============================= */
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name ZDD Counting Operations
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The number of (internal) nodes used to represent the family of
@@ -315,7 +374,13 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   uint64_t zdd_size(const zdd &A);
 
-  /* =========================== ZDD SET ELEMENTS =========================== */
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Set Elements
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Whether the family includes the given set of labels
@@ -347,7 +412,13 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   label_file zdd_varprofile(const zdd &A);
 
-  /* ============================== CONVERSION ============================== */
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Conversion to ZDDs
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the ZDD that represents the same function/set as the
@@ -361,15 +432,40 @@ namespace adiar
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_from(const bdd &f, const label_file &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Obtains the ZDD that represents the same function/set as the
+  ///            given BDD within the global \ref module__domain.
+  ///
+  /// \param f   Boolean function with the given domain
+  ///
+  /// \returns   ZDD that is true for the exact same assignments to variables in
+  ///            the global domain.
+  ///
+  /// \pre       The global \ref module__domain is set to a set of variables
+  ///            that is equals to or a superset of the variables in `A`.
+  //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_from(const bdd &f);
 
-  /* ================================= DEBUG ================================ */
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \name Dot Files of ZDDs
+  ///
+  /// \{
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Output a DOT drawing a decision diagram to an output stream or a
   ///        file with the given file name.
   //////////////////////////////////////////////////////////////////////////////
   void output_dot(const zdd &A, const std::string &file_name);
+
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
+
+  /// \}
+  //////////////////////////////////////////////////////////////////////////////
 }
 
 #include <adiar/zdd/build.h>

@@ -15,12 +15,11 @@ namespace adiar {
   class zdd;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \internal \brief A (possibly non-reduced) Ordered Zero-suppressed Decision
-  /// Diagram.
+  /// \ingroup module__zdd
+  ///
+  /// \brief A (possibly unreduced) Zero-suppressed Decision Diagram.
   ///
   /// \relates zdd
-  ///
-  /// \extends __decision_diagram
   ///
   /// \copydoc __decision_diagram
   //////////////////////////////////////////////////////////////////////////////
@@ -33,6 +32,8 @@ namespace adiar {
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \ingroup module__zdd
+  ///
   /// \brief Reduced Ordered Zero-suppressed Decision Diagram.
   ///
   /// \extends decision_diagram
