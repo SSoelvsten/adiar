@@ -5,6 +5,18 @@
 /// \defgroup module__statistics Statistics
 ///
 /// \brief Statistics on the internal algorithms and data structures.
+///
+/// \details
+///   Statistics are by default **not** gathered due to a concern of the
+///   performance of Adiar. That is, the logic related to updating the
+///   statistics is only run when one or more of the following CMake variables
+///   are set to ON.
+///   - `ADIAR_STATS`
+///     Only gather statistics that introduce a small constant time overhead to
+///     every operation.
+///   - `ADIAR_STATS_EXTRA`
+///     Also gathers statistics that introduce a linear-time overhead to all
+///     operations.
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>

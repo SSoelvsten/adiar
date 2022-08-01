@@ -1,6 +1,17 @@
 #ifndef ADIAR_BUILDER_H
 #define ADIAR_BUILDER_H
 
+////////////////////////////////////////////////////////////////////////////////
+/// \defgroup module__builder Builder
+///
+/// \brief Manual bottom-up construction of decision diagrams.
+///
+/// In some cases, one may already know the shape of a \ref bdd and/or as a \ref
+/// zdd for a more complex function. In those cases, it is much cheaper to
+/// construct them by hand than to manipulate logic formulas.
+///
+////////////////////////////////////////////////////////////////////////////////
+
 #include <adiar/data.h>
 #include <adiar/file_writer.h>
 
@@ -8,25 +19,37 @@
 #include <adiar/zdd/zdd_policy.h>
 
 namespace adiar {
+  //////////////////////////////////////////////////////////////////////////////
+  /// \addtogroup module__builder
+  ///
+  /// \{
 
+  /// \cond
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Shared information between the builder and its pointers.
+  ///
+  /// \see builder buider_ptr
+  //////////////////////////////////////////////////////////////////////////////
   struct builder_shared
   {
 
   };
+  /// \endcond
 
   template<typename dd_policy>
   class builder;
 
   ///////////////////////////////////////////////////////////////////////////////
-  /// \brief The pointer type that builders use to nodes in decision diagrams
+  /// \brief The pointer type that builders use to identify the nodes they have
+  ///        constructed in a decision diagram.
   ///
-  /// \sa builder_ptr builder
+  /// \see builder
   ///////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy>
   class builder_ptr
   {
   public:
-  friend class builder<dd_policy>;
+    friend class builder<dd_policy>;
 
   private:
     ///////////////////////////////////////////////////////////////////////////////
@@ -59,14 +82,14 @@ namespace adiar {
   ///////////////////////////////////////////////////////////////////////////////
   /// \brief Pointer for a BDD node created by a BDD builder.
   ///
-  /// \sa builder_ptr builder
+  /// \see bdd_builder
   ///////////////////////////////////////////////////////////////////////////////
   typedef builder_ptr<bdd_policy> bdd_ptr;
 
   ///////////////////////////////////////////////////////////////////////////////
   /// \brief Pointer for a ZDD node created by a ZDD builder.
   ///
-  /// \sa builder_ptr builder
+  /// \see zdd_builder
   ///////////////////////////////////////////////////////////////////////////////
   typedef builder_ptr<zdd_policy> zdd_ptr;
 
@@ -76,6 +99,9 @@ namespace adiar {
   ///
   /// \details Nodes should be added bottom-up. Each added node returns a
   ///          builder_ptr so that it can be used as a child for other nodes.
+  ///
+  /// \tparam dd_policy Logic related to the specific type of decision diagram
+  ///                   to construct.
   ///////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy>
   class builder
@@ -129,30 +155,24 @@ namespace adiar {
 
   public:
     /////////////////////////////////////////////////////////////////////////////
-    /// \brief Add a terminal node with a given value.
-    /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(bool terminal_value)
-    {
-      created_terminal = true;
-      terminal_val = terminal_value;
-
-      return make_ptr(create_terminal_ptr(terminal_value));
-    }
-
-    /////////////////////////////////////////////////////////////////////////////
-    /// \brief Add an internal node with a given label, id, and children.
-    ///        Children are either pointers to other nodes or booleans.
+    /// \brief Add an internal node with a given label, id, and its two children.
     ///
     /// \param label The variable label for the node to create.
     ///
-    /// \param low   Pointer or Terminal value for when the variable for the
-    ///              given label evaluates to false.
+    /// \param low   Pointer for when the variable with the given label evaluates
+    ///              to `false`.
     ///
-    /// \param high  Pointer or Terminal value for when the variable for the
-    ///              given label evaluates to true.
+    /// \param high  Pointer for when the variable with the given label evaluates
+    ///              to `true`.
     ///
-    /// \returns     Pointer to the (possibly new) BDD node for the desired
+    /// \returns     Pointer to the (possibly new) node for the desired
     ///              function.
+    ///
+    /// \remark This will apply the first reduction rule associated with the
+    ///         specific type of decision diagram, e.g. not construct a "don’t
+    ///         care" node for \ref bdd but instead just return its child. The
+    ///         builder cannot apply the second reduction rule, i.e. merging of
+    ///         duplicate nodes, so that is still left up to you to do.
     ///
     /// \throws std::invalid_argument If a node is malformed or not added in
     ///                               bottom-up order and if pointers from
@@ -220,6 +240,23 @@ namespace adiar {
       return make_ptr(res_uid);
     }
 
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Add an internal node with a given label, id, and its two children.
+    ///
+    /// \param label The variable label for the node to create.
+    ///
+    /// \param low   Terminal value for when the variable with the given label
+    ///              evaluates to `false`.
+    ///
+    /// \param high  Pointer for when the variable with the given label evaluates
+    ///              to `true`.
+    ///
+    /// \returns     Pointer to the (possibly new) node for the desired
+    ///              function.
+    ///
+    /// \throws std::invalid_argument If `label` and `high` are illegal (see
+    ///                               \ref add_node).
+    /////////////////////////////////////////////////////////////////////////////
     builder_ptr<dd_policy> add_node(const label_t label,
                                     const bool low,
                                     const builder_ptr<dd_policy> &high)
@@ -228,6 +265,23 @@ namespace adiar {
       return add_node(label, low_ptr, high);
     }
 
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Add an internal node with a given label, id, and its two children.
+    ///
+    /// \param label The variable label for the node to create.
+    ///
+    /// \param low   Pointer for when when the variable with the given label
+    ///              evaluates to `false`.
+    ///
+    /// \param high  Terminal value for when the variable with the given label
+    ///              evaluates to `true`.
+    ///
+    /// \returns     Pointer to the (possibly new) node for the desired
+    ///              function.
+    ///
+    /// \throws std::invalid_argument If `label` and `low` are illegal (see
+    ///                               \ref add_node).
+    /////////////////////////////////////////////////////////////////////////////
     builder_ptr<dd_policy> add_node(const label_t label,
                                     const builder_ptr<dd_policy> &low,
                                     const bool high)
@@ -236,6 +290,22 @@ namespace adiar {
       return add_node(label, low, high_ptr);
     }
 
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Add an internal node with a given label, id, and its two children.
+    ///
+    /// \param label The variable label for the node to create.
+    ///
+    /// \param low   Terminal value for when when the variable with the given
+    ///              label evaluates to `false`.
+    ///
+    /// \param high  Terminal value for when the variable with the given label
+    ///              evaluates to `true`.
+    ///
+    /// \returns     Pointer to the node for the desired function.
+    ///
+    /// \throws std::invalid_argument If `label` violates the bottom-up ordering
+    ///                               (see \ref add_node).
+    /////////////////////////////////////////////////////////////////////////////
     builder_ptr<dd_policy> add_node(const label_t label,
                                     const bool low,
                                     const bool high)
@@ -246,13 +316,37 @@ namespace adiar {
     }
 
     /////////////////////////////////////////////////////////////////////////////
-    /// \brief Builds the decision diagram with the added nodes and is then
-    ///        fully cleared.
+    /// \brief Add a terminal node with a given value.
     ///
-    /// \sa clear
+    /// \param terminal_value Value of the constant function to create.
+    ///
+    /// \remark One may call this function at any time during the construction
+    ///         process since terminals are not part of the *bottom-up*
+    ///         requirement.
+    /////////////////////////////////////////////////////////////////////////////
+    builder_ptr<dd_policy> add_node(bool terminal_value)
+    {
+      created_terminal = true;
+      terminal_val = terminal_value;
+
+      return make_ptr(create_terminal_ptr(terminal_value));
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Builds the decision diagram with the added nodes. This also
+    ///        clears the builder.
+    ///
+    /// \see clear
     ///
     /// \throws std::domain_error If (a) add_node has not been called or (b) if
     ///                           there are more than one root in the diagram.
+    ///
+    /// \pre     One has used `add_node` to create a non-empty and singly-rooted
+    ///          decision diagram.
+    ///
+    /// \warning After calling this function all previously created
+    ///          `builder_ptr` created by this object will be invalidated and
+    ///          cannot be used anymore.
     /////////////////////////////////////////////////////////////////////////////
     typename dd_policy::reduced_t build()
     {
@@ -277,6 +371,9 @@ namespace adiar {
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Clear builder of all its current content, discarding all nodes
     ///        and invalidating any pointers to them.
+    ///
+    /// \warning This will invalidate any pointers created up to this point. You
+    ///          will not be able to use them after this.
     /////////////////////////////////////////////////////////////////////////////
     void clear() noexcept
     {
@@ -324,6 +421,8 @@ namespace adiar {
   ///////////////////////////////////////////////////////////////////////////////
   typedef builder<zdd_policy> zdd_builder;
 
+  /// \}
+  /////////////////////////////////////////////////////////////////////////////
 }
 
 #endif // ADIAR_BUILDER_H

@@ -53,14 +53,14 @@ namespace adiar
   ///
   /// \param memory_limit_bytes
   ///   The amount of internal memory (in bytes) that Adiar is allowed to use.
-  ///   This has to be at least \ref MINIMUM_BYTES.
+  ///   This has to be at least MINIMUM_BYTES.
   ///
   /// \param temp_dir
   ///   The directory in which to place all temporary files. Default on Linux is
   ///   the */tmp* library.
   ///
   /// \throws std::invalid_argument If `memory_limit_bytes` is set to a value
-  ///                               less than the \ref MINIMUM_BYTES required.
+  ///                               less than the MINIMUM_BYTES required.
   //////////////////////////////////////////////////////////////////////////////
   void adiar_init(size_t memory_limit_bytes, std::string temp_dir = "");
 
