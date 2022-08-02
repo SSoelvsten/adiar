@@ -77,6 +77,11 @@ _ticked_ dependencies are mandatory to install.
   Furthermore, TPIE has a dependency on the [Boost](https://www.boost.org/)
   Library.
 
+- [ ] **Doxygen**
+
+  The documentation is created with the [Doxygen](https://www.doxygen.nl/)
+  documentation generator.
+
 - [ ] **DOT**
 
   As a visual aid, the internal representation of the Decision Diagrams can be
@@ -87,10 +92,10 @@ _ticked_ dependencies are mandatory to install.
 
 To install all of the above then run the respective below.
 
-| Operating System | Shell command                                         |
-|------------------|-------------------------------------------------------|
-| Ubuntu 18+       | `apt install cmake g++     libboost-all-dev graphviz` |
-| Fedora 35+       | `dnf install cmake gcc-c++ boost-devel      graphviz` |
+| Operating System | Shell command                                                 |
+|------------------|---------------------------------------------------------------|
+| Ubuntu 18+       | `apt install cmake g++     libboost-all-dev doxygen graphviz` |
+| Fedora 35+       | `dnf install cmake gcc-c++ boost-devel      doxygen graphviz` |
 
 ## Usage
 
@@ -102,15 +107,16 @@ has only been tested on _Ubuntu 18.04 LTS_ and _20.04 LTS_.
 
 The _Makefile_ provides the following targets
 
-| target          | effect                                                               |
-|-----------------|----------------------------------------------------------------------|
-| `build`         | Build the source files                                               |
-| `clean`         | Remove all build files                                               |
-|                 |                                                                      |
-| `test`          | Run all unit tests (with _O2_ optimisations)                         |
-| `coverage`      | Run all unit tests (with no optimisations) and create _lcov_ report  |
-|                 |                                                                      |
-| `main M=<MiB>`  | Run the _main_ function in `src/main.cpp` with `<MiB>` MiB of memory |
+| target         | effect                                                               |
+|----------------|----------------------------------------------------------------------|
+| `build`        | Build the source files                                               |
+| `docs`         | Build the documentation files                                        |
+| `clean`        | Remove all build files                                               |
+|                |                                                                      |
+| `test`         | Run all unit tests (with _O2_ optimisations)                         |
+| `coverage`     | Run all unit tests (with no optimisations) and create _lcov_ report  |
+|                |                                                                      |
+| `main M=<MiB>` | Run the _main_ function in `src/main.cpp` with `<MiB>` MiB of memory |
 
 ### Examples
 The _example/_ folder contains examples for using the data structures in Adiar.
