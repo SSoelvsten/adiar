@@ -17,7 +17,7 @@ jobs:
       branch: ${{ steps.identify.outputs.branch }}
 
   skip_duplicate:
-    name: 'Check whether to skip job'
+    name: 'Skip Job?'
     continue-on-error: true
     runs-on: ubuntu-latest
 
