@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$structadiar_1_1stats__t_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="5,203,192,229"/>
+<area shape="rect" id="node2" href="$structadiar_1_1stats__t_1_1count__t.html" title="Counting algorithm statistics." alt="" coords="255,5,417,32"/>
+<area shape="rect" id="node3" href="$structadiar_1_1stats__t_1_1equality__t.html" title="Equality Checking algorithm statistics." alt="" coords="246,56,426,83"/>
+<area shape="rect" id="node4" href="$structadiar_1_1stats__t_1_1if__else__t.html" title="If&#45;Then&#45;Else algorithm statistics." alt="" coords="274,107,398,149"/>
+<area shape="rect" id="node5" href="$structadiar_1_1stats__t_1_1intercut__t.html" title="Intercut algorithm statistics." alt="" coords="247,173,425,200"/>
+<area shape="rect" id="node6" href="$structadiar_1_1stats__t_1_1product__construction__t.html" title="2&#45;ary Product Construction algorithm statistics." alt="" coords="254,225,418,266"/>
+<area shape="rect" id="node7" href="$structadiar_1_1stats__t_1_1quantify__t.html" title="Quantification algorithm statistics." alt="" coords="246,291,426,317"/>
+<area shape="rect" id="node8" href="$structadiar_1_1stats__t_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="251,341,421,368"/>
+<area shape="rect" id="node9" href="$structadiar_1_1stats__t_1_1substitute__t.html" title="Substitution algorithm statistics." alt="" coords="240,392,432,419"/>
+</map>

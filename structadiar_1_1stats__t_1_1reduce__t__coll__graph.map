@@ -1,0 +1,6 @@
+<map id="adiar::stats_t::reduce_t" name="adiar::stats_t::reduce_t">
+<area shape="rect" id="node1" title="Reduce algorithm statistics." alt="" coords="13,276,184,303"/>
+<area shape="rect" id="node2" href="$structadiar_1_1stats__t_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="5,200,192,227"/>
+<area shape="rect" id="node3" href="$structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="24,96,173,137"/>
+<area shape="rect" id="node4" href="$structadiar_1_1stats__t_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="11,5,186,47"/>
+</map>
