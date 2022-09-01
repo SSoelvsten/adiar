@@ -578,13 +578,10 @@ namespace adiar
     const bool internal_only = memory::mode == memory::INTERNAL;
     const bool external_only = memory::mode == memory::EXTERNAL;
 
-    const size_t pq_1_bound = std::min({__prod_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_1, in_2, op),
-                                        __prod_2level_upper_bound<prod_policy>(in_1, in_2, op),
-                                        __prod_ilevel_upper_bound<prod_policy>(in_1, in_2, op)});
+    const size_t pq_2_bound = __prod_ilevel_upper_bound<prod_policy>(in_1, in_2, op);
+    const size_t pq_1_bound = pq_2_bound;
 
     const size_t max_pq_1_size = internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
-
-    const size_t pq_2_bound = __prod_ilevel_upper_bound<prod_policy, get_1level_cut, 0u>(in_1, in_2, op);
 
     const size_t max_pq_2_size = internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
 

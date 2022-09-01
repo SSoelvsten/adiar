@@ -29,14 +29,18 @@ namespace adiar
   public:
     static size_t pq1_upper_bound(const node_file &in_1, const node_file &in_2)
     {
-      return std::max(in_1->max_2level_cut[cut_type::INTERNAL],
-                      in_2->max_2level_cut[cut_type::INTERNAL]);
+      const safe_size_t size_1 = in_1->_files[0].size();
+      const safe_size_t size_2 = in_2->_files[0].size();
+
+      return std::max(to_size(size_1 + 1), to_size(size_2 + 1));
     }
 
     static size_t pq2_upper_bound(const node_file &in_1, const node_file &in_2)
     {
-      return std::max(in_1->max_1level_cut[cut_type::INTERNAL],
-                      in_2->max_1level_cut[cut_type::INTERNAL]);
+      const safe_size_t size_1 = in_1->_files[0].size();
+      const safe_size_t size_2 = in_2->_files[0].size();
+
+      return std::max(to_size(size_1 + 1), to_size(size_2 + 1));
     }
 
     static constexpr size_t memory_usage()
