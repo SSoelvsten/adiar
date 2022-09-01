@@ -513,7 +513,7 @@ namespace adiar
     const bool internal_only = memory::mode == memory::INTERNAL;
     const bool external_only = memory::mode == memory::EXTERNAL;
 
-    const size_t pq_bound = in_file->max_1level_cut;
+    const size_t pq_bound = (in_file.size() / 2) + 1;
 
     const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_bound) : pq_bound;
 
