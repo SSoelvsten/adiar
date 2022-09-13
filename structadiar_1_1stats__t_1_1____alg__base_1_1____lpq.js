@@ -1,5 +1,6 @@
 var structadiar_1_1stats__t_1_1____alg__base_1_1____lpq =
 [
+    [ "total", "structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html#ae214010c1568bbe880c74c4946b6a493", null ],
     [ "external", "structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html#a5c3485b2ecd14d82bcdb0fb0d22fd42a", null ],
     [ "internal", "structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html#ab0e36c8d77a4a792a1346fbf461474b4", null ],
     [ "push_bucket", "structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html#a5452ff59b688189e021ea098006de069", null ],
