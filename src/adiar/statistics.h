@@ -139,6 +139,16 @@ namespace adiar
         /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t external = 0;
+
+        ////////////////////////////////////////////////////////////////////////
+        /// \brief Total number of levelized priority queues.
+        ///
+        /// \pre   `ADIAR_STATS`
+        ////////////////////////////////////////////////////////////////////////
+        uintwide_t total() const
+        {
+          return unbucketed + internal + external;
+        }
       }
       /// \copydoc __lpq
       lpq;

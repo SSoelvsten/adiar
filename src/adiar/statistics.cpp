@@ -129,7 +129,7 @@ namespace adiar
   {
     o << indent << bold_on << "levelized priority queue" << bold_off << endl;
 
-    const uintwide_t total_lpqs = stats.lpq.unbucketed + stats.lpq.internal + stats.lpq.external;
+    const uintwide_t total_lpqs = stats.lpq.total();
     const uintwide_t total_internal_lpqs = stats.lpq.unbucketed + stats.lpq.internal;
 
     indent_level++;
@@ -153,7 +153,7 @@ namespace adiar
 
   void __printstat_count(std::ostream &o)
   {
-    uintwide_t total_runs = stats_count.lpq.internal + stats_count.lpq.external;
+    uintwide_t total_runs = stats_count.lpq.total();
     o << indent << bold_on << label << "Count" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -169,7 +169,7 @@ namespace adiar
 
   void __printstat_comparison_check(std::ostream &o)
   {
-    uintwide_t total_runs = stats_equality.lpq.internal + stats_equality.lpq.external;
+    uintwide_t total_runs = stats_equality.lpq.total();
     o << indent << bold_on << label << "Comparison Check" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -185,7 +185,7 @@ namespace adiar
 
   void __printstat_ite(std::ostream &o)
   {
-    uintwide_t total_runs = stats_if_else.lpq.internal + stats_if_else.lpq.external;
+    uintwide_t total_runs = stats_if_else.lpq.total();
     o << indent << bold_on << label << "If-Then-Else" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -201,7 +201,7 @@ namespace adiar
 
   void __printstat_intercut(std::ostream &o)
   {
-    uintwide_t total_runs = stats_intercut.lpq.internal + stats_intercut.lpq.external;
+    uintwide_t total_runs = stats_intercut.lpq.total();
     o << indent << bold_on << label << "Intercut" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -279,7 +279,7 @@ namespace adiar
   }
   void __printstat_product_construction(std::ostream &o)
   {
-    uintwide_t total_runs = stats_product_construction.lpq.internal + stats_product_construction.lpq.external;
+    uintwide_t total_runs = stats_product_construction.lpq.total();
     o << indent << bold_on << label << "Product Construction" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -295,7 +295,7 @@ namespace adiar
 
   void __printstat_reduce(std::ostream &o)
   {
-    uintwide_t total_runs = stats_reduce.lpq.internal + stats_reduce.lpq.external;
+    uintwide_t total_runs = stats_reduce.lpq.total();
     o << indent << bold_on << label << "Reduce" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -344,7 +344,7 @@ namespace adiar
 
   void __printstat_quantify(std::ostream &o)
   {
-    uintwide_t total_runs = stats_quantify.lpq.internal + stats_quantify.lpq.external;
+    uintwide_t total_runs = stats_quantify.lpq.total();
     o << indent << bold_on << label << "Quantification" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -360,7 +360,7 @@ namespace adiar
 
   void __printstat_substitute(std::ostream &o)
   {
-    uintwide_t total_runs = stats_substitute.lpq.internal + stats_substitute.lpq.external;
+    uintwide_t total_runs = stats_substitute.lpq.total();
     o << indent << bold_on << label << "Substitution" << bold_off << total_runs << endl;
 
     indent_level++;
