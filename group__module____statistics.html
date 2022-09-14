@@ -122,10 +122,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Statistics on the internal algorithms and data structures. </p>
-<p>Statistics are by default <b>not</b> gathered due to a concern of the performance of Adiar. That is, the logic related to updating the statistics is only run when one or more of the following CMake variables are set to ON.</p><ul>
-<li><code>ADIAR_STATS</code> Only gather statistics that introduce a small constant time overhead to every operation.</li>
-<li><code>ADIAR_STATS_EXTRA</code> Also gathers statistics that introduce a linear-time overhead to all operations. </li>
-</ul>
+<dl class="section pre"><dt>Precondition</dt><dd>Statistics are by default <b>not</b> gathered due to a concern of the performance of Adiar. That is, the logic related to updating the statistics is only run when the <code>ADIAR_STATS</code> CMake variable is set to <code>ON</code>. </dd></dl>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="gab59c0948a168ed8e1742fc1134e376a3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gab59c0948a168ed8e1742fc1134e376a3">&#9670;&nbsp;</a></span>adiar_printstat()</h2>
@@ -144,11 +141,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Print statistics to an output stream (default <code>std::cout</code>). </p>
-<p>Available statistics from algorithm's and data structures. </p><dl class="section remark"><dt>Remarks</dt><dd>These numbers are always available, but they are only populated with actual statistics if Adiar is compiled with certain CMake variables set. Statistics can be gathered on two levels of detail:<ul>
-<li>If <code>ADIAR_STATS</code> is <code>ON</code> then only the low-overhead O(1) statistics are gathered.</li>
-<li>If <code>ADIAR_STATS_EXTRA</code> is <code>ON</code> then also the more detailed statistics requiring a linear time overhead is gathered. </li>
-</ul>
-</dd></dl>
+<p>Available statistics from algorithm's and data structures. </p><dl class="section pre"><dt>Precondition</dt><dd>These numbers are always available, but they are only populated with actual statistics if Adiar is compiled with the <code>ADIAR_STATS</code> CMake variable set to <code>ON</code>. </dd></dl>
 
 </div>
 </div>
@@ -168,11 +161,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Obtain a copy of all statistics gathered. </p>
-<p>Available statistics from algorithm's and data structures. </p><dl class="section remark"><dt>Remarks</dt><dd>These numbers are always available, but they are only populated with actual statistics if Adiar is compiled with certain CMake variables set. Statistics can be gathered on two levels of detail:<ul>
-<li>If <code>ADIAR_STATS</code> is <code>ON</code> then only the low-overhead O(1) statistics are gathered.</li>
-<li>If <code>ADIAR_STATS_EXTRA</code> is <code>ON</code> then also the more detailed statistics requiring a linear time overhead is gathered. </li>
-</ul>
-</dd></dl>
+<p>Available statistics from algorithm's and data structures. </p><dl class="section pre"><dt>Precondition</dt><dd>These numbers are always available, but they are only populated with actual statistics if Adiar is compiled with the <code>ADIAR_STATS</code> CMake variable set to <code>ON</code>. </dd></dl>
 
 </div>
 </div>
