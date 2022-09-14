@@ -3,10 +3,11 @@
 
 #include <string_view>
 
-#include <adiar/data.h>
+#include <adiar/label.h>
 #include <adiar/file.h>
 
 #include <adiar/internal/cnl.h>
+#include <adiar/internal/cut.h>
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/util.h>
 

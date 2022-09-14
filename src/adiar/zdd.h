@@ -17,7 +17,9 @@
 #include <string>
 #include <iostream>
 
-#include <adiar/data.h>
+#include <adiar/label.h>
+#include <adiar/bool_op.h>
+
 #include <adiar/file.h>
 
 #include <adiar/zdd/zdd.h>

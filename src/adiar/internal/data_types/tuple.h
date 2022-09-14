@@ -1,9 +1,9 @@
-#ifndef ADIAR_INTERNAL_TUPLE_H
-#define ADIAR_INTERNAL_TUPLE_H
+#ifndef ADIAR_INTERNAL_DATA_TYPES_TUPLE_H
+#define ADIAR_INTERNAL_DATA_TYPES_TUPLE_H
 
 #include <functional>
 
-#include <adiar/data.h>
+#include <adiar/internal/data_types/uid.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
@@ -148,4 +148,4 @@ namespace adiar {
     }
   };
 }
-#endif // ADIAR_INTERNAL_TUPLE_H
+#endif // ADIAR_INTERNAL_DATA_TYPES_TUPLE_H

@@ -1,7 +1,7 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_INTERCUT_H
 #define ADIAR_INTERNAL_ALGORITHMS_INTERCUT_H
 
-#include <adiar/data.h>
+#include <adiar/label.h>
 
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
@@ -12,6 +12,9 @@
 #include <adiar/internal/cut.h>
 
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
+#include <adiar/internal/data_types/uid.h>
+#include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/arc.h>
 
 namespace adiar
 {

@@ -17,7 +17,9 @@
 #include <string>
 #include <iostream>
 
-#include <adiar/data.h>
+#include <adiar/assignment.h>
+#include <adiar/label.h>
+#include <adiar/bool_op.h>
 #include <adiar/file.h>
 
 #include <adiar/bdd/bdd.h>
@@ -157,9 +159,11 @@ namespace adiar
   ///
   /// \param f  BDD for the left-hand-side of the operator
   /// \param g  BDD for the right-hand-side of the operator
-  /// \param op Binary boolean operator to be applied. See 'adiar/data.h'
+  /// \param op Binary boolean operator to be applied.
   ///
   /// \returns  The product construction of \f$ f \mathbin{\mathit{op}} g\f$
+  ///
+  /// \sa bool_op
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_apply(const bdd &f, const bdd &g, const bool_op &op);
 
@@ -411,7 +415,7 @@ namespace adiar
   /// \brief Whether f and g represent different functions.
   //////////////////////////////////////////////////////////////////////////////
   inline bool bdd_unequal(const bdd& f, const bdd& g)
-    { return !bdd_equal(f, g); }
+  { return !bdd_equal(f, g); }
 
   bool operator!= (const bdd& f, const bdd& g);
   bool operator!= (const bdd &f, __bdd &&g);
@@ -471,12 +475,6 @@ namespace adiar
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief   Function that computs Boolean assignment to variables with given
-  ///          label.
-  //////////////////////////////////////////////////////////////////////////////
-  typedef std::function<bool(label_t)> assignment_func;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \name Input Variables

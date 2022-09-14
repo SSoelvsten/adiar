@@ -9,7 +9,7 @@
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
 
-#include <adiar/data.h>
+#include <adiar/label.h>
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 

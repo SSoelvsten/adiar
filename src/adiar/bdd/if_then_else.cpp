@@ -1,15 +1,19 @@
 #include <adiar/bdd.h>
 
+#include <adiar/label.h>
+
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
-#include <adiar/internal/tuple.h>
 #include <adiar/internal/util.h>
 
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
+
+#include <adiar/internal/data_types/level_info.h>
+#include <adiar/internal/data_types/tuple.h>
 
 #include <adiar/statistics.h>
 

@@ -1,8 +1,9 @@
 #ifndef ADIAR_BDD_BDD_POLICY_H
 #define ADIAR_BDD_BDD_POLICY_H
 
-#include <adiar/data.h>
-#include <adiar/internal/tuple.h>
+#include <adiar/internal/data_types/uid.h>
+#include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/tuple.h>
 
 #include <adiar/bdd/bdd.h>
 

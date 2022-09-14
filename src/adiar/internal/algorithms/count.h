@@ -1,13 +1,16 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_COUNT_H
 #define ADIAR_INTERNAL_ALGORITHMS_COUNT_H
 
-#include <adiar/data.h>
+#include <stdint.h>
+
+#include <adiar/label.h>
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/util.h>
 
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
+#include <adiar/internal/data_types/uid.h>
 
 namespace adiar
 {

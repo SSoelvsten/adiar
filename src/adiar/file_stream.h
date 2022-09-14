@@ -4,12 +4,17 @@
 #include <tpie/tpie.h>
 #include <tpie/sort.h>
 
-#include <adiar/data.h>
+#include <adiar/label.h>
+#include <adiar/assignment.h>
 #include <adiar/file.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/memory.h>
+
+#include <adiar/internal/data_types/arc.h>
+#include <adiar/internal/data_types/level_info.h>
+#include <adiar/internal/data_types/node.h>
 
 namespace adiar
 {

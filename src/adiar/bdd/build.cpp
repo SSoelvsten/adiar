@@ -1,5 +1,6 @@
 #include <adiar/bdd.h>
 
+#include <adiar/label.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
@@ -7,6 +8,9 @@
 #include <adiar/internal/cut.h>
 
 #include <adiar/internal/algorithms/build.h>
+
+#include <adiar/internal/data_types/uid.h>
+#include <adiar/internal/data_types/level_info.h>
 
 namespace adiar
 {

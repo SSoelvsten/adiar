@@ -6,11 +6,12 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
-#include <adiar/internal/tuple.h>
 
 #include <adiar/internal/algorithms/product_construction.h>
 
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
+
+#include <adiar/internal/data_types/tuple.h>
 
 namespace adiar
 {

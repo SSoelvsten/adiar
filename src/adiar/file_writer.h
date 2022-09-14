@@ -3,11 +3,14 @@
 
 #include <tpie/file_stream.h>
 
-#include <adiar/data.h>
+#include <adiar/assignment.h>
+#include <adiar/label.h>
 #include <adiar/file.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
+
+#include <adiar/internal/data_types/level_info.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////

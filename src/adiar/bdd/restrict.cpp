@@ -1,7 +1,7 @@
 #include <adiar/bdd.h>
 #include <adiar/bdd/bdd_policy.h>
 
-#include <adiar/data.h>
+#include <adiar/assignment.h>
 
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
@@ -10,6 +10,8 @@
 #include <adiar/internal/util.h>
 
 #include <adiar/internal/algorithms/substitution.h>
+
+#include <adiar/internal/data_types/node.h>
 
 namespace adiar
 {

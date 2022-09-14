@@ -1,10 +1,13 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_TRAVERSE_H
 #define ADIAR_INTERNAL_ALGORITHMS_TRAVERSE_H
 
-#include <adiar/data.h>
+#include <adiar/label.h>
 
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
+
+#include <adiar/internal/data_types/uid.h>
+#include <adiar/internal/data_types/node.h>
 
 namespace adiar
 {

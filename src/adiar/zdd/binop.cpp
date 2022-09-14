@@ -4,9 +4,8 @@
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/tuple.h>
-
 #include <adiar/internal/algorithms/product_construction.h>
+#include <adiar/internal/data_types/tuple.h>
 
 namespace adiar
 {

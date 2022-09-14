@@ -4,9 +4,7 @@
 
 #include <memory>
 
-#include <adiar/data.h>
 #include <adiar/domain.h>
-#include <adiar/file_stream.h>
 
 #include <adiar/internal/dot.h>
 #include <adiar/internal/util.h>
@@ -14,7 +12,6 @@
 #include <adiar/internal/algorithms/convert.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/algorithms/reduce.h>
-
 
 #include <adiar/bdd/bdd_policy.h>
 #include <adiar/zdd/zdd_policy.h>
