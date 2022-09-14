@@ -97,7 +97,6 @@ set(SOURCES
   internal/levelized_priority_queue.cpp
   internal/quantify.cpp
   internal/reduce.cpp
-  internal/sorter.cpp
   internal/substitution.cpp
 
   # statistics

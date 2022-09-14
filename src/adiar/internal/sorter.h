@@ -111,8 +111,6 @@ namespace adiar {
     }
   };
 
-  extern tpie::dummy_progress_indicator external_sorter_tpie_progress_indicator;
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's external memory sorter, tpie::merge_sorter.
   ///
@@ -244,7 +242,9 @@ namespace adiar {
     void sort()
     {
       _sorter.end();
-      _sorter.calc(external_sorter_tpie_progress_indicator);
+
+      tpie::dummy_progress_indicator dpi { };
+      _sorter.calc(dpi);
     }
 
     bool can_pull()
