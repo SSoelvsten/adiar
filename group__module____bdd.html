@@ -1354,9 +1354,6 @@ DOT Files of BDDs</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">uint64_t adiar::bdd_satcount </td>
@@ -1366,15 +1363,11 @@ DOT Files of BDDs</h2></td></tr>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Count the number of assignments x that make f(x) true. </p>
-<p>Same as <code>bdd_satcount(bdd, varcount)</code>, with varcount set to be <code>varcount(bdd)</code>. </p>
+<p>Same as <code>bdd_satcount(bdd, varcount)</code>, with varcount set to be the size of the global domain or the number of variables within the given BDD.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____domain.html#gaa144e758b4894b73d75b495f4a8c25b2" title="Set the domain globally for all of Adiar.">adiar_set_domain</a> <a class="el" href="group__module____bdd.html#gada7f39e10463b578239fdc0e5c86cd8b" title="The number of variables that influence the outcome of f, i.e. the number of levels in the BDD.">bdd_varcount</a> </dd></dl>
 
 </div>
 </div>
