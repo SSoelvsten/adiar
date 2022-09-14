@@ -13,7 +13,7 @@
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 
 #include <adiar/internal/data_types/level_info.h>
-#include <adiar/internal/data_types/tuple.h>
+#include <adiar/internal/data_types/triple.h>
 
 #include <adiar/statistics.h>
 
