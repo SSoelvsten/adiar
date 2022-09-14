@@ -4,12 +4,13 @@ go_bandit([]() {
   describe("adiar/dot.h", [&]() {
     it("can output .dot for a terminal-only BDD", [&]() {
       bdd terminal_T = bdd_terminal(true);
-      output_dot(terminal_T, "dot_test_terminal.dot");
-      int exit_value = system("dot -O -Tpng dot_test_terminal.dot");
+
+      bdd_printdot(terminal_T, "dot_test_terminal_T.dot");
+      int exit_value = system("dot -O -Tpng dot_test_terminal_T.dot");
       AssertThat(exit_value, Is().EqualTo(0));
     });
 
-    it("can output .dot for a reduced BDD with internal nodes", [&]() {
+    it("can output .dot for a BDD with internal nodes", [&]() {
       node_file reduced_bdd;
 
       { // Garbage collect writer early
@@ -22,12 +23,37 @@ go_bandit([]() {
           ;
       }
 
-      output_dot(reduced_bdd, "dot_test_reduced.dot");
-      int exit_value = system("dot -O -Tpng dot_test_reduced.dot");
+      bdd_printdot(reduced_bdd, "dot_test_bdd.dot");
+      int exit_value = system("dot -O -Tpng dot_test_bdd.dot");
       AssertThat(exit_value, Is().EqualTo(0));
     });
 
-    it("can output a reduced BDD with internal nodes", [&]() {
+    it("can output .dot for a terminal-only ZDD", [&]() {
+      zdd terminal_F = zdd_empty();
+
+      zdd_printdot(terminal_F, "dot_test_terminal_F.dot");
+      int exit_value = system("dot -O -Tpng dot_test_terminal_F.dot");
+      AssertThat(exit_value, Is().EqualTo(0));
+    });
+
+    it("can output .dot for a ZDD with internal nodes", [&]() {
+      node_file reduced_zdd;
+
+      { // Garbage collect writer early
+        node_writer rw(reduced_zdd);
+
+        rw << create_node(42,0, create_terminal_ptr(false), create_terminal_ptr(true))
+           << create_node(1,2, create_node_ptr(42,0), create_node_ptr(42,0))
+           << create_node(0,1, create_node_ptr(1,2), create_terminal_ptr(true))
+          ;
+      }
+
+      zdd_printdot(reduced_zdd, "dot_test_zdd.dot");
+      int exit_value = system("dot -O -Tpng dot_test_zdd.dot");
+      AssertThat(exit_value, Is().EqualTo(0));
+    });
+
+    it("can output an unreduced diagram [internal API]", [&]() {
       arc_file unreduced_bdd;
 
       { // Garbage collect writer early

@@ -583,10 +583,9 @@ namespace adiar
   /// \{
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Output a DOT drawing a decision diagram to an output stream or a
-  ///        file with the given file name.
+  /// \brief Output a DOT drawing of a BDD to the file with the given name.
   //////////////////////////////////////////////////////////////////////////////
-  void output_dot(const bdd &f, const std::string &file_name);
+  void bdd_printdot(const bdd &f, const std::string &file_name);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
