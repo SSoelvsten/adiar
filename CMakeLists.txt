@@ -10,7 +10,7 @@ endif()
 
 cmake_minimum_required(VERSION 3.10)
 project (adiar
-  VERSION 1.2.0
+  VERSION 1.2.1
   DESCRIPTION "Adiar, an external memory decision diagram library"
   HOMEPAGE_URL "https://ssoelvsten.github.io/adiar/"
   LANGUAGES CXX
