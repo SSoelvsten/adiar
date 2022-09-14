@@ -1,3 +1,36 @@
+# v1.2.1
+
+**Date: 14th of September, 2022**
+
+## Bug Fixes
+
+- `adiar_printstats()`
+  Makes sure to print levelized priority queue statistics, when only the unbucketed priority queue has been used.
+
+## Deprecations
+
+- *adiar/bdd.h*
+  - `output_dot(bdd f, std::string file_name)` -> `bdd_printdot(bdd f, std::string file_name)`
+- *adiar/zdd.h*
+  - `output_dot(zdd A, std::string file_name)` -> `zdd_printdot(zdd A, std::string file_name)`
+
+## Binary Decision Diagrams
+
+- `bdd_satcount(bdd f)`
+  If the global domain is set, then that value will take precedence over the number of levels in *f* (assuming *f* has fewer levels than the domain claims to exist).
+- `bdd_printdot(bdd f, std::ostream out)`
+  Added to allow more flexibility when outputting DOT files. 
+
+## Zero-suppressed Decision Diagrams
+
+- `zdd_printdot(zdd A, std::ostream out)`
+  Added to allow more flexibility when outputting DOT files. 
+
+## Documentation
+
+Instead of separate Markdown files, the documentation is generated directly from the C++ codebase with Doxygen. You can generate the documentation (assuming Doxygen is intalled) with the `docs` Makefile target.
+
+
 # v1.2.0
 
 **Date: 29th of July, 2022**
@@ -97,6 +130,7 @@ The *terminal predicates* `is_any`, `is_true` and `is_false` with the prior `is_
 - *adiar/zdd.h*
   - `is_sink(zdd A)`, `is_null(zdd A)` and `is_empty(zdd A)`.
 
+
 # v1.1.0
 
 **Date: 25th of January, 2022**
@@ -147,6 +181,7 @@ Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics abo
 
 - `stats_t adiar_stats()` to obtain a copy of the raw data values.
 - `void adiar_printstat(std::ostream)` to print all statistics to an output stream.
+
 
 # v1.0.1
 
