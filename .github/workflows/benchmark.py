@@ -95,7 +95,9 @@ def repetitions_for(n):
         return 1
 
 def run_queens(n):
-    out_txt = capture_subprocess_output(['make', 'example/queens', 'N='+str(n), 'M=8096'])[1]
+    (out_success, out_txt) = capture_subprocess_output(['make', 'example/queens', 'N='+str(n), 'M=8096'])
+    if not out_success:
+        exit(255);
 
     matches = re.findall("time:\s*([0-9\.]+)\s*s", out_txt)
     timing = sum([float(t) for t in matches])
