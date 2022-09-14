@@ -73,6 +73,16 @@ namespace adiar
   { return bdd_terminal(value); }
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Output a DOT drawing a decision diagram to an output stream or a
+  ///        file with the given file name.
+  ///
+  /// \sa    bdd_printdot
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by bdd_printdot in 'adiar/bdd.h'")]]
+  inline void output_dot(const bdd &f, const std::string &file_name)
+  { return bdd_printdot(f, file_name); }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief       The ZDD of only a single sink.
   ///
   /// \param value The constant sink value.
@@ -82,6 +92,15 @@ namespace adiar
   [[deprecated("Replaced by zdd_terminal in 'adiar/zdd.h'")]]
   inline zdd zdd_sink(bool value)
   { return zdd_terminal(value); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Output a DOT drawing of a ZDD to the file with the given name.
+  ///
+  /// \sa zdd_printdot
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by zdd_printdot in 'adiar/zdd.h'")]]
+  inline void output_dot(const zdd &A, const std::string &file_name)
+  { return zdd_printdot(A, file_name); }
 
   // LCOV_EXCL_STOP
 }
