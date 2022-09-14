@@ -7,10 +7,10 @@
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/decision_diagram.h>
-#include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/tuple.h>
 
 #include <adiar/internal/algorithms/product_construction.h>
+#include <adiar/internal/data_structures/levelized_priority_queue.h>
 
 namespace adiar
 {

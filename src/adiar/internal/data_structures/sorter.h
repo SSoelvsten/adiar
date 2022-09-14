@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_SORTER_H
-#define ADIAR_INTERNAL_SORTER_H
+#ifndef ADIAR_INTERNAL_DATA_STRUCTURES_SORTER_H
+#define ADIAR_INTERNAL_DATA_STRUCTURES_SORTER_H
 
 #include <string>
 #include <math.h>
@@ -273,4 +273,4 @@ namespace adiar {
   using external_sorter = sorter<memory::EXTERNAL, elem_t, comp_t>;
 }
 
-#endif // ADIAR_INTERNAL_SORTER_H
+#endif // ADIAR_INTERNAL_DATA_STRUCTURES_SORTER_H

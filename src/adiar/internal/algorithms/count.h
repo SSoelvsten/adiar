@@ -5,8 +5,9 @@
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/util.h>
+
+#include <adiar/internal/data_structures/levelized_priority_queue.h>
 
 namespace adiar
 {

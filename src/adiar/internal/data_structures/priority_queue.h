@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_PRIORITY_QUEUE_H
-#define ADIAR_INTERNAL_PRIORITY_QUEUE_H
+#ifndef ADIAR_INTERNAL_DATA_STRUCTURES_PRIORITY_QUEUE_H
+#define ADIAR_INTERNAL_DATA_STRUCTURES_PRIORITY_QUEUE_H
 
 #include <functional>
 
@@ -120,4 +120,4 @@ namespace adiar
   using external_priority_queue = priority_queue<memory::EXTERNAL, elem_t, comp_t>;
 }
 
-#endif // ADIAR_INTERNAL_PRIORITY_QUEUE_H
+#endif // ADIAR_INTERNAL_DATA_STRUCTURES_PRIORITY_QUEUE_H

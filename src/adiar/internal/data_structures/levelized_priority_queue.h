@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_LEVELIZED_PRIORITY_QUEUE_H
-#define ADIAR_INTERNAL_LEVELIZED_PRIORITY_QUEUE_H
+#ifndef ADIAR_INTERNAL_DATA_STRUCTURES_LEVELIZED_PRIORITY_QUEUE_H
+#define ADIAR_INTERNAL_DATA_STRUCTURES_LEVELIZED_PRIORITY_QUEUE_H
 
 #include <limits>
 
@@ -15,9 +15,10 @@
 
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/memory.h>
-#include <adiar/internal/priority_queue.h>
-#include <adiar/internal/sorter.h>
 #include <adiar/internal/util.h>
+
+#include <adiar/internal/data_structures/priority_queue.h>
+#include <adiar/internal/data_structures/sorter.h>
 
 #include <adiar/statistics.h>
 
@@ -1383,4 +1384,4 @@ namespace adiar {
                                                                   INIT_LEVEL>;
 }
 
-#endif // ADIAR_INTERNAL_LEVELIZED_PRIORITY_QUEUE_H
+#endif // ADIAR_INTERNAL_DATA_STRUCTURES_LEVELIZED_PRIORITY_QUEUE_H

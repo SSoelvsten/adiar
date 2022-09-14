@@ -4,8 +4,6 @@
 
 #include <adiar/bdd/if_then_else.h>
 
-#include <adiar/internal/levelized_priority_queue.h>
-
 #include <adiar/internal/algorithms/count.h>
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/algorithms/intercut.h>
@@ -13,6 +11,8 @@
 #include <adiar/internal/algorithms/product_construction.h>
 #include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/algorithms/substitution.h>
+
+#include <adiar/internal/data_structures/levelized_priority_queue.h>
 
 namespace adiar
 {
