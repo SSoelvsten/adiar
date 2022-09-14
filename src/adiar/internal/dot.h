@@ -11,11 +11,8 @@
 
 namespace adiar {
   template <typename T>
-  void output_dot(const T& nodes, const std::string &filename)
+  void output_dot(const T& nodes, std::ostream &out)
   {
-    std::ofstream out;
-    out.open(filename);
-
     out << "digraph BDD {" << std::endl;
 
     node_stream<> ns(nodes);
@@ -76,6 +73,15 @@ namespace adiar {
       }
     }
     out << "}" << std::endl;
+  }
+
+  template <typename T>
+  void output_dot(const T& nodes, const std::string &filename)
+  {
+    std::ofstream out;
+    out.open(filename);
+
+    output_dot(nodes, out);
     out.close();
   }
 

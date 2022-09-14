@@ -153,6 +153,11 @@ namespace adiar {
 
   //////////////////////////////////////////////////////////////////////////////
   // Debug
+  void bdd_printdot(const bdd &f, std::ostream &out)
+  {
+    output_dot<bdd>(f, out);
+  }
+
   void bdd_printdot(const bdd &f, const std::string &file_name)
   {
     output_dot<bdd>(f, file_name);

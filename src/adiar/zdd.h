@@ -15,6 +15,7 @@
 
 #include <optional>
 #include <string>
+#include <iostream>
 
 #include <adiar/data.h>
 #include <adiar/file.h>
@@ -454,6 +455,11 @@ namespace adiar
   /// \name Dot Files of ZDDs
   ///
   /// \{
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Output a DOT drawing of a ZDD to the given output stream.
+  //////////////////////////////////////////////////////////////////////////////
+  void zdd_printdot(const zdd &A, std::ostream &out = std::cout);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Output a DOT drawing of a ZDD to the file with the given name.

@@ -186,6 +186,11 @@ namespace adiar {
 
   //////////////////////////////////////////////////////////////////////////////
   // Debug
+  void zdd_printdot(const zdd &A, std::ostream &out)
+  {
+    output_dot<zdd>(A, out);
+  }
+
   void zdd_printdot(const zdd &A, const std::string &file_name)
   {
     output_dot<zdd>(A, file_name);
