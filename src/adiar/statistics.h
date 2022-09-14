@@ -6,17 +6,10 @@
 ///
 /// \brief Statistics on the internal algorithms and data structures.
 ///
-/// \details
-///   Statistics are by default **not** gathered due to a concern of the
-///   performance of Adiar. That is, the logic related to updating the
-///   statistics is only run when one or more of the following CMake variables
-///   are set to ON.
-///   - `ADIAR_STATS`
-///     Only gather statistics that introduce a small constant time overhead to
-///     every operation.
-///   - `ADIAR_STATS_EXTRA`
-///     Also gathers statistics that introduce a linear-time overhead to all
-///     operations.
+/// \pre Statistics are by default **not** gathered due to a concern of the
+///      performance of Adiar. That is, the logic related to updating the
+///      statistics is only run when the `ADIAR_STATS` CMake variable is set to
+///      `ON`.
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -34,14 +27,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Available statistics from algorithm's and data structures.
   ///
-  /// \remark These numbers are always available, but they are only populated
-  ///         with actual statistics if Adiar is compiled with certain CMake
-  ///         variables set. Statistics can be gathered on two levels of
-  ///         detail:
-  ///         - If `ADIAR_STATS` is `ON` then only the low-overhead O(1)
-  ///           statistics are gathered.
-  ///         - If `ADIAR_STATS_EXTRA` is `ON` then also the more detailed
-  ///           statistics requiring a linear time overhead is gathered.
+  /// \pre These numbers are always available, but they are only populated
+  ///      with actual statistics if Adiar is compiled with the `ADIAR_STATS`
+  ///      CMake variable set to `ON`.
   //////////////////////////////////////////////////////////////////////////////
   struct stats_t
   {
@@ -52,15 +40,11 @@ namespace adiar
     {
       //////////////////////////////////////////////////////////////////////////
       /// \brief Number of pushes in the *bucketed* variant to a bucket.
-      ///
-      /// \pre `ADIAR_STATS_EXTRA`
       //////////////////////////////////////////////////////////////////////////
       uintwide_t push_bucket = 0;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Number of pushes in the *bucketed* variant to the overflow queue.
-      ///
-      /// \pre `ADIAR_STATS_EXTRA`
       //////////////////////////////////////////////////////////////////////////
       uintwide_t push_overflow = 0;
 
@@ -68,8 +52,6 @@ namespace adiar
       /// \brief The sum over all levelized priority queue's predicted maximum
       /// size, i.e. \f$ \sum_{\mathit{pq} \in \mathit{PQ}}
       /// \mathit{pq}.\mathit{predicted\_size} \f$
-      ///
-      /// \pre `ADIAR_STATS_EXTRA`
       ///
       /// \see sum_actual_max_size
       //////////////////////////////////////////////////////////////////////////
@@ -80,8 +62,6 @@ namespace adiar
       /// \f$ \sum_{\mathit{pq} \in \mathit{PQ}} \mathit{pq}.\mathit{max\_size}
       /// \f$
       ///
-      /// \pre `ADIAR_STATS_EXTRA`
-      ///
       /// \see sum_predicted_max_size
       //////////////////////////////////////////////////////////////////////////
       uintwide_t sum_actual_max_size = 0;
@@ -91,16 +71,12 @@ namespace adiar
       /// i.e. \f$ \sum_{\mathit{pq} \in \mathit{PQ}}
       /// \frac{\mathit{pq}.\mathit{max\_size}}{\mathit{pq}.\mathit{predicted\_size}}
       /// \f$.
-      ///
-      /// \pre `ADIAR_STATS_EXTRA`
       //////////////////////////////////////////////////////////////////////////
       double sum_max_size_ratio = 0.0;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Number of calls to the destructor, i.e. the total number of
       /// levelized priority queues that have reported their statistics.
-      ///
-      /// \pre `ADIAR_STATS_EXTRA`
       //////////////////////////////////////////////////////////////////////////
       size_t sum_destructors = 0;
     }
@@ -121,29 +97,21 @@ namespace adiar
       {
         ////////////////////////////////////////////////////////////////////////
         /// \brief Number of *unbucketed internal* levelized priority queues.
-        ///
-        /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t unbucketed = 0;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Number of *bucketed internal* levelized priority queues.
-        ///
-        /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t internal = 0;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Number of *bucketed external* levelized priority queues.
-        ///
-        /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t external = 0;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Total number of levelized priority queues.
-        ///
-        /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t total() const
         {
@@ -178,38 +146,28 @@ namespace adiar
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Early *O(1)* termination due to same \ref node_file.
-      ///
-      /// \pre   `ADIAR_STATS`
       //////////////////////////////////////////////////////////////////////////
       uintwide_t exit_on_same_file = 0;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Early *O(1)* termination due to mismatch in number of nodes.
-      ///
-      /// \pre   `ADIAR_STATS`
       //////////////////////////////////////////////////////////////////////////
       uintwide_t exit_on_nodecount = 0;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Early *O(1)* termination due to mismatch in number of levels.
-      ///
-      /// \pre   `ADIAR_STATS`
       //////////////////////////////////////////////////////////////////////////
       uintwide_t exit_on_varcount = 0;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Early *O(1)* termination due to mismatch in number of arcs to
       ///        terminals.
-      ///
-      /// \pre   `ADIAR_STATS`
       //////////////////////////////////////////////////////////////////////////
       uintwide_t exit_on_terminalcount = 0;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief Early *O(L)* termination due to per-level meta information does
       ///        not match.
-      ///
-      /// \pre   `ADIAR_STATS`
       //////////////////////////////////////////////////////////////////////////
       uintwide_t exit_on_levels_mismatch = 0;
 
@@ -221,31 +179,23 @@ namespace adiar
       {
         ////////////////////////////////////////////////////////////////////////
         /// \brief Number of runs of the slow isomorphism checking algorithm.
-        ///
-        /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t runs = 0;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Termination due to a local violation at the root.
-        ///
-        /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t exit_on_root = 0;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Termination due to too many requests being processed at some
         ///        level, i.e. one node must have been paired with two or more.
-        ///
-        /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t exit_on_processed_on_level = 0;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Termination due to mismatch in a node's children's level,
         ///        i.e. a local violation at some node.
-        ///
-        /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t exit_on_children = 0;
       }
@@ -261,15 +211,11 @@ namespace adiar
       {
         ////////////////////////////////////////////////////////////////////////
         /// \brief Number of runs of the fast isomorphism algorithm.
-        ///
-        /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t runs = 0;
 
         ////////////////////////////////////////////////////////////////////////
         /// \brief Termination due to the i'th nodes do not match numerically.
-        ///
-        /// \pre   `ADIAR_STATS`
         ////////////////////////////////////////////////////////////////////////
         uintwide_t exit_on_mismatch = 0;
       }
@@ -341,15 +287,11 @@ namespace adiar
     {
       ////////////////////////////////////////////////////////////////////////
       /// \brief Sum of the inputs' number of arcs to internal nodes.
-      ///
-      /// \pre   `ADIAR_STATS`
       ////////////////////////////////////////////////////////////////////////
       uintwide_t sum_node_arcs = 0;
 
       ////////////////////////////////////////////////////////////////////////
       /// \brief Sum of the inputs' number of arcs to terminals.
-      ///
-      /// \pre   `ADIAR_STATS`
       ////////////////////////////////////////////////////////////////////////
       uintwide_t sum_terminal_arcs = 0;
 
@@ -357,16 +299,12 @@ namespace adiar
       /// \brief Number of nodes removed due to reduction rule 1, i.e. the
       ///        number of nodes that are suppressed in the specific type of
       ///        decision diagram.
-      ///
-      /// \pre   `ADIAR_STATS_EXTRA`
       ////////////////////////////////////////////////////////////////////////
       uintwide_t removed_by_rule_1 = 0;
 
       ////////////////////////////////////////////////////////////////////////
       /// \brief Number of nodes removed due to reduction rule 2, i.e. the
       ///        number of duplicate of nodes that have been removed.
-      ///
-      /// \pre   `ADIAR_STATS_EXTRA`
       ////////////////////////////////////////////////////////////////////////
       uintwide_t removed_by_rule_2 = 0;
     }

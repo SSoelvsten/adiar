@@ -381,7 +381,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     priority_queue_t _overflow_queue;
 
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The actual maximum size of the levelized priority queue.
     ////////////////////////////////////////////////////////////////////////////
@@ -409,7 +409,7 @@ namespace adiar {
         _memory_occupied_by_merger(memory::available()),
         _memory_occupied_by_overflow(m_overflow_queue(memory_given)),
         _overflow_queue(m_overflow_queue(memory_given), max_size)
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
       , _stats(stats)
 #endif
     { }
@@ -493,7 +493,7 @@ namespace adiar {
   public:
     ~levelized_priority_queue()
     {
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
       stats_levelized_priority_queue.sum_predicted_max_size += _max_size;
       _stats.sum_predicted_max_size += _max_size;
 
@@ -571,7 +571,7 @@ namespace adiar {
                   "There is at least one pushable bucket (i.e. level)");
 
       _size++;
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
       _actual_max_size = std::max(_actual_max_size, _size);
 #endif
 
@@ -581,7 +581,7 @@ namespace adiar {
 
         if (_buckets_level[bucket_idx] == level) {
           _buckets_sorter[bucket_idx] -> push(e);
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
           stats_levelized_priority_queue.push_bucket++;
           _stats.push_bucket++;
 #endif
@@ -589,7 +589,7 @@ namespace adiar {
         }
       } while (bucket_offset <= pushable_buckets);
 
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
       stats_levelized_priority_queue.push_overflow++;
       _stats.push_overflow++;
 #endif
@@ -1049,7 +1049,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     priority_queue_t _priority_queue;
 
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The actual maximum size of the levelized priority queue.
     ////////////////////////////////////////////////////////////////////////////
@@ -1067,7 +1067,7 @@ namespace adiar {
       : _max_size(max_size),
         _memory_given(memory_given),
         _priority_queue(memory_given, max_size)
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
       , _stats(stats)
 #endif
     { }
@@ -1104,7 +1104,7 @@ namespace adiar {
   public:
     ~levelized_priority_queue()
     {
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
       stats_levelized_priority_queue.sum_predicted_max_size += _max_size;
       _stats.sum_predicted_max_size += _max_size;
 
@@ -1173,7 +1173,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     void push(const elem_t &e)
     {
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
       _actual_max_size = std::max(_actual_max_size, _priority_queue.size());
 #endif
       _priority_queue.push(e);
