@@ -356,44 +356,19 @@ Conversion to ZDDs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 Dot Files of ZDDs</h2></td></tr>
-<tr class="memitem:gae4a0f37cd21d3b70a9e5667b1b7775f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gae4a0f37cd21d3b70a9e5667b1b7775f2">adiar::output_dot</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, const std::string &amp;file_name)</td></tr>
-<tr class="memdesc:gae4a0f37cd21d3b70a9e5667b1b7775f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a DOT drawing a decision diagram to an output stream or a file with the given file name.  <a href="group__module____zdd.html#gae4a0f37cd21d3b70a9e5667b1b7775f2">More...</a><br /></td></tr>
-<tr class="separator:gae4a0f37cd21d3b70a9e5667b1b7775f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0a6264d2caaeb6d5d92f6339e6d46794"><td class="memItemLeft" align="right" valign="top"><a id="ga0a6264d2caaeb6d5d92f6339e6d46794"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#ga0a6264d2caaeb6d5d92f6339e6d46794">adiar::zdd_printdot</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, std::ostream &amp;out=std::cout)</td></tr>
+<tr class="memdesc:ga0a6264d2caaeb6d5d92f6339e6d46794"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a DOT drawing of a ZDD to the given output stream. <br /></td></tr>
+<tr class="separator:ga0a6264d2caaeb6d5d92f6339e6d46794"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaed1a53d77ed12f78e3b26a355e4b3270"><td class="memItemLeft" align="right" valign="top"><a id="gaed1a53d77ed12f78e3b26a355e4b3270"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____zdd.html#gaed1a53d77ed12f78e3b26a355e4b3270">adiar::zdd_printdot</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, const std::string &amp;file_name)</td></tr>
+<tr class="memdesc:gaed1a53d77ed12f78e3b26a355e4b3270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a DOT drawing of a ZDD to the file with the given name. <br /></td></tr>
+<tr class="separator:gaed1a53d77ed12f78e3b26a355e4b3270"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>A Zero-suppressed Decision Diagram (ZDD) represents a family of a set of \( n \) numbers, i.e. an \( S \subseteq 2^{\{ 0, 1, \dots, n-1 \}} \). </p>
 <p>The <a class="el" href="classadiar_1_1zdd.html">zdd</a> class takes care of reference counting and optimal garbage collection of the underlying files. To ensure the most disk-space is available, try to garbage collect the <a class="el" href="classadiar_1_1zdd.html">zdd</a> objects as quickly as possible and/or minimise the number of lvalues of said type. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="gae4a0f37cd21d3b70a9e5667b1b7775f2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae4a0f37cd21d3b70a9e5667b1b7775f2">&#9670;&nbsp;</a></span>output_dot()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void adiar::output_dot </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;&#160;</td>
-          <td class="paramname"><em>A</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>file_name</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Output a DOT drawing a decision diagram to an output stream or a file with the given file name. </p>
-
-</div>
-</div>
 <a id="gabe38fcc7812544a97938aa268197edbe"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gabe38fcc7812544a97938aa268197edbe">&#9670;&nbsp;</a></span>zdd_binop()</h2>
 

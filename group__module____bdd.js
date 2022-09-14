@@ -71,6 +71,8 @@ var group__module____bdd =
     [ "bdd_or", "group__module____bdd.html#ga2365280db0d941e3e5c8fb0ce0ace5a8", null ],
     [ "bdd_or", "group__module____bdd.html#gac560c8b597939f9f6269258886779082", null ],
     [ "bdd_pathcount", "group__module____bdd.html#gadd0becff66aaae9313c29248bc33750e", null ],
+    [ "bdd_printdot", "group__module____bdd.html#ga6d90eaeecbd46adb5df806055fa6aacd", null ],
+    [ "bdd_printdot", "group__module____bdd.html#ga971dd2bbea45d61a3603c339a918e0ee", null ],
     [ "bdd_restrict", "group__module____bdd.html#gabdc5403ff794e2d76b12a5e3c95dc3e9", null ],
     [ "bdd_satcount", "group__module____bdd.html#gadbcca4521c9ab9cf4e5b8a31cb99f346", null ],
     [ "bdd_satcount", "group__module____bdd.html#gae9b6600dba11025f628323ff5e697666", null ],
@@ -82,6 +84,5 @@ var group__module____bdd =
     [ "bdd_varcount", "group__module____bdd.html#gada7f39e10463b578239fdc0e5c86cd8b", null ],
     [ "bdd_varprofile", "group__module____bdd.html#ga5d1689d5f0424463270e60e9175e5488", null ],
     [ "bdd_xnor", "group__module____bdd.html#gaa0fd42b5dee7d8fc285f9ccd8ba0c4a0", null ],
-    [ "bdd_xor", "group__module____bdd.html#ga65d9fd1b95db525159c59d921418850a", null ],
-    [ "output_dot", "group__module____bdd.html#ga8f9be3cba03c126cc7fa3467d0341a19", null ]
+    [ "bdd_xor", "group__module____bdd.html#ga65d9fd1b95db525159c59d921418850a", null ]
 ];

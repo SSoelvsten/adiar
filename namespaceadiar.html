@@ -586,9 +586,15 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:ac79eed9b20612ad19bd51420f966adae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#ac79eed9b20612ad19bd51420f966adae">bdd_sink</a> (bool value)</td></tr>
 <tr class="memdesc:ac79eed9b20612ad19bd51420f966adae"><td class="mdescLeft">&#160;</td><td class="mdescRight">The BDD representing a constant value.  <a href="namespaceadiar.html#ac79eed9b20612ad19bd51420f966adae">More...</a><br /></td></tr>
 <tr class="separator:ac79eed9b20612ad19bd51420f966adae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f9be3cba03c126cc7fa3467d0341a19"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a8f9be3cba03c126cc7fa3467d0341a19">output_dot</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const std::string &amp;file_name)</td></tr>
+<tr class="memdesc:a8f9be3cba03c126cc7fa3467d0341a19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a DOT drawing a decision diagram to an output stream or a file with the given file name.  <a href="namespaceadiar.html#a8f9be3cba03c126cc7fa3467d0341a19">More...</a><br /></td></tr>
+<tr class="separator:a8f9be3cba03c126cc7fa3467d0341a19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ba6a63e9aed2a686d61c3eb2de50fe0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1zdd.html">zdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a2ba6a63e9aed2a686d61c3eb2de50fe0">zdd_sink</a> (bool value)</td></tr>
 <tr class="memdesc:a2ba6a63e9aed2a686d61c3eb2de50fe0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The ZDD of only a single sink.  <a href="namespaceadiar.html#a2ba6a63e9aed2a686d61c3eb2de50fe0">More...</a><br /></td></tr>
 <tr class="separator:a2ba6a63e9aed2a686d61c3eb2de50fe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4a0f37cd21d3b70a9e5667b1b7775f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#ae4a0f37cd21d3b70a9e5667b1b7775f2">output_dot</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, const std::string &amp;file_name)</td></tr>
+<tr class="memdesc:ae4a0f37cd21d3b70a9e5667b1b7775f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a DOT drawing of a ZDD to the file with the given name.  <a href="namespaceadiar.html#ae4a0f37cd21d3b70a9e5667b1b7775f2">More...</a><br /></td></tr>
+<tr class="separator:ae4a0f37cd21d3b70a9e5667b1b7775f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa144e758b4894b73d75b495f4a8c25b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#gaa144e758b4894b73d75b495f4a8c25b2">adiar_set_domain</a> (const <a class="el" href="namespaceadiar.html#a9bf731961ab9b07e92cc18bc4af547b5">label_file</a> &amp;dom)</td></tr>
 <tr class="memdesc:gaa144e758b4894b73d75b495f4a8c25b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the domain globally for all of Adiar.  <a href="group__module____domain.html#gaa144e758b4894b73d75b495f4a8c25b2">More...</a><br /></td></tr>
 <tr class="separator:gaa144e758b4894b73d75b495f4a8c25b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1559,6 +1565,84 @@ template&lt;typename T &gt; </div>
 
 <p>Convert a wide integer to a string and push to an output stream. </p>
 <p>TODO: move into 'adiar/internal/cnl.h' </p>
+
+</div>
+</div>
+<a id="a8f9be3cba03c126cc7fa3467d0341a19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f9be3cba03c126cc7fa3467d0341a19">&#9670;&nbsp;</a></span>output_dot() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void adiar::output_dot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>file_name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Output a DOT drawing a decision diagram to an output stream or a file with the given file name. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#ga971dd2bbea45d61a3603c339a918e0ee" title="Output a DOT drawing of a BDD to the given output stream.">bdd_printdot</a> </dd></dl>
+
+</div>
+</div>
+<a id="ae4a0f37cd21d3b70a9e5667b1b7775f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4a0f37cd21d3b70a9e5667b1b7775f2">&#9670;&nbsp;</a></span>output_dot() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void adiar::output_dot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>file_name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Output a DOT drawing of a ZDD to the file with the given name. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____zdd.html#ga0a6264d2caaeb6d5d92f6339e6d46794" title="Output a DOT drawing of a ZDD to the given output stream.">zdd_printdot</a> </dd></dl>
 
 </div>
 </div>

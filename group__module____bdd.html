@@ -331,9 +331,14 @@ Conversion to BDDs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="member-group"></a>
 DOT Files of BDDs</h2></td></tr>
-<tr class="memitem:ga8f9be3cba03c126cc7fa3467d0341a19"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga8f9be3cba03c126cc7fa3467d0341a19">adiar::output_dot</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const std::string &amp;file_name)</td></tr>
-<tr class="memdesc:ga8f9be3cba03c126cc7fa3467d0341a19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a DOT drawing a decision diagram to an output stream or a file with the given file name.  <a href="group__module____bdd.html#ga8f9be3cba03c126cc7fa3467d0341a19">More...</a><br /></td></tr>
-<tr class="separator:ga8f9be3cba03c126cc7fa3467d0341a19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga971dd2bbea45d61a3603c339a918e0ee"><td class="memItemLeft" align="right" valign="top"><a id="ga971dd2bbea45d61a3603c339a918e0ee"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga971dd2bbea45d61a3603c339a918e0ee">adiar::bdd_printdot</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, std::ostream &amp;out=std::cout)</td></tr>
+<tr class="memdesc:ga971dd2bbea45d61a3603c339a918e0ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a DOT drawing of a BDD to the given output stream. <br /></td></tr>
+<tr class="separator:ga971dd2bbea45d61a3603c339a918e0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6d90eaeecbd46adb5df806055fa6aacd"><td class="memItemLeft" align="right" valign="top"><a id="ga6d90eaeecbd46adb5df806055fa6aacd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga6d90eaeecbd46adb5df806055fa6aacd">adiar::bdd_printdot</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const std::string &amp;file_name)</td></tr>
+<tr class="memdesc:ga6d90eaeecbd46adb5df806055fa6aacd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a DOT drawing of a BDD to the file with the given name. <br /></td></tr>
+<tr class="separator:ga6d90eaeecbd46adb5df806055fa6aacd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>A Binary Decision Diagram (BDD) represents a boolean function \( \{ 0,1 \}^n \rightarrow \{ 0,1 \} \) over a finite domain of \( n \) boolean input variables. </p>
@@ -1578,36 +1583,6 @@ DOT Files of BDDs</h2></td></tr>
 <p>Logical 'xor' operator. </p>
 <dl class="section return"><dt>Returns</dt><dd>\( f \oplus g \)</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
-
-</div>
-</div>
-<a id="ga8f9be3cba03c126cc7fa3467d0341a19"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga8f9be3cba03c126cc7fa3467d0341a19">&#9670;&nbsp;</a></span>output_dot()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void adiar::output_dot </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>file_name</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Output a DOT drawing a decision diagram to an output stream or a file with the given file name. </p>
 
 </div>
 </div>

@@ -48,7 +48,7 @@ var NAVTREE =
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
-        [ "All", "namespacemembers.html", null ],
+        [ "All", "namespacemembers.html", "namespacemembers_dup" ],
         [ "Functions", "namespacemembers_func.html", null ],
         [ "Variables", "namespacemembers_vars.html", null ],
         [ "Typedefs", "namespacemembers_type.html", null ]
@@ -76,7 +76,7 @@ var NAVTREEINDEX =
 [
 "adiar_8h_source.html",
 "classadiar_1_1node__writer.html#a962af0398795ecce75101374a12021b0",
-"structadiar_1_1node.html#afd3945335b80388bee4311a3a5e093dd"
+"structadiar_1_1FILE__CONSTANTS_3_01node__t_01_4_1_1stats.html#a2185a10e4d12fc907f03b328d485ef71"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
