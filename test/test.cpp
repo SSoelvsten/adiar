@@ -131,14 +131,14 @@ namespace snowhouse
 
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR Internal unit tests
-#include "adiar/internal/test_levelized_priority_queue.cpp"
-
 #include "adiar/internal/test_dot.cpp"
 #include "adiar/internal/test_util.cpp"
 
 #include "adiar/internal/algorithms/test_convert.cpp"
 #include "adiar/internal/algorithms/test_isomorphism.cpp"
 #include "adiar/internal/algorithms/test_reduce.cpp"
+
+#include "adiar/internal/data_structures/test_levelized_priority_queue.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR BDD unit tests

@@ -7,9 +7,10 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
-#include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/memory.h>
-#include <adiar/internal/sorter.h>
+
+#include <adiar/internal/data_structures/levelized_priority_queue.h>
+#include <adiar/internal/data_structures/sorter.h>
 
 #include <adiar/statistics.h>
 

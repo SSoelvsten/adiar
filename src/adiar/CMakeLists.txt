@@ -4,41 +4,36 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 # Link up files for the library
 
 set(HEADERS
-  # core files
+  # adiar/
   adiar.h
   builder.h
   data.h
+  deprecated.h
   domain.h
   file.h
   file_stream.h
   file_writer.h
+  statistics.h
 
-  # deprecated
-  deprecated.h
-
-  # bdd files
+  # <adiar/bdd/
   bdd.h
   bdd/bdd.h
   bdd/bdd_policy.h
   bdd/if_then_else.h
 
-  # zdd files
+  # <adiar/zdd/
   zdd.h
   zdd/build.h
   zdd/zdd.h
   zdd/zdd_policy.h
 
-  # internal
+  # adiar/internal/
   internal/assert.h
   internal/cnl.h
   internal/cut.h
   internal/decision_diagram.h
   internal/dot.h
   internal/memory.h
-  internal/levelized_priority_queue.h
-  internal/priority_queue.h
-  internal/sorter.h
-  internal/tuple.h
   internal/util.h
 
   # internal/algorithms
@@ -53,8 +48,13 @@ set(HEADERS
   internal/algorithms/substitution.h
   internal/algorithms/traverse.h
 
-  # statistics
-  statistics.h
+  # adiar/internal/data_structures
+  internal/data_structures/levelized_priority_queue.h
+  internal/data_structures/priority_queue.h
+  internal/data_structures/sorter.h
+
+  # adiar/internal/data_types
+  internal/tuple.h
 )
 
 set(SOURCES
@@ -92,7 +92,6 @@ set(SOURCES
   zdd/zdd.cpp
 
   # adiar/internal
-  internal/levelized_priority_queue.cpp
   internal/memory.cpp
 
   # adiar/internal/algorithms
@@ -103,6 +102,9 @@ set(SOURCES
   internal/algorithms/quantify.cpp
   internal/algorithms/reduce.cpp
   internal/algorithms/substitution.cpp
+
+  # adiar/internal/data_structures
+  internal/data_structures/levelized_priority_queue.cpp
 )
 
 # ============================================================================ #
