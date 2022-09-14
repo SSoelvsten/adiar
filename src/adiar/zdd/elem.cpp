@@ -6,7 +6,7 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
-#include <adiar/internal/traverse.h>
+#include <adiar/internal/algorithms/traverse.h>
 
 namespace adiar
 {

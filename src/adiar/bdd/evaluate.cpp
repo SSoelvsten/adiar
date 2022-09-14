@@ -3,7 +3,8 @@
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/traverse.h>
+
+#include <adiar/internal/algorithms/traverse.h>
 
 namespace adiar
 {
