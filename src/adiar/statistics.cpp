@@ -17,7 +17,7 @@ namespace adiar
   stats_t adiar_stats()
   {
 #ifndef ADIAR_STATS
-    std::cerr << "Statistics not gathered. Please compile with 'ADIAR_STATS' or 'ADIAR_STATS_EXTRA'" << std::endl;
+    std::cerr << "Statistics not gathered. Please compile with 'ADIAR_STATS'" << std::endl;
 #endif
 
     return {
@@ -78,7 +78,6 @@ namespace adiar
     return os << to_string(s);
   }
 
-#ifdef ADIAR_STATS_EXTRA
   void __printstat_lpq(std::ostream &o, const stats_t::levelized_priority_queue_t& stats)
   {
     if (indent_level == 0) {
@@ -120,10 +119,6 @@ namespace adiar
       << endl;
     indent_level -= 2;
   }
-#else
-  void __printstat_lpq(std::ostream &, const stats_t::levelized_priority_queue_t&)
-  { }
-#endif
 
   void __printstat_alg_base(std::ostream &o, const stats_t::__alg_base& stats)
   {
@@ -318,7 +313,6 @@ namespace adiar
       << stats_reduce.sum_terminal_arcs << " = " << percent_frac(stats_reduce.sum_terminal_arcs, total_arcs) << percent << endl;
     indent_level--;
 
-#ifdef ADIAR_STATS_EXTRA
     o << indent << endl;
     uintwide_t total_removed = stats_reduce.removed_by_rule_1 + stats_reduce.removed_by_rule_2;
     o << indent << bold_on << label << "nodes removed" << bold_off;
@@ -335,7 +329,6 @@ namespace adiar
       o << "none" << endl;
     }
 
-#endif
     o << indent << endl;
     __printstat_alg_base(o, stats_reduce);
 
@@ -379,7 +372,7 @@ namespace adiar
     o << bold_on << "Adiar statistics" << bold_off << endl;
     o << endl;
 #ifndef ADIAR_STATS
-    o << indent << "Not gathered; please compile with 'ADIAR_STATS' and/or 'ADIAR_STATS_EXTRA'." << endl;
+    o << indent << "Not gathered; please compile with 'ADIAR_STATS'." << endl;
 #else
     o << std::fixed << std::setprecision(FLOAT_PRECISION);
 

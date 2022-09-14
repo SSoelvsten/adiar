@@ -227,7 +227,7 @@ namespace adiar
         // Open red1_mapping first (and create file on disk) when at least one
         // element is written to it.
         if (!red1_mapping.is_open()) { red1_mapping.open(); }
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
         stats_reduce.removed_by_rule_1++;
 #endif
         red1_mapping.write({ n.uid, reduction_rule_ret });
@@ -265,7 +265,7 @@ namespace adiar
         __reduce_cut_add(is_flagged(next_node.high) ? global_1level_cut : local_1level_cut,
                          out_node.high);
       } else {
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
         stats_reduce.removed_by_rule_2++;
 #endif
       }
@@ -399,7 +399,7 @@ namespace adiar
       // Apply reduction rule 1, if applicable
       const ptr_t reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
       if (reduction_rule_ret != e_low.source) {
-#ifdef ADIAR_STATS_EXTRA
+#ifdef ADIAR_STATS
         stats_reduce.removed_by_rule_1++;
 #endif
         const bool terminal_val = value_of(reduction_rule_ret);

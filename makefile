@@ -38,7 +38,7 @@ test:
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug \
                       -D CMAKE_C_FLAGS=$(O2_FLAGS) \
                       -D CMAKE_CXX_FLAGS=$(O2_FLAGS) \
-                      -D ADIAR_STATS_EXTRA=ON \
+                      -D ADIAR_STATS=ON \
                 ..
 	@cd build/ && make $(MAKE_FLAGS) test_unit
 
@@ -56,7 +56,7 @@ coverage:
                       -D CMAKE_C_FLAGS=$(COV_C_FLAGS) \
                       -D CMAKE_CXX_FLAGS=$(COV_C_FLAGS) \
                       -D CMAKE_EXE_LINKER_FLAGS=$(COV_EXE_LINKER_FLAGS) \
-                      -D ADIAR_STATS_EXTRA=ON \
+                      -D ADIAR_STATS=ON \
                 ..
 	@cd build/ && make $(MAKE_FLAGS) test_unit
 
@@ -94,7 +94,7 @@ main:
 	@cd build/ && cmake -D CMAKE_BUILD_TYPE=Debug \
                       -D CMAKE_C_FLAGS=$(O2_FLAGS) \
                       -D CMAKE_CXX_FLAGS=$(O2_FLAGS) \
-                      -D ADIAR_STATS_EXTRA=ON \
+                      -D ADIAR_STATS=ON \
                 ..
 	@cd build/ && make $(MAKE_FLAGS) adiar_main
 	@echo "" && echo ""
