@@ -30,38 +30,41 @@ set(HEADERS
 
   # internal
   internal/assert.h
-  internal/build.h
   internal/cnl.h
-  internal/convert.h
-  internal/count.h
   internal/cut.h
   internal/decision_diagram.h
   internal/dot.h
-  internal/intercut.h
   internal/memory.h
-  internal/pred.h
   internal/levelized_priority_queue.h
   internal/priority_queue.h
-  internal/product_construction.h
-  internal/quantify.h
-  internal/reduce.h
   internal/sorter.h
-  internal/substitution.h
-  internal/traverse.h
   internal/tuple.h
   internal/util.h
+
+  # internal/algorithms
+  internal/algorithms/build.h
+  internal/algorithms/convert.h
+  internal/algorithms/count.h
+  internal/algorithms/intercut.h
+  internal/algorithms/pred.h
+  internal/algorithms/product_construction.h
+  internal/algorithms/quantify.h
+  internal/algorithms/reduce.h
+  internal/algorithms/substitution.h
+  internal/algorithms/traverse.h
 
   # statistics
   statistics.h
 )
 
 set(SOURCES
-  # core files
+  # adiar/
   adiar.cpp
   domain.cpp
   file.cpp
+  statistics.cpp
 
-  # bdd files
+  # adiar/bdd/
   bdd/apply.cpp
   bdd/assignment.cpp
   bdd/bdd.cpp
@@ -74,7 +77,7 @@ set(SOURCES
   bdd/quantify.cpp
   bdd/restrict.cpp
 
-  # zdd files
+  # adiar/zdd/
   zdd/binop.cpp
   zdd/build.cpp
   zdd/change.cpp
@@ -88,19 +91,18 @@ set(SOURCES
   zdd/subset.cpp
   zdd/zdd.cpp
 
-  # internal
-  internal/count.cpp
-  internal/intercut.cpp
-  internal/memory.cpp
-  internal/pred.cpp
-  internal/product_construction.cpp
+  # adiar/internal
   internal/levelized_priority_queue.cpp
-  internal/quantify.cpp
-  internal/reduce.cpp
-  internal/substitution.cpp
+  internal/memory.cpp
 
-  # statistics
-  statistics.cpp
+  # adiar/internal/algorithms
+  internal/algorithms/count.cpp
+  internal/algorithms/intercut.cpp
+  internal/algorithms/pred.cpp
+  internal/algorithms/product_construction.cpp
+  internal/algorithms/quantify.cpp
+  internal/algorithms/reduce.cpp
+  internal/algorithms/substitution.cpp
 )
 
 # ============================================================================ #

@@ -4,7 +4,8 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/build.h>
+
+#include <adiar/internal/algorithms/build.h>
 
 namespace adiar
 {

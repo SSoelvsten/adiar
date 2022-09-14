@@ -4,7 +4,8 @@
 #include <adiar/data.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/count.h>
+
+#include <adiar/internal/algorithms/count.h>
 
 namespace adiar
 {

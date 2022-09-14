@@ -1,5 +1,6 @@
 #include <adiar/bdd.h>
-#include <adiar/internal/pred.h>
+
+#include <adiar/internal/algorithms/pred.h>
 
 namespace adiar
 {

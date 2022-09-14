@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_BUILD_H
-#define ADIAR_INTERNAL_BUILD_H
+#ifndef ADIAR_INTERNAL_ALGORITHMS_BUILD_H
+#define ADIAR_INTERNAL_ALGORITHMS_BUILD_H
 
 #include <adiar/data.h>
 #include <adiar/file_stream.h>
@@ -100,4 +100,4 @@ namespace adiar
     }
 }
 
-#endif // ADIAR_INTERNAL_BUILD_H
+#endif // ADIAR_INTERNAL_ALGORITHMS_BUILD_H

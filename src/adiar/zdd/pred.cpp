@@ -2,8 +2,9 @@
 #include <adiar/zdd/zdd_policy.h>
 
 #include <adiar/internal/cnl.h>
-#include <adiar/internal/pred.h>
-#include <adiar/internal/product_construction.h>
+
+#include <adiar/internal/algorithms/pred.h>
+#include <adiar/internal/algorithms/product_construction.h>
 
 namespace adiar {
   bool zdd_equal(const zdd &s1, const zdd &s2)

@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_PRED_H
-#define ADIAR_INTERNAL_PRED_H
+#ifndef ADIAR_INTERNAL_ALGORITHMS_PRED_H
+#define ADIAR_INTERNAL_ALGORITHMS_PRED_H
 
 #include <adiar/data.h>
 
@@ -8,8 +8,9 @@
 
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
-#include <adiar/internal/product_construction.h>
 #include <adiar/internal/tuple.h>
+
+#include <adiar/internal/algorithms/product_construction.h>
 
 namespace adiar
 {
@@ -275,4 +276,4 @@ namespace adiar
   }
 }
 
-#endif // ADIAR_INTERNAL_PRED_H
+#endif // ADIAR_INTERNAL_ALGORITHMS_PRED_H

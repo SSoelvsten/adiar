@@ -3,7 +3,7 @@
 
 #include <adiar/data.h>
 
-#include <adiar/internal/intercut.h>
+#include <adiar/internal/algorithms/intercut.h>
 
 namespace adiar
 {

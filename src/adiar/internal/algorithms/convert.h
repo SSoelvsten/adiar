@@ -1,10 +1,11 @@
-#ifndef ADIAR_INTERNAL_CONVERT_H
-#define ADIAR_INTERNAL_CONVERT_H
+#ifndef ADIAR_INTERNAL_ALGORITHMS_CONVERT_H
+#define ADIAR_INTERNAL_ALGORITHMS_CONVERT_H
 
 #include<adiar/data.h>
 
 #include<adiar/internal/decision_diagram.h>
-#include<adiar/internal/intercut.h>
+
+#include<adiar/internal/algorithms/intercut.h>
 
 namespace adiar
 {
@@ -116,4 +117,4 @@ namespace adiar
   };
 }
 
-#endif // ADIAR_INTERNAL_CONVERT_H
+#endif // ADIAR_INTERNAL_ALGORITHMS_CONVERT_H

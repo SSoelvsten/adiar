@@ -7,8 +7,9 @@
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/quantify.h>
 #include <adiar/internal/tuple.h>
+
+#include <adiar/internal/algorithms/quantify.h>
 
 namespace adiar
 {

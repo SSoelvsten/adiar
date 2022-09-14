@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_REDUCE_H
-#define ADIAR_INTERNAL_REDUCE_H
+#ifndef ADIAR_INTERNAL_ALGORITHMS_REDUCE_H
+#define ADIAR_INTERNAL_ALGORITHMS_REDUCE_H
 
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
@@ -537,4 +537,4 @@ namespace adiar
   }
 }
 
-#endif // ADIAR_INTERNAL_REDUCE_H
+#endif // ADIAR_INTERNAL_ALGORITHMS_REDUCE_H

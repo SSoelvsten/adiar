@@ -5,7 +5,7 @@
 
 #include <adiar/file_stream.h>
 
-#include <adiar/internal/quantify.h>
+#include <adiar/internal/algorithms/quantify.h>
 
 namespace adiar
 {

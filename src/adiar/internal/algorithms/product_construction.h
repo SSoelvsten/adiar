@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_PRODUCT_CONSTRUCTION_H
-#define ADIAR_INTERNAL_PRODUCT_CONSTRUCTION_H
+#ifndef ADIAR_INTERNAL_ALGORITHMS_PRODUCT_CONSTRUCTION_H
+#define ADIAR_INTERNAL_ALGORITHMS_PRODUCT_CONSTRUCTION_H
 
 #include <variant>
 
@@ -11,12 +11,13 @@
 
 #include <adiar/bdd/bdd.h>
 
-#include <adiar/internal/build.h>
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/levelized_priority_queue.h>
 #include <adiar/internal/tuple.h>
+
+#include <adiar/internal/algorithms/build.h>
 
 namespace adiar
 {
@@ -619,4 +620,4 @@ namespace adiar
   }
 }
 
-#endif // ADIAR_INTERNAL_PRODUCT_CONSTRUCTION_H
+#endif // ADIAR_INTERNAL_ALGORITHMS_PRODUCT_CONSTRUCTION_H

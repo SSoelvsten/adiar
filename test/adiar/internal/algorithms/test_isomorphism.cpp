@@ -1,4 +1,4 @@
-#include <adiar/internal/pred.h>
+#include <adiar/internal/algorithms/pred.h>
 
 go_bandit([]() {
   describe("adiar/internal/pred.h", []() {

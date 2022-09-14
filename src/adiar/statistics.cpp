@@ -2,15 +2,17 @@
 
 #include <iomanip>
 
-#include <adiar/internal/pred.h>
-#include <adiar/internal/levelized_priority_queue.h>
-#include <adiar/internal/reduce.h>
-#include <adiar/internal/count.h>
-#include <adiar/internal/product_construction.h>
-#include <adiar/internal/quantify.h>
 #include <adiar/bdd/if_then_else.h>
-#include <adiar/internal/substitution.h>
-#include <adiar/internal/intercut.h>
+
+#include <adiar/internal/levelized_priority_queue.h>
+
+#include <adiar/internal/algorithms/count.h>
+#include <adiar/internal/algorithms/reduce.h>
+#include <adiar/internal/algorithms/intercut.h>
+#include <adiar/internal/algorithms/pred.h>
+#include <adiar/internal/algorithms/product_construction.h>
+#include <adiar/internal/algorithms/quantify.h>
+#include <adiar/internal/algorithms/substitution.h>
 
 namespace adiar
 {

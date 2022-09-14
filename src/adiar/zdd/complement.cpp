@@ -4,8 +4,8 @@
 #include <adiar/data.h>
 #include <adiar/domain.h>
 
-#include <adiar/internal/build.h>
-#include <adiar/internal/intercut.h>
+#include <adiar/internal/algorithms/build.h>
+#include <adiar/internal/algorithms/intercut.h>
 
 namespace adiar
 {
