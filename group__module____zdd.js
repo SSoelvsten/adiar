@@ -40,7 +40,7 @@ var group__module____zdd =
       [ "negate", "classadiar_1_1zdd.html#ae502b1ffc38e4b757ac8799230589658", null ]
     ] ],
     [ "is_empty", "group__module____zdd.html#ga4dfb5691f634bb3dfcc33a324fb3e495", null ],
-    [ "is_null", "group__module____zdd.html#ga14f838afb4cb6b10989168efaad1c5e0", null ],
+    [ "is_null", "group__module____zdd.html#ga21e8405ad1a9b2e114dbe5ac514e30f8", null ],
     [ "output_dot", "group__module____zdd.html#gae4a0f37cd21d3b70a9e5667b1b7775f2", null ],
     [ "zdd_binop", "group__module____zdd.html#gabe38fcc7812544a97938aa268197edbe", null ],
     [ "zdd_change", "group__module____zdd.html#ga009d56d473ce3f97ac7e5eef4e2cffb2", null ],
