@@ -461,10 +461,12 @@ namespace adiar
   /// \brief   Count the number of assignments x that make f(x) true.
   ///
   /// \details Same as <tt>bdd_satcount(bdd, varcount)</tt>, with varcount set
-  ///          to be <tt>varcount(bdd)</tt>.
+  ///          to be the size of the global domain or the number of variables
+  ///          within the given BDD.
+  ///
+  /// \sa adiar_set_domain bdd_varcount
   //////////////////////////////////////////////////////////////////////////////
-  inline uint64_t bdd_satcount(const bdd &f)
-  { return bdd_satcount(f, bdd_varcount(f)); };
+  uint64_t bdd_satcount(const bdd &f);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
