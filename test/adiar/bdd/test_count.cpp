@@ -123,6 +123,10 @@ go_bandit([]() {
       nw_root_1 << create_node(1,0, terminal_F, terminal_T);
     }
 
+    // Set domain to be empty
+    label_file empty_dom;
+    adiar_set_domain(empty_dom);
+
     describe("bdd_nodecount", [&]() {
       it("can count number of nodes", [&]() {
         AssertThat(bdd_nodecount(bdd_1), Is().EqualTo(4u));
@@ -237,7 +241,7 @@ go_bandit([]() {
       });
     });
 
-    describe("bdd_satcount(f)", [&]() {
+    describe("bdd_satcount(f) [empty dom]", [&]() {
       it("can count assignments leading to T terminals [1]", [&]() {
         AssertThat(bdd_satcount(bdd_1), Is().EqualTo(5u));
       });
@@ -266,6 +270,45 @@ go_bandit([]() {
       it("should count assignments of a root-only BDD [1]", [&]() {
         AssertThat(bdd_satcount(bdd_not(bdd_root_1)), Is().EqualTo(1u));
         AssertThat(bdd_satcount(bdd_root_1), Is().EqualTo(1u));
+      });
+    });
+
+    describe("bdd_satcount(f) [non-empty dom]", [&]() {
+      label_file dom;
+      {
+        label_writer lw(dom);
+        lw << 0 << 1 << 2 << 3 << 4 << 5 << 6;
+      }
+      adiar_set_domain(dom);
+
+      it("can count assignments leading to T terminals [1]", [&]() {
+        AssertThat(bdd_satcount(bdd_1), Is().EqualTo(8u * 5u));
+      });
+
+      it("can count assignments leading to T terminals [2]", [&]() {
+        AssertThat(bdd_satcount(bdd_2), Is().EqualTo(32u * 3u));
+      });
+
+      it("can count assignments leading to F terminals [1]", [&]() {
+        AssertThat(bdd_satcount(bdd_not(bdd_1)), Is().EqualTo(8u * 11u));
+      });
+
+      it("can count assignments leading to F terminals [2]", [&]() {
+        AssertThat(bdd_satcount(bdd_not(bdd_2)), Is().EqualTo(32u * 1u));
+      });
+
+      it("should count assignments to the true terminal-only BDD", [&]() {
+        AssertThat(bdd_satcount(bdd_T), Is().EqualTo(128u * 1u));
+        AssertThat(bdd_satcount(bdd_not(bdd_F)), Is().EqualTo(128u * 1u));
+      });
+
+      it("should count no assignments in a false terminal-only BDD", [&]() {
+        AssertThat(bdd_satcount(bdd_F), Is().EqualTo(0u));
+      });
+
+      it("should count assignments of a root-only BDD [1]", [&]() {
+        AssertThat(bdd_satcount(bdd_not(bdd_root_1)), Is().EqualTo(64u * 1u));
+        AssertThat(bdd_satcount(bdd_root_1), Is().EqualTo(64u * 1u));
       });
     });
   });
