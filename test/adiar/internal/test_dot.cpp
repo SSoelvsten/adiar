@@ -1,3 +1,4 @@
+#include <fstream>
 #include <adiar/internal/dot.h>
 
 go_bandit([]() {
@@ -28,6 +29,21 @@ go_bandit([]() {
       AssertThat(exit_value, Is().EqualTo(0));
     });
 
+    it("can output .dot of a BDD into an output stream", [&]() {
+      bdd f = bdd_terminal(false);
+
+      std::ofstream out;
+      out.open("dot_test_bdd_ostream.dot");
+
+      bdd_printdot(f, out);
+
+      out.close();
+
+      int exit_value = system("dot -O -Tpng dot_test_bdd_ostream.dot");
+      AssertThat(exit_value, Is().EqualTo(0));
+    });
+
+    ////////////////////////////////////////////////////////////////////////////
     it("can output .dot for a terminal-only ZDD", [&]() {
       zdd terminal_F = zdd_empty();
 
@@ -53,6 +69,21 @@ go_bandit([]() {
       AssertThat(exit_value, Is().EqualTo(0));
     });
 
+    it("can output .dot of a ZDD into an output stream", [&]() {
+      zdd A = zdd_null();
+
+      std::ofstream out;
+      out.open("dot_test_zdd_ostream.dot");
+
+      zdd_printdot(A, out);
+
+      out.close();
+
+      int exit_value = system("dot -O -Tpng dot_test_zdd_ostream.dot");
+      AssertThat(exit_value, Is().EqualTo(0));
+    });
+
+    ////////////////////////////////////////////////////////////////////////////
     it("can output an unreduced diagram [internal API]", [&]() {
       arc_file unreduced_bdd;
 
