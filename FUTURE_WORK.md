@@ -129,7 +129,7 @@ which is currently unused in a _node_ and on the _target_ of an _arc_. These are
 currently reserved for implementation of this very feature. The main question
 about the encoding is whether the "only false sink" idea benefits our
 representation? If we do choose to use it, then all binary operators in
-*adiar/data.h* need to **not** unflag the sink but rather manipulate the flag
+*adiar/bool_op.h* need to **not** unflag the sink but rather manipulate the flag
 itself.
 
 **Adding Attributed Edges to Reduce**

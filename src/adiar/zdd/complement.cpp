@@ -1,11 +1,12 @@
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
-#include <adiar/data.h>
+#include <adiar/label.h>
 #include <adiar/domain.h>
 
 #include <adiar/internal/algorithms/build.h>
 #include <adiar/internal/algorithms/intercut.h>
+#include <adiar/internal/data_types/uid.h>
 
 namespace adiar
 {

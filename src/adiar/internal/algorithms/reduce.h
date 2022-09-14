@@ -12,6 +12,10 @@
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_structures/sorter.h>
 
+#include <adiar/internal/data_types/arc.h>
+#include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/convert.h>
+
 #include <adiar/statistics.h>
 
 namespace adiar

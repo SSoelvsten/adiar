@@ -11,12 +11,13 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Core
-#include <adiar/data.h>
+#include <adiar/assignment.h>
+#include <adiar/builder.h>
 #include <adiar/domain.h>
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
-#include <adiar/builder.h>
+#include <adiar/label.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Decision Diagrams

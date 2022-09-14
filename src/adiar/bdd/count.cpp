@@ -1,7 +1,8 @@
+#include <stdint.h>
+
 #include <adiar/bdd.h>
 #include <adiar/domain.h>
-
-#include <adiar/data.h>
+#include <adiar/label.h>
 
 #include <adiar/internal/assert.h>
 

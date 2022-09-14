@@ -1,16 +1,19 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_PRED_H
 #define ADIAR_INTERNAL_ALGORITHMS_PRED_H
 
-#include <adiar/data.h>
+#include <adiar/label.h>
 
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/decision_diagram.h>
-#include <adiar/internal/tuple.h>
 
 #include <adiar/internal/algorithms/product_construction.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
+
+#include <adiar/internal/data_types/uid.h>
+#include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/tuple.h>
 
 namespace adiar
 {

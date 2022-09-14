@@ -13,9 +13,15 @@
 #include <tpie/sort.h>
 
 // ADIAR imports
-#include <adiar/data.h>
+#include <adiar/label.h>
+#include <adiar/assignment.h>
+
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
+
+#include <adiar/internal/data_types/arc.h>
+#include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/level_info.h>
 
 namespace adiar
 {

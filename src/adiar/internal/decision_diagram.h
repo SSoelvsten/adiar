@@ -4,6 +4,8 @@
 #include <adiar/file.h>
 
 #include <adiar/internal/cut.h>
+#include <adiar/internal/data_types/arc.h>
+#include <adiar/internal/data_types/node.h>
 
 #include <variant>
 

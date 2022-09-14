@@ -1,7 +1,5 @@
 #include <adiar/zdd.h>
 
-#include <adiar/data.h>
-
 #include <adiar/internal/assert.h>
 
 #include <adiar/internal/algorithms/count.h>

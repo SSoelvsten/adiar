@@ -1,9 +1,10 @@
 #include <adiar/zdd.h>
 
-#include <adiar/data.h>
+#include <adiar/label.h>
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/algorithms/traverse.h>
+#include <adiar/internal/data_types/node.h>
 
 namespace adiar
 {

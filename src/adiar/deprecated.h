@@ -25,21 +25,21 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a pointer is for a sink.
   //////////////////////////////////////////////////////////////////////////////
-  [[deprecated("Replaced by is_terminal in 'adiar/data.h'")]]
+  [[deprecated("Replaced by is_terminal in 'adiar/internal/data_types/uid.h'")]]
   inline bool is_sink(ptr_t p)
   { return is_terminal(p); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create the unique identifier for a sink with the given value.
   //////////////////////////////////////////////////////////////////////////////
-  [[deprecated("Replaced by create_terminal_uid in 'adiar/data.h'")]]
+  [[deprecated("Replaced by create_terminal_uid in 'adiar/internal/data_types/uid.h'")]]
   inline uid_t create_sink_uid(bool v)
   { return create_terminal_uid(v); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create a pointer to a sink with the given value.
   //////////////////////////////////////////////////////////////////////////////
-  [[deprecated("Replaced by create_terminal_ptr in 'adiar/data.h'")]]
+  [[deprecated("Replaced by create_terminal_ptr in 'adiar/internal/data_types/uid.h'")]]
   inline ptr_t create_sink_ptr(bool v)
   { return create_terminal_ptr(v); }
 
@@ -48,7 +48,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create a sink node representing the given boolean value.
   //////////////////////////////////////////////////////////////////////////////
-  [[deprecated("Replaced by create_terminal in 'adiar/data.h'")]]
+  [[deprecated("Replaced by create_terminal in 'adiar/internal/data_types/uid.h'")]]
   inline node_t create_sink(bool value)
   { return create_terminal(value); }
 

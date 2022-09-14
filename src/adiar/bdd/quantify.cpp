@@ -1,15 +1,18 @@
 #include <adiar/bdd.h>
 #include <adiar/bdd/bdd_policy.h>
 
-#include <adiar/data.h>
+#include <adiar/label.h>
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/tuple.h>
 
 #include <adiar/internal/algorithms/quantify.h>
+
+#include <adiar/internal/data_types/arc.h>
+#include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/tuple.h>
 
 namespace adiar
 {

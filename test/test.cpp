@@ -122,11 +122,12 @@ namespace snowhouse
 
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR Core unit tests
-#include "adiar/test_data.cpp"
-#include "adiar/test_domain.cpp"
+#include "adiar/test_assignment.cpp"
+#include "adiar/test_bool_op.cpp"
 
 #include "adiar/test_file.cpp"
 
+#include "adiar/test_domain.cpp"
 #include "adiar/test_builder.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -139,6 +140,11 @@ namespace snowhouse
 #include "adiar/internal/algorithms/test_reduce.cpp"
 
 #include "adiar/internal/data_structures/test_levelized_priority_queue.cpp"
+
+#include "adiar/internal/data_types/test_uid.cpp"
+#include "adiar/internal/data_types/test_node.cpp"
+#include "adiar/internal/data_types/test_arc.cpp"
+#include "adiar/internal/data_types/test_convert.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR BDD unit tests
