@@ -6,6 +6,16 @@ not implemented recursively with a shared unique node table, but instead they
 are created as streaming algorithms that exploit a specific sorting of diagram
 nodes on disk to delay recursion.
 
+<div align="center">
+  <img src="queens_time.png"
+       alt="Running Time of Adiar and other BDD packages solving the N-Queens problem"
+       style="max-width:32rem; width:32rem"
+/>
+</div>
+<div align="center">
+  **Figure**: Running time solving N -Queens (lower is better).
+</div>
+
 Quick Access
 ========================
 
