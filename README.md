@@ -45,9 +45,7 @@ group at [Aarhus University](https://cs.au.dk).
 
 
 ## Documentation
-The documentation is provided as a collection of Markdown files in the _docs/_
-folder, which are also viewable on [Github Pages](https://ssoelvsten.github.io/adiar/).
-
+The documentation is viewable on [Github Pages](https://ssoelvsten.github.io/adiar/).
 
 ## Dependencies
 The implementation is dependant on the the following external libraries
