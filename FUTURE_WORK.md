@@ -21,6 +21,7 @@ may constitute interesting undergraduate and graduate projects.
     - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
     - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
     - [Quantum Multiple-valued Decision Diagrams](#quantum-multiple-valued-decision-diagrams)
+- [Dealing with Tiny BDDs](#dealing-with-tiny-bdds)
 - [Shared Decision Diagrams](#shared-decision-diagrams)
 - [Parallelization](#parallelization)
     - [Superscalarity and Pipelining in CAL](#superscalarity-and-pipelining-in-cal)
@@ -446,6 +447,54 @@ the worst case and to decrease the overall memory occupied, when one has a lot
 of concurrent decision diagrams alive. Yet, this does also happen at the cost of
 having to read a much larger input. Only a practical evaluation can gauge
 whether it is of benefit.
+
+## Dealing with Tiny BDDs
+
+With Adiar v1.2 we have been able to decrease the threshold as to when Adiar is
+viable in comparison to conventional depth-first BDD packages. Yet, this does
+not remove the major relative performance decrease for tiny BDDs. Interestingly,
+the threshold we derived in our experiments is somewhat below a threshold in the
+CAL BDD package [[Sanghavi96](#references)]: if below this size, it switches to
+the conventional depth-first algorithms instead. Hence, it is likely that we
+have hit a lower bound on when Adiar's time-forward processing is viable.
+
+For an end-user, it is of interest to have Adiar be efficient across the board.
+That is, we want to lower this threshold down to the smallest possible BDD. To
+this end, we will have to (similar to CAL) switch to depth-first algorithms.
+But, instead of implementing a whole new BDD pacakge we ought to interop with
+another BDD package! Specifically, I have the following two in mind:
+
+- *BuDDy:* This BDD package has a very simple and elegant design and throughout
+  all benchmarks it was the fastest. Its design should make it quite easy to
+  integrate it with Adiar's algorithms. Its only problems are, that it is not
+  thread-safe nor supports ZDDs. The latter can be fixed, but the prior may
+  be impossible.
+
+- *Sylvan:* This BDD package provides support for BDDs and ZDDs and also
+  thread-safety. Yet, using its pointers to BDDs may be considerably more
+  complicated. Furthermore, its use of attributed edges may break with Adiar.
+
+Here, we need to address the following three issues.
+
+1. Run the equivalent algorithm in the other BDD package, if
+   - The inputs are all BDDs in the other BDD package.
+   - The size of all inputs is below the 2<sup>19</sup> threshold of CAL.
+   - The worst-case output size fits within the unique node table assuming no
+     nodes can be reused. This may be complicated in practice, as garbage
+     collection may provide the space needed.
+
+2. In Adiar's top-down algorithms a node uid of the input either points to a
+   node in one of Adiar's files or a node in the unique node table.
+   - Here the `node_stream` class simulates a stream by having the `.seek(...)`
+     function in *O(1)* time do a lookup in the unique node table.
+   - For the priority queues to work, we need to add a wrapper on the nodes,
+     such that they can also carry around the level.
+
+3. In Adiar's Reduce algorithm, if the output fits within the unique node table
+   then the `node_writer` should create the entire BDD within the unique node
+   table.
+
+A lot of this can be achieved similar to the templating done for v1.2 itself.
 
 ## Parallelization
 
