@@ -673,7 +673,6 @@ guarantee the technique applies to Adiar.
 ## References
 
 - [[Arge10](https://ieeexplore.ieee.org/abstract/document/5470440)]
-
   Arge, Lars, Michael T. Goodrich, and Nodari Sitchinava. “_Parallel external
   memory graph algorithms_”. In: IEEE International Symposium on Parallel &
   Distributed Processing (IPDPS). (2010).
