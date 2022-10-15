@@ -5,31 +5,34 @@ may constitute interesting undergraduate and graduate projects.
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [Future Work](#future-work)
-    - [Missing BDD algorithms](#missing-bdd-algorithms)
-        - [Set manipulation](#set-manipulation)
-        - [Linear Optimisation](#linear-optimisation)
-        - [Advanced satisfiability functions](#advanced-satisfiability-functions)
-        - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
-    - [Additional features](#additional-features)
-        - [Attributed edges](#attributed-edges)
-        - [Hash Values](#hash-values)
-        - [Proof Logging](#proof-logging)
-        - [Boolean Vectors](#boolean-vectors)
-    - [Other Decision Diagrams](#other-decision-diagrams)
-        - [Chained Decision Diagrams](#chained-decision-diagrams)
-        - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
-        - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
-        - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
-        - [Shared Decision Diagrams](#shared-decision-diagrams)
-    - [Optimising the current algorithms](#optimising-the-current-algorithms)
-        - [Levelized Parallel Computation](#levelized-parallel-computation)
+- [Additional BDD algorithms](#additional-bdd-algorithms)
+    - [Set manipulation](#set-manipulation)
+    - [Linear Optimisation](#linear-optimisation)
+    - [Advanced satisfiability functions](#advanced-satisfiability-functions)
+    - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
+- [Additional Features](#additional-features)
+    - [Attributed edges](#attributed-edges)
+    - [Hash Values](#hash-values)
+    - [Proof Logging](#proof-logging)
+    - [Boolean Vectors](#boolean-vectors)
+- [Other Decision Diagrams](#other-decision-diagrams)
+    - [Chained Decision Diagrams](#chained-decision-diagrams)
+    - [Free Boolean Decision Diagrams](#free-boolean-decision-diagrams)
+    - [Multi-Terminal Binary Decision Diagrams](#multi-terminal-binary-decision-diagrams)
+    - [Multi-valued Decision Diagrams](#multi-valued-decision-diagrams)
+    - [Quantum Multiple-valued Decision Diagrams](#quantum-multiple-valued-decision-diagrams)
+- [Shared Decision Diagrams](#shared-decision-diagrams)
+- [Parallelization](#parallelization)
+    - [Superscalarity and Pipelining in CAL](#superscalarity-and-pipelining-in-cal)
+    - [Pipelining](#pipelining)
+    - [Per-level Multi-threading](#per-level-multi-threading)
+    - [Delayed Pointer Processing](#delayed-pointer-processing)
 - [References](#references)
 
 <!-- markdown-toc end -->
 
 
-## Missing BDD algorithms
+## Additional BDD algorithms
 There are still many algorithms for BDDs not yet present in the _Adiar_ library,
 and valuable additions to the current project can be made in implementing these.
 All of these of course should be made in the style of _Time-Forward Processing_
@@ -86,7 +89,7 @@ are:
 - `bdd_expand`: Their _Expand_ function
 
 
-## Additional features
+## Additional Features
 
 ### Attributed edges
 The primary goal of using a decision diagram is to represent a complicated
@@ -141,11 +144,11 @@ itself.
 - If the root should have its in-going arc flipped then place that value in the
   *negate* flag  of the resulting *node_file*.
 
-One also need to look at whether this addition breaks the idea of the *canonical*
-flag on the *node_file*. That is, either find a counter-example or prove that the
-same linear-scan equality checking algorithm still works. In fact, if the
-linear-scan still works then this will asymptotically improve our equality checking
-to be O(N/B) in all cases!
+One also needs to look at whether this addition breaks the idea of the
+*canonical* flag on the *node_file*. That is, either find a counter-example or
+prove that the same linear-scan equality checking algorithm still works. In
+fact, if the linear-scan still works then this will asymptotically improve our
+equality checking to be O(N/B) in all cases!
 
 **Adding Attributed Edges to all other Algorithms**
 
@@ -278,7 +281,7 @@ The following functions return a new _bvec_.
 - Bit-wise operations such as bit-wise AND, OR, and XOR are quite easy to
   implement, since one merely needs to apply that operator per index.
  
-  `bvec_and(x,y)` (`x & y`), `bvec_or(x,y)` (`x | y`), `bvec_xor(x,y)` (`x ^ y`), `bvec_not(x)` (`x ~ y`)
+  `bvec_and(x,y)` (`x & y`), `bvec_or(x,y)` (`x | y`), `bvec_xor(x,y)` (`x ^ y`), `bvec_not(x)` (`~ y`)
   
 - Much more intersting are arithmetic operations, since the output bits are
   dependant on multiple input bits.
@@ -307,7 +310,7 @@ decision diagrams) which contains the desired result of a comparison of two
 _bvec_s. The type is either a  _bdd_ or _zdd_ depending on what was the
 templated value underneath.
 
-`bdd_eq(x,y)`, `bdd_neq(x,y)` `bdd_lt(x,y)`, `bdd_le(x,y)`, `bdd_gt(x,y)`, `bdd_ge(x,y)`
+`bvec_eq(x,y)`, `bvec_neq(x,y)` `bvec_lt(x,y)`, `bvec_le(x,y)`, `bvec_gt(x,y)`, `bvec_ge(x,y)`.
 
 ## Other Decision Diagrams
 
@@ -359,6 +362,12 @@ ZDDs did not outperform BDDs, CBDDs. CZDDs are on-par (or better) than ZDDs. So,
 currently the only motivation we have for this (except for: "because we can")
 is to remove the need for the user to think about what representation to use.
 
+### Free Boolean Decision Diagrams
+One can remove the restriction of ordering the decision diagram to then
+potentially compress the data structure even more. These Free Binary Decision
+Diagrams (FBDD) of [[Gergov94](#references)] may also be possible to
+implement in the setting of Time-forward processing used here.
+
 ### Multi-Terminal Binary Decision Diagrams
 One can extend the proposed representation of sink nodes to encompass non-boolean
 values, such as integers or floats. To this end, one should template all structs
@@ -375,17 +384,22 @@ TPIE allows one to use a custom _serializer_ and _deserializer_ for their
 `adiar::node` struct to be of variable size such that they can describe the
 _Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)]. Alternatively,
 one can create the "union" of `adiar::uid_t` and `adiar::ptr_t` such that
-consecutive (64-bit) elements describe a single node. Another approach for MDDs
-would be to look into recreating the _List Decision Diagrams_ of
-[[Dijk16](#references)] to keep the decision diagram binary.
+consecutive (64-bit) elements describe a single node.
 
-### Free Boolean Decision Diagrams
-One can remove the restriction of ordering the decision diagram to then
-potentially compress the data structure even more. These Free Binary Decision
-Diagrams (FBDD) of [[Gergov94](#references)] may also be possible to
-implement in the setting of Time-forward processing used here.
+Another approach for MDDs would be to look into recreating the _List Decision
+Diagrams_ of [[Dijk16](#references)] to keep the decision diagram binary.
 
-### Shared Decision Diagrams
+### Quantum Multiple-valued Decision Diagrams
+Assuming Adiar's supports [MDDs](#multi-valued-decision-diagrams), then one can
+add support for _Quantum Multiple-valued Decision Diagram_ (QMDD)
+[[Miller06](#references)]. Alternatively, if Adiar's nodes are changed such
+their out-degree is a template parameter then one can do without all the
+headache that MDDs may bring.
+
+The main addition is to annotate each arc with a complex number (i.e. two
+doubles) and then incorporate the logic within Adiar's algorithm templates.
+
+## Shared Decision Diagrams
 
 **NOTE:** This is best done in a completely new repository, where some files
 (e.g. `data.*`, `tuple.*`, `levelized_priority_queue.*`) are moved over.
@@ -433,69 +447,111 @@ of concurrent decision diagrams alive. Yet, this does also happen at the cost of
 having to read a much larger input. Only a practical evaluation can gauge
 whether it is of benefit.
 
+## Parallelization
 
-## Optimising the current algorithms
-There are quite a few avenues of trying to shave off a few significant constants
-in the running time on the current algorithms. Some suggestions below also make
-the GPU an intriguing subject for a possible heavy improvement in the running
-time.
+Currently, Adiar only makes use of *1* processor thread and is able to get close
+to other conventional BDD packages running sequentially. With some fiddling this
+can be improved such that Adiar is multi-threaded to the same degree as the
+BeeDeeDee package: each operation is still sequential on a thread, but multiple
+threads can in parallel run their own BDD operations.
 
-### Levelized Parallel Computation
-A few experiments show, that the Reduce algorithm in practice removes very few
-redundant nodes. So, the Reduce only really puts it on canonical form and saves
-on space. Should this premise be true even for larger cases, then we may be able
-to obtain a major boost in performance by computing operations in parallel.
+Yet, BDD packages like Sylvan or PJBDD support true multi-threading, i.e.
+multiple BDD operations can run in parallel and each operation also is
+parallelized. The question is, how far can we get Adiar to the same? Below are
+sketches for possible directions to go with the aim of multi-threading.
 
-For example, consider a `bdd_apply(bdd_apply(...), ...)`. The outer Apply can
-already start processing nodes on level _i_ when the inner one is at a level
-_j_>_i_. This puts all Applys (and all other single-sweep BDD operations!) in a
-_levelized lockstep_
+**NOTE:** All suggestions below that involve multi-threading are dependent on
+thread-safety of TPIE. Hence, to be able to parallelize Adiar, we first need to
+be sure to make Adiar thread-safe and double-check the necessary parts of TPIE
+is too.
 
-**Levelized Pipe**
+### Superscalarity and Pipelining in CAL
 
-To this end, the outer Apply needs a _pipe_ that feeds it the _safe to read_
-parts of the output of the inner Apply. From the inner Applys perspective, it
-needs as an argument an output handler (i.e. a _pipe_):
+The Breadth-first BDD package CAL [[Sanghavi96](#references)] supports
+parallelization in a slightly different way: the CPU still only uses a single
+core, but it solves multiple BDD operations at the same time. These ideas can
+maybe be reapplied directly in the context of Adiar to improve the performance
+in practice; or more likely they can serve as inspiration for other avenues of
+parallelization.
 
-1. If the output is supposed to be a reduced file, then they are pushed as before
-   to two different files. Then these can be Reduced.
+**Superscalarity**
 
-2. If the output is supposed to be piped directly into another `bdd_apply` then
-   we place the inserted arcs into the relevant `tpie::merge_sorters` in a
-   queue. This is in many ways akin to the levelized priority queue.
+In [[Sanghavi96](#references)] "superscalarity" is the idea of running
+*independent* operations within a single sweep. Since this can be achieved in
+Adiar with actual thread-safety, this may only becomes relevant if Adiar
+switches to using a [shared forest of BDD nodes](#shared-decision-diagrams).
 
-   - We also remember the number of elements pushed to each sorter. This way we
-     can compare with the meta data to see whether a level has all the expected
-     elements or not.
+**Pipelining**
 
-     This effectively splits the queue in two: (1) the ready sorters that can be
-     used by the Apply at the end of the pipe and (2) the sorters still waiting
-     for some elements by the Apply at the start of the pipe.
+In [[Sanghavi96](#references)] "pipelining" is the idea of running *dependent*
+operations within a single sweep. They base this off of the following observations
 
-     One can store the size of part (1) in a single number `levels_ready`.
+1. There is a one-to-one correspondence between requests and the nodes in the
+   unreduced BDD..
+2. Operands can also be applied on unreduced BDDs to create another valid
+   unreduced BDD.
+3. Handling each request *R* is a local operation: *R* is based on one or more
+   nodes at a level split into *R<sup>low</sup>* and *R<sup>high</sup>*. That
+   is, an operation (even one dependent on another) can progress, assuming both
+   the *low* and *high* arcs are available (see **2**).
 
-   - Due to this levelized lockstep, most synchronisation between threads can be
-     done with _semaphores_ inside the pipe. For example, when going from one
-     level to another, one decreases its `levels_ready` semaphore; if it turns
-     negative, then it is because the next sorter is part of half (2) rather
-     than (1).
+With minor tweaks, these observations also do apply for Adiar. Hence, one can
+have one top-down sweep right behind another.
 
-     This semaphore ensures that the thread of the receiving Apply is only ever
-     _runnable_ if it has something to process.
+### Pipelining
 
-   - The meta data itself needs to be stored in a thread shareable file, i.e.
-     one should use the `tpie::file` and `tpie::file::stream` classes with a
-     semaphore or a simple lock.
+The observations and idea for *pipelining* in [[Sanghavi96](#references)] (see
+[above](#superscalarity-and-pipelining-in-cal)) has also independently sprung to
+my mind: in practice, the Reduce algorithm only removes very few nodes and hence
+does not do much except safe 1/4 of space. Furthermore, from an
+automata-language perspective there is no difference between an unreduced OBDD
+and its equivalent ROBDD (this is the same as observation **2** above) and so we
+can run a top-down apply operation directly on unreduced BDDs.
 
-3. If the input is a base case (e.g. `bdd_ithvar(i)`), then some BDD
-   construction algorithms could be done top-to-bottom rather than bottom-up. If
-   the _levelized files_ ([#154](https://github.com/SSoelvsten/adiar/issues/154))
-   are added too, then this makes a level available before the underlying algorithm
-   has finished constructing all nodes.
+**Top-down Operations: Levelized Pipe**
 
-   This kind of a pipe may not be worth the effort though, since most of these
-   BDDs are smaller than a few thousand nodes (i.e. less than a few kB) and so
-   take no time to construct.
+Hence, we can skip the Reduce step and have one operation start processing level
+*i* of another operation when all arcs with source at level *i* have been
+processed. To this end, we need to replace Adiar's *writer* and *stream* classes
+with some kind of a *pipe*. To Adiar's algorithms, nothing really changes: they
+still push and pull from these sequential streams. Hence, most of this can be
+achieved with further templating Adiar's *internal/* folder.
+
+The pipe on the other hand needs to orchestrate what is the *safe to read* parts
+of the unreduced output still under construction. Since the top-down algorithms
+work on nodes but they produce *arcs*, we need to convert them on-the-fly back
+to be nodes. Here, we can use a *sorter* similar as in the levelized priority
+queue. A level is safe to read, when the sorter for level *i* includes all of
+the arcs corresponding to requests made at level *i*. The number of requests is
+directly given as part of the `level_info` in the meta data.
+
+This effectively splits the queue in two: (1) the ready sorters that can be used
+by the target operation at the end of the pipe and (2) the sorters still waiting
+for some elements by the source operation at the start of the pipe. All of this
+can be boiled down into a single semaphore `levels_ready`: for (1) it is
+decremented each time the target operation proceeds and for (2) it is
+incremented each time a level is fully finished.
+
+
+**Negation Operation**
+
+Negation can be stored inside this computation tree as a "complement edge". If
+the computation result is negated, then this merely is a flag on the pipe to do
+so on the fly (similar to what we do now).
+
+
+**Bottom-up Reduce Operation**
+
+The final BDD still has to be an ROBDD to safe on space. Some operations, e.g.
+Equality Checking, may also take advantage of the canonical form of Adiar's
+ROBDDs.
+
+Yet, even in all other cases it might be valuable to not pipe two top-down
+sweeps together in favour of decreasing the size of the unreduced OBDD. Here,
+one can make a prediction of how many nodes will be removed with a Reduce. When
+this estimate meets a certain threshold, then one can place a Reduce computation
+inside of the pipe to keep the disk usage close to what otherwise would be used.
+
 
 **Processing/Scheduling Tree**
 
@@ -508,36 +564,71 @@ one needs to find a scheduling on the tree, such that all concurrent threads
 have 128+ MiB of their own, and which balances the number of threads with the
 amount of the memory they have.
 
-
-**Piped Apply**
-
-The Apply itself works as before with time-forward processing. The main
-difference is, that its two arguments may not be a fully computed BDD in a file,
-but rather some set of operations instead (i.e. a node in a processing tree).
-
-For each of these uncomputed results we create a pipe and feed it to a newly
-spawned thread. The Apply itself then runs as usual by pulling from the
-streams/pipes and processing the nodes and then pushing to its own output pipe.
-To this end, one can make the `node_stream` change behaviour based on what kind
-of pipe it was given at construction time.
+As part of this scheduling, one may want to use the numbers in
+[[Sanghavi96](#references)] as a guide.
 
 
-**Negation**
+### Per-level Multi-threading
 
-Negation can be stored inside this computation tree as a "complement edge". If
-the computation result is negated, then this merely is a flag on the pipe to do
-so on the fly (similar to what we do now).
+There are a few avenues where Adiars algorithms can be parallelised.
 
+- The levelized priority queue can be fully replaced with per-level sorting
+  algorithms, which can be parallelised.
 
-**Expected Gain of Reduce**
+Furthermore, within a single level, each recursion request is independent of all
+other requests. Hence, while the *time-forward processing* technique is
+sequential with respect to the levels, we can maybe parallelize it for each
+level.
 
-Based on experiments or even prior runs of Reduce, one can make a prediction of
-how many nodes will be removed with the Reduce. When this estimate meets a
-certain threshold, then one can place a Reduce computation inside of the pipe to
-keep the disk usage close to what otherwise would be used.
+Specifically, the recursion requests from the levelized priority queue can be
+distributed to worker threads. Each worker has its own sequential reading of the
+input stream and will only deal with requests *ahead* of itself. There are two
+possible directions to take with this worker thread (the second of which sounds
+the most interesting and promising):
 
+1. Each worker places the request back into a per-level priority queue. This
+   safes on memory but there is likely a lot of contention on these per-level
+   priority queues.
+   
+   - This may lead to some workers being blocked, since they are ahead of the
+     per-level priority queue. One solution is for them to keep processing based
+     on requests in the levelized priority queue, even if it is ahead of the
+     per-level priority queue (as some other thread must be behind it).
+
+2. Each worker has its own per-level priority queue(s) to defer some requests.
+   This decreases contention on shared data and so benefits of parallelization
+   are more likely.
+   
+   - It might be possible to have no coordinating *main* thread but only a
+     parallelized levelized priority queue and a thread safe writer. If this is
+     the case, then a singly-threaded version essentialy is just a single worker
+     thread!
+     
+     This also leads to no threads being blocked. Each thread is still behind
+     the levelized priority queue and can take from that or its own per-level
+     priority queue.
+   
+   - To decrease the contention on the sorters in the levelized priority queue,
+     each worker thread can push to its own block rather than a shared one. This
+     block is then sorted and pushed to disk as a base case.
+
+### Delayed Pointer Processing
+
+In [[Arge10](#references)] the *delayed pointer processing* technique was
+described as a way to design graph algorithms that are both I/O-efficient and
+parallelized.
+
+**NOTE:** I (Steffan Sølvsten) have not read said paper in detail, so I cannot
+guarantee the technique applies to Adiar.
 
 ## References
+
+- [[Arge10](https://ieeexplore.ieee.org/abstract/document/5470440)]
+
+  Arge, Lars, Michael T. Goodrich, and Nodari Sitchinava. “_Parallel external
+  memory graph algorithms_”. In: IEEE International Symposium on Parallel &
+  Distributed Processing (IPDPS). (2010).
+
 
 - [[Blum80](https://www.sciencedirect.com/science/article/pii/S0020019080900782)]
   Manuel Blum, Ashok K. Chandra, and Mark N.Wegman. “_Equivalence of free
@@ -610,6 +701,11 @@ keep the disk usage close to what otherwise would be used.
   Jørn Lind-Nielsen. “_BuDDy: A binary decision diagram package_”. Technical
   report, _Department of Information Technology, Technical University of
   Denmark_, 1999.
+
+- [[Miller06](https://ieeexplore.ieee.org/document/1623982)]
+  D. Michael Miller and Mitchell A. Thornton. “_QMDD: A Decision Diagram
+  Structure for Reversible and Quantum Circuits_”. In: _36th International
+  Symposium on Multiple-Valued Logic (ISMVL'06)_ (2006)
 
 - [[Minato93](https://dl.acm.org/doi/pdf/10.1145/157485.164890)]
   S. Minato. “_Zero-suppressed BDDs for set manipulation in combinatorial
