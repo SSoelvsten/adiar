@@ -37,7 +37,7 @@ Instead of separate Markdown files, the documentation is generated directly from
 
 ## Performance
 
-This new release's primary focus is to drastically improve performance for smaller instances.To this end, we still use the very same algorithms, but if the input is small enough then we soundly can use purely internal memory auxiliary data structures within each algorithm. Prior to this version we could only guarantee up to a 3x performance difference compared to other BDD libraries when the largest constructed decision diagram is 9.5 GiB or larger. Now, we are able to now guarantee the same when the largest is only a few hundred KiB or larger.
+This new release's primary focus is to drastically improve performance for smaller instances.To this end, we still use the very same algorithms, but if the input is small enough then we soundly can use purely internal memory auxiliary data structures within each algorithm. Prior to this version we could only guarantee up to a 4x performance difference compared to other BDD libraries when the largest constructed decision diagram is 113 MiB or larger (for benchmarks where the base cases are manually constructed, i.e. also have some considerable size). Now, we are able to now guarantee the same when the largest is only 3.2 MiB or larger!
 
 ## Domain
 
