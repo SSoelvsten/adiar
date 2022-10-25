@@ -109,7 +109,7 @@ namespace adiar
 
       // Start with the maximal number the accumulated value can be at
       // up to this level.
-      const size_t remaining_levels = labels_size - processed_levels - 1; // exclusive of current level
+      const id_t remaining_levels = labels_size - processed_levels - 1; // exclusive of current level
       id_t curr_id = std::min(remaining_levels, max_id);
 
       // How small has the accumulated sum up to this point to be, such that it
