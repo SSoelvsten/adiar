@@ -178,7 +178,7 @@ library or have it use an alternative to TPIE, such as
 ## Citing this project
 
 If you use Adiar in some of your academic work, then please consider to cite one
-or more of the papers in [docs/cite.md](https://ssoelvsten.github.io/adiar/cite).
+or more of the papers in [docs/cite.md](https://ssoelvsten.github.io/adiar/page__cite.html).
 
 
 ## References
