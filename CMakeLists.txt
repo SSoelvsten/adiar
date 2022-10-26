@@ -32,28 +32,37 @@ if (ADIAR_STATS_EXTRA)
   set(ADIAR_STATS ON)
 endif (ADIAR_STATS_EXTRA)
 
-message(STATUS "  OS: ${CMAKE_SYSTEM_NAME}")
-message(STATUS "  Compiler: ${CMAKE_CXX_COMPILER_ID}")
-message(STATUS "    C Flags: ${CMAKE_C_FLAGS}")
-message(STATUS "    CXX Flags: ${CMAKE_CXX_FLAGS}")
-message(STATUS "    EXE Linker Flags: ${CMAKE_EXE_LINKER_FLAGS}")
+message(STATUS "  OS:                        ${CMAKE_SYSTEM_NAME}")
+message(STATUS "  Compiler:                  ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+message(VERBOSE "    C Flags:                ${CMAKE_C_FLAGS}")
+message(VERBOSE "    CXX Flags:              ${CMAKE_CXX_FLAGS}")
+message(VERBOSE "    EXE Linker Flags:       ${CMAKE_EXE_LINKER_FLAGS}")
+
+message(STATUS "  Library Options:")
 
 option(ADIAR_SHARED "Build adiar as a shared library" OFF)
-message(STATUS "  Shared: ${ADIAR_SHARED}")
+message(STATUS "  | Shared:                  ${ADIAR_SHARED}")
 
 option(ADIAR_STATS "Collect statistics" OFF)
 
-message(STATUS "  Statistics: ${ADIAR_STATS}")
+message(STATUS "  | Statistics:              ${ADIAR_STATS}")
 
 message(STATUS "  Optional targets:")
 
+option(ADIAR_DOCS "Build Documentation for Adiar" ON)
+message(STATUS "  | Documentation (Doxygen): ${MAIN_PROJECT}")
+
 option(ADIAR_TEST "Build unit tests for adiar" ${MAIN_PROJECT})
-message(STATUS "    Unit Tests: ${MAIN_PROJECT}")
+message(STATUS "  | Unit Tests:              ${MAIN_PROJECT}")
 
 option(ADIAR_EXAMPLES "Build examples for usage of adiar" ${MAIN_PROJECT})
-message(STATUS "    Examples: ${MAIN_PROJECT}")
+message(STATUS "  | Examples:                ${MAIN_PROJECT}")
 
 message(STATUS "")
+
+if (ADIAR_SHARED)
+  message (FATAL_ERROR "Adiar's CMake files do not (yet) support building Adiar as a shared library (GitHuB Issue #200). Any help to do so, would be very much appreciated.")
+endif (ADIAR_SHARED)
 
 # ============================================================================ #
 # Dependencies
@@ -68,15 +77,9 @@ add_subdirectory (external/cnl cnl)
 # ============================================================================ #
 add_subdirectory (src)
 
-install(DIRECTORY src/adiar
-        DESTINATION include
-        FILES_MATCHING REGEX "\\.h$")
-
 # ============================================================================ #
 # Documentation
 # ============================================================================ #
-option(ADIAR_DOCS "Build Documentation for Adiar" ON)
-
 if (ADIAR_DOCS)
   add_subdirectory(docs)
 endif (ADIAR_DOCS)
