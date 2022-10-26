@@ -107,29 +107,27 @@ set(SOURCES
 # ============================================================================ #
 # Settings
 if (ADIAR_SHARED)
-  add_library(adiar SHARED ${HEADERS} ${SOURCES})
+  # TODO: GitHub Issue #200
 else()
-  add_library(adiar STATIC ${HEADERS} ${SOURCES})
+  add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
 endif()
 
-if (ADIAR_STATS_EXTRA)
-  target_compile_definitions(adiar PRIVATE ADIAR_STATS ADIAR_STATS_EXTRA)
-elseif (ADIAR_STATS)
-  target_compile_definitions(adiar PRIVATE ADIAR_STATS)
+if (ADIAR_STATS_EXTRA OR ADIAR_STATS)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE ADIAR_STATS)
 endif()
 
 # ============================================================================ #
 # Link dependencies
-target_link_libraries(adiar tpie)
-target_link_libraries(adiar Cnl)
+target_link_libraries(${PROJECT_NAME} tpie)
+target_link_libraries(${PROJECT_NAME} Cnl)
 
 # ============================================================================ #
 # Setup as library
 
-target_include_directories(adiar PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/..
-                                        ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/..
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-set_target_properties(adiar PROPERTIES
+set_target_properties(${PROJECT_NAME} PROPERTIES
   # Language settings
   LINKER_LANGUAGE CXX
   C_STANDARD 17
@@ -138,24 +136,11 @@ set_target_properties(adiar PROPERTIES
   CXX_STANDARD_REQUIRED ON
   CXX_VISIBILITY_PRESET hidden
 
-  # Linkage?
-  FOLDER adiar
+  # Visual Studio
+  FOLDER ${PROJECT_NAME}
 
-  # Other
+  # Project Information
   VERSION ${PROJECT_VERSION}
-  POSITION_INDEPENDENT_CODE ON
 )
 
 target_compile_features(adiar PUBLIC cxx_std_17)
-
-include(GenerateExportHeader)
-generate_export_header(adiar
-  EXPORT_MACRO_NAME ADIAR_API
-)
-
-install(TARGETS adiar
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        INCLUDES DESTINATION ${LIBLEGACY_INCLUDE_DIRS}
-)
