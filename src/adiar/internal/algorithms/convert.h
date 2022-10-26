@@ -64,11 +64,11 @@ namespace adiar
                      "Labels not given in increasing order");
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
-        const node_t next_node = create_node(next_label, MAX_ID, children.t1, children.t2);
+        const node_t next_node = node(next_label, MAX_ID, children.t1, children.t2);
         const ptr_t reduction_result = to_policy::reduction_rule(next_node);
 
-        if (reduction_result == next_node.uid) { // Output
-          prior_node = next_node.uid;
+        if (reduction_result == next_node.uid()) { // Output
+          prior_node = next_node.uid();
 
           nw.unsafe_push(next_node);
           nw.unsafe_push(create_level_info(next_label,1u));
@@ -81,7 +81,7 @@ namespace adiar
       }
 
       if (!has_output) {
-        nw.unsafe_push(create_terminal(terminal_value));
+        nw.unsafe_push(node(terminal_value));
       }
       return nf;
     }
@@ -96,10 +96,10 @@ namespace adiar
     static intercut_rec hit_existing(const node_t &n)
     {
       const ptr_t to_reduction = to_policy::reduction_rule(n);
-      if (to_reduction != n.uid) {
+      if (to_reduction != n.uid()) {
         return intercut_rec_skipto { to_reduction };
       }
-      return intercut_rec_output { n.low, n.high };
+      return intercut_rec_output { n.low(), n.high() };
     }
 
     static intercut_rec_output hit_cut(const ptr_t target)
@@ -107,7 +107,7 @@ namespace adiar
       const tuple children = from_policy::reduction_rule_inv(target);
 
       // Debug mode: double-check we don't create irrelevant nodes
-      adiar_debug(to_policy::reduction_rule(create_node(0,0, children.t1, children.t2)) != target,
+      adiar_debug(to_policy::reduction_rule(node(0,0, children.t1, children.t2)) != target,
                   "Should not cut an arc where the one created will be killed anyways.");
 
       return intercut_rec_output { children.t1, children.t2 };

@@ -8,6 +8,8 @@
 
 namespace adiar
 {
+  // LCOV_EXCL_START
+
   // Based on the assert with messages as described here:
   // https://stackoverflow.com/a/37264642
 
@@ -20,8 +22,6 @@ namespace adiar
 #else
 #   define adiar_debug(Expr, Msg) ;
 #endif
-
-  // LCOV_EXCL_START
 
   inline void __adiar_assert(const char* expr_str, bool expr, const char* file, int line, const char* msg)
   {
@@ -47,6 +47,24 @@ namespace adiar
       {
         std::cerr << "Invariant '" << name << "' failed\n"
                   << "Expected:\t" << expr_str << "\n"
+                  << "Source:\t\t" << file << ", line " << line << "\n";
+        abort();
+      }
+  }
+
+
+#ifndef NDEBUG
+#   define adiar_precondition(Expr)                     \
+  __adiar_precondition(#Expr, Expr, __FILE__, __LINE__)
+#else
+#   define adiar_precondition(Expr) ;
+#endif
+
+  inline void __adiar_precondition(const char* expr_str, bool expr, const char* file, int line)
+  {
+    if (!expr)
+      {
+        std::cerr << "Precondition \t'" << expr_str << "' failed\n"
                   << "Source:\t\t" << file << ", line " << line << "\n";
         abort();
       }

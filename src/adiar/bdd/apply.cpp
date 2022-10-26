@@ -41,25 +41,25 @@ namespace adiar
                                    const node_t &v2, const bdd& bdd_2,
                                    const bool_op &op)
     {
-      if (is_terminal(v1) && is_terminal(v2)) {
-        ptr_t p = op(v1.uid, v2.uid);
+      if (v1.is_terminal() && v2.is_terminal()) {
+        ptr_t p = op(v1.uid(), v2.uid());
         return bdd_terminal(value_of(p));
-      } else if (is_terminal(v1)) {
-        if (can_left_shortcut(op, v1.uid)) {
-          ptr_t p =  op(v1.uid, create_terminal_ptr(false));
+      } else if (v1.is_terminal()) {
+        if (can_left_shortcut(op, v1.uid())) {
+          ptr_t p =  op(v1.uid(), create_terminal_ptr(false));
           return bdd_terminal(value_of(p));
-        } else if (is_left_irrelevant(op, v1.uid)) {
+        } else if (is_left_irrelevant(op, v1.uid())) {
           return bdd_2;
-        } else { // if (is_left_negating(op, v1.uid)) {
+        } else { // if (is_left_negating(op, v1.uid())) {
           return bdd_not(bdd_2);
         }
-      } else { // if (is_terminal(v2)) {
-        if (can_right_shortcut(op, v2.uid)) {
-          ptr_t p = op(create_terminal_ptr(false), v2.uid);
+      } else { // if (v2.is_terminal()) {
+        if (can_right_shortcut(op, v2.uid())) {
+          ptr_t p = op(create_terminal_ptr(false), v2.uid());
           return bdd_terminal(value_of(p));
-        } else if (is_right_irrelevant(op, v2.uid)) {
+        } else if (is_right_irrelevant(op, v2.uid())) {
           return bdd_1;
-        } else { // if (is_right_negating(op, v2.uid)) {
+        } else { // if (is_right_negating(op, v2.uid())) {
           return bdd_not(bdd_1);
         }
       }
@@ -113,4 +113,5 @@ namespace adiar
   {
     return product_construction<apply_prod_policy>(bdd_1, bdd_2, op);
   }
-}
+};
+

@@ -22,10 +22,10 @@ namespace adiar
     { return substitute_rec_output { n }; }
 
     static substitute_rec fix_false(const node_t &n, substitute_assignment_act &/*amgr*/)
-    { return substitute_rec_skipto { n.low }; }
+    { return substitute_rec_skipto { n.low() }; }
 
     static substitute_rec fix_true(const node_t &n, substitute_assignment_act &/*amgr*/)
-    { return substitute_rec_skipto { n.high }; }
+    { return substitute_rec_skipto { n.high() }; }
 
   public:
     static inline bdd terminal(bool terminal_val,

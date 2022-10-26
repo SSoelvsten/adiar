@@ -62,14 +62,14 @@ namespace adiar
     node_t v1 = in_nodes_1.pull();
     node_t v2 = in_nodes_2.pull();
 
-    if (is_terminal(v1) || is_terminal(v2)) {
+    if (v1.is_terminal() || v2.is_terminal()) {
       bool ret_value;
       if (comp_policy::resolve_terminals(v1, v2, ret_value)) {
         return ret_value;
       }
     }
 
-    if (is_terminal(v1.low) && is_terminal(v1.high) && is_terminal(v2.low) && is_terminal(v2.high)) {
+    if (is_terminal(v1.low()) && is_terminal(v1.high()) && is_terminal(v2.low()) && is_terminal(v2.high())) {
       return comp_policy::resolve_singletons(v1, v2);
     }
 
@@ -77,13 +77,13 @@ namespace adiar
     pq_1_t comparison_pq_1({f1, f2}, pq_1_memory, max_pq_size, stats_equality.lpq);
 
     // Check for violation on root children, or 'recurse' otherwise
-    label_t level = label_of(fst(v1.uid, v2.uid));
+    label_t level = label_of(fst(v1.uid(), v2.uid()));
 
     ptr_t low1, high1, low2, high2;
     comp_policy::merge_root(low1,high1, low2,high2, level, v1, v2);
 
-    comp_policy::compute_cofactor(on_level(v1, level), low1, high1);
-    comp_policy::compute_cofactor(on_level(v2, level), low2, high2);
+    comp_policy::compute_cofactor(v1.on_level(level), low1, high1);
+    comp_policy::compute_cofactor(v2.on_level(level), low2, high2);
 
     if (comp_policy::resolve_request(comparison_pq_1, low1, low2)
         || comp_policy::resolve_request(comparison_pq_1, high1, high2)) {
@@ -127,10 +127,10 @@ namespace adiar
 
       // Seek request partially in stream
       ptr_t t_seek = with_data ? snd(t1,t2) : fst(t1,t2);
-      while (v1.uid < t_seek && in_nodes_1.can_pull()) {
+      while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
         v1 = in_nodes_1.pull();
       }
-      while (v2.uid < t_seek && in_nodes_2.can_pull()) {
+      while (v2.uid() < t_seek && in_nodes_2.can_pull()) {
         v2 = in_nodes_2.pull();
       }
 
@@ -143,10 +143,10 @@ namespace adiar
       // Forward information across the level
       if (!with_data
           && !is_terminal(t1) && !is_terminal(t2) && label_of(t1) == label_of(t2)
-          && (v1.uid != t1 || v2.uid != t2)) {
+          && (v1.uid() != t1 || v2.uid() != t2)) {
         node_t v0 = prod_from_1(t1,t2) ? v1 : v2;
 
-        comparison_pq_2.push({ t1, t2, v0.low, v0.high });
+        comparison_pq_2.push({ t1, t2, v0.low(), v0.high() });
         continue;
       }
 

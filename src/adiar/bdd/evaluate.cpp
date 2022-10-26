@@ -19,7 +19,7 @@ namespace adiar
 
     inline ptr_t visit(const node_t &n)
     {
-      return af(label_of(n)) ? n.high : n.low;
+      return af(n.label()) ? n.high() : n.low();
     }
 
     inline void visit(const bool s)
@@ -50,14 +50,14 @@ namespace adiar
 
     inline ptr_t visit(const node_t &n)
     {
-      const label_t label = label_of(n);
+      const label_t label = n.label();
       while (label_of(a) < label) {
         adiar_assert(as.can_pull(), "Given assignment file is insufficient to traverse BDD");
         a = as.pull();
       }
       adiar_assert(label_of(a) == label, "Missing assignment for node visited in BDD");
 
-      return value_of(a) ? n.high : n.low;
+      return value_of(a) ? n.high() : n.low();
     }
 
     inline void visit(const bool s)

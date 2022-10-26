@@ -16,17 +16,17 @@ namespace adiar
   {
     node_stream<> in_nodes(dd);
     node_t n = in_nodes.pull();
-    ptr_t tgt = n.uid;
+    ptr_t tgt = n.uid();
 
     while (!is_terminal(tgt) && !is_nil(tgt)) {
-      while (n.uid < tgt) { n = in_nodes.pull(); }
+      while (n.uid() < tgt) { n = in_nodes.pull(); }
 
-      adiar_debug(n.uid == tgt,
+      adiar_debug(n.uid() == tgt,
                   "Invalid uid chasing; fell out of Decision Diagram");
 
       tgt = visitor.visit(n);
 
-      adiar_debug((tgt == n.low) || (tgt == n.high) || (is_nil(tgt)),
+      adiar_debug((tgt == n.low()) || (tgt == n.high()) || (is_nil(tgt)),
                   "Visitor pointer should be within the diagram or NIL");
     }
     if (!is_nil(tgt)) {
@@ -40,7 +40,7 @@ namespace adiar
     inline ptr_t visit(const node_t &n)
     {
       // Only pick high, if low is the false terminal
-      return is_false(n.low) ? n.high : n.low;
+      return is_false(n.low()) ? n.high() : n.low();
     }
 
     inline void visit(const bool /*s*/)
@@ -53,7 +53,7 @@ namespace adiar
     inline ptr_t visit(const node_t &n)
     {
       // Pick high as long it is not the false terminal
-      return is_node(n.high) || value_of(n.high) ? n.high : n.low;
+      return is_node(n.high()) || value_of(n.high()) ? n.high() : n.low();
     }
 
     inline void visit(const bool /*s*/)

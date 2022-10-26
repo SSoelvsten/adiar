@@ -22,7 +22,7 @@ namespace adiar
   // Data structures
   struct path_sum
   {
-    uid_t uid;
+    uid_t uid; // <-- TODO: rename to 'target'
     uint64_t sum;
   };
 
@@ -101,33 +101,33 @@ namespace adiar
 
     {
       node_t root = ns.pull();
-      typename count_policy::queue_t request = { root.uid, 1u };
+      typename count_policy::queue_t request = { root.uid(), 1u };
 
-      result += count_policy::forward_request(count_pq, varcount, root.low, request);
-      result += count_policy::forward_request(count_pq, varcount, root.high, request);
+      result += count_policy::forward_request(count_pq, varcount, root.low(), request);
+      result += count_policy::forward_request(count_pq, varcount, root.high(), request);
     }
 
     // Take out the rest of the nodes and process them one by one
     while (ns.can_pull()) {
       node_t n = ns.pull();
 
-      if (!count_pq.has_current_level() || count_pq.current_level() != label_of(n)) {
+      if (!count_pq.has_current_level() || count_pq.current_level() != n.label()) {
         count_pq.setup_next_level();
       }
-      adiar_debug(count_pq.current_level() == label_of(n),
+      adiar_debug(count_pq.current_level() == n.label(),
                   "Priority queue is out-of-sync with node stream");
-      adiar_debug(count_pq.can_pull() && count_pq.top().uid == n.uid,
+      adiar_debug(count_pq.can_pull() && count_pq.top().uid == n.uid(),
                   "Priority queue is out-of-sync with node stream");
 
       // Resolve requests
       typename count_policy::queue_t request = count_pq.pull();
 
-      while (count_pq.can_pull() && count_pq.top().uid == n.uid) {
+      while (count_pq.can_pull() && count_pq.top().uid == n.uid()) {
         request = count_policy::combine_requests(request, count_pq.pull());
       }
 
-      result += count_policy::forward_request(count_pq, varcount, n.low, request);
-      result += count_policy::forward_request(count_pq, varcount, n.high, request);
+      result += count_policy::forward_request(count_pq, varcount, n.low(), request);
+      result += count_policy::forward_request(count_pq, varcount, n.high(), request);
     }
 
     return result;

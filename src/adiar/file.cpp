@@ -14,9 +14,9 @@ namespace adiar
     node_stream<reverse> ns(file);
     node_t n = ns.pull();
 
-    adiar_debug(!is_terminal(n), "Cannot extract label from terminal-only file");
+    adiar_debug(!n.is_terminal(), "Cannot extract label from terminal-only file");
 
-    return label_of(n);
+    return n.label();
   }
 
   label_t min_label(const node_file &file)

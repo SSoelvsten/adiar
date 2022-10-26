@@ -10,7 +10,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline arc_t low_arc_of(const node_t &n)
   {
-    return { n.uid, n.low };
+    return { n.uid(), n.low() };
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -18,7 +18,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline arc_t high_arc_of(const node_t &n)
   {
-    return { flag(n.uid), n.high };
+    return { flag(n.uid()), n.high() };
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ namespace adiar {
     adiar_debug(!is_high(low), "High flag set on low child");
     adiar_debug(is_high(high), "High flag not set on high child");
 
-    return { low.source, low.target, high.target };
+    return node(low.source, low.target, high.target);
   }
 }
 

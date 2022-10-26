@@ -89,7 +89,7 @@ namespace adiar
   public:
     static bool resolve_terminals(const node_t &v1, const node_t &v2, bool &ret_value)
     {
-      ret_value = is_terminal(v1) && is_terminal(v2) && value_of(v1) == value_of(v2);
+      ret_value = v1.is_terminal() && v2.is_terminal() && v1.value() == v2.value();
 #ifdef ADIAR_STATS
       stats_equality.slow_check.exit_on_root++;
 #endif
@@ -102,8 +102,8 @@ namespace adiar
 #ifdef ADIAR_STATS
       stats_equality.slow_check.exit_on_root++;
 #endif
-      adiar_debug(label_of(v1) == label_of(v2), "Levels match per the precondition");
-      return v1.low == v2.low && v1.high == v2.high;
+      adiar_debug(v1.label() == v2.label(), "Levels match per the precondition");
+      return v1.low() == v2.low() && v1.high() == v2.high();
     }
 
   public:

@@ -65,13 +65,13 @@ namespace adiar {
   public:
     static bool resolve_terminals(const node_t &v1, const node_t &v2, bool &ret_value)
     {
-      if (is_terminal(v1) && is_terminal(v2)) {
-        ret_value = !value_of(v1) || value_of(v2);
+      if (v1.is_terminal() && v2.is_terminal()) {
+        ret_value = !v1.value() || v2.value();
         return true;
-      } if (is_false(v1)) {
+      } if (v1.is_false()) {
         ret_value = true;
         return true;
-      } else if (is_true(v2)) {
+      } else if (v2.is_true()) {
         ret_value = false;
         return true;
       }
@@ -81,8 +81,8 @@ namespace adiar {
   public:
     static bool resolve_singletons(const node_t &v1, const node_t &v2)
     {
-      return label_of(v1) == label_of(v2)
-        && v1.low <= v2.low && v1.high <= v2.high;
+      return v1.label() == v2.label()
+        && v1.low() <= v2.low() && v1.high() <= v2.high();
     }
 
   public:
@@ -140,16 +140,16 @@ namespace adiar {
   public:
     static bool resolve_terminals(const node_t &v1, const node_t &v2, bool &ret_value)
     {
-      ret_value = is_false(v1) || is_false(v2);
-      return (is_terminal(v1) && is_terminal(v2)) || ret_value;
+      ret_value = v1.is_false() || v2.is_false();
+      return (v1.is_terminal() && v2.is_terminal()) || ret_value;
     }
 
   public:
     static bool resolve_singletons(const node_t &v1, const node_t &v2)
     {
-      return label_of(v1) != label_of(v2)
-        || v1.low != v2.low
-        || v1.high != v2.high;
+      return v1.label() != v2.label()
+        || v1.low() != v2.low()
+        || v1.high() != v2.high();
     }
 
   public:

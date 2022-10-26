@@ -17,10 +17,10 @@ go_bandit([]() {
       { // Garbage collect writer early
         node_writer rw(reduced_bdd);
 
-        rw << create_node(42,1, create_terminal_ptr(false), create_terminal_ptr(true))
-           << create_node(42,0, create_terminal_ptr(true), create_terminal_ptr(false))
-           << create_node(1,2, create_node_ptr(42,0), create_node_ptr(42,1))
-           << create_node(0,1, create_node_ptr(1,2), create_terminal_ptr(false))
+        rw << node(42,1, create_terminal_ptr(false), create_terminal_ptr(true))
+           << node(42,0, create_terminal_ptr(true), create_terminal_ptr(false))
+           << node(1,2, create_node_ptr(42,0), create_node_ptr(42,1))
+           << node(0,1, create_node_ptr(1,2), create_terminal_ptr(false))
           ;
       }
 
@@ -58,9 +58,9 @@ go_bandit([]() {
       { // Garbage collect writer early
         node_writer rw(reduced_zdd);
 
-        rw << create_node(42,0, create_terminal_ptr(false), create_terminal_ptr(true))
-           << create_node(1,2, create_node_ptr(42,0), create_node_ptr(42,0))
-           << create_node(0,1, create_node_ptr(1,2), create_terminal_ptr(true))
+        rw << node(42,0, create_terminal_ptr(false), create_terminal_ptr(true))
+           << node(1,2, create_node_ptr(42,0), create_node_ptr(42,0))
+           << node(0,1, create_node_ptr(1,2), create_terminal_ptr(true))
           ;
       }
 

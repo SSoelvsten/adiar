@@ -129,8 +129,8 @@ namespace adiar
 
       node_t n = from_then ? in_nodes_then.pull() : in_nodes_else.pull();
 
-      if (from_then && !in_nodes_then.can_pull()) { root_then = n.uid; }
-      if (!from_then && !in_nodes_else.can_pull()) { root_else = n.uid; }
+      if (from_then && !in_nodes_then.can_pull()) { root_then = n.uid(); }
+      if (!from_then && !in_nodes_else.can_pull()) { root_else = n.uid(); }
 
       nw << n;
     }
@@ -142,17 +142,17 @@ namespace adiar
     node_stream<true> in_nodes_if(bdd_if);
 
     while (in_nodes_if.can_pull()) {
-      node_t n = in_nodes_if.pull();
+      const node_t n = in_nodes_if.pull();
 
-      n.low = is_terminal(n.low)
-        ? (value_of(n.low) ? root_then : root_else)
-        : n.low;
+      const ptr_t low = is_terminal(n.low())
+        ? (value_of(n.low()) ? root_then : root_else)
+        : n.low();
 
-      n.high = is_terminal(n.high)
-        ? (value_of(n.high) ? root_then : root_else)
-        : n.high;
+      const ptr_t high = is_terminal(n.high())
+        ? (value_of(n.high()) ? root_then : root_else)
+        : n.high();
 
-      nw << n;
+      nw << node(n.uid(), low, high);
     }
 
     for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
@@ -175,19 +175,19 @@ namespace adiar
       // and we should be seeing it later
       && t_seek < t
       // and we haven't by accident just run into it anyway
-      && v.uid != t;
+      && v.uid() != t;
   }
 
   inline void ite_init_request(node_stream<> &in_nodes, node_t &v, label_t out_label,
                                ptr_t &low, ptr_t &high)
   {
-    if (label_of(v) == out_label) {
-      low = v.low;
-      high = v.high;
+    if (v.label() == out_label) {
+      low = v.low();
+      high = v.high();
 
       if (in_nodes.can_pull()) { v = in_nodes.pull(); }
     } else {
-      low = high = v.uid;
+      low = high = v.uid();
     }
   }
 
@@ -232,8 +232,8 @@ namespace adiar
     node_stream<> in_nodes_if(bdd_if);
     node_t v_if = in_nodes_if.pull();
 
-    if (is_terminal(v_if)) {
-      return value_of(v_if) ? bdd_then : bdd_else;
+    if (v_if.is_terminal()) {
+      return v_if.value() ? bdd_then : bdd_else;
     }
 
     node_stream<> in_nodes_then(bdd_then);
@@ -245,8 +245,8 @@ namespace adiar
     // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
     // the two others, then we can merely zip the 'then' and 'else' BDDs. This
     // is only O((N1+N2+N3)/B) I/Os!
-    if (max_label(bdd_if) < label_of(v_then) &&
-        max_label(bdd_if) < label_of(v_else) &&
+    if (max_label(bdd_if) < v_then.label() &&
+        max_label(bdd_if) < v_else.label() &&
         disjoint_labels(bdd_then, bdd_else)) {
       return __ite_zip_bdds(bdd_if,bdd_then,bdd_else);
     }
@@ -261,7 +261,7 @@ namespace adiar
     pq_3_t ite_pq_3(pq_3_memory, max_pq_3_size);
 
     // Process root and create initial recursion requests
-    label_t out_label = label_of(fst(v_if.uid, v_then.uid, v_else.uid));
+    label_t out_label = label_of(fst(v_if.uid(), v_then.uid(), v_else.uid()));
     id_t out_id = 0;
 
     ptr_t low_if, low_then, low_else, high_if, high_then, high_else;
@@ -342,13 +342,13 @@ namespace adiar
                    : with_data_1 ? t_snd
                                  : t_fst;
 
-      while (v_if.uid < t_seek && in_nodes_if.can_pull()) {
+      while (v_if.uid() < t_seek && in_nodes_if.can_pull()) {
         v_if = in_nodes_if.pull();
       }
-      while (v_then.uid < t_seek && in_nodes_then.can_pull()) {
+      while (v_then.uid() < t_seek && in_nodes_then.can_pull()) {
         v_then = in_nodes_then.pull();
       }
-      while (v_else.uid < t_seek && in_nodes_else.can_pull()) {
+      while (v_else.uid() < t_seek && in_nodes_else.can_pull()) {
         v_else = in_nodes_else.pull();
       }
 
@@ -359,9 +359,9 @@ namespace adiar
         // An element should be forwarded, if it was not already forwarded
         // (t_seek <= t_x), if it isn't the last one to seek (t_x < t_trd), and
         // if we actually are holding it.
-        bool forward_if   = t_seek <= t_if   && t_if < t_trd   && v_if.uid == t_if;
-        bool forward_then = t_seek == t_then && t_then < t_trd && v_then.uid == t_then;
-        bool forward_else = t_seek == t_else && t_else < t_trd && v_else.uid == t_else;
+        bool forward_if   = t_seek <= t_if   && t_if < t_trd   && v_if.uid() == t_if;
+        bool forward_then = t_seek == t_then && t_then < t_trd && v_then.uid() == t_then;
+        bool forward_else = t_seek == t_else && t_else < t_trd && v_else.uid() == t_else;
 
         int number_of_elements_to_forward = ((int) forward_if)
                                           + ((int) forward_then)
@@ -376,24 +376,24 @@ namespace adiar
           if (with_data_1) {
             if (t_if < t_seek || forward_else) {
               node_t v2 = forward_else ? v_else : v_then;
-              data_2_low = v2.low;
-              data_2_high = v2.high;
+              data_2_low = v2.low();
+              data_2_high = v2.high();
             } else { // if (forward_if || t_else < t_seek)
               data_2_low = data_1_low;
               data_2_high = data_1_high;
 
               node_t v1 = forward_if ? v_if : v_then;
-              data_1_low = v1.low;
-              data_1_high = v1.high;
+              data_1_low = v1.low();
+              data_1_high = v1.high();
             }
           } else {
             node_t v1 = forward_if   ? v_if   : v_then;
             node_t v2 = forward_else ? v_else : v_then;
 
-            data_1_low = v1.low;
-            data_1_high = v1.high;
-            data_2_low = v2.low;
-            data_2_high = v2.high;
+            data_1_low = v1.low();
+            data_1_high = v1.high();
+            data_2_low = v2.low();
+            data_2_high = v2.high();
           }
 
           ite_pq_3.push({ t_if, t_then, t_else, source, data_1_low, data_1_high, data_2_low, data_2_high });
@@ -410,13 +410,13 @@ namespace adiar
                     : forward_then ? v_then
                                    : v_else;
 
-          ite_pq_2.push({ t_if, t_then, t_else, source, v1.low, v1.high });
+          ite_pq_2.push({ t_if, t_then, t_else, source, v1.low(), v1.high() });
 
           while (ite_pq_1.can_pull() && ite_pq_1.top().t1 == t_if
                                      && ite_pq_1.top().t2 == t_then
                                      && ite_pq_1.top().t3 == t_else) {
             source = ite_pq_1.pull().source;
-            ite_pq_2.push({ t_if, t_then, t_else, source, v1.low, v1.high });
+            ite_pq_2.push({ t_if, t_then, t_else, source, v1.low(), v1.high() });
           }
         }
         continue;
@@ -426,15 +426,15 @@ namespace adiar
       if (is_terminal(t_if) || out_label < label_of(t_if)) {
         low_if = high_if = t_if;
       } else {
-        low_if = t_if == v_if.uid ? v_if.low : data_1_low;
-        high_if = t_if == v_if.uid ? v_if.high : data_1_high;
+        low_if = t_if == v_if.uid() ? v_if.low() : data_1_low;
+        high_if = t_if == v_if.uid() ? v_if.high() : data_1_high;
       }
 
       if (is_nil(t_then) || is_terminal(t_then) || out_label < label_of(t_then)) {
         low_then = high_then = t_then;
-      } else if (t_then == v_then.uid) {
-        low_then = v_then.low;
-        high_then = v_then.high;
+      } else if (t_then == v_then.uid()) {
+        low_then = v_then.low();
+        high_then = v_then.high();
       } else if (t_seek <= t_if) {
         low_then = data_1_low;
         high_then = data_1_high;
@@ -445,9 +445,9 @@ namespace adiar
 
       if (is_nil(t_else) || is_terminal(t_else) || out_label < label_of(t_else)) {
         low_else = high_else = t_else;
-      } else if (t_else == v_else.uid) {
-        low_else = v_else.low;
-        high_else = v_else.high;
+      } else if (t_else == v_else.uid()) {
+        low_else = v_else.low();
+        high_else = v_else.high();
       } else if (t_seek <= t_if && t_seek <= t_then) {
         low_else = data_1_low;
         high_else = data_1_high;

@@ -17,13 +17,13 @@ go_bandit([]() {
 
          AssertThat(out_nodes.can_pull(), Is().True());
 
-         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                                terminal_F,
                                                                terminal_T)));
 
          AssertThat(out_nodes.can_pull(), Is().True());
 
-         AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                                create_node_ptr(1,MAX_ID),
                                                                terminal_T)));
 
@@ -40,13 +40,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               terminal_F,
                                                               terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                               create_node_ptr(1,MAX_ID),
                                                               terminal_T)));
 
@@ -66,7 +66,7 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
 
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream<node_t> out_meta(out);
@@ -99,7 +99,7 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
 
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream<node_t> out_meta(out);
@@ -134,7 +134,7 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
 
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream<node_t> out_meta(out);
@@ -182,7 +182,7 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
 
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                             terminal_F,
                                                             terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().False());
@@ -319,19 +319,19 @@ go_bandit([]() {
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n3
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
                                                             terminal_F,
                                                             terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n2
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                             create_node_ptr(2,MAX_ID),
                                                             terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                             create_node_ptr(2,MAX_ID),
                                                             create_node_ptr(1,MAX_ID))));
       AssertThat(out_nodes.can_pull(), Is().False());
@@ -394,27 +394,27 @@ go_bandit([]() {
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n5
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_T, terminal_F)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID, terminal_T, terminal_F)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n4
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID-1, terminal_F, terminal_T)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID-1, terminal_F, terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n3
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                             create_node_ptr(2, MAX_ID),
                                                             terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n2
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID-1,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID-1,
                                                             create_node_ptr(2,MAX_ID-1),
                                                             create_node_ptr(2,MAX_ID))));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                             create_node_ptr(1,MAX_ID-1),
                                                             create_node_ptr(1,MAX_ID))));
       AssertThat(out_nodes.can_pull(), Is().False());
@@ -467,7 +467,7 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
 
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                             terminal_T,
                                                             terminal_F)));
       AssertThat(out_nodes.can_pull(), Is().False());
@@ -519,7 +519,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                               terminal_F,
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -559,7 +559,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               terminal_T,
                                                               terminal_F)));
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -647,21 +647,21 @@ go_bandit([]() {
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n5
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(5, MAX_ID, terminal_T, terminal_F)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(5, MAX_ID, terminal_T, terminal_F)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n4
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID, terminal_T, terminal_F)));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID, terminal_T, terminal_F)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n3
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID-1,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID-1,
                                                             create_node_ptr(5, MAX_ID),
                                                             terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
-      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
                                                             create_node_ptr(4,MAX_ID-1),
                                                             create_node_ptr(4,MAX_ID))));
       AssertThat(out_nodes.can_pull(), Is().False());
@@ -712,7 +712,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               terminal_F,
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -755,7 +755,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -789,7 +789,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -823,7 +823,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -868,19 +868,19 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
                                                               terminal_F,
                                                               terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               terminal_F,
                                                               create_node_uid(2, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                               create_node_uid(2, MAX_ID),
                                                               create_node_uid(1, MAX_ID))));
 
@@ -932,7 +932,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               terminal_F,
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -990,7 +990,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               terminal_F,
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -1033,7 +1033,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -1067,7 +1067,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -1112,19 +1112,19 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
                                                               terminal_F,
                                                               terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               create_node_uid(2, MAX_ID),
                                                               create_node_uid(2, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                               create_node_uid(2, MAX_ID),
                                                               create_node_uid(1, MAX_ID))));
 

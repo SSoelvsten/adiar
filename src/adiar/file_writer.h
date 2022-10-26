@@ -329,7 +329,7 @@ namespace adiar {
   {
   private:
     // Buffer of latest pushed element, such that one can compare with it.
-    node_t _latest_node = { NIL, NIL, NIL };
+    node_t _latest_node = node(NIL, NIL, NIL); // <-- dummy 'no latest' value
 
     // Canonicity flag
     bool _canonical = true;
@@ -374,32 +374,32 @@ namespace adiar {
     {
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
-      if (is_nil(_latest_node.uid)) { // First node pushed
-        _canonical = is_terminal(n) || id_of(n) == MAX_ID;
+      if (is_nil(_latest_node.uid())) { // First node pushed
+        _canonical = n.is_terminal() || n.id() == MAX_ID;
       } else { // Check validity of input based on prior written node
-        adiar_debug(!is_terminal(_latest_node),
+        adiar_debug(!_latest_node.is_terminal(),
                      "Cannot push a node after having pushed a terminal");
-        adiar_debug(!is_terminal(n),
+        adiar_debug(!n.is_terminal(),
                      "Cannot push a terminal into non-empty file");
 
         // Check it is canonically sorted
         if (_canonical) {
-          if (label_of(_latest_node) == label_of(n)) {
-            bool id_diff = id_of(n.uid) == id_of(_latest_node) - 1u;
-            bool children_ordered = n.high < _latest_node.high
-              || (n.high == _latest_node.high && n.low < _latest_node.low);
+          if (_latest_node.label() == n.label()) {
+            bool id_diff = id_of(n.uid()) == _latest_node.id() - 1u;
+            bool children_ordered = n.high() < _latest_node.high()
+              || (n.high() == _latest_node.high() && n.low() < _latest_node.low());
 
             _canonical = id_diff && children_ordered;
           } else {
-            bool id_reset = id_of(n) == MAX_ID;
+            bool id_reset = n.id() == MAX_ID;
             _canonical = id_reset;
           }
         }
 
         // Check if this is the first node of a new level
-        if (label_of(n) != label_of(_latest_node)) {
+        if (n.label() != _latest_node.label()) {
           // Update level information with the level just finished
-          meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
+          meta_file_writer::unsafe_push(create_level_info(_latest_node.label(),
                                                           _level_size));
           _level_size = 0u;
 
@@ -408,31 +408,31 @@ namespace adiar {
                                                 _curr_1level_short_internal);
 
           _curr_1level_short_internal = 0u;
-          _long_internal_uid = create_node_uid(label_of(_latest_node), MAX_ID);
+          _long_internal_uid = create_node_uid(_latest_node.label(), MAX_ID);
         }
       }
 
       // 1-level cut
       const bool is_pushing_to_bottom = _long_internal_uid == NIL;
-      if (is_pushing_to_bottom && !is_terminal(n)) {
-        _terminals_at_bottom[value_of(n.low)]++;
-        _terminals_at_bottom[value_of(n.high)]++;
+      if (is_pushing_to_bottom && !n.is_terminal()) {
+        _terminals_at_bottom[value_of(n.low())]++;
+        _terminals_at_bottom[value_of(n.high())]++;
       }
 
-      if (is_node(n.low)) {
-        if (n.low > _long_internal_uid) { _number_of_long_internal_arcs++; }
+      if (is_node(n.low())) {
+        if (n.low() > _long_internal_uid) { _number_of_long_internal_arcs++; }
         else { _curr_1level_short_internal++; }
       }
 
-      if (is_node(n.high)) {
-        if (n.high > _long_internal_uid) { _number_of_long_internal_arcs++; }
+      if (is_node(n.high())) {
+        if (n.high() > _long_internal_uid) { _number_of_long_internal_arcs++; }
         else { _curr_1level_short_internal++; }
       }
 
       // Update terminal counters
-      if (is_terminal(n.low)) { _file_ptr->number_of_terminals[value_of(n.low)]++; }
-      if (is_terminal(n.high)) { _file_ptr->number_of_terminals[value_of(n.high)]++; }
-      if (is_terminal(n.uid)) { _file_ptr->number_of_terminals[value_of(n.uid)]++; }
+      if (is_terminal(n.low())) { _file_ptr->number_of_terminals[value_of(n.low())]++; }
+      if (is_terminal(n.high())) { _file_ptr->number_of_terminals[value_of(n.high())]++; }
+      if (is_terminal(n.uid())) { _file_ptr->number_of_terminals[value_of(n.uid())]++; }
 
       // Write node to file
       _latest_node = n;
@@ -459,8 +459,8 @@ namespace adiar {
     {
       meta_file_writer::unsafe_push(n, 0);
 
-      if (is_terminal(n.low)) { _file_ptr->number_of_terminals[value_of(n.low)]++; }
-      if (is_terminal(n.high)) { _file_ptr->number_of_terminals[value_of(n.high)]++; }
+      if (is_terminal(n.low())) { _file_ptr->number_of_terminals[value_of(n.low())]++; }
+      if (is_terminal(n.high())) { _file_ptr->number_of_terminals[value_of(n.high())]++; }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -497,7 +497,7 @@ namespace adiar {
       meta_file_writer::attach(f);
 
       //Reset all meta-data
-      _latest_node = { NIL, NIL, NIL };
+      _latest_node = node(NIL, NIL, NIL);
 
       _canonical = true;
 
@@ -529,10 +529,10 @@ namespace adiar {
       _file_ptr -> canonical = _canonical;
 
       // Has '.push' been used?
-      if (!is_nil(_latest_node.uid)) {
+      if (!is_nil(_latest_node.uid())) {
         // Output level information of the final level
-        if (!is_terminal(_latest_node)) {
-          meta_file_writer::unsafe_push(create_level_info(label_of(_latest_node),
+        if (!_latest_node.is_terminal()) {
+          meta_file_writer::unsafe_push(create_level_info(_latest_node.label(),
                                                           _level_size));
         }
 

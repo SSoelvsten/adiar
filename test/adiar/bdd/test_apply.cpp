@@ -7,10 +7,10 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(bdd_F);
-      nw_F << create_terminal(false);
+      nw_F << node(false);
 
       node_writer nw_T(bdd_T);
-      nw_T << create_terminal(true);
+      nw_T << node(true);
     }
 
     ptr_t terminal_T = create_terminal_ptr(true);
@@ -23,16 +23,16 @@ go_bandit([]() {
 
     { // Garbage collect writers early
       node_writer nw_x0(bdd_x0);
-      nw_x0 << create_node(0,MAX_ID, terminal_F, terminal_T);
+      nw_x0 << node(0,MAX_ID, terminal_F, terminal_T);
 
       node_writer nw_not_x0(bdd_not_x0);
-      nw_not_x0 << create_node(0,MAX_ID, terminal_T, terminal_F);
+      nw_not_x0 << node(0,MAX_ID, terminal_T, terminal_F);
 
       node_writer nw_x1(bdd_x1);
-      nw_x1 << create_node(1,MAX_ID, terminal_F, terminal_T);
+      nw_x1 << node(1,MAX_ID, terminal_F, terminal_T);
 
       node_writer nw_x2(bdd_x2);
-      nw_x2 << create_node(2,MAX_ID, terminal_F, terminal_T);
+      nw_x2 << node(2,MAX_ID, terminal_F, terminal_T);
     }
 
     node_file bdd_1;
@@ -48,11 +48,11 @@ go_bandit([]() {
                F T
     */
 
-    node_t n1_5 = create_node(3,MAX_ID, terminal_F, terminal_T);
-    node_t n1_4 = create_node(2,MAX_ID, terminal_T, n1_5.uid);
-    node_t n1_3 = create_node(2,MAX_ID-1, terminal_F, terminal_T);
-    node_t n1_2 = create_node(1,MAX_ID, n1_3.uid, n1_4.uid);
-    node_t n1_1 = create_node(0,MAX_ID, n1_3.uid, n1_2.uid);
+    node_t n1_5 = node(3,MAX_ID, terminal_F, terminal_T);
+    node_t n1_4 = node(2,MAX_ID, terminal_T, n1_5.uid());
+    node_t n1_3 = node(2,MAX_ID-1, terminal_F, terminal_T);
+    node_t n1_2 = node(1,MAX_ID, n1_3.uid(), n1_4.uid());
+    node_t n1_1 = node(0,MAX_ID, n1_3.uid(), n1_2.uid());
 
     { // Garbage collect early and free write-lock
       node_writer nw_1(bdd_1);
@@ -72,8 +72,8 @@ go_bandit([]() {
            T F
     */
 
-    node_t n2_2 = create_node(3,MAX_ID, terminal_T, terminal_F);
-    node_t n2_1 = create_node(1,MAX_ID, n2_2.uid, terminal_T);
+    node_t n2_2 = node(3,MAX_ID, terminal_T, terminal_F);
+    node_t n2_1 = node(1,MAX_ID, n2_2.uid(), terminal_T);
 
     { // Garbage collect early and free write-lock
       node_writer nw_2(bdd_2);
@@ -97,14 +97,14 @@ go_bandit([]() {
 
     */
 
-    node_t n3_8 = create_node(3,MAX_ID, terminal_F, terminal_T);
-    node_t n3_7 = create_node(2,MAX_ID, terminal_T, terminal_F);
-    node_t n3_6 = create_node(2,MAX_ID - 1, n3_8.uid, terminal_T);
-    node_t n3_5 = create_node(2,MAX_ID - 2, terminal_T, n3_8.uid);
-    node_t n3_4 = create_node(2,MAX_ID - 3, terminal_F, terminal_T);
-    node_t n3_3 = create_node(1,MAX_ID, n3_4.uid, n3_6.uid);
-    node_t n3_2 = create_node(1,MAX_ID - 1, n3_5.uid, n3_7.uid);
-    node_t n3_1 = create_node(0,MAX_ID, n3_2.uid, n3_3.uid);
+    node_t n3_8 = node(3,MAX_ID, terminal_F, terminal_T);
+    node_t n3_7 = node(2,MAX_ID, terminal_T, terminal_F);
+    node_t n3_6 = node(2,MAX_ID - 1, n3_8.uid(), terminal_T);
+    node_t n3_5 = node(2,MAX_ID - 2, terminal_T, n3_8.uid());
+    node_t n3_4 = node(2,MAX_ID - 3, terminal_F, terminal_T);
+    node_t n3_3 = node(1,MAX_ID, n3_4.uid(), n3_6.uid());
+    node_t n3_2 = node(1,MAX_ID - 1, n3_5.uid(), n3_7.uid());
+    node_t n3_1 = node(0,MAX_ID, n3_2.uid(), n3_3.uid());
 
     { // Garbage collect early and free write-lock
       node_writer nw_3(bdd_3);
@@ -141,7 +141,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -160,14 +160,14 @@ go_bandit([]() {
         node_file bdd_T2;
         {
           node_writer w(bdd_T2);
-          w << create_terminal(true);
+          w << node(true);
         }
 
         __bdd out = bdd_and(bdd_T, bdd_T2);
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -195,7 +195,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -252,7 +252,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -392,17 +392,17 @@ go_bandit([]() {
         node_file bdd_group_1, bdd_group_2;
         { // Garbage collect writers to free write-lock
           node_writer w1(bdd_group_1);
-          w1 << create_node(2,1, create_terminal_ptr(false), create_terminal_ptr(true))
-             << create_node(2,0, create_terminal_ptr(true), create_terminal_ptr(false))
-             << create_node(1,0, create_node_ptr(2,0), create_node_ptr(2,1))
-             << create_node(0,1, create_node_ptr(1,0), create_node_ptr(2,1));
+          w1 << node(2,1, create_terminal_ptr(false), create_terminal_ptr(true))
+             << node(2,0, create_terminal_ptr(true), create_terminal_ptr(false))
+             << node(1,0, create_node_ptr(2,0), create_node_ptr(2,1))
+             << node(0,1, create_node_ptr(1,0), create_node_ptr(2,1));
 
           node_writer w2(bdd_group_2);
-          w2 << create_node(3,0, create_terminal_ptr(false), create_terminal_ptr(true))
-             << create_node(2,1, create_node_ptr(3,0), create_terminal_ptr(false))
-             << create_node(2,0, create_terminal_ptr(false), create_node_ptr(3,0))
-             << create_node(1,0, create_node_ptr(2,1), create_node_ptr(2,0))
-             << create_node(0,1, create_node_ptr(1,0), create_node_ptr(2,0));
+          w2 << node(3,0, create_terminal_ptr(false), create_terminal_ptr(true))
+             << node(2,1, create_node_ptr(3,0), create_terminal_ptr(false))
+             << node(2,0, create_terminal_ptr(false), create_node_ptr(3,0))
+             << node(1,0, create_node_ptr(2,1), create_node_ptr(2,0))
+             << node(0,1, create_node_ptr(1,0), create_node_ptr(2,0));
         }
 
         __bdd out = bdd_and(bdd_group_1, bdd_group_2);
@@ -487,7 +487,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -509,7 +509,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -529,14 +529,14 @@ go_bandit([]() {
 
         {
           node_writer w(bdd_F2);
-          w << create_terminal(false);
+          w << node(false);
         }
 
         __bdd out = bdd_or(bdd_F, bdd_F2);
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -620,7 +620,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -641,7 +641,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -742,7 +742,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -765,7 +765,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -785,7 +785,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()) ;
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1150,7 +1150,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1171,7 +1171,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1199,7 +1199,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1219,7 +1219,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1239,7 +1239,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1316,7 +1316,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 

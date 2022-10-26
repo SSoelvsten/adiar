@@ -172,11 +172,11 @@ namespace adiar
                            label_t /* level */,
                            const node_t &v1, const node_t &v2)
     {
-      low1 = v1.low;
-      high1 = v1.high;
+      low1 = v1.low();
+      high1 = v1.high();
 
-      low2 = v2.low;
-      high2 = v2.high;
+      low2 = v2.low();
+      high2 = v2.high();
     }
 
   public:
@@ -185,11 +185,11 @@ namespace adiar
                            const node_t &v1, const node_t &v2,
                            ptr_t data_low, ptr_t data_high)
     {
-      low1  = t1 < t_seek ? data_low  : v1.low;
-      high1 = t1 < t_seek ? data_high : v1.high;
+      low1  = t1 < t_seek ? data_low  : v1.low();
+      high1 = t1 < t_seek ? data_high : v1.high();
 
-      low2  = t2 < t_seek ? data_low  : v2.low;
-      high2 = t2 < t_seek ? data_high : v2.high;
+      low2  = t2 < t_seek ? data_low  : v2.low();
+      high2 = t2 < t_seek ? data_high : v2.high();
     }
   };
 
@@ -199,11 +199,11 @@ namespace adiar
     static void __merge_root(const node_t &v, label_t level,
                              ptr_t &low, ptr_t &high)
     {
-      if (!is_terminal(v) && label_of(v) == level) {
-        low = v.low;
-        high = v.high;
+      if (!v.is_terminal() && v.label() == level) {
+        low = v.low();
+        high = v.high();
       } else {
-        low = high = v.uid;
+        low = high = v.uid();
       }
     }
 
@@ -224,13 +224,13 @@ namespace adiar
     {
       if (is_terminal(t1) || is_terminal(t2) || label_of(t1) != label_of(t2)) {
         if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_terminal(t2)
-          low1 = v1.low;
-          high1 = v1.high;
+          low1 = v1.low();
+          high1 = v1.high();
           low2 = high2 = t2;
         } else { // ==> label_of(t1) > label_of(t2) || is_terminal(t1)
           low1 = high1 = t1;
-          low2 = v2.low;
-          high2 = v2.high;
+          low2 = v2.low();
+          high2 = v2.high();
         }
       } else {
         prod_same_level_merger::merge_data(low1,high1, low2,high2,
@@ -255,7 +255,7 @@ namespace adiar
     node_t v1 = in_nodes_1.pull();
     node_t v2 = in_nodes_2.pull();
 
-    if (is_terminal(v1) || is_terminal(v2)) {
+    if (v1.is_terminal() || v2.is_terminal()) {
       typename prod_policy::unreduced_t maybe_resolved = prod_policy::resolve_terminal_root(v1, in_1, v2, in_2, op);
 
       if (!(maybe_resolved.template has<no_file>())) {
@@ -271,7 +271,7 @@ namespace adiar
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process root and create initial recursion requests
-    label_t out_label = label_of(fst(v1.uid, v2.uid));
+    label_t out_label = label_of(fst(v1.uid(), v2.uid()));
     id_t out_id = 0;
 
     ptr_t low1, low2, high1, high2;
@@ -279,8 +279,8 @@ namespace adiar
 
     // Shortcut the root (maybe)
     {
-      prod_policy::compute_cofactor(on_level(v1, out_label), low1, high1);
-      prod_policy::compute_cofactor(on_level(v2, out_label), low2, high2);
+      prod_policy::compute_cofactor(v1.on_level(out_label), low1, high1);
+      prod_policy::compute_cofactor(v2.on_level(out_label), low2, high2);
 
       prod_rec root_rec = prod_policy::resolve_request(op, low1, low2, high1, high2);
 
@@ -345,21 +345,21 @@ namespace adiar
 
       // Seek request partially in stream
       ptr_t t_seek = with_data ? snd(t1,t2) : fst(t1,t2);
-      while (v1.uid < t_seek && in_nodes_1.can_pull()) {
+      while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
         v1 = in_nodes_1.pull();
       }
-      while (v2.uid < t_seek && in_nodes_2.can_pull()) {
+      while (v2.uid() < t_seek && in_nodes_2.can_pull()) {
         v2 = in_nodes_2.pull();
       }
 
       // Forward information across the level
       if (is_node(t1) && is_node(t2) && label_of(t1) == label_of(t2)
-          && !with_data && (v1.uid != t1 || v2.uid != t2)) {
-        node_t v0 = t1 == v1.uid /*prod_from_1(t1,t2)*/ ? v1 : v2;
+          && !with_data && (v1.uid() != t1 || v2.uid() != t2)) {
+        node_t v0 = t1 == v1.uid() /*prod_from_1(t1,t2)*/ ? v1 : v2;
 
         while (prod_pq_1.can_pull() && prod_pq_1.top().t1 == t1 && prod_pq_1.top().t2 == t2) {
           source = prod_pq_1.pull().source;
-          prod_pq_2.push({ t1, t2, v0.low, v0.high, source });
+          prod_pq_2.push({ t1, t2, v0.low(), v0.high(), source });
         }
         continue;
       }

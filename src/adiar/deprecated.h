@@ -48,9 +48,93 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create a sink node representing the given boolean value.
   //////////////////////////////////////////////////////////////////////////////
-  [[deprecated("Replaced by create_terminal in 'adiar/internal/data_types/uid.h'")]]
+  [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
   inline node_t create_sink(bool value)
-  { return create_terminal(value); }
+  { return node(value); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a sink node representing the given boolean value.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
+  inline node_t create_terminal(bool value)
+  { return node(value); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a node with the given unique identifier (label, id) and a
+  ///        pointer to its two children.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
+  inline node_t create_node(uid_t uid, ptr_t low, ptr_t high)
+  { return node(uid, low, high); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a node is a terminal.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by member function with same name in 'adiar/internal/data_types/node.h'")]]
+  inline bool is_terminal(const node &n)
+  { return n.is_terminal(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtain the value of a terminal node
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by member function 'value' in 'adiar/internal/data_types/node.h'")]]
+  inline bool value_of(const node &n)
+  { return n.value(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a terminal node is 'false'
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by member function with same name in 'adiar/internal/data_types/node.h'")]]
+  inline bool is_false(const node &n)
+  { return n.is_false(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a terminal node is 'true'
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by member function with same name in 'adiar/internal/data_types/node.h'")]]
+  inline bool is_true(const node &n)
+  { return n.is_true(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtain the label of a non-terminal node.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by member function 'label' in 'adiar/internal/data_types/node.h'")]]
+  inline bool label_of(const node &n)
+  { return n.label(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtain the id of a non-terminal node.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by member function 'label' in 'adiar/internal/data_types/node.h'")]]
+  inline bool id_of(const node &n)
+  { return n.id(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtain the id of a non-terminal node.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by member function with same name in 'adiar/internal/data_types/node.h'")]]
+  inline bool on_level(const node &n, label_t lvl)
+  { return n.on_level(lvl); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a node with the given its label, its level identifier, and a
+  ///        pointer to its two children.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
+  inline node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high)
+  { return node(create_node_uid(label, id), low, high); }
+
+  [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
+  inline node_t create_node(label_t label, id_t id, ptr_t low, node_t high)
+  { return node(label, id, low, high.uid()); }
+
+  [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
+  inline node_t create_node(label_t label, id_t id, node_t low, ptr_t high)
+  { return node(label, id, low.uid(), high); }
+
+  [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
+  inline node_t create_node(label_t label, id_t id, node_t low, node_t high)
+  { return node(label, id, low.uid(), high.uid()); }
 
   /* =========================== DECISION DIAGRAM =========================== */
 

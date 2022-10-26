@@ -66,22 +66,22 @@ namespace adiar
     {
       ptr_t terminal_F = create_terminal_ptr(false);
 
-      if (is_terminal(v1) && is_terminal(v2)) {
-        ptr_t p = op(v1.uid, v2.uid);
+      if (v1.is_terminal() && v2.is_terminal()) {
+        ptr_t p = op(v1.uid(), v2.uid());
         return zdd_terminal(value_of(p));
-      } else if (is_terminal(v1)) {
-        if (can_left_shortcut_zdd(op, v1.uid))  {
+      } else if (v1.is_terminal()) {
+        if (can_left_shortcut_zdd(op, v1.uid()))  {
           // Shortcuts the left-most path to {Ø} and all others to Ø
           return zdd_terminal(false);
-        } else if (is_left_irrelevant(op, v1.uid) && is_left_irrelevant(op, terminal_F)) {
+        } else if (is_left_irrelevant(op, v1.uid()) && is_left_irrelevant(op, terminal_F)) {
           // Has no change to left-most path to {Ø} and neither any others
           return zdd_2;
         }
-      } else { // if (is_terminal(v2)) {
-        if (can_right_shortcut_zdd(op, v2.uid)) {
+      } else { // if (v2.is_terminal()) {
+        if (can_right_shortcut_zdd(op, v2.uid())) {
           // Shortcuts the left-most path to {Ø} and all others to Ø
           return zdd_terminal(false);
-        } else if (is_right_irrelevant(op, v2.uid) && is_right_irrelevant(op, terminal_F)) {
+        } else if (is_right_irrelevant(op, v2.uid()) && is_right_irrelevant(op, terminal_F)) {
           // Has no change to left-most path to {Ø} and neither any others
           return zdd_1;
         }
