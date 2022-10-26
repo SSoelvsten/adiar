@@ -112,11 +112,6 @@ else()
   add_library(adiar STATIC ${HEADERS} ${SOURCES})
 endif()
 
-include(GenerateExportHeader)
-generate_export_header(adiar
-  EXPORT_MACRO_NAME ADIAR_API
-)
-
 if (ADIAR_STATS_EXTRA)
   target_compile_definitions(adiar PRIVATE ADIAR_STATS ADIAR_STATS_EXTRA)
 elseif (ADIAR_STATS)
@@ -152,6 +147,11 @@ set_target_properties(adiar PROPERTIES
 )
 
 target_compile_features(adiar PUBLIC cxx_std_17)
+
+include(GenerateExportHeader)
+generate_export_header(adiar
+  EXPORT_MACRO_NAME ADIAR_API
+)
 
 install(TARGETS adiar
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
