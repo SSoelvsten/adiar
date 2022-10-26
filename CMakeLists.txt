@@ -77,7 +77,7 @@ option(ADIAR_DOCS "Build Documentation for Adiar" ON)
 
 if (ADIAR_DOCS)
   add_subdirectory(docs)
-endif (AIDAR_DOCS)
+endif (ADIAR_DOCS)
 
 # ============================================================================ #
 # Unit Tests
