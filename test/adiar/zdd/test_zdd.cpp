@@ -3,7 +3,7 @@ go_bandit([]() {
     node_file x0_nf;
     {
       node_writer nw_0(x0_nf);
-      nw_0 << create_node(0,MAX_ID,
+      nw_0 << node(0,MAX_ID,
                           create_terminal_ptr(false),
                           create_terminal_ptr(true));
     }
@@ -13,7 +13,7 @@ go_bandit([]() {
     node_file x1_nf;
     {
       node_writer nw_1(x1_nf);
-      nw_1 << create_node(1,MAX_ID,
+      nw_1 << node(1,MAX_ID,
                           create_terminal_ptr(false),
                           create_terminal_ptr(true));
     }
@@ -24,11 +24,11 @@ go_bandit([]() {
     {
       node_writer nw_01(x0_or_x1_nf);
 
-      nw_01 << create_node(1, MAX_ID,
+      nw_01 << node(1, MAX_ID,
                            create_terminal_ptr(false),
                            create_terminal_ptr(true));
 
-      nw_01 << create_node(0, MAX_ID,
+      nw_01 << node(0, MAX_ID,
                            create_node_ptr(1, MAX_ID),
                            create_terminal_ptr(true));
     }
@@ -38,7 +38,7 @@ go_bandit([]() {
     node_file terminal_T_nf;
     {
       node_writer nw_T(terminal_T_nf);
-      nw_T << create_terminal(true);
+      nw_T << node(true);
     }
 
     zdd terminal_T(terminal_T_nf);
@@ -46,7 +46,7 @@ go_bandit([]() {
     node_file terminal_F_nf;
     {
       node_writer nw_F(terminal_F_nf);
-      nw_F << create_terminal(false);
+      nw_F << node(false);
     }
 
     zdd terminal_F(terminal_F_nf);
@@ -112,7 +112,7 @@ go_bandit([]() {
         node_file x0_nf_2;
 
         { node_writer nw_0(x0_nf_2);
-          nw_0 << create_node(0,MAX_ID,
+          nw_0 << node(0,MAX_ID,
                               create_terminal_ptr(false),
                               create_terminal_ptr(true));
         }
@@ -146,8 +146,8 @@ go_bandit([]() {
         node_file expected;
         {
           node_writer nw(expected);
-          nw << create_node(1,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true))
-             << create_node(0,MAX_ID, create_terminal_ptr(true), create_node_uid(1,MAX_ID));
+          nw << node(1,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true))
+             << node(0,MAX_ID, create_terminal_ptr(true), create_node_uid(1,MAX_ID));
         }
 
         AssertThat(~x0_or_x1 == zdd(expected), Is().True());

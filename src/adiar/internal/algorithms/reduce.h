@@ -135,15 +135,15 @@ namespace adiar
       //     Use the 'flag' bit on children to mark attributed edges. Currently,
       //     we use this flag to mark whether Reduction Rule 1 was applied to
       //     some node across some arc.
-      const ptr_t a_high = unflag(a.high);
-      const ptr_t a_low = unflag(a.low);
+      const ptr_t a_high = unflag(a.high());
+      const ptr_t a_low = unflag(a.low());
 
-      const ptr_t b_high = unflag(b.high);
-      const ptr_t b_low = unflag(b.low);
+      const ptr_t b_high = unflag(b.high());
+      const ptr_t b_low = unflag(b.low());
 
       return a_high > b_high || (a_high == b_high && a_low > b_low)
 #ifndef NDEBUG
-        || (a_high == b_high && a_low == b_low && a.uid > b.uid)
+        || (a_high == b_high && a_low == b_low && a.uid() > b.uid())
 #endif
         ;
     }
@@ -226,14 +226,14 @@ namespace adiar
 
       // Apply Reduction rule 1
       ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
-      if (reduction_rule_ret != n.uid) {
+      if (reduction_rule_ret != n.uid()) {
         // Open red1_mapping first (and create file on disk) when at least one
         // element is written to it.
         if (!red1_mapping.is_open()) { red1_mapping.open(); }
 #ifdef ADIAR_STATS
         stats_reduce.removed_by_rule_1++;
 #endif
-        red1_mapping.write({ n.uid, reduction_rule_ret });
+        red1_mapping.write({ n.uid(), reduction_rule_ret });
       } else {
         child_grouping.push(n);
       }
@@ -251,32 +251,32 @@ namespace adiar
     child_grouping.sort();
 
     id_t out_id = MAX_ID;
-    node_t out_node = { NIL, NIL, NIL };
+    node_t out_node = node(NIL, NIL, NIL);
 
     while (child_grouping.can_pull()) {
       const node_t next_node = child_grouping.pull();
 
-      if (out_node.low != unflag(next_node.low) || out_node.high != unflag(next_node.high)) {
-        out_node = create_node(label, out_id, unflag(next_node.low), unflag(next_node.high));
+      if (out_node.low() != unflag(next_node.low()) || out_node.high() != unflag(next_node.high())) {
+        out_node = node(label, out_id, unflag(next_node.low()), unflag(next_node.high()));
         out_writer.unsafe_push(out_node);
 
         adiar_debug(out_id > 0, "Has run out of ids");
         out_id--;
 
-        __reduce_cut_add(is_flagged(next_node.low) ? global_1level_cut : local_1level_cut,
-                         out_node.low);
-        __reduce_cut_add(is_flagged(next_node.high) ? global_1level_cut : local_1level_cut,
-                         out_node.high);
+        __reduce_cut_add(is_flagged(next_node.low()) ? global_1level_cut : local_1level_cut,
+                         out_node.low());
+        __reduce_cut_add(is_flagged(next_node.high()) ? global_1level_cut : local_1level_cut,
+                         out_node.high());
       } else {
 #ifdef ADIAR_STATS
         stats_reduce.removed_by_rule_2++;
 #endif
       }
 
-      red2_mapping.push({ next_node.uid, out_node.uid });
+      red2_mapping.push({ next_node.uid(), out_node.uid() });
     }
 
-    if (!is_nil(out_node.uid)) {
+    if (!is_nil(out_node.uid())) {
       out_writer.unsafe_push(create_level_info(label, MAX_ID - out_id));
     }
 
@@ -365,7 +365,7 @@ namespace adiar
 
       const bool terminal_val = value_of(next_red1.new_uid);
 
-      out_writer.unsafe_push(create_terminal(terminal_val));
+      out_writer.unsafe_push(node(terminal_val));
       out_writer.set_number_of_terminals(!terminal_val, terminal_val);
     }
   }
@@ -406,7 +406,7 @@ namespace adiar
         stats_reduce.removed_by_rule_1++;
 #endif
         const bool terminal_val = value_of(reduction_rule_ret);
-        const node_t out_node = create_terminal(terminal_val);
+        const node_t out_node = node(terminal_val);
         out_writer.unsafe_push(out_node);
 
         out_writer.set_number_of_terminals(!terminal_val, terminal_val);
@@ -414,7 +414,7 @@ namespace adiar
       } else {
         const label_t label = label_of(e_low.source);
 
-        out_writer.unsafe_push(create_node(label, MAX_ID, e_low.target, e_high.target));
+        out_writer.unsafe_push(node(label, MAX_ID, e_low.target, e_high.target));
 
         out_writer.unsafe_push(create_level_info(label,1u));
 

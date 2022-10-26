@@ -28,7 +28,7 @@ namespace adiar
     ptr_t visit(const node_t &n)
     {
       const ptr_t next_ptr = __visitor.visit(n);
-      const label_t label = label_of(n);
+      const label_t label = n.label();
 
       // set default to all skipped levels
       while (label_of(ms.peek()) < label) {
@@ -37,7 +37,7 @@ namespace adiar
       adiar_debug(label_of(ms.peek()) == label,
                   "level given should exist in BDD");
 
-      aw << create_assignment(label_of(ms.pull()), next_ptr == n.high);
+      aw << create_assignment(label_of(ms.pull()), next_ptr == n.high());
       return next_ptr;
     }
 

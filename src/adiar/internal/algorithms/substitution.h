@@ -113,7 +113,7 @@ namespace adiar
 
     pq_t substitute_pq({dd}, pq_memory, pq_max_size, stats_substitute.lpq);
 
-    label_t level = label_of(n);
+    label_t level = n.label();
     size_t level_size = 0;
 
     substitute_act action = amgr.action_for_level(level);
@@ -159,7 +159,7 @@ namespace adiar
       }
 
       // seek requested node
-      while (n.uid < substitute_pq.top().target) {
+      while (n.uid() < substitute_pq.top().target) {
         n = ns.pull();
       }
 
@@ -174,7 +174,7 @@ namespace adiar
         __substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
 
         // Ingoing arcs
-        while(substitute_pq.can_pull() && substitute_pq.top().target == n_res.uid) {
+        while(substitute_pq.can_pull() && substitute_pq.top().target == n_res.uid()) {
           const arc_t parent_arc = substitute_pq.pull();
 
           if(!is_nil(parent_arc.source)) {
@@ -186,7 +186,7 @@ namespace adiar
       } else { // std::holds_alternative<substitute_rec_skipto>(rec_res)
         const ptr_t rec_child = std::get<substitute_rec_skipto>(rec_res).child;
 
-        while(substitute_pq.can_pull() && substitute_pq.top().target == n.uid) {
+        while(substitute_pq.can_pull() && substitute_pq.top().target == n.uid()) {
           const arc_t parent_arc = substitute_pq.pull();
           const arc_t request = { parent_arc.source, rec_child };
 

@@ -21,8 +21,8 @@ namespace adiar
   public:
     static inline ptr_t reduction_rule(const node_t &n)
     {
-      if (is_false(n.high)) { return n.low; }
-      return n.uid;
+      if (is_false(n.high())) { return n.low(); }
+      return n.uid();
     }
 
     static inline tuple reduction_rule_inv(const ptr_t &child)

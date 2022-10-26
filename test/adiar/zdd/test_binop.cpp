@@ -5,10 +5,10 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(zdd_F);
-      nw_F << create_terminal(false);
+      nw_F << node(false);
 
       node_writer nw_T(zdd_T);
-      nw_T << create_terminal(true);
+      nw_T << node(true);
     }
 
     ptr_t terminal_T = create_terminal_ptr(true);
@@ -19,10 +19,10 @@ go_bandit([]() {
 
     { // Garbage collect writers early
       node_writer nw_x0(zdd_x0);
-      nw_x0 << create_node(0,MAX_ID, terminal_F, terminal_T);
+      nw_x0 << node(0,MAX_ID, terminal_F, terminal_T);
 
       node_writer nw_x1(zdd_x1);
-      nw_x1 << create_node(1,MAX_ID, terminal_F, terminal_T);
+      nw_x1 << node(1,MAX_ID, terminal_F, terminal_T);
     }
 
     describe("zdd_union", [&]() {
@@ -51,7 +51,7 @@ go_bandit([]() {
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -72,7 +72,7 @@ go_bandit([]() {
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -201,14 +201,14 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(3,MAX_ID, terminal_F, terminal_T)
-               << create_node(1,MAX_ID, create_node_ptr(3,MAX_ID), terminal_T)
-               << create_node(0,MAX_ID, terminal_F, create_node_ptr(1,MAX_ID))
+          nw_a << node(3,MAX_ID, terminal_F, terminal_T)
+               << node(1,MAX_ID, create_node_ptr(3,MAX_ID), terminal_T)
+               << node(0,MAX_ID, terminal_F, create_node_ptr(1,MAX_ID))
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(2,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))
+          nw_b << node(2,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))
             ;
         }
 
@@ -289,13 +289,13 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(1,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(1,MAX_ID))
+          nw_a << node(1,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(1,MAX_ID))
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(2,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))
+          nw_b << node(2,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))
             ;
         }
 
@@ -366,15 +366,15 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(3,MAX_ID, terminal_F, terminal_T)
-               << create_node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID))
-               << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(3,MAX_ID))
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), terminal_T)
+          nw_a << node(3,MAX_ID, terminal_F, terminal_T)
+               << node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID))
+               << node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(3,MAX_ID))
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), terminal_T)
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(3,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID))
+          nw_b << node(3,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID))
             ;
         }
 
@@ -458,7 +458,7 @@ go_bandit([]() {
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -478,7 +478,7 @@ go_bandit([]() {
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -505,7 +505,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -526,7 +526,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -553,7 +553,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -578,7 +578,7 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(0,MAX_ID, terminal_T, terminal_T);
+          nw_a << node(0,MAX_ID, terminal_T, terminal_T);
         }
 
         __zdd out = zdd_intsec(zdd_a, zdd_T);
@@ -586,7 +586,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -614,8 +614,8 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(1,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), terminal_T)
+          nw_a << node(1,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), terminal_T)
             ;
         }
 
@@ -624,7 +624,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -653,14 +653,14 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(1,MAX_ID, terminal_F, terminal_T)
-               << create_node(1,MAX_ID-1, terminal_T, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID))
+          nw_a << node(1,MAX_ID, terminal_F, terminal_T)
+               << node(1,MAX_ID-1, terminal_T, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID))
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(1,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, terminal_F, create_node_ptr(1,MAX_ID))
+          nw_b << node(1,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, terminal_F, create_node_ptr(1,MAX_ID))
             ;
         }
 
@@ -715,8 +715,8 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(1,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(1,MAX_ID))
+          nw_a << node(1,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(1,MAX_ID))
             ;
         }
 
@@ -725,7 +725,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -760,9 +760,9 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(2,MAX_ID, terminal_T, terminal_T)
-               << create_node(2,MAX_ID-1, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
+          nw_a << node(2,MAX_ID, terminal_T, terminal_T)
+               << node(2,MAX_ID-1, terminal_F, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
             ;
         }
 
@@ -770,9 +770,9 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_b(zdd_b);
-          nw_b << create_node(2,MAX_ID, terminal_T, terminal_F)
-               << create_node(2,MAX_ID-1, terminal_F, terminal_T)
-               << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
+          nw_b << node(2,MAX_ID, terminal_T, terminal_F)
+               << node(2,MAX_ID-1, terminal_F, terminal_T)
+               << node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
             ;
         }
 
@@ -781,7 +781,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -816,10 +816,10 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(2,MAX_ID, terminal_T, terminal_T)
-               << create_node(2,MAX_ID-1, terminal_F, terminal_T)
-               << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
-               << create_node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID))
+          nw_a << node(2,MAX_ID, terminal_T, terminal_T)
+               << node(2,MAX_ID-1, terminal_F, terminal_T)
+               << node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
+               << node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID))
             ;
         }
 
@@ -827,10 +827,10 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_b(zdd_b);
-          nw_b << create_node(2,MAX_ID, terminal_T, terminal_T)
-               << create_node(2,MAX_ID-1, terminal_F, terminal_T)
-               << create_node(1,MAX_ID, create_node_ptr(2,MAX_ID-1), terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID))
+          nw_b << node(2,MAX_ID, terminal_T, terminal_T)
+               << node(2,MAX_ID-1, terminal_F, terminal_T)
+               << node(1,MAX_ID, create_node_ptr(2,MAX_ID-1), terminal_T)
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID))
             ;
         }
 
@@ -890,13 +890,13 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(1,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), terminal_T)
+          nw_a << node(1,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), terminal_T)
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(1,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, terminal_F, create_node_ptr(1,MAX_ID))
+          nw_b << node(1,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, terminal_F, create_node_ptr(1,MAX_ID))
             ;
         }
 
@@ -946,17 +946,17 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(2,MAX_ID,   terminal_T, terminal_T)
-               << create_node(2,MAX_ID-1, terminal_F, terminal_T)
-               << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
-               << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(2,MAX_ID))
+          nw_a << node(2,MAX_ID,   terminal_T, terminal_T)
+               << node(2,MAX_ID-1, terminal_F, terminal_T)
+               << node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
+               << node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(2,MAX_ID))
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(2,MAX_ID,   terminal_T, terminal_T)
-               << create_node(2,MAX_ID-1, terminal_F, terminal_T)
-               << create_node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
-               << create_node(0,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(1,MAX_ID))
+          nw_b << node(2,MAX_ID,   terminal_T, terminal_T)
+               << node(2,MAX_ID-1, terminal_F, terminal_T)
+               << node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
+               << node(0,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(1,MAX_ID))
             ;
         }
 
@@ -1018,14 +1018,14 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(1,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), terminal_T)
+          nw_a << node(1,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), terminal_T)
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(2,MAX_ID, terminal_F, terminal_T)
-               << create_node(1,MAX_ID, terminal_F, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID))
+          nw_b << node(2,MAX_ID, terminal_F, terminal_T)
+               << node(1,MAX_ID, terminal_F, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID))
             ;
         }
 
@@ -1085,14 +1085,14 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(2,MAX_ID, terminal_F, terminal_T)
-               << create_node(1,MAX_ID, terminal_T, create_node_ptr(2,MAX_ID))
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID))
+          nw_a << node(2,MAX_ID, terminal_F, terminal_T)
+               << node(1,MAX_ID, terminal_T, create_node_ptr(2,MAX_ID))
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID))
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(1,MAX_ID, terminal_T, terminal_T)
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), terminal_T)
+          nw_b << node(1,MAX_ID, terminal_T, terminal_T)
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), terminal_T)
             ;
         }
 
@@ -1152,14 +1152,14 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(2,MAX_ID, terminal_F, terminal_T)
-               << create_node(1,MAX_ID, terminal_T, create_node_ptr(2,MAX_ID))
-               << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID))
+          nw_a << node(2,MAX_ID, terminal_F, terminal_T)
+               << node(1,MAX_ID, terminal_T, create_node_ptr(2,MAX_ID))
+               << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID))
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(2,MAX_ID, terminal_T, terminal_T)
-               << create_node(0,MAX_ID, terminal_F, create_node_ptr(2,MAX_ID))
+          nw_b << node(2,MAX_ID, terminal_T, terminal_T)
+               << node(0,MAX_ID, terminal_F, create_node_ptr(2,MAX_ID))
             ;
         }
 
@@ -1207,7 +1207,7 @@ go_bandit([]() {
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1227,7 +1227,7 @@ go_bandit([]() {
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1247,7 +1247,7 @@ go_bandit([]() {
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1267,7 +1267,7 @@ go_bandit([]() {
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1298,7 +1298,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1319,7 +1319,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1378,7 +1378,7 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a << create_node(0,MAX_ID, terminal_T, terminal_T);
+          nw_a << node(0,MAX_ID, terminal_T, terminal_T);
         }
 
         __zdd out = zdd_diff(zdd_a, zdd_T);
@@ -1422,12 +1422,12 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a  << create_node(1,MAX_ID, terminal_F, terminal_T)
-                << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(1,MAX_ID))
+          nw_a  << node(1,MAX_ID, terminal_F, terminal_T)
+                << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(1,MAX_ID))
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(1,MAX_ID, terminal_T, terminal_T);
+          nw_b << node(1,MAX_ID, terminal_T, terminal_T);
         }
 
         __zdd out = zdd_diff(zdd_a, zdd_b);
@@ -1482,14 +1482,14 @@ go_bandit([]() {
 
         { // Garbage collect writers early
           node_writer nw_a(zdd_a);
-          nw_a  << create_node(2,MAX_ID, terminal_T, terminal_T)
-                << create_node(1,MAX_ID, terminal_F, terminal_T)
-                << create_node(1,MAX_ID-1, terminal_F, create_node_ptr(2,MAX_ID))
-                << create_node(0,MAX_ID, create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID))
+          nw_a  << node(2,MAX_ID, terminal_T, terminal_T)
+                << node(1,MAX_ID, terminal_F, terminal_T)
+                << node(1,MAX_ID-1, terminal_F, create_node_ptr(2,MAX_ID))
+                << node(0,MAX_ID, create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID))
             ;
 
           node_writer nw_b(zdd_b);
-          nw_b << create_node(1,MAX_ID, terminal_T, terminal_T);
+          nw_b << node(1,MAX_ID, terminal_T, terminal_T);
         }
 
         __zdd out = zdd_diff(zdd_a, zdd_b);

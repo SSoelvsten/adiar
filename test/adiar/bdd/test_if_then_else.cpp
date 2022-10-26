@@ -15,35 +15,35 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(bdd_F);
-      nw_F << create_terminal(false);
+      nw_F << node(false);
 
       node_writer nw_T(bdd_T);
-      nw_T << create_terminal(true);
+      nw_T << node(true);
 
       node_writer nw_x0(bdd_x0);
-      nw_x0 << create_node(0,0,terminal_F,terminal_T);
+      nw_x0 << node(0,0,terminal_F,terminal_T);
 
       node_writer nw_not_x0(bdd_not_x0);
-      nw_not_x0 << create_node(0,0,terminal_T,terminal_F);
+      nw_not_x0 << node(0,0,terminal_T,terminal_F);
 
       node_writer nw_x1(bdd_x1);
-      nw_x1 << create_node(1,0,terminal_F,terminal_T);
+      nw_x1 << node(1,0,terminal_F,terminal_T);
 
       node_writer nw_not_x1(bdd_not_x1);
-      nw_not_x1 << create_node(1,0,terminal_T,terminal_F);
+      nw_not_x1 << node(1,0,terminal_T,terminal_F);
 
       node_writer nw_x2(bdd_x2);
-      nw_x2 << create_node(2,0,terminal_F,terminal_T);
+      nw_x2 << node(2,0,terminal_F,terminal_T);
 
       node_writer nw_x0_xor_x1(bdd_x0_xor_x1);
-      nw_x0_xor_x1 << create_node(1,1,terminal_T,terminal_F)
-                   << create_node(1,0,terminal_F,terminal_T)
-                   << create_node(0,0,create_node_uid(1,0),create_node_uid(1,1));
+      nw_x0_xor_x1 << node(1,1,terminal_T,terminal_F)
+                   << node(1,0,terminal_F,terminal_T)
+                   << node(0,0,create_node_uid(1,0),create_node_uid(1,1));
 
       node_writer nw_x0_xor_x2(bdd_x0_xor_x2);
-      nw_x0_xor_x2 << create_node(2,1,terminal_T,terminal_F)
-                   << create_node(2,0,terminal_F,terminal_T)
-                   << create_node(0,0,create_node_uid(2,0),create_node_uid(2,1));
+      nw_x0_xor_x2 << node(2,1,terminal_T,terminal_F)
+                   << node(2,0,terminal_F,terminal_T)
+                   << node(0,0,create_node_uid(2,0),create_node_uid(2,1));
     }
 
     node_file bdd_1;
@@ -61,13 +61,13 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_1(bdd_1);
-      nw_1 << create_node(3,0,terminal_F,terminal_T)                             // 7
-           << create_node(2,2,terminal_F,terminal_T)                             // 6
-           << create_node(2,1,terminal_T,create_node_ptr(3,0))               // 5
-           << create_node(2,0,create_node_ptr(3,0),terminal_T)               // 4
-           << create_node(1,1,create_node_ptr(2,1),create_node_ptr(2,0)) // 3
-           << create_node(1,0,create_node_ptr(2,2),create_node_ptr(2,1)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(1,1)) // 1
+      nw_1 << node(3,0,terminal_F,terminal_T)                             // 7
+           << node(2,2,terminal_F,terminal_T)                             // 6
+           << node(2,1,terminal_T,create_node_ptr(3,0))               // 5
+           << node(2,0,create_node_ptr(3,0),terminal_T)               // 4
+           << node(1,1,create_node_ptr(2,1),create_node_ptr(2,0)) // 3
+           << node(1,0,create_node_ptr(2,2),create_node_ptr(2,1)) // 2
+           << node(0,0,create_node_ptr(1,0),create_node_ptr(1,1)) // 1
         ;
     }
 
@@ -86,15 +86,15 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_2(bdd_2);
-      nw_2 << create_node(3,1,terminal_F,terminal_T)                              // 9
-           << create_node(3,0,terminal_T,terminal_F)                              // 8
-           << create_node(2,3,terminal_F,terminal_T)                              // 7
-           << create_node(2,2,terminal_T,terminal_F)                              // 6
-           << create_node(2,1,terminal_F,create_node_ptr(3,1))                // 5
-           << create_node(2,0,terminal_F,create_node_ptr(3,0))                // 4
-           << create_node(1,1,create_node_ptr(2,2),create_node_ptr(2,3))  // 3
-           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))  // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(1,1))  // 1
+      nw_2 << node(3,1,terminal_F,terminal_T)                              // 9
+           << node(3,0,terminal_T,terminal_F)                              // 8
+           << node(2,3,terminal_F,terminal_T)                              // 7
+           << node(2,2,terminal_T,terminal_F)                              // 6
+           << node(2,1,terminal_F,create_node_ptr(3,1))                // 5
+           << node(2,0,terminal_F,create_node_ptr(3,0))                // 4
+           << node(1,1,create_node_ptr(2,2),create_node_ptr(2,3))  // 3
+           << node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))  // 2
+           << node(0,0,create_node_ptr(1,0),create_node_ptr(1,1))  // 1
         ;
     }
 
@@ -113,12 +113,12 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_3(bdd_3);
-      nw_3 << create_node(3,0,terminal_F,terminal_T)                             // 6
-           << create_node(2,2,terminal_F,terminal_T)                             // 5
-           << create_node(2,1,terminal_F,create_node_ptr(3,0))               // 4
-           << create_node(2,0,terminal_T,terminal_F)                             // 3
-           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,2)) // 1
+      nw_3 << node(3,0,terminal_F,terminal_T)                             // 6
+           << node(2,2,terminal_F,terminal_T)                             // 5
+           << node(2,1,terminal_F,create_node_ptr(3,0))               // 4
+           << node(2,0,terminal_T,terminal_F)                             // 3
+           << node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
+           << node(0,0,create_node_ptr(1,0),create_node_ptr(2,2)) // 1
         ;
     }
 
@@ -136,13 +136,13 @@ go_bandit([]() {
     */
     { // Garbage collect writers to free write-lock
       node_writer nw_4(bdd_4);
-      nw_4 << create_node(3,1,terminal_F,terminal_T)                             // 7
-           << create_node(3,0,terminal_T,terminal_F)                             // 6
-           << create_node(2,2,terminal_F,create_node_ptr(3,1))               // 5
-           << create_node(2,1,create_node_ptr(3,0),terminal_T)               // 4
-           << create_node(2,0,terminal_T,terminal_F)                             // 3
-           << create_node(1,0,create_node_ptr(2,1),create_node_ptr(2,2)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,0)) // 1
+      nw_4 << node(3,1,terminal_F,terminal_T)                             // 7
+           << node(3,0,terminal_T,terminal_F)                             // 6
+           << node(2,2,terminal_F,create_node_ptr(3,1))               // 5
+           << node(2,1,create_node_ptr(3,0),terminal_T)               // 4
+           << node(2,0,terminal_T,terminal_F)                             // 3
+           << node(1,0,create_node_ptr(2,1),create_node_ptr(2,2)) // 2
+           << node(0,0,create_node_ptr(1,0),create_node_ptr(2,0)) // 1
         ;
     }
 
@@ -160,12 +160,12 @@ go_bandit([]() {
     */
     { // Garbage collect writers to free write-lock
       node_writer nw_5(bdd_5);
-      nw_5 << create_node(3,0,terminal_T,terminal_F)                             // 6
-           << create_node(2,2,terminal_F,create_node_ptr(3,0))               // 5
-           << create_node(2,1,terminal_F,terminal_T)                             // 4
-           << create_node(2,0,terminal_T,terminal_F)                             // 3
-           << create_node(1,0,create_node_ptr(2,2),create_node_ptr(2,0)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
+      nw_5 << node(3,0,terminal_T,terminal_F)                             // 6
+           << node(2,2,terminal_F,create_node_ptr(3,0))               // 5
+           << node(2,1,terminal_F,terminal_T)                             // 4
+           << node(2,0,terminal_T,terminal_F)                             // 3
+           << node(1,0,create_node_ptr(2,2),create_node_ptr(2,0)) // 2
+           << node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
         ;
     }
 
@@ -182,10 +182,10 @@ go_bandit([]() {
     */
     { // Garbage collect writers to free write-lock
       node_writer nw_6(bdd_6);
-      nw_6 << create_node(2,1,terminal_T,terminal_F)
-           << create_node(2,0,terminal_F,terminal_T)
-           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))
-           << create_node(0,0,terminal_F,create_node_ptr(1,0))
+      nw_6 << node(2,1,terminal_T,terminal_F)
+           << node(2,0,terminal_F,terminal_T)
+           << node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))
+           << node(0,0,terminal_F,create_node_ptr(1,0))
         ;
     }
 
@@ -202,10 +202,10 @@ go_bandit([]() {
     */
     { // Garbage collect writers to free write-lock
       node_writer nw_not_6(bdd_not_6);
-      nw_not_6 << create_node(2,1,terminal_F,terminal_T)
-               << create_node(2,0,terminal_T,terminal_F)
-               << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))
-               << create_node(0,0,terminal_T,create_node_ptr(1,0))
+      nw_not_6 << node(2,1,terminal_F,terminal_T)
+               << node(2,0,terminal_T,terminal_F)
+               << node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))
+               << node(0,0,terminal_T,create_node_ptr(1,0))
         ;
     }
 
@@ -224,11 +224,11 @@ go_bandit([]() {
 
     {
       node_writer nw_7(bdd_7);
-      nw_7 << create_node(3,0,terminal_F,terminal_T)                             // 5
-           << create_node(2,1,create_node_ptr(3,0),terminal_T)               // 4
-           << create_node(2,0,terminal_F,create_node_ptr(3,0))               // 3
-           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
+      nw_7 << node(3,0,terminal_F,terminal_T)                             // 5
+           << node(2,1,create_node_ptr(3,0),terminal_T)               // 4
+           << node(2,0,terminal_F,create_node_ptr(3,0))               // 3
+           << node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
+           << node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
         ;
     }
 
@@ -246,10 +246,10 @@ go_bandit([]() {
     */
     {
       node_writer nw_8(bdd_8);
-      nw_8 << create_node(3,0,terminal_T,terminal_F)                             // 4
-           << create_node(2,0,terminal_T,create_node_ptr(3,0))               // 3
-           << create_node(1,0,create_node_ptr(2,0),create_node_ptr(3,0)) // 2
-           << create_node(0,0,create_node_ptr(1,0),create_node_ptr(3,0)) // 1
+      nw_8 << node(3,0,terminal_T,terminal_F)                             // 4
+           << node(2,0,terminal_T,create_node_ptr(3,0))               // 3
+           << node(1,0,create_node_ptr(2,0),create_node_ptr(3,0)) // 2
+           << node(0,0,create_node_ptr(1,0),create_node_ptr(3,0)) // 1
         ;
     }
 
@@ -876,9 +876,9 @@ go_bandit([]() {
         node_file bdd_x0_xnor_x1;
         {
           node_writer nw_x0_xnor_x1(bdd_x0_xnor_x1);
-          nw_x0_xnor_x1 << create_node(1,1,terminal_T,terminal_F)
-                        << create_node(1,0,terminal_F,terminal_T)
-                        << create_node(0,0,create_node_uid(1,1),create_node_uid(1,0));
+          nw_x0_xnor_x1 << node(1,1,terminal_T,terminal_F)
+                        << node(1,0,terminal_F,terminal_T)
+                        << node(0,0,create_node_uid(1,1),create_node_uid(1,0));
         }
 
         /*
@@ -958,7 +958,7 @@ go_bandit([]() {
         */
         {
           node_writer nw_x3(bdd_x3);
-          nw_x3 << create_node(3,0,terminal_F,terminal_T);
+          nw_x3 << node(3,0,terminal_F,terminal_T);
         }
 
         node_file bdd_x1_and_x2;
@@ -971,8 +971,8 @@ go_bandit([]() {
         */
         {
           node_writer nw_x1_and_x2(bdd_x1_and_x2);
-          nw_x1_and_x2 << create_node(2,1,terminal_F,terminal_T)
-                      << create_node(1,0,terminal_F,create_node_ptr(2,1));
+          nw_x1_and_x2 << node(2,1,terminal_F,terminal_T)
+                      << node(1,0,terminal_F,create_node_ptr(2,1));
         }
 
         /*
@@ -1352,9 +1352,9 @@ go_bandit([]() {
         */
         {
           node_writer nw_x0_xnor_x2(bdd_x0_xnor_x2);
-          nw_x0_xnor_x2 << create_node(2,1,terminal_T,terminal_F)                              // 3
-                        << create_node(2,0,terminal_F,terminal_T)                              // 2
-                        << create_node(0,0,create_node_uid(2,1),create_node_uid(2,0)); // 1
+          nw_x0_xnor_x2 << node(2,1,terminal_T,terminal_F)                              // 3
+                        << node(2,0,terminal_F,terminal_T)                              // 2
+                        << node(0,0,create_node_uid(2,1),create_node_uid(2,0)); // 1
         }
 
         /*
@@ -1469,9 +1469,9 @@ go_bandit([]() {
 
         {
           node_writer nw_x1_xor_x2(bdd_x1_xor_x2_2);
-          nw_x1_xor_x2 << create_node(2,1,terminal_F,terminal_T)                              // 3
-                      << create_node(2,0,terminal_T,terminal_F)                              // 2
-                      << create_node(1,0,create_node_uid(2,1),create_node_uid(2,0)); // 1
+          nw_x1_xor_x2 << node(2,1,terminal_F,terminal_T)                              // 3
+                      << node(2,0,terminal_T,terminal_F)                              // 2
+                      << node(1,0,create_node_uid(2,1),create_node_uid(2,0)); // 1
         }
 
         /*
@@ -1585,9 +1585,9 @@ go_bandit([]() {
 
         {
           node_writer nw_if(bdd_if);
-          nw_if << create_node(2,0,terminal_F,terminal_T)                // 3
-                << create_node(1,0,create_node_uid(2,0),terminal_F)  // 2
-                << create_node(0,0,create_node_uid(1,0),terminal_F); // 1
+          nw_if << node(2,0,terminal_F,terminal_T)                // 3
+                << node(1,0,create_node_uid(2,0),terminal_F)  // 2
+                << node(0,0,create_node_uid(1,0),terminal_F); // 1
         }
 
         /*
@@ -1695,9 +1695,9 @@ go_bandit([]() {
         */
         {
           node_writer nw_if(bdd_if);
-          nw_if << create_node(2,0,terminal_F,terminal_T)               // 3
-                << create_node(1,0,terminal_F,create_node_ptr(2,0)) // 2
-                << create_node(0,0,create_node_ptr(1,0),terminal_T) // 1
+          nw_if << node(2,0,terminal_F,terminal_T)               // 3
+                << node(1,0,terminal_F,create_node_ptr(2,0)) // 2
+                << node(0,0,create_node_ptr(1,0),terminal_T) // 1
             ;
         }
 
@@ -1886,8 +1886,8 @@ go_bandit([]() {
 
         {
           node_writer nw_x1_and_x3(bdd_x1_and_x3);
-          nw_x1_and_x3 << create_node(3,42,terminal_F,terminal_T)                // 2
-                       << create_node(1,0,terminal_F,create_node_uid(3,42)); // 1
+          nw_x1_and_x3 << node(3,42,terminal_F,terminal_T)                // 2
+                       << node(1,0,terminal_F,create_node_uid(3,42)); // 1
         }
 
         __bdd out = bdd_ite(bdd_x0, bdd_x2, bdd_x1_and_x3);
@@ -1896,22 +1896,22 @@ go_bandit([]() {
         node_test_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3,42,
+        AssertThat(ns.pull(), Is().EqualTo(node(3,42,
                                                        terminal_F,
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2,0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2,0,
                                                        terminal_F,
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1,0,
+        AssertThat(ns.pull(), Is().EqualTo(node(1,0,
                                                        terminal_F,
                                                        create_node_ptr(3,42))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0,0,
+        AssertThat(ns.pull(), Is().EqualTo(node(0,0,
                                                        create_node_ptr(1,0),
                                                        create_node_ptr(2,0))));
 
@@ -1963,12 +1963,12 @@ go_bandit([]() {
 
         {
           node_writer nw_then(bdd_then);
-          nw_then << create_node(6,1,terminal_T,terminal_F)                              // 6
-                  << create_node(4,1,terminal_T,create_node_ptr(6,1))                // 5
-                  << create_node(4,0,terminal_F,terminal_T)                              // 4
-                  << create_node(3,2,terminal_T,create_node_ptr(4,1))                // 3
-                  << create_node(3,0,terminal_T,create_node_ptr(4,0))                // 2
-                  << create_node(2,0,create_node_ptr(3,0),create_node_uid(3,2)); // 1
+          nw_then << node(6,1,terminal_T,terminal_F)                              // 6
+                  << node(4,1,terminal_T,create_node_ptr(6,1))                // 5
+                  << node(4,0,terminal_F,terminal_T)                              // 4
+                  << node(3,2,terminal_T,create_node_ptr(4,1))                // 3
+                  << node(3,0,terminal_T,create_node_ptr(4,0))                // 2
+                  << node(2,0,create_node_ptr(3,0),create_node_uid(3,2)); // 1
         }
 
         node_file bdd_else;
@@ -1982,9 +1982,9 @@ go_bandit([]() {
 
         {
           node_writer nw_else(bdd_else);
-          nw_else << create_node(8,1,terminal_T,terminal_F)                             // 3
-                  << create_node(8,0,terminal_F,terminal_T)                             // 2
-                  << create_node(5,0,create_node_ptr(8,0),create_node_ptr(8,1)) // 1
+          nw_else << node(8,1,terminal_T,terminal_F)                             // 3
+                  << node(8,0,terminal_F,terminal_T)                             // 2
+                  << node(5,0,create_node_ptr(8,0),create_node_ptr(8,1)) // 1
             ;
         }
 
@@ -1994,62 +1994,62 @@ go_bandit([]() {
         node_test_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8,1,
+        AssertThat(ns.pull(), Is().EqualTo(node(8,1,
                                                        terminal_T,
                                                        terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8,0,
+        AssertThat(ns.pull(), Is().EqualTo(node(8,0,
                                                        terminal_F,
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6,1,
+        AssertThat(ns.pull(), Is().EqualTo(node(6,1,
                                                        terminal_T,
                                                        terminal_F)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5,0,
+        AssertThat(ns.pull(), Is().EqualTo(node(5,0,
                                                        create_node_ptr(8,0),
                                                        create_node_ptr(8,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4,1,
+        AssertThat(ns.pull(), Is().EqualTo(node(4,1,
                                                        terminal_T,
                                                        create_node_ptr(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4,0,
+        AssertThat(ns.pull(), Is().EqualTo(node(4,0,
                                                        terminal_F,
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3,2,
+        AssertThat(ns.pull(), Is().EqualTo(node(3,2,
                                                        terminal_T,
                                                        create_node_ptr(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3,0,
+        AssertThat(ns.pull(), Is().EqualTo(node(3,0,
                                                        terminal_T,
                                                        create_node_ptr(4,0))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2,0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2,0,
                                                        create_node_ptr(3,0),
                                                        create_node_ptr(3,2))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1,1,
+        AssertThat(ns.pull(), Is().EqualTo(node(1,1,
                                                        create_node_ptr(5,0),
                                                        create_node_ptr(2,0))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1,0,
+        AssertThat(ns.pull(), Is().EqualTo(node(1,0,
                                                        create_node_ptr(2,0),
                                                        create_node_ptr(5,0))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0,0,
+        AssertThat(ns.pull(), Is().EqualTo(node(0,0,
                                                        create_node_ptr(1,0),
                                                        create_node_ptr(1,1))));
 
@@ -2101,19 +2101,19 @@ go_bandit([]() {
         node_file bdd_if;
         {
           node_writer nw_if(bdd_if);
-          nw_if << create_node(0,MAX_ID,terminal_T,terminal_F);
+          nw_if << node(0,MAX_ID,terminal_T,terminal_F);
         }
 
         node_file bdd_a;
         {
           node_writer nw_a(bdd_a);
-          nw_a << create_node(2,MAX_ID,terminal_F,terminal_T);
+          nw_a << node(2,MAX_ID,terminal_F,terminal_T);
         }
 
         node_file bdd_b;
         {
           node_writer nw_b(bdd_b);
-          nw_b << create_node(1,MAX_ID,terminal_T,terminal_F);
+          nw_b << node(1,MAX_ID,terminal_T,terminal_F);
         }
 
         bdd out_1 = bdd_ite(bdd_if, bdd_a, bdd_b);
@@ -2134,30 +2134,30 @@ go_bandit([]() {
         node_file bdd_if;
         {
           node_writer nw_if(bdd_if);
-          nw_if << create_node(0,MAX_ID,terminal_T,terminal_F);
+          nw_if << node(0,MAX_ID,terminal_T,terminal_F);
         }
         AssertThat(is_canonical(bdd_if), Is().True());
 
         node_file bdd_a;
         {
           node_writer nw_a(bdd_a);
-          nw_a << create_node(2,MAX_ID,terminal_F,terminal_T);
+          nw_a << node(2,MAX_ID,terminal_F,terminal_T);
         }
         AssertThat(is_canonical(bdd_a), Is().True());
 
         node_file bdd_b;
         {
           node_writer nw_b(bdd_b);
-          nw_b << create_node(3,MAX_ID,   terminal_F, terminal_T)
-              << create_node(3,MAX_ID-1, terminal_T, terminal_F)
-              << create_node(1,MAX_ID,   create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID));
+          nw_b << node(3,MAX_ID,   terminal_F, terminal_T)
+              << node(3,MAX_ID-1, terminal_T, terminal_F)
+              << node(1,MAX_ID,   create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID));
         }
         AssertThat(is_canonical(bdd_b), Is().True());
 
         node_file bdd_c;
         {
           node_writer nw_c(bdd_c);
-          nw_c << create_node(1,MAX_ID, terminal_T, terminal_F);
+          nw_c << node(1,MAX_ID, terminal_T, terminal_F);
         }
         AssertThat(is_canonical(bdd_c), Is().True());
 
@@ -2178,21 +2178,21 @@ go_bandit([]() {
         node_file bdd_if;
         {
           node_writer nw_if(bdd_if);
-          nw_if << create_node(1,MAX_ID,   terminal_T,                      terminal_T)
-                << create_node(1,MAX_ID-1, terminal_F,                      terminal_F)
-                << create_node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+          nw_if << node(1,MAX_ID,   terminal_T,                      terminal_T)
+                << node(1,MAX_ID-1, terminal_F,                      terminal_F)
+                << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
         }
 
         node_file bdd_a;
         {
           node_writer nw_a(bdd_a);
-          nw_a << create_node(3,MAX_ID,terminal_F,terminal_T);
+          nw_a << node(3,MAX_ID,terminal_F,terminal_T);
         }
 
         node_file bdd_b;
         {
           node_writer nw_b(bdd_b);
-          nw_b << create_node(2,MAX_ID,terminal_T,terminal_F);
+          nw_b << node(2,MAX_ID,terminal_T,terminal_F);
         }
 
         bdd out_1 = bdd_ite(bdd_if, bdd_a, bdd_b);

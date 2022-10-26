@@ -16,11 +16,11 @@ go_bandit([]() {
                   F T
     */
 
-    node_t n5 = create_node(3,0, terminal_F, terminal_T);
-    node_t n4 = create_node(2,1, terminal_T, n5.uid);
-    node_t n3 = create_node(2,0, terminal_F, terminal_T);
-    node_t n2 = create_node(1,0, n3.uid, n4.uid);
-    node_t n1 = create_node(0,0, n3.uid, n2.uid);
+    node_t n5 = node(3,0, terminal_F, terminal_T);
+    node_t n4 = node(2,1, terminal_T, n5.uid());
+    node_t n3 = node(2,0, terminal_F, terminal_T);
+    node_t n2 = node(1,0, n3.uid(), n4.uid());
+    node_t n1 = node(0,0, n3.uid(), n2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd);
@@ -42,10 +42,10 @@ go_bandit([]() {
                F T
     */
 
-    node_t skip_n4 = create_node(4,0, terminal_F, terminal_T);
-    node_t skip_n3 = create_node(2,1, terminal_T, skip_n4.uid);
-    node_t skip_n2 = create_node(2,0, terminal_F, terminal_T);
-    node_t skip_n1 = create_node(0,0, skip_n2.uid, skip_n3.uid);
+    node_t skip_n4 = node(4,0, terminal_F, terminal_T);
+    node_t skip_n3 = node(2,1, terminal_T, skip_n4.uid());
+    node_t skip_n2 = node(2,0, terminal_F, terminal_T);
+    node_t skip_n1 = node(0,0, skip_n2.uid(), skip_n3.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer skip_nw(skip_bdd);
@@ -63,19 +63,19 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw(non_zero_bdd);
-      nw << create_node(1,0, terminal_F, terminal_T);
+      nw << node(1,0, terminal_F, terminal_T);
     }
 
     node_file bdd_F;
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_F);
-      nw << create_terminal(false);
+      nw << node(false);
     }
 
     node_file bdd_T;
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_T);
-      nw << create_terminal(true);
+      nw << node(true);
     }
 
     describe("bdd_eval(bdd, assignment_file)", [&]() {

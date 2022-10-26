@@ -209,10 +209,10 @@ namespace adiar {
       }
 
       // Create potential node
-      const node_t node = create_node(label, current_id, low.uid, high.uid);
+      const node_t n(label, current_id, low.uid, high.uid);
 
       // Check whether this node is 'redundant'
-      const uid_t res_uid = dd_policy::reduction_rule(node);
+      const uid_t res_uid = dd_policy::reduction_rule(n);
 
       if (is_terminal(res_uid)) {
         created_terminal = true;
@@ -223,7 +223,7 @@ namespace adiar {
       if(res_uid == high.uid) { return high; }
 
       // Push node to file
-      nw.push(node);
+      nw.push(n);
       unref_nodes++;
       current_id--;
 
@@ -355,7 +355,7 @@ namespace adiar {
     {
       if(!nw.has_pushed()) {
         if(created_terminal) {
-          nw.push(create_terminal(terminal_val));
+          nw.push(node(terminal_val));
         } else {
           throw std::domain_error("There must be at least one node or terminal in the decision diagram");
         }

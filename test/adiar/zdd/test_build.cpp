@@ -9,7 +9,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -36,7 +36,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -63,7 +63,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -90,7 +90,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -119,7 +119,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -149,7 +149,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -183,7 +183,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -217,7 +217,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -254,11 +254,11 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_F, create_node_ptr(5,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID, terminal_F, create_node_ptr(5,MAX_ID))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID, terminal_F, create_node_ptr(2,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID, terminal_F, create_node_ptr(2,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -297,7 +297,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -331,7 +331,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -368,11 +368,11 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, create_node_ptr(5,MAX_ID), terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID, create_node_ptr(5,MAX_ID), terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID, create_node_ptr(2,MAX_ID), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -411,7 +411,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -438,7 +438,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(42, MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -475,13 +475,13 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID,
                                                        create_node_ptr(5,MAX_ID),
                                                        create_node_ptr(5,MAX_ID))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
                                                        create_node_ptr(2,MAX_ID),
                                                        create_node_ptr(2,MAX_ID))));
 
@@ -522,7 +522,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -548,7 +548,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -580,7 +580,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -612,7 +612,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -644,20 +644,20 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(6, MAX_ID, terminal_T, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, MAX_ID,
                                                        create_node_ptr(6,MAX_ID),
                                                        create_node_ptr(6,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID,
                                                        create_node_ptr(4,MAX_ID),
                                                        create_node_ptr(4,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
                                                        create_node_ptr(2,MAX_ID),
                                                        create_node_ptr(2,MAX_ID))));
 
@@ -701,7 +701,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -733,15 +733,15 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID, terminal_T, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
                                                        create_node_ptr(2,MAX_ID),
                                                        create_node_ptr(2,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
                                                        create_node_ptr(1,MAX_ID),
                                                        create_node_ptr(1,MAX_ID))));
 
@@ -783,15 +783,15 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
                                                        terminal_F,
                                                        create_node_ptr(2,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
                                                        terminal_F,
                                                        create_node_ptr(1,MAX_ID))));
 
@@ -833,7 +833,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -860,7 +860,7 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node_t> ms(res);
@@ -900,19 +900,19 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 1, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
                                                        create_node_ptr(5,1),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
                                                        terminal_F,
                                                        create_node_ptr(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
                                                        create_node_ptr(3,0),
                                                        create_node_ptr(3,1))));
 
@@ -958,41 +958,41 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 2, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 2, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 2,
                                                        create_node_ptr(6,2),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
                                                        terminal_F,
                                                        create_node_ptr(6,2))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 2,
                                                        create_node_ptr(4,2),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
                                                        create_node_ptr(4,1),
                                                        create_node_ptr(4,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
                                                        terminal_F,
                                                        create_node_ptr(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
                                                        create_node_ptr(3,1),
                                                        create_node_ptr(3,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
                                                        create_node_ptr(3,0),
                                                        create_node_ptr(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
                                                        create_node_ptr(2,0),
                                                        create_node_ptr(2,1))));
 
@@ -1042,47 +1042,47 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 2, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(8, 2, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 1, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(8, 1, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 2,
                                                        create_node_ptr(8,2),
                                                        create_node_ptr(8,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
                                                        create_node_ptr(8,1),
                                                        create_node_ptr(8,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 0,
                                                        terminal_F,
                                                        create_node_ptr(8,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 2,
                                                        create_node_ptr(6,2),
                                                        create_node_ptr(6,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
                                                        create_node_ptr(6,1),
                                                        create_node_ptr(6,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
                                                        create_node_ptr(6,0),
                                                        create_node_ptr(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
                                                        create_node_ptr(4,1),
                                                        create_node_ptr(4,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
                                                        create_node_ptr(4,0),
                                                        create_node_ptr(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
                                                        create_node_ptr(2,0),
                                                        create_node_ptr(2,1))));
 
@@ -1132,48 +1132,48 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 1, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 0, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 0, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
                                                        create_node_ptr(5,1),
                                                        create_node_ptr(5,1))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
                                                        create_node_ptr(5,0),
                                                        create_node_ptr(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
                                                        create_node_ptr(4,1),
                                                        create_node_ptr(4,1))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
                                                        create_node_ptr(4,0),
                                                        create_node_ptr(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
                                                        create_node_ptr(3,1),
                                                        create_node_ptr(3,1))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
                                                        create_node_ptr(3,0),
                                                        create_node_ptr(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, 1,
                                                        create_node_ptr(2,1),
                                                        create_node_ptr(2,1))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
                                                        create_node_ptr(2,0),
                                                        create_node_ptr(2,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
                                                        create_node_ptr(1,0),
                                                        create_node_ptr(1,1))));
 
@@ -1225,47 +1225,47 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 2, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 2, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 1, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 2,
                                                        create_node_ptr(5,2),
                                                        create_node_ptr(5,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
                                                        create_node_ptr(5,1),
                                                        create_node_ptr(5,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
                                                        terminal_F,
                                                        create_node_ptr(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 2,
                                                        create_node_ptr(3,2),
                                                        create_node_ptr(3,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
                                                        create_node_ptr(3,1),
                                                        create_node_ptr(3,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
                                                        create_node_ptr(3,0),
                                                        create_node_ptr(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, 1,
                                                        create_node_ptr(2,1),
                                                        create_node_ptr(2,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
                                                        create_node_ptr(2,0),
                                                        create_node_ptr(2,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
                                                        create_node_ptr(1,0),
                                                        create_node_ptr(1,1))));
 
@@ -1315,27 +1315,27 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(8, 0,
                                                        terminal_T,
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 0,
                                                        create_node_ptr(8,0),
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
                                                        create_node_ptr(6,0),
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
                                                        create_node_ptr(4,0),
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
                                                        create_node_ptr(2,0),
                                                        terminal_T)));
 
@@ -1385,30 +1385,30 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
                                                        terminal_T,
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
                                                        create_node_ptr(6,1),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
                                                        create_node_ptr(6,1),
                                                        create_node_ptr(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
                                                        create_node_ptr(4,1),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
                                                        create_node_ptr(4,0),
                                                        create_node_ptr(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
                                                        create_node_ptr(2,0),
                                                        create_node_ptr(2,1))));
 
@@ -1456,107 +1456,107 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(9, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(9, 3,
                                                        terminal_T,
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(8, 3,
                                                        create_node_ptr(9,3),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(8, 2,
                                                        create_node_ptr(9,3),
                                                        create_node_ptr(9,3))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(7, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(7, 3,
                                                        create_node_ptr(8,3),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(7, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(7, 2,
                                                        create_node_ptr(8,2),
                                                        create_node_ptr(8,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(7, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(7, 1,
                                                        create_node_ptr(8,2),
                                                        create_node_ptr(8,2))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 3,
                                                        create_node_ptr(7,3),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 2,
                                                        create_node_ptr(7,2),
                                                        create_node_ptr(7,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
                                                        create_node_ptr(7,1),
                                                        create_node_ptr(7,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 0,
                                                        create_node_ptr(7,1),
                                                        create_node_ptr(7,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 3,
                                                        create_node_ptr(6,3),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 2,
                                                        create_node_ptr(6,2),
                                                        create_node_ptr(6,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 1,
                                                        create_node_ptr(6,1),
                                                        create_node_ptr(6,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 0,
                                                        create_node_ptr(6,0),
                                                        create_node_ptr(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 3,
                                                        create_node_ptr(5,3),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 2,
                                                        create_node_ptr(5,2),
                                                        create_node_ptr(5,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
                                                        create_node_ptr(5,1),
                                                        create_node_ptr(5,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
                                                        create_node_ptr(5,0),
                                                        create_node_ptr(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 2,
                                                        create_node_ptr(4,2),
                                                        create_node_ptr(4,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
                                                        create_node_ptr(4,1),
                                                        create_node_ptr(4,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
                                                        create_node_ptr(4,0),
                                                        create_node_ptr(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
                                                        create_node_ptr(3,1),
                                                        create_node_ptr(3,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
                                                        create_node_ptr(3,0),
                                                        create_node_ptr(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
                                                        create_node_ptr(2,0),
                                                        create_node_ptr(2,1))));
 
@@ -1614,37 +1614,37 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 1, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(8, 1, terminal_T, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
                                                        create_node_ptr(8,1),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 0,
                                                        create_node_ptr(8,1),
                                                        create_node_ptr(8,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
                                                        create_node_ptr(6,1),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
                                                        create_node_ptr(6,0),
                                                        create_node_ptr(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
                                                        create_node_ptr(4,1),
                                                        terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
                                                        create_node_ptr(4,0),
                                                        create_node_ptr(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
                                                        create_node_ptr(2,0),
                                                        create_node_ptr(2,1))));
 
@@ -1694,160 +1694,160 @@ go_bandit([]() {
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(9, 5, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(9, 5, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(9, 4, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(9, 4, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 5,
+        AssertThat(ns.pull(), Is().EqualTo(node(8, 5,
                                                        create_node_ptr(9,5),
                                                        create_node_ptr(9,5))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 4,
+        AssertThat(ns.pull(), Is().EqualTo(node(8, 4,
                                                        create_node_ptr(9,4),
                                                        create_node_ptr(9,5))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(8, 3,
                                                        terminal_T,
                                                        create_node_ptr(9,4))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(8, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(8, 2,
                                                        create_node_ptr(9,5),
                                                        terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(7, 5,
+        AssertThat(ns.pull(), Is().EqualTo(node(7, 5,
                                                        create_node_ptr(8,5),
                                                        create_node_ptr(8,5))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(7, 4,
+        AssertThat(ns.pull(), Is().EqualTo(node(7, 4,
                                                        create_node_ptr(8,4),
                                                        create_node_ptr(8,5))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(7, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(7, 3,
                                                        create_node_ptr(8,3),
                                                        create_node_ptr(8,4))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(7, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(7, 2,
                                                        create_node_ptr(8,2),
                                                        create_node_ptr(8,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(7, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(7, 1,
                                                        create_node_ptr(8,5),
                                                        create_node_ptr(8,2))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 5,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 5,
                                                        create_node_ptr(7,5),
                                                        create_node_ptr(7,5))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 4,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 4,
                                                        create_node_ptr(7,4),
                                                        create_node_ptr(7,5))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 3,
                                                        create_node_ptr(7,3),
                                                        create_node_ptr(7,4))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 2,
                                                        create_node_ptr(7,2),
                                                        create_node_ptr(7,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
                                                        create_node_ptr(7,1),
                                                        create_node_ptr(7,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(6, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(6, 0,
                                                        create_node_ptr(7,5),
                                                        create_node_ptr(7,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 5,
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 5,
                                                        create_node_ptr(6,5),
                                                        create_node_ptr(6,5))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 4,
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 4,
                                                        create_node_ptr(6,4),
                                                        create_node_ptr(6,5))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 3,
                                                        create_node_ptr(6,3),
                                                        create_node_ptr(6,4))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 2,
                                                        create_node_ptr(6,2),
                                                        create_node_ptr(6,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 1,
                                                        create_node_ptr(6,1),
                                                        create_node_ptr(6,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(5, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(5, 0,
                                                        create_node_ptr(6,0),
                                                        create_node_ptr(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 4,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 4,
                                                        create_node_ptr(5,4),
                                                        create_node_ptr(5,5))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 3,
                                                        create_node_ptr(5,3),
                                                        create_node_ptr(5,4))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 2,
                                                        create_node_ptr(5,2),
                                                        create_node_ptr(5,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
                                                        create_node_ptr(5,1),
                                                        create_node_ptr(5,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
                                                        create_node_ptr(5,0),
                                                        create_node_ptr(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 3,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 3,
                                                        create_node_ptr(4,3),
                                                        create_node_ptr(4,4))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 2,
                                                        create_node_ptr(4,2),
                                                        create_node_ptr(4,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
                                                        create_node_ptr(4,1),
                                                        create_node_ptr(4,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
                                                        create_node_ptr(4,0),
                                                        create_node_ptr(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 2,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 2,
                                                        create_node_ptr(3,2),
                                                        create_node_ptr(3,3))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
                                                        create_node_ptr(3,1),
                                                        create_node_ptr(3,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
                                                        create_node_ptr(3,0),
                                                        create_node_ptr(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 1,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, 1,
                                                        create_node_ptr(2,1),
                                                        create_node_ptr(2,2))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
                                                        create_node_ptr(2,0),
                                                        create_node_ptr(2,1))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0, 0,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
                                                        create_node_ptr(1,0),
                                                        create_node_ptr(1,1))));
 

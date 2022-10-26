@@ -16,11 +16,170 @@ namespace adiar {
   /// \remark If a node is a terminal, then `low` and `high` are NIL. Otherwise,
   ///         they are always \em not NIL.
   //////////////////////////////////////////////////////////////////////////////
-  struct node
+  class node
   {
-    uid_t uid;
-    ptr_t low;
-    ptr_t high;
+  public:
+    // TODO (MDD):
+    //   template with 'outdegree' and use the below to reexpose it
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of children of this node type.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr size_t OUTDEGREE = 2u;
+
+  private:
+    // TODO (ADD with 64-bit values):
+    //   template with 'uid_t' reexpose it (and its related 'ptr_t') with typedefs.
+    uid_t _uid;
+    ptr_t _children[OUTDEGREE];
+
+  public:
+    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    node() = default;
+    node(const node &) = default;
+    ~node() = default;
+
+  public:
+    // Provide 'non-default' constructors to make it easy to use outside of TPIE.
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct node `(uid, low, high)`.
+    ////////////////////////////////////////////////////////////////////////////
+    node(const uid_t u, const ptr_t &l, const ptr_t &h)
+      : _uid(u), _children{l, h}
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct *internal* node `((label, id), low, high)`.
+    ////////////////////////////////////////////////////////////////////////////
+    node(const label_t label, const id_t id, const ptr_t &l, const ptr_t &h)
+      : _uid(create_node_uid(label, id)), _children{l, h}
+    {
+      adiar_debug(!is_nil(l), "Cannot create a node with NIL child");
+      adiar_debug(adiar::is_terminal(l) || label < label_of(l),
+                  "Node is not prior to given low child");
+
+      adiar_debug(!is_nil(h), "Cannot create a node with NIL child");
+      adiar_debug(adiar::is_terminal(h) || label < label_of(h),
+                  "Node is not prior to given high child");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct *internal* node `((label, id), low, high)`.
+    ////////////////////////////////////////////////////////////////////////////
+    node(const label_t label, const id_t id, const node &l, const ptr_t &h)
+      : node(label, id, l.uid(), h)
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct *internal* node `((label, id), low, high)`.
+    ////////////////////////////////////////////////////////////////////////////
+    node(const label_t label, const id_t id, const ptr_t &l, const node &h)
+      : node(label, id, l, h.uid())
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct *internal* node `((label, id), low, high)`.
+    ////////////////////////////////////////////////////////////////////////////
+    node(const label_t label, const id_t id, const node &l, const node &h)
+      : node(label, id, l.uid(), h.uid())
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct *terminal* node `(value, NIL, NIL)`.
+    ////////////////////////////////////////////////////////////////////////////
+    node(const bool value)
+      : _uid(create_terminal_ptr(value)), _children{NIL, NIL}
+    { }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The unique identifier of this node
+    ////////////////////////////////////////////////////////////////////////////
+    inline uid_t uid() const
+    { return _uid; }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether this node represents a terminal value.
+    ////////////////////////////////////////////////////////////////////////////
+    inline bool is_terminal() const
+    {
+      // Since uid never is nil, then this is a slightly a faster logic
+      // TODO: move this simplified logic into a 'uid' class
+      return uid() >= TERMINAL_BIT;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The value of this terminal node (assuming it is one).
+    ///
+    /// \pre `is_terminal()` evaluates to `true`.
+    ////////////////////////////////////////////////////////////////////////////
+    inline bool value() const
+    {
+      adiar_precondition(is_terminal());
+      return value_of(_uid);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether this node is the false terminal.
+    ///
+    /// \details This is equivalent to `n.is_terminal() && !n.value()`.
+    //////////////////////////////////////////////////////////////////////////////
+    inline bool is_false() const
+    { return adiar::is_false(uid()); }
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether this node is the true terminal.
+    ///
+    /// \details This is equivalent to `n.is_terminal() && n.value()`.
+    //////////////////////////////////////////////////////////////////////////////
+    inline bool is_true() const
+    { return adiar::is_true(uid()); }
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the label of a node.
+    ///
+    /// \todo Rename to `level()` when introducing variable ordering
+    ///
+    /// \pre `is_terminal()` evaluates to `false`.
+    //////////////////////////////////////////////////////////////////////////////
+    inline label_t label() const
+    {
+      adiar_precondition(!is_terminal());
+      return label_of(uid());
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the level-specific identifier of a node.
+    ///
+    /// \pre `is_terminal()` evaluates to `false`.
+    //////////////////////////////////////////////////////////////////////////////
+    inline id_t id() const
+    {
+      adiar_precondition(!is_terminal());
+      return id_of(uid());
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether a node is on a given level, i.e. has the given label.
+    //////////////////////////////////////////////////////////////////////////////
+    inline bool on_level(label_t level) const
+    { return adiar::on_level(uid(), level); }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The 'low' child (also known as the 'else' child), i.e. reflecting
+    ///        assigning `false` to variable with the 'label'.
+    ////////////////////////////////////////////////////////////////////////////
+    inline ptr_t low() const
+    { return _children[false]; }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The 'high' child (also known as the 'then' child), i.e.
+    ///        reflecting assigning `true` to variable with the 'label'.
+    ////////////////////////////////////////////////////////////////////////////
+    inline ptr_t high() const
+    { return _children[true]; }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -28,116 +187,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   typedef node node_t;
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create a terminal node representing the given boolean value.
-  //////////////////////////////////////////////////////////////////////////////
-  inline node_t create_terminal(bool value)
-  {
-    return { create_terminal_ptr(value) , NIL, NIL };
-  }
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a given node represents a terminal.
-  //////////////////////////////////////////////////////////////////////////////
-  inline bool is_terminal(const node_t& n)
-  {
-    return n.uid >= TERMINAL_BIT;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Extract the value from a terminal.
-  //////////////////////////////////////////////////////////////////////////////
-  inline bool value_of(const node_t &n)
-  {
-    adiar_debug(is_terminal(n), "Cannot extract value from non-terminal");
-
-    return value_of(n.uid);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a node is the false terminal.
-  //////////////////////////////////////////////////////////////////////////////
-  inline bool is_false(const node_t &n)
-  {
-    return is_false(n.uid);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a node is the true terminal.
-  //////////////////////////////////////////////////////////////////////////////
-  inline bool is_true(const node_t &n)
-  {
-    return is_true(n.uid);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create a node with the given unique identifier (label, id) and a
-  ///        pointer to its two children.
-  //////////////////////////////////////////////////////////////////////////////
-  inline node_t create_node(uid_t uid, ptr_t low, ptr_t high)
-  {
-    return { uid, low, high };
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create a node with the given its label, its level identifier, and a
-  ///        pointer to its two children.
-  //////////////////////////////////////////////////////////////////////////////
-  inline node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high)
-  {
-    adiar_debug(!is_nil(low), "Cannot create a node with NIL child");
-    adiar_debug(is_terminal(low) || label < label_of(low),
-                "Node is not prior to given low child");
-
-    adiar_debug(!is_nil(high), "Cannot create a node with NIL child");
-    adiar_debug(is_terminal(high) || label < label_of(high),
-                "Node is not prior to given high child");
-
-    return create_node(create_node_uid(label, id), low, high);
-  }
-
-  inline node_t create_node(label_t label, id_t id, ptr_t low, node_t high)
-  {
-    return create_node(label, id, low, high.uid);
-  }
-
-  inline node_t create_node(label_t label, id_t id, node_t low, ptr_t high)
-  {
-    return create_node(label, id, low.uid, high);
-  }
-
-  inline node_t create_node(label_t label, id_t id, node_t low, node_t high)
-  {
-    return create_node(label, id, low.uid, high.uid);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Extract the label from a node.
-  //////////////////////////////////////////////////////////////////////////////
-  inline label_t label_of(const node_t &n)
-  {
-    adiar_debug(!is_terminal(n), "Cannot extract label of a terminal");
-
-    return label_of(n.uid);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Extract the level identifier of a node.
-  //////////////////////////////////////////////////////////////////////////////
-  inline id_t id_of(const node_t &n)
-  {
-    adiar_debug(!is_terminal(n), "Cannot extract id of a terminal");
-
-    return id_of(n.uid);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether a node is on a given level, i.e. has the given label.
-  //////////////////////////////////////////////////////////////////////////////
-  inline bool on_level(const node_t &n, label_t level)
-  {
-    return on_level(n.uid, level);
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create the node representing the (locally) negated function:
@@ -146,13 +196,13 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline node_t negate(const node_t &n)
   {
-    if (is_terminal(n)) {
-      return { negate(n.uid), NIL, NIL };
+    if (n.is_terminal()) {
+      return node(negate(n.uid()), NIL, NIL);
     }
 
-    uint64_t low =  is_terminal(n.low)  ? negate(n.low)  : n.low;
-    uint64_t high = is_terminal(n.high) ? negate(n.high) : n.high;
-    return { n.uid, low, high };
+    const ptr_t low =  is_terminal(n.low())  ? negate(n.low())  : n.low();
+    const ptr_t high = is_terminal(n.high()) ? negate(n.high()) : n.high();
+    return node(n.uid(), low, high);
   }
 
   inline node operator! (const node &n)
@@ -162,17 +212,17 @@ namespace adiar {
 
   inline bool operator< (const node &a, const node &b)
   {
-    return a.uid < b.uid;
+    return a.uid() < b.uid();
   }
 
   inline bool operator> (const node &a, const node &b)
   {
-    return a.uid > b.uid;
+    return a.uid() > b.uid();
   }
 
   inline bool operator== (const node &a, const node &b)
   {
-    return a.uid == b.uid && a.low == b.low && a.high == b.high;
+    return a.uid() == b.uid() && a.low() == b.low() && a.high() == b.high();
   }
 
   inline bool operator!= (const node &a, const node &b)

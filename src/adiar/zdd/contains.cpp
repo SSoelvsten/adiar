@@ -32,9 +32,9 @@ namespace adiar
 
     inline ptr_t visit(const node_t &n)
     {
-      visited_label = label_of(n);
+      visited_label = n.label();
 
-      const ptr_t next_ptr = has_l && l == visited_label ? n.high : n.low;
+      const ptr_t next_ptr = has_l && l == visited_label ? n.high() : n.low();
 
       if (has_l) {
         // Did we miss a label before the root?

@@ -166,8 +166,8 @@ namespace adiar
     node_stream<> in_nodes(dd);
     node_t n = in_nodes.pull();
 
-    if (is_terminal(n)) {
-      return intercut_policy::on_terminal_input(value_of(n), dd, labels);
+    if (n.is_terminal()) {
+      return intercut_policy::on_terminal_input(n.value(), dd, labels);
     }
 
     label_stream<> ls(labels);
@@ -180,8 +180,8 @@ namespace adiar
     pq_t intercut_pq({dd_labels, labels}, pq_memory, max_pq_size, stats_intercut.lpq);
 
     // Add request for root in the queue
-    label_t out_label = std::min(l, label_of(n));
-    intercut_pq.push({ NIL, n.uid, out_label });
+    label_t out_label = std::min(l, n.label());
+    intercut_pq.push({ NIL, n.uid(), out_label });
     id_t out_id = 0;
 
     size_t max_1level_cut = 0;
@@ -210,11 +210,11 @@ namespace adiar
 
       // Resolve requests that end at the cut for this level
       while (intercut_pq.can_pull() && label_of(intercut_pq.peek().target) == intercut_pq.peek().level) {
-        while (n.uid < intercut_pq.top().target) {
+        while (n.uid() < intercut_pq.top().target) {
           n = in_nodes.pull();
         }
 
-        adiar_debug(n.uid == intercut_pq.top().target, "should always find desired node");
+        adiar_debug(n.uid() == intercut_pq.top().target, "should always find desired node");
 
         const intercut_rec r = hit_level
           ? intercut_policy::hit_existing(n)
@@ -233,7 +233,7 @@ namespace adiar
           //       label file are only of the remaining labels.
 
           intercut_in__pq<intercut_policy, intercut_out__pq<intercut_policy>>
-            (aw, intercut_pq, out_label, n.uid, rs.tgt, l);
+            (aw, intercut_pq, out_label, n.uid(), rs.tgt, l);
         } else {
           const intercut_rec_output ro = std::get<intercut_rec_output>(r);
           const uid_t out_uid = create_node_uid(out_label, out_id++);
@@ -245,7 +245,7 @@ namespace adiar
             (aw, intercut_pq, flag(out_uid), ro.high, out_label, l);
 
           intercut_in__pq<intercut_policy, intercut_out__writer>
-            (aw, intercut_pq, out_label, n.uid, out_uid, l);
+            (aw, intercut_pq, out_label, n.uid(), out_uid, l);
         }
       }
 

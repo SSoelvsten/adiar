@@ -17,11 +17,11 @@ go_bandit([]() {
     */
 
     {
-      node_t n5 = create_node(3,0, terminal_F, terminal_T);
-      node_t n4 = create_node(2,1, terminal_T, terminal_F);
-      node_t n3 = create_node(2,0, terminal_F, n5.uid);
-      node_t n2 = create_node(1,0, n3.uid, n4.uid);
-      node_t n1 = create_node(0,0, n2.uid, n4.uid);
+      node_t n5 = node(3,0, terminal_F, terminal_T);
+      node_t n4 = node(2,1, terminal_T, terminal_F);
+      node_t n3 = node(2,0, terminal_F, n5.uid());
+      node_t n2 = node(1,0, n3.uid(), n4.uid());
+      node_t n1 = node(0,0, n2.uid(), n4.uid());
 
       node_writer nw(bdd_1);
       nw << n5 << n4 << n3 << n2 << n1;
@@ -43,12 +43,12 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node_t n6 = create_node(3,0, terminal_T, terminal_F);
-      node_t n5 = create_node(2,2, n6.uid, terminal_T);
-      node_t n4 = create_node(2,1, terminal_T, terminal_F);
-      node_t n3 = create_node(2,0, terminal_F, n6.uid);
-      node_t n2 = create_node(1,0, n3.uid, n4.uid);
-      node_t n1 = create_node(0,0, n2.uid, n5.uid);
+      node_t n6 = node(3,0, terminal_T, terminal_F);
+      node_t n5 = node(2,2, n6.uid(), terminal_T);
+      node_t n4 = node(2,1, terminal_T, terminal_F);
+      node_t n3 = node(2,0, terminal_F, n6.uid());
+      node_t n2 = node(1,0, n3.uid(), n4.uid());
+      node_t n1 = node(0,0, n2.uid(), n5.uid());
 
       node_writer nw(bdd_2);
       nw << n6 << n5 << n4 << n3 << n2 << n1;
@@ -67,10 +67,10 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node_t n4 = create_node(5,1, terminal_F, terminal_T);
-      node_t n3 = create_node(5,0, terminal_T, terminal_F);
-      node_t n2 = create_node(3,0, n3.uid, n4.uid);
-      node_t n1 = create_node(1,0, n2.uid, n4.uid);
+      node_t n4 = node(5,1, terminal_F, terminal_T);
+      node_t n3 = node(5,0, terminal_T, terminal_F);
+      node_t n2 = node(3,0, n3.uid(), n4.uid());
+      node_t n1 = node(1,0, n2.uid(), n4.uid());
 
       node_writer nw(bdd_3);
       nw << n4 << n3 << n2 << n1;
@@ -81,7 +81,7 @@ go_bandit([]() {
         node_file T;
         {
           node_writer nw(T);
-          nw << create_terminal(true);
+          nw << node(true);
         }
 
         assignment_file result = bdd_satmin(T);
@@ -94,7 +94,7 @@ go_bandit([]() {
         node_file F;
         {
           node_writer nw(F);
-          nw << create_terminal(false);
+          nw << node(false);
         }
 
         assignment_file result = bdd_satmin(false);

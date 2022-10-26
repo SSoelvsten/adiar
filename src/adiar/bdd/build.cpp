@@ -112,7 +112,7 @@ namespace adiar
           high = adiar::create_node_ptr(curr_label + 1, curr_id + 1);
         }
 
-        nw.unsafe_push(adiar::create_node(curr_label, curr_id, low, high));
+        nw.unsafe_push(adiar::node(curr_label, curr_id, low, high));
 
       } while (curr_id-- > min_id);
       nw.unsafe_push(create_level_info(curr_label, (max_id - min_id) + 1));

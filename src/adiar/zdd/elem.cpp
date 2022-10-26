@@ -29,8 +29,8 @@ namespace adiar
     {
       const ptr_t next_ptr = visitor.visit(n);
 
-      if (next_ptr == n.high && (next_ptr != n.low || visitor_t::keep_dont_cares)) {
-        lw << label_of(n);
+      if (next_ptr == n.high() && (next_ptr != n.low() || visitor_t::keep_dont_cares)) {
+        lw << n.label();
       }
 
       return next_ptr;
@@ -67,8 +67,8 @@ namespace adiar
     static constexpr bool keep_dont_cares = true;
 
     inline ptr_t visit(const node_t &n) {
-      adiar_debug(!is_terminal(n.high) || value_of(n.high), "high terminals are never false");
-      return n.high;
+      adiar_debug(!is_terminal(n.high()) || value_of(n.high()), "high terminals are never false");
+      return n.high();
     }
 
     inline void visit(const bool /*s*/)

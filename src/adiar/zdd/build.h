@@ -164,7 +164,7 @@ namespace adiar
 
         adiar_debug(high != create_terminal_ptr(false), "Should not create a reducible node");
 
-        nw.unsafe_push(create_node(curr_label, curr_id, low, high));
+        nw.unsafe_push(node(curr_label, curr_id, low, high));
 
         level_size++;
       } while (curr_id-- > min_id);

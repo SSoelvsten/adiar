@@ -50,7 +50,7 @@ namespace adiar
 
     static inline intercut_rec_output miss_existing(const node_t &n)
     {
-      return intercut_rec_output { n.low, n.high };
+      return intercut_rec_output { n.low(), n.high() };
     }
   };
 

@@ -17,10 +17,10 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node_t n4 = create_node(3,0, terminal_F, terminal_T);
-      node_t n3 = create_node(2,0, terminal_F, n4.uid);
-      node_t n2 = create_node(1,0, n3.uid, n4.uid);
-      node_t n1 = create_node(0,0, n3.uid, n2.uid);
+      node_t n4 = node(3,0, terminal_F, terminal_T);
+      node_t n3 = node(2,0, terminal_F, n4.uid());
+      node_t n2 = node(1,0, n3.uid(), n4.uid());
+      node_t n1 = node(0,0, n3.uid(), n2.uid());
 
       node_writer nw_1(bdd_1);
       nw_1 << n4 << n3 << n2 << n1;
@@ -38,8 +38,8 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node_t n2 = create_node(2,0, terminal_F, terminal_T);
-      node_t n1 = create_node(1,0, n2.uid, terminal_T);
+      node_t n2 = node(2,0, terminal_F, terminal_T);
+      node_t n1 = node(1,0, n2.uid(), terminal_T);
 
       node_writer nw_2(bdd_2);
       nw_2 << n2 << n1;
@@ -57,9 +57,9 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node_t n3 = create_node(2,1, terminal_T, terminal_F);
-      node_t n2 = create_node(2,0, terminal_F, terminal_T);
-      node_t n1 = create_node(1,0, n2.uid, n3.uid);
+      node_t n3 = node(2,1, terminal_T, terminal_F);
+      node_t n2 = node(2,0, terminal_F, terminal_T);
+      node_t n1 = node(1,0, n2.uid(), n3.uid());
 
       node_writer nw_3(bdd_3);
       nw_3 << n3 << n2 << n1;
@@ -80,12 +80,12 @@ go_bandit([]() {
     */
 
     { // Garbage collect writer to free write-lock
-      node_t n6 = create_node(6,1, terminal_F, terminal_T);
-      node_t n5 = create_node(6,0, terminal_T, terminal_F);
-      node_t n4 = create_node(4,0, n5.uid, n6.uid);
-      node_t n3 = create_node(2,1, n5.uid, n4.uid);
-      node_t n2 = create_node(2,0, n4.uid, n6.uid);
-      node_t n1 = create_node(0,0, n2.uid, n3.uid);
+      node_t n6 = node(6,1, terminal_F, terminal_T);
+      node_t n5 = node(6,0, terminal_T, terminal_F);
+      node_t n4 = node(4,0, n5.uid(), n6.uid());
+      node_t n3 = node(2,1, n5.uid(), n4.uid());
+      node_t n2 = node(2,0, n4.uid(), n6.uid());
+      node_t n1 = node(0,0, n2.uid(), n3.uid());
 
       node_writer nw_4(bdd_4);
       nw_4 << n6 << n5 << n4 << n3 << n2 << n1;
@@ -98,7 +98,7 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_T(bdd_T);
-      nw_T << create_terminal(true);
+      nw_T << node(true);
     }
 
     node_file bdd_F;
@@ -108,7 +108,7 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_F(bdd_F);
-      nw_F << create_terminal(false);
+      nw_F << node(false);
     }
 
     node_file bdd_root_1;
@@ -120,7 +120,7 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_root_1(bdd_root_1);
-      nw_root_1 << create_node(1,0, terminal_F, terminal_T);
+      nw_root_1 << node(1,0, terminal_F, terminal_T);
     }
 
     // Set domain to be empty

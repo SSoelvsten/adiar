@@ -81,15 +81,15 @@ namespace snowhouse
     static std::string ToString(const node_t& n)
     {
       std::stringstream stream;
-      if (is_terminal(n)) {
-        stream << "node: " << value_of(n);
+      if (n.is_terminal()) {
+        stream << "node: " << n.value();
       } else {
         stream << "node: ("
-               << string_of_adiar_uid(n.uid)
+               << string_of_adiar_uid(n.uid())
                << ", "
-               << string_of_adiar_uid(n.low)
+               << string_of_adiar_uid(n.low())
                << ", "
-               << string_of_adiar_uid(n.high)
+               << string_of_adiar_uid(n.high())
                << ")"
           ;
       }

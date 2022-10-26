@@ -21,13 +21,13 @@ go_bandit([]() {
     node_file nf_F;
     {
       node_writer w(nf_F);
-      w << create_terminal(false);
+      w << node(false);
     }
 
     node_file nf_T;
     {
       node_writer w(nf_T);
-      w << create_terminal(true);
+      w << node(true);
     }
 
     const ptr_t terminal_F = create_terminal_ptr(false);
@@ -36,19 +36,19 @@ go_bandit([]() {
     node_file nf_x0;
     {
       node_writer nw(nf_x0);
-      nw << create_node(0, MAX_ID, terminal_F, terminal_T);
+      nw << node(0, MAX_ID, terminal_F, terminal_T);
     }
 
     node_file nf_x1;
     {
       node_writer nw(nf_x1);
-      nw << create_node(1, MAX_ID, terminal_F, terminal_T);
+      nw << node(1, MAX_ID, terminal_F, terminal_T);
     }
 
     node_file nf_x2;
     {
       node_writer nw(nf_x2);
-      nw << create_node(2, MAX_ID, terminal_F, terminal_T);
+      nw << node(2, MAX_ID, terminal_F, terminal_T);
     }
 
     zdd zdd_F(nf_F);
@@ -61,21 +61,21 @@ go_bandit([]() {
     node_file nf_x0_null;
     {
       node_writer nw(nf_x0_null);
-      nw << create_node(0, MAX_ID, terminal_T, terminal_T);
+      nw << node(0, MAX_ID, terminal_T, terminal_T);
     }
     zdd zdd_x0_null(nf_x0_null);
 
     node_file nf_x1_null;
     {
       node_writer nw(nf_x1_null);
-      nw << create_node(1, MAX_ID, terminal_T, terminal_T);
+      nw << node(1, MAX_ID, terminal_T, terminal_T);
     }
     zdd zdd_x1_null(nf_x1_null);
 
     node_file nf_x2_null;
     {
       node_writer nw(nf_x2_null);
-      nw << create_node(2, MAX_ID, terminal_T, terminal_T);
+      nw << node(2, MAX_ID, terminal_T, terminal_T);
     }
     zdd zdd_x2_null(nf_x2_null);
 
@@ -83,8 +83,8 @@ go_bandit([]() {
     // is the ZDD version of Fig. 3 in the same paper.
     node_file nf_minato_fig5;
     {
-      const node_t n2 = create_node(1, MAX_ID, terminal_F, terminal_T);
-      const node_t n1 = create_node(0, MAX_ID, n2.uid, terminal_T);
+      const node_t n2 = node(1, MAX_ID, terminal_F, terminal_T);
+      const node_t n1 = node(0, MAX_ID, n2.uid(), terminal_T);
 
       node_writer nw(nf_minato_fig5);
       nw << n2 << n1;
@@ -105,7 +105,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -120,7 +120,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -134,7 +134,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -148,17 +148,17 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
                                                               terminal_T,
                                                               terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               create_node_ptr(2, MAX_ID),
                                                               terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                               create_node_ptr(1, MAX_ID),
                                                               terminal_F)));
 
@@ -276,7 +276,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -389,9 +389,9 @@ go_bandit([]() {
       it("collapses to T terminal on pow(dom) with dom = { 0,1,2 }", [&]() {
         node_file nf_pow_dom;
         {
-          const node_t n2 = create_node(2, MAX_ID, terminal_T, terminal_T);
-          const node_t n1 = create_node(1, MAX_ID, n2.uid, n2.uid);
-          const node_t n0 = create_node(0, MAX_ID, n1.uid, n1.uid);
+          const node_t n2 = node(2, MAX_ID, terminal_T, terminal_T);
+          const node_t n1 = node(1, MAX_ID, n2.uid(), n2.uid());
+          const node_t n0 = node(0, MAX_ID, n1.uid(), n1.uid());
 
           node_writer nw(nf_pow_dom);
           nw << n2 << n1 << n0;
@@ -403,7 +403,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -414,9 +414,9 @@ go_bandit([]() {
       it("collapses to T terminal on pow(dom) with dom = { 0,2,4 }", [&]() {
         node_file nf_pow_dom;
         {
-          const node_t n2 = create_node(4, MAX_ID, terminal_T, terminal_T);
-          const node_t n1 = create_node(2, MAX_ID, n2.uid, n2.uid);
-          const node_t n0 = create_node(0, MAX_ID, n1.uid, n1.uid);
+          const node_t n2 = node(4, MAX_ID, terminal_T, terminal_T);
+          const node_t n1 = node(2, MAX_ID, n2.uid(), n2.uid());
+          const node_t n0 = node(0, MAX_ID, n1.uid(), n1.uid());
 
           node_writer nw(nf_pow_dom);
           nw << n2 << n1 << n0;
@@ -428,7 +428,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -449,10 +449,10 @@ go_bandit([]() {
 
         node_file nf;
         {
-          const node_t n4 = create_node(2, MAX_ID,   terminal_F, terminal_T);
-          const node_t n3 = create_node(1, MAX_ID,   n4.uid, n4.uid);
-          const node_t n2 = create_node(1, MAX_ID-1, terminal_F, n4.uid);
-          const node_t n1 = create_node(0, MAX_ID,   n2.uid, n3.uid);
+          const node_t n4 = node(2, MAX_ID,   terminal_F, terminal_T);
+          const node_t n3 = node(1, MAX_ID,   n4.uid(), n4.uid());
+          const node_t n2 = node(1, MAX_ID-1, terminal_F, n4.uid());
+          const node_t n1 = node(0, MAX_ID,   n2.uid(), n3.uid());
 
           node_writer nw(nf);
           nw << n4 << n3 << n2 << n1;
@@ -621,9 +621,9 @@ go_bandit([]() {
       it("converts [Minato] Fig. 11 (dom = { 0,1,2,3 })", [&]() {
         node_file nf;
         {
-          const node_t n3 = create_node(3, MAX_ID, terminal_T, terminal_T);
-          const node_t n2 = create_node(2, MAX_ID, n3.uid, n3.uid);
-          const node_t n1 = create_node(1, MAX_ID, n2.uid, terminal_T);
+          const node_t n3 = node(3, MAX_ID, terminal_T, terminal_T);
+          const node_t n2 = node(2, MAX_ID, n3.uid(), n3.uid());
+          const node_t n1 = node(1, MAX_ID, n2.uid(), terminal_T);
 
           node_writer nw(nf);
           nw << n3 << n2 << n1;
@@ -683,9 +683,9 @@ go_bandit([]() {
       it("converts [Minato] Fig. 15 (dom = { 0,1,2 })", [&]() {
         node_file nf;
         {
-          const node_t n3 = create_node(2, MAX_ID, terminal_F, terminal_T);
-          const node_t n2 = create_node(1, MAX_ID, n3.uid, terminal_T);
-          const node_t n1 = create_node(0, MAX_ID, n3.uid, n2.uid);
+          const node_t n3 = node(2, MAX_ID, terminal_F, terminal_T);
+          const node_t n2 = node(1, MAX_ID, n3.uid(), terminal_T);
+          const node_t n1 = node(0, MAX_ID, n3.uid(), n2.uid());
 
           node_writer nw(nf);
           nw << n3 << n2 << n1;
@@ -759,10 +759,10 @@ go_bandit([]() {
               F T
         */
         {
-          const node_t n4 = create_node(2, MAX_ID,   terminal_F, terminal_T);
-          const node_t n3 = create_node(1, MAX_ID,   n4.uid, terminal_T);
-          const node_t n2 = create_node(1, MAX_ID-1, terminal_T, n4.uid);
-          const node_t n1 = create_node(0, MAX_ID,   n2.uid, n3.uid);
+          const node_t n4 = node(2, MAX_ID,   terminal_F, terminal_T);
+          const node_t n3 = node(1, MAX_ID,   n4.uid(), terminal_T);
+          const node_t n2 = node(1, MAX_ID-1, terminal_T, n4.uid());
+          const node_t n1 = node(0, MAX_ID,   n2.uid(), n3.uid());
 
           node_writer nw(nf_in);
           nw << n4 << n3 << n2 << n1;
@@ -850,13 +850,13 @@ go_bandit([]() {
                   T T
         */
         {
-          const node_t n7 = create_node(6, MAX_ID,   terminal_T, terminal_T);
-          const node_t n6 = create_node(5, MAX_ID,   n7.uid, n7.uid);
-          const node_t n5 = create_node(5, MAX_ID-1, terminal_F, n7.uid);
-          const node_t n4 = create_node(4, MAX_ID,   n6.uid, terminal_T);
-          const node_t n3 = create_node(4, MAX_ID-1, n5.uid, n6.uid);
-          const node_t n2 = create_node(3, MAX_ID,   n3.uid, n4.uid);
-          const node_t n1 = create_node(1, MAX_ID,   n2.uid, n2.uid);
+          const node_t n7 = node(6, MAX_ID,   terminal_T, terminal_T);
+          const node_t n6 = node(5, MAX_ID,   n7.uid(), n7.uid());
+          const node_t n5 = node(5, MAX_ID-1, terminal_F, n7.uid());
+          const node_t n4 = node(4, MAX_ID,   n6.uid(), terminal_T);
+          const node_t n3 = node(4, MAX_ID-1, n5.uid(), n6.uid());
+          const node_t n2 = node(3, MAX_ID,   n3.uid(), n4.uid());
+          const node_t n1 = node(1, MAX_ID,   n2.uid(), n2.uid());
 
           node_writer w(in);
           w << n7 << n6 << n5 << n4 << n3 << n2 << n1;
@@ -970,17 +970,17 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
                                                               terminal_T,
                                                               terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               create_node_ptr(2, MAX_ID),
                                                               terminal_F)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                               create_node_ptr(1, MAX_ID),
                                                               terminal_F)));
 
@@ -1045,7 +1045,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1060,7 +1060,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1074,7 +1074,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(false)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1088,17 +1088,17 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
                                                               terminal_T,
                                                               terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               create_node_ptr(2, MAX_ID),
                                                               create_node_ptr(2, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                               create_node_ptr(1, MAX_ID),
                                                               create_node_ptr(1, MAX_ID))));
 
@@ -1208,7 +1208,7 @@ go_bandit([]() {
         node_file nf;
         {
           node_writer nw(nf);
-          nw << create_node(1, MAX_ID, terminal_T, terminal_F);
+          nw << node(1, MAX_ID, terminal_T, terminal_F);
         }
         bdd in(nf);
 
@@ -1255,7 +1255,7 @@ go_bandit([]() {
         node_file nf;
         {
           node_writer nw(nf);
-          nw << create_node(0, MAX_ID, terminal_T, terminal_F);
+          nw << node(0, MAX_ID, terminal_T, terminal_F);
         }
         bdd in(nf);
 
@@ -1264,7 +1264,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1275,9 +1275,9 @@ go_bandit([]() {
       it("collapses false-chain into { Ø } on with dom = { 0,2,4 }", [&]() {
         node_file nf;
         {
-          const node_t n3 = create_node(4, MAX_ID, terminal_T, terminal_F);
-          const node_t n2 = create_node(2, MAX_ID, n3.uid, terminal_F);
-          const node_t n1 = create_node(0, MAX_ID, n2.uid, terminal_F);
+          const node_t n3 = node(4, MAX_ID, terminal_T, terminal_F);
+          const node_t n2 = node(2, MAX_ID, n3.uid(), terminal_F);
+          const node_t n1 = node(0, MAX_ID, n2.uid(), terminal_F);
 
           node_writer nw(nf);
           nw << n3 << n2 << n1;
@@ -1289,7 +1289,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1301,10 +1301,10 @@ go_bandit([]() {
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2 } ", [&]() {
         node_file nf;
         {
-          const node_t n4 = create_node(2, MAX_ID,   terminal_T, terminal_F);
-          const node_t n3 = create_node(1, MAX_ID,   n4.uid, terminal_F);
-          const node_t n2 = create_node(1, MAX_ID-1, terminal_F, n4.uid);
-          const node_t n1 = create_node(0, MAX_ID,   n2.uid, n3.uid);
+          const node_t n4 = node(2, MAX_ID,   terminal_T, terminal_F);
+          const node_t n3 = node(1, MAX_ID,   n4.uid(), terminal_F);
+          const node_t n2 = node(1, MAX_ID-1, terminal_F, n4.uid());
+          const node_t n1 = node(0, MAX_ID,   n2.uid(), n3.uid());
 
           node_writer nw(nf);
           nw << n4 << n3 << n2 << n1;
@@ -1347,11 +1347,11 @@ go_bandit([]() {
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2,3 } ", [&]() {
         node_file nf;
         {
-          const node_t n5 = create_node(3, MAX_ID,   terminal_T, terminal_F);
-          const node_t n4 = create_node(2, MAX_ID,   n5.uid, terminal_F);
-          const node_t n3 = create_node(1, MAX_ID,   n4.uid, terminal_F);
-          const node_t n2 = create_node(1, MAX_ID-1, terminal_F, n4.uid);
-          const node_t n1 = create_node(0, MAX_ID,   n2.uid, n3.uid);
+          const node_t n5 = node(3, MAX_ID,   terminal_T, terminal_F);
+          const node_t n4 = node(2, MAX_ID,   n5.uid(), terminal_F);
+          const node_t n3 = node(1, MAX_ID,   n4.uid(), terminal_F);
+          const node_t n2 = node(1, MAX_ID-1, terminal_F, n4.uid());
+          const node_t n1 = node(0, MAX_ID,   n2.uid(), n3.uid());
 
           node_writer nw(nf);
           nw << n5 << n4 << n3 << n2 << n1;
@@ -1394,10 +1394,10 @@ go_bandit([]() {
       it("converts [Minato] Fig. 11 with dom = { 0,1,2,3 } ", [&]() {
         node_file nf;
         {
-          const node_t n4 = create_node(3, MAX_ID,   terminal_T, terminal_F);
-          const node_t n3 = create_node(2, MAX_ID,   n4.uid, terminal_F);
-          const node_t n2 = create_node(1, MAX_ID-1, terminal_T, n3.uid);
-          const node_t n1 = create_node(0, MAX_ID,   n2.uid, terminal_F);
+          const node_t n4 = node(3, MAX_ID,   terminal_T, terminal_F);
+          const node_t n3 = node(2, MAX_ID,   n4.uid(), terminal_F);
+          const node_t n2 = node(1, MAX_ID-1, terminal_T, n3.uid());
+          const node_t n1 = node(0, MAX_ID,   n2.uid(), terminal_F);
 
           node_writer nw(nf);
           nw << n4 << n3 << n2 << n1;
@@ -1449,11 +1449,11 @@ go_bandit([]() {
       it("converts [Minato] Fig. 15 with dom = { 0,1,2 } ", [&]() {
         node_file nf;
         {
-          const node_t n5 = create_node(2, MAX_ID,   terminal_F, terminal_T);
-          const node_t n4 = create_node(2, MAX_ID-1, terminal_T, terminal_F);
-          const node_t n3 = create_node(1, MAX_ID,   n5.uid, terminal_F);
-          const node_t n2 = create_node(1, MAX_ID-1, n5.uid, n4.uid);
-          const node_t n1 = create_node(0, MAX_ID,   n3.uid, n2.uid);
+          const node_t n5 = node(2, MAX_ID,   terminal_F, terminal_T);
+          const node_t n4 = node(2, MAX_ID-1, terminal_T, terminal_F);
+          const node_t n3 = node(1, MAX_ID,   n5.uid(), terminal_F);
+          const node_t n2 = node(1, MAX_ID-1, n5.uid(), n4.uid());
+          const node_t n1 = node(0, MAX_ID,   n3.uid(), n2.uid());
 
           node_writer nw(nf);
           nw << n5 << n4 << n3 << n2 << n1;
@@ -1512,17 +1512,17 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
                                                               terminal_T,
                                                               terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(1, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               create_node_ptr(2, MAX_ID),
                                                               create_node_ptr(2, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_node(0, MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
                                                               create_node_ptr(1, MAX_ID),
                                                               create_node_ptr(1, MAX_ID))));
 
@@ -1545,9 +1545,9 @@ go_bandit([]() {
       it("collapses false-chain into { Ø } on with set dom = { 0,2,4 }", [&]() {
         node_file nf;
         {
-          const node_t n3 = create_node(4, MAX_ID, terminal_T, terminal_F);
-          const node_t n2 = create_node(2, MAX_ID, n3.uid, terminal_F);
-          const node_t n1 = create_node(0, MAX_ID, n2.uid, terminal_F);
+          const node_t n3 = node(4, MAX_ID, terminal_T, terminal_F);
+          const node_t n2 = node(2, MAX_ID, n3.uid(), terminal_F);
+          const node_t n1 = node(0, MAX_ID, n2.uid(), terminal_F);
 
           node_writer nw(nf);
           nw << n3 << n2 << n1;
@@ -1561,7 +1561,7 @@ go_bandit([]() {
         node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(create_terminal(true)));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 

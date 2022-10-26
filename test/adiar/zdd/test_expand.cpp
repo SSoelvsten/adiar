@@ -5,10 +5,10 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(zdd_F);
-      nw_F << create_terminal(false);
+      nw_F << node(false);
 
       node_writer nw_T(zdd_T);
-      nw_T << create_terminal(true);
+      nw_T << node(true);
     }
 
     const ptr_t terminal_F = create_terminal_ptr(false);
@@ -23,7 +23,7 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_x1);
-      nw << create_node(1, MAX_ID, terminal_F, terminal_T);
+      nw << node(1, MAX_ID, terminal_F, terminal_T);
     }
 
     node_file zdd_1;
@@ -41,13 +41,13 @@ go_bandit([]() {
           F T
      */
 
-    const node_t n1_7 = create_node(10, MAX_ID,   terminal_F,   terminal_T);
-    const node_t n1_6 = create_node(8,  MAX_ID,   terminal_T,   terminal_T);
-    const node_t n1_5 = create_node(8,  MAX_ID-1, n1_7.uid, terminal_T);
-    const node_t n1_4 = create_node(6,  MAX_ID,   n1_5.uid, n1_6.uid);
-    const node_t n1_3 = create_node(4,  MAX_ID,   n1_4.uid, terminal_T);
-    const node_t n1_2 = create_node(4,  MAX_ID-1, terminal_F,   n1_4.uid);
-    const node_t n1_1 = create_node(2,  MAX_ID,   n1_2.uid, n1_3.uid);
+    const node_t n1_7 = node(10, MAX_ID,   terminal_F,   terminal_T);
+    const node_t n1_6 = node(8,  MAX_ID,   terminal_T,   terminal_T);
+    const node_t n1_5 = node(8,  MAX_ID-1, n1_7.uid(), terminal_T);
+    const node_t n1_4 = node(6,  MAX_ID,   n1_5.uid(), n1_6.uid());
+    const node_t n1_3 = node(4,  MAX_ID,   n1_4.uid(), terminal_T);
+    const node_t n1_2 = node(4,  MAX_ID-1, terminal_F,   n1_4.uid());
+    const node_t n1_1 = node(2,  MAX_ID,   n1_2.uid(), n1_3.uid());
 
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_1);
@@ -107,7 +107,7 @@ go_bandit([]() {
       node_test_stream ns(out);
 
       AssertThat(ns.can_pull(), Is().True());
-      AssertThat(ns.pull(), Is().EqualTo(create_node(42,MAX_ID, terminal_T, terminal_T)));
+      AssertThat(ns.pull(), Is().EqualTo(node(42,MAX_ID, terminal_T, terminal_T)));
 
       AssertThat(ns.can_pull(), Is().False());
 
@@ -140,10 +140,10 @@ go_bandit([]() {
       node_test_stream ns(out);
 
       AssertThat(ns.can_pull(), Is().True());
-      AssertThat(ns.pull(), Is().EqualTo(create_node(2,MAX_ID, terminal_T, terminal_T)));
+      AssertThat(ns.pull(), Is().EqualTo(node(2,MAX_ID, terminal_T, terminal_T)));
 
       AssertThat(ns.can_pull(), Is().True());
-      AssertThat(ns.pull(), Is().EqualTo(create_node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))));
+      AssertThat(ns.pull(), Is().EqualTo(node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))));
 
       AssertThat(ns.can_pull(), Is().False());
 
@@ -171,7 +171,7 @@ go_bandit([]() {
 
       { // Garbage collect writer to free write-lock
         node_writer w(in);
-        w << create_node(1, MAX_ID, terminal_F, terminal_T);
+        w << node(1, MAX_ID, terminal_F, terminal_T);
       }
 
       label_file labels;
@@ -224,8 +224,8 @@ go_bandit([]() {
 
       { // Garbage collect writer to free write-lock
         node_writer w(in);
-        w << create_node(4, MAX_ID, terminal_F, terminal_T)
-          << create_node(3, MAX_ID, terminal_T, create_node_ptr(4,MAX_ID))
+        w << node(4, MAX_ID, terminal_F, terminal_T)
+          << node(3, MAX_ID, terminal_T, create_node_ptr(4,MAX_ID))
           ;
       }
 
@@ -297,7 +297,7 @@ go_bandit([]() {
 
       { // Garbage collect writer to free write-lock
         node_writer w(in);
-        w << create_node(3, MAX_ID, terminal_T, terminal_T);
+        w << node(3, MAX_ID, terminal_T, terminal_T);
       }
 
       label_file labels;
@@ -370,9 +370,9 @@ go_bandit([]() {
 
       { // Garbage collect writer to free write-lock
         node_writer w(in);
-        w << create_node(3, MAX_ID, terminal_F, terminal_T)
-          << create_node(2, MAX_ID, create_node_ptr(3, MAX_ID), terminal_T)
-          << create_node(1, MAX_ID, terminal_F, create_node_ptr(2, MAX_ID));
+        w << node(3, MAX_ID, terminal_F, terminal_T)
+          << node(2, MAX_ID, create_node_ptr(3, MAX_ID), terminal_T)
+          << node(1, MAX_ID, terminal_F, create_node_ptr(2, MAX_ID));
       }
 
       label_file labels;
@@ -461,8 +461,8 @@ go_bandit([]() {
 
       { // Garbage collect writer to free write-lock
         node_writer w(in);
-        w << create_node(2, MAX_ID, terminal_F, terminal_T)
-          << create_node(0, MAX_ID, terminal_F, create_node_ptr(2, MAX_ID));
+        w << node(2, MAX_ID, terminal_F, terminal_T)
+          << node(0, MAX_ID, terminal_F, create_node_ptr(2, MAX_ID));
       }
 
       label_file labels;
@@ -524,8 +524,8 @@ go_bandit([]() {
 
       { // Garbage collect writer to free write-lock
         node_writer w(in);
-        w << create_node(3, MAX_ID, terminal_F, terminal_T)
-          << create_node(0, MAX_ID, terminal_F, create_node_ptr(3, MAX_ID));
+        w << node(3, MAX_ID, terminal_F, terminal_T)
+          << node(0, MAX_ID, terminal_F, create_node_ptr(3, MAX_ID));
       }
 
       label_file labels;
@@ -596,9 +596,9 @@ go_bandit([]() {
 
       { // Garbage collect writer to free write-lock
         node_writer w(in);
-        w << create_node(2, MAX_ID,   terminal_T, terminal_T)
-          << create_node(2, MAX_ID-1, terminal_F, terminal_T)
-          << create_node(0, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID));
+        w << node(2, MAX_ID,   terminal_T, terminal_T)
+          << node(2, MAX_ID-1, terminal_F, terminal_T)
+          << node(0, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID));
       }
 
       label_file labels;

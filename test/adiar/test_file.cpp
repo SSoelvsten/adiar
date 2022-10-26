@@ -44,9 +44,9 @@ go_bandit([]() {
 
     node_file node_test_file;
 
-    node_t n2 = create_node(1,1, create_terminal_ptr(false), create_terminal_ptr(true));
-    node_t n1 = create_node(1,0, create_terminal_ptr(true), create_terminal_ptr(false));
-    node_t n0 = create_node(0,0, create_node_ptr(1,1), create_node_ptr(1,0));
+    node_t n2 = node(1,1, create_terminal_ptr(false), create_terminal_ptr(true));
+    node_t n1 = node(1,0, create_terminal_ptr(true), create_terminal_ptr(false));
+    node_t n0 = node(0,0, create_node_ptr(1,1), create_node_ptr(1,0));
 
     arc_file arc_test_file;
 
@@ -161,7 +161,7 @@ go_bandit([]() {
           node_file nf_F;
           {
             node_writer nw(nf_F);
-            nw << create_terminal(false);
+            nw << node(false);
           }
 
           /*
@@ -170,7 +170,7 @@ go_bandit([]() {
           node_file nf_T;
           {
             node_writer nw(nf_T);
-            nw << create_terminal(true);
+            nw << node(true);
           }
 
           /*
@@ -181,7 +181,7 @@ go_bandit([]() {
           node_file nf_42;
           {
             node_writer nw(nf_42);
-            nw << create_node(42, MAX_ID, terminal_F, terminal_T);
+            nw << node(42, MAX_ID, terminal_F, terminal_T);
           }
 
           /*
@@ -192,7 +192,7 @@ go_bandit([]() {
           node_file nf_not42;
           {
             node_writer nw(nf_not42);
-            nw << create_node(42, MAX_ID, terminal_F, terminal_T);
+            nw << node(42, MAX_ID, terminal_F, terminal_T);
           }
 
           /*
@@ -205,8 +205,8 @@ go_bandit([]() {
           node_file nf_0and1;
           {
             node_writer nw(nf_0and1);
-            nw << create_node(1, MAX_ID, terminal_F, terminal_T)
-               << create_node(0, MAX_ID, terminal_F, create_node_ptr(1,MAX_ID));
+            nw << node(1, MAX_ID, terminal_F, terminal_T)
+               << node(0, MAX_ID, terminal_F, create_node_ptr(1,MAX_ID));
           }
 
           /*
@@ -221,9 +221,9 @@ go_bandit([]() {
           node_file nf_0and1and2;
           {
             node_writer nw(nf_0and1and2);
-            nw << create_node(2, MAX_ID, terminal_F, terminal_T)
-               << create_node(1, MAX_ID, terminal_F, create_node_ptr(2,MAX_ID))
-               << create_node(0, MAX_ID, terminal_F, create_node_ptr(1,MAX_ID));
+            nw << node(2, MAX_ID, terminal_F, terminal_T)
+               << node(1, MAX_ID, terminal_F, create_node_ptr(2,MAX_ID))
+               << node(0, MAX_ID, terminal_F, create_node_ptr(1,MAX_ID));
           }
 
           /*
@@ -238,9 +238,9 @@ go_bandit([]() {
           node_file nf_0and1_or_2;
           {
             node_writer nw(nf_0and1_or_2);
-            nw << create_node(2, MAX_ID, terminal_F, terminal_T)
-               << create_node(1, MAX_ID, create_node_ptr(2,MAX_ID), terminal_T)
-               << create_node(0, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID));
+            nw << node(2, MAX_ID, terminal_F, terminal_T)
+               << node(1, MAX_ID, create_node_ptr(2,MAX_ID), terminal_T)
+               << node(0, MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID));
           }
 
           /*
@@ -253,9 +253,9 @@ go_bandit([]() {
           node_file nf_21xor42;
           {
             node_writer nw(nf_21xor42);
-            nw << create_node(42, MAX_ID, terminal_F, terminal_T)
-               << create_node(42, MAX_ID-1, terminal_T, terminal_F)
-               << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
+            nw << node(42, MAX_ID, terminal_F, terminal_T)
+               << node(42, MAX_ID-1, terminal_T, terminal_F)
+               << node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
           }
 
           /*
@@ -270,10 +270,10 @@ go_bandit([]() {
           node_file nf_0xnor1_or_2;
           {
             node_writer nw(nf_0xnor1_or_2);
-            nw << create_node(2, MAX_ID, terminal_F, terminal_T)
-               << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), terminal_T)
-               << create_node(1, MAX_ID-1, terminal_T, create_node_ptr(2, MAX_ID))
-               << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID-1), create_node_ptr(1, MAX_ID));
+            nw << node(2, MAX_ID, terminal_F, terminal_T)
+               << node(1, MAX_ID, create_node_ptr(2, MAX_ID), terminal_T)
+               << node(1, MAX_ID-1, terminal_T, create_node_ptr(2, MAX_ID))
+               << node(0, MAX_ID, create_node_ptr(1, MAX_ID-1), create_node_ptr(1, MAX_ID));
           }
 
           /*
@@ -288,10 +288,10 @@ go_bandit([]() {
           node_file nf_0xor1_or_2;
           {
             node_writer nw(nf_0xor1_or_2);
-            nw << create_node(2, MAX_ID, terminal_F, terminal_T)
-               << create_node(1, MAX_ID, create_node_ptr(2, MAX_ID), terminal_T)
-               << create_node(1, MAX_ID-1, terminal_T, create_node_ptr(2, MAX_ID))
-               << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID-1));
+            nw << node(2, MAX_ID, terminal_F, terminal_T)
+               << node(1, MAX_ID, create_node_ptr(2, MAX_ID), terminal_T)
+               << node(1, MAX_ID-1, terminal_T, create_node_ptr(2, MAX_ID))
+               << node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID-1));
           }
 
           /*
@@ -312,15 +312,15 @@ go_bandit([]() {
             // In comments, we provide the sum (mod 2) before adding the
             // respective variable.
             node_writer nw(nf_sum01234_mod2);
-            nw << create_node(4, MAX_ID,   terminal_F, terminal_T)                                            // 0
-               << create_node(4, MAX_ID-1, terminal_T, terminal_F)                                            // 1
-               << create_node(3, MAX_ID,   create_node_ptr(4,MAX_ID-1), create_node_ptr(4,MAX_ID))    // 1
-               << create_node(3, MAX_ID-1, create_node_ptr(4,MAX_ID),   create_node_ptr(4,MAX_ID-1))  // 0
-               << create_node(2, MAX_ID,   create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))    // 0
-               << create_node(2, MAX_ID-1, create_node_ptr(3,MAX_ID),   create_node_ptr(3,MAX_ID-1))  // 1
-               << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))    // 1
-               << create_node(1, MAX_ID-1, create_node_ptr(2,MAX_ID),   create_node_ptr(2,MAX_ID-1))  // 0
-               << create_node(0, MAX_ID,   create_node_ptr(1,MAX_ID-1),   create_node_ptr(1,MAX_ID)); // 0
+            nw << node(4, MAX_ID,   terminal_F, terminal_T)                                            // 0
+               << node(4, MAX_ID-1, terminal_T, terminal_F)                                            // 1
+               << node(3, MAX_ID,   create_node_ptr(4,MAX_ID-1), create_node_ptr(4,MAX_ID))    // 1
+               << node(3, MAX_ID-1, create_node_ptr(4,MAX_ID),   create_node_ptr(4,MAX_ID-1))  // 0
+               << node(2, MAX_ID,   create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))    // 0
+               << node(2, MAX_ID-1, create_node_ptr(3,MAX_ID),   create_node_ptr(3,MAX_ID-1))  // 1
+               << node(1, MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))    // 1
+               << node(1, MAX_ID-1, create_node_ptr(2,MAX_ID),   create_node_ptr(2,MAX_ID-1))  // 0
+               << node(0, MAX_ID,   create_node_ptr(1,MAX_ID-1),   create_node_ptr(1,MAX_ID)); // 0
           }
 
           // -------------------------------------------------------------------
@@ -345,13 +345,13 @@ go_bandit([]() {
           node_file nf_larger_2level_cut_A;
           {
             node_writer nw(nf_larger_2level_cut_A);
-            nw << create_node(3, MAX_ID,   terminal_F, terminal_T)
-               << create_node(3, MAX_ID-1, terminal_T, terminal_F)
-               << create_node(2, MAX_ID,   create_node_ptr(3,MAX_ID),   terminal_T)
-               << create_node(2, MAX_ID-1, create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))
-               << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID-1), terminal_T)
-               << create_node(1, MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
-               << create_node(0, MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+            nw << node(3, MAX_ID,   terminal_F, terminal_T)
+               << node(3, MAX_ID-1, terminal_T, terminal_F)
+               << node(2, MAX_ID,   create_node_ptr(3,MAX_ID),   terminal_T)
+               << node(2, MAX_ID-1, create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))
+               << node(1, MAX_ID,   create_node_ptr(2,MAX_ID-1), terminal_T)
+               << node(1, MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
+               << node(0, MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
           }
 
           /*
@@ -373,11 +373,11 @@ go_bandit([]() {
           node_file nf_larger_2level_cut_B;
           {
             node_writer nw(nf_larger_2level_cut_B);
-            nw << create_node(3, MAX_ID,   terminal_F, terminal_T)
-               << create_node(2, MAX_ID,   terminal_F, terminal_T)
-               << create_node(2, MAX_ID-1, create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID))
-               << create_node(1, MAX_ID,   create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
-               << create_node(0, MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(3,MAX_ID));
+            nw << node(3, MAX_ID,   terminal_F, terminal_T)
+               << node(2, MAX_ID,   terminal_F, terminal_T)
+               << node(2, MAX_ID-1, create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID))
+               << node(1, MAX_ID,   create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID-1))
+               << node(0, MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(3,MAX_ID));
           }
 
           describe("canonicity", [&]() {
@@ -401,7 +401,7 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(21, 42, terminal_F, terminal_T);
+                nw << node(21, 42, terminal_F, terminal_T);
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -415,9 +415,9 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(42, MAX_ID, terminal_T, terminal_F)
-                   << create_node(42, MAX_ID-1, terminal_F, terminal_T)
-                   << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
+                nw << node(42, MAX_ID, terminal_T, terminal_F)
+                   << node(42, MAX_ID-1, terminal_F, terminal_T)
+                   << node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -427,9 +427,9 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(42, MAX_ID, terminal_F, terminal_T)
-                   << create_node(42, MAX_ID-1, terminal_T, terminal_F)
-                   << create_node(21, MAX_ID-2, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
+                nw << node(42, MAX_ID, terminal_F, terminal_T)
+                   << node(42, MAX_ID-1, terminal_T, terminal_F)
+                   << node(21, MAX_ID-2, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-1));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -439,9 +439,9 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(42, MAX_ID, terminal_F, terminal_T)
-                   << create_node(42, MAX_ID-2, terminal_T, terminal_F)
-                   << create_node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-2));
+                nw << node(42, MAX_ID, terminal_F, terminal_T)
+                   << node(42, MAX_ID-2, terminal_T, terminal_F)
+                   << node(21, MAX_ID, create_node_ptr(42, MAX_ID), create_node_ptr(42, MAX_ID-2));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -459,10 +459,10 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(2, MAX_ID, terminal_F, terminal_T)
-                   << create_node(1, MAX_ID, terminal_T, create_node_ptr(2, MAX_ID))
-                   << create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID), terminal_F)
-                   << create_node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID-1));
+                nw << node(2, MAX_ID, terminal_F, terminal_T)
+                   << node(1, MAX_ID, terminal_T, create_node_ptr(2, MAX_ID))
+                   << node(1, MAX_ID-1, create_node_ptr(2, MAX_ID), terminal_F)
+                   << node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID-1));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -472,12 +472,12 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(3, MAX_ID,   terminal_F, terminal_T)
-                   << create_node(2, MAX_ID,   terminal_F, terminal_T)
-                   << create_node(2, MAX_ID-1, terminal_T, create_node_ptr(3, MAX_ID))
-                   << create_node(1, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID))
-                   << create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID),   create_node_ptr(2, MAX_ID))
-                   << create_node(0, MAX_ID,   create_node_ptr(1, MAX_ID),   create_node_ptr(1, MAX_ID-1));
+                nw << node(3, MAX_ID,   terminal_F, terminal_T)
+                   << node(2, MAX_ID,   terminal_F, terminal_T)
+                   << node(2, MAX_ID-1, terminal_T, create_node_ptr(3, MAX_ID))
+                   << node(1, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID))
+                   << node(1, MAX_ID-1, create_node_ptr(2, MAX_ID),   create_node_ptr(2, MAX_ID))
+                   << node(0, MAX_ID,   create_node_ptr(1, MAX_ID),   create_node_ptr(1, MAX_ID-1));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -487,12 +487,12 @@ go_bandit([]() {
               node_file nf;
               {
                 node_writer nw(nf);
-                nw << create_node(3, MAX_ID,   terminal_F, terminal_T)
-                   << create_node(2, MAX_ID,   terminal_F, terminal_T)
-                   << create_node(2, MAX_ID-1, terminal_T, create_node_ptr(3, MAX_ID))
-                   << create_node(1, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID-1))
-                   << create_node(1, MAX_ID-1, create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID))
-                   << create_node(0, MAX_ID,   create_node_ptr(1, MAX_ID),   create_node_ptr(1, MAX_ID-1));
+                nw << node(3, MAX_ID,   terminal_F, terminal_T)
+                   << node(2, MAX_ID,   terminal_F, terminal_T)
+                   << node(2, MAX_ID-1, terminal_T, create_node_ptr(3, MAX_ID))
+                   << node(1, MAX_ID,   create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID-1))
+                   << node(1, MAX_ID-1, create_node_ptr(2, MAX_ID-1), create_node_ptr(2, MAX_ID))
+                   << node(0, MAX_ID,   create_node_ptr(1, MAX_ID),   create_node_ptr(1, MAX_ID-1));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -1133,7 +1133,7 @@ go_bandit([]() {
 
           {
             node_writer nw_0(x0);
-            nw_0 << create_node(0,MAX_ID,
+            nw_0 << node(0,MAX_ID,
                                 create_terminal_ptr(false),
                                 create_terminal_ptr(true));
           }
@@ -1143,11 +1143,11 @@ go_bandit([]() {
           {
             node_writer nw_01(x0_and_x1);
 
-            nw_01 << create_node(1, MAX_ID,
+            nw_01 << node(1, MAX_ID,
                                  create_terminal_ptr(false),
                                  create_terminal_ptr(true));
 
-            nw_01 << create_node(0, MAX_ID,
+            nw_01 << node(0, MAX_ID,
                                  create_terminal_ptr(false),
                                  create_node_ptr(1, MAX_ID));
           }
@@ -1156,14 +1156,14 @@ go_bandit([]() {
 
           {
             node_writer nw_T(terminal_T);
-            nw_T << create_terminal(true);
+            nw_T << node(true);
           }
 
           node_file terminal_F;
 
           {
             node_writer nw_F(terminal_F);
-            nw_F << create_terminal(false);
+            nw_F << node(false);
           }
 
           describe("size computation", [&]() {

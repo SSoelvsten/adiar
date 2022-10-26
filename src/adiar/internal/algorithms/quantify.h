@@ -153,7 +153,7 @@ namespace adiar
     node_stream<> in_nodes(in);
     node_t v = in_nodes.pull();
 
-    if (label_of(v) == label && (is_terminal(v.low) || is_terminal(v.high))) {
+    if (v.label() == label && (is_terminal(v.low()) || is_terminal(v.high()))) {
       typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_terminal_root(v, op);
 
       if (!maybe_resolved.empty()) {
@@ -168,24 +168,24 @@ namespace adiar
     pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
     pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
-    label_t out_label = label_of(v.uid);
+    label_t out_label = label_of(v.uid());
     id_t out_id = 0;
 
-    if (label_of(v.uid) == label) {
+    if (label_of(v.uid()) == label) {
       // Precondition: The input is reduced and will not collapse to a terminal
-      quantify_pq_1.push({ fst(v.low, v.high), snd(v.low, v.high), NIL });
+      quantify_pq_1.push({ fst(v.low(), v.high()), snd(v.low(), v.high()), NIL });
     } else {
       uid_t out_uid = create_node_uid(out_label, out_id++);
 
-      if (is_terminal(v.low)) {
-        aw.unsafe_push_terminal({ out_uid, v.low });
+      if (is_terminal(v.low())) {
+        aw.unsafe_push_terminal({ out_uid, v.low() });
       } else {
-        quantify_pq_1.push({ v.low, NIL, out_uid });
+        quantify_pq_1.push({ v.low(), NIL, out_uid });
       }
-      if (is_terminal(v.high)) {
-        aw.unsafe_push_terminal({ flag(out_uid), v.high });
+      if (is_terminal(v.high())) {
+        aw.unsafe_push_terminal({ flag(out_uid), v.high() });
       } else {
-        quantify_pq_1.push({ v.high, NIL, flag(out_uid) });
+        quantify_pq_1.push({ v.high(), NIL, flag(out_uid) });
       }
     }
 
@@ -231,17 +231,17 @@ namespace adiar
       // Seek element from request in stream
       ptr_t t_seek = with_data ? t2 : t1;
 
-      while (v.uid < t_seek) {
+      while (v.uid() < t_seek) {
         v = in_nodes.pull();
       }
 
-      // Forward information of v.uid == t1 across the level if needed
+      // Forward information of v.uid() == t1 across the level if needed
       if (!with_data && !is_nil(t2) && !is_terminal(t2) && label_of(t1) == label_of(t2)) {
-        quantify_pq_2.push({ t1, t2, v.low, v.high, source });
+        quantify_pq_2.push({ t1, t2, v.low(), v.high(), source });
 
         while (quantify_pq_1.can_pull() && (quantify_pq_1.top().t1 == t1 && quantify_pq_1.top().t2 == t2)) {
           source = quantify_pq_1.pull().source;
-          quantify_pq_2.push({ t1, t2, v.low, v.high, source });
+          quantify_pq_2.push({ t1, t2, v.low(), v.high(), source });
         }
 
         continue;
@@ -254,17 +254,17 @@ namespace adiar
         adiar_debug(is_nil(t2), "Ended in pairing case on request that already is a pair");
 
         do {
-          __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, source, v.low, v.high);
+          __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, source, v.low(), v.high());
         } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2, source, t1, t2));
       } else {
         // The variable should stay: proceed as in the Product Construction by
         // simulating both possibilities in parallel.
 
         // Resolve current node and recurse.
-        ptr_t low1  = with_data ? data_low  : v.low;
-        ptr_t high1 = with_data ? data_high : v.high;
-        ptr_t low2  = with_data ? v.low     : t2;
-        ptr_t high2 = with_data ? v.high    : t2;
+        ptr_t low1  = with_data ? data_low  : v.low();
+        ptr_t high1 = with_data ? data_high : v.high();
+        ptr_t low2  = with_data ? v.low()     : t2;
+        ptr_t high2 = with_data ? v.high()    : t2;
 
         quantify_policy::compute_cofactor(true, low1, high1);
         quantify_policy::compute_cofactor(on_level(t2, out_label), low2, high2);

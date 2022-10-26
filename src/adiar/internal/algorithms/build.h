@@ -16,7 +16,7 @@ namespace adiar
   {
     node_file nf;
     node_writer nw(nf);
-    nw.unsafe_push(create_terminal(value));
+    nw.unsafe_push(node(value));
 
     nf->number_of_terminals[value] = 1;
 
@@ -29,7 +29,7 @@ namespace adiar
 
     node_file nf;
     node_writer nw(nf);
-    nw.unsafe_push(create_node(label, MAX_ID,
+    nw.unsafe_push(node(label, MAX_ID,
                                create_terminal_ptr(false),
                                create_terminal_ptr(true)));
 
@@ -57,17 +57,17 @@ namespace adiar
       label_stream<true> ls(labels);
       while(ls.can_pull()) {
         label_t next_label = ls.pull();
-        node_t next_node = create_node(next_label, MAX_ID, low, high);
+        node_t next_node = node(next_label, MAX_ID, low, high);
 
         adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
         adiar_assert(is_terminal(high) || next_label < label_of(high),
                      "Labels not given in increasing order");
 
         if constexpr(link_low) {
-          low = next_node.uid;
+          low = next_node.uid();
         }
         if constexpr(link_high) {
-          high = next_node.uid;
+          high = next_node.uid();
         }
 
         nw.unsafe_push(next_node);

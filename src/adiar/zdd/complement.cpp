@@ -48,8 +48,8 @@ namespace adiar
     // shortcutting in branch-prediction probably offsets this?
     static intercut_rec_output hit_existing(const node_t &n)
     {
-      const ptr_t low = is_terminal(n.low) ? negate(n.low) : n.low;
-      const ptr_t high = is_terminal(n.high) ? negate(n.high) : n.high;
+      const ptr_t low = is_terminal(n.low()) ? negate(n.low()) : n.low();
+      const ptr_t high = is_terminal(n.high()) ? negate(n.high()) : n.high();
 
       return intercut_rec_output { low, high };
     }

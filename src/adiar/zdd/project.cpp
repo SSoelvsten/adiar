@@ -17,7 +17,7 @@ namespace adiar
   public:
     static inline __zdd resolve_terminal_root(const node_t v, const bool_op &/* op */)
     {
-      if (is_terminal(v.low) && is_terminal(v.high)) {
+      if (is_terminal(v.low()) && is_terminal(v.high())) {
         // Only or_op and at least one of the terminals should be true
         return zdd_null();
       }

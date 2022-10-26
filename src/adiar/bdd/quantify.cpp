@@ -21,12 +21,12 @@ namespace adiar
   public:
     static __bdd resolve_terminal_root(const node_t v, const bool_op &op)
     {
-      if (is_terminal(v.low) && can_left_shortcut(op, v.low)) {
-        return bdd_terminal(value_of(v.low));
+      if (is_terminal(v.low()) && can_left_shortcut(op, v.low())) {
+        return bdd_terminal(value_of(v.low()));
       }
 
-      if (is_terminal(v.high) && can_right_shortcut(op, v.high)) {
-        return bdd_terminal(value_of(v.high));
+      if (is_terminal(v.high()) && can_right_shortcut(op, v.high())) {
+        return bdd_terminal(value_of(v.high()));
       }
 
       return __bdd(); // return nothing

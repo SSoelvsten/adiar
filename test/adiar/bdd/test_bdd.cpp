@@ -4,7 +4,7 @@ go_bandit([]() {
 
     {
       node_writer nw_0(x0_nf);
-      nw_0 << create_node(0,MAX_ID,
+      nw_0 << node(0,MAX_ID,
                           create_terminal_ptr(false),
                           create_terminal_ptr(true));
     }
@@ -15,7 +15,7 @@ go_bandit([]() {
 
     {
       node_writer nw_1(x1_nf);
-      nw_1 << create_node(1,MAX_ID,
+      nw_1 << node(1,MAX_ID,
                           create_terminal_ptr(false),
                           create_terminal_ptr(true));
     }
@@ -27,11 +27,11 @@ go_bandit([]() {
     {
       node_writer nw_01(x0_and_x1_nf);
 
-      nw_01 << create_node(1, MAX_ID,
+      nw_01 << node(1, MAX_ID,
                            create_terminal_ptr(false),
                            create_terminal_ptr(true));
 
-      nw_01 << create_node(0, MAX_ID,
+      nw_01 << node(0, MAX_ID,
                            create_terminal_ptr(false),
                            create_node_ptr(1, MAX_ID));
     }
@@ -43,7 +43,7 @@ go_bandit([]() {
 
     {
       node_writer nw_T(terminal_T_nf);
-      nw_T << create_terminal(true);
+      nw_T << node(true);
     }
 
     bdd terminal_T(terminal_T_nf);
@@ -52,7 +52,7 @@ go_bandit([]() {
 
     {
       node_writer nw_F(terminal_F_nf);
-      nw_F << create_terminal(false);
+      nw_F << node(false);
     }
 
     bdd terminal_F(terminal_F_nf);
@@ -154,11 +154,11 @@ go_bandit([]() {
       {
         node_writer nw_01(x0_and_x1_nf2);
 
-        nw_01 << create_node(1, MAX_ID,
+        nw_01 << node(1, MAX_ID,
                              create_terminal_ptr(false),
                              create_terminal_ptr(true));
 
-        nw_01 << create_node(0, MAX_ID,
+        nw_01 << node(0, MAX_ID,
                              create_terminal_ptr(false),
                              create_node_ptr(1, MAX_ID));
       }

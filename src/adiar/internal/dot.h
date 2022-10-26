@@ -19,7 +19,7 @@ namespace adiar {
 
     if (is_terminal(nodes)) {
       out << "\t"
-          << value_of(ns.pull())
+          << ns.pull().value()
           << " [shape=box];" << std::endl;
     } else {
       out << "\t// Nodes" << std::endl;
@@ -29,11 +29,11 @@ namespace adiar {
         node_t node = ns.pull();
 
         out << "\tn"
-            << node.uid
+            << node.uid()
             << " [label=<x<SUB>"
-            << label_of(node)
+            << node.label()
             << "</SUB>, id<SUB>"
-            << (id_of(node)) << "</SUB>>, style=rounded];"
+            << (node.id()) << "</SUB>>, style=rounded];"
             << std::endl;
       }
 
@@ -46,28 +46,28 @@ namespace adiar {
       while (ns.can_pull()) {
         node_t node = ns.pull();
 
-        out << "\tn" << node.uid
+        out << "\tn" << node.uid()
             << " -> "
-            << "n" << node.low
+            << "n" << node.low()
             << " [style=dashed];" << std::endl;
-        out << "\tn" << node.uid
+        out << "\tn" << node.uid()
             << " -> "
-            << "n" << node.high
+            << "n" << node.high()
             << "[style=solid];"  << std::endl;
       }
 
       out <<  std::endl << "\t// Ranks" << std::endl;
 
       ns.reset();
-      out << "\t{ rank=same; " << "n" << ns.pull().uid << " }" << std::endl;
+      out << "\t{ rank=same; " << "n" << ns.pull().uid() << " }" << std::endl;
 
       while (ns.can_pull()) {
         node_t current_node = ns.pull();
 
-        out << "\t{ rank=same; " << "n" << current_node.uid << " ";
+        out << "\t{ rank=same; " << "n" << current_node.uid() << " ";
 
-        while(ns.can_pull() && label_of(current_node) == label_of(ns.peek())) {
-          out << "n" << ns.pull().uid << " ";
+        while(ns.can_pull() && current_node.label() == ns.peek().label()) {
+          out << "n" << ns.pull().uid() << " ";
         }
         out << "}" << std::endl;
       }

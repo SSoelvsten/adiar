@@ -5,10 +5,10 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(zdd_F);
-      nw_F << create_terminal(false);
+      nw_F << node(false);
 
       node_writer nw_T(zdd_T);
-      nw_T << create_terminal(true);
+      nw_T << node(true);
     }
 
     ptr_t terminal_T = create_terminal_ptr(true);
@@ -26,8 +26,8 @@ go_bandit([]() {
             T T
     */
     { // Garbage collect writer early
-      const node_t n2 = create_node(4, MAX_ID,   terminal_T, terminal_T);
-      const node_t n1 = create_node(2, MAX_ID,   n2.uid, n2.uid);
+      const node_t n2 = node(4, MAX_ID,   terminal_T, terminal_T);
+      const node_t n1 = node(2, MAX_ID,   n2.uid(), n2.uid());
 
       node_writer nw(zdd_pow_24);
       nw << n2 << n1;
@@ -68,22 +68,22 @@ go_bandit([]() {
         node_test_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(3,MAX_ID,
                                                       terminal_T,
                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2,MAX_ID,
                                                       create_node_ptr(3,MAX_ID),
                                                       create_node_ptr(3,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(1,MAX_ID,
                                                       create_node_ptr(2,MAX_ID),
                                                       create_node_ptr(2,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(0,MAX_ID,
                                                       create_node_ptr(1,MAX_ID),
                                                       create_node_ptr(1,MAX_ID))));
 
@@ -120,22 +120,22 @@ go_bandit([]() {
         node_test_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(4,MAX_ID,
                                                       terminal_T,
                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(3,MAX_ID,
                                                       create_node_ptr(4,MAX_ID),
                                                       create_node_ptr(4,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2,MAX_ID,
                                                       create_node_ptr(3,MAX_ID),
                                                       create_node_ptr(3,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(1,MAX_ID,
                                                       create_node_ptr(2,MAX_ID),
                                                       create_node_ptr(2,MAX_ID))));
 
@@ -179,12 +179,12 @@ go_bandit([]() {
         node_test_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2,MAX_ID,
                                                       terminal_F,
                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(0,MAX_ID,
                                                       create_node_ptr(2,MAX_ID),
                                                       create_node_ptr(2,MAX_ID))));
 
@@ -215,22 +215,22 @@ go_bandit([]() {
         node_test_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(4,MAX_ID,
                                                       terminal_F,
                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(3,MAX_ID,
                                                       create_node_ptr(4,MAX_ID),
                                                       create_node_ptr(4,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2,MAX_ID,
                                                       create_node_ptr(3,MAX_ID),
                                                       create_node_ptr(3,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(1,MAX_ID,
                                                       create_node_ptr(2,MAX_ID),
                                                       create_node_ptr(2,MAX_ID))));
 
@@ -270,7 +270,7 @@ go_bandit([]() {
                / \
                F T
           */
-          nw << create_node(3, MAX_ID, terminal_F, terminal_T);
+          nw << node(3, MAX_ID, terminal_F, terminal_T);
         }
 
         __zdd out = zdd_complement(zdd_x3, dom_0123);
@@ -362,7 +362,7 @@ go_bandit([]() {
         node_file zdd_x2;
         {
           node_writer nw(zdd_x2);
-          nw << create_node(2, MAX_ID, terminal_F, terminal_T);
+          nw << node(2, MAX_ID, terminal_F, terminal_T);
         }
 
         __zdd out = zdd_complement(zdd_x2, dom_0123);
@@ -448,7 +448,7 @@ go_bandit([]() {
         */
         {
           node_writer nw(zdd_x1_null);
-          nw << create_node(1, MAX_ID, terminal_T, terminal_T);
+          nw << node(1, MAX_ID, terminal_T, terminal_T);
         }
 
         __zdd out = zdd_complement(zdd_x1_null, dom_0123);
@@ -550,10 +550,10 @@ go_bandit([]() {
             F T  T
         */
         { // Garbage collect writer early
-          const node_t n4 = create_node(4, MAX_ID,   terminal_T, terminal_T);
-          const node_t n3 = create_node(4, MAX_ID-1, terminal_F, terminal_T);
-          const node_t n2 = create_node(3, MAX_ID,   n3.uid, n4.uid);
-          const node_t n1 = create_node(2, MAX_ID,   n2.uid, n4.uid);
+          const node_t n4 = node(4, MAX_ID,   terminal_T, terminal_T);
+          const node_t n3 = node(4, MAX_ID-1, terminal_F, terminal_T);
+          const node_t n2 = node(3, MAX_ID,   n3.uid(), n4.uid());
+          const node_t n1 = node(2, MAX_ID,   n2.uid(), n4.uid());
 
           node_writer nw(in);
           nw << n4 << n3 << n2 << n1;
@@ -668,13 +668,13 @@ go_bandit([]() {
               F T T T
         */
         { // Garbage collect writer early
-          const node_t n7 = create_node(4, MAX_ID,   terminal_T, terminal_T);
-          const node_t n6 = create_node(4, MAX_ID-1, terminal_F, terminal_T);
-          const node_t n5 = create_node(3, MAX_ID,   n7.uid, terminal_T);
-          const node_t n4 = create_node(3, MAX_ID-1, n6.uid, terminal_T);
-          const node_t n3 = create_node(2, MAX_ID,   terminal_F, n5.uid);
-          const node_t n2 = create_node(2, MAX_ID-1, terminal_T, n4.uid); // <-- breaks canonicity
-          const node_t n1 = create_node(1, MAX_ID,   n2.uid, n3.uid);
+          const node_t n7 = node(4, MAX_ID,   terminal_T, terminal_T);
+          const node_t n6 = node(4, MAX_ID-1, terminal_F, terminal_T);
+          const node_t n5 = node(3, MAX_ID,   n7.uid(), terminal_T);
+          const node_t n4 = node(3, MAX_ID-1, n6.uid(), terminal_T);
+          const node_t n3 = node(2, MAX_ID,   terminal_F, n5.uid());
+          const node_t n2 = node(2, MAX_ID-1, terminal_T, n4.uid()); // <-- breaks canonicity
+          const node_t n1 = node(1, MAX_ID,   n2.uid(), n3.uid());
 
           node_writer nw(in);
           nw << n7 << n6 << n5 << n4 << n3 << n2 << n1;
@@ -944,22 +944,22 @@ go_bandit([]() {
         node_test_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(3,MAX_ID,
                                                       terminal_T,
                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2,MAX_ID,
                                                       create_node_ptr(3,MAX_ID),
                                                       create_node_ptr(3,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(1,MAX_ID,
                                                       create_node_ptr(2,MAX_ID),
                                                       create_node_ptr(2,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(0,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(0,MAX_ID,
                                                       create_node_ptr(1,MAX_ID),
                                                       create_node_ptr(1,MAX_ID))));
 
@@ -998,22 +998,22 @@ go_bandit([]() {
         node_test_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(4,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(4,MAX_ID,
                                                       terminal_F,
                                                       terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(3,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(3,MAX_ID,
                                                       create_node_ptr(4,MAX_ID),
                                                       create_node_ptr(4,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(2,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2,MAX_ID,
                                                       create_node_ptr(3,MAX_ID),
                                                       create_node_ptr(3,MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(create_node(1,MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(1,MAX_ID,
                                                       create_node_ptr(2,MAX_ID),
                                                       create_node_ptr(2,MAX_ID))));
 

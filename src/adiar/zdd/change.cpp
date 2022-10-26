@@ -36,11 +36,11 @@ namespace adiar
 
     static intercut_rec hit_existing(const node_t &n)
     {
-      if (is_false(n.low)) {
-        return intercut_rec_skipto { n.high };
+      if (is_false(n.low())) {
+        return intercut_rec_skipto { n.high() };
       }
 
-      return intercut_rec_output { n.high, n.low };
+      return intercut_rec_output { n.high(), n.low() };
     }
 
     static intercut_rec_output hit_cut(const ptr_t target)
@@ -50,7 +50,7 @@ namespace adiar
 
     static intercut_rec_output miss_existing(const node_t &n)
     {
-      return intercut_rec_output { n.low, n.high };
+      return intercut_rec_output { n.low(), n.high() };
     }
   };
 

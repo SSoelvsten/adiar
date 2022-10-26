@@ -6,13 +6,13 @@ go_bandit([]() {
       node_file terminal_F;
       {
         node_writer writer(terminal_F);
-        writer << create_terminal(false);
+        writer << node(false);
       }
 
       node_file terminal_T;
       {
         node_writer writer(terminal_T);
-        writer << create_terminal(true);
+        writer << node(true);
       }
 
       ptr_t false_ptr = create_terminal_ptr(false);
@@ -21,24 +21,24 @@ go_bandit([]() {
       node_file x42;
       {
         node_writer writer(x42);
-        writer << create_node(42, MAX_ID, false_ptr, true_ptr);
+        writer << node(42, MAX_ID, false_ptr, true_ptr);
       }
 
       node_file bdd_file;
       {
-        node_t n3 = create_node(4, MAX_ID, true_ptr, false_ptr);
-        node_t n2 = create_node(3, MAX_ID, n3.uid, false_ptr);
-        node_t n1 = create_node(1, MAX_ID, n3.uid, n2.uid);
+        node_t n3 = node(4, MAX_ID, true_ptr, false_ptr);
+        node_t n2 = node(3, MAX_ID, n3.uid(), false_ptr);
+        node_t n1 = node(1, MAX_ID, n3.uid(), n2.uid());
         node_writer writer(bdd_file);
         writer << n3 << n2 << n1;
       }
 
       node_file zdd_file;
       {
-        node_t n4 = create_node(2, MAX_ID, true_ptr, true_ptr);
-        node_t n3 = create_node(2, MAX_ID-1, false_ptr, true_ptr);
-        node_t n2 = create_node(1, MAX_ID, n4.uid, n4.uid);
-        node_t n1 = create_node(0, MAX_ID, n3.uid, n4.uid);
+        node_t n4 = node(2, MAX_ID, true_ptr, true_ptr);
+        node_t n3 = node(2, MAX_ID-1, false_ptr, true_ptr);
+        node_t n2 = node(1, MAX_ID, n4.uid(), n4.uid());
+        node_t n1 = node(0, MAX_ID, n3.uid(), n4.uid());
         node_writer writer(zdd_file);
         writer << n4 << n3 << n2 << n1;
       }
