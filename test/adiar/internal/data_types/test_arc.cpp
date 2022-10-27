@@ -44,7 +44,7 @@ go_bandit([]() {
                 const ptr_t node_ptr_2 = create_node_ptr(4,3);
 
                 const arc_t arc_low = { node_ptr_1, node_ptr_2 };
-                AssertThat(is_high(arc_low), Is().False());
+                AssertThat(arc_low.is_high(), Is().False());
               });
 
             it("should recognise high arcs from bit-flag on source", [&]() {
@@ -52,7 +52,7 @@ go_bandit([]() {
                 const ptr_t node_ptr_2 = create_node_ptr(4,3);
 
                 const arc_t arc_high = { flag(node_ptr_1), node_ptr_2 };
-                AssertThat(is_high(arc_high), Is().True());
+                AssertThat(arc_high.is_high(), Is().True());
               });
 
             it("should leave node_ptr target unchanged", [&]() {

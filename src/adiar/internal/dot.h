@@ -98,10 +98,10 @@ namespace adiar {
     while (nas.can_pull()) {
       arc_t a = nas.pull();
       out << "\t"
-          << "n" << label_of(a.target) << "_" << id_of(a.target)
+          << "n" << label_of(a.target()) << "_" << id_of(a.target())
           << " -> "
-          << "n" << label_of(a.source) << "_" << id_of(a.source)
-          << " [style=" << (is_flagged(a.source) ? "solid" : "dashed") << ", color=blue];"
+          << "n" << label_of(a.source()) << "_" << id_of(a.source())
+          << " [style=" << (a.is_high() ? "solid" : "dashed") << ", color=blue];"
           << std::endl;
     }
 
@@ -114,10 +114,10 @@ namespace adiar {
     while (sas.can_pull()) {
       arc_t a = sas.pull();
       out << "\t"
-          << "n" << label_of(a.source) << "_" << id_of(a.source)
+          << "n" << label_of(a.source()) << "_" << id_of(a.source())
           << " -> "
-          << "s" << value_of(a.target)
-          << " [style=" << (is_flagged(a.source) ? "solid" : "dashed") << ", color=red];"
+          << "s" << value_of(a.target())
+          << " [style=" << (a.is_high() ? "solid" : "dashed") << ", color=red];"
           << std::endl;
     }
 

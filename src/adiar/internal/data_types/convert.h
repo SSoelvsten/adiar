@@ -25,16 +25,15 @@ namespace adiar {
   /// \brief      Combine two arcs with the same source into a node.
   ///
   /// \param low  The low arc
-  ///
   /// \param high The high arc
   //////////////////////////////////////////////////////////////////////////////
   inline node_t node_of(const arc_t &low, const arc_t &high)
   {
-    adiar_debug(unflag(low.source) == unflag(high.source), "Arcs are not of the same node");
-    adiar_debug(!is_high(low), "High flag set on low child");
-    adiar_debug(is_high(high), "High flag not set on high child");
+    adiar_debug(unflag(low.source()) == unflag(high.source()), "Arcs are not of the same node");
+    adiar_debug(!low.is_high(), "High flag is not set on low child");
+    adiar_debug(high.is_high(), "High flag is set on high child");
 
-    return node(low.source, low.target, high.target);
+    return node(low.source(), low.target(), high.target());
   }
 }
 

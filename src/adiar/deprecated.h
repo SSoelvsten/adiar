@@ -136,6 +136,12 @@ namespace adiar
   inline node_t create_node(label_t label, id_t id, node_t low, node_t high)
   { return node(label, id, low.uid(), high.uid()); }
 
+  /* ================================= ARC ================================== */
+
+  [[deprecated("Replaced by member function with same name in 'adiar/internal/data_types/arc.h'")]]
+  inline node_t is_high(const arc &a)
+  { return a.is_high(); }
+
   /* =========================== DECISION DIAGRAM =========================== */
 
   //////////////////////////////////////////////////////////////////////////////

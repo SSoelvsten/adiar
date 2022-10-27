@@ -705,9 +705,9 @@ namespace adiar {
     //////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const arc_t &a)
     {
-      if (is_node(a.target)) {
+      if (is_node(a.target())) {
         unsafe_push_node(a);
-      } else { // is_terminal(a.target)
+      } else { // is_terminal(a.target())
         unsafe_push_terminal(a);
       }
     }
@@ -717,7 +717,7 @@ namespace adiar {
     //////////////////////////////////////////////////////////////////////////////
     void unsafe_push_node(const arc_t &a)
     {
-      adiar_debug(is_node(a.target), "pushing non-node arc into node file");
+      adiar_precondition(is_node(a.target()));
       meta_file_writer::unsafe_push(a, 0);
     }
 
@@ -726,9 +726,9 @@ namespace adiar {
     //////////////////////////////////////////////////////////////////////////////
     void unsafe_push_terminal(const arc_t &a)
     {
-      adiar_debug(is_terminal(a.target), "pushing non-terminal into terminal file");
+      adiar_precondition(is_terminal(a.target()));
 
-      if (!__has_latest_terminal || a.source > __latest_terminal.source) { // in-order
+      if (!__has_latest_terminal || a.source() > __latest_terminal.source()) { // in-order
         __has_latest_terminal = true;
         __latest_terminal = a;
         meta_file_writer::unsafe_push(a, 1);
@@ -736,7 +736,7 @@ namespace adiar {
         meta_file_writer::unsafe_push(a, 2);
       }
 
-      _file_ptr->number_of_terminals[value_of(a.target)]++;
+      _file_ptr->number_of_terminals[value_of(a.target())]++;
     }
 
     //////////////////////////////////////////////////////////////////////////////
