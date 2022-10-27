@@ -275,15 +275,15 @@ namespace adiar
   private:
     bool pull_in_order()
     {
-      bool in_order_pull = in_order_arc_stream<REVERSE>::can_pull();
-      bool out_of_order_pull = out_of_order_arc_stream<REVERSE>::can_pull();
+      const bool in_order_pull = in_order_arc_stream<REVERSE>::can_pull();
+      const bool out_of_order_pull = out_of_order_arc_stream<REVERSE>::can_pull();
 
       if (in_order_pull != out_of_order_pull) {
         return in_order_pull;
       }
 
-      ptr_t in_order_source = in_order_arc_stream<REVERSE>::peek().source;
-      ptr_t out_of_order_source = out_of_order_arc_stream<REVERSE>::peek().source;
+      const ptr_t in_order_source = in_order_arc_stream<REVERSE>::peek().source();
+      const ptr_t out_of_order_source = out_of_order_arc_stream<REVERSE>::peek().source();
 
       return (REVERSE && in_order_source < out_of_order_source)
         || (!REVERSE && in_order_source > out_of_order_source);
@@ -318,7 +318,7 @@ namespace adiar
         ? in_order_arc_stream<REVERSE>::pull()
         : out_of_order_arc_stream<REVERSE>::pull();
 
-      _unread[value_of(a.target)]--;
+      _unread[value_of(a.target())]--;
 
       return a;
     }

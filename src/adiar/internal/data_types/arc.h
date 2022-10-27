@@ -18,10 +18,56 @@ namespace adiar {
   ///
   /// \remark  <tt>source</tt> may be NIL
   //////////////////////////////////////////////////////////////////////////////
-  struct arc
+  class arc
   {
-    ptr_t source;
-    ptr_t target;
+    // TODO (Attributed Edges):
+    //   Add logic related to flag on 'target'.
+    //   At that point, 'target()' should always return the unflagged value?
+
+  private:
+    ptr_t _source;
+    ptr_t _target;
+
+  public:
+    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    arc() = default;
+    arc(const arc&) = default;
+    ~arc() = default;
+
+  public:
+    // Provide 'non-default' constructors to make it easy to use outside of TPIE.
+    arc(ptr_t source, ptr_t target) : _source(source), _target(target)
+    { }
+
+    // TODO: template with 'is_high'
+    /*
+      template<>
+      arc<false>(uid_t source, uid_t target) : _source(source), _target(target)
+      { }
+
+      template<>
+      arc<true>(uid_t source, uid_t target) : _source(flag(source)), _target(target)
+      { }
+     */
+
+  public:
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain 'source' value (including flag).
+    ///
+    /// \TODO Always returned the unflagged value?
+    //////////////////////////////////////////////////////////////////////////////
+    ptr_t source() const
+    { return _source; }
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain 'targt' value (including flag).
+    //////////////////////////////////////////////////////////////////////////////
+    ptr_t target() const
+    { return _target; }
+
+  public:
+    bool is_high() const
+    { return is_flagged(_source); }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -30,20 +76,11 @@ namespace adiar {
   typedef arc arc_t;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Whether an arc is marked as the high from its source.
-  //////////////////////////////////////////////////////////////////////////////
-  inline bool is_high(const arc_t &a)
-  {
-    return is_flagged(a.source);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
   /// \brief Negates the target value, if it is a terminal.
   //////////////////////////////////////////////////////////////////////////////
   inline arc_t negate(const arc_t &a)
   {
-    uint64_t target = is_terminal(a.target) ? negate(a.target) : a.target;
-    return { a.source, target };
+    return { a.source(), is_terminal(a.target()) ? negate(a.target()) : a.target() };
   }
 
   inline arc_t operator! (const arc &a)
@@ -53,7 +90,7 @@ namespace adiar {
 
   inline bool operator== (const arc &a, const arc &b)
   {
-    return a.source == b.source && a.target == b.target;
+    return a.source() == b.source() && a.target() == b.target();
   }
 
   inline bool operator!= (const arc &a, const arc &b)
@@ -68,7 +105,7 @@ namespace adiar {
   struct arc_source_lt
   {
     bool operator ()(const arc_t& a, const arc_t& b) const {
-      return a.source < b.source;
+      return a.source() < b.source();
     }
   };
 
@@ -78,9 +115,9 @@ namespace adiar {
   struct arc_target_lt
   {
     bool operator ()(const arc_t& a, const arc_t& b) const {
-      return a.target < b.target
+      return a.target() < b.target()
 #ifndef NDEBUG
-        || (a.target == b.target && a.source < b.source)
+        || (a.target() == b.target() && a.source() < b.source())
 #endif
         ;
     }
@@ -93,7 +130,7 @@ namespace adiar {
   {
     static inline label_t label_of(const arc_t& a)
     {
-      return adiar::label_of(a.target);
+      return adiar::label_of(a.target());
     }
   };
 }

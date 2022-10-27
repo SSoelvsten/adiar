@@ -91,7 +91,7 @@ namespace adiar
                                          pq_t &pq,
                                          arc_writer &aw)
   {
-    if(is_terminal(request.target)) {
+    if(is_terminal(request.target())) {
       aw.unsafe_push_terminal(request);
     } else {
       pq.push(request);
@@ -136,7 +136,7 @@ namespace adiar
           return substitute_policy::terminal(value_of(rec_child), amgr);
         }
 
-        substitute_pq.push({ NIL, rec_child });
+        substitute_pq.push(arc(NIL, rec_child));
       }
     }
 
@@ -159,7 +159,7 @@ namespace adiar
       }
 
       // seek requested node
-      while (n.uid() < substitute_pq.top().target) {
+      while (n.uid() < substitute_pq.top().target()) {
         n = ns.pull();
       }
 
@@ -174,10 +174,10 @@ namespace adiar
         __substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
 
         // Ingoing arcs
-        while(substitute_pq.can_pull() && substitute_pq.top().target == n_res.uid()) {
+        while(substitute_pq.can_pull() && substitute_pq.top().target() == n_res.uid()) {
           const arc_t parent_arc = substitute_pq.pull();
 
-          if(!is_nil(parent_arc.source)) {
+          if(!is_nil(parent_arc.source())) {
             aw.unsafe_push_node(parent_arc);
           }
         }
@@ -186,11 +186,11 @@ namespace adiar
       } else { // std::holds_alternative<substitute_rec_skipto>(rec_res)
         const ptr_t rec_child = std::get<substitute_rec_skipto>(rec_res).child;
 
-        while(substitute_pq.can_pull() && substitute_pq.top().target == n.uid()) {
+        while(substitute_pq.can_pull() && substitute_pq.top().target() == n.uid()) {
           const arc_t parent_arc = substitute_pq.pull();
-          const arc_t request = { parent_arc.source, rec_child };
+          const arc_t request = { parent_arc.source(), rec_child };
 
-          if(is_terminal(rec_child) && is_nil(parent_arc.source)) {
+          if(is_terminal(rec_child) && is_nil(parent_arc.source())) {
             // we have restricted ourselves to a terminal
             return substitute_policy::terminal(value_of(rec_child), amgr);
           }

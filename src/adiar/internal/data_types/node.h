@@ -30,6 +30,10 @@ namespace adiar {
   private:
     // TODO (ADD with 64-bit values):
     //   template with 'uid_t' reexpose it (and its related 'ptr_t') with typedefs.
+
+    // TODO (Attributed Edges):
+    //   Add logic related to flag on children.
+
     uid_t _uid;
     ptr_t _children[OUTDEGREE];
 
@@ -186,8 +190,6 @@ namespace adiar {
   /// \copydoc node
   //////////////////////////////////////////////////////////////////////////////
   typedef node node_t;
-
-
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create the node representing the (locally) negated function:
