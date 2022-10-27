@@ -70,6 +70,21 @@ namespace adiar {
   constexpr uint64_t TERMINAL_BIT = 0x8000000000000000ull;
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief A (possibly flagged) unique identifier of a terminal, an internal
+  ///        node, or nothing (`NIL`).
+  ///
+  /// \remark The layout of a pointer is such, that unique identifiers precede
+  ///         terminals which in turn precede NIL. The ordering on unique
+  ///         identifiers and terminals are lifted to pointers.
+  ///
+  /// \remark A pointer may be flagged. For an arc's source this marks the arc
+  ///         being a 'high' rather than a 'low' arc.
+  ///
+  /// \sa uid_t
+  //////////////////////////////////////////////////////////////////////////////
+  typedef uint64_t ptr_t;
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief   A unique identifier (label, id) of an internal node.
   ///
   /// \details An internal node is identified by the tuple (label, id) where
@@ -80,22 +95,9 @@ namespace adiar {
   ///          guarantee that (a) it is \em never NIL, and (b) is \em not
   ///          flagged.
   //////////////////////////////////////////////////////////////////////////////
-  typedef uint64_t uid_t;
+  typedef ptr_t uid_t;
 
   /* =============================== POINTERS =============================== */
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief A (possibly flagged) identifier of a terminal, an internal node
-  ///        (uid_t), or nothing (NIL).
-  ///
-  /// \remark The layout of a pointer is such, that unique identifiers precede
-  ///         terminals which in turn precede NIL. The ordering on unique
-  ///         identifiers and terminals are lifted to pointers.
-  ///
-  /// \remark A pointer may be flagged. For an arc's source this marks the arc
-  ///         being a 'high' rather than a 'low' arc.
-  //////////////////////////////////////////////////////////////////////////////
-  typedef uint64_t ptr_t;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The bit representation of the high/low flag.
