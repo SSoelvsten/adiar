@@ -25,8 +25,8 @@ namespace adiar {
     //   At that point, 'target()' should always return the unflagged value?
 
   private:
-    ptr_t _source;
-    ptr_t _target;
+    ptr_uint64 _source;
+    ptr_uint64 _target;
 
   public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
@@ -36,7 +36,7 @@ namespace adiar {
 
   public:
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
-    arc(ptr_t source, ptr_t target) : _source(source), _target(target)
+    arc(ptr_uint64 source, ptr_uint64 target) : _source(source), _target(target)
     { }
 
     // TODO: template with 'is_high'
@@ -56,18 +56,18 @@ namespace adiar {
     ///
     /// \TODO Always returned the unflagged value?
     //////////////////////////////////////////////////////////////////////////////
-    ptr_t source() const
+    ptr_uint64 source() const
     { return _source; }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain 'targt' value (including flag).
     //////////////////////////////////////////////////////////////////////////////
-    ptr_t target() const
+    ptr_uint64 target() const
     { return _target; }
 
   public:
     bool is_high() const
-    { return is_flagged(_source); }
+    { return _source.is_flagged(); }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline arc_t negate(const arc_t &a)
   {
-    return { a.source(), is_terminal(a.target()) ? negate(a.target()) : a.target() };
+    return { a.source(), a.target().is_terminal() ? negate(a.target()) : a.target() };
   }
 
   inline arc_t operator! (const arc &a)
@@ -130,7 +130,7 @@ namespace adiar {
   {
     static inline label_t label_of(const arc_t& a)
     {
-      return adiar::label_of(a.target());
+      return a.target().label();
     }
   };
 }

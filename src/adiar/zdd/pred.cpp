@@ -87,22 +87,22 @@ namespace adiar {
 
   public:
     template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, ptr_t r1, ptr_t r2)
+    static bool resolve_request(pq_1_t &pq, ptr_uint64 r1, ptr_uint64 r2)
     {
       // Are they both a terminal? If so, check whether the left-hand side is true
       // and not the right, which would contradict being an implication (i.e.
       // representing a subset).
-      if (is_terminal(r1) && is_terminal(r2)) {
+      if (r1.is_terminal() && r2.is_terminal()) {
         return unflag(r1) > unflag(r2);
       }
 
       // Has the left-hand side fallen out of its set?
-      if (is_false(r1)) {
+      if (r1.is_false()) {
         return false;
       }
 
       // Has the right-hand side fallen out of its set?
-      if (is_false(r2)) {
+      if (r2.is_false()) {
         return true;
       }
 
@@ -154,22 +154,22 @@ namespace adiar {
 
   public:
   template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, ptr_t r1, ptr_t r2)
+    static bool resolve_request(pq_1_t &pq, ptr_uint64 r1, ptr_uint64 r2)
     {
       // Are they both a terminal? If so, check whether they both are true, which
       // verify there is a satisfiying conjunction (i.e. representing a shared
       // path/element).
-      if (is_terminal(r1) && is_terminal(r2)) {
-        return value_of(r1) && value_of(r2);
+      if (r1.is_terminal() && r2.is_terminal()) {
+        return r1.value() && r2.value();
       }
 
       // Has the left-hand side fallen out of its set?
-      if (is_false(r1)) {
+      if (r1.is_false()) {
         return false;
       }
 
       // Has the right-hand side fallen out of its set?
-      if (is_false(r2)) {
+      if (r2.is_false()) {
         return false;
       }
 

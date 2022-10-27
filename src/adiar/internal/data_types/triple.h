@@ -10,33 +10,33 @@ namespace adiar {
   // Data structures
   struct triple
   {
-    ptr_t t1;
-    ptr_t t2;
-    ptr_t t3;
+    ptr_uint64 t1;
+    ptr_uint64 t2;
+    ptr_uint64 t3;
   };
 
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access
-  inline ptr_t fst(const ptr_t t1, const ptr_t t2, const ptr_t t3)
+  inline ptr_uint64 fst(const ptr_uint64 t1, const ptr_uint64 t2, const ptr_uint64 t3)
   {
     return std::min({t1, t2, t3});
   }
 
-  inline ptr_t fst(const triple &t) { return fst(t.t1, t.t2, t.t3); }
+  inline ptr_uint64 fst(const triple &t) { return fst(t.t1, t.t2, t.t3); }
 
-  inline ptr_t snd(const ptr_t t1, const ptr_t t2, const ptr_t t3)
+  inline ptr_uint64 snd(const ptr_uint64 t1, const ptr_uint64 t2, const ptr_uint64 t3)
   {
     return std::max(std::min(t1, t2), std::min(std::max(t1,t2),t3));
   }
 
-  inline ptr_t snd(const triple &t) { return snd(t.t1, t.t2, t.t3); }
+  inline ptr_uint64 snd(const triple &t) { return snd(t.t1, t.t2, t.t3); }
 
-  inline ptr_t trd(const ptr_t t1, const ptr_t t2, const ptr_t t3)
+  inline ptr_uint64 trd(const ptr_uint64 t1, const ptr_uint64 t2, const ptr_uint64 t3)
   {
     return std::max({t1, t2, t3});
   }
 
-  inline ptr_t trd(const triple &t) { return trd(t.t1, t.t2, t.t3); }
+  inline ptr_uint64 trd(const triple &t) { return trd(t.t1, t.t2, t.t3); }
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
@@ -44,7 +44,7 @@ namespace adiar {
   {
     static inline label_t label_of(const triple &t)
     {
-      return adiar::label_of(fst(t));
+      return fst(t).label();
     }
   };
 

@@ -1,7 +1,7 @@
 go_bandit([]() {
   describe("adiar/builder.h", []() {
-    const ptr_t terminal_T = create_terminal_ptr(true);
-    const ptr_t terminal_F = create_terminal_ptr(false);
+    const ptr_uint64 terminal_T = ptr_uint64(true);
+    const ptr_uint64 terminal_F = ptr_uint64(false);
 
     describe("builder_ptr", [&]() {
       it("supports copy-construction", [&]() {
@@ -24,7 +24,7 @@ go_bandit([]() {
          AssertThat(out_nodes.can_pull(), Is().True());
 
          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                               create_node_ptr(1,MAX_ID),
+                                                               ptr_uint64(1,MAX_ID),
                                                                terminal_T)));
 
          AssertThat(out_nodes.can_pull(), Is().False());
@@ -47,7 +47,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(1,MAX_ID),
+                                                              ptr_uint64(1,MAX_ID),
                                                               terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -262,7 +262,7 @@ go_bandit([]() {
       AssertThrows(std::invalid_argument, b.add_node(1,false,true));
     });
 
-    it("throws an exception when label_of(low) >= label [1]", [&]() {
+    it("throws an exception when low.label() >= label [1]", [&]() {
       bdd_builder b;
 
       const bdd_ptr p = b.add_node(0,false,true);
@@ -270,7 +270,7 @@ go_bandit([]() {
       AssertThrows(std::invalid_argument, b.add_node(0,p,true));
     });
 
-    it("throws an exception when label_of(low) >= label [2]", [&]() {
+    it("throws an exception when low.label() >= label [2]", [&]() {
       bdd_builder b;
 
       const bdd_ptr p = b.add_node(3,false,true);
@@ -278,7 +278,7 @@ go_bandit([]() {
       AssertThrows(std::invalid_argument, b.add_node(3,p,true));
     });
 
-    it("throws an exception when label_of(high) >= label [1]", [&]() {
+    it("throws an exception when high.label() >= label [1]", [&]() {
       bdd_builder b;
 
       const bdd_ptr p = b.add_node(0,false,true);
@@ -286,7 +286,7 @@ go_bandit([]() {
       AssertThrows(std::invalid_argument, b.add_node(0,false,p));
     });
 
-    it("throws an exception when label_of(high) >= label [2]", [&]() {
+    it("throws an exception when high.label() >= label [2]", [&]() {
       bdd_builder b;
 
       const bdd_ptr p = b.add_node(6,false,true);
@@ -326,14 +326,14 @@ go_bandit([]() {
 
       // n2
       AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                            create_node_ptr(2,MAX_ID),
+                                                            ptr_uint64(2,MAX_ID),
                                                             terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
       AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                            create_node_ptr(2,MAX_ID),
-                                                            create_node_ptr(1,MAX_ID))));
+                                                            ptr_uint64(2,MAX_ID),
+                                                            ptr_uint64(1,MAX_ID))));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream<node_t> out_meta(out);
@@ -403,20 +403,20 @@ go_bandit([]() {
 
       // n3
       AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                            create_node_ptr(2, MAX_ID),
+                                                            ptr_uint64(2, MAX_ID),
                                                             terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n2
       AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID-1,
-                                                            create_node_ptr(2,MAX_ID-1),
-                                                            create_node_ptr(2,MAX_ID))));
+                                                            ptr_uint64(2,MAX_ID-1),
+                                                            ptr_uint64(2,MAX_ID))));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
       AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                            create_node_ptr(1,MAX_ID-1),
-                                                            create_node_ptr(1,MAX_ID))));
+                                                            ptr_uint64(1,MAX_ID-1),
+                                                            ptr_uint64(1,MAX_ID))));
       AssertThat(out_nodes.can_pull(), Is().False());
 
 
@@ -656,14 +656,14 @@ go_bandit([]() {
 
       // n3
       AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID-1,
-                                                            create_node_ptr(5, MAX_ID),
+                                                            ptr_uint64(5, MAX_ID),
                                                             terminal_T)));
       AssertThat(out_nodes.can_pull(), Is().True());
 
       // n1
       AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                            create_node_ptr(4,MAX_ID-1),
-                                                            create_node_ptr(4,MAX_ID))));
+                                                            ptr_uint64(4,MAX_ID-1),
+                                                            ptr_uint64(4,MAX_ID))));
       AssertThat(out_nodes.can_pull(), Is().False());
 
       level_info_test_stream<node_t> out_meta(out);
@@ -876,13 +876,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               terminal_F,
-                                                              create_node_uid(2, MAX_ID))));
+                                                              uid(2, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_uid(2, MAX_ID),
-                                                              create_node_uid(1, MAX_ID))));
+                                                              uid(2, MAX_ID),
+                                                              uid(1, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1119,14 +1119,14 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_uid(2, MAX_ID),
-                                                              create_node_uid(2, MAX_ID))));
+                                                              uid(2, MAX_ID),
+                                                              uid(2, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_uid(2, MAX_ID),
-                                                              create_node_uid(1, MAX_ID))));
+                                                              uid(2, MAX_ID),
+                                                              uid(1, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 

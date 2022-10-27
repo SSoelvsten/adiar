@@ -20,28 +20,117 @@ namespace adiar
     simple_file_sorter<T, pred_t>::sort(f, pred);
   }
 
-  /* ================== UNIQUE IDENTIFIERS : SINK NODES====================== */
+  /* =============== UNIQUE IDENTIFIERS : INTERNAL NODES ==================== */
+
+  [[deprecated("Use the 'ptr' class type directly 'adiar/internal/data_types/ptr.h'")]]
+  typedef ptr_uint64 ptr_t;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a pointer to the uid = (label, id).
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by constructor in 'adiar/internal/data_types/ptr.h'")]]
+  inline ptr_uint64 create_node_ptr(label_t label, id_t id)
+  { return ptr_uint64(label, id); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a pointer to the given uid.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by constructor in 'adiar/internal/data_types/ptr.h'")]]
+  inline ptr_uint64 create_node_ptr(uid_t uid)
+  { return uid; }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the label from a uid = (label, id).
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by 'label()' member function in 'adiar/internal/data_types/ptr.h'")]]
+  inline label_t label_of(ptr_uint64 p)
+  { return p.label(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the level identifier from a uid = (label, id).
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by 'label()' member function in 'adiar/internal/data_types/ptr.h'")]]
+  inline id_t id_of(ptr_uint64 p)
+  { return p.id(); }
+
+  /* =============== UNIQUE IDENTIFIERS : TERMINAL NODES ==================== */
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a pointer is for a sink.
   //////////////////////////////////////////////////////////////////////////////
-  [[deprecated("Replaced by is_terminal in 'adiar/internal/data_types/uid.h'")]]
-  inline bool is_sink(ptr_t p)
-  { return is_terminal(p); }
+  [[deprecated("Replaced by 'is_terminal()' member function in 'adiar/internal/data_types/ptr.h'")]]
+  inline bool is_sink(ptr_uint64 p)
+  { return p.is_terminal(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a pointer is for a terminal.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by 'is_terminal()' member function in 'adiar/internal/data_types/ptr.h'")]]
+  inline bool is_terminal(ptr_uint64 p)
+  { return p.is_terminal(); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create the unique identifier for a sink with the given value.
   //////////////////////////////////////////////////////////////////////////////
-  [[deprecated("Replaced by create_terminal_uid in 'adiar/internal/data_types/uid.h'")]]
+  [[deprecated("Replaced by constructor in 'adiar/internal/data_types/uid.h'")]]
   inline uid_t create_sink_uid(bool v)
-  { return create_terminal_uid(v); }
+  { return uid(v); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create the uid = (label, id).
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by constructor in 'adiar/internal/data_types/uid.h'")]]
+  inline uid create_node_uid(label_t label, id_t id)
+  { return uid(label, id); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create the unique identifier for a terminal with the given value.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by constructor in 'adiar/internal/data_types/uid.h'")]]
+  inline uid create_terminal_uid(bool v)
+  { return uid(v); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create a pointer to a sink with the given value.
   //////////////////////////////////////////////////////////////////////////////
-  [[deprecated("Replaced by create_terminal_ptr in 'adiar/internal/data_types/uid.h'")]]
-  inline ptr_t create_sink_ptr(bool v)
-  { return create_terminal_ptr(v); }
+  [[deprecated("Replaced by 'ptr(v)' constructor in 'adiar/internal/data_types/ptr.h'")]]
+  inline ptr_uint64 create_sink_ptr(bool v)
+  { return ptr_uint64(v); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create a pointer to a terminal with the given value.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by 'ptr(v)' constructor in 'adiar/internal/data_types/ptr.h'")]]
+  inline ptr_uint64 create_terminal_ptr(bool v)
+  { return ptr_uint64(v); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the value from a terminal.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by 'value()' member function in 'adiar/internal/data_types/ptr.h'")]]
+  inline bool value_of(ptr_uint64 p)
+  { return p.value(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the pointer points to the `false` terminal.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by 'is_false()' member function in 'adiar/internal/data_types/ptr.h'")]]
+  inline bool is_false(ptr_uint64 p)
+  { return p.is_false(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether the pointer points to the `true` terminal.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by 'is_true()' member function in 'adiar/internal/data_types/ptr.h'")]]
+  inline bool is_true(ptr_uint64 p)
+  { return p.is_true(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Whether a pointer is for a node on a given level.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by 'on_level(level)' member function in 'adiar/internal/data_types/ptr.h'")]]
+  inline bool on_level(ptr_uint64 p, label_t level)
+  { return p.on_level(level); }
 
   /* ================================ NODES ================================= */
 
@@ -64,7 +153,7 @@ namespace adiar
   ///        pointer to its two children.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_node(uid_t uid, ptr_t low, ptr_t high)
+  inline node_t create_node(uid_t uid, ptr_uint64 low, ptr_uint64 high)
   { return node(uid, low, high); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -121,15 +210,15 @@ namespace adiar
   ///        pointer to its two children.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_node(label_t label, id_t id, ptr_t low, ptr_t high)
-  { return node(create_node_uid(label, id), low, high); }
+  inline node_t create_node(label_t label, id_t id, ptr_uint64 low, ptr_uint64 high)
+  { return node(label, id, low, high); }
 
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_node(label_t label, id_t id, ptr_t low, node_t high)
+  inline node_t create_node(label_t label, id_t id, ptr_uint64 low, node_t high)
   { return node(label, id, low, high.uid()); }
 
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_node(label_t label, id_t id, node_t low, ptr_t high)
+  inline node_t create_node(label_t label, id_t id, node_t low, ptr_uint64 high)
   { return node(label, id, low.uid(), high); }
 
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]

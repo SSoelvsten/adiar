@@ -10,31 +10,31 @@ namespace adiar {
   // Data structures
   struct tuple
   {
-    ptr_t t1;
-    ptr_t t2;
+    ptr_uint64 t1;
+    ptr_uint64 t2;
   };
 
   struct tuple_data : tuple
   {
-    ptr_t data_low;
-    ptr_t data_high;
+    ptr_uint64 data_low;
+    ptr_uint64 data_high;
   };
 
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access
-  inline ptr_t fst(const ptr_t t1, const ptr_t t2)
+  inline ptr_uint64 fst(const ptr_uint64 t1, const ptr_uint64 t2)
   {
     return std::min(t1, t2);
   }
 
-  inline ptr_t fst(const tuple &t) { return fst(t.t1, t.t2); }
+  inline ptr_uint64 fst(const tuple &t) { return fst(t.t1, t.t2); }
 
-  inline ptr_t snd(const ptr_t t1, const ptr_t t2)
+  inline ptr_uint64 snd(const ptr_uint64 t1, const ptr_uint64 t2)
   {
     return std::max(t1, t2);
   }
 
-  inline ptr_t snd(const tuple &t) { return snd(t.t1, t.t2); }
+  inline ptr_uint64 snd(const tuple &t) { return snd(t.t1, t.t2); }
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
@@ -42,7 +42,7 @@ namespace adiar {
   {
     static inline label_t label_of(const tuple &t)
     {
-      return adiar::label_of(std::min(t.t1, t.t2));
+      return std::min(t.t1, t.t2).label();
     }
   };
 

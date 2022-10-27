@@ -38,7 +38,7 @@ namespace adiar
     template<typename count_pq_t>
     inline static uint64_t forward_request(count_pq_t &count_pq,
                                            const label_t varcount,
-                                           const ptr_t child_to_resolve,
+                                           const ptr_uint64 child_to_resolve,
                                            const queue_t &request)
     {
       adiar_debug(request.sum > 0, "No 'empty' request should be created");
@@ -48,8 +48,8 @@ namespace adiar
 
       label_t levels_visited = request.levels_visited + 1u;
 
-      if (is_terminal(child_to_resolve)) {
-        return value_of(child_to_resolve)
+      if (child_to_resolve.is_terminal()) {
+        return child_to_resolve.value()
           ? request.sum * (1u << (varcount - levels_visited))
           : 0u;
       } else {

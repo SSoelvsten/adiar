@@ -1,7 +1,7 @@
 go_bandit([]() {
     describe("adiar/bool_op.h", []() {
-        const ptr_t terminal_F = create_terminal_ptr(false);
-        const ptr_t terminal_T = create_terminal_ptr(true);
+        const ptr_uint64 terminal_F = ptr_uint64(false);
+        const ptr_uint64 terminal_T = ptr_uint64(true);
 
         it("and_op", [&]() {
             AssertThat(and_op(terminal_T, terminal_T), Is().EqualTo(terminal_T));

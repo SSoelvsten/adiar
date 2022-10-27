@@ -69,7 +69,7 @@ namespace adiar
       }
     }
 
-    if (is_terminal(v1.low()) && is_terminal(v1.high()) && is_terminal(v2.low()) && is_terminal(v2.high())) {
+    if (v1.low().is_terminal() && v1.high().is_terminal() && v2.low().is_terminal() && v2.high().is_terminal()) {
       return comp_policy::resolve_singletons(v1, v2);
     }
 
@@ -77,9 +77,9 @@ namespace adiar
     pq_1_t comparison_pq_1({f1, f2}, pq_1_memory, max_pq_size, stats_equality.lpq);
 
     // Check for violation on root children, or 'recurse' otherwise
-    label_t level = label_of(fst(v1.uid(), v2.uid()));
+    label_t level = fst(v1.uid(), v2.uid()).label();
 
-    ptr_t low1, high1, low2, high2;
+    ptr_uint64 low1, high1, low2, high2;
     comp_policy::merge_root(low1,high1, low2,high2, level, v1, v2);
 
     comp_policy::compute_cofactor(v1.on_level(level), low1, high1);
@@ -102,9 +102,9 @@ namespace adiar
         level_checker.next_level(comparison_pq_1.current_level());
       }
 
-      ptr_t t1, t2;
+      ptr_uint64 t1, t2;
       bool with_data;
-      ptr_t data_low = NIL, data_high = NIL;
+      ptr_uint64 data_low = ptr_uint64::NIL(), data_high = ptr_uint64::NIL();
 
       // Merge requests from comparison_pq_1 and comparison_pq_2
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
@@ -126,7 +126,7 @@ namespace adiar
       }
 
       // Seek request partially in stream
-      ptr_t t_seek = with_data ? snd(t1,t2) : fst(t1,t2);
+      ptr_uint64 t_seek = with_data ? snd(t1,t2) : fst(t1,t2);
       while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
         v1 = in_nodes_1.pull();
       }
@@ -142,7 +142,7 @@ namespace adiar
 
       // Forward information across the level
       if (!with_data
-          && !is_terminal(t1) && !is_terminal(t2) && label_of(t1) == label_of(t2)
+          && !t1.is_terminal() && !t2.is_terminal() && t1.label() == t2.label()
           && (v1.uid() != t1 || v2.uid() != t2)) {
         node_t v0 = prod_from_1(t1,t2) ? v1 : v2;
 
@@ -154,15 +154,15 @@ namespace adiar
         return level_checker.termination_value;
       }
 
-      ptr_t low1, high1, low2, high2;
+      ptr_uint64 low1, high1, low2, high2;
       comp_policy::merge_data(low1,high1, low2,high2,
                               t1, t2, t_seek,
                               v1, v2,
                               data_low, data_high);
 
-      label_t level = label_of(t_seek);
-      comp_policy::compute_cofactor(on_level(t1, level), low1, high1);
-      comp_policy::compute_cofactor(on_level(t2, level), low2, high2);
+      label_t level = t_seek.label();
+      comp_policy::compute_cofactor(t1.on_level(level), low1, high1);
+      comp_policy::compute_cofactor(t2.on_level(level), low2, high2);
 
       if (comp_policy::resolve_request(comparison_pq_1, low1, low2)
           || comp_policy::resolve_request(comparison_pq_1, high1, high2)) {

@@ -36,16 +36,16 @@ namespace adiar
 
     static intercut_rec hit_existing(const node_t &n)
     {
-      if (is_false(n.low())) {
+      if (n.low().is_false()) {
         return intercut_rec_skipto { n.high() };
       }
 
       return intercut_rec_output { n.high(), n.low() };
     }
 
-    static intercut_rec_output hit_cut(const ptr_t target)
+    static intercut_rec_output hit_cut(const ptr_uint64 target)
     {
-      return intercut_rec_output { create_terminal_ptr(false), target };
+      return intercut_rec_output { ptr_uint64(false), target };
     }
 
     static intercut_rec_output miss_existing(const node_t &n)

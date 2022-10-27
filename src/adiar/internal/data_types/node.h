@@ -20,7 +20,13 @@ namespace adiar {
   {
   public:
     // TODO (MDD):
-    //   template with 'outdegree' and use the below to reexpose it
+    //   change (with templating) the _children array below to be a std::vector.
+    //   To get it to work with TPIE, use the serialization stream instead.
+
+    // TODO (QMDD):
+    //   template with 'outdegree' and use it with the value of '4u'. Reexpose
+    //   the templated variable in the constexpr below, such that algorithms
+    //   also can retrieve it.
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of children of this node type.
@@ -28,14 +34,14 @@ namespace adiar {
     static constexpr size_t OUTDEGREE = 2u;
 
   private:
-    // TODO (ADD with 64-bit values):
-    //   template with 'uid_t' reexpose it (and its related 'ptr_t') with typedefs.
+    // TODO (ADD (64-bit)):
+    //   template with 'uid_t' reexpose it (and its related 'ptr') with typedefs.
 
     // TODO (Attributed Edges):
     //   Add logic related to flag on children.
 
     uid_t _uid;
-    ptr_t _children[OUTDEGREE];
+    ptr_uint64 _children[OUTDEGREE];
 
   public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
@@ -49,36 +55,36 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct node `(uid, low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const uid_t u, const ptr_t &l, const ptr_t &h)
+    node(const uid_t u, const ptr_uint64 &l, const ptr_uint64 &h)
       : _uid(u), _children{l, h}
     { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_t label, const id_t id, const ptr_t &l, const ptr_t &h)
-      : _uid(create_node_uid(label, id)), _children{l, h}
+    node(const label_t label, const id_t id, const ptr_uint64 &l, const ptr_uint64 &h)
+      : _uid(label, id), _children{l, h}
     {
-      adiar_debug(!is_nil(l), "Cannot create a node with NIL child");
-      adiar_debug(adiar::is_terminal(l) || label < label_of(l),
+      adiar_debug(!l.is_nil(), "Cannot create a node with NIL child");
+      adiar_debug(l.is_terminal() || label < l.label(),
                   "Node is not prior to given low child");
 
-      adiar_debug(!is_nil(h), "Cannot create a node with NIL child");
-      adiar_debug(adiar::is_terminal(h) || label < label_of(h),
+      adiar_debug(!h.is_nil(), "Cannot create a node with NIL child");
+      adiar_debug(h.is_terminal() || label < h.label(),
                   "Node is not prior to given high child");
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_t label, const id_t id, const node &l, const ptr_t &h)
+    node(const label_t label, const id_t id, const node &l, const ptr_uint64 &h)
       : node(label, id, l.uid(), h)
     { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const label_t label, const id_t id, const ptr_t &l, const node &h)
+    node(const label_t label, const id_t id, const ptr_uint64 &l, const node &h)
       : node(label, id, l, h.uid())
     { }
 
@@ -93,7 +99,7 @@ namespace adiar {
     /// \brief Construct *terminal* node `(value, NIL, NIL)`.
     ////////////////////////////////////////////////////////////////////////////
     node(const bool value)
-      : _uid(create_terminal_ptr(value)), _children{NIL, NIL}
+      : _uid(ptr_uint64(value)), _children{ptr_uint64::NIL(), ptr_uint64::NIL()}
     { }
 
   public:
@@ -107,11 +113,7 @@ namespace adiar {
     /// \brief Whether this node represents a terminal value.
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_terminal() const
-    {
-      // Since uid never is nil, then this is a slightly a faster logic
-      // TODO: move this simplified logic into a 'uid' class
-      return uid() >= TERMINAL_BIT;
-    }
+    { return _uid.is_terminal(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The value of this terminal node (assuming it is one).
@@ -121,7 +123,7 @@ namespace adiar {
     inline bool value() const
     {
       adiar_precondition(is_terminal());
-      return value_of(_uid);
+      return _uid.value();
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -130,7 +132,7 @@ namespace adiar {
     /// \details This is equivalent to `n.is_terminal() && !n.value()`.
     //////////////////////////////////////////////////////////////////////////////
     inline bool is_false() const
-    { return adiar::is_false(uid()); }
+    { return uid().is_false(); }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Whether this node is the true terminal.
@@ -138,7 +140,7 @@ namespace adiar {
     /// \details This is equivalent to `n.is_terminal() && n.value()`.
     //////////////////////////////////////////////////////////////////////////////
     inline bool is_true() const
-    { return adiar::is_true(uid()); }
+    { return uid().is_true(); }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the label of a node.
@@ -150,7 +152,7 @@ namespace adiar {
     inline label_t label() const
     {
       adiar_precondition(!is_terminal());
-      return label_of(uid());
+      return uid().label();
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -161,28 +163,28 @@ namespace adiar {
     inline id_t id() const
     {
       adiar_precondition(!is_terminal());
-      return id_of(uid());
+      return uid().id();
     }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a node is on a given level, i.e. has the given label.
     //////////////////////////////////////////////////////////////////////////////
     inline bool on_level(label_t level) const
-    { return adiar::on_level(uid(), level); }
+    { return uid().on_level(level); }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The 'low' child (also known as the 'else' child), i.e. reflecting
     ///        assigning `false` to variable with the 'label'.
     ////////////////////////////////////////////////////////////////////////////
-    inline ptr_t low() const
+    inline ptr_uint64 low() const
     { return _children[false]; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The 'high' child (also known as the 'then' child), i.e.
     ///        reflecting assigning `true` to variable with the 'label'.
     ////////////////////////////////////////////////////////////////////////////
-    inline ptr_t high() const
+    inline ptr_uint64 high() const
     { return _children[true]; }
   };
 
@@ -199,11 +201,11 @@ namespace adiar {
   inline node_t negate(const node_t &n)
   {
     if (n.is_terminal()) {
-      return node(negate(n.uid()), NIL, NIL);
+      return node(negate(n.uid()), ptr_uint64::NIL(), ptr_uint64::NIL());
     }
 
-    const ptr_t low =  is_terminal(n.low())  ? negate(n.low())  : n.low();
-    const ptr_t high = is_terminal(n.high()) ? negate(n.high()) : n.high();
+    const ptr_uint64 low =  n.low().is_terminal()  ? negate(n.low())  : n.low();
+    const ptr_uint64 high = n.high().is_terminal() ? negate(n.high()) : n.high();
     return node(n.uid(), low, high);
   }
 

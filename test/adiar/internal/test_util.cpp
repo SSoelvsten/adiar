@@ -15,8 +15,8 @@ go_bandit([]() {
         writer << node(true);
       }
 
-      ptr_t false_ptr = create_terminal_ptr(false);
-      ptr_t true_ptr = create_terminal_ptr(true);
+      ptr_uint64 false_ptr = ptr_uint64(false);
+      ptr_uint64 true_ptr = ptr_uint64(true);
 
       node_file x42;
       {

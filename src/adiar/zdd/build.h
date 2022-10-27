@@ -38,14 +38,14 @@ namespace adiar
     }
 
     const bool lt_terminal_val = pred(set_size, set_size+1);
-    const ptr_t lt_terminal = create_terminal_ptr(lt_terminal_val);
+    const ptr_uint64 lt_terminal = ptr_uint64(lt_terminal_val);
 
     if (labels_size < set_size) {
       return lt_terminal_val ? zdd_powerset(labels) : zdd_empty();
     }
 
     const bool eq_terminal_val = pred(set_size, set_size);
-    const ptr_t eq_terminal = create_terminal_ptr(eq_terminal_val);
+    const ptr_uint64 eq_terminal = ptr_uint64(eq_terminal_val);
 
     if (labels_size == set_size) {
       if (lt_terminal_val == eq_terminal_val) {
@@ -56,7 +56,7 @@ namespace adiar
     }
 
     const bool gt_terminal_val = pred(set_size + 1, set_size);
-    const ptr_t gt_terminal = create_terminal_ptr(gt_terminal_val);
+    const ptr_uint64 gt_terminal = ptr_uint64(gt_terminal_val);
 
     if (lt_terminal_val && eq_terminal_val && gt_terminal_val) {
       return zdd_powerset(labels);
@@ -128,7 +128,7 @@ namespace adiar
       const id_t min_id = curr_level_width < max_id ? max_id - curr_level_width : 0u;
 
       do {
-        ptr_t low;
+        ptr_uint64 low;
         if (processed_levels == 0) { // lowest level
           low = curr_id == set_size+1 ? gt_terminal
               : curr_id == set_size   ? eq_terminal
@@ -136,18 +136,18 @@ namespace adiar
         } else if (curr_id < prior_min_id) { // guaranteed to be in lt case
           if (not_equal) {
             low = curr_id == min_id
-              ? create_node_ptr(prior_label, max_id)
+              ? ptr_uint64(prior_label, max_id)
               : lt_terminal; // <- When processed_levels == 1 and happens twice
           } else {
             low = lt_terminal_val
-              ? create_node_ptr(prior_label, prior_min_id)
+              ? ptr_uint64(prior_label, prior_min_id)
               : lt_terminal;
           }
         } else {
-          low = create_node_ptr(prior_label, curr_id);
+          low = ptr_uint64(prior_label, curr_id);
         }
 
-        ptr_t high;
+        ptr_uint64 high;
         if (processed_levels == 0) {
           high = curr_id >= set_size    ? gt_terminal
                : curr_id == set_size-1u ? eq_terminal
@@ -159,10 +159,10 @@ namespace adiar
         } else if (not_equal && processed_levels == 1 && curr_id == min_id){
           high = lt_terminal; // <-- true terminal
         } else {
-          high = create_node_ptr(prior_label, curr_id + 1u);
+          high = ptr_uint64(prior_label, curr_id + 1u);
         }
 
-        adiar_debug(high != create_terminal_ptr(false), "Should not create a reducible node");
+        adiar_debug(high != ptr_uint64(false), "Should not create a reducible node");
 
         nw.unsafe_push(node(curr_label, curr_id, low, high));
 

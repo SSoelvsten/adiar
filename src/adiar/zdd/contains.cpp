@@ -30,19 +30,21 @@ namespace adiar
       l = has_l ? ls.pull() : 0;
     }
 
-    inline ptr_t visit(const node_t &n)
+    inline ptr_uint64 visit(const node_t &n)
     {
       visited_label = n.label();
 
-      const ptr_t next_ptr = has_l && l == visited_label ? n.high() : n.low();
+      const ptr_uint64 next_ptr = has_l && l == visited_label ? n.high() : n.low();
 
       if (has_l) {
         // Did we miss a label before the root?
-        if (is_first_visit && l < visited_label) { return NIL; }
+        if (is_first_visit && l < visited_label) { return ptr_uint64::NIL(); }
 
         // Will we miss a label?
         if (l == visited_label && ls.can_pull()) { l = ls.pull(); }
-        if (is_node(next_ptr) && visited_label < l && l < label_of(next_ptr)) { return NIL; }
+        if (next_ptr.is_node() && visited_label < l && l < next_ptr.label()) {
+          return ptr_uint64::NIL();
+        }
       }
 
       is_first_visit = false;

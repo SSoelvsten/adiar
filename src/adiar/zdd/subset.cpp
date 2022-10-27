@@ -125,12 +125,12 @@ namespace adiar
       if (amgr.has_level_incl()) {
         // If recursion goes past the intended level, then it is replaced with
         // the false terminal.
-        const ptr_t low  = is_terminal(n.low()) || label_of(n.low()) > amgr.level_incl()
-          ? create_terminal_ptr(false)
+        const ptr_uint64 low  = n.low().is_terminal() || n.low().label() > amgr.level_incl()
+          ? ptr_uint64(false)
           : n.low();
 
         // If this applies to high, then the node should be skipped entirely.
-        if (is_terminal(n.high()) || label_of(n.high()) > amgr.level_incl()) {
+        if (n.high().is_terminal() || n.high().label() > amgr.level_incl()) {
           return substitute_rec_skipto { low };
         }
         return substitute_rec_output { node(n.uid(), low, n.high()) };
@@ -146,11 +146,11 @@ namespace adiar
     static substitute_rec fix_true(const node_t &n, zdd_subset_act &amgr)
     {
       if (amgr.has_level_excl()) {
-        if (is_terminal(n.high()) || label_of(n.high()) > amgr.level_excl()) {
-          return substitute_rec_skipto { create_terminal_ptr(false) };
+        if (n.high().is_terminal() || n.high().label() > amgr.level_excl()) {
+          return substitute_rec_skipto { ptr_uint64(false) };
         }
       }
-      return substitute_rec_output { node(n.uid(), create_terminal_ptr(false), n.high()) };
+      return substitute_rec_output { node(n.uid(), ptr_uint64(false), n.high()) };
     }
 
   public:

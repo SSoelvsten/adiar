@@ -384,7 +384,7 @@ TPIE allows one to use a custom _serializer_ and _deserializer_ for their
 `tpie::file_stream` and `tpie::merge_sorter`. With this, one can change the
 `adiar::node` struct to be of variable size such that they can describe the
 _Multi-valued Decision Diagram_ (MDD) of [[Kam98](#references)]. Alternatively,
-one can create the "union" of `adiar::uid_t` and `adiar::ptr_t` such that
+one can create the "union" of `adiar::uid_t` and `adiar::ptr` such that
 consecutive (64-bit) elements describe a single node.
 
 Another approach for MDDs would be to look into recreating the _List Decision

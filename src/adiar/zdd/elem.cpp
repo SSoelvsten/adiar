@@ -25,9 +25,9 @@ namespace adiar
   public:
     zdd_sat_label_writer_visitor() : lw(lf) { }
 
-    ptr_t visit(const node_t &n)
+    ptr_uint64 visit(const node_t &n)
     {
-      const ptr_t next_ptr = visitor.visit(n);
+      const ptr_uint64 next_ptr = visitor.visit(n);
 
       if (next_ptr == n.high() && (next_ptr != n.low() || visitor_t::keep_dont_cares)) {
         lw << n.label();
@@ -66,8 +66,8 @@ namespace adiar
   public:
     static constexpr bool keep_dont_cares = true;
 
-    inline ptr_t visit(const node_t &n) {
-      adiar_debug(!is_terminal(n.high()) || value_of(n.high()), "high terminals are never false");
+    inline ptr_uint64 visit(const node_t &n) {
+      adiar_debug(!n.high().is_terminal() || n.high().value(), "high terminals are never false");
       return n.high();
     }
 

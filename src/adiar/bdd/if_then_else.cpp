@@ -35,7 +35,7 @@ namespace adiar
 
   struct ite_triple_1 : triple
   {
-    ptr_t source;
+    ptr_uint64 source;
   };
 
 #ifndef NDEBUG
@@ -57,8 +57,8 @@ namespace adiar
 
   struct ite_triple_2 : ite_triple_1
   {
-    ptr_t data_1_low;
-    ptr_t data_1_high;
+    ptr_uint64 data_1_low;
+    ptr_uint64 data_1_high;
   };
 
 #ifndef NDEBUG
@@ -80,8 +80,8 @@ namespace adiar
 
   struct ite_triple_3 : ite_triple_2
   {
-    ptr_t data_2_low;
-    ptr_t data_2_high;
+    ptr_uint64 data_2_low;
+    ptr_uint64 data_2_high;
   };
 
 #ifndef NDEBUG
@@ -113,7 +113,7 @@ namespace adiar
     // It can be approximated as:
     // max(bdd_if.max_1level_cut, bdd_then.max_1level_cut + bdd_else.max_1level_cut)
 
-    ptr_t root_then = NIL, root_else = NIL;
+    ptr_uint64 root_then = ptr_uint64::NIL(), root_else = ptr_uint64::NIL();
 
     node_file out_nodes;
     node_writer nw(out_nodes);
@@ -136,20 +136,20 @@ namespace adiar
     }
 
     // push all nodes from 'if' conditional and remap its terminals
-    adiar_debug(!is_nil(root_then), "Did not obtain root from then stream");
-    adiar_debug(!is_nil(root_else), "Did not obtain root from else stream");
+    adiar_debug(!root_then.is_nil(), "Did not obtain root from then stream");
+    adiar_debug(!root_else.is_nil(), "Did not obtain root from else stream");
 
     node_stream<true> in_nodes_if(bdd_if);
 
     while (in_nodes_if.can_pull()) {
       const node_t n = in_nodes_if.pull();
 
-      const ptr_t low = is_terminal(n.low())
-        ? (value_of(n.low()) ? root_then : root_else)
+      const ptr_uint64 low = n.low().is_terminal()
+        ? (n.low().value() ? root_then : root_else)
         : n.low();
 
-      const ptr_t high = is_terminal(n.high())
-        ? (value_of(n.high()) ? root_then : root_else)
+      const ptr_uint64 high = n.high().is_terminal()
+        ? (n.high().value() ? root_then : root_else)
         : n.high();
 
       nw << node(n.uid(), low, high);
@@ -167,11 +167,11 @@ namespace adiar
     return out_nodes;
   }
 
-  inline bool ite_must_forward(node_t v, ptr_t t, label_t out_label, ptr_t t_seek)
+  inline bool ite_must_forward(node_t v, ptr_uint64 t, label_t out_label, ptr_uint64 t_seek)
   {
     return
       // is it a node at this level?
-      is_node(t) && label_of(t) == out_label
+      t.is_node() && t.label() == out_label
       // and we should be seeing it later
       && t_seek < t
       // and we haven't by accident just run into it anyway
@@ -179,7 +179,7 @@ namespace adiar
   }
 
   inline void ite_init_request(node_stream<> &in_nodes, node_t &v, label_t out_label,
-                               ptr_t &low, ptr_t &high)
+                               ptr_uint64 &low, ptr_uint64 &high)
   {
     if (v.label() == out_label) {
       low = v.low();
@@ -194,26 +194,26 @@ namespace adiar
   template<typename pq_1_t>
   inline void __ite_resolve_request(pq_1_t &ite_pq_1,
                                   arc_writer &aw,
-                                  ptr_t source, ptr_t r_if, ptr_t r_then, ptr_t r_else)
+                                  ptr_uint64 source, ptr_uint64 r_if, ptr_uint64 r_then, ptr_uint64 r_else)
   {
     // Early shortcut an ite, if the terminals of both cases have collapsed to the
     // same anyway
-    if (is_terminal(r_then) && is_terminal(r_else) &&
-        value_of(r_then) == value_of(r_else)) {
+    if (r_then.is_terminal() && r_else.is_terminal() &&
+        r_then.value() == r_else.value()) {
 
       aw.unsafe_push_terminal(arc_t { source, r_then });
       return;
     }
     // Remove irrelevant parts of a request to prune requests similar to
     // shortcutting the operator in bdd_apply.
-    r_then = is_false(r_if) ? NIL : r_then;
-    r_else = is_true(r_if)  ? NIL : r_else;
+    r_then = r_if.is_false() ? ptr_uint64::NIL() : r_then;
+    r_else = r_if.is_true()  ? ptr_uint64::NIL() : r_else;
 
-    if (is_terminal(r_if) && is_terminal(r_then)) {
-      // => ~NIL => r_if is a terminal with the 'true' value
+    if (r_if.is_terminal() && r_then.is_terminal()) {
+      // => ~ptr_uint64::NIL() => r_if is a terminal with the 'true' value
       aw.unsafe_push_terminal(arc_t { source, r_then });
-    } else if (is_terminal(r_if) && is_terminal(r_else)) {
-      // => ~NIL => r_if is a terminal with the 'false' value
+    } else if (r_if.is_terminal() && r_else.is_terminal()) {
+      // => ~ptr_uint64::NIL() => r_if is a terminal with the 'false' value
       aw.unsafe_push_terminal(arc_t { source, r_else });
     } else {
       ite_pq_1.push({ r_if, r_then, r_else, source });
@@ -261,17 +261,19 @@ namespace adiar
     pq_3_t ite_pq_3(pq_3_memory, max_pq_3_size);
 
     // Process root and create initial recursion requests
-    label_t out_label = label_of(fst(v_if.uid(), v_then.uid(), v_else.uid()));
+    label_t out_label = fst(v_if.uid(), v_then.uid(), v_else.uid()).label();
     id_t out_id = 0;
 
-    ptr_t low_if, low_then, low_else, high_if, high_then, high_else;
+    ptr_uint64 low_if, low_then, low_else, high_if, high_then, high_else;
     ite_init_request(in_nodes_if, v_if, out_label, low_if, high_if);
     ite_init_request(in_nodes_then, v_then, out_label, low_then, high_then);
     ite_init_request(in_nodes_else, v_else, out_label, low_else, high_else);
 
-    uid_t out_uid = create_node_uid(out_label, out_id++);
-    __ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
-    __ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
+    {
+      const uid_t out_uid(out_label, out_id++);
+      __ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
+      __ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
+    }
 
     size_t max_1level_cut = 0;
 
@@ -287,9 +289,9 @@ namespace adiar
         max_1level_cut = std::max(max_1level_cut, ite_pq_1.size());
       }
 
-      ptr_t source, t_if, t_then, t_else;
+      ptr_uint64 source, t_if, t_then, t_else;
       bool with_data_1 = false, with_data_2 = false;
-      ptr_t data_1_low = NIL, data_1_high = NIL, data_2_low = NIL, data_2_high = NIL;
+      ptr_uint64 data_1_low = ptr_uint64::NIL(), data_1_high = ptr_uint64::NIL(), data_2_low = ptr_uint64::NIL(), data_2_high = ptr_uint64::NIL();
 
       // Merge requests from priority queues
       if (ite_pq_1.can_pull()
@@ -334,11 +336,11 @@ namespace adiar
       }
 
       // Seek request partially in stream
-      ptr_t t_fst = fst(t_if,t_then,t_else);
-      ptr_t t_snd = snd(t_if,t_then,t_else);
-      ptr_t t_trd = trd(t_if,t_then,t_else);
+      ptr_uint64 t_fst = fst(t_if,t_then,t_else);
+      ptr_uint64 t_snd = snd(t_if,t_then,t_else);
+      ptr_uint64 t_trd = trd(t_if,t_then,t_else);
 
-      ptr_t t_seek = with_data_2 ? t_trd
+      ptr_uint64 t_seek = with_data_2 ? t_trd
                    : with_data_1 ? t_snd
                                  : t_fst;
 
@@ -423,14 +425,14 @@ namespace adiar
       }
 
       // Resolve current node and recurse
-      if (is_terminal(t_if) || out_label < label_of(t_if)) {
+      if (t_if.is_terminal() || out_label < t_if.label()) {
         low_if = high_if = t_if;
       } else {
         low_if = t_if == v_if.uid() ? v_if.low() : data_1_low;
         high_if = t_if == v_if.uid() ? v_if.high() : data_1_high;
       }
 
-      if (is_nil(t_then) || is_terminal(t_then) || out_label < label_of(t_then)) {
+      if (t_then.is_nil() || t_then.is_terminal() || out_label < t_then.label()) {
         low_then = high_then = t_then;
       } else if (t_then == v_then.uid()) {
         low_then = v_then.low();
@@ -443,7 +445,7 @@ namespace adiar
         high_then = data_2_high;
       }
 
-      if (is_nil(t_else) || is_terminal(t_else) || out_label < label_of(t_else)) {
+      if (t_else.is_nil() || t_else.is_terminal() || out_label < t_else.label()) {
         low_else = high_else = t_else;
       } else if (t_else == v_else.uid()) {
         low_else = v_else.low();
@@ -458,7 +460,7 @@ namespace adiar
 
       // Resolve request
       adiar_debug(out_id < MAX_ID, "Has run out of ids");
-      out_uid = create_node_uid(out_label, out_id++);
+      const uid_t out_uid(out_label, out_id++);
 
       __ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
       __ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);

@@ -25,9 +25,9 @@ namespace adiar
   public:
     bdd_sat_assignment_writer_visitor(const bdd& f) : aw(af), ms(f) { }
 
-    ptr_t visit(const node_t &n)
+    ptr_uint64 visit(const node_t &n)
     {
-      const ptr_t next_ptr = __visitor.visit(n);
+      const ptr_uint64 next_ptr = __visitor.visit(n);
       const label_t label = n.label();
 
       // set default to all skipped levels

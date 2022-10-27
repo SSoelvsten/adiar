@@ -47,7 +47,7 @@ namespace adiar
     {
       adiar_debug(dom.size() > 0, "Emptiness check is before terminal check");
 
-      ptr_t prior_node = create_terminal_ptr(terminal_value);
+      ptr_uint64 prior_node = ptr_uint64(terminal_value);
 
       node_file nf;
 
@@ -60,12 +60,12 @@ namespace adiar
         const label_t next_label = ls.pull();
 
         adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
-        adiar_assert(is_terminal(prior_node) || next_label < label_of(prior_node),
+        adiar_assert(prior_node.is_terminal() || next_label < prior_node.label(),
                      "Labels not given in increasing order");
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
         const node_t next_node = node(next_label, MAX_ID, children.t1, children.t2);
-        const ptr_t reduction_result = to_policy::reduction_rule(next_node);
+        const ptr_uint64 reduction_result = to_policy::reduction_rule(next_node);
 
         if (reduction_result == next_node.uid()) { // Output
           prior_node = next_node.uid();
@@ -95,14 +95,14 @@ namespace adiar
 
     static intercut_rec hit_existing(const node_t &n)
     {
-      const ptr_t to_reduction = to_policy::reduction_rule(n);
+      const ptr_uint64 to_reduction = to_policy::reduction_rule(n);
       if (to_reduction != n.uid()) {
         return intercut_rec_skipto { to_reduction };
       }
       return intercut_rec_output { n.low(), n.high() };
     }
 
-    static intercut_rec_output hit_cut(const ptr_t target)
+    static intercut_rec_output hit_cut(const ptr_uint64 target)
    {
       const tuple children = from_policy::reduction_rule_inv(target);
 

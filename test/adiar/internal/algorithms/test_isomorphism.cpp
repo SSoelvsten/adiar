@@ -11,28 +11,28 @@ go_bandit([]() {
           w_F << node(false);
 
           node_writer w_21(x21);
-          w_21 << node(21,0, create_terminal_ptr(false), create_terminal_ptr(true));
+          w_21 << node(21,0, ptr_uint64(false), ptr_uint64(true));
 
           node_writer w_42(x42);
-          w_42 << node(42,0, create_terminal_ptr(false), create_terminal_ptr(true));
+          w_42 << node(42,0, ptr_uint64(false), ptr_uint64(true));
 
           node_writer w_21_and_22(x21_and_x22);
-          w_21_and_22 << node(22,0, create_terminal_ptr(false), create_terminal_ptr(true))
-                      << node(21,0, create_terminal_ptr(false), create_node_ptr(22,0));
+          w_21_and_22 << node(22,0, ptr_uint64(false), ptr_uint64(true))
+                      << node(21,0, ptr_uint64(false), ptr_uint64(22,0));
 
           node_writer w_21_and_22_and_42(x21_and_x22_and_x42);
-          w_21_and_22_and_42 << node(42,0, create_terminal_ptr(false), create_terminal_ptr(true))
-                             << node(22,0, create_terminal_ptr(false), create_node_ptr(42,0))
-                             << node(21,0, create_terminal_ptr(false), create_node_ptr(22,0));
+          w_21_and_22_and_42 << node(42,0, ptr_uint64(false), ptr_uint64(true))
+                             << node(22,0, ptr_uint64(false), ptr_uint64(42,0))
+                             << node(21,0, ptr_uint64(false), ptr_uint64(22,0));
 
           node_writer w_21_and_42(x21_and_x42);
-          w_21_and_42 << node(42,0, create_terminal_ptr(false), create_terminal_ptr(true))
-                      << node(21,0, create_terminal_ptr(false), create_node_ptr(42,0));
+          w_21_and_42 << node(42,0, ptr_uint64(false), ptr_uint64(true))
+                      << node(21,0, ptr_uint64(false), ptr_uint64(42,0));
 
           node_writer w_21_xor_42(x21_xor_x42);
-          w_21_xor_42 << node(42,1, create_terminal_ptr(true), create_terminal_ptr(false))
-                      << node(42,0, create_terminal_ptr(false), create_terminal_ptr(true))
-                      << node(21,0, create_node_ptr(42,0), create_node_ptr(42,1));
+          w_21_xor_42 << node(42,1, ptr_uint64(true), ptr_uint64(false))
+                      << node(42,0, ptr_uint64(false), ptr_uint64(true))
+                      << node(21,0, ptr_uint64(42,0), ptr_uint64(42,1));
         }
 
         it("accepts same file with same negation flag", [&]() {
@@ -96,22 +96,22 @@ go_bandit([]() {
 
           { // Garbage collect writers to free write-lock
             node_writer w_seven_a(seven_a);
-            w_seven_a << node(3,0, create_terminal_ptr(false), create_terminal_ptr(true))
-                    << node(2,2, create_terminal_ptr(false), create_terminal_ptr(true))
-                    << node(2,1, create_terminal_ptr(true), create_node_ptr(3,0))
-                    << node(2,0, create_terminal_ptr(false), create_node_ptr(3,0))
-                    << node(1,1, create_node_ptr(2,0), create_node_ptr(2,1))
-                    << node(1,0, create_node_ptr(2,1), create_node_ptr(2,2))
-                    << node(0,0, create_node_ptr(1,0), create_node_ptr(1,1));
+            w_seven_a << node(3,0, ptr_uint64(false), ptr_uint64(true))
+                    << node(2,2, ptr_uint64(false), ptr_uint64(true))
+                    << node(2,1, ptr_uint64(true), ptr_uint64(3,0))
+                    << node(2,0, ptr_uint64(false), ptr_uint64(3,0))
+                    << node(1,1, ptr_uint64(2,0), ptr_uint64(2,1))
+                    << node(1,0, ptr_uint64(2,1), ptr_uint64(2,2))
+                    << node(0,0, ptr_uint64(1,0), ptr_uint64(1,1));
 
             node_writer w_seven_b(seven_b);
-            w_seven_b << node(3,1, create_terminal_ptr(true), create_terminal_ptr(false))
-                      << node(3,0, create_terminal_ptr(false), create_terminal_ptr(true))
-                      << node(2,1, create_node_ptr(3,1), create_terminal_ptr(true))
-                      << node(2,0, create_terminal_ptr(false), create_node_ptr(3,0))
-                      << node(1,1, create_node_ptr(2,1), create_node_ptr(2,0))
-                      << node(1,0, create_node_ptr(2,0), create_node_ptr(2,1))
-                      << node(0,0, create_node_ptr(1,0), create_node_ptr(1,1));
+            w_seven_b << node(3,1, ptr_uint64(true), ptr_uint64(false))
+                      << node(3,0, ptr_uint64(false), ptr_uint64(true))
+                      << node(2,1, ptr_uint64(3,1), ptr_uint64(true))
+                      << node(2,0, ptr_uint64(false), ptr_uint64(3,0))
+                      << node(1,1, ptr_uint64(2,1), ptr_uint64(2,0))
+                      << node(1,0, ptr_uint64(2,0), ptr_uint64(2,1))
+                      << node(0,0, ptr_uint64(1,0), ptr_uint64(1,1));
           }
 
           AssertThat(is_isomorphic(seven_a, seven_b, false, false), Is().False());
@@ -148,13 +148,13 @@ go_bandit([]() {
 
       { // Garbage collect writers to free write-lock
         node_writer wa(x42_a);
-        wa << node(42,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true));
+        wa << node(42,MAX_ID, ptr_uint64(false), ptr_uint64(true));
 
         node_writer wb(x42_b);
-        wb << node(42,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true));
+        wb << node(42,MAX_ID, ptr_uint64(false), ptr_uint64(true));
 
         node_writer wn(not_x42);
-        wn << node(42,MAX_ID, create_terminal_ptr(true), create_terminal_ptr(false));
+        wn << node(42,MAX_ID, ptr_uint64(true), ptr_uint64(false));
       }
 
       /*
@@ -166,10 +166,10 @@ go_bandit([]() {
 
       { // Garbage collect writers to free write-lock
         node_writer wT(x69_T);
-        wT << node(69,MAX_ID, create_terminal_ptr(true), create_terminal_ptr(true));
+        wT << node(69,MAX_ID, ptr_uint64(true), ptr_uint64(true));
 
         node_writer wF(x69_F);
-        wF << node(69,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(false));
+        wF << node(69,MAX_ID, ptr_uint64(false), ptr_uint64(false));
       }
 
 
@@ -186,37 +186,37 @@ go_bandit([]() {
             F T
       */
       { node_writer w(bdd_1);
-        w << node(2,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(true))
-          << node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_terminal_ptr(false))
-          << node(1,MAX_ID-1, create_terminal_ptr(true),       create_node_ptr(2,MAX_ID))
-          << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        w << node(2,MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
+          << node(1,MAX_ID,   ptr_uint64(2,MAX_ID),   ptr_uint64(false))
+          << node(1,MAX_ID-1, ptr_uint64(true),       ptr_uint64(2,MAX_ID))
+          << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID));
       }
 
       node_file bdd_1n;
       /* bdd_1 negated */
       { node_writer w(bdd_1n);
-        w << node(2,MAX_ID,   create_terminal_ptr(true),       create_terminal_ptr(false))
-          << node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_terminal_ptr(true))
-          << node(1,MAX_ID-1, create_terminal_ptr(false),      create_node_ptr(2,MAX_ID))
-          << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        w << node(2,MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
+          << node(1,MAX_ID,   ptr_uint64(2,MAX_ID),   ptr_uint64(true))
+          << node(1,MAX_ID-1, ptr_uint64(false),      ptr_uint64(2,MAX_ID))
+          << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID));
       }
 
       // bdd_1 with child of (2) and low child of (4) flipped in truth value
       node_file bdd_1_low_leaf;
       { node_writer w(bdd_1_low_leaf);
-        w << node(2,MAX_ID,   create_terminal_ptr(true),       create_terminal_ptr(true))
-          << node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_terminal_ptr(false))
-          << node(1,MAX_ID-1, create_terminal_ptr(false),      create_node_ptr(2,MAX_ID))
-          << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        w << node(2,MAX_ID,   ptr_uint64(true),       ptr_uint64(true))
+          << node(1,MAX_ID,   ptr_uint64(2,MAX_ID),   ptr_uint64(false))
+          << node(1,MAX_ID-1, ptr_uint64(false),      ptr_uint64(2,MAX_ID))
+          << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID));
       }
 
       // bdd_1 with child of (3) and high child of (4) flipped in truth value
       node_file bdd_1_high_leaf;
       { node_writer w(bdd_1_high_leaf);
-        w << node(2,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(false))
-          << node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_terminal_ptr(true))
-          << node(1,MAX_ID-1, create_terminal_ptr(true),       create_node_ptr(2,MAX_ID))
-          << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        w << node(2,MAX_ID,   ptr_uint64(false),      ptr_uint64(false))
+          << node(1,MAX_ID,   ptr_uint64(2,MAX_ID),   ptr_uint64(true))
+          << node(1,MAX_ID-1, ptr_uint64(true),       ptr_uint64(2,MAX_ID))
+          << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID));
       }
 
       node_file bdd_2;
@@ -231,21 +231,21 @@ go_bandit([]() {
          T   F   T
       */
       { node_writer w(bdd_2);
-        w << node(2,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(true))
-          << node(2,MAX_ID-1, create_terminal_ptr(true),       create_terminal_ptr(false))
-          << node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_terminal_ptr(false))
-          << node(1,MAX_ID-1, create_terminal_ptr(false),      create_node_ptr(2,MAX_ID))
-          << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        w << node(2,MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
+          << node(2,MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))
+          << node(1,MAX_ID,   ptr_uint64(2,MAX_ID-1), ptr_uint64(false))
+          << node(1,MAX_ID-1, ptr_uint64(false),      ptr_uint64(2,MAX_ID))
+          << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID));
       }
 
       node_file bdd_2n;
       /* bdd_2 negated */
       { node_writer w(bdd_2n);
-        w << node(2,MAX_ID,   create_terminal_ptr(true),       create_terminal_ptr(false))
-          << node(2,MAX_ID-1, create_terminal_ptr(false),      create_terminal_ptr(true))
-          << node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_terminal_ptr(true))
-          << node(1,MAX_ID-1, create_terminal_ptr(true),       create_node_ptr(2,MAX_ID))
-          << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        w << node(2,MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
+          << node(2,MAX_ID-1, ptr_uint64(false),      ptr_uint64(true))
+          << node(1,MAX_ID,   ptr_uint64(2,MAX_ID-1), ptr_uint64(true))
+          << node(1,MAX_ID-1, ptr_uint64(true),       ptr_uint64(2,MAX_ID))
+          << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID));
       }
 
       node_file bdd_2_low_child;
@@ -261,11 +261,11 @@ go_bandit([]() {
           which in traversal look similar to bdd_2 until (3) on level x1
       */
       { node_writer w(bdd_2_low_child);
-        w << node(2,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(true))
-          << node(2,MAX_ID-1, create_terminal_ptr(true),       create_terminal_ptr(false))
-          << node(1,MAX_ID,   create_terminal_ptr(true),       create_terminal_ptr(false))
-          << node(1,MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
-          << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+        w << node(2,MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
+          << node(2,MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))
+          << node(1,MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
+          << node(1,MAX_ID-1, ptr_uint64(2,MAX_ID-1), ptr_uint64(2,MAX_ID))
+          << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID));
       }
 
       node_file bdd_2_high_child;
@@ -281,11 +281,11 @@ go_bandit([]() {
           which in traversal look similar to bdd_2 until (2) on level x1
       */
       { node_writer w(bdd_2_high_child);
-        w << node(2,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(true))
-          << node(2,MAX_ID-1, create_terminal_ptr(true),       create_terminal_ptr(false))
-          << node(1,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(true))
-          << node(1,MAX_ID-1, create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
-          << node(0,MAX_ID,   create_node_ptr(1,MAX_ID),   create_node_ptr(1,MAX_ID-1));
+        w << node(2,MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
+          << node(2,MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))
+          << node(1,MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
+          << node(1,MAX_ID-1, ptr_uint64(2,MAX_ID-1), ptr_uint64(2,MAX_ID))
+          << node(0,MAX_ID,   ptr_uint64(1,MAX_ID),   ptr_uint64(1,MAX_ID-1));
       }
 
       node_file bdd_3;
@@ -301,10 +301,10 @@ go_bandit([]() {
            F T
       */
       { node_writer w(bdd_3);
-        w << node(3,MAX_ID, create_terminal_ptr(false),    create_terminal_ptr(true))
-          << node(2,MAX_ID, create_terminal_ptr(true),     create_node_ptr(3,MAX_ID))
-          << node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_terminal_ptr(false))
-          << node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID));
+        w << node(3,MAX_ID, ptr_uint64(false),    ptr_uint64(true))
+          << node(2,MAX_ID, ptr_uint64(true),     ptr_uint64(3,MAX_ID))
+          << node(1,MAX_ID, ptr_uint64(2,MAX_ID), ptr_uint64(false))
+          << node(0,MAX_ID, ptr_uint64(2,MAX_ID), ptr_uint64(1,MAX_ID));
       }
 
       node_file bdd_4;
@@ -322,10 +322,10 @@ go_bandit([]() {
           The same as bdd_3 but mirrored horisontally
       */
       { node_writer w(bdd_4);
-        w << node(3,MAX_ID, create_terminal_ptr(true),     create_terminal_ptr(false))
-          << node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_terminal_ptr(true))
-          << node(1,MAX_ID, create_terminal_ptr(false),    create_node_ptr(2,MAX_ID))
-          << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
+        w << node(3,MAX_ID, ptr_uint64(true),     ptr_uint64(false))
+          << node(2,MAX_ID, ptr_uint64(3,MAX_ID), ptr_uint64(true))
+          << node(1,MAX_ID, ptr_uint64(false),    ptr_uint64(2,MAX_ID))
+          << node(0,MAX_ID, ptr_uint64(1,MAX_ID), ptr_uint64(2,MAX_ID));
       }
 
       node_file bdd_5;
@@ -343,10 +343,10 @@ go_bandit([]() {
           The same as bdd_4 but (2) goes to a terminal instead of (3)
       */
       { node_writer w(bdd_5);
-        w << node(3,MAX_ID, create_terminal_ptr(true),     create_terminal_ptr(false))
-          << node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_terminal_ptr(true))
-          << node(1,MAX_ID, create_terminal_ptr(false),    create_terminal_ptr(true))
-          << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
+        w << node(3,MAX_ID, ptr_uint64(true),     ptr_uint64(false))
+          << node(2,MAX_ID, ptr_uint64(3,MAX_ID), ptr_uint64(true))
+          << node(1,MAX_ID, ptr_uint64(false),    ptr_uint64(true))
+          << node(0,MAX_ID, ptr_uint64(1,MAX_ID), ptr_uint64(2,MAX_ID));
       }
 
       node_file bdd_6;
@@ -364,10 +364,10 @@ go_bandit([]() {
           The same as bdd_5 but (3) goes to a false terminal instead of true
       */
       { node_writer w(bdd_5);
-        w << node(3,MAX_ID, create_terminal_ptr(true),     create_terminal_ptr(false))
-          << node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_terminal_ptr(false))
-          << node(1,MAX_ID, create_terminal_ptr(false),    create_terminal_ptr(true))
-          << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
+        w << node(3,MAX_ID, ptr_uint64(true),     ptr_uint64(false))
+          << node(2,MAX_ID, ptr_uint64(3,MAX_ID), ptr_uint64(false))
+          << node(1,MAX_ID, ptr_uint64(false),    ptr_uint64(true))
+          << node(0,MAX_ID, ptr_uint64(1,MAX_ID), ptr_uint64(2,MAX_ID));
       }
 
       describe("Fast 2N/B check", [&]() {
@@ -434,10 +434,10 @@ go_bandit([]() {
           /* Same as bdd_3 but with (2) directly going to (4) on the low */
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_3_b);
-            w << node(3,MAX_ID, create_terminal_ptr(false),    create_terminal_ptr(true))
-              << node(2,MAX_ID, create_terminal_ptr(true),     create_node_ptr(3,MAX_ID))
-              << node(1,MAX_ID, create_node_ptr(3,MAX_ID), create_terminal_ptr(false))
-              << node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID));
+            w << node(3,MAX_ID, ptr_uint64(false),    ptr_uint64(true))
+              << node(2,MAX_ID, ptr_uint64(true),     ptr_uint64(3,MAX_ID))
+              << node(1,MAX_ID, ptr_uint64(3,MAX_ID), ptr_uint64(false))
+              << node(0,MAX_ID, ptr_uint64(2,MAX_ID), ptr_uint64(1,MAX_ID));
           }
 
           AssertThat(is_isomorphic(bdd_3, bdd_3_b, false, false), Is().False());
@@ -458,10 +458,10 @@ go_bandit([]() {
           node_file bdd_4_b;
           /* Same as bdd_4 but with (2) directly going to (4) on the high */
           { node_writer w(bdd_4_b);
-            w << node(3,MAX_ID, create_terminal_ptr(true),     create_terminal_ptr(false))
-              << node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_terminal_ptr(true))
-              << node(1,MAX_ID, create_terminal_ptr(false),    create_node_ptr(3,MAX_ID))
-              << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
+            w << node(3,MAX_ID, ptr_uint64(true),     ptr_uint64(false))
+              << node(2,MAX_ID, ptr_uint64(3,MAX_ID), ptr_uint64(true))
+              << node(1,MAX_ID, ptr_uint64(false),    ptr_uint64(3,MAX_ID))
+              << node(0,MAX_ID, ptr_uint64(1,MAX_ID), ptr_uint64(2,MAX_ID));
           }
 
           AssertThat(is_isomorphic(bdd_4, bdd_4_b, false, false), Is().False());
@@ -525,10 +525,10 @@ go_bandit([]() {
           node_file bdd_1b;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_1b);
-            w << node(2,MAX_ID,   create_terminal_ptr(false),    create_terminal_ptr(true))
-              << node(1,MAX_ID,   create_terminal_ptr(true),     create_node_ptr(2,MAX_ID))
-              << node(1,MAX_ID-1, create_node_ptr(2,MAX_ID), create_terminal_ptr(false))
-              << node(0,MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(1,MAX_ID-1));
+            w << node(2,MAX_ID,   ptr_uint64(false),    ptr_uint64(true))
+              << node(1,MAX_ID,   ptr_uint64(true),     ptr_uint64(2,MAX_ID))
+              << node(1,MAX_ID-1, ptr_uint64(2,MAX_ID), ptr_uint64(false))
+              << node(0,MAX_ID,   ptr_uint64(1,MAX_ID), ptr_uint64(1,MAX_ID-1));
           }
 
           AssertThat(is_isomorphic(bdd_1, bdd_1b, false, false), Is().True());
@@ -542,11 +542,11 @@ go_bandit([]() {
           node_file bdd_2b;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_2b);
-            w << node(2,MAX_ID,   create_terminal_ptr(true),       create_terminal_ptr(false))
-              << node(2,MAX_ID-1, create_terminal_ptr(false),      create_terminal_ptr(true))
-              << node(1,MAX_ID,   create_terminal_ptr(false),      create_node_ptr(2,MAX_ID-1))
-              << node(1,MAX_ID-1, create_node_ptr(2,MAX_ID),   create_terminal_ptr(false))
-              << node(0,MAX_ID,   create_node_ptr(1,MAX_ID), create_node_ptr(1,MAX_ID-1));
+            w << node(2,MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
+              << node(2,MAX_ID-1, ptr_uint64(false),      ptr_uint64(true))
+              << node(1,MAX_ID,   ptr_uint64(false),      ptr_uint64(2,MAX_ID-1))
+              << node(1,MAX_ID-1, ptr_uint64(2,MAX_ID),   ptr_uint64(false))
+              << node(0,MAX_ID,   ptr_uint64(1,MAX_ID), ptr_uint64(1,MAX_ID-1));
           }
 
           AssertThat(is_isomorphic(bdd_2, bdd_2b, false, false), Is().True());
@@ -569,10 +569,10 @@ go_bandit([]() {
           node_file bdd_3_b;
           /* Same as bdd_3 negated but with (2) directly going to (4) on the low */
           { node_writer w(bdd_3_b);
-            w << node(3,MAX_ID, create_terminal_ptr(true),     create_terminal_ptr(false))
-              << node(2,MAX_ID, create_terminal_ptr(false),    create_node_ptr(3,MAX_ID))
-              << node(1,MAX_ID, create_node_ptr(3,MAX_ID), create_terminal_ptr(true))
-              << node(0,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(1,MAX_ID));
+            w << node(3,MAX_ID, ptr_uint64(true),     ptr_uint64(false))
+              << node(2,MAX_ID, ptr_uint64(false),    ptr_uint64(3,MAX_ID))
+              << node(1,MAX_ID, ptr_uint64(3,MAX_ID), ptr_uint64(true))
+              << node(0,MAX_ID, ptr_uint64(2,MAX_ID), ptr_uint64(1,MAX_ID));
           }
 
           AssertThat(is_isomorphic(bdd_3, bdd_3_b, true, false), Is().False());
@@ -582,14 +582,14 @@ go_bandit([]() {
         it("rejects on low child mismatch on root", [&]() {
           node_file bdd_a;
           { node_writer w(bdd_a);
-            w << node(1,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true))
-              << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_terminal_ptr(false));
+            w << node(1,MAX_ID, ptr_uint64(false), ptr_uint64(true))
+              << node(0,MAX_ID, ptr_uint64(1,MAX_ID), ptr_uint64(false));
           }
 
           node_file bdd_b;
           { node_writer w(bdd_b);
-            w << node(1,MAX_ID, create_terminal_ptr(true), create_terminal_ptr(false))
-              << node(0,MAX_ID, create_terminal_ptr(true), create_node_ptr(1,MAX_ID));
+            w << node(1,MAX_ID, ptr_uint64(true), ptr_uint64(false))
+              << node(0,MAX_ID, ptr_uint64(true), ptr_uint64(1,MAX_ID));
           }
 
           AssertThat(is_isomorphic(bdd_a, bdd_b, true, false), Is().False());
@@ -611,10 +611,10 @@ go_bandit([]() {
           /* Same as bdd_4 negated but with (2) directly going to (4) on
              the high */
           { node_writer w(bdd_4_b);
-            w << node(3,MAX_ID, create_terminal_ptr(false),    create_terminal_ptr(true))
-              << node(2,MAX_ID, create_node_ptr(3,MAX_ID), create_terminal_ptr(false))
-              << node(1,MAX_ID, create_terminal_ptr(true),     create_node_ptr(3,MAX_ID))
-              << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_node_ptr(2,MAX_ID));
+            w << node(3,MAX_ID, ptr_uint64(false),    ptr_uint64(true))
+              << node(2,MAX_ID, ptr_uint64(3,MAX_ID), ptr_uint64(false))
+              << node(1,MAX_ID, ptr_uint64(true),     ptr_uint64(3,MAX_ID))
+              << node(0,MAX_ID, ptr_uint64(1,MAX_ID), ptr_uint64(2,MAX_ID));
           }
 
           AssertThat(is_isomorphic(bdd_4, bdd_4_b, true, false), Is().False());
@@ -624,16 +624,16 @@ go_bandit([]() {
         it("rejects on high child mismatch on root", [&]() {
           node_file bdd_a;
           { node_writer w(bdd_a);
-            w << node(2,MAX_ID, create_terminal_ptr(false),    create_terminal_ptr(true))
-              << node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_terminal_ptr(false))
-              << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_terminal_ptr(true));
+            w << node(2,MAX_ID, ptr_uint64(false),    ptr_uint64(true))
+              << node(1,MAX_ID, ptr_uint64(2,MAX_ID), ptr_uint64(false))
+              << node(0,MAX_ID, ptr_uint64(1,MAX_ID), ptr_uint64(true));
           }
 
           node_file bdd_b;
           { node_writer w(bdd_b);
-            w << node(2,MAX_ID, create_terminal_ptr(true),     create_terminal_ptr(false))
-              << node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_terminal_ptr(false))
-              << node(0,MAX_ID, create_node_ptr(1,MAX_ID), create_terminal_ptr(true));
+            w << node(2,MAX_ID, ptr_uint64(true),     ptr_uint64(false))
+              << node(1,MAX_ID, ptr_uint64(2,MAX_ID), ptr_uint64(false))
+              << node(0,MAX_ID, ptr_uint64(1,MAX_ID), ptr_uint64(true));
           }
 
           AssertThat(is_isomorphic(bdd_a, bdd_b, true, false), Is().False());
@@ -666,24 +666,24 @@ go_bandit([]() {
           node_file bdd_5_a;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_5_a);
-            w << node(3,MAX_ID,   create_terminal_ptr(false), create_terminal_ptr(true))
-              << node(3,MAX_ID-1, create_terminal_ptr(true), create_terminal_ptr(false))
-              << node(2,MAX_ID,   create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))
-              << node(2,MAX_ID-1, create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID-1))
-              << node(1,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(2,MAX_ID))
-              << node(0,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(1,MAX_ID));
+            w << node(3,MAX_ID,   ptr_uint64(false), ptr_uint64(true))
+              << node(3,MAX_ID-1, ptr_uint64(true), ptr_uint64(false))
+              << node(2,MAX_ID,   ptr_uint64(3,MAX_ID-1), ptr_uint64(3,MAX_ID))
+              << node(2,MAX_ID-1, ptr_uint64(3,MAX_ID), ptr_uint64(3,MAX_ID-1))
+              << node(1,MAX_ID,   ptr_uint64(2,MAX_ID-1), ptr_uint64(2,MAX_ID))
+              << node(0,MAX_ID,   ptr_uint64(2,MAX_ID-1), ptr_uint64(1,MAX_ID));
           }
 
           node_file bdd_5_b;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_5_b);
-            w << node(3,MAX_ID,   create_terminal_ptr(false),      create_terminal_ptr(true))
-              << node(3,MAX_ID-1, create_terminal_ptr(true),       create_terminal_ptr(false))
-              << node(2,MAX_ID,   create_node_ptr(3,MAX_ID-1), create_node_ptr(3,MAX_ID))
-              << node(2,MAX_ID-1, create_node_ptr(3,MAX_ID),   create_node_ptr(3,MAX_ID-1))
+            w << node(3,MAX_ID,   ptr_uint64(false),      ptr_uint64(true))
+              << node(3,MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))
+              << node(2,MAX_ID,   ptr_uint64(3,MAX_ID-1), ptr_uint64(3,MAX_ID))
+              << node(2,MAX_ID-1, ptr_uint64(3,MAX_ID),   ptr_uint64(3,MAX_ID-1))
               // This one has its children flipped
-              << node(1,MAX_ID,   create_node_ptr(2,MAX_ID),   create_node_ptr(2,MAX_ID-1))
-              << node(0,MAX_ID,   create_node_ptr(2,MAX_ID-1), create_node_ptr(1,MAX_ID));
+              << node(1,MAX_ID,   ptr_uint64(2,MAX_ID),   ptr_uint64(2,MAX_ID-1))
+              << node(0,MAX_ID,   ptr_uint64(2,MAX_ID-1), ptr_uint64(1,MAX_ID));
           }
 
           AssertThat(is_isomorphic(bdd_5_a, bdd_5_b, true, false), Is().False());

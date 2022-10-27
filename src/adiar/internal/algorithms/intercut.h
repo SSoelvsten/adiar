@@ -36,7 +36,7 @@ namespace adiar
     ~intercut_req() = default;
 
   public:
-    intercut_req(ptr_t source, ptr_t target, label_t lvl) : arc(source, target), _level(lvl)
+    intercut_req(ptr_uint64 source, ptr_uint64 target, label_t lvl) : arc(source, target), _level(lvl)
     { }
 
   public:
@@ -77,13 +77,13 @@ namespace adiar
 
   struct intercut_rec_output
   {
-    ptr_t low;
-    ptr_t high;
+    ptr_uint64 low;
+    ptr_uint64 high;
   };
 
   struct intercut_rec_skipto
   {
-    ptr_t tgt;
+    ptr_uint64 tgt;
   };
 
   typedef std::variant<intercut_rec_output, intercut_rec_skipto> intercut_rec;
@@ -108,11 +108,11 @@ namespace adiar
     template<typename pq_t>
     static inline void forward(arc_writer &aw,
                                pq_t &pq,
-                               const ptr_t source, const ptr_t target,
+                               const ptr_uint64 source, const ptr_uint64 target,
                                const label_t curr_level, const label_t next_cut)
     {
-      const label_t target_level = is_node(target) ? label_of(target) : MAX_LABEL+1;
-      if (is_terminal(target) && !cut_terminal<intercut_policy>(curr_level, next_cut, value_of(target))) {
+      const label_t target_level = target.is_node() ? target.label() : MAX_LABEL+1;
+      if (target.is_terminal() && !cut_terminal<intercut_policy>(curr_level, next_cut, target.value())) {
         aw.unsafe_push_terminal(arc(source, target));
         return;
       }
@@ -128,7 +128,7 @@ namespace adiar
     template<typename pq_t>
     static inline void forward(arc_writer &aw,
                                pq_t &/*pq*/,
-                               const ptr_t source, const ptr_t target,
+                               const ptr_uint64 source, const ptr_uint64 target,
                                const label_t /*curr_level*/, const label_t /*next_cut*/)
     {
       aw.unsafe_push_node(arc(source, target));
@@ -139,11 +139,11 @@ namespace adiar
   inline void intercut_in__pq(arc_writer &aw,
                                 pq_t &pq,
                                 const label_t out_label,
-                                const ptr_t pq_target,
-                                const ptr_t out_target,
+                                const ptr_uint64 pq_target,
+                                const ptr_uint64 out_target,
                                 const label_t l)
   {
-    adiar_debug(out_label <= label_of(out_target),
+    adiar_debug(out_label <= out_target.label(),
                 "should forward/output a node on this level or ahead.");
 
     while (pq.can_pull()
@@ -151,7 +151,7 @@ namespace adiar
            && pq.top().target() == pq_target) {
       const intercut_req parent = pq.pull();
 
-      if (in_policy::ignore_nil && is_nil(parent.source())) { continue; }
+      if (in_policy::ignore_nil && parent.source().is_nil()) { continue; }
       in_policy::forward(aw, pq, parent.source(), out_target, out_label, l);
     }
   }
@@ -195,7 +195,7 @@ namespace adiar
 
     // Add request for root in the queue
     label_t out_label = std::min(l, n.label());
-    intercut_pq.push(intercut_req(NIL, n.uid(), out_label));
+    intercut_pq.push(intercut_req(ptr_uint64::NIL(), n.uid(), out_label));
     id_t out_id = 0;
 
     size_t max_1level_cut = 0;
@@ -223,7 +223,7 @@ namespace adiar
       }
 
       // Resolve requests that end at the cut for this level
-      while (intercut_pq.can_pull() && label_of(intercut_pq.peek().target()) == intercut_pq.peek().level()) {
+      while (intercut_pq.can_pull() && intercut_pq.peek().target().label() == intercut_pq.peek().level()) {
         while (n.uid() < intercut_pq.top().target()) {
           n = in_nodes.pull();
         }
@@ -237,12 +237,12 @@ namespace adiar
         if (intercut_policy::may_skip && std::holds_alternative<intercut_rec_skipto>(r)) {
           const intercut_rec_skipto rs = std::get<intercut_rec_skipto>(r);
 
-          if (is_terminal(rs.tgt)
-              && is_nil(intercut_pq.top().source())
-              && !cut_terminal<intercut_policy>(out_label, l, value_of(rs.tgt))) {
-            return intercut_policy::terminal(value_of(rs.tgt));
+          if (rs.tgt.is_terminal()
+              && intercut_pq.top().source().is_nil()
+              && !cut_terminal<intercut_policy>(out_label, l, rs.tgt.value())) {
+            return intercut_policy::terminal(rs.tgt.value());
           }
-          // TODO: The 'is_terminal(rs.tgt) && cut_terminal(...)' case can be handled even
+          // TODO: The 'rs.tgt.is_terminal() && cut_terminal(...)' case can be handled even
           //       better with 'intercut_policy::on_terminal_input' but where the
           //       label file are only of the remaining labels.
 
@@ -250,7 +250,7 @@ namespace adiar
             (aw, intercut_pq, out_label, n.uid(), rs.tgt, l);
         } else {
           const intercut_rec_output ro = std::get<intercut_rec_output>(r);
-          const uid_t out_uid = create_node_uid(out_label, out_id++);
+          const uid_t out_uid(out_label, out_id++);
 
           intercut_out__pq<intercut_policy>::forward
             (aw, intercut_pq, out_uid, ro.low, out_label, l);
@@ -266,11 +266,11 @@ namespace adiar
       // Resolve requests that end after the cut for this level
       while(intercut_pq.can_pull()) {
         adiar_invariant(out_label <= l,
-                          "the last iteration in this case is for the very last label to cut on");
+                        "the last iteration in this case is for the very last label to cut on");
 
         const intercut_req request = intercut_pq.top();
         const intercut_rec_output ro = intercut_policy::hit_cut(request.target());
-        const uid_t out_uid = create_node_uid(out_label, out_id++);
+        const uid_t out_uid(out_label, out_id++);
 
         intercut_out__pq<intercut_policy>::forward
           (aw, intercut_pq, out_uid, ro.low, out_label, l);

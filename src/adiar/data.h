@@ -7,6 +7,7 @@
 #include <adiar/assignment.h>
 
 #include <adiar/internal/data_types/id.h>
+#include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/bool_op.h>
 

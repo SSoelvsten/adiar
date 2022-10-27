@@ -17,7 +17,7 @@ namespace adiar
   public:
     static inline __zdd resolve_terminal_root(const node_t v, const bool_op &/* op */)
     {
-      if (is_terminal(v.low()) && is_terminal(v.high())) {
+      if (v.low().is_terminal() && v.high().is_terminal()) {
         // Only or_op and at least one of the terminals should be true
         return zdd_null();
       }
@@ -26,17 +26,17 @@ namespace adiar
     }
 
   public:
-    static inline tuple resolve_request(const bool_op &/* op */, ptr_t r1, ptr_t r2)
+    static inline tuple resolve_request(const bool_op &/* op */, ptr_uint64 r1, ptr_uint64 r2)
     {
-      adiar_debug(!is_nil(r1) && !is_nil(r2), "Resolve request is only used for tuple cases");
+      adiar_debug(!r1.is_nil() && !r2.is_nil(), "Resolve request is only used for tuple cases");
 
-      const ptr_t r_fst = fst(r1,r2);
-      ptr_t r_snd = snd(r1,r2);
+      const ptr_uint64 r_fst = fst(r1,r2);
+      ptr_uint64 r_snd = snd(r1,r2);
 
       // Has the second option fallen out, while the first is still within? Then
       // we can collapse back into the original ZDD.
-      if (is_node(r_fst) && is_false(r_snd)) {
-        r_snd = NIL;
+      if (r_fst.is_node() && r_snd.is_false()) {
+        r_snd = ptr_uint64::NIL();
       }
 
       return { r_fst, r_snd };

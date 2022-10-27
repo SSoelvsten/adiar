@@ -4,8 +4,8 @@ go_bandit([]() {
     {
       node_writer nw_0(x0_nf);
       nw_0 << node(0,MAX_ID,
-                          create_terminal_ptr(false),
-                          create_terminal_ptr(true));
+                          ptr_uint64(false),
+                          ptr_uint64(true));
     }
 
     zdd x0(x0_nf);
@@ -14,8 +14,8 @@ go_bandit([]() {
     {
       node_writer nw_1(x1_nf);
       nw_1 << node(1,MAX_ID,
-                          create_terminal_ptr(false),
-                          create_terminal_ptr(true));
+                          ptr_uint64(false),
+                          ptr_uint64(true));
     }
 
     zdd x1(x1_nf);
@@ -25,12 +25,12 @@ go_bandit([]() {
       node_writer nw_01(x0_or_x1_nf);
 
       nw_01 << node(1, MAX_ID,
-                           create_terminal_ptr(false),
-                           create_terminal_ptr(true));
+                           ptr_uint64(false),
+                           ptr_uint64(true));
 
       nw_01 << node(0, MAX_ID,
-                           create_node_ptr(1, MAX_ID),
-                           create_terminal_ptr(true));
+                           ptr_uint64(1, MAX_ID),
+                           ptr_uint64(true));
     }
 
     zdd x0_or_x1(x0_or_x1_nf);
@@ -78,11 +78,11 @@ go_bandit([]() {
 
       {
         arc_writer aw(af);
-        aw.unsafe_push_node(arc {create_node_ptr(0,0), create_node_ptr(1,0)});
+        aw.unsafe_push_node(arc {ptr_uint64(0,0), ptr_uint64(1,0)});
 
-        aw.unsafe_push_terminal(arc {flag(create_node_ptr(0,0)), create_terminal_ptr(true)});
-        aw.unsafe_push_terminal(arc {create_node_ptr(1,0), create_terminal_ptr(false)});
-        aw.unsafe_push_terminal(arc {flag(create_node_ptr(1,0)), create_terminal_ptr(true)});
+        aw.unsafe_push_terminal(arc {flag(ptr_uint64(0,0)), ptr_uint64(true)});
+        aw.unsafe_push_terminal(arc {ptr_uint64(1,0), ptr_uint64(false)});
+        aw.unsafe_push_terminal(arc {flag(ptr_uint64(1,0)), ptr_uint64(true)});
 
         aw.unsafe_push(create_level_info(0,1u));
         aw.unsafe_push(create_level_info(1,1u));
@@ -113,8 +113,8 @@ go_bandit([]() {
 
         { node_writer nw_0(x0_nf_2);
           nw_0 << node(0,MAX_ID,
-                              create_terminal_ptr(false),
-                              create_terminal_ptr(true));
+                              ptr_uint64(false),
+                              ptr_uint64(true));
         }
 
         zdd x0_2(x0_nf);
@@ -146,8 +146,8 @@ go_bandit([]() {
         node_file expected;
         {
           node_writer nw(expected);
-          nw << node(1,MAX_ID, create_terminal_ptr(false), create_terminal_ptr(true))
-             << node(0,MAX_ID, create_terminal_ptr(true), create_node_uid(1,MAX_ID));
+          nw << node(1,MAX_ID, ptr_uint64(false), ptr_uint64(true))
+             << node(0,MAX_ID, ptr_uint64(true), uid(1,MAX_ID));
         }
 
         AssertThat(~x0_or_x1 == zdd(expected), Is().True());
