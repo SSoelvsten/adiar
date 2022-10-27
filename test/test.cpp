@@ -47,15 +47,26 @@ public:
 
 namespace snowhouse
 {
-  std::string string_of_adiar_uid(adiar::uid_t p)
+  std::string string_of_adiar_ptr(adiar::ptr_uint64 p)
   {
     std::stringstream stream;
-    if (is_nil(p)) {
+    if (p.is_nil()) {
       stream << "NIL";
-    } else if (is_terminal(p)) {
-      stream << value_of(p);
-    } else { // is_node(p)
-      stream << "(x" << label_of(p) << ", " << id_of(p) << ")" ;
+    } else if (p.is_terminal()) {
+      stream << p.value();
+    } else { // p.is_node()
+      stream << "(x" << p.label() << ", " << p.id() << ")" ;
+    }
+    return stream.str();
+  }
+
+  std::string string_of_adiar_uid(adiar::uid u)
+  {
+    std::stringstream stream;
+    if (u.is_terminal()) {
+      stream << u.value();
+    } else { // u.is_node()
+      stream << "(x" << u.label() << ", " << u.id() << ")" ;
     }
     return stream.str();
   }
@@ -141,6 +152,7 @@ namespace snowhouse
 
 #include "adiar/internal/data_structures/test_levelized_priority_queue.cpp"
 
+#include "adiar/internal/data_types/test_ptr.cpp"
 #include "adiar/internal/data_types/test_uid.cpp"
 #include "adiar/internal/data_types/test_node.cpp"
 #include "adiar/internal/data_types/test_arc.cpp"

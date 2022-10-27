@@ -1,7 +1,7 @@
 go_bandit([]() {
   describe("adiar/bdd/if_then_else.cpp", []() {
-    ptr_t terminal_T = create_terminal_ptr(true);
-    ptr_t terminal_F = create_terminal_ptr(false);
+    ptr_uint64 terminal_T = ptr_uint64(true);
+    ptr_uint64 terminal_F = ptr_uint64(false);
 
     node_file bdd_F;
     node_file bdd_T;
@@ -38,12 +38,12 @@ go_bandit([]() {
       node_writer nw_x0_xor_x1(bdd_x0_xor_x1);
       nw_x0_xor_x1 << node(1,1,terminal_T,terminal_F)
                    << node(1,0,terminal_F,terminal_T)
-                   << node(0,0,create_node_uid(1,0),create_node_uid(1,1));
+                   << node(0,0,uid(1,0),uid(1,1));
 
       node_writer nw_x0_xor_x2(bdd_x0_xor_x2);
       nw_x0_xor_x2 << node(2,1,terminal_T,terminal_F)
                    << node(2,0,terminal_F,terminal_T)
-                   << node(0,0,create_node_uid(2,0),create_node_uid(2,1));
+                   << node(0,0,uid(2,0),uid(2,1));
     }
 
     node_file bdd_1;
@@ -63,11 +63,11 @@ go_bandit([]() {
       node_writer nw_1(bdd_1);
       nw_1 << node(3,0,terminal_F,terminal_T)                             // 7
            << node(2,2,terminal_F,terminal_T)                             // 6
-           << node(2,1,terminal_T,create_node_ptr(3,0))               // 5
-           << node(2,0,create_node_ptr(3,0),terminal_T)               // 4
-           << node(1,1,create_node_ptr(2,1),create_node_ptr(2,0)) // 3
-           << node(1,0,create_node_ptr(2,2),create_node_ptr(2,1)) // 2
-           << node(0,0,create_node_ptr(1,0),create_node_ptr(1,1)) // 1
+           << node(2,1,terminal_T,ptr_uint64(3,0))               // 5
+           << node(2,0,ptr_uint64(3,0),terminal_T)               // 4
+           << node(1,1,ptr_uint64(2,1),ptr_uint64(2,0)) // 3
+           << node(1,0,ptr_uint64(2,2),ptr_uint64(2,1)) // 2
+           << node(0,0,ptr_uint64(1,0),ptr_uint64(1,1)) // 1
         ;
     }
 
@@ -90,11 +90,11 @@ go_bandit([]() {
            << node(3,0,terminal_T,terminal_F)                              // 8
            << node(2,3,terminal_F,terminal_T)                              // 7
            << node(2,2,terminal_T,terminal_F)                              // 6
-           << node(2,1,terminal_F,create_node_ptr(3,1))                // 5
-           << node(2,0,terminal_F,create_node_ptr(3,0))                // 4
-           << node(1,1,create_node_ptr(2,2),create_node_ptr(2,3))  // 3
-           << node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))  // 2
-           << node(0,0,create_node_ptr(1,0),create_node_ptr(1,1))  // 1
+           << node(2,1,terminal_F,ptr_uint64(3,1))                // 5
+           << node(2,0,terminal_F,ptr_uint64(3,0))                // 4
+           << node(1,1,ptr_uint64(2,2),ptr_uint64(2,3))  // 3
+           << node(1,0,ptr_uint64(2,0),ptr_uint64(2,1))  // 2
+           << node(0,0,ptr_uint64(1,0),ptr_uint64(1,1))  // 1
         ;
     }
 
@@ -115,10 +115,10 @@ go_bandit([]() {
       node_writer nw_3(bdd_3);
       nw_3 << node(3,0,terminal_F,terminal_T)                             // 6
            << node(2,2,terminal_F,terminal_T)                             // 5
-           << node(2,1,terminal_F,create_node_ptr(3,0))               // 4
+           << node(2,1,terminal_F,ptr_uint64(3,0))               // 4
            << node(2,0,terminal_T,terminal_F)                             // 3
-           << node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
-           << node(0,0,create_node_ptr(1,0),create_node_ptr(2,2)) // 1
+           << node(1,0,ptr_uint64(2,0),ptr_uint64(2,1)) // 2
+           << node(0,0,ptr_uint64(1,0),ptr_uint64(2,2)) // 1
         ;
     }
 
@@ -138,11 +138,11 @@ go_bandit([]() {
       node_writer nw_4(bdd_4);
       nw_4 << node(3,1,terminal_F,terminal_T)                             // 7
            << node(3,0,terminal_T,terminal_F)                             // 6
-           << node(2,2,terminal_F,create_node_ptr(3,1))               // 5
-           << node(2,1,create_node_ptr(3,0),terminal_T)               // 4
+           << node(2,2,terminal_F,ptr_uint64(3,1))               // 5
+           << node(2,1,ptr_uint64(3,0),terminal_T)               // 4
            << node(2,0,terminal_T,terminal_F)                             // 3
-           << node(1,0,create_node_ptr(2,1),create_node_ptr(2,2)) // 2
-           << node(0,0,create_node_ptr(1,0),create_node_ptr(2,0)) // 1
+           << node(1,0,ptr_uint64(2,1),ptr_uint64(2,2)) // 2
+           << node(0,0,ptr_uint64(1,0),ptr_uint64(2,0)) // 1
         ;
     }
 
@@ -161,11 +161,11 @@ go_bandit([]() {
     { // Garbage collect writers to free write-lock
       node_writer nw_5(bdd_5);
       nw_5 << node(3,0,terminal_T,terminal_F)                             // 6
-           << node(2,2,terminal_F,create_node_ptr(3,0))               // 5
+           << node(2,2,terminal_F,ptr_uint64(3,0))               // 5
            << node(2,1,terminal_F,terminal_T)                             // 4
            << node(2,0,terminal_T,terminal_F)                             // 3
-           << node(1,0,create_node_ptr(2,2),create_node_ptr(2,0)) // 2
-           << node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
+           << node(1,0,ptr_uint64(2,2),ptr_uint64(2,0)) // 2
+           << node(0,0,ptr_uint64(1,0),ptr_uint64(2,1)) // 1
         ;
     }
 
@@ -184,8 +184,8 @@ go_bandit([]() {
       node_writer nw_6(bdd_6);
       nw_6 << node(2,1,terminal_T,terminal_F)
            << node(2,0,terminal_F,terminal_T)
-           << node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))
-           << node(0,0,terminal_F,create_node_ptr(1,0))
+           << node(1,0,ptr_uint64(2,0),ptr_uint64(2,1))
+           << node(0,0,terminal_F,ptr_uint64(1,0))
         ;
     }
 
@@ -204,8 +204,8 @@ go_bandit([]() {
       node_writer nw_not_6(bdd_not_6);
       nw_not_6 << node(2,1,terminal_F,terminal_T)
                << node(2,0,terminal_T,terminal_F)
-               << node(1,0,create_node_ptr(2,0),create_node_ptr(2,1))
-               << node(0,0,terminal_T,create_node_ptr(1,0))
+               << node(1,0,ptr_uint64(2,0),ptr_uint64(2,1))
+               << node(0,0,terminal_T,ptr_uint64(1,0))
         ;
     }
 
@@ -225,10 +225,10 @@ go_bandit([]() {
     {
       node_writer nw_7(bdd_7);
       nw_7 << node(3,0,terminal_F,terminal_T)                             // 5
-           << node(2,1,create_node_ptr(3,0),terminal_T)               // 4
-           << node(2,0,terminal_F,create_node_ptr(3,0))               // 3
-           << node(1,0,create_node_ptr(2,0),create_node_ptr(2,1)) // 2
-           << node(0,0,create_node_ptr(1,0),create_node_ptr(2,1)) // 1
+           << node(2,1,ptr_uint64(3,0),terminal_T)               // 4
+           << node(2,0,terminal_F,ptr_uint64(3,0))               // 3
+           << node(1,0,ptr_uint64(2,0),ptr_uint64(2,1)) // 2
+           << node(0,0,ptr_uint64(1,0),ptr_uint64(2,1)) // 1
         ;
     }
 
@@ -247,9 +247,9 @@ go_bandit([]() {
     {
       node_writer nw_8(bdd_8);
       nw_8 << node(3,0,terminal_T,terminal_F)                             // 4
-           << node(2,0,terminal_T,create_node_ptr(3,0))               // 3
-           << node(1,0,create_node_ptr(2,0),create_node_ptr(3,0)) // 2
-           << node(0,0,create_node_ptr(1,0),create_node_ptr(3,0)) // 1
+           << node(2,0,terminal_T,ptr_uint64(3,0))               // 3
+           << node(1,0,ptr_uint64(2,0),ptr_uint64(3,0)) // 2
+           << node(0,0,ptr_uint64(1,0),ptr_uint64(3,0)) // 1
         ;
     }
 
@@ -310,26 +310,26 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -355,26 +355,26 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -400,20 +400,20 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -439,20 +439,20 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -478,20 +478,20 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -517,20 +517,20 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -556,20 +556,20 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -595,20 +595,20 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -634,20 +634,20 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -673,20 +673,20 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -723,26 +723,26 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -777,26 +777,26 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -831,26 +831,26 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -878,7 +878,7 @@ go_bandit([]() {
           node_writer nw_x0_xnor_x1(bdd_x0_xnor_x1);
           nw_x0_xnor_x1 << node(1,1,terminal_T,terminal_F)
                         << node(1,0,terminal_F,terminal_T)
-                        << node(0,0,create_node_uid(1,1),create_node_uid(1,0));
+                        << node(0,0,uid(1,1),uid(1,0));
         }
 
         /*
@@ -899,34 +899,34 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True()); // ((2,0),(1,0),(1,1))
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // ((2,0),(1,1),(1,0))
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // ((2,0),F,T)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // ((2,0),T,F)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,1) }));
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), ptr_uint64(2,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // ((2,0),F,T)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // ((2,0),T,F)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -972,7 +972,7 @@ go_bandit([]() {
         {
           node_writer nw_x1_and_x2(bdd_x1_and_x2);
           nw_x1_and_x2 << node(2,1,terminal_F,terminal_T)
-                      << node(1,0,terminal_F,create_node_ptr(2,1));
+                      << node(1,0,terminal_F,ptr_uint64(2,1));
         }
 
         /*
@@ -1011,62 +1011,62 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,1,2)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,1,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,2,4)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,2,5)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,F,5)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), create_node_ptr(2,2) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), ptr_uint64(2,2) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,F,6)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,3) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,3) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,F,7)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), ptr_uint64(3,0) }));
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,2)), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,2)), ptr_uint64(3,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,F,T)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), create_node_ptr(3,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,1), ptr_uint64(3,1) }));
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,2), create_node_ptr(3,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,2), ptr_uint64(3,1) }));
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,3)), create_node_ptr(3,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,3)), ptr_uint64(3,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,T,7)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(3,2) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), ptr_uint64(3,2) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (1,2,4)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (1,F,6)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,3), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,3), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (1,F,7)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (1,F,T)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (1,T,7)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,2), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,2), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,2)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,2)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -1121,52 +1121,52 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,2,2)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,4,5)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (4,5,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (5,3,4)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,2) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(2,2) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,6)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), ptr_uint64(3,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (T,6,_)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), create_node_ptr(3,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), ptr_uint64(3,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (6,7,F)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(3,2) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), ptr_uint64(3,2) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (4,5,3)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (5,3,4)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,2), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,2), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,2)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,2)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,6)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (T,6,_)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (6,7,F)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,2), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,2), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,2)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,2)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -1220,30 +1220,30 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,2,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,3,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (4,4,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (1,1,1)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (3,3,3)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (4,4,3)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -1295,30 +1295,30 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,3,2)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,3,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (4,3,4)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (1,1,1)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (3,3,3)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (4,4,3)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -1354,7 +1354,7 @@ go_bandit([]() {
           node_writer nw_x0_xnor_x2(bdd_x0_xnor_x2);
           nw_x0_xnor_x2 << node(2,1,terminal_T,terminal_F)                              // 3
                         << node(2,0,terminal_F,terminal_T)                              // 2
-                        << node(0,0,create_node_uid(2,1),create_node_uid(2,0)); // 1
+                        << node(0,0,uid(2,1),uid(2,0)); // 1
         }
 
         /*
@@ -1386,52 +1386,52 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,1,2)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,1,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,1,4)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,1,5)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), ptr_uint64(2,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,1,5)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,2) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,2) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,1,6)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,3) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,3) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,7)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), ptr_uint64(3,0) }));
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,2)), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,2)), ptr_uint64(3,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (2,1,4)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (2,1,5)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (3,1,5)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,2), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,2), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (3,1,6)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,3), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,3), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,3)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,3)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,7)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -1471,7 +1471,7 @@ go_bandit([]() {
           node_writer nw_x1_xor_x2(bdd_x1_xor_x2_2);
           nw_x1_xor_x2 << node(2,1,terminal_F,terminal_T)                              // 3
                       << node(2,0,terminal_T,terminal_F)                              // 2
-                      << node(1,0,create_node_uid(2,1),create_node_uid(2,0)); // 1
+                      << node(1,0,uid(2,1),uid(2,0)); // 1
         }
 
         /*
@@ -1494,58 +1494,58 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,2,2)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (1,3,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,5,5)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,5,6)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), ptr_uint64(2,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,6,4)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,2) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,2) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,4,7)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), create_node_ptr(2,3) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), ptr_uint64(2,3) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (T,7,_)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), ptr_uint64(3,0) }));
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,3), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,3), ptr_uint64(3,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,9)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), ptr_uint64(3,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (2,5,5)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (3,5,6)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (3,6,4)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,2), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,2), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,2)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,2)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (2,4,7)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,3)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,3)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (T,7,_)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,9)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,1), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -1586,8 +1586,8 @@ go_bandit([]() {
         {
           node_writer nw_if(bdd_if);
           nw_if << node(2,0,terminal_F,terminal_T)                // 3
-                << node(1,0,create_node_uid(2,0),terminal_F)  // 2
-                << node(0,0,create_node_uid(1,0),terminal_F); // 1
+                << node(1,0,uid(2,0),terminal_F)  // 2
+                << node(0,0,uid(1,0),terminal_F); // 1
         }
 
         /*
@@ -1611,52 +1611,52 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,2,2)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,4,4)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,5)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,2) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,2) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,6)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,1), ptr_uint64(3,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (T,8,_)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(3,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), ptr_uint64(3,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,7)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,2)), create_node_ptr(3,2) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,2)), ptr_uint64(3,2) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,3)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,5)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,2), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,2), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,6)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (T,8,_)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,7)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,2), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,2), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,2)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,2)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -1696,8 +1696,8 @@ go_bandit([]() {
         {
           node_writer nw_if(bdd_if);
           nw_if << node(2,0,terminal_F,terminal_T)               // 3
-                << node(1,0,terminal_F,create_node_ptr(2,0)) // 2
-                << node(0,0,create_node_ptr(1,0),terminal_T) // 1
+                << node(1,0,terminal_F,ptr_uint64(2,0)) // 2
+                << node(0,0,ptr_uint64(1,0),terminal_T) // 1
             ;
         }
 
@@ -1719,40 +1719,40 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,2,2)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,4,4)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,5)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), ptr_uint64(3,0) }));
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,1), ptr_uint64(3,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (T,4,_)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(3,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(3,1) }));
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(3,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), ptr_uint64(3,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,3)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,5)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (T,4,_)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -1797,58 +1797,58 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,2)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (2,3,3)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,4)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,5)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (3,3,6)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), create_node_ptr(2,2) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), ptr_uint64(2,2) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (4,3,7)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), create_node_ptr(2,3) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), ptr_uint64(2,3) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,8)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), create_node_ptr(3,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), ptr_uint64(3,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True()); // (F,_,9)
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,1)), create_node_ptr(3,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), ptr_uint64(3,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,4)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,5)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,1), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (3,3,6)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,2), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,2), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,2)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,2)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (4,3,7)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,3), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,3), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,3)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,3)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,8)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,0), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_T }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True()); // (F,_,9)
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(3,1), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_F }));
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(3,1)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_T }));
 
         level_info_test_stream<arc_t> level_info(out);
 
@@ -1887,7 +1887,7 @@ go_bandit([]() {
         {
           node_writer nw_x1_and_x3(bdd_x1_and_x3);
           nw_x1_and_x3 << node(3,42,terminal_F,terminal_T)                // 2
-                       << node(1,0,terminal_F,create_node_uid(3,42)); // 1
+                       << node(1,0,terminal_F,uid(3,42)); // 1
         }
 
         __bdd out = bdd_ite(bdd_x0, bdd_x2, bdd_x1_and_x3);
@@ -1908,12 +1908,12 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1,0,
                                                        terminal_F,
-                                                       create_node_ptr(3,42))));
+                                                       ptr_uint64(3,42))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0,0,
-                                                       create_node_ptr(1,0),
-                                                       create_node_ptr(2,0))));
+                                                       ptr_uint64(1,0),
+                                                       ptr_uint64(2,0))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1964,11 +1964,11 @@ go_bandit([]() {
         {
           node_writer nw_then(bdd_then);
           nw_then << node(6,1,terminal_T,terminal_F)                              // 6
-                  << node(4,1,terminal_T,create_node_ptr(6,1))                // 5
+                  << node(4,1,terminal_T,ptr_uint64(6,1))                // 5
                   << node(4,0,terminal_F,terminal_T)                              // 4
-                  << node(3,2,terminal_T,create_node_ptr(4,1))                // 3
-                  << node(3,0,terminal_T,create_node_ptr(4,0))                // 2
-                  << node(2,0,create_node_ptr(3,0),create_node_uid(3,2)); // 1
+                  << node(3,2,terminal_T,ptr_uint64(4,1))                // 3
+                  << node(3,0,terminal_T,ptr_uint64(4,0))                // 2
+                  << node(2,0,ptr_uint64(3,0),uid(3,2)); // 1
         }
 
         node_file bdd_else;
@@ -1984,7 +1984,7 @@ go_bandit([]() {
           node_writer nw_else(bdd_else);
           nw_else << node(8,1,terminal_T,terminal_F)                             // 3
                   << node(8,0,terminal_F,terminal_T)                             // 2
-                  << node(5,0,create_node_ptr(8,0),create_node_ptr(8,1)) // 1
+                  << node(5,0,ptr_uint64(8,0),ptr_uint64(8,1)) // 1
             ;
         }
 
@@ -2010,13 +2010,13 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5,0,
-                                                       create_node_ptr(8,0),
-                                                       create_node_ptr(8,1))));
+                                                       ptr_uint64(8,0),
+                                                       ptr_uint64(8,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4,1,
                                                        terminal_T,
-                                                       create_node_ptr(6,1))));
+                                                       ptr_uint64(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4,0,
@@ -2026,32 +2026,32 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3,2,
                                                        terminal_T,
-                                                       create_node_ptr(4,1))));
+                                                       ptr_uint64(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3,0,
                                                        terminal_T,
-                                                       create_node_ptr(4,0))));
+                                                       ptr_uint64(4,0))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2,0,
-                                                       create_node_ptr(3,0),
-                                                       create_node_ptr(3,2))));
+                                                       ptr_uint64(3,0),
+                                                       ptr_uint64(3,2))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1,1,
-                                                       create_node_ptr(5,0),
-                                                       create_node_ptr(2,0))));
+                                                       ptr_uint64(5,0),
+                                                       ptr_uint64(2,0))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1,0,
-                                                       create_node_ptr(2,0),
-                                                       create_node_ptr(5,0))));
+                                                       ptr_uint64(2,0),
+                                                       ptr_uint64(5,0))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0,0,
-                                                       create_node_ptr(1,0),
-                                                       create_node_ptr(1,1))));
+                                                       ptr_uint64(1,0),
+                                                       ptr_uint64(1,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -2150,7 +2150,7 @@ go_bandit([]() {
           node_writer nw_b(bdd_b);
           nw_b << node(3,MAX_ID,   terminal_F, terminal_T)
               << node(3,MAX_ID-1, terminal_T, terminal_F)
-              << node(1,MAX_ID,   create_node_ptr(3,MAX_ID), create_node_ptr(3,MAX_ID));
+              << node(1,MAX_ID,   ptr_uint64(3,MAX_ID), ptr_uint64(3,MAX_ID));
         }
         AssertThat(is_canonical(bdd_b), Is().True());
 
@@ -2180,7 +2180,7 @@ go_bandit([]() {
           node_writer nw_if(bdd_if);
           nw_if << node(1,MAX_ID,   terminal_T,                      terminal_T)
                 << node(1,MAX_ID-1, terminal_F,                      terminal_F)
-                << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID));
+                << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID));
         }
 
         node_file bdd_a;
@@ -2211,32 +2211,32 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 
@@ -2265,32 +2265,32 @@ go_bandit([]() {
         node_arc_test_stream node_arcs(out);
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { create_node_ptr(0,0), create_node_ptr(1,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(0,0)), create_node_ptr(1,1) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,0)), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().True());
-        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(1,1)), create_node_ptr(2,0) }));
+        AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), ptr_uint64(2,0) }));
 
         AssertThat(node_arcs.can_pull(), Is().False());
 
         terminal_arc_test_stream terminal_arcs(out);
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(1,1), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(1,1), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { create_node_ptr(2,0), terminal_F }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
 
         AssertThat(terminal_arcs.can_pull(), Is().True());
-        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(create_node_ptr(2,0)), terminal_T }));
+        AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
 
         AssertThat(terminal_arcs.can_pull(), Is().False());
 

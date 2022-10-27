@@ -48,21 +48,21 @@ namespace adiar
     // shortcutting in branch-prediction probably offsets this?
     static intercut_rec_output hit_existing(const node_t &n)
     {
-      const ptr_t low = is_terminal(n.low()) ? negate(n.low()) : n.low();
-      const ptr_t high = is_terminal(n.high()) ? negate(n.high()) : n.high();
+      const ptr_uint64 low = n.low().is_terminal() ? negate(n.low()) : n.low();
+      const ptr_uint64 high = n.high().is_terminal() ? negate(n.high()) : n.high();
 
       return intercut_rec_output { low, high };
     }
 
-    static intercut_rec_output hit_cut(const ptr_t target)
+    static intercut_rec_output hit_cut(const ptr_uint64 target)
     {
       // T chain: We are definitely outside of the given set
-      if (is_true(target)) {
+      if (target.is_true()) {
         return intercut_rec_output { target, target };
       }
 
       // Otherwise, check whether this variable is true and so we move to the T chain
-      return intercut_rec_output { target, create_terminal_ptr(true) };
+      return intercut_rec_output { target, ptr_uint64(true) };
     }
 
     // LCOV_EXCL_START

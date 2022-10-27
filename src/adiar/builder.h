@@ -58,7 +58,7 @@ namespace adiar {
     ///////////////////////////////////////////////////////////////////////////////
     /// \brief The unique identifier of a prior node.
     ///////////////////////////////////////////////////////////////////////////////
-    // TODO: rename to 'ptr_t ptr' when using complement edges
+    // TODO: rename to 'ptr ptr' when using complement edges
     /*const*/ uid_t uid;
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -195,10 +195,10 @@ namespace adiar {
       if(label > current_label) {
         throw std::invalid_argument("Nodes must be added bottom-up");
       }
-      if(is_node(low.uid) && label_of(low.uid) <= label) {
+      if(low.uid.is_node() && low.uid.label() <= label) {
         throw std::invalid_argument("Low child must point to a node with higher label");
       }
-      if(is_node(high.uid) && label_of(high.uid) <= label) {
+      if(high.uid.is_node() && high.uid.label() <= label) {
         throw std::invalid_argument("High child must point to a node with higher label");
       }
 
@@ -214,9 +214,9 @@ namespace adiar {
       // Check whether this node is 'redundant'
       const uid_t res_uid = dd_policy::reduction_rule(n);
 
-      if (is_terminal(res_uid)) {
+      if (res_uid.is_terminal()) {
         created_terminal = true;
-        terminal_val = value_of(res_uid);
+        terminal_val = res_uid.value();
       }
 
       if(res_uid == low.uid) { return low; }
@@ -229,13 +229,13 @@ namespace adiar {
 
       // Update count of unreferenced nodes
       bool& low_unref = *low.unreferenced;
-      if(low_unref && !is_terminal(low.uid)) {
+      if(low_unref && !low.uid.is_terminal()) {
         low_unref = false;
         unref_nodes--;
       }
 
       bool& high_unref = *high.unreferenced;
-      if(high_unref && !is_terminal(high.uid)) {
+      if(high_unref && !high.uid.is_terminal()) {
         high_unref = false;
         unref_nodes--;
       }
@@ -264,7 +264,7 @@ namespace adiar {
                                     const bool low,
                                     const builder_ptr<dd_policy> &high)
     {
-      builder_ptr<dd_policy> low_ptr = make_ptr(create_terminal_ptr(low));
+      builder_ptr<dd_policy> low_ptr = make_ptr(ptr_uint64(low));
       return add_node(label, low_ptr, high);
     }
 
@@ -289,7 +289,7 @@ namespace adiar {
                                     const builder_ptr<dd_policy> &low,
                                     const bool high)
     {
-      builder_ptr<dd_policy> high_ptr = make_ptr(create_terminal_ptr(high));
+      builder_ptr<dd_policy> high_ptr = make_ptr(ptr_uint64(high));
       return add_node(label, low, high_ptr);
     }
 
@@ -313,8 +313,8 @@ namespace adiar {
                                     const bool low,
                                     const bool high)
     {
-      builder_ptr<dd_policy> low_ptr = make_ptr(create_terminal_ptr(low));
-      builder_ptr<dd_policy> high_ptr = make_ptr(create_terminal_ptr(high));
+      builder_ptr<dd_policy> low_ptr = make_ptr(ptr_uint64(low));
+      builder_ptr<dd_policy> high_ptr = make_ptr(ptr_uint64(high));
       return add_node(label, low_ptr, high_ptr);
     }
 
@@ -332,7 +332,7 @@ namespace adiar {
       created_terminal = true;
       terminal_val = terminal_value;
 
-      return make_ptr(create_terminal_ptr(terminal_value));
+      return make_ptr(ptr_uint64(terminal_value));
     }
 
     /////////////////////////////////////////////////////////////////////////////
@@ -404,7 +404,7 @@ namespace adiar {
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Create a builder_ptr with 'this' builder as its parent.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> make_ptr(const ptr_t p) noexcept
+    builder_ptr<dd_policy> make_ptr(const ptr_uint64 p) noexcept
     {
       return builder_ptr<dd_policy>(p, builder_ref);
     }

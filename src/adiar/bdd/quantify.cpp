@@ -21,27 +21,27 @@ namespace adiar
   public:
     static __bdd resolve_terminal_root(const node_t v, const bool_op &op)
     {
-      if (is_terminal(v.low()) && can_left_shortcut(op, v.low())) {
-        return bdd_terminal(value_of(v.low()));
+      if (v.low().is_terminal() && can_left_shortcut(op, v.low())) {
+        return bdd_terminal(v.low().value());
       }
 
-      if (is_terminal(v.high()) && can_right_shortcut(op, v.high())) {
-        return bdd_terminal(value_of(v.high()));
+      if (v.high().is_terminal() && can_right_shortcut(op, v.high())) {
+        return bdd_terminal(v.high().value());
       }
 
       return __bdd(); // return nothing
     }
 
   public:
-    static tuple resolve_request(const bool_op &op, ptr_t r1, ptr_t r2)
+    static tuple resolve_request(const bool_op &op, ptr_uint64 r1, ptr_uint64 r2)
     {
-      adiar_debug(!is_nil(r1) && !is_nil(r2), "Resolve request is only used for tuple cases");
+      adiar_debug(!r1.is_nil() && !r2.is_nil(), "Resolve request is only used for tuple cases");
 
-      ptr_t r_fst = fst(r1,r2);
-      ptr_t r_snd = snd(r1,r2);
+      ptr_uint64 r_fst = fst(r1,r2);
+      ptr_uint64 r_snd = snd(r1,r2);
 
-      if (is_terminal(r_snd) && can_right_shortcut(op, r_snd)) {
-        r_fst = create_terminal_ptr(false);
+      if (r_snd.is_terminal() && can_right_shortcut(op, r_snd)) {
+        r_fst = ptr_uint64(false);
       }
 
       return { r_fst, r_snd };
@@ -50,8 +50,8 @@ namespace adiar
   public:
     static cut_type cut_with_terminals(const bool_op &op)
     {
-      const bool incl_false = !can_right_shortcut(op, create_terminal_ptr(false));
-      const bool incl_true = !can_right_shortcut(op, create_terminal_ptr(true));
+      const bool incl_false = !can_right_shortcut(op, ptr_uint64(false));
+      const bool incl_true = !can_right_shortcut(op, ptr_uint64(true));
 
       return cut_type_with(incl_false, incl_true);
     }

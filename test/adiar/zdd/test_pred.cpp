@@ -1,7 +1,7 @@
 go_bandit([]() {
   describe("adiar/zdd/pred.cpp", [&]() {
-    ptr_t terminal_T = create_terminal_ptr(true);
-    ptr_t terminal_F = create_terminal_ptr(false);
+    ptr_uint64 terminal_T = ptr_uint64(true);
+    ptr_uint64 terminal_F = ptr_uint64(false);
 
     // Ø
     node_file zdd_empty_nf;
@@ -40,7 +40,7 @@ go_bandit([]() {
     node_file zdd_B_nf;
     { node_writer nw(zdd_B_nf);
       nw << node(2,MAX_ID, terminal_T, terminal_T)
-         << node(1,MAX_ID, terminal_F, create_node_ptr(2,MAX_ID))
+         << node(1,MAX_ID, terminal_F, ptr_uint64(2,MAX_ID))
         ;
     }
 
@@ -48,14 +48,14 @@ go_bandit([]() {
     node_file zdd_C_nf;
     { node_writer nw(zdd_C_nf);
       nw << node(2,MAX_ID, terminal_T,                    terminal_T)
-         << node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))
+         << node(1,MAX_ID, ptr_uint64(2,MAX_ID), ptr_uint64(2,MAX_ID))
         ;
     }
 
     node_file zdd_C_nf_copy;
     { node_writer nw(zdd_C_nf_copy);
       nw << node(2,MAX_ID, terminal_T,                    terminal_T)
-         << node(1,MAX_ID, create_node_ptr(2,MAX_ID), create_node_ptr(2,MAX_ID))
+         << node(1,MAX_ID, ptr_uint64(2,MAX_ID), ptr_uint64(2,MAX_ID))
         ;
     }
 
@@ -64,9 +64,9 @@ go_bandit([]() {
     { node_writer nw(zdd_D_nf);
       nw << node(3,MAX_ID,   terminal_F,                      terminal_T)
          << node(2,MAX_ID,   terminal_T,                      terminal_T)
-         << node(1,MAX_ID,   terminal_F,                      create_node_ptr(3,MAX_ID))
-         << node(1,MAX_ID-1, terminal_F,                      create_node_ptr(2,MAX_ID))
-         << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID))
+         << node(1,MAX_ID,   terminal_F,                      ptr_uint64(3,MAX_ID))
+         << node(1,MAX_ID-1, terminal_F,                      ptr_uint64(2,MAX_ID))
+         << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID))
         ;
     }
 
@@ -74,9 +74,9 @@ go_bandit([]() {
     { node_writer nw(zdd_D_nf_copy);
       nw << node(3,MAX_ID,   terminal_F,                      terminal_T)
          << node(2,MAX_ID,   terminal_T,                      terminal_T)
-         << node(1,MAX_ID,   terminal_F,                      create_node_ptr(3,MAX_ID))
-         << node(1,MAX_ID-1, terminal_F,                      create_node_ptr(2,MAX_ID))
-         << node(0,MAX_ID,   create_node_ptr(1,MAX_ID-1), create_node_ptr(1,MAX_ID))
+         << node(1,MAX_ID,   terminal_F,                      ptr_uint64(3,MAX_ID))
+         << node(1,MAX_ID-1, terminal_F,                      ptr_uint64(2,MAX_ID))
+         << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID))
         ;
     }
 
@@ -84,14 +84,14 @@ go_bandit([]() {
     node_file zdd_E_nf;
     { node_writer nw(zdd_E_nf);
       nw << node(3,MAX_ID, terminal_F, terminal_T)
-         << node(0,MAX_ID, terminal_T, create_node_ptr(3,MAX_ID))
+         << node(0,MAX_ID, terminal_T, ptr_uint64(3,MAX_ID))
         ;
     }
 
     node_file zdd_E_nf_copy;
     { node_writer nw(zdd_E_nf_copy);
       nw << node(3,MAX_ID, terminal_F, terminal_T)
-         << node(0,MAX_ID, terminal_T, create_node_ptr(3,MAX_ID))
+         << node(0,MAX_ID, terminal_T, ptr_uint64(3,MAX_ID))
         ;
     }
 

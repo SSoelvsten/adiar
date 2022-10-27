@@ -19,21 +19,21 @@ namespace adiar
     typedef __zdd unreduced_t;
 
   public:
-    static inline ptr_t reduction_rule(const node_t &n)
+    static inline ptr_uint64 reduction_rule(const node_t &n)
     {
-      if (is_false(n.high())) { return n.low(); }
+      if (n.high().is_false()) { return n.low(); }
       return n.uid();
     }
 
-    static inline tuple reduction_rule_inv(const ptr_t &child)
+    static inline tuple reduction_rule_inv(const ptr_uint64 &child)
     {
-      return { child, create_terminal_ptr(false) };
+      return { child, ptr_uint64(false) };
     }
 
   public:
-    static inline void compute_cofactor(bool on_curr_level, ptr_t &, ptr_t &high)
+    static inline void compute_cofactor(bool on_curr_level, ptr_uint64 &, ptr_uint64 &high)
     {
-      if (!on_curr_level) { high = create_terminal_ptr(false); }
+      if (!on_curr_level) { high = ptr_uint64(false); }
     }
   };
 }

@@ -34,8 +34,8 @@ go_bandit([]() {
       AssertThat(zdd_contains(zdd_T, labels), Is().False());
     });
 
-    const ptr_t terminal_F = create_terminal_ptr(false);
-    const ptr_t terminal_T = create_terminal_ptr(true);
+    const ptr_uint64 terminal_F = ptr_uint64(false);
+    const ptr_uint64 terminal_T = ptr_uint64(true);
 
     node_file zdd_x0;
     // { { 0 } }

@@ -1,24 +1,24 @@
 go_bandit([]() {
     describe("adiar/internal/data_types/node.h", []() {
         describe("node_t", [&]() {
-            const ptr_t terminal_F = create_terminal_ptr(false);
-            const ptr_t terminal_T = create_terminal_ptr(true);
+            const ptr_uint64 terminal_F = ptr_uint64(false);
+            const ptr_uint64 terminal_T = ptr_uint64(true);
 
             it("should be a POD", [&]() {
                 AssertThat(std::is_pod<node>::value, Is().True());
               });
 
             it("should take up 24 bytes of memory", [&]() {
-                const ptr_t node_ptr = create_node_ptr(42,2);
+                const ptr_uint64 node_ptr = ptr_uint64(42,2);
                 const node_t n = node(1u,8u, node_ptr, terminal_F);
 
                 AssertThat(sizeof(n), Is().EqualTo(3u * 8u));
               });
 
             describe("create_node, label_of, id_of", [&]() {
-                it("should create node [label_t, id_t, ptr_t, ptr_t] [1]", [&]() {
+                it("should create node [label_t, id_t, ptr_uint64, ptr_uint64] [1]", [&]() {
                     const node_t n1 = node(3u,12u, terminal_F, terminal_T);
-                    AssertThat(n1.uid(), Is().EqualTo(create_node_ptr(3,12)));
+                    AssertThat(n1.uid(), Is().EqualTo(ptr_uint64(3,12)));
                     AssertThat(n1.label(), Is().EqualTo(3u));
                     AssertThat(n1.id(), Is().EqualTo(12u));
 
@@ -26,9 +26,9 @@ go_bandit([]() {
                     AssertThat(n1.high(), Is().EqualTo(terminal_T));
                   });
 
-                it("should create node [label_t, id_t, ptr_t, ptr_t] [2]", [&]() {
+                it("should create node [label_t, id_t, ptr_uint64, ptr_uint64] [2]", [&]() {
                     const node_t n2 = node(3u,42u, terminal_T, terminal_F);
-                    AssertThat(n2.uid(), Is().EqualTo(create_node_ptr(3,42)));
+                    AssertThat(n2.uid(), Is().EqualTo(ptr_uint64(3,42)));
                     AssertThat(n2.label(), Is().EqualTo(3u));
                     AssertThat(n2.id(), Is().EqualTo(42u));
 
@@ -41,7 +41,7 @@ go_bandit([]() {
                     const node_t n_child2 = node(3u,42u, terminal_T, terminal_F);
 
                     const node_t n = node(2,2, n_child1, n_child2);
-                    AssertThat(n.uid(), Is().EqualTo(create_node_ptr(2,2)));
+                    AssertThat(n.uid(), Is().EqualTo(ptr_uint64(2,2)));
                     AssertThat(n.label(), Is().EqualTo(2u));
                     AssertThat(n.id(), Is().EqualTo(2u));
 
@@ -49,11 +49,11 @@ go_bandit([]() {
                     AssertThat(n.high(), Is().EqualTo(n_child2.uid()));
                   });
 
-                it("should create node [label_t, id_t, node_t&, ptr_t]", [&]() {
+                it("should create node [label_t, id_t, node_t&, ptr_uint64]", [&]() {
                     const node_t n_child = node(2u,2u, terminal_F, terminal_T);
 
                     const node_t n = node(1u,7u,terminal_T,n_child);
-                    AssertThat(n.uid(), Is().EqualTo(create_node_ptr(1,7)));
+                    AssertThat(n.uid(), Is().EqualTo(ptr_uint64(1,7)));
                     AssertThat(n.label(), Is().EqualTo(1u));
                     AssertThat(n.id(), Is().EqualTo(7u));
 
@@ -61,11 +61,11 @@ go_bandit([]() {
                     AssertThat(n.high(), Is().EqualTo(n_child.uid()));
                   });
 
-                it("should create node [label_t, id_t, ptr_t, node_t&]", [&]() {
+                it("should create node [label_t, id_t, ptr_uint64, node_t&]", [&]() {
                     const node_t n_child = node(2u,2u, terminal_F,terminal_T);
 
                     const node_t n = node(0u,3u, terminal_T,n_child);
-                    AssertThat(n.uid(), Is().EqualTo(create_node_ptr(0,3)));
+                    AssertThat(n.uid(), Is().EqualTo(ptr_uint64(0,3)));
                     AssertThat(n.label(), Is().EqualTo(0u));
                     AssertThat(n.id(), Is().EqualTo(3u));
 
@@ -130,12 +130,12 @@ go_bandit([]() {
                       });
 
                     it("rejects non-terminal nodes [2]", [&]() {
-                        const node_t almost_F_terminal = node(0u,0u, terminal_T, create_node_ptr(42,2));
+                        const node_t almost_F_terminal = node(0u,0u, terminal_T, ptr_uint64(42,2));
                         AssertThat(almost_F_terminal.is_terminal(), Is().False());
                       });
 
                     it("rejects non-terminal nodes [2]", [&]() {
-                        const node_t almost_T_terminal = node(0u,1u, terminal_T, create_node_ptr(42,2));
+                        const node_t almost_T_terminal = node(0u,1u, terminal_T, ptr_uint64(42,2));
                         AssertThat(almost_T_terminal.is_terminal(), Is().False());
                       });
                   });
@@ -160,7 +160,7 @@ go_bandit([]() {
                       });
 
                     it("rejects non-terminal nodes", [&]() {
-                        const node_t n = node(0,0, create_node_ptr(42,2), terminal_F);
+                        const node_t n = node(0,0, ptr_uint64(42,2), terminal_F);
                         AssertThat(n.is_false(), Is().False());
                       });
                   });
@@ -175,7 +175,7 @@ go_bandit([]() {
                       });
 
                     it("rejects non-terminal nodes", [&]() {
-                        const node_t n = node(0,1, terminal_T, create_node_ptr(2,3));
+                        const node_t n = node(0,1, terminal_T, ptr_uint64(2,3));
                         AssertThat(n.is_true(), Is().False());
                       });
                   });
@@ -183,15 +183,15 @@ go_bandit([]() {
 
             describe("negate (!)", [&]() {
                 it("should leave node_ptr children unchanged", [&]() {
-                    const node_t n = node(2u,2u, create_node_ptr(42,3), create_node_ptr(8,2));
+                    const node_t n = node(2u,2u, ptr_uint64(42,3), ptr_uint64(8,2));
 
                     AssertThat(!n, Is().EqualTo(n));
                   });
 
                 it("should negate terminal_ptr child", [&]() {
-                    const node_t n = node(2u,2u, terminal_F, create_node_ptr(8,2));
+                    const node_t n = node(2u,2u, terminal_F, ptr_uint64(8,2));
 
-                    AssertThat(!n, Is().EqualTo(node(2,2, terminal_T, create_node_ptr(8,2))));
+                    AssertThat(!n, Is().EqualTo(node(2,2, terminal_T, ptr_uint64(8,2))));
                   });
 
                 it("should negate terminal_ptr children while preserving flags", [&]() {

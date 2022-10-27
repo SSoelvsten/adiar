@@ -19,7 +19,7 @@ namespace adiar
     typedef __bdd unreduced_t;
 
   public:
-    static inline ptr_t reduction_rule(const node_t &n)
+    static inline ptr_uint64 reduction_rule(const node_t &n)
     {
       // If adding attributed edges, i.e. complement edges:
       //    remove the 'unflag' below. Currently, it removes any forwarding of
@@ -28,15 +28,15 @@ namespace adiar
       return n.uid();
     }
 
-    static inline tuple reduction_rule_inv(const ptr_t &child)
+    static inline tuple reduction_rule_inv(const ptr_uint64 &child)
     {
       return { child, child };
     }
 
   public:
     static inline void compute_cofactor(bool /* on_curr_level */,
-                                        ptr_t & /* low */,
-                                        ptr_t & /* high */)
+                                        ptr_uint64 & /* low */,
+                                        ptr_uint64 & /* high */)
     { /* do nothing */ }
   };
 }

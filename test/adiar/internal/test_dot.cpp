@@ -17,10 +17,10 @@ go_bandit([]() {
       { // Garbage collect writer early
         node_writer rw(reduced_bdd);
 
-        rw << node(42,1, create_terminal_ptr(false), create_terminal_ptr(true))
-           << node(42,0, create_terminal_ptr(true), create_terminal_ptr(false))
-           << node(1,2, create_node_ptr(42,0), create_node_ptr(42,1))
-           << node(0,1, create_node_ptr(1,2), create_terminal_ptr(false))
+        rw << node(42,1, ptr_uint64(false), ptr_uint64(true))
+           << node(42,0, ptr_uint64(true), ptr_uint64(false))
+           << node(1,2, ptr_uint64(42,0), ptr_uint64(42,1))
+           << node(0,1, ptr_uint64(1,2), ptr_uint64(false))
           ;
       }
 
@@ -58,9 +58,9 @@ go_bandit([]() {
       { // Garbage collect writer early
         node_writer rw(reduced_zdd);
 
-        rw << node(42,0, create_terminal_ptr(false), create_terminal_ptr(true))
-           << node(1,2, create_node_ptr(42,0), create_node_ptr(42,0))
-           << node(0,1, create_node_ptr(1,2), create_terminal_ptr(true))
+        rw << node(42,0, ptr_uint64(false), ptr_uint64(true))
+           << node(1,2, ptr_uint64(42,0), ptr_uint64(42,0))
+           << node(0,1, ptr_uint64(1,2), ptr_uint64(true))
           ;
       }
 
@@ -90,15 +90,15 @@ go_bandit([]() {
       { // Garbage collect writer early
         arc_writer uw(unreduced_bdd);
 
-        uw.unsafe_push_terminal({ flag(create_node_ptr(2,0)), create_terminal_ptr(true) });
-        uw.unsafe_push_terminal({ create_node_ptr(2,0), create_terminal_ptr(true) });
-        uw.unsafe_push_terminal({ create_node_ptr(1,1), create_terminal_ptr(true) });
+        uw.unsafe_push_terminal({ flag(ptr_uint64(2,0)), ptr_uint64(true) });
+        uw.unsafe_push_terminal({ ptr_uint64(2,0), ptr_uint64(true) });
+        uw.unsafe_push_terminal({ ptr_uint64(1,1), ptr_uint64(true) });
 
-        uw.unsafe_push_node({ create_node_ptr(0,0), create_node_ptr(1,0) });
-        uw.unsafe_push_node({ create_node_ptr(0,0), create_node_ptr(1,1) });
-        uw.unsafe_push_node({ create_node_ptr(1,0), create_node_ptr(2,0) });
-        uw.unsafe_push_node({ flag(create_node_ptr(1,0)), create_node_ptr(2,0) });
-        uw.unsafe_push_node({ flag(create_node_ptr(1,1)), create_node_ptr(2,0) });
+        uw.unsafe_push_node({ ptr_uint64(0,0), ptr_uint64(1,0) });
+        uw.unsafe_push_node({ ptr_uint64(0,0), ptr_uint64(1,1) });
+        uw.unsafe_push_node({ ptr_uint64(1,0), ptr_uint64(2,0) });
+        uw.unsafe_push_node({ flag(ptr_uint64(1,0)), ptr_uint64(2,0) });
+        uw.unsafe_push_node({ flag(ptr_uint64(1,1)), ptr_uint64(2,0) });
       }
 
       output_dot(unreduced_bdd, "dot_test_unreduced.dot");

@@ -108,11 +108,11 @@ namespace adiar
 
   public:
     template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, ptr_t r1, ptr_t r2)
+    static bool resolve_request(pq_1_t &pq, ptr_uint64 r1, ptr_uint64 r2)
     {
       // Are they both a terminal (and the same terminal)?
-      if (is_terminal(r1) || is_terminal(r2)) {
-        if (is_terminal(r1) && is_terminal(r2) && value_of(r1) == value_of(r2)) {
+      if (r1.is_terminal() || r2.is_terminal()) {
+        if (r1.is_terminal() && r2.is_terminal() && r1.value() == r2.value()) {
           return false;
         } else {
 #ifdef ADIAR_STATS
@@ -123,7 +123,7 @@ namespace adiar
       }
 
       // Do they NOT point to a node with the same level?
-      if (label_of(r1) != label_of(r2)) {
+      if (r1.label() != r2.label()) {
 #ifdef ADIAR_STATS
         stats_equality.slow_check.exit_on_children++;
 #endif
@@ -138,7 +138,7 @@ namespace adiar
   public:
     // Since we guarantee to be on the same level, then we merely provide a noop
     // (similar to the bdd_policy) for the cofactor.
-    static inline void compute_cofactor([[maybe_unused]] bool on_curr_level, ptr_t &, ptr_t &)
+    static inline void compute_cofactor([[maybe_unused]] bool on_curr_level, ptr_uint64 &, ptr_uint64 &)
     { adiar_invariant(on_curr_level, "No request have mixed levels"); }
 
   public:

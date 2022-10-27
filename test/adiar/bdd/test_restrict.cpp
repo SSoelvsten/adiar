@@ -12,8 +12,8 @@ go_bandit([]() {
                 F T
     */
 
-    ptr_t terminal_T = create_terminal_ptr(true);
-    ptr_t terminal_F = create_terminal_ptr(false);
+    ptr_uint64 terminal_T = ptr_uint64(true);
+    ptr_uint64 terminal_F = ptr_uint64(false);
 
     node_t n5 = node(3,0, terminal_F, terminal_T);
     node_t n4 = node(2,1, terminal_T, n5.uid());
@@ -461,8 +461,8 @@ go_bandit([]() {
                 / \
                 T F              * This arc will be resolved as the last one
       */
-      ptr_t terminal_T = create_terminal_ptr(true);
-      ptr_t terminal_F = create_terminal_ptr(false);
+      ptr_uint64 terminal_T = ptr_uint64(true);
+      ptr_uint64 terminal_F = ptr_uint64(false);
 
       node_file node_input;
 
@@ -537,8 +537,8 @@ go_bandit([]() {
                 / \ / \
                 T F F T          * Both these will be resolved out-of-order!
       */
-      ptr_t terminal_T = create_terminal_ptr(true);
-      ptr_t terminal_F = create_terminal_ptr(false);
+      ptr_uint64 terminal_T = ptr_uint64(true);
+      ptr_uint64 terminal_F = ptr_uint64(false);
 
       node_file node_input;
 

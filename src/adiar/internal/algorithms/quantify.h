@@ -27,12 +27,12 @@ namespace adiar
   // Data structures
   struct quantify_tuple : tuple
   {
-    ptr_t source;
+    ptr_uint64 source;
   };
 
   struct quantify_tuple_data : tuple_data
   {
-    ptr_t source;
+    ptr_uint64 source;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -83,15 +83,15 @@ namespace adiar
   inline void __quantify_resolve_request(pq_1_t &quantify_pq_1,
                                          arc_writer &aw,
                                          const bool_op &op,
-                                         const ptr_t source, ptr_t r1, ptr_t r2)
+                                         const ptr_uint64 source, ptr_uint64 r1, ptr_uint64 r2)
   {
-    adiar_debug(!is_nil(r1), "NIL should only ever end up being placed in r2");
+    adiar_debug(!r1.is_nil(), "ptr_uint64::NIL() should only ever end up being placed in r2");
 
     // Collapse requests to the same node back into one
-    if (is_node(r2) && r1 == r2) { r2 = NIL; }
+    if (r2.is_node() && r1 == r2) { r2 = ptr_uint64::NIL(); }
 
-    if (is_nil(r2)) {
-      if (is_terminal(r1)) {
+    if (r2.is_nil()) {
+      if (r1.is_terminal()) {
         aw.unsafe_push_terminal({ source, r1 });
       } else {
         quantify_pq_1.push({ r1, r2, source });
@@ -101,7 +101,7 @@ namespace adiar
       tuple rec = quantify_policy::resolve_request(op, r1, r2);
       adiar_debug(fst(rec) == rec.t1 && snd(rec) == rec.t2, "Request recursion should be created in-order");
 
-      if (is_terminal(rec.t1) /* && is_terminal(rec.t2) */) {
+      if (rec.t1.is_terminal() /* && rec.t2.is_terminal() */) {
         arc_t out_arc = { source, op(rec.t1, rec.t2) };
         aw.unsafe_push_terminal(out_arc);
       } else {
@@ -113,8 +113,8 @@ namespace adiar
   template<typename pq_1_t, typename pq_2_t>
   inline bool __quantify_update_source_or_break(pq_1_t &quantify_pq_1,
                                                 pq_2_t &quantify_pq_2,
-                                                ptr_t &source,
-                                                const ptr_t t1, const ptr_t t2)
+                                                ptr_uint64 &source,
+                                                const ptr_uint64 t1, const ptr_uint64 t2)
   {
     if (quantify_pq_1.can_pull() && quantify_pq_1.top().t1 == t1 && quantify_pq_1.top().t2 == t2) {
       source = quantify_pq_1.pull().source;
@@ -153,7 +153,7 @@ namespace adiar
     node_stream<> in_nodes(in);
     node_t v = in_nodes.pull();
 
-    if (v.label() == label && (is_terminal(v.low()) || is_terminal(v.high()))) {
+    if (v.label() == label && (v.low().is_terminal() || v.high().is_terminal())) {
       typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_terminal_root(v, op);
 
       if (!maybe_resolved.empty()) {
@@ -168,24 +168,24 @@ namespace adiar
     pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
     pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
-    label_t out_label = label_of(v.uid());
+    label_t out_label = v.uid().label();
     id_t out_id = 0;
 
-    if (label_of(v.uid()) == label) {
+    if (v.uid().label() == label) {
       // Precondition: The input is reduced and will not collapse to a terminal
-      quantify_pq_1.push({ fst(v.low(), v.high()), snd(v.low(), v.high()), NIL });
+      quantify_pq_1.push({ fst(v.low(), v.high()), snd(v.low(), v.high()), ptr_uint64::NIL() });
     } else {
-      uid_t out_uid = create_node_uid(out_label, out_id++);
+      const uid_t out_uid(out_label, out_id++);
 
-      if (is_terminal(v.low())) {
+      if (v.low().is_terminal()) {
         aw.unsafe_push_terminal({ out_uid, v.low() });
       } else {
-        quantify_pq_1.push({ v.low(), NIL, out_uid });
+        quantify_pq_1.push({ v.low(), ptr_uint64::NIL(), out_uid });
       }
-      if (is_terminal(v.high())) {
+      if (v.high().is_terminal()) {
         aw.unsafe_push_terminal({ flag(out_uid), v.high() });
       } else {
-        quantify_pq_1.push({ v.high(), NIL, flag(out_uid) });
+        quantify_pq_1.push({ v.high(), ptr_uint64::NIL(), flag(out_uid) });
       }
     }
 
@@ -204,9 +204,9 @@ namespace adiar
         max_1level_cut = std::max(max_1level_cut, quantify_pq_1.size());
       }
 
-      ptr_t source, t1, t2;
+      ptr_uint64 source, t1, t2;
       bool with_data = false;
-      ptr_t data_low = NIL, data_high = NIL;
+      ptr_uint64 data_low = ptr_uint64::NIL(), data_high = ptr_uint64::NIL();
 
       // Merge requests from quantify_pq_1 and quantify_pq_2 (pretty much just as for Apply)
       if (quantify_pq_1.can_pull() && (quantify_pq_2.empty() || quantify_pq_1.top().t1 < quantify_pq_2.top().t2)) {
@@ -229,14 +229,14 @@ namespace adiar
       }
 
       // Seek element from request in stream
-      ptr_t t_seek = with_data ? t2 : t1;
+      ptr_uint64 t_seek = with_data ? t2 : t1;
 
       while (v.uid() < t_seek) {
         v = in_nodes.pull();
       }
 
-      // Forward information of v.uid() == t1 across the level if needed
-      if (!with_data && !is_nil(t2) && !is_terminal(t2) && label_of(t1) == label_of(t2)) {
+      // Forward information of node t1 across the level if needed
+      if (!with_data && !t2.is_nil() && !t2.is_terminal() && t1.label() == t2.label()) {
         quantify_pq_2.push({ t1, t2, v.low(), v.high(), source });
 
         while (quantify_pq_1.can_pull() && (quantify_pq_1.top().t1 == t1 && quantify_pq_1.top().t2 == t2)) {
@@ -247,11 +247,11 @@ namespace adiar
         continue;
       }
 
-      if (label_of(fst(t1, t2)) == label) {
+      if (fst(t1, t2).label() == label) {
         // The variable should be quantified: proceed somewhat as for the BDD
         // Restrict algorithm by forwarding the request of source further to the
         // children, though here we keep track of both possibilities.
-        adiar_debug(is_nil(t2), "Ended in pairing case on request that already is a pair");
+        adiar_debug(t2.is_nil(), "Ended in pairing case on request that already is a pair");
 
         do {
           __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, source, v.low(), v.high());
@@ -261,21 +261,21 @@ namespace adiar
         // simulating both possibilities in parallel.
 
         // Resolve current node and recurse.
-        ptr_t low1  = with_data ? data_low  : v.low();
-        ptr_t high1 = with_data ? data_high : v.high();
-        ptr_t low2  = with_data ? v.low()     : t2;
-        ptr_t high2 = with_data ? v.high()    : t2;
+        ptr_uint64 low1  = with_data ? data_low  : v.low();
+        ptr_uint64 high1 = with_data ? data_high : v.high();
+        ptr_uint64 low2  = with_data ? v.low()     : t2;
+        ptr_uint64 high2 = with_data ? v.high()    : t2;
 
         quantify_policy::compute_cofactor(true, low1, high1);
-        quantify_policy::compute_cofactor(on_level(t2, out_label), low2, high2);
+        quantify_policy::compute_cofactor(t2.on_level(out_label), low2, high2);
 
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
-        uid_t out_uid = create_node_uid(out_label, out_id++);
+        const uid_t out_uid(out_label, out_id++);
 
         __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, out_uid, low1, low2);
         __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, flag(out_uid), high1, high2);
 
-        if (!is_nil(source)) {
+        if (!source.is_nil()) {
           do {
             arc_t out_arc = { source, out_uid };
             aw.unsafe_push_node(out_arc);

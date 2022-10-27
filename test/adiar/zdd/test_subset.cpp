@@ -11,8 +11,8 @@ go_bandit([]() {
       nw_T << node(true);
     }
 
-    ptr_t terminal_T = create_terminal_ptr(true);
-    ptr_t terminal_F = create_terminal_ptr(false);
+    ptr_uint64 terminal_T = ptr_uint64(true);
+    ptr_uint64 terminal_F = ptr_uint64(false);
 
     // { {3}, {0,3}, {3,4}, {0,3,4}, {1,2,4}, {1,2,3}, {1,3,4}, {0,1,2,4}, {0,1,2,3}, {0,1,3,4} }
     /*
@@ -111,7 +111,7 @@ go_bandit([]() {
         {
           node_writer nw(in);
           nw << node(2, MAX_ID, terminal_F, terminal_T)
-             << node(1, MAX_ID, terminal_T, create_node_ptr(2, MAX_ID));
+             << node(1, MAX_ID, terminal_T, ptr_uint64(2, MAX_ID));
         }
 
         __zdd out = zdd_offset(in, labels);
@@ -426,8 +426,8 @@ go_bandit([]() {
         {
           node_writer w(in);
           w << node(3, MAX_ID, terminal_F, terminal_T)
-            << node(2, MAX_ID, terminal_T, create_node_ptr(3, MAX_ID))
-            << node(1, MAX_ID, create_node_ptr(2, MAX_ID), terminal_T);
+            << node(2, MAX_ID, terminal_T, ptr_uint64(3, MAX_ID))
+            << node(1, MAX_ID, ptr_uint64(2, MAX_ID), terminal_T);
         }
 
         label_file labels;
@@ -470,7 +470,7 @@ go_bandit([]() {
         {
           node_writer w(in);
           w << node(2, MAX_ID, terminal_T, terminal_T)
-            << node(1, MAX_ID, terminal_T, create_node_ptr(2, MAX_ID));
+            << node(1, MAX_ID, terminal_T, ptr_uint64(2, MAX_ID));
         }
 
         label_file labels;
@@ -1029,7 +1029,7 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           node_writer w(in);
           w << node(2, MAX_ID, terminal_T, terminal_T)
-            << node(0, MAX_ID, terminal_T, create_node_ptr(2, MAX_ID));
+            << node(0, MAX_ID, terminal_T, ptr_uint64(2, MAX_ID));
         }
 
         label_file labels;

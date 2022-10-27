@@ -43,7 +43,7 @@ namespace adiar
       adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
-    static inline intercut_rec_output hit_cut(const ptr_t target)
+    static inline intercut_rec_output hit_cut(const ptr_uint64 target)
     {
       return intercut_rec_output { target, target };
     }

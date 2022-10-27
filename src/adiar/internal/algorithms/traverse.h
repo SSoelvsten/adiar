@@ -16,9 +16,9 @@ namespace adiar
   {
     node_stream<> in_nodes(dd);
     node_t n = in_nodes.pull();
-    ptr_t tgt = n.uid();
+    ptr_uint64 tgt = n.uid();
 
-    while (!is_terminal(tgt) && !is_nil(tgt)) {
+    while (!tgt.is_terminal() && !tgt.is_nil()) {
       while (n.uid() < tgt) { n = in_nodes.pull(); }
 
       adiar_debug(n.uid() == tgt,
@@ -26,21 +26,21 @@ namespace adiar
 
       tgt = visitor.visit(n);
 
-      adiar_debug((tgt == n.low()) || (tgt == n.high()) || (is_nil(tgt)),
+      adiar_debug((tgt == n.low()) || (tgt == n.high()) || (tgt.is_nil()),
                   "Visitor pointer should be within the diagram or NIL");
     }
-    if (!is_nil(tgt)) {
-      visitor.visit(value_of(tgt));
+    if (!tgt.is_nil()) {
+      visitor.visit(tgt.value());
     }
   }
 
   class traverse_satmin_visitor
   {
   public:
-    inline ptr_t visit(const node_t &n)
+    inline ptr_uint64 visit(const node_t &n)
     {
       // Only pick high, if low is the false terminal
-      return is_false(n.low()) ? n.high() : n.low();
+      return n.low().is_false() ? n.high() : n.low();
     }
 
     inline void visit(const bool /*s*/)
@@ -50,10 +50,10 @@ namespace adiar
   class traverse_satmax_visitor
   {
   public:
-    inline ptr_t visit(const node_t &n)
+    inline ptr_uint64 visit(const node_t &n)
     {
       // Pick high as long it is not the false terminal
-      return is_node(n.high()) || value_of(n.high()) ? n.high() : n.low();
+      return n.high().is_node() || n.high().value() ? n.high() : n.low();
     }
 
     inline void visit(const bool /*s*/)

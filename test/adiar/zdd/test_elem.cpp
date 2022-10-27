@@ -11,8 +11,8 @@ go_bandit([]() {
       nw_T << node(true);
     }
 
-    const ptr_t terminal_T = create_terminal_ptr(true);
-    const ptr_t terminal_F = create_terminal_ptr(false);
+    const ptr_uint64 terminal_T = ptr_uint64(true);
+    const ptr_uint64 terminal_F = ptr_uint64(false);
 
     node_file zdd_1;
     // { { 0 }, { 1 }, { 0,2 }, { 1,2 } }

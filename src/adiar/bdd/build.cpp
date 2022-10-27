@@ -61,9 +61,9 @@ namespace adiar
     adiar_assert(min_label <= max_label,
                  "The given min_label should be smaller than the given max_label");
 
-    const ptr_t gt_terminal = create_terminal_ptr(false);
-    const ptr_t eq_terminal = create_terminal_ptr(true);
-    const ptr_t lt_terminal = create_terminal_ptr(false);
+    const ptr_uint64 gt_terminal = ptr_uint64(false);
+    const ptr_uint64 eq_terminal = ptr_uint64(true);
+    const ptr_uint64 lt_terminal = ptr_uint64(false);
 
     const size_t vars = max_label - min_label + 1u;
     if (vars < threshold) {
@@ -94,22 +94,22 @@ namespace adiar
       id_t min_id = bdd_counter_min_id(curr_label, max_label, threshold);
 
       do {
-        ptr_t low;
+        ptr_uint64 low;
         if (curr_label == max_label) {
           low = curr_id == threshold ? eq_terminal : lt_terminal;
         } else if (curr_id < bdd_counter_min_id(curr_label+1, max_label, threshold)) {
           low = lt_terminal;
         } else {
-          low = adiar::create_node_ptr(curr_label + 1, curr_id);
+          low = adiar::ptr_uint64(curr_label + 1, curr_id);
         }
 
-        ptr_t high;
+        ptr_uint64 high;
         if (curr_label == max_label) {
           high = curr_id + 1 == threshold ? eq_terminal : gt_terminal;
         } else if (curr_id == threshold) {
           high = gt_terminal;
         } else {
-          high = adiar::create_node_ptr(curr_label + 1, curr_id + 1);
+          high = adiar::ptr_uint64(curr_label + 1, curr_id + 1);
         }
 
         nw.unsafe_push(adiar::node(curr_label, curr_id, low, high));

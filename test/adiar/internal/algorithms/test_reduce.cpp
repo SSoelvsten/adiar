@@ -3,8 +3,8 @@ go_bandit([]() {
     // The reduce<dd_policy> function is used within the constructors of the BDD
     // and ZDD classes.
 
-    ptr_t terminal_T = create_terminal_ptr(true);
-    ptr_t terminal_F = create_terminal_ptr(false);
+    ptr_uint64 terminal_T = ptr_uint64(true);
+    ptr_uint64 terminal_F = ptr_uint64(false);
 
     node_file x0x1_node_file;
 
@@ -12,7 +12,7 @@ go_bandit([]() {
       node_writer nw(x0x1_node_file);
 
       nw << node(1,MAX_ID, terminal_F, terminal_T)
-         << node(0,MAX_ID, terminal_F, create_node_ptr(1,MAX_ID));
+         << node(0,MAX_ID, terminal_F, ptr_uint64(1,MAX_ID));
     }
 
     it("preserves negation flag on reduced input [1]", [&]() {
@@ -59,10 +59,10 @@ go_bandit([]() {
                   F T               F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(2,0);
-        ptr_t n4 = create_node_ptr(2,1);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(2,0);
+        ptr_uint64 n4 = ptr_uint64(2,1);
 
         arc_file in;
 
@@ -104,14 +104,14 @@ go_bandit([]() {
 
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
+                                                              ptr_uint64(2,MAX_ID),
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(1,MAX_ID))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(1,MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -158,11 +158,11 @@ go_bandit([]() {
                   /| |\                      / \
                   FT FT                      F T
         */
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(2,0);
-        ptr_t n3 = create_node_ptr(2,1);
-        ptr_t n4 = create_node_ptr(3,0);
-        ptr_t n5 = create_node_ptr(3,1);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(2,0);
+        ptr_uint64 n3 = ptr_uint64(2,1);
+        ptr_uint64 n4 = ptr_uint64(3,0);
+        ptr_uint64 n5 = ptr_uint64(3,1);
 
         arc_file in;
 
@@ -203,17 +203,17 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                              create_node_ptr(3, MAX_ID),
+                                                              ptr_uint64(3, MAX_ID),
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID-1,
                                                               terminal_F,
-                                                              create_node_ptr(3, MAX_ID))));
+                                                              ptr_uint64(3, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2, MAX_ID-1),
-                                                              create_node_ptr(2, MAX_ID))));
+                                                              ptr_uint64(2, MAX_ID-1),
+                                                              ptr_uint64(2, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -261,12 +261,12 @@ go_bandit([]() {
                   F T T F           F  T F
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(2,0);
-        ptr_t n4 = create_node_ptr(2,1);
-        ptr_t n5 = create_node_ptr(3,0);
-        ptr_t n6 = create_node_ptr(3,1);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(2,0);
+        ptr_uint64 n4 = ptr_uint64(2,1);
+        ptr_uint64 n5 = ptr_uint64(3,0);
+        ptr_uint64 n6 = ptr_uint64(3,1);
 
         arc_file in;
 
@@ -315,20 +315,20 @@ go_bandit([]() {
 
         // n4
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                              create_node_ptr(3, MAX_ID),
-                                                              create_node_ptr(3, MAX_ID-1))));
+                                                              ptr_uint64(3, MAX_ID),
+                                                              ptr_uint64(3, MAX_ID-1))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
+                                                              ptr_uint64(2,MAX_ID),
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(1,MAX_ID))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(1,MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
 
@@ -379,11 +379,11 @@ go_bandit([]() {
                   F T               F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(2,0);
-        ptr_t n4 = create_node_ptr(2,1);
-        ptr_t n5 = create_node_ptr(3,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(2,0);
+        ptr_uint64 n4 = ptr_uint64(2,1);
+        ptr_uint64 n5 = ptr_uint64(3,0);
 
         arc_file in;
 
@@ -426,20 +426,20 @@ go_bandit([]() {
 
         // n4
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                              create_node_ptr(3,MAX_ID),
+                                                              ptr_uint64(3,MAX_ID),
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
+                                                              ptr_uint64(2,MAX_ID),
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(1,MAX_ID))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(1,MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -495,13 +495,13 @@ go_bandit([]() {
                      F T                      F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(1,1);
-        ptr_t n4 = create_node_ptr(2,0);
-        ptr_t n5 = create_node_ptr(2,1);
-        ptr_t n6 = create_node_ptr(2,2);
-        ptr_t n7 = create_node_ptr(3,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(1,1);
+        ptr_uint64 n4 = ptr_uint64(2,0);
+        ptr_uint64 n5 = ptr_uint64(2,1);
+        ptr_uint64 n6 = ptr_uint64(2,2);
+        ptr_uint64 n7 = ptr_uint64(3,0);
 
         arc_file in;
 
@@ -556,26 +556,26 @@ go_bandit([]() {
 
         // n5
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID-1,
-                                                              create_node_ptr(3, MAX_ID),
+                                                              ptr_uint64(3, MAX_ID),
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n3
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2, MAX_ID-1),
-                                                              create_node_ptr(2, MAX_ID))));
+                                                              ptr_uint64(2, MAX_ID-1),
+                                                              ptr_uint64(2, MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID-1,
-                                                              create_node_ptr(2, MAX_ID),
-                                                              create_node_ptr(2, MAX_ID-1))));
+                                                              ptr_uint64(2, MAX_ID),
+                                                              ptr_uint64(2, MAX_ID-1))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(1,MAX_ID-1),
-                                                              create_node_ptr(1, MAX_ID))));
+                                                              ptr_uint64(1,MAX_ID-1),
+                                                              ptr_uint64(1, MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -627,12 +627,12 @@ go_bandit([]() {
                   F T F T T F         F T T F
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(1,1);
-        ptr_t n4 = create_node_ptr(2,0);
-        ptr_t n5 = create_node_ptr(2,1);
-        ptr_t n6 = create_node_ptr(2,2);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(1,1);
+        ptr_uint64 n4 = ptr_uint64(2,0);
+        ptr_uint64 n5 = ptr_uint64(2,1);
+        ptr_uint64 n6 = ptr_uint64(2,2);
 
         arc_file in;
 
@@ -680,13 +680,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 3
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2, MAX_ID),
-                                                              create_node_ptr(2, MAX_ID-1))));
+                                                              ptr_uint64(2, MAX_ID),
+                                                              ptr_uint64(2, MAX_ID-1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2, MAX_ID),
-                                                              create_node_ptr(1, MAX_ID))));
+                                                              ptr_uint64(2, MAX_ID),
+                                                              ptr_uint64(1, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -735,12 +735,12 @@ go_bandit([]() {
                   T F T F F T         T F F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(1,1);
-        ptr_t n4 = create_node_ptr(2,0);
-        ptr_t n5 = create_node_ptr(2,1);
-        ptr_t n6 = create_node_ptr(2,2);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(1,1);
+        ptr_uint64 n4 = ptr_uint64(2,0);
+        ptr_uint64 n5 = ptr_uint64(2,1);
+        ptr_uint64 n6 = ptr_uint64(2,2);
 
         arc_file in;
 
@@ -788,13 +788,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 3
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2, MAX_ID-1),
-                                                              create_node_ptr(2, MAX_ID))));
+                                                              ptr_uint64(2, MAX_ID-1),
+                                                              ptr_uint64(2, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2, MAX_ID-1),
-                                                              create_node_ptr(1, MAX_ID))));
+                                                              ptr_uint64(2, MAX_ID-1),
+                                                              ptr_uint64(1, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -844,10 +844,10 @@ go_bandit([]() {
                   F  T                F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(2,0);
-        ptr_t n4 = create_node_ptr(2,1);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(2,0);
+        ptr_uint64 n4 = ptr_uint64(2,1);
 
         arc_file in;
 
@@ -889,14 +889,14 @@ go_bandit([]() {
 
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
+                                                              ptr_uint64(2,MAX_ID),
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(1,MAX_ID))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(1,MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
 
@@ -944,11 +944,11 @@ go_bandit([]() {
                       F T                F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(2,0);
-        ptr_t n4 = create_node_ptr(2,1);
-        ptr_t n5 = create_node_ptr(3,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(2,0);
+        ptr_uint64 n4 = ptr_uint64(2,1);
+        ptr_uint64 n5 = ptr_uint64(3,0);
 
         arc_file in;
 
@@ -995,14 +995,14 @@ go_bandit([]() {
 
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(3,MAX_ID))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(3,MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(1,MAX_ID))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(1,MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
 
@@ -1055,11 +1055,11 @@ go_bandit([]() {
 
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(1,1);
-        ptr_t n4 = create_node_ptr(2,0);
-        ptr_t n5 = create_node_ptr(2,1);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(1,1);
+        ptr_uint64 n4 = ptr_uint64(2,0);
+        ptr_uint64 n5 = ptr_uint64(2,1);
 
         arc_file in;
 
@@ -1105,8 +1105,8 @@ go_bandit([]() {
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(2,MAX_ID-1))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(2,MAX_ID-1))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
 
@@ -1153,10 +1153,10 @@ go_bandit([]() {
                   F T                F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(2,0);
-        ptr_t n4 = create_node_ptr(2,1);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(2,0);
+        ptr_uint64 n4 = ptr_uint64(2,1);
 
         arc_file in;
 
@@ -1198,7 +1198,7 @@ go_bandit([]() {
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
+                                                              ptr_uint64(2,MAX_ID),
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1247,12 +1247,12 @@ go_bandit([]() {
              F T                 F T
           */
 
-          ptr_t n1 = create_node_ptr(0,0);
-          ptr_t n2 = create_node_ptr(1,0);
-          ptr_t n3 = create_node_ptr(1,1);
-          ptr_t n4 = create_node_ptr(2,0);
-          ptr_t n5 = create_node_ptr(2,1);
-          ptr_t n6 = create_node_ptr(3,0);
+          ptr_uint64 n1 = ptr_uint64(0,0);
+          ptr_uint64 n2 = ptr_uint64(1,0);
+          ptr_uint64 n3 = ptr_uint64(1,1);
+          ptr_uint64 n4 = ptr_uint64(2,0);
+          ptr_uint64 n5 = ptr_uint64(2,1);
+          ptr_uint64 n6 = ptr_uint64(3,0);
 
           arc_file in;
 
@@ -1304,14 +1304,14 @@ go_bandit([]() {
           // n2
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                                create_node_ptr(3, MAX_ID),
-                                                                create_node_ptr(2, MAX_ID))));
+                                                                ptr_uint64(3, MAX_ID),
+                                                                ptr_uint64(2, MAX_ID))));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                                create_node_ptr(1,MAX_ID),
-                                                                create_node_ptr(2, MAX_ID))));
+                                                                ptr_uint64(1,MAX_ID),
+                                                                ptr_uint64(2, MAX_ID))));
           AssertThat(out_nodes.can_pull(), Is().False());
 
           level_info_test_stream<node_t> out_meta(out);
@@ -1370,10 +1370,10 @@ go_bandit([]() {
                   F T                F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(2,0);
-        ptr_t n4 = create_node_ptr(2,1);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(2,0);
+        ptr_uint64 n4 = ptr_uint64(2,1);
 
         arc_file in;
 
@@ -1445,12 +1445,12 @@ go_bandit([]() {
             T F F T T T          T F F T
         */
 
-        const ptr_t n1 = create_node_ptr(0,0);
-        const ptr_t n2 = create_node_ptr(1,0);
-        const ptr_t n3 = create_node_ptr(2,0);
-        const ptr_t n4 = create_node_ptr(3,0);
-        const ptr_t n5 = create_node_ptr(3,1);
-        const ptr_t n6 = create_node_ptr(3,2);
+        const ptr_uint64 n1 = ptr_uint64(0,0);
+        const ptr_uint64 n2 = ptr_uint64(1,0);
+        const ptr_uint64 n3 = ptr_uint64(2,0);
+        const ptr_uint64 n4 = ptr_uint64(3,0);
+        const ptr_uint64 n5 = ptr_uint64(3,1);
+        const ptr_uint64 n6 = ptr_uint64(3,2);
 
         arc_file in;
 
@@ -1501,19 +1501,19 @@ go_bandit([]() {
           // n4
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                                create_node_ptr(3, MAX_ID-1),
-                                                                create_node_ptr(3, MAX_ID))));
+                                                                ptr_uint64(3, MAX_ID-1),
+                                                                ptr_uint64(3, MAX_ID))));
 
           // n2
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                                create_node_ptr(2, MAX_ID),
+                                                                ptr_uint64(2, MAX_ID),
                                                                 terminal_T)));
 
           // n1
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                                create_node_ptr(1,MAX_ID),
+                                                                ptr_uint64(1,MAX_ID),
                                                                 terminal_T)));
           AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1565,7 +1565,7 @@ go_bandit([]() {
                   F F
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
 
         arc_file in;
 
@@ -1620,8 +1620,8 @@ go_bandit([]() {
                   T  T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
 
         arc_file in;
 
@@ -1676,7 +1676,7 @@ go_bandit([]() {
                   F T               F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
 
         arc_file in;
 
@@ -1740,17 +1740,17 @@ go_bandit([]() {
                T  F   T         T  F F  T
          */
 
-        const ptr_t n1  = create_node_ptr(0,0);
-        const ptr_t n2  = create_node_ptr(1,0);
-        const ptr_t n3  = create_node_ptr(1,1);
-        const ptr_t n4  = create_node_ptr(2,0);
-        const ptr_t n5  = create_node_ptr(2,1);
-        const ptr_t n6  = create_node_ptr(3,0);
-        const ptr_t n7  = create_node_ptr(3,1);
-        const ptr_t n8  = create_node_ptr(4,0);
-        const ptr_t n9  = create_node_ptr(4,1);
-        const ptr_t n10 = create_node_ptr(5,0);
-        const ptr_t n11 = create_node_ptr(5,1);
+        const ptr_uint64 n1  = ptr_uint64(0,0);
+        const ptr_uint64 n2  = ptr_uint64(1,0);
+        const ptr_uint64 n3  = ptr_uint64(1,1);
+        const ptr_uint64 n4  = ptr_uint64(2,0);
+        const ptr_uint64 n5  = ptr_uint64(2,1);
+        const ptr_uint64 n6  = ptr_uint64(3,0);
+        const ptr_uint64 n7  = ptr_uint64(3,1);
+        const ptr_uint64 n8  = ptr_uint64(4,0);
+        const ptr_uint64 n9  = ptr_uint64(4,1);
+        const ptr_uint64 n10 = ptr_uint64(5,0);
+        const ptr_uint64 n11 = ptr_uint64(5,1);
 
         arc_file in;
 
@@ -1811,29 +1811,29 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n9
         AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID,
-                                                              create_node_ptr(5,MAX_ID-1),
-                                                              create_node_ptr(5,MAX_ID))));
+                                                              ptr_uint64(5,MAX_ID-1),
+                                                              ptr_uint64(5,MAX_ID))));
 
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n7
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3, MAX_ID,
-                                                              create_node_ptr(5,MAX_ID-1),
-                                                              create_node_ptr(4,MAX_ID))));
+                                                              ptr_uint64(5,MAX_ID-1),
+                                                              ptr_uint64(4,MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n5
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                              create_node_ptr(5,MAX_ID-1),
-                                                              create_node_ptr(3,MAX_ID))));
+                                                              ptr_uint64(5,MAX_ID-1),
+                                                              ptr_uint64(3,MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n3
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(5,MAX_ID-1),
-                                                              create_node_ptr(2,MAX_ID))));
+                                                              ptr_uint64(5,MAX_ID-1),
+                                                              ptr_uint64(2,MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(5,MAX_ID-1),
-                                                              create_node_ptr(1,MAX_ID))));
+                                                              ptr_uint64(5,MAX_ID-1),
+                                                              ptr_uint64(1,MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1898,20 +1898,20 @@ go_bandit([]() {
                      T  F   T                  T  F    F  T
          */
 
-        const ptr_t n1  = create_node_ptr(0,0);
-        const ptr_t n2  = create_node_ptr(1,0);
-        const ptr_t n3  = create_node_ptr(1,1);
-        const ptr_t n4  = create_node_ptr(2,0);
-        const ptr_t n5  = create_node_ptr(2,1);
-        const ptr_t n6  = create_node_ptr(2,2);
-        const ptr_t n7  = create_node_ptr(3,0);
-        const ptr_t n8  = create_node_ptr(3,1);
-        const ptr_t n9  = create_node_ptr(3,2);
-        const ptr_t n10 = create_node_ptr(4,0);
-        const ptr_t n11 = create_node_ptr(4,1);
-        const ptr_t n12 = create_node_ptr(4,2);
-        const ptr_t n13 = create_node_ptr(5,0);
-        const ptr_t n14 = create_node_ptr(5,1);
+        const ptr_uint64 n1  = ptr_uint64(0,0);
+        const ptr_uint64 n2  = ptr_uint64(1,0);
+        const ptr_uint64 n3  = ptr_uint64(1,1);
+        const ptr_uint64 n4  = ptr_uint64(2,0);
+        const ptr_uint64 n5  = ptr_uint64(2,1);
+        const ptr_uint64 n6  = ptr_uint64(2,2);
+        const ptr_uint64 n7  = ptr_uint64(3,0);
+        const ptr_uint64 n8  = ptr_uint64(3,1);
+        const ptr_uint64 n9  = ptr_uint64(3,2);
+        const ptr_uint64 n10 = ptr_uint64(4,0);
+        const ptr_uint64 n11 = ptr_uint64(4,1);
+        const ptr_uint64 n12 = ptr_uint64(4,2);
+        const ptr_uint64 n13 = ptr_uint64(5,0);
+        const ptr_uint64 n14 = ptr_uint64(5,1);
 
         arc_file in;
 
@@ -1978,48 +1978,48 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n12
         AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID,
-                                                              create_node_ptr(5,MAX_ID-1),
-                                                              create_node_ptr(5,MAX_ID))));
+                                                              ptr_uint64(5,MAX_ID-1),
+                                                              ptr_uint64(5,MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n10
         AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID-1,
-                                                              create_node_ptr(5,MAX_ID),
-                                                              create_node_ptr(5,MAX_ID-1))));
+                                                              ptr_uint64(5,MAX_ID),
+                                                              ptr_uint64(5,MAX_ID-1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n7
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3, MAX_ID,
-                                                              create_node_ptr(4,MAX_ID-1),
-                                                              create_node_ptr(5,MAX_ID-1))));
+                                                              ptr_uint64(4,MAX_ID-1),
+                                                              ptr_uint64(5,MAX_ID-1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n9
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3, MAX_ID-1,
-                                                              create_node_ptr(5,MAX_ID-1),
-                                                              create_node_ptr(4,MAX_ID))));
+                                                              ptr_uint64(5,MAX_ID-1),
+                                                              ptr_uint64(4,MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n4
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                              create_node_ptr(3,MAX_ID),
-                                                              create_node_ptr(5,MAX_ID-1))));
+                                                              ptr_uint64(3,MAX_ID),
+                                                              ptr_uint64(5,MAX_ID-1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n6
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID-1,
-                                                              create_node_ptr(5,MAX_ID-1),
-                                                              create_node_ptr(3,MAX_ID-1))));
+                                                              ptr_uint64(5,MAX_ID-1),
+                                                              ptr_uint64(3,MAX_ID-1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(5,MAX_ID-1))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(5,MAX_ID-1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n3
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID-1,
-                                                              create_node_ptr(5,MAX_ID-1),
-                                                              create_node_ptr(2,MAX_ID-1))));
+                                                              ptr_uint64(5,MAX_ID-1),
+                                                              ptr_uint64(2,MAX_ID-1))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(1,MAX_ID),
-                                                              create_node_ptr(1,MAX_ID-1))));
+                                                              ptr_uint64(1,MAX_ID),
+                                                              ptr_uint64(1,MAX_ID-1))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -2078,10 +2078,10 @@ go_bandit([]() {
                T T
          */
 
-        const ptr_t n1  = create_node_ptr(0,0);
-        const ptr_t n2  = create_node_ptr(1,0);
-        const ptr_t n3  = create_node_ptr(1,1);
-        const ptr_t n4  = create_node_ptr(2,0);
+        const ptr_uint64 n1  = ptr_uint64(0,0);
+        const ptr_uint64 n2  = ptr_uint64(1,0);
+        const ptr_uint64 n3  = ptr_uint64(1,1);
+        const ptr_uint64 n4  = ptr_uint64(2,0);
 
         arc_file in;
 
@@ -2151,8 +2151,8 @@ go_bandit([]() {
                   T  F
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
 
         arc_file in;
 
@@ -2218,11 +2218,11 @@ go_bandit([]() {
                      F T                 F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(2,0);
-        ptr_t n4 = create_node_ptr(2,1);
-        ptr_t n5 = create_node_ptr(3,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(2,0);
+        ptr_uint64 n4 = ptr_uint64(2,1);
+        ptr_uint64 n5 = ptr_uint64(3,0);
 
         arc_file in;
 
@@ -2269,14 +2269,14 @@ go_bandit([]() {
 
         // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(3,MAX_ID))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(3,MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().True());
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(1,MAX_ID))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(1,MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
 
@@ -2333,10 +2333,10 @@ go_bandit([]() {
                         T F
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
-        ptr_t n3 = create_node_ptr(1,1);
-        ptr_t n4 = create_node_ptr(2,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
+        ptr_uint64 n3 = ptr_uint64(1,1);
+        ptr_uint64 n4 = ptr_uint64(2,0);
 
         arc_file in;
 
@@ -2378,8 +2378,8 @@ go_bandit([]() {
 
         // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(1,MAX_ID),
-                                                              create_node_ptr(1,MAX_ID))));
+                                                              ptr_uint64(1,MAX_ID),
+                                                              ptr_uint64(1,MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
         level_info_test_stream<node_t> out_meta(out);
@@ -2423,7 +2423,7 @@ go_bandit([]() {
                   T F
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
 
         arc_file in;
 
@@ -2478,8 +2478,8 @@ go_bandit([]() {
                   F T                F T
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
 
         arc_file in;
 
@@ -2542,8 +2542,8 @@ go_bandit([]() {
                   F  F
         */
 
-        ptr_t n1 = create_node_ptr(0,0);
-        ptr_t n2 = create_node_ptr(1,0);
+        ptr_uint64 n1 = ptr_uint64(0,0);
+        ptr_uint64 n2 = ptr_uint64(1,0);
 
         arc_file in;
 
@@ -2598,7 +2598,7 @@ go_bandit([]() {
                   F T               F T
         */
 
-        ptr_t n1 = create_node_ptr(42,0);
+        ptr_uint64 n1 = ptr_uint64(42,0);
 
         arc_file in;
 
@@ -2652,7 +2652,7 @@ go_bandit([]() {
                   T T               T T
         */
 
-        ptr_t n1 = create_node_ptr(12,0);
+        ptr_uint64 n1 = ptr_uint64(12,0);
 
         arc_file in;
 
@@ -2717,17 +2717,17 @@ go_bandit([]() {
                F T T T             F T T T
          */
 
-        const ptr_t n1  = create_node_ptr(0,0);
-        const ptr_t n2  = create_node_ptr(1,0);
-        const ptr_t n3  = create_node_ptr(1,1);
-        const ptr_t n4  = create_node_ptr(2,0);
-        const ptr_t n5  = create_node_ptr(2,1);
-        const ptr_t n6  = create_node_ptr(3,0);
-        const ptr_t n7  = create_node_ptr(3,1);
-        const ptr_t n8  = create_node_ptr(4,0);
-        const ptr_t n9  = create_node_ptr(4,1);
-        const ptr_t n10 = create_node_ptr(5,0);
-        const ptr_t n11 = create_node_ptr(5,1);
+        const ptr_uint64 n1  = ptr_uint64(0,0);
+        const ptr_uint64 n2  = ptr_uint64(1,0);
+        const ptr_uint64 n3  = ptr_uint64(1,1);
+        const ptr_uint64 n4  = ptr_uint64(2,0);
+        const ptr_uint64 n5  = ptr_uint64(2,1);
+        const ptr_uint64 n6  = ptr_uint64(3,0);
+        const ptr_uint64 n7  = ptr_uint64(3,1);
+        const ptr_uint64 n8  = ptr_uint64(4,0);
+        const ptr_uint64 n9  = ptr_uint64(4,1);
+        const ptr_uint64 n10 = ptr_uint64(5,0);
+        const ptr_uint64 n11 = ptr_uint64(5,1);
 
         arc_file in;
 
@@ -2788,29 +2788,29 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n9
         AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID,
-                                                              create_node_ptr(5,MAX_ID-1),
-                                                              create_node_ptr(5,MAX_ID))));
+                                                              ptr_uint64(5,MAX_ID-1),
+                                                              ptr_uint64(5,MAX_ID))));
 
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n7
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3, MAX_ID,
-                                                              create_node_ptr(4,MAX_ID),
-                                                              create_node_ptr(5,MAX_ID))));
+                                                              ptr_uint64(4,MAX_ID),
+                                                              ptr_uint64(5,MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n5
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                              create_node_ptr(3,MAX_ID),
-                                                              create_node_ptr(5,MAX_ID))));
+                                                              ptr_uint64(3,MAX_ID),
+                                                              ptr_uint64(5,MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n3
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              create_node_ptr(2,MAX_ID),
-                                                              create_node_ptr(5,MAX_ID))));
+                                                              ptr_uint64(2,MAX_ID),
+                                                              ptr_uint64(5,MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n1
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              create_node_ptr(1,MAX_ID),
-                                                              create_node_ptr(5,MAX_ID))));
+                                                              ptr_uint64(1,MAX_ID),
+                                                              ptr_uint64(5,MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -2869,10 +2869,10 @@ go_bandit([]() {
                T F
          */
 
-        const ptr_t n1  = create_node_ptr(0,0);
-        const ptr_t n2  = create_node_ptr(1,0);
-        const ptr_t n3  = create_node_ptr(1,1);
-        const ptr_t n4  = create_node_ptr(2,0);
+        const ptr_uint64 n1  = ptr_uint64(0,0);
+        const ptr_uint64 n2  = ptr_uint64(1,0);
+        const ptr_uint64 n3  = ptr_uint64(1,1);
+        const ptr_uint64 n4  = ptr_uint64(2,0);
 
         arc_file in;
 
@@ -2908,7 +2908,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n1
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID, create_node_ptr(1, MAX_ID), create_node_ptr(1, MAX_ID))));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID, ptr_uint64(1, MAX_ID), ptr_uint64(1, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 

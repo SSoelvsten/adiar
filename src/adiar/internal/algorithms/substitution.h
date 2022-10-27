@@ -35,7 +35,7 @@ namespace adiar
                                   mem_mode>;
 
   struct substitute_rec_output { node_t out; };
-  struct substitute_rec_skipto { ptr_t child; };
+  struct substitute_rec_skipto { ptr_uint64 child; };
 
   typedef std::variant<substitute_rec_output, substitute_rec_skipto> substitute_rec;
 
@@ -91,7 +91,7 @@ namespace adiar
                                          pq_t &pq,
                                          arc_writer &aw)
   {
-    if(is_terminal(request.target())) {
+    if(request.target().is_terminal()) {
       aw.unsafe_push_terminal(request);
     } else {
       pq.push(request);
@@ -130,13 +130,13 @@ namespace adiar
         __substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);
         __substitute_resolve_request(high_arc_of(n_res), substitute_pq, aw);
       } else { // std::holds_alternative<substitute_rec_skipto>(n_res)
-        const ptr_t rec_child = std::get<substitute_rec_skipto>(rec_res).child;;
+        const ptr_uint64 rec_child = std::get<substitute_rec_skipto>(rec_res).child;;
 
-        if(is_terminal(rec_child)) {
-          return substitute_policy::terminal(value_of(rec_child), amgr);
+        if(rec_child.is_terminal()) {
+          return substitute_policy::terminal(rec_child.value(), amgr);
         }
 
-        substitute_pq.push(arc(NIL, rec_child));
+        substitute_pq.push(arc(ptr_uint64::NIL(), rec_child));
       }
     }
 
@@ -177,22 +177,22 @@ namespace adiar
         while(substitute_pq.can_pull() && substitute_pq.top().target() == n_res.uid()) {
           const arc_t parent_arc = substitute_pq.pull();
 
-          if(!is_nil(parent_arc.source())) {
+          if(!parent_arc.source().is_nil()) {
             aw.unsafe_push_node(parent_arc);
           }
         }
 
         level_size++;
       } else { // std::holds_alternative<substitute_rec_skipto>(rec_res)
-        const ptr_t rec_child = std::get<substitute_rec_skipto>(rec_res).child;
+        const ptr_uint64 rec_child = std::get<substitute_rec_skipto>(rec_res).child;
 
         while(substitute_pq.can_pull() && substitute_pq.top().target() == n.uid()) {
           const arc_t parent_arc = substitute_pq.pull();
           const arc_t request = { parent_arc.source(), rec_child };
 
-          if(is_terminal(rec_child) && is_nil(parent_arc.source())) {
+          if(rec_child.is_terminal() && parent_arc.source().is_nil()) {
             // we have restricted ourselves to a terminal
-            return substitute_policy::terminal(value_of(rec_child), amgr);
+            return substitute_policy::terminal(rec_child.value(), amgr);
           }
 
           __substitute_resolve_request(request, substitute_pq, aw);

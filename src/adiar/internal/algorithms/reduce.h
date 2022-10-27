@@ -48,7 +48,7 @@ namespace adiar
   {
     static label_t label_of(const arc_t &a)
     {
-      return adiar::label_of(a.source());
+      return a.source().label();
     }
   };
 
@@ -81,8 +81,8 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     void push(const arc_t &a)
     {
-      _terminals[false] += is_false(a.target());
-      _terminals[true]  += is_true(a.target());
+      _terminals[false] += a.target().is_false();
+      _terminals[true]  += a.target().is_true();
 
       inner_lpq::push(a);
     }
@@ -94,8 +94,8 @@ namespace adiar
     {
       arc_t a = inner_lpq::pull();
 
-      _terminals[false] -= is_false(a.target());
-      _terminals[true]  -= is_true(a.target());
+      _terminals[false] -= a.target().is_false();
+      _terminals[true]  -= a.target().is_true();
 
       return a;
     }
@@ -135,11 +135,11 @@ namespace adiar
       //     Use the 'flag' bit on children to mark attributed edges. Currently,
       //     we use this flag to mark whether Reduction Rule 1 was applied to
       //     some node across some arc.
-      const ptr_t a_high = unflag(a.high());
-      const ptr_t a_low = unflag(a.low());
+      const ptr_uint64 a_high = unflag(a.high());
+      const ptr_uint64 a_low = unflag(a.low());
 
-      const ptr_t b_high = unflag(b.high());
-      const ptr_t b_low = unflag(b.low());
+      const ptr_uint64 b_high = unflag(b.high());
+      const ptr_uint64 b_low = unflag(b.low());
 
       return a_high > b_high || (a_high == b_high && a_low > b_low)
 #ifndef NDEBUG
@@ -188,11 +188,11 @@ namespace adiar
     cut[cut_type::ALL]            += internal_arcs + false_arcs + true_arcs;
   }
 
-  inline void __reduce_cut_add(size_t (&cut)[4], const ptr_t target)
+  inline void __reduce_cut_add(size_t (&cut)[4], const ptr_uint64 target)
   {
-    cut[cut_type::INTERNAL]       += is_node(target);
-    cut[cut_type::INTERNAL_FALSE] += is_node(target) + is_false(target);
-    cut[cut_type::INTERNAL_TRUE]  += is_node(target) + is_true(target);
+    cut[cut_type::INTERNAL]       += target.is_node();
+    cut[cut_type::INTERNAL_FALSE] += target.is_node() + target.is_false();
+    cut[cut_type::INTERNAL_TRUE]  += target.is_node() + target.is_true();
     cut[cut_type::ALL]            += 1u;
   }
 
@@ -217,7 +217,7 @@ namespace adiar
       red2_mapping(sorters_memory, level_width, 2);
 
     // Pull out all nodes from reduce_pq and terminal_arcs for this level
-    while ((terminal_arcs.can_pull() && label_of(terminal_arcs.peek().source()) == label)
+    while ((terminal_arcs.can_pull() && terminal_arcs.peek().source().label() == label)
             || reduce_pq.can_pull()) {
       const arc_t e_high = __reduce_get_next(reduce_pq, terminal_arcs);
       const arc_t e_low = __reduce_get_next(reduce_pq, terminal_arcs);
@@ -225,7 +225,7 @@ namespace adiar
       node_t n = node_of(e_low, e_high);
 
       // Apply Reduction rule 1
-      ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
+      ptr_uint64 reduction_rule_ret = dd_policy::reduction_rule(n);
       if (reduction_rule_ret != n.uid()) {
         // Open red1_mapping first (and create file on disk) when at least one
         // element is written to it.
@@ -251,7 +251,7 @@ namespace adiar
     child_grouping.sort();
 
     id_t out_id = MAX_ID;
-    node_t out_node = node(NIL, NIL, NIL);
+    node_t out_node = node(uid(), ptr_uint64::NIL(), ptr_uint64::NIL());
 
     while (child_grouping.can_pull()) {
       const node_t next_node = child_grouping.pull();
@@ -263,9 +263,9 @@ namespace adiar
         adiar_debug(out_id > 0, "Has run out of ids");
         out_id--;
 
-        __reduce_cut_add(is_flagged(next_node.low()) ? global_1level_cut : local_1level_cut,
+        __reduce_cut_add(next_node.low().is_flagged() ? global_1level_cut : local_1level_cut,
                          out_node.low());
-        __reduce_cut_add(is_flagged(next_node.high()) ? global_1level_cut : local_1level_cut,
+        __reduce_cut_add(next_node.high().is_flagged() ? global_1level_cut : local_1level_cut,
                          out_node.high());
       } else {
 #ifdef ADIAR_STATS
@@ -276,7 +276,8 @@ namespace adiar
       red2_mapping.push({ next_node.uid(), out_node.uid() });
     }
 
-    if (!is_nil(out_node.uid())) {
+    // Add number of nodes to level information, if any nodes were pushed to the output.
+    if (!out_node.low().is_nil() /* && !out_node.high().is_nil() */) {
       out_writer.unsafe_push(create_level_info(label, MAX_ID - out_id));
     }
 
@@ -284,14 +285,14 @@ namespace adiar
     red2_mapping.sort();
 
     // Merging of red1_mapping and red2_mapping
-    mapping next_red1 = {0, 0};
+    mapping next_red1 = { uid(), uid() }; // <-- dummy value
     bool has_next_red1 = red1_mapping.is_open() && red1_mapping.size() > 0;
     if (has_next_red1) {
       red1_mapping.seek(0);
       next_red1 = red1_mapping.read();
     }
 
-    mapping next_red2 = {0, 0};
+    mapping next_red2 = { uid(), uid() }; // <-- dummy value
     bool has_next_red2 = red2_mapping.can_pull();
     if (has_next_red2) {
       next_red2 = red2_mapping.pull();
@@ -310,10 +311,10 @@ namespace adiar
       // Find all arcs that have sources that match the current mapping's old_uid
       while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target()) {
         // The is_high flag is included in arc_t.source() pulled from node_arcs.
-        ptr_t s = node_arcs.pull().source();
+        ptr_uint64 s = node_arcs.pull().source();
 
         // If Reduction Rule 1 was used, then tell the parents to add to the global cut.
-        ptr_t t = is_red1_current ? flag(current_map.new_uid) : current_map.new_uid;
+        ptr_uint64 t = is_red1_current ? flag(current_map.new_uid) : current_map.new_uid;
 
         reduce_pq.push({ s,t });
       }
@@ -339,17 +340,17 @@ namespace adiar
     out_writer.inc_1level_cut(local_1level_cut);
 
     if (!reduce_pq.empty()) {
-      adiar_debug(!terminal_arcs.can_pull() || label_of(terminal_arcs.peek().source()) < label,
+      adiar_debug(!terminal_arcs.can_pull() || terminal_arcs.peek().source().label() < label,
                   "All terminal arcs for 'label' should be processed");
 
-      adiar_debug(!node_arcs.can_pull() || label_of(node_arcs.peek().target()) < label,
+      adiar_debug(!node_arcs.can_pull() || node_arcs.peek().target().label() < label,
                   "All node arcs for 'label' should be processed");
 
       adiar_debug(reduce_pq.empty() || !reduce_pq.can_pull(),
                   "All forwarded arcs for 'label' should be processed");
 
       if (terminal_arcs.can_pull()) {
-        reduce_pq.setup_next_level(label_of(terminal_arcs.peek().source()));
+        reduce_pq.setup_next_level(terminal_arcs.peek().source().label());
       } else {
         reduce_pq.setup_next_level();
       }
@@ -363,7 +364,7 @@ namespace adiar
       adiar_debug(!out_writer.has_pushed(),
                   "No nodes are pushed when it collapses to a terminal");
 
-      const bool terminal_val = value_of(next_red1.new_uid);
+      const bool terminal_val = next_red1.new_uid.value();
 
       out_writer.unsafe_push(node(terminal_val));
       out_writer.set_number_of_terminals(!terminal_val, terminal_val);
@@ -400,33 +401,33 @@ namespace adiar
       const arc_t e_low = terminal_arcs.pull();
 
       // Apply reduction rule 1, if applicable
-      const ptr_t reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
+      const ptr_uint64 reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
       if (reduction_rule_ret != e_low.source()) {
 #ifdef ADIAR_STATS
         stats_reduce.removed_by_rule_1++;
 #endif
-        const bool terminal_val = value_of(reduction_rule_ret);
+        const bool terminal_val = reduction_rule_ret.value();
         const node_t out_node = node(terminal_val);
         out_writer.unsafe_push(out_node);
 
         out_writer.set_number_of_terminals(!terminal_val, terminal_val);
         __reduce_cut_add(out_file->max_1level_cut, 0u, !terminal_val, terminal_val);
       } else {
-        const label_t label = label_of(e_low.source());
+        const label_t label = e_low.source().label();
 
         out_writer.unsafe_push(node(label, MAX_ID, e_low.target(), e_high.target()));
 
         out_writer.unsafe_push(create_level_info(label,1u));
 
-        out_file->max_1level_cut[cut_type::INTERNAL] = 1u;
+        out_file->max_1level_cut[cut_type::INTERNAL]       = 1u;
 
         out_file->max_1level_cut[cut_type::INTERNAL_FALSE] =
-          std::max(!value_of(e_low.target()) + !value_of(e_high.target()), 1);
+          std::max(!e_low.target().value() + !e_high.target().value(), 1);
 
-        out_file->max_1level_cut[cut_type::INTERNAL_TRUE] =
-          std::max(value_of(e_low.target()) + value_of(e_high.target()), 1);
+        out_file->max_1level_cut[cut_type::INTERNAL_TRUE]  =
+          std::max(e_low.target().value() + e_high.target().value(), 1);
 
-        out_file->max_1level_cut[cut_type::ALL]      = 2u;
+        out_file->max_1level_cut[cut_type::ALL]            = 2u;
       }
 
       // Copy over 1-level cut to 2-level cut.

@@ -32,7 +32,7 @@ namespace adiar
   // Data structures
   struct prod_tuple_1 : tuple
   {
-    ptr_t source;
+    ptr_uint64 source;
   };
 
 #ifndef NDEBUG
@@ -58,7 +58,7 @@ namespace adiar
 
   struct prod_tuple_2 : tuple_data
   {
-    ptr_t source;
+    ptr_uint64 source;
   };
 
 #ifndef NDEBUG
@@ -93,13 +93,13 @@ namespace adiar
   template<typename pq_1_t>
   inline void prod_recurse_out(pq_1_t &prod_pq_1, arc_writer &aw,
                                const bool_op &op,
-                               ptr_t source, tuple target)
+                               ptr_uint64 source, tuple target)
   {
-    if (is_terminal(target.t1) && is_terminal(target.t2)) {
+    if (target.t1.is_terminal() && target.t2.is_terminal()) {
       arc_t out_arc = { source, op(target.t1, target.t2) };
       aw.unsafe_push_terminal(out_arc);
     } else {
-      adiar_debug(label_of(source) < label_of(std::min(target.t1, target.t2)),
+      adiar_debug(source.label() < std::min(target.t1, target.t2).label(),
                   "should always push recursion for 'later' level");
 
       prod_pq_1.push({ target.t1, target.t2, source });
@@ -109,7 +109,7 @@ namespace adiar
   template<typename out_policy, typename extra_arg, typename pq_1_t, typename pq_2_t>
   inline void prod_recurse_in(pq_1_t &prod_pq_1, pq_2_t &prod_pq_2,
                               arc_writer &aw,
-                              const extra_arg &ea, ptr_t t1, ptr_t t2)
+                              const extra_arg &ea, ptr_uint64 t1, ptr_uint64 t2)
   {
     while (prod_pq_1.can_pull() && prod_pq_1.top().t1 == t1 && prod_pq_1.top().t2 == t2) {
       out_policy::go(prod_pq_1, aw, ea, prod_pq_1.pull().source);
@@ -125,9 +125,9 @@ namespace adiar
   {
     template<typename pq_1_t>
     static inline void go(pq_1_t& /*prod_pq_1*/, arc_writer &aw,
-                          uid_t out_uid, ptr_t source)
+                          uid_t out_uid, ptr_uint64 source)
     {
-      if (!is_nil(source)) {
+      if (!source.is_nil()) {
         aw.unsafe_push_node({ source, out_uid });
       }
     }
@@ -137,7 +137,7 @@ namespace adiar
   {
     template<typename pq_1_t>
     static inline void go(pq_1_t& /*prod_pq_1*/, arc_writer &aw,
-                          ptr_t out_terminal, ptr_t source)
+                          ptr_uint64 out_terminal, ptr_uint64 source)
     {
       aw.unsafe_push_terminal({ source, out_terminal });
     }
@@ -147,19 +147,19 @@ namespace adiar
   {
     template<typename pq_1_t>
     static inline void go(pq_1_t &prod_pq_1, arc_writer&,
-                          const prod_rec_skipto &r, ptr_t source)
+                          const prod_rec_skipto &r, ptr_uint64 source)
     {
       prod_pq_1.push({ r.t1, r.t2, source });
     }
   };
 
-  inline node_file prod_terminal(ptr_t t1, ptr_t t2, const bool_op &op)
+  inline node_file prod_terminal(ptr_uint64 t1, ptr_uint64 t2, const bool_op &op)
   {
     // TODO: Abuse that op(t1,t2) already is a pointer.
-    return build_terminal(value_of(op(t1,t2)));
+    return build_terminal(op(t1,t2).value());
   }
 
-  inline bool prod_from_1(ptr_t t1, ptr_t t2)
+  inline bool prod_from_1(ptr_uint64 t1, ptr_uint64 t2)
   {
     return fst(t1,t2) == t1;
   }
@@ -168,7 +168,7 @@ namespace adiar
   class prod_same_level_merger
   {
   public:
-    static void merge_root(ptr_t &low1, ptr_t &high1, ptr_t &low2, ptr_t &high2,
+    static void merge_root(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
                            label_t /* level */,
                            const node_t &v1, const node_t &v2)
     {
@@ -180,10 +180,10 @@ namespace adiar
     }
 
   public:
-    static void merge_data(ptr_t &low1, ptr_t &high1, ptr_t &low2, ptr_t &high2,
-                           ptr_t t1, ptr_t t2, ptr_t t_seek,
+    static void merge_data(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
+                           ptr_uint64 t1, ptr_uint64 t2, ptr_uint64 t_seek,
                            const node_t &v1, const node_t &v2,
-                           ptr_t data_low, ptr_t data_high)
+                           ptr_uint64 data_low, ptr_uint64 data_high)
     {
       low1  = t1 < t_seek ? data_low  : v1.low();
       high1 = t1 < t_seek ? data_high : v1.high();
@@ -197,7 +197,7 @@ namespace adiar
   {
   private:
     static void __merge_root(const node_t &v, label_t level,
-                             ptr_t &low, ptr_t &high)
+                             ptr_uint64 &low, ptr_uint64 &high)
     {
       if (!v.is_terminal() && v.label() == level) {
         low = v.low();
@@ -208,7 +208,7 @@ namespace adiar
     }
 
   public:
-    static void merge_root(ptr_t &low1, ptr_t &high1, ptr_t &low2, ptr_t &high2,
+    static void merge_root(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
                            label_t level,
                            const node_t &v1, const node_t &v2)
     {
@@ -217,17 +217,17 @@ namespace adiar
     }
 
   public:
-    static void merge_data(ptr_t &low1, ptr_t &high1, ptr_t &low2, ptr_t &high2,
-                           ptr_t t1, ptr_t t2, ptr_t t_seek,
+    static void merge_data(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
+                           ptr_uint64 t1, ptr_uint64 t2, ptr_uint64 t_seek,
                            const node_t &v1, const node_t &v2,
-                           ptr_t data_low, ptr_t data_high)
+                           ptr_uint64 data_low, ptr_uint64 data_high)
     {
-      if (is_terminal(t1) || is_terminal(t2) || label_of(t1) != label_of(t2)) {
-        if (t1 < t2) { // ==> label_of(t1) < label_of(t2) || is_terminal(t2)
+      if (t1.is_terminal() || t2.is_terminal() || t1.label() != t2.label()) {
+        if (t1 < t2) { // ==> t1.label() < t2.label() || t2.is_terminal()
           low1 = v1.low();
           high1 = v1.high();
           low2 = high2 = t2;
-        } else { // ==> label_of(t1) > label_of(t2) || is_terminal(t1)
+        } else { // ==> t1.label() > t2.label() || t1.is_terminal()
           low1 = high1 = t1;
           low2 = v2.low();
           high2 = v2.high();
@@ -271,10 +271,10 @@ namespace adiar
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process root and create initial recursion requests
-    label_t out_label = label_of(fst(v1.uid(), v2.uid()));
+    label_t out_label = fst(v1.uid(), v2.uid()).label();
     id_t out_id = 0;
 
-    ptr_t low1, low2, high1, high2;
+    ptr_uint64 low1, low2, high1, high2;
     prod_policy::merge_root(low1,high1, low2,high2, out_label, v1, v2);
 
     // Shortcut the root (maybe)
@@ -286,17 +286,17 @@ namespace adiar
 
       if (std::holds_alternative<prod_rec_output>(root_rec)) {
         prod_rec_output r = std::get<prod_rec_output>(root_rec);
-        uid_t out_uid = create_node_uid(out_label, out_id++);
+        const uid_t out_uid(out_label, out_id++);
 
         prod_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
         prod_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(root_rec);
 
-        if (is_terminal(r.t1) && is_terminal(r.t2)) {
+        if (r.t1.is_terminal() && r.t2.is_terminal()) {
           return prod_terminal(r.t1, r.t2, op);
         } else {
-          prod_pq_1.push({ r.t1, r.t2, NIL });
+          prod_pq_1.push({ r.t1, r.t2, ptr_uint64::NIL() });
         }
       }
     }
@@ -318,9 +318,9 @@ namespace adiar
         max_1level_cut = std::max(max_1level_cut, prod_pq_1.size());
       }
 
-      ptr_t source, t1, t2;
+      ptr_uint64 source, t1, t2;
       bool with_data = false;
-      ptr_t data_low = NIL, data_high = NIL;
+      ptr_uint64 data_low = ptr_uint64::NIL(), data_high = ptr_uint64::NIL();
 
       // Merge requests from  prod_pq_1 or prod_pq_2
       if (prod_pq_1.can_pull() && (prod_pq_2.empty() ||
@@ -338,13 +338,13 @@ namespace adiar
         data_high = prod_pq_2.top().data_high;
       }
 
-      adiar_invariant(is_terminal(t1) || out_label <= label_of(t1),
+      adiar_invariant(t1.is_terminal() || out_label <= t1.label(),
                       "Request should never level-wise be behind current position");
-      adiar_invariant(is_terminal(t2) || out_label <= label_of(t2),
+      adiar_invariant(t2.is_terminal() || out_label <= t2.label(),
                       "Request should never level-wise be behind current position");
 
       // Seek request partially in stream
-      ptr_t t_seek = with_data ? snd(t1,t2) : fst(t1,t2);
+      ptr_uint64 t_seek = with_data ? snd(t1,t2) : fst(t1,t2);
       while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
         v1 = in_nodes_1.pull();
       }
@@ -353,7 +353,7 @@ namespace adiar
       }
 
       // Forward information across the level
-      if (is_node(t1) && is_node(t2) && label_of(t1) == label_of(t2)
+      if (t1.is_node() && t2.is_node() && t1.label() == t2.label()
           && !with_data && (v1.uid() != t1 || v2.uid() != t2)) {
         node_t v0 = t1 == v1.uid() /*prod_from_1(t1,t2)*/ ? v1 : v2;
 
@@ -365,15 +365,15 @@ namespace adiar
       }
 
       // Resolve current node and recurse
-      // remember from above: ptr_t low1, low2, high1, high2;
+      // remember from above: ptr low1, low2, high1, high2;
       prod_policy::merge_data(low1,high1, low2,high2,
                               t1, t2, t_seek,
                               v1, v2,
                               data_low, data_high);
 
       // Resolve request
-      prod_policy::compute_cofactor(on_level(t1, out_label), low1, high1);
-      prod_policy::compute_cofactor(on_level(t2, out_label), low2, high2);
+      prod_policy::compute_cofactor(t1.on_level(out_label), low1, high1);
+      prod_policy::compute_cofactor(t2.on_level(out_label), low2, high2);
 
       prod_rec rec_res = prod_policy::resolve_request(op, low1, low2, high1, high2);
 
@@ -381,7 +381,7 @@ namespace adiar
         prod_rec_output r = std::get<prod_rec_output>(rec_res);
 
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
-        uid_t out_uid = create_node_uid(out_label, out_id++);
+        const uid_t out_uid(out_label, out_id++);
 
         prod_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
         prod_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
@@ -390,8 +390,8 @@ namespace adiar
 
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(rec_res);
-        if (is_terminal(r.t1) && is_terminal(r.t2)) {
-          if (is_nil(source)) {
+        if (r.t1.is_terminal() && r.t2.is_terminal()) {
+          if (source.is_nil()) {
             // Skipped in both DAGs all the way from the root until a pair of terminals.
             return prod_terminal(r.t1, r.t2, op);
           }

@@ -1,7 +1,7 @@
 go_bandit([]() {
   describe("adiar/bdd/assignment.cpp", []() {
-    ptr_t terminal_T = create_terminal_ptr(true);
-    ptr_t terminal_F = create_terminal_ptr(false);
+    ptr_uint64 terminal_T = ptr_uint64(true);
+    ptr_uint64 terminal_F = ptr_uint64(false);
 
     node_file bdd_1;
     /*

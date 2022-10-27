@@ -29,16 +29,16 @@ namespace adiar {
         node_t node = ns.pull();
 
         out << "\tn"
-            << node.uid()
+            << node.uid()._raw
             << " [label=<x<SUB>"
             << node.label()
             << "</SUB>, id<SUB>"
-            << (node.id()) << "</SUB>>, style=rounded];"
+            << node.id() << "</SUB>>, style=rounded];"
             << std::endl;
       }
 
-      out << "\tn" << create_terminal_ptr(false) << " [label=\"" << T::false_print << "\"];" << std::endl;
-      out << "\tn" << create_terminal_ptr(true) << " [label=\"" << T::true_print << "\"];" << std::endl;
+      out << "\tn" << ptr_uint64(false)._raw << " [label=\"" << T::false_print << "\"];" << std::endl;
+      out << "\tn" << ptr_uint64(true)._raw << " [label=\"" << T::true_print << "\"];" << std::endl;
 
       out <<  std::endl << "\t// Arcs" << std::endl;
 
@@ -46,28 +46,28 @@ namespace adiar {
       while (ns.can_pull()) {
         node_t node = ns.pull();
 
-        out << "\tn" << node.uid()
+        out << "\tn" << node.uid()._raw
             << " -> "
-            << "n" << node.low()
+            << "n" << node.low()._raw
             << " [style=dashed];" << std::endl;
-        out << "\tn" << node.uid()
+        out << "\tn" << node.uid()._raw
             << " -> "
-            << "n" << node.high()
+            << "n" << node.high()._raw
             << "[style=solid];"  << std::endl;
       }
 
       out <<  std::endl << "\t// Ranks" << std::endl;
 
       ns.reset();
-      out << "\t{ rank=same; " << "n" << ns.pull().uid() << " }" << std::endl;
+      out << "\t{ rank=same; " << "n" << ns.pull().uid()._raw << " }" << std::endl;
 
       while (ns.can_pull()) {
         node_t current_node = ns.pull();
 
-        out << "\t{ rank=same; " << "n" << current_node.uid() << " ";
+        out << "\t{ rank=same; " << "n" << current_node.uid()._raw << " ";
 
         while(ns.can_pull() && current_node.label() == ns.peek().label()) {
-          out << "n" << ns.pull().uid() << " ";
+          out << "n" << ns.pull().uid()._raw << " ";
         }
         out << "}" << std::endl;
       }
@@ -98,9 +98,9 @@ namespace adiar {
     while (nas.can_pull()) {
       arc_t a = nas.pull();
       out << "\t"
-          << "n" << label_of(a.target()) << "_" << id_of(a.target())
+          << "n" << a.target().label() << "_" << a.target().id()
           << " -> "
-          << "n" << label_of(a.source()) << "_" << id_of(a.source())
+          << "n" << a.source().label() << "_" << a.source().id()
           << " [style=" << (a.is_high() ? "solid" : "dashed") << ", color=blue];"
           << std::endl;
     }
@@ -114,9 +114,9 @@ namespace adiar {
     while (sas.can_pull()) {
       arc_t a = sas.pull();
       out << "\t"
-          << "n" << label_of(a.source()) << "_" << id_of(a.source())
+          << "n" << a.source().label() << "_" << a.source().id()
           << " -> "
-          << "s" << value_of(a.target())
+          << "s" << a.target().value()
           << " [style=" << (a.is_high() ? "solid" : "dashed") << ", color=red];"
           << std::endl;
     }
