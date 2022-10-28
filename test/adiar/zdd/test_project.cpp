@@ -581,10 +581,10 @@ go_bandit([]() {
       /* Expected: { {2}, {4}, {2,4} }
 
                          1     ---- x2
-                         ||
-                         2     ---- x4
                         / \
-                        F T
+                        2 3    ---- x4
+                       / \|
+                       F  T
       */
 
       __zdd out = zdd_project(zdd_4, dom);
@@ -593,12 +593,17 @@ go_bandit([]() {
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID,
+                                                            terminal_T,
+                                                            terminal_T)));
+
+      AssertThat(out_nodes.can_pull(), Is().True());
+      AssertThat(out_nodes.pull(), Is().EqualTo(create_node(4, MAX_ID-1,
                                                             terminal_F,
                                                             terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(create_node(2, MAX_ID,
-                                                            create_node_ptr(4, MAX_ID),
+                                                            create_node_ptr(4, MAX_ID-1),
                                                             create_node_ptr(4, MAX_ID))));
 
       AssertThat(out_nodes.can_pull(), Is().False());
@@ -606,7 +611,7 @@ go_bandit([]() {
       level_info_test_stream<node_t> ms(out);
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,2u)));
 
       AssertThat(ms.can_pull(), Is().True());
       AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -616,10 +621,10 @@ go_bandit([]() {
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
 
       AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(3u));
     });
   });
  });

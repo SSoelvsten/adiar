@@ -267,7 +267,7 @@ namespace adiar
         ptr_t high2 = with_data ? v.high    : t2;
 
         quantify_policy::compute_cofactor(true, low1, high1);
-        quantify_policy::compute_cofactor(on_level(out_label, t2), low2, high2);
+        quantify_policy::compute_cofactor(on_level(t2, out_label), low2, high2);
 
         adiar_debug(out_id < MAX_ID, "Has run out of ids");
         uid_t out_uid = create_node_uid(out_label, out_id++);
