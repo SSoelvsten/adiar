@@ -7,7 +7,7 @@ may constitute interesting undergraduate and graduate projects.
 
 - [Additional BDD algorithms](#additional-bdd-algorithms)
     - [Set manipulation](#set-manipulation)
-    - [Linear Optimisation](#linear-optimisation)
+    - [Boolean Optimisation](#boolean-optimisation)
     - [Advanced satisfiability functions](#advanced-satisfiability-functions)
     - [Coudert's and Madre's BDD functions](#couderts-and-madres-bdd-functions)
 - [Additional Features](#additional-features)
@@ -51,22 +51,22 @@ of Sylvan for an overview of this. More interesting is Coudert and Madre's
 _Meta-products_ representation [[Coudert92](#references)] of sets in BDDs and the
 functions related to it.
 
-### Linear Optimisation
+### Boolean Optimisation
 
-Donald Knuth solved the NP-complete _travelling salesman_  problem to optimality
-in a graph of 50 nodes in one of his [lectures](https://youtu.be/SQE21efsf7Y?t=3776).
+Donald Knuth solved the NP-complete combinatorial _travelling salesman_ problem (and
+many others) to optimality in a graph of 50 nodes in one of his
+[lectures](https://youtu.be/SQE21efsf7Y?t=3776) and also in *The Art of Programming
+Volume 4A* on page 208 - 214. Given Adiar already being competetive for combinatorial
+problems, this seems like an interesting way to go.
 
-If we want to support the same, we need to derive the optimal solution given a
-linear cost function on the input variables for a BDD / ZDD. That is, the value
-of a path is derived from a list of _integers_/_floats_ constants; each constant
-is added to the value of a path, if one followed the _true_ edge rather than the
-_false_ edge.
+We should be able to derive the best (i.e. minimal or maximal) solution in O(sort(N))
+I/Os with a similar algorithm as for Counting paths. The question then is, how does
+one (a) maintain the entire path(s) of possible best solutions traversed or (b)
+reconstruct the best path? I think (b) is the most promising by using O(N) extra space
+and time after the initial sweep.
 
-One should be able to derive this value of the best (i.e. minimal or maximal)
-solution in O(sort(N)) I/Os with a similar algorithm as for Counting paths. The
-question then is, how does one (a) maintain the entire path traversed or (b)
-reconstruct said path? I think (b) is the most promising by using O(N) extra
-space and time after the initial sweep.
+Alternatively, one may want to look into recreating the Counting algorithm bottom-up
+and then generalising it for this application.
 
 ### Advanced satisfiability functions
 The number of satisfiable assignments can be very large (even larger than
