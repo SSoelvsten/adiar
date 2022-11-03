@@ -272,11 +272,17 @@ namespace adiar {
         return 0u;
       }
 
-      // HACK: the 'internal_priority_queue' can take (two) fewer elements than
-      // the 'internal_sorter'. So, this is a slight under-approximation of what
-      // we truly could do with this amount of memory.
-      return priority_queue<memory::INTERNAL, elem_t, elem_comp_t>
-        ::memory_fits((memory_bytes - const_memory_bytes) / DATA_STRUCTURES);
+      // HACK: just provide the minimum of what either of the data structures
+      //       can match when given an equal share of the memory.
+      const size_t memory_per_data_structure = (memory_bytes - const_memory_bytes) / DATA_STRUCTURES;
+
+      const size_t sorter_fits = sorter<memory::INTERNAL, elem_t, elem_comp_t>
+        ::memory_fits(memory_per_data_structure);
+
+      const size_t priority_queue_fits = priority_queue<memory::INTERNAL, elem_t, elem_comp_t>
+        ::memory_fits(memory_per_data_structure);
+
+      return std::min(sorter_fits, priority_queue_fits);
     }
 
   private:
