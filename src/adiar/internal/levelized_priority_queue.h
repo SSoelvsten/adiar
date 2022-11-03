@@ -273,7 +273,7 @@ namespace adiar {
       }
 
       // HACK: just provide the minimum of what either of the data structures
-      //       can match when given an equal share of the memory.
+      //       can hold when given an equal share of the memory.
       const size_t memory_per_data_structure = (memory_bytes - const_memory_bytes) / DATA_STRUCTURES;
 
       const size_t sorter_fits = sorter<memory::INTERNAL, elem_t, elem_comp_t>
@@ -402,17 +402,35 @@ namespace adiar {
   private:
     static tpie::memory_size_type m_overflow_queue(tpie::memory_size_type memory_given)
     {
-      const tpie::memory_size_type eight_MiB = 8 * 1024;
-      const tpie::memory_size_type weighted_share = memory_given / (4 * BUCKETS + 1);
+      // GCC bug 85282: One cannot do a member class specialization of each of
+      // the two following cases. So, we will have to resort to a constexpr
+      // if-statement instead.
+      if constexpr (mem_mode == memory::INTERNAL) {
+        // ---------------------------------------------------------------------
+        // INTERNAL MEMORY MODE:
+        //   Divide memory in equal parts
 
-      return std::max(eight_MiB, weighted_share);
+        return memory_given / DATA_STRUCTURES;
+      } else if constexpr (mem_mode == memory::EXTERNAL) {
+        // ---------------------------------------------------------------------
+        // EXTERNAL MEMORY MODE:
+        //   Use 1/16th of the memory and at least 8 MiB.
+
+        const tpie::memory_size_type eight_MiB = 8 * 1024;
+        const tpie::memory_size_type weighted_share = memory_given / (4 * BUCKETS + 1);
+
+        return std::max(eight_MiB, weighted_share);
+      } else {
+        // ---------------------------------------------------------------------
+        static_assert(mem_mode != memory::AUTO, "Memory mode cannot be set to 'AUTO' at compile-time");
+      }
     }
 
     levelized_priority_queue(tpie::memory_size_type memory_given, size_t max_size,
                              [[maybe_unused]] stats_t::levelized_priority_queue_t &stats)
       : _max_size(max_size),
         _memory_given(memory_given),
-        _memory_occupied_by_merger(memory::available()),
+        _memory_occupied_by_merger(memory::available()), // <-- ?
         _memory_occupied_by_overflow(m_overflow_queue(memory_given)),
         _overflow_queue(m_overflow_queue(memory_given), max_size)
 #ifdef ADIAR_STATS
