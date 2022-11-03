@@ -53,7 +53,7 @@ typedef meta_file_writer<pq_test_data> pq_test_writer;
 template <typename file_t, size_t LOOK_AHEAD>
 using test_priority_queue = levelized_priority_queue<pq_test_data, pq_test_label_ext,
                                                      pq_test_lt, LOOK_AHEAD,
-                                                     internal_sorter, internal_priority_queue,
+                                                     memory::INTERNAL,
                                                      file_t, 1u, std::less<label_t>,
                                                      1u>;
 
@@ -4293,7 +4293,7 @@ go_bandit([]() {
 
       it("can sort elements from buckets", [&]() {
           levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_gt, 1u,
-                                   internal_sorter, internal_priority_queue,
+                                   memory::INTERNAL,
                                    label_file, 1u, std::greater<label_t>,
                                    1u>
             pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4329,7 +4329,7 @@ go_bandit([]() {
 
       it("can sort elements in overflow priority queue", [&]() {
           levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_gt, 1u,
-                                   internal_sorter, internal_priority_queue,
+                                   memory::INTERNAL,
                                    label_file, 1u, std::greater<label_t>,
                                    1u>
             pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4352,7 +4352,7 @@ go_bandit([]() {
 
       it("can merge elements from buckets and overflow", [&]() {
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_gt, 1u,
-                                 internal_sorter, internal_priority_queue,
+                                 memory::INTERNAL,
                                  label_file, 1u, std::greater<label_t>,
                                  1u>
           pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4408,7 +4408,7 @@ go_bandit([]() {
 
       it("can sort elements from the priority queue [1]", [&]() {
           levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_gt, 0u,
-                                   internal_sorter, internal_priority_queue,
+                                   memory::INTERNAL,
                                    label_file, 1u, std::greater<label_t>,
                                    1u>
             pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4444,7 +4444,7 @@ go_bandit([]() {
 
       it("can sort elements from the priority queue [2]", [&]() {
           levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_gt, 0u,
-                                   internal_sorter, internal_priority_queue,
+                                   memory::INTERNAL,
                                    label_file, 1u, std::greater<label_t>,
                                    1u>
             pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4467,7 +4467,7 @@ go_bandit([]() {
 
       it("can sort elements from the priority queue [3]", [&]() {
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_gt, 0u,
-                                 internal_sorter, internal_priority_queue,
+                                 memory::INTERNAL,
                                  label_file, 1u, std::greater<label_t>,
                                  1u>
           pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4514,7 +4514,7 @@ go_bandit([]() {
         label_file f;
 
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt, 1u,
-                                  internal_sorter, internal_priority_queue,
+                                  memory::INTERNAL,
                                   label_file, 1u, std::less<label_t>,
                                   0u>
           pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4535,7 +4535,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt, 1u,
-                                  internal_sorter, internal_priority_queue,
+                                  memory::INTERNAL,
                                   label_file, 1u, std::less<label_t>,
                                   0u>
           pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4556,7 +4556,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt, 1u,
-                                  internal_sorter, internal_priority_queue,
+                                  memory::INTERNAL,
                                   label_file, 1u, std::less<label_t>,
                                   0u>
           pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4579,7 +4579,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt, 1u,
-                                 internal_sorter, internal_priority_queue,
+                                 memory::INTERNAL,
                                  pq_test_file, 1u, std::less<label_t>,
                                  0u>
           pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4618,7 +4618,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt, 1u,
-                                 internal_sorter, internal_priority_queue,
+                                 memory::INTERNAL,
                                  pq_test_file, 1u, std::less<label_t>,
                                  0u>
           pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4650,7 +4650,7 @@ go_bandit([]() {
         label_file f;
 
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt, 0u,
-                                  internal_sorter, internal_priority_queue,
+                                  memory::INTERNAL,
                                   label_file, 1u, std::less<label_t>,
                                   0u>
           pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4671,7 +4671,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt, 0u,
-                                 internal_sorter, internal_priority_queue,
+                                 memory::INTERNAL,
                                  pq_test_file, 1u, std::less<label_t>,
                                  0u>
           pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4710,7 +4710,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt, 0u,
-                                 internal_sorter, internal_priority_queue,
+                                 memory::INTERNAL,
                                  pq_test_file, 1u, std::less<label_t>,
                                  0u>
           pq({f}, memory::available(), 32, stats_lpq_tests);
@@ -4754,7 +4754,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt, 1u,
-                                 internal_sorter, internal_priority_queue,
+                                 memory::INTERNAL,
                                  pq_test_file, 2u, std::less<label_t>,
                                  0u>
           pq({f1,f2}, memory::available(), 32, stats_lpq_tests);
@@ -4824,7 +4824,7 @@ go_bandit([]() {
         }
 
         levelized_priority_queue<pq_test_data, pq_test_label_ext, pq_test_lt, 0u,
-                                 internal_sorter, internal_priority_queue,
+                                 memory::INTERNAL,
                                  pq_test_file, 2u, std::less<label_t>,
                                  0u>
           pq({f1,f2}, memory::available(), 32, stats_lpq_tests);

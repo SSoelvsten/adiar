@@ -47,13 +47,11 @@ namespace adiar
     }
   };
 
-  template<size_t LOOK_AHEAD,
-           template<typename, typename> typename sorter_template,
-           template<typename, typename> typename priority_queue_template>
+  template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using intercut_priority_queue_t =
     levelized_label_priority_queue<intercut_req, intercut_req_label, intercut_req_lt,
                                    LOOK_AHEAD,
-                                   sorter_template, priority_queue_template,
+                                   mem_mode,
                                    2u,
                                    0u>;
 
@@ -309,7 +307,7 @@ namespace adiar
     const size_t pq_memory = aux_available_memory;
 
     const size_t pq_memory_fits =
-      intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>::memory_fits(pq_memory);
+      intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory::memory_mode::INTERNAL>::memory_fits(pq_memory);
 
     const bool internal_only = memory::mode == memory::INTERNAL;
     const bool external_only = memory::mode == memory::EXTERNAL;
@@ -323,25 +321,21 @@ namespace adiar
       stats_intercut.lpq.unbucketed++;
 #endif
       return __intercut<intercut_policy,
-                        intercut_priority_queue_t<0, internal_sorter, internal_priority_queue>>
+                        intercut_priority_queue_t<0, memory::INTERNAL>>
         (dd, labels, pq_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_intercut.lpq.internal++;
 #endif
       return __intercut<intercut_policy,
-                        intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD,
-                                                  internal_sorter,
-                                                  internal_priority_queue>>
+                        intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>>
         (dd, labels, pq_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_intercut.lpq.external++;
 #endif
       return __intercut<intercut_policy,
-                        intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD,
-                                                  external_sorter,
-                                                  external_priority_queue>>
+                        intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory::EXTERNAL>>
         (dd, labels, pq_memory, max_pq_size);
     }
   }

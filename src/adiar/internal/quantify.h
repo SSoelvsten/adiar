@@ -66,16 +66,13 @@ namespace adiar
     }
   };
 
-  template<size_t LOOK_AHEAD,
-           template<typename, typename> typename sorter_template,
-           template<typename, typename> typename priority_queue_template>
+  template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using quantify_priority_queue_1_t =
-    levelized_node_priority_queue<quantify_tuple, tuple_label,
-                                  quantify_1_lt, LOOK_AHEAD,
-                                  sorter_template, priority_queue_template>;
+    levelized_node_priority_queue<quantify_tuple, tuple_label, quantify_1_lt, LOOK_AHEAD, mem_mode>;
 
-  template<template<typename, typename> typename priority_queue_template>
-  using quantify_priority_queue_2_t = priority_queue_template<quantify_tuple_data, quantify_2_lt>;
+  template<memory::memory_mode mem_mode>
+  using quantify_priority_queue_2_t =
+    priority_queue<mem_mode, quantify_tuple_data, quantify_2_lt>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -347,22 +344,22 @@ namespace adiar
       - arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
+      quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>::DATA_STRUCTURES;
 
     constexpr size_t data_structures_in_pq_2 =
-      quantify_priority_queue_2_t<internal_priority_queue>::DATA_STRUCTURES;
+      quantify_priority_queue_2_t<memory::INTERNAL>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
 
     const size_t pq_1_memory_fits =
-      quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
+      quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_internal_memory =
       aux_available_memory - pq_1_internal_memory;
 
     const size_t pq_2_memory_fits =
-      quantify_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
+      quantify_priority_queue_2_t<memory::INTERNAL>::memory_fits(pq_2_internal_memory);
 
     const bool internal_only = memory::mode == memory::INTERNAL;
     const bool external_only = memory::mode == memory::EXTERNAL;
@@ -381,8 +378,8 @@ namespace adiar
       stats_quantify.lpq.unbucketed++;
 #endif
       return __quantify<quantify_policy,
-                        quantify_priority_queue_1_t<0, internal_sorter, internal_priority_queue>,
-                        quantify_priority_queue_2_t<internal_priority_queue>>
+                        quantify_priority_queue_1_t<0, memory::INTERNAL>,
+                        quantify_priority_queue_2_t<memory::INTERNAL>>
         (in, label, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
@@ -390,8 +387,8 @@ namespace adiar
       stats_quantify.lpq.internal++;
 #endif
       return __quantify<quantify_policy,
-                        quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>,
-                        quantify_priority_queue_2_t<internal_priority_queue>>
+                        quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>,
+                        quantify_priority_queue_2_t<memory::INTERNAL>>
         (in, label, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
@@ -401,8 +398,8 @@ namespace adiar
       const size_t pq_2_memory = pq_1_memory;
 
       return __quantify<quantify_policy,
-                        quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, external_sorter, external_priority_queue>,
-                        quantify_priority_queue_2_t<external_priority_queue>>
+                        quantify_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::EXTERNAL>,
+                        quantify_priority_queue_2_t<memory::EXTERNAL>>
         (in, label, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
   }
