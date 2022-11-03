@@ -332,7 +332,8 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Memory used by the label merger.
     ////////////////////////////////////////////////////////////////////////////
-    tpie::memory_size_type _memory_occupied_by_merger;
+    const tpie::memory_size_type _memory_occupied_by_merger =
+      label_merger<file_t, level_comp_t, FILES>::memory_usage();
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Memory to be used for the buckets.
@@ -342,7 +343,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Memory to be used for the overflow priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    tpie::memory_size_type _memory_occupied_by_overflow;
+    const tpie::memory_size_type _memory_occupied_by_overflow;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Provides the levels to distribute all elements across.
@@ -402,6 +403,14 @@ namespace adiar {
   private:
     static tpie::memory_size_type m_overflow_queue(tpie::memory_size_type memory_given)
     {
+      const size_t const_memory_bytes = label_merger<file_t, level_comp_t, FILES>::memory_usage();
+
+      adiar_debug(const_memory_bytes < memory_given,
+                  "There should be enough memory for the merger");
+
+      // subtract memory of the merger to not take any of its memory.
+      memory_given -= label_merger<file_t, level_comp_t, FILES>::memory_usage();
+
       // GCC bug 85282: One cannot do a member class specialization of each of
       // the two following cases. So, we will have to resort to a constexpr
       // if-statement instead.
@@ -414,7 +423,7 @@ namespace adiar {
       } else if constexpr (mem_mode == memory::EXTERNAL) {
         // ---------------------------------------------------------------------
         // EXTERNAL MEMORY MODE:
-        //   Use 1/16th of the memory and at least 8 MiB.
+        //   Use 1/(4Buckets + 1)th of the memory and at least 8 MiB.
 
         const tpie::memory_size_type eight_MiB = 8 * 1024;
         const tpie::memory_size_type weighted_share = memory_given / (4 * BUCKETS + 1);
@@ -422,7 +431,8 @@ namespace adiar {
         return std::max(eight_MiB, weighted_share);
       } else {
         // ---------------------------------------------------------------------
-        static_assert(mem_mode != memory::AUTO, "Memory mode cannot be set to 'AUTO' at compile-time");
+        static_assert(mem_mode == memory::INTERNAL && mem_mode == memory::EXTERNAL,
+                      "Memory mode must be 'INTERNAL' or 'EXTERNAL' at compile-time");
       }
     }
 
@@ -430,7 +440,6 @@ namespace adiar {
                              [[maybe_unused]] stats_t::levelized_priority_queue_t &stats)
       : _max_size(max_size),
         _memory_given(memory_given),
-        _memory_occupied_by_merger(memory::available()), // <-- ?
         _memory_occupied_by_overflow(m_overflow_queue(memory_given)),
         _overflow_queue(m_overflow_queue(memory_given), max_size)
 #ifdef ADIAR_STATS
@@ -484,15 +493,10 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     void init_buckets()
     {
-      // This was set in the private constructor above to be the total amount of
-      // memory. This was done before the _level_merger had created all of its
-      // level_info streams, so we can get how much space they already took of
-      // what we are given now.
-      _memory_occupied_by_merger -= memory::available();
-      _memory_for_buckets = _memory_given - _memory_occupied_by_merger - _memory_occupied_by_overflow;
-
       adiar_debug(_memory_occupied_by_merger + _memory_occupied_by_overflow <= _memory_given,
                   "the amount of memory used should be within the given bounds");
+
+      _memory_for_buckets = _memory_given - _memory_occupied_by_merger - _memory_occupied_by_overflow;
 
       // Initially skip the number of levels
       for (label_t idx = 0; _level_merger.can_pull() && idx < INIT_LEVEL; idx++) {
