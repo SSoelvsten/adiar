@@ -1002,6 +1002,10 @@ namespace adiar {
     }
   };
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Specialization of the levelized priority queue with a look_ahead
+  ///        of '0', i.e. **without** any buckets.
+  ////////////////////////////////////////////////////////////////////////////
   template <typename elem_t,
             typename elem_level_t,
             typename elem_comp_t,
