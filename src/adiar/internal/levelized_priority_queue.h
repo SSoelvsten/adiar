@@ -14,6 +14,7 @@
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/memory.h>
 #include <adiar/internal/priority_queue.h>
 #include <adiar/internal/sorter.h>
 #include <adiar/internal/util.h>
@@ -206,14 +207,13 @@ namespace adiar {
 
   template <typename elem_t,
             typename elem_level_t,
-            typename elem_comp_t  = std::less<elem_t>,
-            label_t  LOOK_AHEAD = ADIAR_LPQ_LOOKAHEAD,
-            template<typename, typename> typename sorter_template = external_sorter,
-            template<typename, typename> typename priority_queue_template = external_priority_queue,
-            typename file_t       = meta_file<elem_t>,
-            size_t   FILES        = 1u,
-            typename level_comp_t = std::less<label_t>,
-            label_t  INIT_LEVEL   = 1u
+            typename elem_comp_t         = std::less<elem_t>,
+            label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
+            memory::memory_mode mem_mode = memory::EXTERNAL,
+            typename file_t              = meta_file<elem_t>,
+            size_t   FILES               = 1u,
+            typename level_comp_t        = std::less<label_t>,
+            label_t  INIT_LEVEL          = 1u
             >
   class levelized_priority_queue
   {
@@ -238,12 +238,12 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the sorter for each bucket.
     ////////////////////////////////////////////////////////////////////////////
-    typedef sorter_template<elem_t, elem_comp_t> sorter_t;
+    typedef sorter<mem_mode, elem_t, elem_comp_t> sorter_t;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the overflow priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    typedef priority_queue_template<elem_t, elem_comp_t> priority_queue_t;
+    typedef priority_queue<mem_mode, elem_t, elem_comp_t> priority_queue_t;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of buckets.
@@ -259,8 +259,8 @@ namespace adiar {
   public:
     static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
-      return internal_priority_queue<elem_t, elem_comp_t>::memory_usage(no_elements)
-        + BUCKETS * internal_sorter<elem_t, elem_comp_t>::memory_usage(no_elements)
+      return priority_queue<memory::INTERNAL, elem_t, elem_comp_t>::memory_usage(no_elements)
+        + BUCKETS * sorter<memory::INTERNAL, elem_t, elem_comp_t>::memory_usage(no_elements)
         + label_merger<file_t, level_comp_t, FILES>::memory_usage();
     }
 
@@ -275,7 +275,7 @@ namespace adiar {
       // HACK: the 'internal_priority_queue' can take (two) fewer elements than
       // the 'internal_sorter'. So, this is a slight under-approximation of what
       // we truly could do with this amount of memory.
-      return internal_priority_queue<elem_t, elem_comp_t>
+      return priority_queue<memory::INTERNAL, elem_t, elem_comp_t>
         ::memory_fits((memory_bytes - const_memory_bytes) / DATA_STRUCTURES);
     }
 
@@ -981,25 +981,23 @@ namespace adiar {
   template <typename elem_t,
             typename elem_level_t,
             typename elem_comp_t,
-            template<typename, typename> typename sorter_template,
-            template<typename, typename> typename priority_queue_template,
+            memory::memory_mode mem_mode,
             typename file_t,
             size_t   FILES,
             typename level_comp_t,
             label_t  INIT_LEVEL
             >
-  class levelized_priority_queue<elem_t, elem_level_t, elem_comp_t, 0u,
-                                 sorter_template, priority_queue_template,
-                                 file_t, FILES, level_comp_t, INIT_LEVEL>
+  class levelized_priority_queue<elem_t, elem_level_t, elem_comp_t, 0u, // <--
+                                 mem_mode, file_t, FILES, level_comp_t, INIT_LEVEL>
   {
   private:
     static constexpr label_t NO_LABEL = MAX_LABEL+1;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of the priority queue.
+    /// \brief Type of the overflow priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    typedef priority_queue_template<elem_t, elem_comp_t> priority_queue_t;
+    typedef priority_queue<mem_mode, elem_t, elem_comp_t> priority_queue_t;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Total number of data structures in Levelized Priority Queue.
@@ -1009,12 +1007,12 @@ namespace adiar {
   public:
     static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
-      return internal_priority_queue<elem_t, elem_comp_t>::memory_usage(no_elements);
+      return priority_queue<memory::INTERNAL, elem_t, elem_comp_t>::memory_usage(no_elements);
     }
 
     static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
-      return internal_priority_queue<elem_t, elem_comp_t>::memory_fits(memory_bytes);
+      return priority_queue<memory::INTERNAL, elem_t, elem_comp_t>::memory_fits(memory_bytes);
     }
 
   private:
@@ -1310,43 +1308,40 @@ namespace adiar {
 
   template <typename elem_t,
             typename elem_level_t,
-            typename elem_comp_t = std::less<elem_t>,
-            label_t  LOOK_AHEAD  = ADIAR_LPQ_LOOKAHEAD,
-            template<typename, typename> typename sorter_template = external_sorter,
-            template<typename, typename> typename priority_queue_template = external_priority_queue,
+            typename elem_comp_t         = std::less<elem_t>,
+            label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
+            memory::memory_mode mem_mode = memory::EXTERNAL,
             size_t   FILES       = 1u,
             label_t  INIT_LEVEL  = 1u>
   using levelized_node_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
                                                                  elem_comp_t, LOOK_AHEAD,
-                                                                 sorter_template, priority_queue_template,
+                                                                 mem_mode,
                                                                  node_file, FILES, std::less<label_t>,
                                                                  INIT_LEVEL>;
 
   template <typename elem_t,
             typename elem_level_t,
-            typename elem_comp_t  = std::less<elem_t>,
-            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD,
-            template<typename, typename> typename sorter_template = external_sorter,
-            template<typename, typename> typename priority_queue_template = external_priority_queue,
-            size_t   FILES        = 1u,
-            label_t  INIT_LEVEL   = 1u>
+            typename elem_comp_t         = std::less<elem_t>,
+            label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
+            memory::memory_mode mem_mode = memory::EXTERNAL,
+            size_t   FILES               = 1u,
+            label_t  INIT_LEVEL          = 1u>
   using levelized_arc_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
                                                                 elem_comp_t, LOOK_AHEAD,
-                                                                sorter_template, priority_queue_template,
+                                                                mem_mode,
                                                                 arc_file, FILES, std::greater<label_t>,
                                                                 INIT_LEVEL>;
 
   template <typename elem_t,
             typename elem_level_t,
-            typename elem_comp_t  = std::less<elem_t>,
-            label_t  LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD,
-            template<typename, typename> typename sorter_template = external_sorter,
-            template<typename, typename> typename priority_queue_template = external_priority_queue,
-            size_t   FILES        = 1u,
-            label_t  INIT_LEVEL   = 1u>
+            typename elem_comp_t         = std::less<elem_t>,
+            label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
+            memory::memory_mode mem_mode = memory::EXTERNAL,
+            size_t   FILES               = 1u,
+            label_t  INIT_LEVEL          = 1u>
   using levelized_label_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
                                                                   elem_comp_t, LOOK_AHEAD,
-                                                                  sorter_template, priority_queue_template,
+                                                                  mem_mode,
                                                                   label_file, FILES, std::less<label_t>,
                                                                   INIT_LEVEL>;
 }

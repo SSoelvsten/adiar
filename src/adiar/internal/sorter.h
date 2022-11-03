@@ -10,13 +10,18 @@
 #include <tpie/sort.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/memory.h>
 
 namespace adiar {
+  template <memory::memory_mode mem_mode, typename elem_t, typename comp_t = std::less<elem_t>>
+  class sorter;
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's internal vector with standard quick-sort.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, typename pred_t = std::less<T>>
-  class internal_sorter {
+  template <typename T, typename pred_t>
+  class sorter<memory::INTERNAL, T, pred_t>
+  {
   private:
     tpie::array<T> _array;
     pred_t _pred;
@@ -46,15 +51,15 @@ namespace adiar {
 
     static constexpr size_t DATA_STRUCTURES = 1u;
 
-    static std::unique_ptr<internal_sorter<T, pred_t>> make_unique(size_t memory_bytes,
-                                                                   size_t no_elements,
-                                                                   size_t no_sorters,
-                                                                   pred_t pred = pred_t())
+    static std::unique_ptr<sorter<memory::INTERNAL, T, pred_t>> make_unique(size_t memory_bytes,
+                                                                             size_t no_elements,
+                                                                             size_t no_sorters,
+                                                                             pred_t pred = pred_t())
     {
-      return std::make_unique<internal_sorter<T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
+      return std::make_unique<sorter<memory::INTERNAL, T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
     }
 
-    static void reset_unique(std::unique_ptr<internal_sorter<T, pred_t>> &u_ptr,
+    static void reset_unique(std::unique_ptr<sorter<memory::INTERNAL, T, pred_t>> &u_ptr,
                              size_t /*memory_bytes*/,
                              size_t /*no_elements*/,
                              size_t /*no_sorters*/,
@@ -64,7 +69,10 @@ namespace adiar {
     }
 
   public:
-    internal_sorter([[maybe_unused]] size_t memory_bytes, size_t no_elements, [[maybe_unused]] size_t no_sorters, pred_t pred = pred_t())
+    sorter([[maybe_unused]] size_t memory_bytes,
+           size_t no_elements,
+           [[maybe_unused]] size_t no_sorters,
+           pred_t pred = pred_t())
       : _array(no_elements), _pred(pred), _size(0), _front_idx(0)
     {
       adiar_debug(no_elements <= memory_fits(memory_bytes / no_sorters),
@@ -112,23 +120,24 @@ namespace adiar {
   /// TODO:
   /// - Peek function
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, typename pred_t = std::less<T>>
-  class external_sorter {
+  template <typename T, typename pred_t>
+  class sorter<memory::EXTERNAL, T, pred_t>
+  {
   private:
     tpie::merge_sorter<T, false, pred_t> _sorter;
 
   public:
     static constexpr size_t DATA_STRUCTURES = 1u;
 
-    static std::unique_ptr<external_sorter<T, pred_t>> make_unique(size_t memory_bytes,
-                                                                   size_t no_elements,
-                                                                   size_t no_sorters,
-                                                                   pred_t pred = pred_t())
+    static std::unique_ptr<sorter<memory::EXTERNAL, T, pred_t>> make_unique(size_t memory_bytes,
+                                                                            size_t no_elements,
+                                                                            size_t no_sorters,
+                                                                            pred_t pred = pred_t())
     {
-      return std::make_unique<external_sorter<T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
+      return std::make_unique<sorter<memory::EXTERNAL, T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
     }
 
-    static void reset_unique(std::unique_ptr<external_sorter<T, pred_t>> &u_ptr,
+    static void reset_unique(std::unique_ptr<sorter<memory::EXTERNAL, T, pred_t>> &u_ptr,
                              size_t memory_bytes,
                              size_t no_elements,
                              size_t no_sorters,
@@ -138,7 +147,7 @@ namespace adiar {
     }
 
   public:
-    external_sorter(size_t memory_bytes, size_t no_elements, size_t number_of_sorters, pred_t pred = pred_t())
+    sorter(size_t memory_bytes, size_t no_elements, size_t number_of_sorters, pred_t pred = pred_t())
       : _sorter(pred)
     {
       adiar_debug(number_of_sorters > 0, "Number of sorters should be positive");
@@ -169,7 +178,7 @@ namespace adiar {
 
       const tpie::memory_size_type phase1 =
         std::max(minimum_phase1,
-          std::min(maximum_phase1, internal_sorter<T, pred_t>::memory_usage(no_elements) << 1));
+                 std::min(maximum_phase1, sorter<memory::INTERNAL, T, pred_t>::memory_usage(no_elements) << 1));
 
       const tpie::memory_size_type phase2 =
         memory_bytes - phase1 * (number_of_sorters - 1);
@@ -202,6 +211,20 @@ namespace adiar {
       return _sorter.pull();
     }
   };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Type alias for sorter for partial type application of the
+  ///        'internal' memory type.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename elem_t, typename comp_t = std::less<elem_t>>
+  using internal_sorter = sorter<memory::INTERNAL, elem_t, comp_t>;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Type alias for sorter for partial type application of the
+  ///        'external' memory type.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename elem_t, typename comp_t = std::less<elem_t>>
+  using external_sorter = sorter<memory::EXTERNAL, elem_t, comp_t>;
 }
 
 #endif // ADIAR_INTERNAL_SORTER_H

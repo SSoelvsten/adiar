@@ -51,17 +51,15 @@ namespace adiar
   /// \brief Decorator on the levelized priority queue to also keep track of
   ///        the number of arcs to each terminal.
   ////////////////////////////////////////////////////////////////////////////
-  template<size_t LOOK_AHEAD,
-           template<typename, typename> typename sorter_template,
-           template<typename, typename> typename priority_queue_template>
+  template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   class reduce_priority_queue : public levelized_arc_priority_queue<arc_t, reduce_queue_label,
                                                                     reduce_queue_lt, LOOK_AHEAD,
-                                                                    sorter_template, priority_queue_template>
+                                                                    mem_mode>
   {
   private:
     using inner_lpq = levelized_arc_priority_queue<arc_t, reduce_queue_label,
                                                    reduce_queue_lt, LOOK_AHEAD,
-                                                   sorter_template, priority_queue_template>;
+                                                   mem_mode>;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of terminals (of each type) placed within the priority queue.
@@ -508,7 +506,7 @@ namespace adiar
     const size_t sorters_memory = aux_available_memory - pq_memory - tpie::file_stream<mapping>::memory_usage();
 
     const tpie::memory_size_type pq_memory_fits =
-      reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>::memory_fits(pq_memory);
+      reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>::memory_fits(pq_memory);
 
     const bool internal_only = memory::mode == memory::INTERNAL;
     const bool external_only = memory::mode == memory::EXTERNAL;
@@ -521,19 +519,19 @@ namespace adiar
 #ifdef ADIAR_STATS
       stats_reduce.lpq.unbucketed++;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>>
+      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>>
         (in_file, pq_memory, sorters_memory);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.internal++;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>>
+      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>>
         (in_file, pq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
-        stats_reduce.lpq.external++;
+      stats_reduce.lpq.external++;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, external_sorter, external_priority_queue>>
+      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory::EXTERNAL>>
         (in_file, pq_memory, sorters_memory);
     }
   }

@@ -45,13 +45,11 @@ namespace adiar
   typedef tuple_fst_lt prod_tuple_1_lt;
 #endif
 
-  template<size_t LOOK_AHEAD,
-           template<typename, typename> typename sorter_template,
-           template<typename, typename> typename priority_queue_template>
+  template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using prod_priority_queue_1_t =
     levelized_node_priority_queue<prod_tuple_1, tuple_label,
                                   prod_tuple_1_lt, LOOK_AHEAD,
-                                  sorter_template, priority_queue_template,
+                                  mem_mode,
                                   2>;
 
   struct prod_tuple_2 : tuple_data
@@ -73,8 +71,9 @@ namespace adiar
   typedef tuple_snd_lt prod_tuple_2_lt;
 #endif
 
-  template<template<typename, typename> typename priority_queue_template>
-  using prod_priority_queue_2_t = priority_queue_template<prod_tuple_2, prod_tuple_2_lt>;
+  template<memory::memory_mode mem_mode>
+  using prod_priority_queue_2_t =
+    priority_queue<mem_mode, prod_tuple_2, prod_tuple_2_lt>;
 
   struct prod_rec_output {
     tuple low;
@@ -559,10 +558,10 @@ namespace adiar
       - arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>::DATA_STRUCTURES;
+      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>::DATA_STRUCTURES;
 
     constexpr size_t data_structures_in_pq_2 =
-      prod_priority_queue_2_t<internal_priority_queue>::DATA_STRUCTURES;
+      prod_priority_queue_2_t<memory::INTERNAL>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2)) * data_structures_in_pq_1;
@@ -570,10 +569,10 @@ namespace adiar
     const size_t pq_2_internal_memory = aux_available_memory - pq_1_internal_memory;
 
     const size_t pq_1_memory_fits =
-      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>::memory_fits(pq_1_internal_memory);
+      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_memory_fits =
-      prod_priority_queue_2_t<internal_priority_queue>::memory_fits(pq_2_internal_memory);
+      prod_priority_queue_2_t<memory::INTERNAL>::memory_fits(pq_2_internal_memory);
 
     const bool internal_only = memory::mode == memory::INTERNAL;
     const bool external_only = memory::mode == memory::EXTERNAL;
@@ -593,8 +592,8 @@ namespace adiar
       stats_product_construction.lpq.unbucketed++;
 #endif
       return __product_construction<prod_policy,
-                                    prod_priority_queue_1_t<0, internal_sorter, internal_priority_queue>,
-                                    prod_priority_queue_2_t<internal_priority_queue>>
+                                    prod_priority_queue_1_t<0, memory::INTERNAL>,
+                                    prod_priority_queue_2_t<memory::INTERNAL>>
         (in_1, in_2, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
@@ -602,8 +601,8 @@ namespace adiar
       stats_product_construction.lpq.internal++;
 #endif
       return __product_construction<prod_policy,
-                                    prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, internal_sorter, internal_priority_queue>,
-                                    prod_priority_queue_2_t<internal_priority_queue>>
+                                    prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>,
+                                    prod_priority_queue_2_t<memory::INTERNAL>>
         (in_1, in_2, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
@@ -613,8 +612,8 @@ namespace adiar
       const size_t pq_2_memory = pq_1_memory;
 
       return __product_construction<prod_policy,
-                                    prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, external_sorter, external_priority_queue>,
-                                    prod_priority_queue_2_t<external_priority_queue>>
+                                    prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::EXTERNAL>,
+                                    prod_priority_queue_2_t<memory::EXTERNAL>>
         (in_1, in_2, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
   }
