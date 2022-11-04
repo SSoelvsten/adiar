@@ -53,14 +53,27 @@ namespace adiar
   class priority_queue<memory::INTERNAL, elem_t, comp_t>
   {
   public:
-    static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
+    static tpie::memory_size_type unsafe_memory_usage(tpie::memory_size_type no_elements)
     {
       return tpie::internal_priority_queue<elem_t, comp_t>::memory_usage(no_elements);
     }
 
+    static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
+    {
+      const tpie::memory_size_type max_value = std::numeric_limits<tpie::memory_size_type>::max();
+      const tpie::memory_size_type max_elem = memory_fits(max_value);
+      if (no_elements > max_elem) {
+        return max_value;
+      }
+      return unsafe_memory_usage(no_elements);
+    }
+
     static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
-      return tpie::internal_priority_queue<elem_t, comp_t>::memory_fits(memory_bytes);
+      const tpie::memory_size_type ret = tpie::internal_priority_queue<elem_t, comp_t>::memory_fits(memory_bytes);
+      adiar_assert(unsafe_memory_usage(ret) <= memory_bytes,
+                   "memory_fits and memory_usage should agree.");
+      return ret;
     }
 
     static constexpr size_t DATA_STRUCTURES = 1u;

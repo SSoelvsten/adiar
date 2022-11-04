@@ -46,7 +46,10 @@ namespace adiar {
 
     static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
-      return tpie::array<T>::memory_fits(memory_bytes);
+      const tpie::memory_size_type ret = tpie::array<T>::memory_fits(memory_bytes);
+      adiar_assert(unsafe_memory_usage(ret) <= memory_bytes,
+                   "memory_fits and memory_usage should agree.");
+      return ret;
     }
 
     static constexpr size_t DATA_STRUCTURES = 1u;
