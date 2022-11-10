@@ -256,17 +256,23 @@ namespace adiar {
     static constexpr size_t DATA_STRUCTURES =
       BUCKETS * sorter_t::DATA_STRUCTURES + priority_queue_t::DATA_STRUCTURES;
 
+  private:
+    static tpie::memory_size_type const_memory_usage()
+    {
+      return label_merger<file_t, level_comp_t, FILES>::memory_usage();
+    }
+
   public:
     static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
     {
       return priority_queue<memory::INTERNAL, elem_t, elem_comp_t>::memory_usage(no_elements)
         + BUCKETS * sorter<memory::INTERNAL, elem_t, elem_comp_t>::memory_usage(no_elements)
-        + label_merger<file_t, level_comp_t, FILES>::memory_usage();
+        + const_memory_usage();
     }
 
     static tpie::memory_size_type memory_fits(tpie::memory_size_type memory_bytes)
     {
-      const size_t const_memory_bytes = label_merger<file_t, level_comp_t, FILES>::memory_usage();
+      const size_t const_memory_bytes = const_memory_usage();
 
       if (memory_bytes < const_memory_bytes) {
         return 0u;
@@ -338,7 +344,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Memory to be used for the buckets.
     ////////////////////////////////////////////////////////////////////////////
-    tpie::memory_size_type _memory_for_buckets;
+    const tpie::memory_size_type _memory_for_buckets;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Memory to be used for the overflow priority queue.
@@ -401,15 +407,15 @@ namespace adiar {
 #endif
 
   private:
-    static tpie::memory_size_type m_overflow_queue(tpie::memory_size_type memory_given)
+    static tpie::memory_size_type mem_overflow_queue(tpie::memory_size_type memory_given)
     {
-      const size_t const_memory_bytes = label_merger<file_t, level_comp_t, FILES>::memory_usage();
+      const size_t const_memory = const_memory_usage();
 
-      adiar_debug(const_memory_bytes < memory_given,
+      adiar_debug(const_memory < memory_given,
                   "There should be enough memory for the merger");
 
       // subtract memory of the merger to not take any of its memory.
-      memory_given -= label_merger<file_t, level_comp_t, FILES>::memory_usage();
+      memory_given -= const_memory;
 
       // GCC bug 85282: One cannot do a member class specialization of each of
       // the two following cases. So, we will have to resort to a constexpr
@@ -438,14 +444,18 @@ namespace adiar {
 
     levelized_priority_queue(tpie::memory_size_type memory_given, size_t max_size,
                              [[maybe_unused]] stats_t::levelized_priority_queue_t &stats)
-      : _max_size(max_size),
-        _memory_given(memory_given),
-        _memory_occupied_by_overflow(m_overflow_queue(memory_given)),
-        _overflow_queue(m_overflow_queue(memory_given), max_size)
+      : _max_size(max_size)
+      , _memory_given(memory_given)
+      , _memory_for_buckets(memory_given - _memory_occupied_by_merger - mem_overflow_queue(memory_given))
+      , _memory_occupied_by_overflow(mem_overflow_queue(memory_given))
+      , _overflow_queue(mem_overflow_queue(memory_given), max_size)
 #ifdef ADIAR_STATS
       , _stats(stats)
 #endif
-    { }
+    {
+      adiar_debug(_memory_occupied_by_merger + _memory_for_buckets + _memory_occupied_by_overflow <= _memory_given,
+                  "the amount of memory used should be within the given bounds");
+    }
 
 
   public:
@@ -493,11 +503,6 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     void init_buckets()
     {
-      adiar_debug(_memory_occupied_by_merger + _memory_occupied_by_overflow <= _memory_given,
-                  "the amount of memory used should be within the given bounds");
-
-      _memory_for_buckets = _memory_given - _memory_occupied_by_merger - _memory_occupied_by_overflow;
-
       // Initially skip the number of levels
       for (label_t idx = 0; _level_merger.can_pull() && idx < INIT_LEVEL; idx++) {
         _level_merger.pull();
