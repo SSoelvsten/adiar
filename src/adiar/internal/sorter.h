@@ -55,9 +55,9 @@ namespace adiar {
     static constexpr size_t DATA_STRUCTURES = 1u;
 
     static std::unique_ptr<sorter<memory::INTERNAL, T, pred_t>> make_unique(size_t memory_bytes,
-                                                                             size_t no_elements,
-                                                                             size_t no_sorters,
-                                                                             pred_t pred = pred_t())
+                                                                            size_t no_elements,
+                                                                            size_t no_sorters,
+                                                                            pred_t pred = pred_t())
     {
       return std::make_unique<sorter<memory::INTERNAL, T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
     }
@@ -156,6 +156,7 @@ namespace adiar {
       adiar_debug(number_of_sorters > 0, "Number of sorters should be positive");
       adiar_debug(number_of_sorters > 1, "TODO: memory calculations for single sorter");
 
+      // -----------------------------------------------------------------------
       // We intend to have the memory divided between all the sorters, such that
       // one can be in phase 2 while everyone else is in phase 1 or 3.
       //
@@ -170,24 +171,66 @@ namespace adiar {
       //
       // TODO: phase 1 should be upper bounded by the number of elements
       //       possibly placed in this queue. See Issue #189 on ssoelvsten/adiar
-      //       as to why. I would suggest for to upper bound the 1/16th by
+      //       as to why. I would suggest for us to upper bound the 1/16th by
       //       slightly more than the amount of memory necessary to hold all
       //       values simultaneously.
 
-      // Quickfix: Issue #250 of thomasmoelhave/tpie
+      // -----------------------------------------------------------------------
+      // Phase 1 : Push Mergesort base cases
+      //
+      // Quickfix: Issue https://github.com/thomasmoelhave/tpie/issues/250
       constexpr tpie::memory_size_type minimum_phase1 = sizeof(T) * 128 * 1024 + 5 * 1024 * 1024;
 
+      // Consult the internal sorter to get a bound of how much memory is
+      // necessary to sort these elements in internal memory. We don't need to
+      // allocate more than a constant of this for the external memory case.
+      const tpie::memory_size_type no_elements_memory =
+        2 * sorter<memory::INTERNAL, T, pred_t>::memory_usage(no_elements);
+
+      // Take up at most 1/(Sorter-1)'th of 1/16th of the total memory. The last
+      // sorter is either in the same phase or another phase.
+      //
+      //                Intendeds shared memory layout of sorters
+      //   +--------+-----------------------------------------------------+
+      //   | p1 . . | p2/p3 . . . . . . . . . . . . . . . . . . . . . . . |
+      //   +--------+-----------------------------------------------------+
       const tpie::memory_size_type maximum_phase1 = (memory_bytes >> 4) / (number_of_sorters - 1);
 
       const tpie::memory_size_type phase1 =
-        std::max(minimum_phase1,
-                 std::min(maximum_phase1, sorter<memory::INTERNAL, T, pred_t>::memory_usage(no_elements) << 1));
+        std::max(minimum_phase1, std::min(maximum_phase1, no_elements_memory));
 
+      // -----------------------------------------------------------------------
+      // Phase 3 : Top-most and final merging of partial lists.
+      //
+      // Based on internal workings of `tpie::merge_sorter` this should be at
+      // least twice the size of the phase 1 memory.
+      constexpr tpie::memory_size_type minimum_phase3 = /*2 **/ minimum_phase1;
+
+      const tpie::memory_size_type phase3 = std::max(minimum_phase3, phase1);
+
+      // -----------------------------------------------------------------------
+      // Phase 2 : Merge sorted lists until there are few enough for phase 3.
+      //
+      // Use the remaining sorter memory for this very step. If one is in this
+      // phase, then all other sorters are in phase 1.
       const tpie::memory_size_type phase2 =
         memory_bytes - phase1 * (number_of_sorters - 1);
 
-      const tpie::memory_size_type phase3 = phase1;
+      // -----------------------------------------------------------------------
+      // Sanity tests...
+      adiar_debug(number_of_sorters * phase1 <= memory_bytes,
+                  "Memory is enough to have 'N' pushable sorters.");
 
+      adiar_debug((number_of_sorters-1) * phase1 + phase2 <= memory_bytes,
+                  "Memory is enough to have 'N-1' pushable sorters and '1' sorting one.");
+
+      adiar_debug((number_of_sorters-1) * phase1 + phase3 <= memory_bytes,
+                  "Memory is enough to have 'N-1' pushable sorters and '1' pullable one.");
+
+      adiar_debug((number_of_sorters-1) * phase1 + phase3 + phase1 <= memory_bytes,
+                  "Memory is enough to replace the pullable sorter with an 'Nth' pushable one.");
+
+      // -----------------------------------------------------------------------
       // Set the available memory and start the sorter
       _sorter.set_available_memory(phase1, phase2, phase3);
       _sorter.begin();
