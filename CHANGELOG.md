@@ -1,3 +1,14 @@
+# v1.2.2
+
+**Date: 14th of November, 2022**
+
+## Bug Fixes
+
+- `zdd_project(A, dom)`
+  An accidental swapping of arguments for a helper function resulted in the generated recursion requests are for the wrong elements and hence the wrong ZDD was constructed.
+  
+- Fixes C++ and CMake such that Adiar compiles and runs on Mac computers with default Clang.
+
 # v1.2.1
 
 **Date: 14th of September, 2022**
