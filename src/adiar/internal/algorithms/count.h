@@ -22,7 +22,7 @@ namespace adiar
   // Data structures
   struct path_sum
   {
-    uid_t uid; // <-- TODO: rename to 'target'
+    uid_t target;
     uint64_t sum;
   };
 
@@ -35,7 +35,7 @@ namespace adiar
   {
     inline static label_t label_of(const path_sum &s)
     {
-      return s.uid.label();
+      return s.target.label();
     }
   };
 
@@ -44,7 +44,7 @@ namespace adiar
   {
     bool operator()(const path_sum &a, const path_sum &b)
     {
-      return a.uid < b.uid;
+      return a.target < b.target;
     }
   };
 
@@ -79,10 +79,10 @@ namespace adiar
 
     inline static queue_t combine_requests(const queue_t &acc, const queue_t &next)
     {
-      adiar_debug(acc.uid == next.uid,
+      adiar_debug(acc.target == next.target,
                   "Requests should be for the same node");
 
-      return { acc.uid, acc.sum + next.sum };
+      return { acc.target, acc.sum + next.sum };
     }
   };
 
@@ -116,13 +116,13 @@ namespace adiar
       }
       adiar_debug(count_pq.current_level() == n.label(),
                   "Priority queue is out-of-sync with node stream");
-      adiar_debug(count_pq.can_pull() && count_pq.top().uid == n.uid(),
+      adiar_debug(count_pq.can_pull() && count_pq.top().target == n.uid(),
                   "Priority queue is out-of-sync with node stream");
 
       // Resolve requests
       typename count_policy::queue_t request = count_pq.pull();
 
-      while (count_pq.can_pull() && count_pq.top().uid == n.uid()) {
+      while (count_pq.can_pull() && count_pq.top().target == n.uid()) {
         request = count_policy::combine_requests(request, count_pq.pull());
       }
 
