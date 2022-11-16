@@ -8,7 +8,7 @@ go_bandit([]() {
                                       ptr_uint64(8,21),
                                       ptr_uint64(9,8));
 
-                const arc_t arc = low_arc_of(n);
+                const arc arc = low_arc_of(n);
 
                 AssertThat(arc.source().label(), Is().EqualTo(7u));
                 AssertThat(arc.source().id(), Is().EqualTo(42u));
@@ -23,7 +23,7 @@ go_bandit([]() {
                                       ptr_uint64(8,21),
                                       ptr_uint64(9,8));
 
-                const arc_t arc = high_arc_of(n);
+                const arc arc = high_arc_of(n);
 
                 AssertThat(arc.source().label(), Is().EqualTo(6u));
                 AssertThat(arc.source().id(), Is().EqualTo(13u));
@@ -34,8 +34,8 @@ go_bandit([]() {
 
         describe("node_of", []() {
             it("should combine low and high arcs into single node", [&]() {
-                const arc_t low_arc = arc(ptr_uint64(17,42), ptr_uint64(9,8));
-                const arc_t high_arc = arc(flag(ptr_uint64(17,42)), ptr_uint64(8,21));
+                const arc low_arc = arc(ptr_uint64(17,42), ptr_uint64(9,8));
+                const arc high_arc = arc(flag(ptr_uint64(17,42)), ptr_uint64(8,21));
 
                 const node n = node_of(low_arc, high_arc);
 

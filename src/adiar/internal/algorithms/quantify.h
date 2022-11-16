@@ -102,7 +102,7 @@ namespace adiar
       adiar_debug(fst(rec) == rec.t1 && snd(rec) == rec.t2, "Request recursion should be created in-order");
 
       if (rec.t1.is_terminal() /* && rec.t2.is_terminal() */) {
-        arc_t out_arc = { source, op(rec.t1, rec.t2) };
+        arc out_arc = { source, op(rec.t1, rec.t2) };
         aw.unsafe_push_terminal(out_arc);
       } else {
         quantify_pq_1.push({ rec.t1, rec.t2, source });
@@ -277,7 +277,7 @@ namespace adiar
 
         if (!source.is_nil()) {
           do {
-            arc_t out_arc = { source, out_uid };
+            arc out_arc = { source, out_uid };
             aw.unsafe_push_node(out_arc);
           } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2, source, t1, t2));
         }

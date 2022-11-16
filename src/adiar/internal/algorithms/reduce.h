@@ -36,7 +36,7 @@ namespace adiar
   // For priority queue
   struct reduce_queue_lt
   {
-    bool operator()(const arc_t &a, const arc_t &b)
+    bool operator()(const arc &a, const arc &b)
     {
       // We want the high arc first, but that is already placed on the
       // least-significant bit on the source variable.
@@ -46,7 +46,7 @@ namespace adiar
 
   struct reduce_queue_label
   {
-    static label_t label_of(const arc_t &a)
+    static label_t label_of(const arc &a)
     {
       return a.source().label();
     }
@@ -57,12 +57,12 @@ namespace adiar
   ///        the number of arcs to each terminal.
   ////////////////////////////////////////////////////////////////////////////
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
-  class reduce_priority_queue : public levelized_arc_priority_queue<arc_t, reduce_queue_label,
+  class reduce_priority_queue : public levelized_arc_priority_queue<arc, reduce_queue_label,
                                                                     reduce_queue_lt, LOOK_AHEAD,
                                                                     mem_mode>
   {
   private:
-    using inner_lpq = levelized_arc_priority_queue<arc_t, reduce_queue_label,
+    using inner_lpq = levelized_arc_priority_queue<arc, reduce_queue_label,
                                                    reduce_queue_lt, LOOK_AHEAD,
                                                    mem_mode>;
 
@@ -79,7 +79,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Push an arc into the priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    void push(const arc_t &a)
+    void push(const arc &a)
     {
       _terminals[false] += a.target().is_false();
       _terminals[true]  += a.target().is_true();
@@ -90,9 +90,9 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the top arc on the current level and remove it.
     ////////////////////////////////////////////////////////////////////////////
-    arc_t pull()
+    arc pull()
     {
-      arc_t a = inner_lpq::pull();
+      arc a = inner_lpq::pull();
 
       _terminals[false] -= a.target().is_false();
       _terminals[true]  -= a.target().is_true();
@@ -164,7 +164,7 @@ namespace adiar
   /// \brief Merging priority queue with terminal_arc stream.
   //////////////////////////////////////////////////////////////////////////////
   template <typename pq_t>
-  inline arc_t __reduce_get_next(pq_t &reduce_pq, terminal_arc_stream<> &terminal_arcs)
+  inline arc __reduce_get_next(pq_t &reduce_pq, terminal_arc_stream<> &terminal_arcs)
   {
     if (!reduce_pq.can_pull()
         || (terminal_arcs.can_pull() && terminal_arcs.peek().source() > reduce_pq.top().source())) {
@@ -219,8 +219,8 @@ namespace adiar
     // Pull out all nodes from reduce_pq and terminal_arcs for this level
     while ((terminal_arcs.can_pull() && terminal_arcs.peek().source().label() == label)
             || reduce_pq.can_pull()) {
-      const arc_t e_high = __reduce_get_next(reduce_pq, terminal_arcs);
-      const arc_t e_low = __reduce_get_next(reduce_pq, terminal_arcs);
+      const arc e_high = __reduce_get_next(reduce_pq, terminal_arcs);
+      const arc e_low = __reduce_get_next(reduce_pq, terminal_arcs);
 
       node n = node_of(e_low, e_high);
 
@@ -310,7 +310,7 @@ namespace adiar
 
       // Find all arcs that have sources that match the current mapping's old_uid
       while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target()) {
-        // The is_high flag is included in arc_t.source() pulled from node_arcs.
+        // The is_high flag is included in arc.source() pulled from node_arcs.
         ptr_uint64 s = node_arcs.pull().source();
 
         // If Reduction Rule 1 was used, then tell the parents to add to the global cut.
@@ -382,7 +382,7 @@ namespace adiar
 
     node_arc_stream<> node_arcs(in_file);
     terminal_arc_stream<> terminal_arcs(in_file);
-    level_info_stream<arc_t> level_info(in_file);
+    level_info_stream<arc> level_info(in_file);
 
     // Set up output
     node_file out_file;
@@ -397,8 +397,8 @@ namespace adiar
 
     // Trivial single-node case
     if (!node_arcs.can_pull()) {
-      const arc_t e_high = terminal_arcs.pull();
-      const arc_t e_low = terminal_arcs.pull();
+      const arc e_high = terminal_arcs.pull();
+      const arc e_low = terminal_arcs.pull();
 
       // Apply reduction rule 1, if applicable
       const ptr_uint64 reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
@@ -504,7 +504,7 @@ namespace adiar
     // memory variant.
     const size_t aux_available_memory = memory::available()
       // Input streams
-      - node_arc_stream<>::memory_usage() - terminal_arc_stream<>::memory_usage() - level_info_stream<arc_t>::memory_usage()
+      - node_arc_stream<>::memory_usage() - terminal_arc_stream<>::memory_usage() - level_info_stream<arc>::memory_usage()
       // Output streams
       - node_writer::memory_usage();
 

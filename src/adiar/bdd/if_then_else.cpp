@@ -201,7 +201,7 @@ namespace adiar
     if (r_then.is_terminal() && r_else.is_terminal() &&
         r_then.value() == r_else.value()) {
 
-      aw.unsafe_push_terminal(arc_t { source, r_then });
+      aw.unsafe_push_terminal(arc { source, r_then });
       return;
     }
     // Remove irrelevant parts of a request to prune requests similar to
@@ -211,10 +211,10 @@ namespace adiar
 
     if (r_if.is_terminal() && r_then.is_terminal()) {
       // => ~ptr_uint64::NIL() => r_if is a terminal with the 'true' value
-      aw.unsafe_push_terminal(arc_t { source, r_then });
+      aw.unsafe_push_terminal(arc { source, r_then });
     } else if (r_if.is_terminal() && r_else.is_terminal()) {
       // => ~ptr_uint64::NIL() => r_if is a terminal with the 'false' value
-      aw.unsafe_push_terminal(arc_t { source, r_else });
+      aw.unsafe_push_terminal(arc { source, r_else });
     } else {
       ite_pq_1.push({ r_if, r_then, r_else, source });
     }
@@ -467,7 +467,7 @@ namespace adiar
 
       // Output ingoing arcs
       while (true) {
-        arc_t out_arc = { source, out_uid };
+        arc out_arc = { source, out_uid };
         aw.unsafe_push_node(out_arc);
 
         if (ite_pq_1.can_pull() && ite_pq_1.top().t1 == t_if

@@ -96,7 +96,7 @@ namespace adiar {
 
     node_arc_stream<> nas(arcs);
     while (nas.can_pull()) {
-      arc_t a = nas.pull();
+      arc a = nas.pull();
       out << "\t"
           << "n" << a.target().label() << "_" << a.target().id()
           << " -> "
@@ -112,7 +112,7 @@ namespace adiar {
 
     terminal_arc_stream<> sas(arcs);
     while (sas.can_pull()) {
-      arc_t a = sas.pull();
+      arc a = sas.pull();
       out << "\t"
           << "n" << a.source().label() << "_" << a.source().id()
           << " -> "

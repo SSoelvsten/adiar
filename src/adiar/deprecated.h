@@ -140,7 +140,6 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   typedef node node_t;
 
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create a sink node representing the given boolean value.
   //////////////////////////////////////////////////////////////////////////////
@@ -233,6 +232,12 @@ namespace adiar
   { return node(label, id, low.uid(), high.uid()); }
 
   /* ================================= ARC ================================== */
+
+  [[deprecated("Use the 'arc' class type in 'adiar/internal/data_types/arc.h' directly")]]
+  //////////////////////////////////////////////////////////////////////////////
+  /// \copydoc arc
+  //////////////////////////////////////////////////////////////////////////////
+  typedef arc arc_t;
 
   [[deprecated("Replaced by member function with same name in 'adiar/internal/data_types/arc.h'")]]
   inline node is_high(const arc &a)
