@@ -20,12 +20,12 @@ namespace adiar
     assignment_file af;
     assignment_writer aw;
 
-    level_info_stream<node_t> ms;
+    level_info_stream<node> ms;
 
   public:
     bdd_sat_assignment_writer_visitor(const bdd& f) : aw(af), ms(f) { }
 
-    ptr_uint64 visit(const node_t &n)
+    ptr_uint64 visit(const node &n)
     {
       const ptr_uint64 next_ptr = __visitor.visit(n);
       const label_t label = n.label();

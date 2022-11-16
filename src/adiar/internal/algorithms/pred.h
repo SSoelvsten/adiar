@@ -59,8 +59,8 @@ namespace adiar
     node_stream<> in_nodes_1(f1, negate1);
     node_stream<> in_nodes_2(f2, negate2);
 
-    node_t v1 = in_nodes_1.pull();
-    node_t v2 = in_nodes_2.pull();
+    node v1 = in_nodes_1.pull();
+    node v2 = in_nodes_2.pull();
 
     if (v1.is_terminal() || v2.is_terminal()) {
       bool ret_value;
@@ -144,7 +144,7 @@ namespace adiar
       if (!with_data
           && !t1.is_terminal() && !t2.is_terminal() && t1.label() == t2.label()
           && (v1.uid() != t1 || v2.uid() != t2)) {
-        node_t v0 = prod_from_1(t1,t2) ? v1 : v2;
+        node v0 = prod_from_1(t1,t2) ? v1 : v2;
 
         comparison_pq_2.push({ t1, t2, v0.low(), v0.high() });
         continue;

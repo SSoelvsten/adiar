@@ -34,7 +34,7 @@ namespace adiar
                                   arc_target_lt, LOOK_AHEAD,
                                   mem_mode>;
 
-  struct substitute_rec_output { node_t out; };
+  struct substitute_rec_output { node out; };
   struct substitute_rec_skipto { ptr_uint64 child; };
 
   typedef std::variant<substitute_rec_output, substitute_rec_skipto> substitute_rec;
@@ -72,7 +72,7 @@ namespace adiar
   // Helper functions
   template<typename substitute_policy, typename substitute_act_mgr>
   inline substitute_rec substitute_apply_act(const substitute_act &act,
-                                             const node_t &n,
+                                             const node &n,
                                              substitute_act_mgr &amgr)
   {
     switch (act) {
@@ -106,7 +106,7 @@ namespace adiar
   {
     // Set up to run the substitution algorithm
     node_stream<> ns(dd);
-    node_t n = ns.pull();
+    node n = ns.pull();
 
     arc_file out_arcs;
     arc_writer aw(out_arcs);
@@ -123,7 +123,7 @@ namespace adiar
       const substitute_rec rec_res = substitute_apply_act<substitute_policy>(action, n, amgr);
 
       if (std::holds_alternative<substitute_rec_output>(rec_res)) {
-        const node_t n_res = std::get<substitute_rec_output>(rec_res).out;
+        const node n_res = std::get<substitute_rec_output>(rec_res).out;
 
         level_size = 1;
 
@@ -167,7 +167,7 @@ namespace adiar
       const substitute_rec rec_res = substitute_apply_act<substitute_policy>(action, n, amgr);
 
       if(std::holds_alternative<substitute_rec_output>(rec_res)) {
-        const node_t n_res = std::get<substitute_rec_output>(rec_res).out;
+        const node n_res = std::get<substitute_rec_output>(rec_res).out;
 
         // outgoing arcs
         __substitute_resolve_request(low_arc_of(n_res), substitute_pq, aw);

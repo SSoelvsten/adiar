@@ -64,7 +64,7 @@ namespace adiar
                      "Labels not given in increasing order");
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
-        const node_t next_node = node(next_label, MAX_ID, children.t1, children.t2);
+        const node next_node = node(next_label, MAX_ID, children.t1, children.t2);
         const ptr_uint64 reduction_result = to_policy::reduction_rule(next_node);
 
         if (reduction_result == next_node.uid()) { // Output
@@ -93,7 +93,7 @@ namespace adiar
       return terminal_value;
     }
 
-    static intercut_rec hit_existing(const node_t &n)
+    static intercut_rec hit_existing(const node &n)
     {
       const ptr_uint64 to_reduction = to_policy::reduction_rule(n);
       if (to_reduction != n.uid()) {
@@ -114,7 +114,7 @@ namespace adiar
     }
 
     // LCOV_EXCL_START
-    static intercut_rec miss_existing(const node_t &/*n*/)
+    static intercut_rec miss_existing(const node &/*n*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_END
   };

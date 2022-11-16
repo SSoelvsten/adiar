@@ -8,13 +8,13 @@ go_bandit([]() {
     describe("bdd_terminal", [&]() {
       it("can create true terminal [bdd_terminal]", [&]() {
         bdd res = bdd_terminal(true);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(is_canonical(res), Is().True());
@@ -35,13 +35,13 @@ go_bandit([]() {
 
       it("can create true terminal [bdd_true]", [&]() {
         bdd res = bdd_true();
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -62,13 +62,13 @@ go_bandit([]() {
 
       it("can create false terminal [bdd_terminal]", [&]() {
         bdd res = bdd_terminal(false);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -89,13 +89,13 @@ go_bandit([]() {
 
       it("can create false terminal [bdd_false]", [&]() {
         bdd res = bdd_false();
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -118,13 +118,13 @@ go_bandit([]() {
     describe("bdd_ithvar", [&]() {
       it("can create x0", [&]() {
         bdd res = bdd_ithvar(0);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -148,13 +148,13 @@ go_bandit([]() {
 
       it("can create x42", [&]() {
         bdd res = bdd_ithvar(42);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
@@ -180,13 +180,13 @@ go_bandit([]() {
     describe("bdd_nithvar", [&]() {
       it("can create !x1", [&]() {
         bdd res = bdd_nithvar(1);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID, terminal_T, terminal_F)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
@@ -210,13 +210,13 @@ go_bandit([]() {
 
       it("can create !x3", [&]() {
         bdd res = bdd_nithvar(3);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, MAX_ID, terminal_T, terminal_F)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -249,7 +249,7 @@ go_bandit([]() {
         }
 
         bdd res = bdd_and(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID,
@@ -268,7 +268,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
@@ -301,13 +301,13 @@ go_bandit([]() {
         label_file labels;
 
         bdd res = bdd_and(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -337,7 +337,7 @@ go_bandit([]() {
         }
 
         bdd res = bdd_or(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID,
@@ -356,7 +356,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
@@ -389,13 +389,13 @@ go_bandit([]() {
         label_file labels;
 
         bdd res = bdd_or(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -414,13 +414,13 @@ go_bandit([]() {
       it("collapses impossible counting to 10 in [0,8] to F", [&]() {
         bdd res = bdd_counter(0, 8, 10);
 
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -440,13 +440,13 @@ go_bandit([]() {
       it("collapses impossible counting to 2 in [10,10] to F", [&]() {
         bdd res = bdd_counter(10, 10, 2);
 
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -466,13 +466,13 @@ go_bandit([]() {
       it("collapses counting to 1 in [42,42] to x42", [&]() {
         bdd res = bdd_counter(42, 42, 1);
 
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
@@ -496,13 +496,13 @@ go_bandit([]() {
       it("collapses counting to 0 in [10, 10] to ~x10", [&]() {
         bdd res = bdd_counter(10, 10, 0);
 
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(10, MAX_ID, terminal_T, terminal_F)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(10,1u)));
@@ -525,7 +525,7 @@ go_bandit([]() {
 
       it("creates counting to 0 in [1,5]", [&]() {
         bdd res = bdd_counter(1, 5, 0);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 0,
@@ -554,7 +554,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
@@ -589,7 +589,7 @@ go_bandit([]() {
 
       it("creates counting to 5 in [1,5]", [&]() {
         bdd res = bdd_counter(1, 5, 5);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 4,
@@ -618,7 +618,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
@@ -653,7 +653,7 @@ go_bandit([]() {
 
       it("creates counting to 2 in [2,5]", [&]() {
         bdd res = bdd_counter(2, 5, 2);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 2,
@@ -694,7 +694,7 @@ go_bandit([]() {
                                                        ptr_uint64(3,0),
                                                        ptr_uint64(3,1))));
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,2u)));
@@ -726,7 +726,7 @@ go_bandit([]() {
 
       it("creates counting to 3 in [0,8]", [&]() {
         bdd res = bdd_counter(0, 8, 3);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 3,
@@ -865,7 +865,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(8,2u)));
@@ -912,7 +912,7 @@ go_bandit([]() {
 
       it("creates counting to 4 in [0,4]", [&]() {
         bdd res = bdd_counter(0, 4, 4);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 4,
@@ -958,7 +958,7 @@ go_bandit([]() {
                                                        ptr_uint64(1,0),
                                                        ptr_uint64(1,1))));
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,2u)));
@@ -993,7 +993,7 @@ go_bandit([]() {
 
       it("creates counting to 1 in [0,1]", [&]() {
         bdd res = bdd_counter(0, 1, 1);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, 1,
@@ -1009,7 +1009,7 @@ go_bandit([]() {
                                                        ptr_uint64(1,0),
                                                        ptr_uint64(1,1))));
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,2u)));

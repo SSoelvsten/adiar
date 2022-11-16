@@ -325,11 +325,11 @@ namespace adiar {
   ///
   /// \sa node_file
   //////////////////////////////////////////////////////////////////////////////
-  class node_writer: public meta_file_writer<node_t>
+  class node_writer: public meta_file_writer<node>
   {
   private:
     // Buffer of latest pushed element, such that one can compare with it.
-    node_t _latest_node = node(node::uid_t(0,0), ptr_uint64::NIL(), ptr_uint64::NIL()); // <-- dummy 'no latest' value
+    node _latest_node = node(node::uid_t(0,0), ptr_uint64::NIL(), ptr_uint64::NIL()); // <-- dummy 'no latest' value
 
     bool has_latest_node()
     {
@@ -378,7 +378,7 @@ namespace adiar {
     ///          properly checked), and must be topologically prior to any nodes
     ///          already written to the file (checked).
     ////////////////////////////////////////////////////////////////////////////
-    void push(const node_t &n)
+    void push(const node &n)
     {
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
@@ -449,7 +449,7 @@ namespace adiar {
       meta_file_writer::unsafe_push(n, 0);
     }
 
-    node_writer& operator<< (const node_t& n)
+    node_writer& operator<< (const node& n)
     {
       this -> push(n);
       return *this;
@@ -463,7 +463,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to the underlying node file without any checks.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const node_t &n)
+    void unsafe_push(const node &n)
     {
       meta_file_writer::unsafe_push(n, 0);
 

@@ -8,7 +8,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Extract the *low* arc from a node
   //////////////////////////////////////////////////////////////////////////////
-  inline arc_t low_arc_of(const node_t &n)
+  inline arc_t low_arc_of(const node &n)
   {
     return { n.uid(), n.low() };
   }
@@ -16,7 +16,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Extract the *high* arc from a node
   //////////////////////////////////////////////////////////////////////////////
-  inline arc_t high_arc_of(const node_t &n)
+  inline arc_t high_arc_of(const node &n)
   {
     return { flag(n.uid()), n.high() };
   }
@@ -27,7 +27,7 @@ namespace adiar {
   /// \param low  The low arc
   /// \param high The high arc
   //////////////////////////////////////////////////////////////////////////////
-  inline node_t node_of(const arc_t &low, const arc_t &high)
+  inline node node_of(const arc_t &low, const arc_t &high)
   {
     adiar_debug(unflag(low.source()) == unflag(high.source()), "Arcs are not of the same node");
     adiar_debug(!low.is_high(), "High flag is not set on low child");

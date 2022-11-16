@@ -41,13 +41,13 @@ go_bandit([]() {
           F T
      */
 
-    const node_t n1_7 = node(10, MAX_ID,   terminal_F,   terminal_T);
-    const node_t n1_6 = node(8,  MAX_ID,   terminal_T,   terminal_T);
-    const node_t n1_5 = node(8,  MAX_ID-1, n1_7.uid(), terminal_T);
-    const node_t n1_4 = node(6,  MAX_ID,   n1_5.uid(), n1_6.uid());
-    const node_t n1_3 = node(4,  MAX_ID,   n1_4.uid(), terminal_T);
-    const node_t n1_2 = node(4,  MAX_ID-1, terminal_F,   n1_4.uid());
-    const node_t n1_1 = node(2,  MAX_ID,   n1_2.uid(), n1_3.uid());
+    const node n1_7 = node(10, MAX_ID,   terminal_F,   terminal_T);
+    const node n1_6 = node(8,  MAX_ID,   terminal_T,   terminal_T);
+    const node n1_5 = node(8,  MAX_ID-1, n1_7.uid(), terminal_T);
+    const node n1_4 = node(6,  MAX_ID,   n1_5.uid(), n1_6.uid());
+    const node n1_3 = node(4,  MAX_ID,   n1_4.uid(), terminal_T);
+    const node n1_2 = node(4,  MAX_ID-1, terminal_F,   n1_4.uid());
+    const node n1_1 = node(2,  MAX_ID,   n1_2.uid(), n1_3.uid());
 
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_1);
@@ -104,14 +104,14 @@ go_bandit([]() {
 
       __zdd out = zdd_expand(zdd_T, labels);
 
-      node_test_stream ns(out);
+      nodeest_stream ns(out);
 
       AssertThat(ns.can_pull(), Is().True());
       AssertThat(ns.pull(), Is().EqualTo(node(42,MAX_ID, terminal_T, terminal_T)));
 
       AssertThat(ns.can_pull(), Is().False());
 
-      level_info_test_stream<node_t> level_info(out);
+      level_info_test_stream<node> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(42,1u)));
@@ -137,7 +137,7 @@ go_bandit([]() {
 
       __zdd out = zdd_expand(zdd_T, labels);
 
-      node_test_stream ns(out);
+      nodeest_stream ns(out);
 
       AssertThat(ns.can_pull(), Is().True());
       AssertThat(ns.pull(), Is().EqualTo(node(2,MAX_ID, terminal_T, terminal_T)));
@@ -147,7 +147,7 @@ go_bandit([]() {
 
       AssertThat(ns.can_pull(), Is().False());
 
-      level_info_test_stream<node_t> level_info(out);
+      level_info_test_stream<node> level_info(out);
 
       AssertThat(level_info.can_pull(), Is().True());
       AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));

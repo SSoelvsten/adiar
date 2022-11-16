@@ -15,7 +15,7 @@ namespace adiar
   class zdd_project_policy : public zdd_policy
   {
   public:
-    static inline __zdd resolve_terminal_root(const node_t v, const bool_op &/* op */)
+    static inline __zdd resolve_terminal_root(const node v, const bool_op &/* op */)
     {
       if (v.low().is_terminal() && v.high().is_terminal()) {
         // Only or_op and at least one of the terminals should be true
@@ -56,7 +56,7 @@ namespace adiar
     label_writer diw(dom_inv);
 
     label_stream<> ls(dom);
-    level_info_stream<node_t> dd_meta(dd);
+    level_info_stream<node> dd_meta(dd);
 
     while (dd_meta.can_pull()) {
       label_t dd_label = label_of(dd_meta.pull());

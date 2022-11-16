@@ -170,7 +170,7 @@ namespace adiar
   public:
     static void merge_root(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
                            label_t /* level */,
-                           const node_t &v1, const node_t &v2)
+                           const node &v1, const node &v2)
     {
       low1 = v1.low();
       high1 = v1.high();
@@ -182,7 +182,7 @@ namespace adiar
   public:
     static void merge_data(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
                            ptr_uint64 t1, ptr_uint64 t2, ptr_uint64 t_seek,
-                           const node_t &v1, const node_t &v2,
+                           const node &v1, const node &v2,
                            ptr_uint64 data_low, ptr_uint64 data_high)
     {
       low1  = t1 < t_seek ? data_low  : v1.low();
@@ -196,7 +196,7 @@ namespace adiar
   class prod_mixed_level_merger
   {
   private:
-    static void __merge_root(const node_t &v, label_t level,
+    static void __merge_root(const node &v, label_t level,
                              ptr_uint64 &low, ptr_uint64 &high)
     {
       if (!v.is_terminal() && v.label() == level) {
@@ -210,7 +210,7 @@ namespace adiar
   public:
     static void merge_root(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
                            label_t level,
-                           const node_t &v1, const node_t &v2)
+                           const node &v1, const node &v2)
     {
       __merge_root(v1, level, low1, high1);
       __merge_root(v2, level, low2, high2);
@@ -219,7 +219,7 @@ namespace adiar
   public:
     static void merge_data(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
                            ptr_uint64 t1, ptr_uint64 t2, ptr_uint64 t_seek,
-                           const node_t &v1, const node_t &v2,
+                           const node &v1, const node &v2,
                            ptr_uint64 data_low, ptr_uint64 data_high)
     {
       if (t1.is_terminal() || t2.is_terminal() || t1.label() != t2.label()) {
@@ -252,8 +252,8 @@ namespace adiar
     node_stream<> in_nodes_1(in_1);
     node_stream<> in_nodes_2(in_2);
 
-    node_t v1 = in_nodes_1.pull();
-    node_t v2 = in_nodes_2.pull();
+    node v1 = in_nodes_1.pull();
+    node v2 = in_nodes_2.pull();
 
     if (v1.is_terminal() || v2.is_terminal()) {
       typename prod_policy::unreduced_t maybe_resolved = prod_policy::resolve_terminal_root(v1, in_1, v2, in_2, op);
@@ -355,7 +355,7 @@ namespace adiar
       // Forward information across the level
       if (t1.is_node() && t2.is_node() && t1.label() == t2.label()
           && !with_data && (v1.uid() != t1 || v2.uid() != t2)) {
-        node_t v0 = t1 == v1.uid() /*prod_from_1(t1,t2)*/ ? v1 : v2;
+        node v0 = t1 == v1.uid() /*prod_from_1(t1,t2)*/ ? v1 : v2;
 
         while (prod_pq_1.can_pull() && prod_pq_1.top().t1 == t1 && prod_pq_1.top().t2 == t2) {
           source = prod_pq_1.pull().source;

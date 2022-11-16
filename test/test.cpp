@@ -17,14 +17,14 @@ using namespace adiar;
 template <typename T>
 using level_info_test_stream = level_info_stream<T, true>;
 
-class node_test_stream: public node_stream<true>
+class nodeest_stream: public node_stream<true>
 {
 public:
-  node_test_stream(node_file &f): node_stream<true>(f) { }
-  node_test_stream(bdd &f): node_stream<true>(f) { }
-  node_test_stream(__bdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
-  node_test_stream(zdd &f): node_stream<true>(f) { }
-  node_test_stream(__zdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
+  nodeest_stream(node_file &f): node_stream<true>(f) { }
+  nodeest_stream(bdd &f): node_stream<true>(f) { }
+  nodeest_stream(__bdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
+  nodeest_stream(zdd &f): node_stream<true>(f) { }
+  nodeest_stream(__zdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
 };
 
 class node_arc_test_stream: public node_arc_stream<true>
@@ -87,9 +87,9 @@ namespace snowhouse
   };
 
   template<>
-  struct Stringizer<node_t>
+  struct Stringizer<node>
   {
-    static std::string ToString(const node_t& n)
+    static std::string ToString(const node& n)
     {
       std::stringstream stream;
       if (n.is_terminal()) {

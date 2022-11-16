@@ -42,11 +42,11 @@ go_bandit([]() {
     meta_file<int> test_file_meta_1;
     meta_file<int> test_file_meta_2;
 
-    node_file node_test_file;
+    node_file nodeest_file;
 
-    node_t n2 = node(1,1, ptr_uint64(false), ptr_uint64(true));
-    node_t n1 = node(1,0, ptr_uint64(true), ptr_uint64(false));
-    node_t n0 = node(0,0, ptr_uint64(1,1), ptr_uint64(1,0));
+    node n2 = node(1,1, ptr_uint64(false), ptr_uint64(true));
+    node n1 = node(1,0, ptr_uint64(true), ptr_uint64(false));
+    node n0 = node(0,0, ptr_uint64(1,1), ptr_uint64(1,0));
 
     arc_file arc_test_file;
 
@@ -143,13 +143,13 @@ go_bandit([]() {
           const ptr_uint64 terminal_F = ptr_uint64(false);
           const ptr_uint64 terminal_T = ptr_uint64(true);
 
-          it("can hook into and write to node_test_file", [&]() {
-            AssertThat(node_test_file.is_read_only(), Is().False());
+          it("can hook into and write to nodeest_file", [&]() {
+            AssertThat(nodeest_file.is_read_only(), Is().False());
 
-            node_writer nw(node_test_file);
+            node_writer nw(nodeest_file);
             nw << n2 << n1 << n0;
 
-            AssertThat(node_test_file.is_read_only(), Is().False());
+            AssertThat(nodeest_file.is_read_only(), Is().False());
           });
 
           // -------------------------------------------------------------------
@@ -901,8 +901,8 @@ go_bandit([]() {
             AssertThat(ms.can_pull(), Is().False());
           });
 
-          it("can read level_info stream of node_test_file", [&]() {
-            level_info_stream ms(node_test_file);
+          it("can read level_info stream of nodeest_file", [&]() {
+            level_info_stream ms(nodeest_file);
 
             AssertThat(ms.can_pull(), Is().True());
             AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -913,8 +913,8 @@ go_bandit([]() {
         });
 
         describe("node_stream", [&]() {
-          it("can read node stream of node_test_file", [&]() {
-            node_stream<> ns(node_test_file);
+          it("can read node stream of nodeest_file", [&]() {
+            node_stream<> ns(nodeest_file);
 
             AssertThat(ns.can_pull(), Is().True());
             AssertThat(ns.pull(), Is().EqualTo(n0));
@@ -925,8 +925,8 @@ go_bandit([]() {
             AssertThat(ns.can_pull(), Is().False());
           });
 
-          it("can read negated node stream of node_test_file", [&]() {
-            node_stream<> ns(node_test_file, true);
+          it("can read negated node stream of nodeest_file", [&]() {
+            node_stream<> ns(nodeest_file, true);
 
             AssertThat(ns.can_pull(), Is().True());
             AssertThat(ns.pull(), Is().EqualTo(!n0));
@@ -1167,28 +1167,28 @@ go_bandit([]() {
           }
 
           describe("size computation", [&]() {
-            it("can compute size of node_test_file", [&]() {
-              AssertThat(node_test_file.size(), Is().EqualTo(3u));
-              AssertThat(node_test_file.meta_size(), Is().EqualTo(2u));
-              AssertThat(node_test_file.file_size(), Is().EqualTo(3u * sizeof(node_t) + 2u * sizeof(level_info_t)));
+            it("can compute size of nodeest_file", [&]() {
+              AssertThat(nodeest_file.size(), Is().EqualTo(3u));
+              AssertThat(nodeest_file.meta_size(), Is().EqualTo(2u));
+              AssertThat(nodeest_file.file_size(), Is().EqualTo(3u * sizeof(node) + 2u * sizeof(level_info_t)));
             });
 
             it("can compute size of x0", [&]() {
               AssertThat(x0.size(), Is().EqualTo(1u));
               AssertThat(x0.meta_size(), Is().EqualTo(1u));
-              AssertThat(x0.file_size(), Is().EqualTo(1u * sizeof(node_t) + 1u * sizeof(level_info_t)));
+              AssertThat(x0.file_size(), Is().EqualTo(1u * sizeof(node) + 1u * sizeof(level_info_t)));
             });
 
             it("can compute size of x0 & x1", [&]() {
               AssertThat(x0_and_x1.size(), Is().EqualTo(2u));
               AssertThat(x0_and_x1.meta_size(), Is().EqualTo(2u));
-              AssertThat(x0_and_x1.file_size(), Is().EqualTo(2u * sizeof(node_t) + 2u * sizeof(level_info_t)));
+              AssertThat(x0_and_x1.file_size(), Is().EqualTo(2u * sizeof(node) + 2u * sizeof(level_info_t)));
             });
 
             it("can compute size of terminal_T", [&]() {
               AssertThat(terminal_T.size(), Is().EqualTo(1u));
               AssertThat(terminal_T.meta_size(), Is().EqualTo(0u));
-              AssertThat(terminal_T.file_size(), Is().EqualTo(1u * sizeof(node_t) + 0u * sizeof(level_info_t)));
+              AssertThat(terminal_T.file_size(), Is().EqualTo(1u * sizeof(node) + 0u * sizeof(level_info_t)));
             });
           });
 
@@ -1223,9 +1223,9 @@ go_bandit([]() {
               AssertThat(max_label(x0_and_x1), Is().EqualTo(1u));
             });
 
-            it("should extract labels from node_test_file", [&]() {
-              AssertThat(min_label(node_test_file), Is().EqualTo(0u));
-              AssertThat(max_label(node_test_file), Is().EqualTo(1u));
+            it("should extract labels from nodeest_file", [&]() {
+              AssertThat(min_label(nodeest_file), Is().EqualTo(0u));
+              AssertThat(max_label(nodeest_file), Is().EqualTo(1u));
             });
           });
         });

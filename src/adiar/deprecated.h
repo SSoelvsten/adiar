@@ -134,18 +134,25 @@ namespace adiar
 
   /* ================================ NODES ================================= */
 
+  [[deprecated("Use the 'node' class type in 'adiar/internal/data_types/node.h' directly")]]
+  //////////////////////////////////////////////////////////////////////////////
+  /// \copydoc node
+  //////////////////////////////////////////////////////////////////////////////
+  typedef node node_t;
+
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create a sink node representing the given boolean value.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_sink(bool value)
+  inline node create_sink(bool value)
   { return node(value); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create a sink node representing the given boolean value.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_terminal(bool value)
+  inline node create_terminal(bool value)
   { return node(value); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -153,7 +160,7 @@ namespace adiar
   ///        pointer to its two children.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_node(uid_t uid, ptr_uint64 low, ptr_uint64 high)
+  inline node create_node(uid_t uid, ptr_uint64 low, ptr_uint64 high)
   { return node(uid, low, high); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -210,25 +217,25 @@ namespace adiar
   ///        pointer to its two children.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_node(label_t label, id_t id, ptr_uint64 low, ptr_uint64 high)
+  inline node create_node(label_t label, id_t id, ptr_uint64 low, ptr_uint64 high)
   { return node(label, id, low, high); }
 
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_node(label_t label, id_t id, ptr_uint64 low, node_t high)
+  inline node create_node(label_t label, id_t id, ptr_uint64 low, node high)
   { return node(label, id, low, high.uid()); }
 
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_node(label_t label, id_t id, node_t low, ptr_uint64 high)
+  inline node create_node(label_t label, id_t id, node low, ptr_uint64 high)
   { return node(label, id, low.uid(), high); }
 
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node_t create_node(label_t label, id_t id, node_t low, node_t high)
+  inline node create_node(label_t label, id_t id, node low, node high)
   { return node(label, id, low.uid(), high.uid()); }
 
   /* ================================= ARC ================================== */
 
   [[deprecated("Replaced by member function with same name in 'adiar/internal/data_types/arc.h'")]]
-  inline node_t is_high(const arc &a)
+  inline node is_high(const arc &a)
   { return a.is_high(); }
 
   /* =========================== DECISION DIAGRAM =========================== */

@@ -212,15 +212,15 @@ namespace adiar
   /// \sa node_file
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  class node_stream : public meta_file_stream<node_t, 0, !REVERSE>
+  class node_stream : public meta_file_stream<node, 0, !REVERSE>
   {
   public:
     node_stream(const node_file &file, bool negate = false)
-      : meta_file_stream<node_t, 0, !REVERSE>(file, negate)
+      : meta_file_stream<node, 0, !REVERSE>(file, negate)
     { }
 
     node_stream(const decision_diagram &dd)
-      : meta_file_stream<node_t, 0, !REVERSE>(dd.file, dd.negate)
+      : meta_file_stream<node, 0, !REVERSE>(dd.file, dd.negate)
     { }
   };
 
@@ -361,7 +361,7 @@ namespace adiar
     //////////////////////////////////////////////////////////////////////////////
     meta_file<T> __obtain_file(const __decision_diagram &dd)
     {
-      if constexpr (std::is_same<node_t, T>::value) {
+      if constexpr (std::is_same<node, T>::value) {
         return dd.get<node_file>();
       } else {
         return dd.get<arc_file>();

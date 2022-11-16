@@ -26,8 +26,8 @@ go_bandit([]() {
             T T
     */
     { // Garbage collect writer early
-      const node_t n2 = node(4, MAX_ID,   terminal_T, terminal_T);
-      const node_t n1 = node(2, MAX_ID,   n2.uid(), n2.uid());
+      const node n2 = node(4, MAX_ID,   terminal_T, terminal_T);
+      const node n1 = node(2, MAX_ID,   n2.uid(), n2.uid());
 
       node_writer nw(zdd_pow_24);
       nw << n2 << n1;
@@ -65,7 +65,7 @@ go_bandit([]() {
       it("produces pow(U) on F terminal and U = { 0, 1, 2, 3 }", [&]() {
         __zdd out = zdd_complement(zdd_F, dom_0123);
 
-        node_test_stream ns(out);
+        nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3,MAX_ID,
@@ -89,7 +89,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> level_info(out);
+        level_info_test_stream<node> level_info(out);
 
         AssertThat(level_info.can_pull(), Is().True());
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -117,7 +117,7 @@ go_bandit([]() {
       it("produces pow(U) on F terminal and U = { 1, 2, 3, 4 }", [&]() {
         __zdd out = zdd_complement(zdd_F, dom_1234);
 
-        node_test_stream ns(out);
+        nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4,MAX_ID,
@@ -141,7 +141,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> level_info(out);
+        level_info_test_stream<node> level_info(out);
 
         AssertThat(level_info.can_pull(), Is().True());
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(4,1u)));
@@ -176,7 +176,7 @@ go_bandit([]() {
 
         __zdd out = zdd_complement(zdd_T, U02);
 
-        node_test_stream ns(out);
+        nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2,MAX_ID,
@@ -190,7 +190,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> level_info(out);
+        level_info_test_stream<node> level_info(out);
 
         AssertThat(level_info.can_pull(), Is().True());
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -212,7 +212,7 @@ go_bandit([]() {
       it("produces pow(U) \\ Ø on T terminal and U = { 1, 2, 3, 4 }", [&]() {
         __zdd out = zdd_complement(zdd_T, dom_1234);
 
-        node_test_stream ns(out);
+        nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4,MAX_ID,
@@ -236,7 +236,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> level_info(out);
+        level_info_test_stream<node> level_info(out);
 
         AssertThat(level_info.can_pull(), Is().True());
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(4,1u)));
@@ -550,10 +550,10 @@ go_bandit([]() {
             F T  T
         */
         { // Garbage collect writer early
-          const node_t n4 = node(4, MAX_ID,   terminal_T, terminal_T);
-          const node_t n3 = node(4, MAX_ID-1, terminal_F, terminal_T);
-          const node_t n2 = node(3, MAX_ID,   n3.uid(), n4.uid());
-          const node_t n1 = node(2, MAX_ID,   n2.uid(), n4.uid());
+          const node n4 = node(4, MAX_ID,   terminal_T, terminal_T);
+          const node n3 = node(4, MAX_ID-1, terminal_F, terminal_T);
+          const node n2 = node(3, MAX_ID,   n3.uid(), n4.uid());
+          const node n1 = node(2, MAX_ID,   n2.uid(), n4.uid());
 
           node_writer nw(in);
           nw << n4 << n3 << n2 << n1;
@@ -668,13 +668,13 @@ go_bandit([]() {
               F T T T
         */
         { // Garbage collect writer early
-          const node_t n7 = node(4, MAX_ID,   terminal_T, terminal_T);
-          const node_t n6 = node(4, MAX_ID-1, terminal_F, terminal_T);
-          const node_t n5 = node(3, MAX_ID,   n7.uid(), terminal_T);
-          const node_t n4 = node(3, MAX_ID-1, n6.uid(), terminal_T);
-          const node_t n3 = node(2, MAX_ID,   terminal_F, n5.uid());
-          const node_t n2 = node(2, MAX_ID-1, terminal_T, n4.uid()); // <-- breaks canonicity
-          const node_t n1 = node(1, MAX_ID,   n2.uid(), n3.uid());
+          const node n7 = node(4, MAX_ID,   terminal_T, terminal_T);
+          const node n6 = node(4, MAX_ID-1, terminal_F, terminal_T);
+          const node n5 = node(3, MAX_ID,   n7.uid(), terminal_T);
+          const node n4 = node(3, MAX_ID-1, n6.uid(), terminal_T);
+          const node n3 = node(2, MAX_ID,   terminal_F, n5.uid());
+          const node n2 = node(2, MAX_ID-1, terminal_T, n4.uid()); // <-- breaks canonicity
+          const node n1 = node(1, MAX_ID,   n2.uid(), n3.uid());
 
           node_writer nw(in);
           nw << n7 << n6 << n5 << n4 << n3 << n2 << n1;
@@ -941,7 +941,7 @@ go_bandit([]() {
 
         __zdd out = zdd_complement(zdd_F);
 
-        node_test_stream ns(out);
+        nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3,MAX_ID,
@@ -965,7 +965,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> level_info(out);
+        level_info_test_stream<node> level_info(out);
 
         AssertThat(level_info.can_pull(), Is().True());
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -995,7 +995,7 @@ go_bandit([]() {
 
         __zdd out = zdd_complement(zdd_T);
 
-        node_test_stream ns(out);
+        nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4,MAX_ID,
@@ -1019,7 +1019,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> level_info(out);
+        level_info_test_stream<node> level_info(out);
 
         AssertThat(level_info.can_pull(), Is().True());
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(4,1u)));

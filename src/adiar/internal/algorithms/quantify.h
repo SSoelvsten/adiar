@@ -129,7 +129,7 @@ namespace adiar
 
   inline bool quantify_has_label(const label_t label, const decision_diagram &in)
   {
-    level_info_stream<node_t> in_meta(in);
+    level_info_stream<node> in_meta(in);
     while(in_meta.can_pull()) {
       level_info_t m = in_meta.pull();
 
@@ -151,7 +151,7 @@ namespace adiar
   {
     // Check for trivial terminal-only return on shortcutting the root
     node_stream<> in_nodes(in);
-    node_t v = in_nodes.pull();
+    node v = in_nodes.pull();
 
     if (v.label() == label && (v.low().is_terminal() || v.high().is_terminal())) {
       typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_terminal_root(v, op);

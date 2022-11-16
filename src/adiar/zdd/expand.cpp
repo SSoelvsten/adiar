@@ -37,7 +37,7 @@ namespace adiar
     }
     // LCOV_EXCL_END
 
-    static inline intercut_rec hit_existing(const node_t &/*n*/)
+    static inline intercut_rec hit_existing(const node &/*n*/)
     {
       // The user should NOT have supplied a label that hits any existing nodes.
       adiar_unreachable(); // LCOV_EXCL_LINE
@@ -48,7 +48,7 @@ namespace adiar
       return intercut_rec_output { target, target };
     }
 
-    static inline intercut_rec_output miss_existing(const node_t &n)
+    static inline intercut_rec_output miss_existing(const node &n)
     {
       return intercut_rec_output { n.low(), n.high() };
     }

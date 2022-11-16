@@ -27,8 +27,8 @@ go_bandit([]() {
     */
     node_file bdd_1;
 
-    node_t n1_2 = node(1,MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node_t n1_1 = node(0,MAX_ID, ptr_uint64(true), n1_2.uid());
+    node n1_2 = node(1,MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    node n1_1 = node(0,MAX_ID, ptr_uint64(true), n1_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_1(bdd_1);
@@ -48,11 +48,11 @@ go_bandit([]() {
     */
     node_file bdd_2;
 
-    node_t n2_5 = node(2,MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node_t n2_4 = node(2,MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
-    node_t n2_3 = node(1,MAX_ID, n2_5.uid(), ptr_uint64(false));
-    node_t n2_2 = node(1,MAX_ID-1, n2_4.uid(), n2_5.uid());
-    node_t n2_1 = node(0,MAX_ID, n2_2.uid(), n2_3.uid());
+    node n2_5 = node(2,MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    node n2_4 = node(2,MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
+    node n2_3 = node(1,MAX_ID, n2_5.uid(), ptr_uint64(false));
+    node n2_2 = node(1,MAX_ID-1, n2_4.uid(), n2_5.uid());
+    node n2_1 = node(0,MAX_ID, n2_2.uid(), n2_3.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_2(bdd_2);
@@ -72,10 +72,10 @@ go_bandit([]() {
     */
     node_file bdd_3;
 
-    node_t n3_4 = node(2,MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node_t n3_3 = node(2,MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
-    node_t n3_2 = node(1,MAX_ID, n3_3.uid(), n3_4.uid());
-    node_t n3_1 = node(0,MAX_ID, n3_3.uid(), n3_2.uid());
+    node n3_4 = node(2,MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    node n3_3 = node(2,MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
+    node n3_2 = node(1,MAX_ID, n3_3.uid(), n3_4.uid());
+    node n3_1 = node(0,MAX_ID, n3_3.uid(), n3_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_3(bdd_3);
@@ -97,11 +97,11 @@ go_bandit([]() {
     */
     node_file bdd_4;
 
-    node_t n4_5 = node(3,MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node_t n4_4 = node(2,MAX_ID, n4_5.uid(), ptr_uint64(true));
-    node_t n4_3 = node(2,MAX_ID-1, ptr_uint64(false), n4_5.uid());
-    node_t n4_2 = node(1,MAX_ID, n4_3.uid(), n4_4.uid());
-    node_t n4_1 = node(0,MAX_ID, n4_3.uid(), n4_2.uid());
+    node n4_5 = node(3,MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    node n4_4 = node(2,MAX_ID, n4_5.uid(), ptr_uint64(true));
+    node n4_3 = node(2,MAX_ID-1, ptr_uint64(false), n4_5.uid());
+    node n4_2 = node(1,MAX_ID, n4_3.uid(), n4_4.uid());
+    node n4_1 = node(0,MAX_ID, n4_3.uid(), n4_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_4(bdd_4);
@@ -121,10 +121,10 @@ go_bandit([]() {
     */
     node_file bdd_5;
 
-    node_t n5_4 = node(2,MAX_ID, ptr_uint64(true), ptr_uint64(false));
-    node_t n5_3 = node(2,MAX_ID-1, ptr_uint64(false), ptr_uint64(true));
-    node_t n5_2 = node(1,MAX_ID, n5_3.uid(), n5_4.uid());
-    node_t n5_1 = node(0,MAX_ID, ptr_uint64(false), n5_2.uid());
+    node n5_4 = node(2,MAX_ID, ptr_uint64(true), ptr_uint64(false));
+    node n5_3 = node(2,MAX_ID-1, ptr_uint64(false), ptr_uint64(true));
+    node n5_2 = node(1,MAX_ID, n5_3.uid(), n5_4.uid());
+    node n5_1 = node(0,MAX_ID, ptr_uint64(false), n5_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_5(bdd_5);
@@ -249,7 +249,7 @@ go_bandit([]() {
       it("should shortcut quantification of root into T terminal [BDD 1]", [&]() {
         __bdd out = bdd_exists(bdd_1, 0);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -269,7 +269,7 @@ go_bandit([]() {
       it("should shortcut quantification of root into T terminal [x2]", [&]() {
         __bdd out = bdd_exists(bdd_x2, 2);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -624,10 +624,10 @@ go_bandit([]() {
       it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
         node_file bdd_chain;
 
-        node_t n4 = node(3,MAX_ID, ptr_uint64(false), ptr_uint64(true));
-        node_t n3 = node(2,MAX_ID, n4.uid(), ptr_uint64(true));
-        node_t n2 = node(1,MAX_ID, n3.uid(), ptr_uint64(true));
-        node_t n1 = node(0,MAX_ID, n2.uid(), ptr_uint64(true));
+        node n4 = node(3,MAX_ID, ptr_uint64(false), ptr_uint64(true));
+        node n3 = node(2,MAX_ID, n4.uid(), ptr_uint64(true));
+        node n2 = node(1,MAX_ID, n3.uid(), ptr_uint64(true));
+        node n1 = node(0,MAX_ID, n2.uid(), ptr_uint64(true));
 
         { // Garbage collect writer to free write-lock
           node_writer bdd_chain_w(bdd_chain);
@@ -928,7 +928,7 @@ go_bandit([]() {
 
         bdd out = bdd_exists(bdd_4, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
@@ -942,7 +942,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> out_meta(out);
+        level_info_test_stream<node> out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3u,1u)));
@@ -963,7 +963,7 @@ go_bandit([]() {
 
         bdd out = bdd_exists(bdd_4, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
@@ -977,7 +977,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> out_meta(out);
+        level_info_test_stream<node> out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3u,1u)));
@@ -998,7 +998,7 @@ go_bandit([]() {
 
         bdd out = bdd_exists(bdd_4, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
@@ -1017,7 +1017,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> out_meta(out);
+        level_info_test_stream<node> out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3u,1u)));
@@ -1041,7 +1041,7 @@ go_bandit([]() {
 
         bdd out = bdd_exists(bdd_4, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2,MAX_ID,
@@ -1055,7 +1055,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> out_meta(out);
+        level_info_test_stream<node> out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2u,1u)));
@@ -1076,7 +1076,7 @@ go_bandit([]() {
 
         bdd out = bdd_exists(bdd_4, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
@@ -1090,7 +1090,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> out_meta(out);
+        level_info_test_stream<node> out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3u,1u)));
@@ -1112,7 +1112,7 @@ go_bandit([]() {
         bdd in_bdd = bdd_4;
         bdd out = bdd_exists(in_bdd, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
@@ -1126,7 +1126,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> out_meta(out);
+        level_info_test_stream<node> out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3u,1u)));
@@ -1147,13 +1147,13 @@ go_bandit([]() {
 
         bdd out = bdd_exists(bdd_4, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(out);
+        level_info_test_stream<node> ms(out);
         AssertThat(ms.can_pull(), Is().False());
       });
 
@@ -1167,13 +1167,13 @@ go_bandit([]() {
 
         bdd out = bdd_exists(bdd_x2, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(out);
+        level_info_test_stream<node> ms(out);
         AssertThat(ms.can_pull(), Is().False());
       });
 
@@ -1479,13 +1479,13 @@ go_bandit([]() {
 
         __bdd out = bdd_forall(bdd_4, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(out);
+        level_info_test_stream<node> ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
@@ -1503,13 +1503,13 @@ go_bandit([]() {
         bdd in_bdd = bdd_4;
         __bdd out = bdd_forall(in_bdd, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(out);
+        level_info_test_stream<node> ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
@@ -1526,7 +1526,7 @@ go_bandit([]() {
 
         bdd out = bdd_forall(bdd_4, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
@@ -1543,7 +1543,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(out);
+        level_info_test_stream<node> ms(out);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(3u,1u)));
@@ -1565,7 +1565,7 @@ go_bandit([]() {
         bdd in_bdd = bdd_4;
         bdd out = bdd_forall(in_bdd, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
@@ -1582,7 +1582,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(out);
+        level_info_test_stream<node> ms(out);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(3u,1u)));

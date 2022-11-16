@@ -49,13 +49,13 @@ go_bandit([]() {
       it("computes Ø U { {Ø} }", [&]() {
         __zdd out = zdd_union(zdd_F, zdd_T);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(out);
+        level_info_test_stream<node> ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -70,13 +70,13 @@ go_bandit([]() {
       it("computes { Ø } U Ø", [&]() {
         __zdd out = zdd_union(zdd_T, zdd_F);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(out);
+        level_info_test_stream<node> ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -456,7 +456,7 @@ go_bandit([]() {
       it("computes Ø ∩ { {Ø} }", [&]() {
         __zdd out = zdd_intsec(zdd_F, zdd_T);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
@@ -476,7 +476,7 @@ go_bandit([]() {
       it("computes { Ø } ∩ Ø", [&]() {
         __zdd out = zdd_intsec(zdd_T, zdd_F);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
@@ -502,7 +502,7 @@ go_bandit([]() {
 
         __zdd out = zdd_intsec(zdd_x0, zdd_F);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -523,7 +523,7 @@ go_bandit([]() {
       it("computes (and shortcut) Ø ∩ { {0} }", [&]() {
         __zdd out = zdd_intsec(zdd_F, zdd_x0);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -550,7 +550,7 @@ go_bandit([]() {
 
         __zdd out = zdd_intsec(zdd_x0, zdd_T);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -583,7 +583,7 @@ go_bandit([]() {
 
         __zdd out = zdd_intsec(zdd_a, zdd_T);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -621,7 +621,7 @@ go_bandit([]() {
 
         __zdd out = zdd_intsec(zdd_a, zdd_T);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -722,7 +722,7 @@ go_bandit([]() {
 
         __zdd out = zdd_intsec(zdd_a, zdd_T);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -778,7 +778,7 @@ go_bandit([]() {
 
         __zdd out = zdd_intsec(zdd_a, zdd_b);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -1205,7 +1205,7 @@ go_bandit([]() {
       it("should shortcut to Ø on same file for { {x0} }", [&]() {
         __zdd out = zdd_diff(zdd_x0, zdd_x0);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
@@ -1225,7 +1225,7 @@ go_bandit([]() {
       it("should shortcut to Ø on same file for { {x1} }", [&]() {
         __zdd out = zdd_diff(zdd_x1, zdd_x1);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
@@ -1245,7 +1245,7 @@ go_bandit([]() {
       it("computes { Ø } \\ Ø", [&]() {
         __zdd out = zdd_diff(zdd_T, zdd_F);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
 
@@ -1265,7 +1265,7 @@ go_bandit([]() {
       it("computes Ø \\ { Ø }", [&]() {
         __zdd out = zdd_diff(zdd_F, zdd_T);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
 
@@ -1295,7 +1295,7 @@ go_bandit([]() {
       it("computes (and shortcut) Ø  \\ { {0} }", [&]() {
         __zdd out = zdd_intsec(zdd_F, zdd_x0);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -1316,7 +1316,7 @@ go_bandit([]() {
       it("computes { {Ø} } \\ { {0} }", [&]() {
         __zdd out = zdd_diff(zdd_T, zdd_x0);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));

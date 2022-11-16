@@ -1893,7 +1893,7 @@ go_bandit([]() {
         __bdd out = bdd_ite(bdd_x0, bdd_x2, bdd_x1_and_x3);
         AssertThat(out.get<node_file>()->canonical, Is().False());
 
-        node_test_stream ns(out);
+        nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3,42,
@@ -1917,7 +1917,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> level_info(out);
+        level_info_test_stream<node> level_info(out);
 
         AssertThat(level_info.can_pull(), Is().True());
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -1991,7 +1991,7 @@ go_bandit([]() {
         __bdd out = bdd_ite(bdd_not(bdd_x0_xor_x1), bdd_then, bdd_else);
         AssertThat(out.get<node_file>()->canonical, Is().False());
 
-        node_test_stream ns(out);
+        nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8,1,
@@ -2055,7 +2055,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> level_info(out);
+        level_info_test_stream<node> level_info(out);
 
         AssertThat(level_info.can_pull(), Is().True());
         AssertThat(level_info.pull(), Is().EqualTo(create_level_info(8,2u)));

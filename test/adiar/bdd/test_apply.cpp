@@ -48,11 +48,11 @@ go_bandit([]() {
                F T
     */
 
-    node_t n1_5 = node(3,MAX_ID, terminal_F, terminal_T);
-    node_t n1_4 = node(2,MAX_ID, terminal_T, n1_5.uid());
-    node_t n1_3 = node(2,MAX_ID-1, terminal_F, terminal_T);
-    node_t n1_2 = node(1,MAX_ID, n1_3.uid(), n1_4.uid());
-    node_t n1_1 = node(0,MAX_ID, n1_3.uid(), n1_2.uid());
+    node n1_5 = node(3,MAX_ID, terminal_F, terminal_T);
+    node n1_4 = node(2,MAX_ID, terminal_T, n1_5.uid());
+    node n1_3 = node(2,MAX_ID-1, terminal_F, terminal_T);
+    node n1_2 = node(1,MAX_ID, n1_3.uid(), n1_4.uid());
+    node n1_1 = node(0,MAX_ID, n1_3.uid(), n1_2.uid());
 
     { // Garbage collect early and free write-lock
       node_writer nw_1(bdd_1);
@@ -72,8 +72,8 @@ go_bandit([]() {
            T F
     */
 
-    node_t n2_2 = node(3,MAX_ID, terminal_T, terminal_F);
-    node_t n2_1 = node(1,MAX_ID, n2_2.uid(), terminal_T);
+    node n2_2 = node(3,MAX_ID, terminal_T, terminal_F);
+    node n2_1 = node(1,MAX_ID, n2_2.uid(), terminal_T);
 
     { // Garbage collect early and free write-lock
       node_writer nw_2(bdd_2);
@@ -97,14 +97,14 @@ go_bandit([]() {
 
     */
 
-    node_t n3_8 = node(3,MAX_ID, terminal_F, terminal_T);
-    node_t n3_7 = node(2,MAX_ID, terminal_T, terminal_F);
-    node_t n3_6 = node(2,MAX_ID - 1, n3_8.uid(), terminal_T);
-    node_t n3_5 = node(2,MAX_ID - 2, terminal_T, n3_8.uid());
-    node_t n3_4 = node(2,MAX_ID - 3, terminal_F, terminal_T);
-    node_t n3_3 = node(1,MAX_ID, n3_4.uid(), n3_6.uid());
-    node_t n3_2 = node(1,MAX_ID - 1, n3_5.uid(), n3_7.uid());
-    node_t n3_1 = node(0,MAX_ID, n3_2.uid(), n3_3.uid());
+    node n3_8 = node(3,MAX_ID, terminal_F, terminal_T);
+    node n3_7 = node(2,MAX_ID, terminal_T, terminal_F);
+    node n3_6 = node(2,MAX_ID - 1, n3_8.uid(), terminal_T);
+    node n3_5 = node(2,MAX_ID - 2, terminal_T, n3_8.uid());
+    node n3_4 = node(2,MAX_ID - 3, terminal_F, terminal_T);
+    node n3_3 = node(1,MAX_ID, n3_4.uid(), n3_6.uid());
+    node n3_2 = node(1,MAX_ID - 1, n3_5.uid(), n3_7.uid());
+    node n3_1 = node(0,MAX_ID, n3_2.uid(), n3_3.uid());
 
     { // Garbage collect early and free write-lock
       node_writer nw_3(bdd_3);
@@ -138,7 +138,7 @@ go_bandit([]() {
     describe("bdd_and(f,g)", [&]() {
       it("should resolve F /\\ T terminal-only BDDs", [&]() {
         __bdd out = bdd_and(bdd_F, bdd_T);
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -164,7 +164,7 @@ go_bandit([]() {
         }
 
         __bdd out = bdd_and(bdd_T, bdd_T2);
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -192,7 +192,7 @@ go_bandit([]() {
       it("should shortcut F /\\ x0", [&]() {
         __bdd out = bdd_and(bdd_F, bdd_x0);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -249,7 +249,7 @@ go_bandit([]() {
       it("should shortcut F /\\ [2]", [&]() {
         __bdd out = bdd_and(bdd_F, bdd_2);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -484,7 +484,7 @@ go_bandit([]() {
       it("should collapse on the same BDD twice, where one is negated [1]", [&]() {
         __bdd out = bdd_nand(bdd_2, bdd_not(bdd_2));
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -506,7 +506,7 @@ go_bandit([]() {
     describe("bdd_or(f,g)", [&]() {
       it("should resolve T \\/ F terminal-only BDDs", [&]() {
         __bdd out = bdd_or(bdd_T, bdd_F);
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -533,7 +533,7 @@ go_bandit([]() {
         }
 
         __bdd out = bdd_or(bdd_F, bdd_F2);
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -617,7 +617,7 @@ go_bandit([]() {
       it("should shortcut [1] \\/ T", [&]() {
         __bdd out = bdd_or(bdd_1, bdd_T);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -638,7 +638,7 @@ go_bandit([]() {
       it("should compute (and shortcut) [2] \\/ T", [&]() {
         __bdd out = bdd_or(bdd_2, bdd_T);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -739,7 +739,7 @@ go_bandit([]() {
       it("should collapse on the same BDD twice to a terminal, where one is negated [2]", [&]() {
         __bdd out = bdd_nor(bdd_not(bdd_3), bdd_3);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -762,7 +762,7 @@ go_bandit([]() {
     describe("bdd_xor(f,g)", [&]() {
       it("should resolve F ^ T terminal-only BDDs", [&]() {
         __bdd out = bdd_xor(bdd_F, bdd_T);
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -782,7 +782,7 @@ go_bandit([]() {
 
       it("should resolve T ^ T terminal-only BDDs", [&]() {
         __bdd out = bdd_xor(bdd_T, bdd_T);
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()) ;
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -1147,7 +1147,7 @@ go_bandit([]() {
       it("should collapse on the same BDD twice", [&]() {
         __bdd out = bdd_xor(bdd_1, bdd_1);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -1168,7 +1168,7 @@ go_bandit([]() {
       it("should collapse on the same BDD twice to a terminal, when both are negated", [&]() {
         __bdd out = bdd_xor(bdd_not(bdd_1), bdd_not(bdd_1));
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -1196,7 +1196,7 @@ go_bandit([]() {
     describe("bdd_imp(f,g)", [&]() {
       it("should resolve F -> T terminal-only BDDs", [&]() {
         __bdd out = bdd_imp(bdd_F, bdd_T);
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -1216,7 +1216,7 @@ go_bandit([]() {
 
       it("should resolve T -> F terminal-only BDDs", [&]() {
         __bdd out = bdd_imp(bdd_T, bdd_F);
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
@@ -1236,7 +1236,7 @@ go_bandit([]() {
 
       it("should resolve T -> T terminal-only BDDs", [&]() {
         __bdd out = bdd_imp(bdd_T, bdd_T);
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
@@ -1313,7 +1313,7 @@ go_bandit([]() {
       it("should shortcut F -> [1]", [&]() {
         __bdd out = bdd_imp(bdd_F, bdd_1);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));

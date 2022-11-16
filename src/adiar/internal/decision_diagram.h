@@ -160,7 +160,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Read-only access to the raw files and meta information.
     ////////////////////////////////////////////////////////////////////////////
-    const std::shared_ptr<const __meta_file<node_t>> file_ptr() const
+    const std::shared_ptr<const __meta_file<node>> file_ptr() const
     {
       return file._file_ptr;
     }
@@ -170,7 +170,7 @@ namespace adiar
     ///        information, i.e. this is similar to writing
     ///        `.file_ptr()->`.
     ////////////////////////////////////////////////////////////////////////////
-    const __meta_file<node_t>* operator->() const
+    const __meta_file<node>* operator->() const
     {
       return file_ptr().get();
     }

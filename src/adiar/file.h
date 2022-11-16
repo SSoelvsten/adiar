@@ -149,7 +149,7 @@ namespace adiar
   /// A reduced Decision Diagram is given by a single sorted file by nodes.
   //////////////////////////////////////////////////////////////////////////////
   template <>
-  struct FILE_CONSTANTS<node_t>
+  struct FILE_CONSTANTS<node>
   {
     static constexpr size_t files = 1u;
 
@@ -486,7 +486,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief File of nodes to represent a reduced decision diagram.
   //////////////////////////////////////////////////////////////////////////////
-  class node_file : public meta_file<node_t>
+  class node_file : public meta_file<node>
   {
   public:
     static constexpr std::string_view false_print = "0";

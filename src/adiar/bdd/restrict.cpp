@@ -18,13 +18,13 @@ namespace adiar
   class bdd_restrict_policy : public bdd_policy
   {
   public:
-    static substitute_rec keep_node(const node_t &n, substitute_assignment_act &/*amgr*/)
+    static substitute_rec keep_node(const node &n, substitute_assignment_act &/*amgr*/)
     { return substitute_rec_output { n }; }
 
-    static substitute_rec fix_false(const node_t &n, substitute_assignment_act &/*amgr*/)
+    static substitute_rec fix_false(const node &n, substitute_assignment_act &/*amgr*/)
     { return substitute_rec_skipto { n.low() }; }
 
-    static substitute_rec fix_true(const node_t &n, substitute_assignment_act &/*amgr*/)
+    static substitute_rec fix_true(const node &n, substitute_assignment_act &/*amgr*/)
     { return substitute_rec_skipto { n.high() }; }
 
   public:

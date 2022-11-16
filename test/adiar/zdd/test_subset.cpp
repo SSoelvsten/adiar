@@ -30,12 +30,12 @@ go_bandit([]() {
      */
     node_file zdd_1;
 
-    node_t n1_6 = node(4, MAX_ID,   terminal_T, terminal_T);
-    node_t n1_5 = node(3, MAX_ID,   n1_6.uid(), terminal_T);
-    node_t n1_4 = node(3, MAX_ID-1, terminal_F, n1_6.uid());
-    node_t n1_3 = node(2, MAX_ID,   n1_4.uid(), n1_5.uid());
-    node_t n1_2 = node(1, MAX_ID,   n1_4.uid(), n1_3.uid());
-    node_t n1_1 = node(0, MAX_ID,   n1_2.uid(), n1_2.uid());
+    node n1_6 = node(4, MAX_ID,   terminal_T, terminal_T);
+    node n1_5 = node(3, MAX_ID,   n1_6.uid(), terminal_T);
+    node n1_4 = node(3, MAX_ID-1, terminal_F, n1_6.uid());
+    node n1_3 = node(2, MAX_ID,   n1_4.uid(), n1_5.uid());
+    node n1_2 = node(1, MAX_ID,   n1_4.uid(), n1_3.uid());
+    node n1_1 = node(0, MAX_ID,   n1_2.uid(), n1_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer w(zdd_1);
@@ -56,10 +56,10 @@ go_bandit([]() {
      */
     node_file zdd_2;
 
-    const node_t n2_4 = node(3, MAX_ID, terminal_F, terminal_T);
-    const node_t n2_3 = node(2, MAX_ID, terminal_T, n2_4.uid());
-    const node_t n2_2 = node(1, MAX_ID, terminal_T, n2_3.uid());
-    const node_t n2_1 = node(0, MAX_ID, n2_2.uid(), n2_3.uid());
+    const node n2_4 = node(3, MAX_ID, terminal_F, terminal_T);
+    const node n2_3 = node(2, MAX_ID, terminal_T, n2_4.uid());
+    const node n2_2 = node(1, MAX_ID, terminal_T, n2_3.uid());
+    const node n2_1 = node(0, MAX_ID, n2_2.uid(), n2_3.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer w(zdd_2);
@@ -128,8 +128,8 @@ go_bandit([]() {
 
         node_file in;
 
-        node_t n2 = node(2, MAX_ID, terminal_F, terminal_T);
-        node_t n1 = node(1, MAX_ID, terminal_T, n2.uid());;
+        node n2 = node(2, MAX_ID, terminal_F, terminal_T);
+        node n1 = node(1, MAX_ID, terminal_T, n2.uid());;
 
         {
           node_writer nw(in);
@@ -174,8 +174,8 @@ go_bandit([]() {
 
         node_file in;
 
-        node_t n2 = node(2, MAX_ID-1, terminal_T, terminal_T);
-        node_t n1 = node(1, MAX_ID, n2.uid(), n2.uid());;
+        node n2 = node(2, MAX_ID-1, terminal_T, terminal_T);
+        node n1 = node(1, MAX_ID, n2.uid(), n2.uid());;
 
         {
           node_writer nw(in);
@@ -220,8 +220,8 @@ go_bandit([]() {
 
         node_file in;
 
-        node_t n2 = node(2, MAX_ID, terminal_T, terminal_T);
-        node_t n1 = node(1, MAX_ID, n2.uid(), n2.uid());;
+        node n2 = node(2, MAX_ID, terminal_T, terminal_T);
+        node n1 = node(1, MAX_ID, n2.uid(), n2.uid());;
 
         {
           node_writer nw(in);
@@ -393,13 +393,13 @@ go_bandit([]() {
 
         __zdd out = zdd_offset(zdd_1, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> meta_arcs(out);
+        level_info_test_stream<node> meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -439,13 +439,13 @@ go_bandit([]() {
 
         __zdd out = zdd_offset(in, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> meta_arcs(out);
+        level_info_test_stream<node> meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -482,13 +482,13 @@ go_bandit([]() {
 
         __zdd out = zdd_offset(in, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> meta_arcs(out);
+        level_info_test_stream<node> meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -594,13 +594,13 @@ go_bandit([]() {
 
         __zdd out = zdd_onset(zdd_T, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> meta_arcs(out);
+        level_info_test_stream<node> meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -622,13 +622,13 @@ go_bandit([]() {
 
         __zdd out = zdd_onset(zdd_T, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> meta_arcs(out);
+        level_info_test_stream<node> meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -650,13 +650,13 @@ go_bandit([]() {
 
           __zdd out = zdd_onset(zdd_1, labels);
 
-          node_test_stream out_nodes(out);
+          nodeest_stream out_nodes(out);
 
           AssertThat(out_nodes.can_pull(), Is().True());
           AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream<node_t> meta_arcs(out);
+          level_info_test_stream<node> meta_arcs(out);
           AssertThat(meta_arcs.can_pull(), Is().False());
 
           AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -671,7 +671,7 @@ go_bandit([]() {
       it("should return { { 0 } } when given { Ø, { 0 } } for (0)", [&]() {
         node_file in;
 
-        const node_t n = node(0, MAX_ID, terminal_T, terminal_T);
+        const node n = node(0, MAX_ID, terminal_T, terminal_T);
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
@@ -730,13 +730,13 @@ go_bandit([]() {
 
         __zdd out = zdd_onset(in, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> meta_arcs(out);
+        level_info_test_stream<node> meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -1041,13 +1041,13 @@ go_bandit([]() {
 
         __zdd out = zdd_onset(in, labels);
 
-        node_test_stream out_nodes(out);
+        nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> meta_arcs(out);
+        level_info_test_stream<node> meta_arcs(out);
         AssertThat(meta_arcs.can_pull(), Is().False());
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -1071,9 +1071,9 @@ go_bandit([]() {
           */
         node_file in;
 
-        const node_t n3 = node(2, MAX_ID, terminal_F, terminal_T);
-        const node_t n2 = node(1, MAX_ID, n3.uid(), n3.uid());
-        const node_t n1 = node(0, MAX_ID, n3.uid(), n2.uid());
+        const node n3 = node(2, MAX_ID, terminal_F, terminal_T);
+        const node n2 = node(1, MAX_ID, n3.uid(), n3.uid());
+        const node n1 = node(0, MAX_ID, n3.uid(), n2.uid());
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
@@ -1147,9 +1147,9 @@ go_bandit([]() {
         */
         node_file in;
 
-        const node_t n3 = node(2, MAX_ID, terminal_F, terminal_T);
-        const node_t n2 = node(1, MAX_ID, n3.uid(), terminal_T);
-        const node_t n1 = node(0, MAX_ID, n3.uid(), n2.uid());
+        const node n3 = node(2, MAX_ID, terminal_F, terminal_T);
+        const node n2 = node(1, MAX_ID, n3.uid(), terminal_T);
+        const node n1 = node(0, MAX_ID, n3.uid(), n2.uid());
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);
@@ -1410,12 +1410,12 @@ go_bandit([]() {
         */
         node_file in;
 
-        node_t n6 = node(3, MAX_ID,   terminal_T, terminal_T);
-        node_t n5 = node(3, MAX_ID-1, terminal_F, terminal_T);
-        node_t n4 = node(2, MAX_ID,   n5.uid(), n6.uid());
-        node_t n3 = node(1, MAX_ID,   n5.uid(), n4.uid());
-        node_t n2 = node(1, MAX_ID-1, terminal_T, n5.uid());
-        node_t n1 = node(0, MAX_ID,   n2.uid(), n3.uid());
+        node n6 = node(3, MAX_ID,   terminal_T, terminal_T);
+        node n5 = node(3, MAX_ID-1, terminal_F, terminal_T);
+        node n4 = node(2, MAX_ID,   n5.uid(), n6.uid());
+        node n3 = node(1, MAX_ID,   n5.uid(), n4.uid());
+        node n2 = node(1, MAX_ID-1, terminal_T, n5.uid());
+        node n1 = node(0, MAX_ID,   n2.uid(), n3.uid());
 
         { // Garbage collect writer to free write-lock
           node_writer w(in);

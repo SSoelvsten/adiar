@@ -26,7 +26,7 @@ namespace adiar {
       out << "\tnode [shape=box];" << std::endl;
 
       while (ns.can_pull()) {
-        node_t node = ns.pull();
+        node node = ns.pull();
 
         out << "\tn"
             << node.uid()._raw
@@ -44,7 +44,7 @@ namespace adiar {
 
       ns.reset();
       while (ns.can_pull()) {
-        node_t node = ns.pull();
+        node node = ns.pull();
 
         out << "\tn" << node.uid()._raw
             << " -> "
@@ -62,7 +62,7 @@ namespace adiar {
       out << "\t{ rank=same; " << "n" << ns.pull().uid()._raw << " }" << std::endl;
 
       while (ns.can_pull()) {
-        node_t current_node = ns.pull();
+        node current_node = ns.pull();
 
         out << "\t{ rank=same; " << "n" << current_node.uid()._raw << " ";
 
