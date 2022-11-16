@@ -268,16 +268,16 @@ namespace adiar {
     { return this->_raw <= o._raw; }
 
     inline bool operator> (const ptr_uint64 &o) const
-    { return this->_raw > o._raw; }
+    { return (o < *this); }
 
     inline bool operator>= (const ptr_uint64 &o) const
-    { return this->_raw >= o._raw; }
+    { return (o <= *this); }
 
     inline bool operator== (const ptr_uint64 &o) const
     { return this->_raw == o._raw; }
 
     inline bool operator!= (const ptr_uint64 &o) const
-    { return this->_raw != o._raw; }
+    { return !(*this == o); }
 
     /* ================================ OPERATORS ============================= */
   public:
@@ -292,8 +292,8 @@ namespace adiar {
     {
       adiar_precondition(this->is_terminal());
 
-      // TODO (MTBDD): bit-flip all values inside of the 'value' area? Or, maybe
-      //               just delete the function in this case?
+      // TODO (ADD): bit-flip all values inside of the 'value' area? Or, maybe
+      //             just delete the function in this case?
       return ptr_uint64(2u ^ _raw);
     }
 

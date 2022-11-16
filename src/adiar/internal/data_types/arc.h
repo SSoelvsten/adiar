@@ -13,8 +13,8 @@ namespace adiar {
   ///          word-aligned. That means with an explicit is_high member it would
   ///          take up 3 x 64 bits rather than only 2 x 64 bits.
   ///
-  /// \remark  If <tt>source</tt> is flagged, then this is a high arc rather than
-  ///          a low arc.
+  /// \remark  If <tt>source</tt> is flagged, then this is a high arc rather
+  ///          than a low arc.
   ///
   /// \remark  <tt>source</tt> may be NIL
   //////////////////////////////////////////////////////////////////////////////
@@ -40,38 +40,56 @@ namespace adiar {
 
   public:
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct an arc with the given source and target.
+    ///
+    /// \pre The flags on both `source` and `target` are already set correctly.
+    ////////////////////////////////////////////////////////////////////////////
     arc(ptr_t source, ptr_t target) : _source(source), _target(target)
     { }
 
-    // TODO: template with 'is_high'
-    /*
-      template<>
-      arc<false>(uid_t source, uid_t target) : _source(source), _target(target)
-      { }
-
-      template<>
-      arc<true>(uid_t source, uid_t target) : _source(flag(source)), _target(target)
-      { }
-     */
-
+    /* ================================ NODES =============================== */
   public:
-    //////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain 'source' value (including flag).
     ///
     /// \TODO Always returned the unflagged value?
-    //////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     ptr_t source() const
     { return _source; }
 
-    //////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain 'target' value (including flag).
-    //////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     ptr_t target() const
     { return _target; }
 
+    /* ================================= FLAGS ============================== */
   public:
     bool is_high() const
     { return _source.is_flagged(); }
+
+    /* ============================== COMPARATORS =========================== */
+
+  public:
+    inline bool operator== (const arc &o) const
+    { return this->_source == o._source && this->_target == o._target; }
+
+    inline bool operator!= (const arc &o) const
+    { return !(*this == o); }
+
+    /* =============================== OPERATORS ============================ */
+  public:
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain an arc where the target's value (if any) is negated.
+    ////////////////////////////////////////////////////////////////////////////
+    arc operator~ () const
+    {
+      return arc(this->_source,
+                 this->_target.is_terminal() ? ~this->_target : this->_target);
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -80,27 +98,13 @@ namespace adiar {
   typedef arc arc_t;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Negates the target value, if it is a terminal.
+  /// \brief Obtain an arc where the target's value (if any) is negated.
   //////////////////////////////////////////////////////////////////////////////
-  inline arc_t negate(const arc_t &a)
-  {
-    return { a.source(), a.target().is_terminal() ? negate(a.target()) : a.target() };
-  }
+  inline arc negate(const arc &a)
+  { return ~a; }
 
   inline arc_t operator! (const arc &a)
-  {
-    return negate(a);
-  }
-
-  inline bool operator== (const arc &a, const arc &b)
-  {
-    return a.source() == b.source() && a.target() == b.target();
-  }
-
-  inline bool operator!= (const arc &a, const arc &b)
-  {
-    return !(a==b);
-  }
+  { return negate(a); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Sorting predicate: First on unique identifier of the source, and
