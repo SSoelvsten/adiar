@@ -251,7 +251,7 @@ namespace adiar
     child_grouping.sort();
 
     id_t out_id = MAX_ID;
-    node_t out_node = node(uid(), ptr_uint64::NIL(), ptr_uint64::NIL());
+    node_t out_node = node(node::uid_t(), ptr_uint64::NIL(), ptr_uint64::NIL());
 
     while (child_grouping.can_pull()) {
       const node_t next_node = child_grouping.pull();
@@ -285,14 +285,14 @@ namespace adiar
     red2_mapping.sort();
 
     // Merging of red1_mapping and red2_mapping
-    mapping next_red1 = { uid(), uid() }; // <-- dummy value
+    mapping next_red1 = { node::uid_t(), node::uid_t() }; // <-- dummy value
     bool has_next_red1 = red1_mapping.is_open() && red1_mapping.size() > 0;
     if (has_next_red1) {
       red1_mapping.seek(0);
       next_red1 = red1_mapping.read();
     }
 
-    mapping next_red2 = { uid(), uid() }; // <-- dummy value
+    mapping next_red2 = { node::uid_t(), node::uid_t() }; // <-- dummy value
     bool has_next_red2 = red2_mapping.can_pull();
     if (has_next_red2) {
       next_red2 = red2_mapping.pull();

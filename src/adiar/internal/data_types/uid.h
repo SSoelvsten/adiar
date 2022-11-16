@@ -84,7 +84,6 @@ namespace adiar {
   typedef __uid<ptr_uint64> uid_uint64;
 
   // TODO: remove?
-  typedef uid_uint64 uid;
   typedef uid_uint64 uid_t;
 }
 

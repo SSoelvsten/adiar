@@ -38,12 +38,12 @@ go_bandit([]() {
       node_writer nw_x0_xor_x1(bdd_x0_xor_x1);
       nw_x0_xor_x1 << node(1,1,terminal_T,terminal_F)
                    << node(1,0,terminal_F,terminal_T)
-                   << node(0,0,uid(1,0),uid(1,1));
+                   << node(0,0,ptr_uint64(1,0),ptr_uint64(1,1));
 
       node_writer nw_x0_xor_x2(bdd_x0_xor_x2);
       nw_x0_xor_x2 << node(2,1,terminal_T,terminal_F)
                    << node(2,0,terminal_F,terminal_T)
-                   << node(0,0,uid(2,0),uid(2,1));
+                   << node(0,0,ptr_uint64(2,0),ptr_uint64(2,1));
     }
 
     node_file bdd_1;
@@ -878,7 +878,7 @@ go_bandit([]() {
           node_writer nw_x0_xnor_x1(bdd_x0_xnor_x1);
           nw_x0_xnor_x1 << node(1,1,terminal_T,terminal_F)
                         << node(1,0,terminal_F,terminal_T)
-                        << node(0,0,uid(1,1),uid(1,0));
+                        << node(0,0,ptr_uint64(1,1),ptr_uint64(1,0));
         }
 
         /*
@@ -1354,7 +1354,7 @@ go_bandit([]() {
           node_writer nw_x0_xnor_x2(bdd_x0_xnor_x2);
           nw_x0_xnor_x2 << node(2,1,terminal_T,terminal_F)                              // 3
                         << node(2,0,terminal_F,terminal_T)                              // 2
-                        << node(0,0,uid(2,1),uid(2,0)); // 1
+                        << node(0,0,ptr_uint64(2,1),ptr_uint64(2,0)); // 1
         }
 
         /*
@@ -1471,7 +1471,7 @@ go_bandit([]() {
           node_writer nw_x1_xor_x2(bdd_x1_xor_x2_2);
           nw_x1_xor_x2 << node(2,1,terminal_F,terminal_T)                              // 3
                       << node(2,0,terminal_T,terminal_F)                              // 2
-                      << node(1,0,uid(2,1),uid(2,0)); // 1
+                      << node(1,0,ptr_uint64(2,1),ptr_uint64(2,0)); // 1
         }
 
         /*
@@ -1586,8 +1586,8 @@ go_bandit([]() {
         {
           node_writer nw_if(bdd_if);
           nw_if << node(2,0,terminal_F,terminal_T)                // 3
-                << node(1,0,uid(2,0),terminal_F)  // 2
-                << node(0,0,uid(1,0),terminal_F); // 1
+                << node(1,0,ptr_uint64(2,0),terminal_F)  // 2
+                << node(0,0,ptr_uint64(1,0),terminal_F); // 1
         }
 
         /*
@@ -1887,7 +1887,7 @@ go_bandit([]() {
         {
           node_writer nw_x1_and_x3(bdd_x1_and_x3);
           nw_x1_and_x3 << node(3,42,terminal_F,terminal_T)                // 2
-                       << node(1,0,terminal_F,uid(3,42)); // 1
+                       << node(1,0,terminal_F,ptr_uint64(3,42)); // 1
         }
 
         __bdd out = bdd_ite(bdd_x0, bdd_x2, bdd_x1_and_x3);
@@ -1968,7 +1968,7 @@ go_bandit([]() {
                   << node(4,0,terminal_F,terminal_T)                              // 4
                   << node(3,2,terminal_T,ptr_uint64(4,1))                // 3
                   << node(3,0,terminal_T,ptr_uint64(4,0))                // 2
-                  << node(2,0,ptr_uint64(3,0),uid(3,2)); // 1
+                  << node(2,0,ptr_uint64(3,0),ptr_uint64(3,2)); // 1
         }
 
         node_file bdd_else;

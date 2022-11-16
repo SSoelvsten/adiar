@@ -329,12 +329,12 @@ namespace adiar {
   {
   private:
     // Buffer of latest pushed element, such that one can compare with it.
-    node_t _latest_node = node(uid(0,0), ptr_uint64::NIL(), ptr_uint64::NIL()); // <-- dummy 'no latest' value
+    node_t _latest_node = node(node::uid_t(0,0), ptr_uint64::NIL(), ptr_uint64::NIL()); // <-- dummy 'no latest' value
 
     bool has_latest_node()
     {
       // Check it does not look like the dummy value above.
-      return !(_latest_node.uid() == uid(0,0)
+      return !(_latest_node.uid() == node::uid_t(0,0)
                && _latest_node.low().is_nil()
                && _latest_node.high().is_nil());
     }
@@ -416,7 +416,7 @@ namespace adiar {
                                                 _curr_1level_short_internal);
 
           _curr_1level_short_internal = 0u;
-          _long_internal_ptr = uid(_latest_node.label(), MAX_ID);
+          _long_internal_ptr = node::uid_t(_latest_node.label(), MAX_ID);
         }
       }
 
@@ -505,7 +505,7 @@ namespace adiar {
       meta_file_writer::attach(f);
 
       //Reset all meta-data
-      _latest_node = node(uid(0,0), ptr_uint64::NIL(), ptr_uint64::NIL());
+      _latest_node = node(node::uid_t(0,0), ptr_uint64::NIL(), ptr_uint64::NIL());
 
       _canonical = true;
 

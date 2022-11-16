@@ -876,13 +876,13 @@ go_bandit([]() {
 
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
                                                               terminal_F,
-                                                              uid(2, MAX_ID))));
+                                                              ptr_uint64(2, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              uid(2, MAX_ID),
-                                                              uid(1, MAX_ID))));
+                                                              ptr_uint64(2, MAX_ID),
+                                                              ptr_uint64(1, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1119,14 +1119,14 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().True());
 
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                              uid(2, MAX_ID),
-                                                              uid(2, MAX_ID))));
+                                                              ptr_uint64(2, MAX_ID),
+                                                              ptr_uint64(2, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                              uid(2, MAX_ID),
-                                                              uid(1, MAX_ID))));
+                                                              ptr_uint64(2, MAX_ID),
+                                                              ptr_uint64(1, MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 

@@ -73,22 +73,22 @@ namespace adiar
   /// \brief Create the unique identifier for a sink with the given value.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by constructor in 'adiar/internal/data_types/uid.h'")]]
-  inline uid_t create_sink_uid(bool v)
-  { return uid(v); }
+  inline __uid<ptr_uint64> create_sink_uid(bool v)
+  { return __uid<ptr_uint64>(v); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create the uid = (label, id).
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by constructor in 'adiar/internal/data_types/uid.h'")]]
-  inline uid create_node_uid(label_t label, id_t id)
-  { return uid(label, id); }
+  inline __uid<ptr_uint64> create_node_uid(label_t label, id_t id)
+  { return __uid<ptr_uint64>(label, id); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create the unique identifier for a terminal with the given value.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by constructor in 'adiar/internal/data_types/uid.h'")]]
-  inline uid create_terminal_uid(bool v)
-  { return uid(v); }
+  inline __uid<ptr_uint64> create_terminal_uid(bool v)
+  { return __uid<ptr_uint64>(v); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create a pointer to a sink with the given value.

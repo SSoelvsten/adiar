@@ -147,7 +147,7 @@ go_bandit([]() {
         {
           node_writer nw(expected);
           nw << node(1,MAX_ID, ptr_uint64(false), ptr_uint64(true))
-             << node(0,MAX_ID, ptr_uint64(true), uid(1,MAX_ID));
+             << node(0,MAX_ID, ptr_uint64(true), ptr_uint64(1,MAX_ID));
         }
 
         AssertThat(~x0_or_x1 == zdd(expected), Is().True());

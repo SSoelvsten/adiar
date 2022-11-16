@@ -4,6 +4,7 @@
 #include<adiar/label.h>
 
 #include<adiar/internal/data_types/id.h>
+#include<adiar/internal/data_types/ptr.h>
 #include<adiar/internal/data_types/uid.h>
 
 namespace adiar {
@@ -33,10 +34,20 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     static constexpr size_t OUTDEGREE = 2u;
 
-  private:
     // TODO (ADD (64-bit)):
     //   template with 'uid_t' reexpose it (and its related 'ptr') with typedefs.
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the pointer of this node's children.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef ptr_uint64 ptr_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of this node's unique identifier.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef __uid<ptr_t> uid_t;
+
+  private:
     // TODO (Attributed Edges):
     //   Add logic related to flag on children.
 
