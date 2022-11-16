@@ -24,7 +24,7 @@ namespace adiar
   {
     bool operator()(const sat_sum &a, const sat_sum &b)
     {
-      return a.uid < b.uid || (a.uid == b.uid && a.levels_visited < b.levels_visited);
+      return a.target < b.target || (a.target == b.target && a.levels_visited < b.levels_visited);
     }
   };
 
@@ -60,14 +60,14 @@ namespace adiar
 
     inline static queue_t combine_requests(const queue_t &acc, const queue_t &next)
     {
-      adiar_debug(acc.uid == next.uid,
+      adiar_debug(acc.target == next.target,
                   "Requests should be for the same node");
 
       adiar_debug(acc.levels_visited <= next.levels_visited,
                   "Requests should be ordered on the number of levels visited");
 
       return {
-        acc.uid,
+        acc.target,
         acc.sum * (1u << (next.levels_visited - acc.levels_visited)) + next.sum,
         next.levels_visited
       };

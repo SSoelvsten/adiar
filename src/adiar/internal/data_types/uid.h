@@ -7,30 +7,30 @@
 #include<adiar/internal/data_types/ptr.h>
 
 namespace adiar {
-  /* ========================== UNIQUE IDENTIFIER =========================== */
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   A unique identifier a decision diagram node.
   ///
-  /// \details This essentially is the <tt>ptr</tt> with the guarantee that (a)
-  ///          is \em never NIL, and (b) is \em not flagged.
+  /// \details This essentially is a *ptr* guaranteed to point to a node, i.e.
+  ///          it is \em never NIL, and without any associated information,
+  ///          e.g. \em without a flag.
   //////////////////////////////////////////////////////////////////////////////
-  class uid : public ptr_uint64
+  template<typename ptr_type>
+  class __uid : public ptr_type
   {
   public:
-    typedef ptr_uint64 ptr_t;
+    typedef ptr_type ptr_t;
 
   public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
-    uid() = default;
-    uid(const uid &p) = default;
-    ~uid() = default;
+    __uid() = default;
+    __uid(const __uid<ptr_t> &p) = default;
+    ~__uid() = default;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a uid of an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    uid(const ptr_t& p) : ptr_t(unflag(p))
+    __uid(const ptr_t& p) : ptr_t(unflag(p))
     {
 #ifndef NDEBUG
       if (p.is_nil()) throw std::invalid_argument("Pointer must be non-NIL");
@@ -54,7 +54,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    uid(label_t label, id_t id) : ptr_t(label, id)
+    __uid(label_t label, id_t id) : ptr_t(label, id)
     { }
 
     /* ============================== TERMINALS ============================= */
@@ -62,7 +62,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a uid of a terminal node (v).
     ////////////////////////////////////////////////////////////////////////////
-    uid(bool v) : ptr_t(v)
+    __uid(bool v) : ptr_t(v)
     { }
 
   public:
@@ -70,15 +70,22 @@ namespace adiar {
     /// \brief Whether this uid identifies a terminal node.
     //////////////////////////////////////////////////////////////////////////////
     inline bool is_terminal() const
-    {
-      // Since uid never is nil, then this is a slightly a faster logic than the
-      // one in 'ptr' itself.
-      return _raw >= ptr_t::TERMINAL_BIT;
-    }
+    { return ptr_t::is_terminal(); }
   };
 
-  // TODO: deprecate
-  typedef uid uid_t;
+  template<>
+  inline bool __uid<ptr_uint64>::is_terminal() const
+  {
+    // Since uid never is nil, then this is a slightly a faster logic than the
+    // one in 'ptr' itself.
+    return _raw >= ptr_t::TERMINAL_BIT;
+  }
+
+  typedef __uid<ptr_uint64> uid_uint64;
+
+  // TODO: remove?
+  typedef uid_uint64 uid;
+  typedef uid_uint64 uid_t;
 }
 
 #endif // ADIAR_INTERNAL_DATA_TYPES_UID_H
