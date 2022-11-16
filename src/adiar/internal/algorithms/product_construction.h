@@ -96,7 +96,7 @@ namespace adiar
                                ptr_uint64 source, tuple target)
   {
     if (target.t1.is_terminal() && target.t2.is_terminal()) {
-      arc_t out_arc = { source, op(target.t1, target.t2) };
+      arc out_arc = { source, op(target.t1, target.t2) };
       aw.unsafe_push_terminal(out_arc);
     } else {
       adiar_debug(source.label() < std::min(target.t1, target.t2).label(),

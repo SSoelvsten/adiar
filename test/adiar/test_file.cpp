@@ -48,13 +48,13 @@ go_bandit([]() {
     node n1 = node(1,0, ptr_uint64(true), ptr_uint64(false));
     node n0 = node(0,0, ptr_uint64(1,1), ptr_uint64(1,0));
 
-    arc_file arc_test_file;
+    arc_file arcest_file;
 
-    arc_t node_arc_1 = { ptr_uint64(0,0), ptr_uint64(1,0) };
-    arc_t terminal_arc_1 = { flag(ptr_uint64(0,0)), ptr_uint64(false) };
+    arc node_arc_1 = { ptr_uint64(0,0), ptr_uint64(1,0) };
+    arc terminal_arc_1 = { flag(ptr_uint64(0,0)), ptr_uint64(false) };
 
-    arc_t terminal_arc_2 = { ptr_uint64(1,0), ptr_uint64(true) };
-    arc_t terminal_arc_3 = { flag(ptr_uint64(1,0)), ptr_uint64(false) };
+    arc terminal_arc_2 = { ptr_uint64(1,0), ptr_uint64(true) };
+    arc terminal_arc_3 = { flag(ptr_uint64(1,0)), ptr_uint64(false) };
 
     describe("adiar/file_writer", [&]() {
       describe("simple_file_writer", [&]() {
@@ -674,20 +674,20 @@ go_bandit([]() {
         });
 
         describe("arc_writer", [&]() {
-          arc_writer aw(arc_test_file);
+          arc_writer aw(arcest_file);
 
-          it("can hook into arc_test_file and write node arcs", [&]() {
-            AssertThat(arc_test_file.is_read_only(), Is().False());
+          it("can hook into arcest_file and write node arcs", [&]() {
+            AssertThat(arcest_file.is_read_only(), Is().False());
 
             aw.unsafe_push_node(node_arc_1);
           });
 
-          it("can hook into arc_test_file and write level_info", [&]() {
+          it("can hook into arcest_file and write level_info", [&]() {
             aw.unsafe_push(create_level_info(0,1u));
             aw.unsafe_push(create_level_info(1,1u));
           });
 
-          it("can hook into arc_test_file and  write terminal arcs out of order", [&]() {
+          it("can hook into arcest_file and  write terminal arcs out of order", [&]() {
             aw.unsafe_push_terminal(terminal_arc_3);
             aw.unsafe_push_terminal(terminal_arc_1);
             aw.unsafe_push_terminal(terminal_arc_2);
@@ -939,16 +939,16 @@ go_bandit([]() {
         });
 
         describe("arc_streams", [&]() {
-          it("can read node arcs of arc_test_file", [&]() {
-            node_arc_stream<> as(arc_test_file);
+          it("can read node arcs of arcest_file", [&]() {
+            node_arc_stream<> as(arcest_file);
 
             AssertThat(as.can_pull(), Is().True());
             AssertThat(as.pull(), Is().EqualTo(node_arc_1));
             AssertThat(as.can_pull(), Is().False());
           });
 
-          it("can read terminal arcs of arc_test_file", [&]() {
-            terminal_arc_stream<> as(arc_test_file);
+          it("can read terminal arcs of arcest_file", [&]() {
+            terminal_arc_stream<> as(arcest_file);
 
             // The stream has been sorted 1, 2, 3 yet the
             // terminal_arc_stream is per default in reverse, so we will

@@ -30,8 +30,8 @@ namespace adiar
   // Priority queue functions
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using substitute_priority_queue_t =
-    levelized_node_priority_queue<arc_t, arc_target_label,
-                                  arc_target_lt, LOOK_AHEAD,
+    levelized_node_priority_queue<arc, arcarget_label,
+                                  arcarget_lt, LOOK_AHEAD,
                                   mem_mode>;
 
   struct substitute_rec_output { node out; };
@@ -87,7 +87,7 @@ namespace adiar
   }
 
   template<typename pq_t>
-  inline void __substitute_resolve_request(const arc_t &request,
+  inline void __substitute_resolve_request(const arc &request,
                                          pq_t &pq,
                                          arc_writer &aw)
   {
@@ -175,7 +175,7 @@ namespace adiar
 
         // Ingoing arcs
         while(substitute_pq.can_pull() && substitute_pq.top().target() == n_res.uid()) {
-          const arc_t parent_arc = substitute_pq.pull();
+          const arc parent_arc = substitute_pq.pull();
 
           if(!parent_arc.source().is_nil()) {
             aw.unsafe_push_node(parent_arc);
@@ -187,8 +187,8 @@ namespace adiar
         const ptr_uint64 rec_child = std::get<substitute_rec_skipto>(rec_res).child;
 
         while(substitute_pq.can_pull() && substitute_pq.top().target() == n.uid()) {
-          const arc_t parent_arc = substitute_pq.pull();
-          const arc_t request = { parent_arc.source(), rec_child };
+          const arc parent_arc = substitute_pq.pull();
+          const arc request = { parent_arc.source(), rec_child };
 
           if(rec_child.is_terminal() && parent_arc.source().is_nil()) {
             // we have restricted ourselves to a terminal

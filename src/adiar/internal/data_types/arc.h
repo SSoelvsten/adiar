@@ -95,7 +95,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \copydoc arc
   //////////////////////////////////////////////////////////////////////////////
-  typedef arc arc_t;
+  typedef arc arc;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain an arc where the target's value (if any) is negated.
@@ -103,7 +103,7 @@ namespace adiar {
   inline arc negate(const arc &a)
   { return ~a; }
 
-  inline arc_t operator! (const arc &a)
+  inline arc operator! (const arc &a)
   { return negate(a); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   struct arc_source_lt
   {
-    bool operator ()(const arc_t& a, const arc_t& b) const {
+    bool operator ()(const arc& a, const arc& b) const {
       return a.source() < b.source();
     }
   };
@@ -120,9 +120,9 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Sorting predicate on the target.
   //////////////////////////////////////////////////////////////////////////////
-  struct arc_target_lt
+  struct arcarget_lt
   {
-    bool operator ()(const arc_t& a, const arc_t& b) const {
+    bool operator ()(const arc& a, const arc& b) const {
       return a.target() < b.target()
 #ifndef NDEBUG
         || (a.target() == b.target() && a.source() < b.source())
@@ -134,9 +134,9 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Extracts the label from the target of an arc
   //////////////////////////////////////////////////////////////////////////////
-  struct arc_target_label
+  struct arcarget_label
   {
-    static inline label_t label_of(const arc_t& a)
+    static inline label_t label_of(const arc& a)
     {
       return a.target().label();
     }

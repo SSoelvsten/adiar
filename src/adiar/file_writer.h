@@ -681,11 +681,11 @@ namespace adiar {
   ///
   /// \sa arc_file
   //////////////////////////////////////////////////////////////////////////////
-  class arc_writer: public meta_file_writer<arc_t>
+  class arc_writer: public meta_file_writer<arc>
   {
   private:
     bool __has_latest_terminal = false;
-    arc_t __latest_terminal;
+    arc __latest_terminal;
 
   public:
     arc_writer() { }
@@ -711,7 +711,7 @@ namespace adiar {
     ///
     /// \sa unsafe_push_node unsafe_push_terminal
     //////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const arc_t &a)
+    void unsafe_push(const arc &a)
     {
       adiar_debug(!a.target().is_nil(), "Should not push an arc to NIL.");
       if (a.target().is_node()) {
@@ -724,7 +724,7 @@ namespace adiar {
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Write an internal arc to its file, i.e. where the target is a node.
     //////////////////////////////////////////////////////////////////////////////
-    void unsafe_push_node(const arc_t &a)
+    void unsafe_push_node(const arc &a)
     {
       adiar_precondition(a.target().is_node());
       meta_file_writer::unsafe_push(a, 0);
@@ -733,7 +733,7 @@ namespace adiar {
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Write a terminal arc to its file, i.e. where the target is a terminal.
     //////////////////////////////////////////////////////////////////////////////
-    void unsafe_push_terminal(const arc_t &a)
+    void unsafe_push_terminal(const arc &a)
     {
       adiar_precondition(a.target().is_terminal());
 

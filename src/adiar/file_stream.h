@@ -230,15 +230,15 @@ namespace adiar
   /// \sa arc_file
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  using node_arc_stream = meta_file_stream<arc_t, 0, !REVERSE>;
+  using node_arc_stream = meta_file_stream<arc, 0, !REVERSE>;
 
   // TODO: Move inside of terminal_arc_stream below ?
   template<bool REVERSE = false>
-  using in_order_arc_stream = meta_file_stream<arc_t, 1, !REVERSE>;
+  using in_order_arc_stream = meta_file_stream<arc, 1, !REVERSE>;
 
   // TODO: Move inside of terminal_arc_stream below ?
   template<bool REVERSE = false>
-  using out_of_order_arc_stream = meta_file_stream<arc_t, 2, !REVERSE>;
+  using out_of_order_arc_stream = meta_file_stream<arc, 2, !REVERSE>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream for terminal arcs of an arc file.
@@ -312,9 +312,9 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next arc (and move the read head)
     ////////////////////////////////////////////////////////////////////////////
-    const arc_t pull()
+    const arc pull()
     {
-      const arc_t a = pull_in_order()
+      const arc a = pull_in_order()
         ? in_order_arc_stream<REVERSE>::pull()
         : out_of_order_arc_stream<REVERSE>::pull();
 
@@ -326,7 +326,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next arc (but do not move the read head)
     ////////////////////////////////////////////////////////////////////////////
-    const arc_t peek()
+    const arc peek()
     {
       return pull_in_order()
         ? in_order_arc_stream<REVERSE>::peek()

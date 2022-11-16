@@ -27,20 +27,20 @@ public:
   nodeest_stream(__zdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
 };
 
-class node_arc_test_stream: public node_arc_stream<true>
+class node_arcest_stream: public node_arc_stream<true>
 {
 public:
-  node_arc_test_stream(arc_file &f): node_arc_stream<true>(f) { }
-  node_arc_test_stream(__bdd &bdd): node_arc_stream<true>(bdd.get<arc_file>()) { }
-  node_arc_test_stream(__zdd &zdd): node_arc_stream<true>(zdd.get<arc_file>()) { }
+  node_arcest_stream(arc_file &f): node_arc_stream<true>(f) { }
+  node_arcest_stream(__bdd &bdd): node_arc_stream<true>(bdd.get<arc_file>()) { }
+  node_arcest_stream(__zdd &zdd): node_arc_stream<true>(zdd.get<arc_file>()) { }
 };
 
-class terminal_arc_test_stream: public terminal_arc_stream<true>
+class terminal_arcest_stream: public terminal_arc_stream<true>
 {
 public:
-  terminal_arc_test_stream(arc_file &f): terminal_arc_stream<true>(f) { }
-  terminal_arc_test_stream(__bdd &bdd): terminal_arc_stream<true>(bdd.get<arc_file>()) { }
-  terminal_arc_test_stream(__zdd &zdd): terminal_arc_stream<true>(zdd.get<arc_file>()) { }
+  terminal_arcest_stream(arc_file &f): terminal_arc_stream<true>(f) { }
+  terminal_arcest_stream(__bdd &bdd): terminal_arc_stream<true>(bdd.get<arc_file>()) { }
+  terminal_arcest_stream(__zdd &zdd): terminal_arc_stream<true>(zdd.get<arc_file>()) { }
 };
 ////////////////////////////////////////////////////////////////////////////////
 // To improve the error messages
@@ -72,9 +72,9 @@ namespace snowhouse
   }
 
   template<>
-  struct Stringizer<arc_t>
+  struct Stringizer<arc>
   {
-    static std::string ToString(const arc_t& a)
+    static std::string ToString(const arc& a)
     {
       std::stringstream stream;
       stream << "arc: "
