@@ -60,7 +60,7 @@ namespace snowhouse
     return stream.str();
   }
 
-  std::string string_of_adiar_uid(adiar::uid u)
+  std::string string_of_adiar_uid(adiar::uid_uint64 u)
   {
     std::stringstream stream;
     if (u.is_terminal()) {
