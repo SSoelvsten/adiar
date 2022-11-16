@@ -127,7 +127,7 @@ namespace adiar
         && (!in_nodes_else.can_pull()
             || in_nodes_then.peek() > in_nodes_else.peek());
 
-      node_t n = from_then ? in_nodes_then.pull() : in_nodes_else.pull();
+      node n = from_then ? in_nodes_then.pull() : in_nodes_else.pull();
 
       if (from_then && !in_nodes_then.can_pull()) { root_then = n.uid(); }
       if (!from_then && !in_nodes_else.can_pull()) { root_else = n.uid(); }
@@ -142,7 +142,7 @@ namespace adiar
     node_stream<true> in_nodes_if(bdd_if);
 
     while (in_nodes_if.can_pull()) {
-      const node_t n = in_nodes_if.pull();
+      const node n = in_nodes_if.pull();
 
       const ptr_uint64 low = n.low().is_terminal()
         ? (n.low().value() ? root_then : root_else)
@@ -167,7 +167,7 @@ namespace adiar
     return out_nodes;
   }
 
-  inline bool ite_must_forward(node_t v, ptr_uint64 t, label_t out_label, ptr_uint64 t_seek)
+  inline bool ite_must_forward(node v, ptr_uint64 t, label_t out_label, ptr_uint64 t_seek)
   {
     return
       // is it a node at this level?
@@ -178,7 +178,7 @@ namespace adiar
       && v.uid() != t;
   }
 
-  inline void ite_init_request(node_stream<> &in_nodes, node_t &v, label_t out_label,
+  inline void ite_init_request(node_stream<> &in_nodes, node &v, label_t out_label,
                                ptr_uint64 &low, ptr_uint64 &high)
   {
     if (v.label() == out_label) {
@@ -230,17 +230,17 @@ namespace adiar
     // up memory by opening the input streams and evaluating trivial
     // conditionals.
     node_stream<> in_nodes_if(bdd_if);
-    node_t v_if = in_nodes_if.pull();
+    node v_if = in_nodes_if.pull();
 
     if (v_if.is_terminal()) {
       return v_if.value() ? bdd_then : bdd_else;
     }
 
     node_stream<> in_nodes_then(bdd_then);
-    node_t v_then = in_nodes_then.pull();
+    node v_then = in_nodes_then.pull();
 
     node_stream<> in_nodes_else(bdd_else);
-    node_t v_else = in_nodes_else.pull();
+    node v_else = in_nodes_else.pull();
 
     // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
     // the two others, then we can merely zip the 'then' and 'else' BDDs. This
@@ -377,20 +377,20 @@ namespace adiar
 
           if (with_data_1) {
             if (t_if < t_seek || forward_else) {
-              node_t v2 = forward_else ? v_else : v_then;
+              node v2 = forward_else ? v_else : v_then;
               data_2_low = v2.low();
               data_2_high = v2.high();
             } else { // if (forward_if || t_else < t_seek)
               data_2_low = data_1_low;
               data_2_high = data_1_high;
 
-              node_t v1 = forward_if ? v_if : v_then;
+              node v1 = forward_if ? v_if : v_then;
               data_1_low = v1.low();
               data_1_high = v1.high();
             }
           } else {
-            node_t v1 = forward_if   ? v_if   : v_then;
-            node_t v2 = forward_else ? v_else : v_then;
+            node v1 = forward_if   ? v_if   : v_then;
+            node v2 = forward_else ? v_else : v_then;
 
             data_1_low = v1.low();
             data_1_high = v1.high();
@@ -408,7 +408,7 @@ namespace adiar
           }
         } else {
           // got no data and the stream only gave us a single item to forward.
-          node_t v1 = forward_if   ? v_if
+          node v1 = forward_if   ? v_if
                     : forward_then ? v_then
                                    : v_else;
 

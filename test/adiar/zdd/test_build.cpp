@@ -6,13 +6,13 @@ go_bandit([]() {
     describe("zdd_terminal", [&]() {
       it("can create { Ø } [zdd_terminal]", [&]() {
         zdd res = zdd_terminal(true);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -33,13 +33,13 @@ go_bandit([]() {
 
       it("can create { Ø } [zdd_null]", [&]() {
         zdd res = zdd_null();
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -60,13 +60,13 @@ go_bandit([]() {
 
       it("can create Ø [zdd_terminal]", [&]() {
         zdd res = zdd_terminal(false);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -87,13 +87,13 @@ go_bandit([]() {
 
       it("can create Ø [zdd_empty]", [&]() {
         zdd res = zdd_empty();
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -116,13 +116,13 @@ go_bandit([]() {
     describe("zdd_ithvar", [&]() {
       it("can create { {0} }", [&]() {
         zdd res = zdd_ithvar(0);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -146,13 +146,13 @@ go_bandit([]() {
 
       it("can create { {42} }", [&]() {
         zdd res = zdd_ithvar(42);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
@@ -180,13 +180,13 @@ go_bandit([]() {
         label_file labels;
 
         zdd res = zdd_vars(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -214,13 +214,13 @@ go_bandit([]() {
         }
 
         zdd res = zdd_vars(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
@@ -251,7 +251,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_vars(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID, terminal_F, terminal_T)));
@@ -262,7 +262,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
@@ -294,13 +294,13 @@ go_bandit([]() {
         label_file labels;
 
         zdd res = zdd_singletons(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -328,13 +328,13 @@ go_bandit([]() {
         }
 
         zdd res = zdd_singletons(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
@@ -365,7 +365,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_singletons(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID, terminal_F, terminal_T)));
@@ -376,7 +376,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
@@ -408,13 +408,13 @@ go_bandit([]() {
         label_file labels;
 
         zdd res = zdd_powerset(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -435,13 +435,13 @@ go_bandit([]() {
         }
 
         zdd res = zdd_powerset(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(42,1u)));
@@ -472,7 +472,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_powerset(labels);
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID, terminal_T, terminal_T)));
@@ -487,7 +487,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
@@ -519,13 +519,13 @@ go_bandit([]() {
       it("can compute { s <= Ø | |s| <= 0 } to be { Ø }", [&]() {
         label_file labels;
         zdd res = zdd_sized_sets(labels, 0, std::less_equal<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -545,13 +545,13 @@ go_bandit([]() {
       it("can compute { s <= Ø | |s| > 0 } to be Ø", [&]() {
         label_file labels;
         zdd res = zdd_sized_sets(labels, 0, std::greater<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -577,13 +577,13 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 0, std::less<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -609,13 +609,13 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 0, std::less_equal<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -641,7 +641,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 42, std::less<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, MAX_ID, terminal_T, terminal_T)));
@@ -663,7 +663,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(6,1u)));
@@ -698,13 +698,13 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 42, std::greater<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -730,7 +730,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 3, std::less_equal<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID, terminal_T, terminal_T)));
@@ -747,7 +747,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -780,7 +780,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 3, std::equal_to<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID, terminal_F, terminal_T)));
@@ -797,7 +797,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -830,13 +830,13 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 3, std::greater<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -857,13 +857,13 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 1, std::less<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(true)));
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -897,7 +897,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 2, std::equal_to<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 1, terminal_F, terminal_T)));
@@ -918,7 +918,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,1u)));
@@ -955,7 +955,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 3, std::equal_to<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 2, terminal_F, terminal_T)));
@@ -998,7 +998,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(6,1u)));
@@ -1039,7 +1039,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 2, std::greater_equal<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 2, terminal_T, terminal_T)));
@@ -1088,7 +1088,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(8,2u)));
@@ -1129,7 +1129,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 0, std::greater<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 1, terminal_T, terminal_T)));
@@ -1179,7 +1179,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,2u)));
@@ -1222,7 +1222,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 1, std::greater<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 2, terminal_T, terminal_T)));
@@ -1271,7 +1271,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(5,2u)));
@@ -1312,7 +1312,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 2, std::less<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 0,
@@ -1341,7 +1341,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(8,1u)));
@@ -1382,7 +1382,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 3, std::less<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
@@ -1414,7 +1414,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(6,1u)));
@@ -1453,7 +1453,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 5, std::less<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(9, 3,
@@ -1562,7 +1562,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(9,1u)));
@@ -1611,7 +1611,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 2, std::less_equal<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 1, terminal_T, terminal_T)));
@@ -1650,7 +1650,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(8,1u)));
@@ -1691,7 +1691,7 @@ go_bandit([]() {
         }
 
         zdd res = zdd_sized_sets(labels, 4, std::not_equal_to<label_t>());
-        node_test_stream ns(res);
+        nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(9, 5, terminal_T, terminal_T)));
@@ -1853,7 +1853,7 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream<node_t> ms(res);
+        level_info_test_stream<node> ms(res);
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(create_level_info(9,2u)));

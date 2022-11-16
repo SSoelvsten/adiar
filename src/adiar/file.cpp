@@ -12,7 +12,7 @@ namespace adiar
     adiar_debug(file.size() > 0, "Invalid node_file: empty");
 
     node_stream<reverse> ns(file);
-    node_t n = ns.pull();
+    node n = ns.pull();
 
     adiar_debug(!n.is_terminal(), "Cannot extract label from terminal-only file");
 

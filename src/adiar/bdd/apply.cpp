@@ -37,8 +37,8 @@ namespace adiar
     }
 
   public:
-    static __bdd resolve_terminal_root(const node_t &v1, const bdd& bdd_1,
-                                   const node_t &v2, const bdd& bdd_2,
+    static __bdd resolve_terminal_root(const node &v1, const bdd& bdd_1,
+                                   const node &v2, const bdd& bdd_2,
                                    const bool_op &op)
     {
       if (v1.is_terminal() && v2.is_terminal()) {

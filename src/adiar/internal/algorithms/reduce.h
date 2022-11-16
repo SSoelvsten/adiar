@@ -129,7 +129,7 @@ namespace adiar
   // Reduction Rule 2 sorting (and back again)
   struct reduce_node_children_lt
   {
-    bool operator()(const node_t &a, const node_t &b)
+    bool operator()(const node &a, const node &b)
     {
       // If adding attributed edges, i.e. complement edges:
       //     Use the 'flag' bit on children to mark attributed edges. Currently,
@@ -210,7 +210,7 @@ namespace adiar
     tpie::file_stream<mapping> red1_mapping;
 
     // Sorter to find Reduction Rule 2 mappings
-    sorter_t<node_t, reduce_node_children_lt>
+    sorter_t<node, reduce_node_children_lt>
       child_grouping(sorters_memory, level_width, 2);
 
     sorter_t<mapping, reduce_uid_lt>
@@ -222,7 +222,7 @@ namespace adiar
       const arc_t e_high = __reduce_get_next(reduce_pq, terminal_arcs);
       const arc_t e_low = __reduce_get_next(reduce_pq, terminal_arcs);
 
-      node_t n = node_of(e_low, e_high);
+      node n = node_of(e_low, e_high);
 
       // Apply Reduction rule 1
       ptr_uint64 reduction_rule_ret = dd_policy::reduction_rule(n);
@@ -251,10 +251,10 @@ namespace adiar
     child_grouping.sort();
 
     id_t out_id = MAX_ID;
-    node_t out_node = node(node::uid_t(), ptr_uint64::NIL(), ptr_uint64::NIL());
+    node out_node = node(node::uid_t(), ptr_uint64::NIL(), ptr_uint64::NIL());
 
     while (child_grouping.can_pull()) {
-      const node_t next_node = child_grouping.pull();
+      const node next_node = child_grouping.pull();
 
       if (out_node.low() != unflag(next_node.low()) || out_node.high() != unflag(next_node.high())) {
         out_node = node(label, out_id, unflag(next_node.low()), unflag(next_node.high()));
@@ -407,7 +407,7 @@ namespace adiar
         stats_reduce.removed_by_rule_1++;
 #endif
         const bool terminal_val = reduction_rule_ret.value();
-        const node_t out_node = node(terminal_val);
+        const node out_node = node(terminal_val);
         out_writer.unsafe_push(out_node);
 
         out_writer.set_number_of_terminals(!terminal_val, terminal_val);
@@ -446,7 +446,7 @@ namespace adiar
     // Initialize (levelized) priority queue
     pq_t reduce_pq({in_file}, lpq_memory, in_file->max_1level_cut);
 
-    const size_t internal_sorter_can_fit = internal_sorter<node_t>::memory_fits(sorters_memory / 2);
+    const size_t internal_sorter_can_fit = internal_sorter<node>::memory_fits(sorters_memory / 2);
 
     // Process bottom-up each level
     while (terminal_arcs.can_pull() || !reduce_pq.empty()) {

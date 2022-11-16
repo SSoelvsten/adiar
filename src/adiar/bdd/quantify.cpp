@@ -19,7 +19,7 @@ namespace adiar
   class bdd_quantify_policy : public bdd_policy
   {
   public:
-    static __bdd resolve_terminal_root(const node_t v, const bool_op &op)
+    static __bdd resolve_terminal_root(const node v, const bool_op &op)
     {
       if (v.low().is_terminal() && can_left_shortcut(op, v.low())) {
         return bdd_terminal(v.low().value());

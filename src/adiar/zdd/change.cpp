@@ -34,7 +34,7 @@ namespace adiar
       return zdd_terminal(terminal_value);
     }
 
-    static intercut_rec hit_existing(const node_t &n)
+    static intercut_rec hit_existing(const node &n)
     {
       if (n.low().is_false()) {
         return intercut_rec_skipto { n.high() };
@@ -48,7 +48,7 @@ namespace adiar
       return intercut_rec_output { ptr_uint64(false), target };
     }
 
-    static intercut_rec_output miss_existing(const node_t &n)
+    static intercut_rec_output miss_existing(const node &n)
     {
       return intercut_rec_output { n.low(), n.high() };
     }

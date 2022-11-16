@@ -46,7 +46,7 @@ namespace adiar
     // Yet, this is only 2 nodes that we can kill; that is 4 arcs. This is 32
     // bytes of data and very few computation cycles. For very large cases the
     // shortcutting in branch-prediction probably offsets this?
-    static intercut_rec_output hit_existing(const node_t &n)
+    static intercut_rec_output hit_existing(const node &n)
     {
       const ptr_uint64 low = n.low().is_terminal() ? negate(n.low()) : n.low();
       const ptr_uint64 high = n.high().is_terminal() ? negate(n.high()) : n.high();
@@ -66,7 +66,7 @@ namespace adiar
     }
 
     // LCOV_EXCL_START
-    static intercut_rec_output miss_existing(const node_t &/*n*/)
+    static intercut_rec_output miss_existing(const node &/*n*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_END
   };

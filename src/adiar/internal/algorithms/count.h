@@ -100,7 +100,7 @@ namespace adiar
     uint64_t result = 0u;
 
     {
-      node_t root = ns.pull();
+      node root = ns.pull();
       typename count_policy::queue_t request = { root.uid(), 1u };
 
       result += count_policy::forward_request(count_pq, varcount, root.low(), request);
@@ -109,7 +109,7 @@ namespace adiar
 
     // Take out the rest of the nodes and process them one by one
     while (ns.can_pull()) {
-      node_t n = ns.pull();
+      node n = ns.pull();
 
       if (!count_pq.has_current_level() || count_pq.current_level() != n.label()) {
         count_pq.setup_next_level();

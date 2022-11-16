@@ -60,8 +60,8 @@ namespace adiar
     }
 
   public:
-    static __zdd resolve_terminal_root(const node_t &v1, const zdd& zdd_1,
-                                   const node_t &v2, const zdd& zdd_2,
+    static __zdd resolve_terminal_root(const node &v1, const zdd& zdd_1,
+                                   const node &v2, const zdd& zdd_2,
                                    const bool_op &op)
     {
       ptr_uint64 terminal_F = ptr_uint64(false);

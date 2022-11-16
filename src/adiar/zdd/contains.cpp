@@ -30,7 +30,7 @@ namespace adiar
       l = has_l ? ls.pull() : 0;
     }
 
-    inline ptr_uint64 visit(const node_t &n)
+    inline ptr_uint64 visit(const node &n)
     {
       visited_label = n.label();
 

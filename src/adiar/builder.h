@@ -209,7 +209,7 @@ namespace adiar {
       }
 
       // Create potential node
-      const node_t n(label, current_id, low.uid, high.uid);
+      const node n(label, current_id, low.uid, high.uid);
 
       // Check whether this node is 'redundant'
       const uid_t res_uid = dd_policy::reduction_rule(n);

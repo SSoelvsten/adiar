@@ -162,7 +162,7 @@ namespace adiar
     label_file labels;
     label_writer writer(labels);
 
-    level_info_stream<node_t> info_stream(dd);
+    level_info_stream<node> info_stream(dd);
 
     while(info_stream.can_pull()) {
       writer << label_of(info_stream.pull());
@@ -178,7 +178,7 @@ namespace adiar
                                                     const size_t max_pq_size)
   {
     node_stream<> in_nodes(dd);
-    node_t n = in_nodes.pull();
+    node n = in_nodes.pull();
 
     if (n.is_terminal()) {
       return intercut_policy::on_terminal_input(n.value(), dd, labels);

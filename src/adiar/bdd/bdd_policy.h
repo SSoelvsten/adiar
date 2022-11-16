@@ -19,7 +19,7 @@ namespace adiar
     typedef __bdd unreduced_t;
 
   public:
-    static inline ptr_uint64 reduction_rule(const node_t &n)
+    static inline ptr_uint64 reduction_rule(const node &n)
     {
       // If adding attributed edges, i.e. complement edges:
       //    remove the 'unflag' below. Currently, it removes any forwarding of

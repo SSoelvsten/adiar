@@ -19,7 +19,7 @@ namespace adiar
     typedef __zdd unreduced_t;
 
   public:
-    static inline ptr_uint64 reduction_rule(const node_t &n)
+    static inline ptr_uint64 reduction_rule(const node &n)
     {
       if (n.high().is_false()) { return n.low(); }
       return n.uid();

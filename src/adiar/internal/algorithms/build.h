@@ -57,7 +57,7 @@ namespace adiar
       label_stream<true> ls(labels);
       while(ls.can_pull()) {
         label_t next_label = ls.pull();
-        node_t next_node = node(next_label, MAX_ID, low, high);
+        node next_node = node(next_label, MAX_ID, low, high);
 
         adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
         adiar_assert(high.is_terminal() || next_label < high.label(),

@@ -4,7 +4,7 @@ go_bandit([]() {
     describe("adiar/internal/data_types/convert.h", []() {
         describe("low_arc_of", []() {
             it("should extract low arc from node", [&]() {
-                const node_t n = node(7,42,
+                const node n = node(7,42,
                                       ptr_uint64(8,21),
                                       ptr_uint64(9,8));
 
@@ -19,7 +19,7 @@ go_bandit([]() {
 
         describe("high_arc_of", []() {
             it("should extract high arc from node", [&]() {
-                const node_t n = node(6,13,
+                const node n = node(6,13,
                                       ptr_uint64(8,21),
                                       ptr_uint64(9,8));
 
@@ -37,7 +37,7 @@ go_bandit([]() {
                 const arc_t low_arc = arc(ptr_uint64(17,42), ptr_uint64(9,8));
                 const arc_t high_arc = arc(flag(ptr_uint64(17,42)), ptr_uint64(8,21));
 
-                const node_t n = node_of(low_arc, high_arc);
+                const node n = node_of(low_arc, high_arc);
 
                 AssertThat(n.label(), Is().EqualTo(17u));
                 AssertThat(n.id(), Is().EqualTo(42u));

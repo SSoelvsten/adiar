@@ -16,11 +16,11 @@ go_bandit([]() {
                   F T
     */
 
-    node_t n5 = node(3,0, terminal_F, terminal_T);
-    node_t n4 = node(2,1, terminal_T, n5.uid());
-    node_t n3 = node(2,0, terminal_F, terminal_T);
-    node_t n2 = node(1,0, n3.uid(), n4.uid());
-    node_t n1 = node(0,0, n3.uid(), n2.uid());
+    node n5 = node(3,0, terminal_F, terminal_T);
+    node n4 = node(2,1, terminal_T, n5.uid());
+    node n3 = node(2,0, terminal_F, terminal_T);
+    node n2 = node(1,0, n3.uid(), n4.uid());
+    node n1 = node(0,0, n3.uid(), n2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd);
@@ -42,10 +42,10 @@ go_bandit([]() {
                F T
     */
 
-    node_t skip_n4 = node(4,0, terminal_F, terminal_T);
-    node_t skip_n3 = node(2,1, terminal_T, skip_n4.uid());
-    node_t skip_n2 = node(2,0, terminal_F, terminal_T);
-    node_t skip_n1 = node(0,0, skip_n2.uid(), skip_n3.uid());
+    node skip_n4 = node(4,0, terminal_F, terminal_T);
+    node skip_n3 = node(2,1, terminal_T, skip_n4.uid());
+    node skip_n2 = node(2,0, terminal_F, terminal_T);
+    node skip_n1 = node(0,0, skip_n2.uid(), skip_n3.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer skip_nw(skip_bdd);

@@ -21,7 +21,7 @@ namespace adiar
   class input_bound_levels
   {
   private:
-    level_info_stream<node_t> in_meta_1;
+    level_info_stream<node> in_meta_1;
 
     size_t curr_level_size;
     size_t curr_level_processed;
@@ -41,7 +41,7 @@ namespace adiar
 
     static constexpr size_t memory_usage()
     {
-      return level_info_stream<node_t>::memory_usage();
+      return level_info_stream<node>::memory_usage();
     }
 
   public:
@@ -87,7 +87,7 @@ namespace adiar
     }
 
   public:
-    static bool resolve_terminals(const node_t &v1, const node_t &v2, bool &ret_value)
+    static bool resolve_terminals(const node &v1, const node &v2, bool &ret_value)
     {
       ret_value = v1.is_terminal() && v2.is_terminal() && v1.value() == v2.value();
 #ifdef ADIAR_STATS
@@ -97,7 +97,7 @@ namespace adiar
     }
 
   public:
-    static bool resolve_singletons(const node &v1, const node_t v2)
+    static bool resolve_singletons(const node &v1, const node v2)
     {
 #ifdef ADIAR_STATS
       stats_equality.slow_check.exit_on_root++;
@@ -224,8 +224,8 @@ namespace adiar
     // Are they trivially not the same, since the labels or the size of each
     // level does not match?
     { // Create new scope to garbage collect the two meta_streams early
-      level_info_stream<node_t> in_meta_1(f1);
-      level_info_stream<node_t> in_meta_2(f2);
+      level_info_stream<node> in_meta_1(f1);
+      level_info_stream<node> in_meta_2(f2);
 
       while (in_meta_1.can_pull()) {
         adiar_debug(in_meta_2.can_pull(), "level_info files are same size");

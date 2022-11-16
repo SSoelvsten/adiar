@@ -86,13 +86,13 @@ namespace adiar
   class zdd_offset_policy : public zdd_policy
   {
   public:
-    static substitute_rec keep_node(const node_t &n, zdd_subset_act &/*amgr*/)
+    static substitute_rec keep_node(const node &n, zdd_subset_act &/*amgr*/)
     { return substitute_rec_output { n }; }
 
-    static substitute_rec fix_false(const node_t &n, zdd_subset_act &/*amgr*/)
+    static substitute_rec fix_false(const node &n, zdd_subset_act &/*amgr*/)
     { return substitute_rec_skipto { n.low() }; }
 
-    static substitute_rec fix_true(const node_t &/*n*/, zdd_subset_act &/*amgr*/)
+    static substitute_rec fix_true(const node &/*n*/, zdd_subset_act &/*amgr*/)
     {
       adiar_unreachable(); // LCOV_EXCL_LINE
     }
@@ -120,7 +120,7 @@ namespace adiar
   class zdd_onset_policy : public zdd_policy
   {
   public:
-    static substitute_rec keep_node(const node_t &n, zdd_subset_act &amgr)
+    static substitute_rec keep_node(const node &n, zdd_subset_act &amgr)
     {
       if (amgr.has_level_incl()) {
         // If recursion goes past the intended level, then it is replaced with
@@ -138,12 +138,12 @@ namespace adiar
       return substitute_rec_output { n };
     }
 
-    static substitute_rec fix_false(const node_t &/*n*/, zdd_subset_act &/*amgr*/)
+    static substitute_rec fix_false(const node &/*n*/, zdd_subset_act &/*amgr*/)
     {
       adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
-    static substitute_rec fix_true(const node_t &n, zdd_subset_act &amgr)
+    static substitute_rec fix_true(const node &n, zdd_subset_act &amgr)
     {
       if (amgr.has_level_excl()) {
         if (n.high().is_terminal() || n.high().label() > amgr.level_excl()) {

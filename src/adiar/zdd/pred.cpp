@@ -63,7 +63,7 @@ namespace adiar {
     }
 
   public:
-    static bool resolve_terminals(const node_t &v1, const node_t &v2, bool &ret_value)
+    static bool resolve_terminals(const node &v1, const node &v2, bool &ret_value)
     {
       if (v1.is_terminal() && v2.is_terminal()) {
         ret_value = !v1.value() || v2.value();
@@ -79,7 +79,7 @@ namespace adiar {
     }
 
   public:
-    static bool resolve_singletons(const node_t &v1, const node_t &v2)
+    static bool resolve_singletons(const node &v1, const node &v2)
     {
       return v1.label() == v2.label()
         && v1.low() <= v2.low() && v1.high() <= v2.high();
@@ -138,14 +138,14 @@ namespace adiar {
     }
 
   public:
-    static bool resolve_terminals(const node_t &v1, const node_t &v2, bool &ret_value)
+    static bool resolve_terminals(const node &v1, const node &v2, bool &ret_value)
     {
       ret_value = v1.is_false() || v2.is_false();
       return (v1.is_terminal() && v2.is_terminal()) || ret_value;
     }
 
   public:
-    static bool resolve_singletons(const node_t &v1, const node_t &v2)
+    static bool resolve_singletons(const node &v1, const node &v2)
     {
       return v1.label() != v2.label()
         || v1.low() != v2.low()

@@ -16,10 +16,10 @@ go_bandit([]() {
              F T
     */
     { // Garbage collect writer to free write-lock
-      node_t n4 = node(3,0, terminal_F, terminal_T);
-      node_t n3 = node(2,0, terminal_F, n4.uid());
-      node_t n2 = node(1,0, n3.uid(), n4.uid());
-      node_t n1 = node(0,0, n3.uid(), n2.uid());
+      node n4 = node(3,0, terminal_F, terminal_T);
+      node n3 = node(2,0, terminal_F, n4.uid());
+      node n2 = node(1,0, n3.uid(), n4.uid());
+      node n1 = node(0,0, n3.uid(), n2.uid());
 
       node_writer nw_1(zdd_1);
       nw_1 << n4 << n3 << n2 << n1;
@@ -36,8 +36,8 @@ go_bandit([]() {
            F  T
     */
     { // Garbage collect writer to free write-lock
-      node_t n2 = node(2,0, terminal_F, terminal_T);
-      node_t n1 = node(1,0, n2.uid(), terminal_T);
+      node n2 = node(2,0, terminal_F, terminal_T);
+      node n1 = node(1,0, n2.uid(), terminal_T);
 
       node_writer nw_2(zdd_2);
       nw_2 << n2 << n1;

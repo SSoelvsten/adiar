@@ -15,11 +15,11 @@ go_bandit([]() {
     ptr_uint64 terminal_T = ptr_uint64(true);
     ptr_uint64 terminal_F = ptr_uint64(false);
 
-    node_t n5 = node(3,0, terminal_F, terminal_T);
-    node_t n4 = node(2,1, terminal_T, n5.uid());
-    node_t n3 = node(2,0, terminal_F, terminal_T);
-    node_t n2 = node(1,0, n3.uid(), n4.uid());
-    node_t n1 = node(0,0, n3.uid(), n2.uid());
+    node n5 = node(3,0, terminal_F, terminal_T);
+    node n4 = node(2,1, terminal_T, n5.uid());
+    node n3 = node(2,0, terminal_F, terminal_T);
+    node n2 = node(1,0, n3.uid(), n4.uid());
+    node n1 = node(0,0, n3.uid(), n2.uid());
 
     node_file bdd;
 
@@ -332,13 +332,13 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      node_test_stream out_nodes(out);
+      nodeest_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
-      level_info_test_stream<node_t> meta_arcs(out);
+      level_info_test_stream<node> meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -362,13 +362,13 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      node_test_stream out_nodes(out);
+      nodeest_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
-      level_info_test_stream<node_t> meta_arcs(out);
+      level_info_test_stream<node> meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -466,10 +466,10 @@ go_bandit([]() {
 
       node_file node_input;
 
-      node_t n4 = node(2,0, terminal_T, terminal_F);
-      node_t n3 = node(1,1, terminal_T, terminal_F);
-      node_t n2 = node(1,0, n4.uid(), terminal_F);
-      node_t n1 = node(0,0, n2.uid(), n3.uid());
+      node n4 = node(2,0, terminal_T, terminal_F);
+      node n3 = node(1,1, terminal_T, terminal_F);
+      node n2 = node(1,0, n4.uid(), terminal_F);
+      node n1 = node(0,0, n2.uid(), n3.uid());
 
       { // Garbage collect writer to free write-lock
         node_writer inw(node_input);
@@ -542,11 +542,11 @@ go_bandit([]() {
 
       node_file node_input;
 
-      node_t n5 = node(2,1, terminal_F, terminal_T);
-      node_t n4 = node(2,0, terminal_T, terminal_F);
-      node_t n3 = node(1,1, n5.uid(), terminal_F);
-      node_t n2 = node(1,0, n4.uid(), terminal_F);
-      node_t n1 = node(0,0, n2.uid(), n3.uid());
+      node n5 = node(2,1, terminal_F, terminal_T);
+      node n4 = node(2,0, terminal_T, terminal_F);
+      node n3 = node(1,1, n5.uid(), terminal_F);
+      node n2 = node(1,0, n4.uid(), terminal_F);
+      node n1 = node(0,0, n2.uid(), n3.uid());
 
       { // Garbage collect writer to free write-lock
         node_writer inw(node_input);
@@ -621,15 +621,15 @@ go_bandit([]() {
 
       node_file dead_bdd;
 
-      node_t n9 = node(3,1, terminal_T, terminal_F);
-      node_t n8 = node(3,0, terminal_F, terminal_T);
-      node_t n7 = node(2,3, n9.uid(), terminal_T);
-      node_t n6 = node(2,2, terminal_T, n9.uid());
-      node_t n5 = node(2,1, terminal_F, n8.uid());
-      node_t n4 = node(2,0, terminal_T, terminal_F);
-      node_t n3 = node(1,1, n6.uid(), n7.uid());
-      node_t n2 = node(1,0, n4.uid(), n5.uid());
-      node_t n1 = node(0,0, n2.uid(), n3.uid());
+      node n9 = node(3,1, terminal_T, terminal_F);
+      node n8 = node(3,0, terminal_F, terminal_T);
+      node n7 = node(2,3, n9.uid(), terminal_T);
+      node n6 = node(2,2, terminal_T, n9.uid());
+      node n5 = node(2,1, terminal_F, n8.uid());
+      node n4 = node(2,0, terminal_T, terminal_F);
+      node n3 = node(1,1, n6.uid(), n7.uid());
+      node n2 = node(1,0, n4.uid(), n5.uid());
+      node n1 = node(0,0, n2.uid(), n3.uid());
 
       { // Garbage collect writer to free write-lock
         node_writer dead_w(dead_bdd);
@@ -705,8 +705,8 @@ go_bandit([]() {
     it("should return terminal-child of restricted root [assignment = T]", [&]() {
       node_file terminal_child_of_root_bdd;
 
-      node_t n2 = node(2,MAX_ID, terminal_T, terminal_T);
-      node_t n1 = node(1,MAX_ID, n2.uid(), terminal_F);
+      node n2 = node(2,MAX_ID, terminal_T, terminal_T);
+      node n1 = node(1,MAX_ID, n2.uid(), terminal_F);
 
       { // Garbage collect writer to free write-lock
         node_writer dead_w(terminal_child_of_root_bdd);
@@ -722,13 +722,13 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(terminal_child_of_root_bdd, assignment);
 
-      node_test_stream out_nodes(out);
+      nodeest_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
-      level_info_test_stream<node_t> meta_arcs(out);
+      level_info_test_stream<node> meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -743,8 +743,8 @@ go_bandit([]() {
     it("should return terminal-child of restricted root [assignment = F]", [&]() {
       node_file terminal_child_of_root_bdd;
 
-      node_t n2 = node(2,MAX_ID, terminal_T, terminal_T);
-      node_t n1 = node(0,MAX_ID, terminal_T, n2.uid());
+      node n2 = node(2,MAX_ID, terminal_T, terminal_T);
+      node n1 = node(0,MAX_ID, terminal_T, n2.uid());
 
       { // Garbage collect writer to free write-lock
         node_writer dead_w(terminal_child_of_root_bdd);
@@ -760,13 +760,13 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(terminal_child_of_root_bdd, assignment);
 
-      node_test_stream out_nodes(out);
+      nodeest_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
-      level_info_test_stream<node_t> meta_arcs(out);
+      level_info_test_stream<node> meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
