@@ -12,7 +12,7 @@ else()
 endif()
 
 project (adiar
-  VERSION 1.2.1
+  VERSION 1.2.2
   DESCRIPTION "Adiar, an external memory decision diagram library"
   HOMEPAGE_URL "https://ssoelvsten.github.io/adiar/"
   LANGUAGES CXX
