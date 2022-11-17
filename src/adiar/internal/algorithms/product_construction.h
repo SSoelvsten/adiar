@@ -30,61 +30,70 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct prod_tuple_1 : tuple
+  struct prod_tuple_1
   {
+    tuple<ptr_uint64> target;
     ptr_uint64 source;
   };
 
-#ifndef NDEBUG
   struct prod_tuple_1_lt
   {
     bool operator()(const prod_tuple_1 &a, const prod_tuple_1 &b)
     {
-      return tuple_fst_lt()(a,b)
-        || (!tuple_fst_lt()(b,a) && a.source < b.source)
+      return tuple_fst_lt<tuple<ptr_uint64>>()(a.target, b.target)
+#ifndef NDEBUG
+        || (!tuple_fst_lt<tuple<ptr_uint64>>()(b.target, a.target) && a.source < b.source)
+#endif
         ;
     }
   };
-#else
-  typedef tuple_fst_lt prod_tuple_1_lt;
-#endif
+
+  struct prod_tuple_1_label // TODO: remove by generalising to 'request' class
+  {
+    static inline ptr_uint64::label_t label_of(const prod_tuple_1 &t)
+    {
+      return t.target.fst().label();
+    }
+  };
 
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using prod_priority_queue_1_t =
-    levelized_node_priority_queue<prod_tuple_1, tuple_label,
+    levelized_node_priority_queue<prod_tuple_1, prod_tuple_1_label,
                                   prod_tuple_1_lt, LOOK_AHEAD,
                                   mem_mode,
                                   2>;
 
-  struct prod_tuple_2 : tuple_data
+  struct prod_tuple_2
   {
+    tuple<ptr_uint64> target;
+    ptr_uint64 data_low;  // <-- TODO: data array
+    ptr_uint64 data_high; // <-- TODO: data array
     ptr_uint64 source;
   };
 
-#ifndef NDEBUG
   struct prod_tuple_2_lt
   {
     bool operator()(const prod_tuple_2 &a, const prod_tuple_2 &b)
     {
-      return tuple_snd_lt()(a,b)
-        || (!tuple_snd_lt()(b,a) && a.source < b.source)
+      return tuple_snd_lt<tuple<ptr_uint64>>()(a.target, b.target)
+#ifndef NDEBUG
+        || (!tuple_snd_lt<tuple<ptr_uint64>>()(b.target, a.target) && a.source < b.source)
+#endif
         ;
     }
   };
-#else
-  typedef tuple_snd_lt prod_tuple_2_lt;
-#endif
 
   template<memory::memory_mode mem_mode>
   using prod_priority_queue_2_t =
     priority_queue<mem_mode, prod_tuple_2, prod_tuple_2_lt>;
 
+  // TODO: turn into 'tuple<tuple<ptr_uint64>>'
   struct prod_rec_output {
-    tuple low;
-    tuple high;
+    tuple<ptr_uint64> low;
+    tuple<ptr_uint64> high;
   };
 
-  struct prod_rec_skipto : tuple { };
+  typedef tuple<ptr_uint64> prod_rec_skipto;
 
   typedef std::variant<prod_rec_output, prod_rec_skipto> prod_rec;
 
@@ -93,16 +102,16 @@ namespace adiar
   template<typename pq_1_t>
   inline void prod_recurse_out(pq_1_t &prod_pq_1, arc_writer &aw,
                                const bool_op &op,
-                               ptr_uint64 source, tuple target)
+                               ptr_uint64 source, tuple<ptr_uint64> target)
   {
-    if (target.t1.is_terminal() && target.t2.is_terminal()) {
-      arc out_arc = { source, op(target.t1, target.t2) };
+    if (target[0].is_terminal() && target[1].is_terminal()) {
+      arc out_arc = { source, op(target[0], target[1]) };
       aw.unsafe_push_terminal(out_arc);
     } else {
-      adiar_debug(source.label() < std::min(target.t1, target.t2).label(),
+      adiar_debug(source.label() < std::min(target[0], target[1]).label(),
                   "should always push recursion for 'later' level");
 
-      prod_pq_1.push({ target.t1, target.t2, source });
+      prod_pq_1.push({ target, source });
     }
   }
 
@@ -111,11 +120,11 @@ namespace adiar
                               arc_writer &aw,
                               const extra_arg &ea, ptr_uint64 t1, ptr_uint64 t2)
   {
-    while (prod_pq_1.can_pull() && prod_pq_1.top().t1 == t1 && prod_pq_1.top().t2 == t2) {
+    while (prod_pq_1.can_pull() && prod_pq_1.top().target[0] == t1 && prod_pq_1.top().target[1] == t2) {
       out_policy::go(prod_pq_1, aw, ea, prod_pq_1.pull().source);
     }
 
-    while (!prod_pq_2.empty() && prod_pq_2.top().t1 == t1 && prod_pq_2.top().t2 == t2) {
+    while (!prod_pq_2.empty() && prod_pq_2.top().target[0] == t1 && prod_pq_2.top().target[1] == t2) {
       out_policy::go(prod_pq_1, aw, ea, prod_pq_2.top().source);
       prod_pq_2.pop();
     }
@@ -149,7 +158,7 @@ namespace adiar
     static inline void go(pq_1_t &prod_pq_1, arc_writer&,
                           const prod_rec_skipto &r, ptr_uint64 source)
     {
-      prod_pq_1.push({ r.t1, r.t2, source });
+      prod_pq_1.push({ { r[0], r[1] }, source });
     }
   };
 
@@ -293,10 +302,10 @@ namespace adiar
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(root_rec);
 
-        if (r.t1.is_terminal() && r.t2.is_terminal()) {
-          return prod_terminal(r.t1, r.t2, op);
+        if (r[0].is_terminal() && r[1].is_terminal()) {
+          return prod_terminal(r[0], r[1], op);
         } else {
-          prod_pq_1.push({ r.t1, r.t2, ptr_uint64::NIL() });
+          prod_pq_1.push({ { r[0], r[1] }, ptr_uint64::NIL() });
         }
       }
     }
@@ -318,20 +327,20 @@ namespace adiar
         max_1level_cut = std::max(max_1level_cut, prod_pq_1.size());
       }
 
-      ptr_uint64 source, t1, t2;
+      ptr_uint64 source, t1, t2; // TODO: merge t1,t2 in a tuple
       bool with_data = false;
       ptr_uint64 data_low = ptr_uint64::NIL(), data_high = ptr_uint64::NIL();
 
       // Merge requests from  prod_pq_1 or prod_pq_2
       if (prod_pq_1.can_pull() && (prod_pq_2.empty() ||
-                                   fst(prod_pq_1.top()) < snd(prod_pq_2.top()))) {
+                                   prod_pq_1.top().target.fst() < prod_pq_2.top().target.snd())) {
         source = prod_pq_1.top().source;
-        t1 = prod_pq_1.top().t1;
-        t2 = prod_pq_1.top().t2;
+        t1 = prod_pq_1.top().target[0];
+        t2 = prod_pq_1.top().target[1];
       } else {
         source = prod_pq_2.top().source;
-        t1 = prod_pq_2.top().t1;
-        t2 = prod_pq_2.top().t2;
+        t1 = prod_pq_2.top().target[0];
+        t2 = prod_pq_2.top().target[1];
 
         with_data = true;
         data_low = prod_pq_2.top().data_low;
@@ -357,9 +366,9 @@ namespace adiar
           && !with_data && (v1.uid() != t1 || v2.uid() != t2)) {
         node v0 = t1 == v1.uid() /*prod_from_1(t1,t2)*/ ? v1 : v2;
 
-        while (prod_pq_1.can_pull() && prod_pq_1.top().t1 == t1 && prod_pq_1.top().t2 == t2) {
+        while (prod_pq_1.can_pull() && prod_pq_1.top().target[0] == t1 && prod_pq_1.top().target[1] == t2) {
           source = prod_pq_1.pull().source;
-          prod_pq_2.push({ t1, t2, v0.low(), v0.high(), source });
+          prod_pq_2.push({ { t1, t2 }, v0.low(), v0.high(), source });
         }
         continue;
       }
@@ -390,12 +399,12 @@ namespace adiar
 
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(rec_res);
-        if (r.t1.is_terminal() && r.t2.is_terminal()) {
+        if (r[0].is_terminal() && r[1].is_terminal()) {
           if (source.is_nil()) {
             // Skipped in both DAGs all the way from the root until a pair of terminals.
-            return prod_terminal(r.t1, r.t2, op);
+            return prod_terminal(r[0], r[1], op);
           }
-          prod_recurse_in<prod_recurse_in__output_terminal>(prod_pq_1, prod_pq_2, aw, op(r.t1, r.t2), t1, t2);
+          prod_recurse_in<prod_recurse_in__output_terminal>(prod_pq_1, prod_pq_2, aw, op(r[0], r[1]), t1, t2);
         } else {
           prod_recurse_in<prod_recurse_in__forward>(prod_pq_1, prod_pq_2, aw, r, t1, t2);
         }

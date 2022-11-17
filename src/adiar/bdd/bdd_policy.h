@@ -15,7 +15,8 @@ namespace adiar
   typedef decision_diagram_policy<bdd, __bdd> bdd_policy;
 
   template<>
-  inline ptr_uint64 bdd_policy::reduction_rule(const bdd::node_t &n)
+  inline ptr_uint64
+  bdd_policy::reduction_rule(const bdd::node_t &n)
   {
     // If adding attributed edges, i.e. complement edges:
     //    remove the 'unflag' below. Currently, it removes any forwarding of
@@ -25,15 +26,15 @@ namespace adiar
   }
 
   template<>
-  inline tuple bdd_policy::reduction_rule_inv(const bdd::ptr_t &child)
+  inline tuple<ptr_uint64>
+  bdd_policy::reduction_rule_inv(const bdd::ptr_t &child)
   {
     return { child, child };
   }
 
   template<>
-  inline void bdd_policy::compute_cofactor(bool /* on_curr_level */,
-                                           bdd::ptr_t & /* low */,
-                                           bdd::ptr_t & /* high */)
+  inline void
+  bdd_policy::compute_cofactor(bool, bdd::ptr_t &, bdd::ptr_t &)
   { /* do nothing */ }
 }
 

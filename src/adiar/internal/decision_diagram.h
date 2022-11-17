@@ -371,13 +371,17 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// Function declaration
   public:
-    static inline ptr_uint64 reduction_rule(const typename dd_type::node_t &n);
+    static inline ptr_uint64
+    reduction_rule(const typename dd_type::node_t &n);
 
-    static inline tuple reduction_rule_inv(const typename dd_type::ptr_t &child);
+    // TODO: replace 'tuple' with 2-ary array.
+    static inline tuple<ptr_uint64>
+    reduction_rule_inv(const typename dd_type::ptr_t &child);
 
-    static inline void compute_cofactor(bool on_curr_level,
-                                        typename dd_type::ptr_t &low,
-                                        typename dd_type::ptr_t &high);
+    static inline void
+    compute_cofactor(bool on_curr_level,
+                     typename dd_type::ptr_t &low,
+                     typename dd_type::ptr_t &high);
   };
 }
 

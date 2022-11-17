@@ -24,7 +24,8 @@ namespace adiar
     }
 
   public:
-    static inline tuple resolve_request(const bool_op &/* op */, ptr_uint64 r1, ptr_uint64 r2)
+    static inline tuple<ptr_uint64, 2, true>
+    resolve_request(const bool_op &/* op */, ptr_uint64 r1, ptr_uint64 r2)
     {
       adiar_debug(!r1.is_nil() && !r2.is_nil(), "Resolve request is only used for tuple cases");
 
