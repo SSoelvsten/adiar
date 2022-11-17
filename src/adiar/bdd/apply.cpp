@@ -84,7 +84,8 @@ namespace adiar
     }
 
   private:
-    static tuple __resolve_request(const bool_op &op, ptr_uint64 r1, ptr_uint64 r2)
+    static tuple<ptr_uint64>
+    __resolve_request(const bool_op &op, ptr_uint64 r1, ptr_uint64 r2)
     {
       if (r1.is_terminal() && can_left_shortcut(op, r1)) {
         return { r1, ptr_uint64(true) };

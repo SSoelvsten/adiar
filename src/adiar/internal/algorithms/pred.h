@@ -41,11 +41,14 @@ namespace adiar
   // Data structures
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using comparison_priority_queue_1_t =
-    levelized_node_priority_queue<tuple, tuple_label, tuple_fst_lt, LOOK_AHEAD, mem_mode, 2>;
+    levelized_node_priority_queue<tuple<ptr_uint64>,
+                                  tuple_label<tuple<ptr_uint64>>,
+                                  tuple_fst_lt<tuple<ptr_uint64>>,
+                                  LOOK_AHEAD, mem_mode, 2>;
 
   template<memory::memory_mode mem_mode>
   using comparison_priority_queue_2_t =
-    priority_queue<mem_mode, tuple_data, tuple_snd_lt>;
+    priority_queue<mem_mode, tuple_data, tuple_snd_lt<tuple<ptr_uint64>>>;
 
   template<typename comp_policy, typename pq_1_t, typename pq_2_t>
   bool __comparison_check(const node_file &f1, const node_file &f2,
@@ -100,22 +103,23 @@ namespace adiar
         level_checker.next_level(comparison_pq_1.current_level());
       }
 
+      // TODO: merge into request struct
       ptr_uint64 t1, t2;
       bool with_data;
       ptr_uint64 data_low = ptr_uint64::NIL(), data_high = ptr_uint64::NIL();
 
       // Merge requests from comparison_pq_1 and comparison_pq_2
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
-                                         fst(comparison_pq_1.top()) < snd(comparison_pq_2.top()))) {
+                                         comparison_pq_1.top().fst() < comparison_pq_2.top().snd())) {
         with_data = false;
-        t1 = comparison_pq_1.top().t1;
-        t2 = comparison_pq_1.top().t2;
+        t1 = comparison_pq_1.top()[0];
+        t2 = comparison_pq_1.top()[1];
 
         comparison_pq_1.pop();
       } else {
         with_data = true;
-        t1 = comparison_pq_2.top().t1;
-        t2 = comparison_pq_2.top().t2;
+        t1 = comparison_pq_2.top()[0];
+        t2 = comparison_pq_2.top()[1];
 
         data_low = comparison_pq_2.top().data_low;
         data_high = comparison_pq_2.top().data_high;
@@ -133,8 +137,8 @@ namespace adiar
       }
 
       // Skip all requests to the same node
-      while (comparison_pq_1.can_pull() && (comparison_pq_1.top().t1 == t1
-                                            && comparison_pq_1.top().t2 == t2)) {
+      while (comparison_pq_1.can_pull() && (comparison_pq_1.top()[0] == t1
+                                            && comparison_pq_1.top()[1] == t2)) {
         comparison_pq_1.pull();
       }
 
@@ -144,7 +148,7 @@ namespace adiar
           && (v1.uid() != t1 || v2.uid() != t2)) {
         node v0 = prod_from_1(t1,t2) ? v1 : v2;
 
-        comparison_pq_2.push({ t1, t2, v0.low(), v0.high() });
+        comparison_pq_2.push({ {t1, t2}, v0.low(), v0.high() });
         continue;
       }
 

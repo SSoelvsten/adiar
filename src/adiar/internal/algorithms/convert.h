@@ -70,7 +70,7 @@ namespace adiar
                      "Labels not given in increasing order");
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
-        const node next_node = node(next_label, to_policy::MAX_ID, children.t1, children.t2);
+        const node next_node = node(next_label, to_policy::MAX_ID, children[0], children[1]);
         const ptr_uint64 reduction_result = to_policy::reduction_rule(next_node);
 
         if (reduction_result == next_node.uid()) { // Output
@@ -113,10 +113,10 @@ namespace adiar
       const tuple children = from_policy::reduction_rule_inv(target);
 
       // Debug mode: double-check we don't create irrelevant nodes
-      adiar_debug(to_policy::reduction_rule(node(0,0, children.t1, children.t2)) != target,
+      adiar_debug(to_policy::reduction_rule(node(0,0, children[0], children[1])) != target,
                   "Should not cut an arc where the one created will be killed anyways.");
 
-      return intercut_rec_output { children.t1, children.t2 };
+      return intercut_rec_output { children[0], children[1] };
     }
 
     // LCOV_EXCL_START

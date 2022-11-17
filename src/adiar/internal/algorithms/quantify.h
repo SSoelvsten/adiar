@@ -24,13 +24,17 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct quantify_tuple : tuple
+  struct quantify_tuple
   {
+    tuple<ptr_uint64, 2, true> target;
     ptr_uint64 source;
   };
 
-  struct quantify_tuple_data : tuple_data
+  struct quantify_tuple_data
   {
+    tuple<ptr_uint64, 2, true> target;
+    ptr_uint64 data_low;
+    ptr_uint64 data_high;
     ptr_uint64 source;
   };
 
@@ -44,13 +48,15 @@ namespace adiar
   // sorted.
   //
   // This improves the speed of the comparators.
+
+  // TODO: hide all of this within tuple class and just use the tuple-'default' ordering
   struct quantify_1_lt
   {
     bool operator()(const quantify_tuple &a, const quantify_tuple &b)
     {
-      return a.t1 < b.t1 || (a.t1 == b.t1 && a.t2 < b.t2)
+      return a.target[0] < b.target[0] || (a.target[0] == b.target[0] && a.target[1] < b.target[1])
 #ifndef NDEBUG
-        || (a.t1 == b.t1 && a.t2 == b.t2 && a.source < b.source)
+        || (a.target[0] == b.target[0] && a.target[1] == b.target[1] && a.source < b.source)
 #endif
         ;
     }
@@ -60,17 +66,25 @@ namespace adiar
   {
     bool operator()(const quantify_tuple_data &a, const quantify_tuple_data &b)
     {
-      return a.t2 < b.t2 || (a.t2 == b.t2 && a.t1 < b.t1)
+      return a.target[1] < b.target[1] || (a.target[1] == b.target[1] && a.target[0] < b.target[0])
 #ifndef NDEBUG
-        || (a.t1 == b.t1 && a.t2 == b.t2 && a.source < b.source)
+        || (a.target[0] == b.target[0] && a.target[1] == b.target[1] && a.source < b.source)
 #endif
         ;
     }
   };
 
+  struct quantify_1_label // TODO: remove by generalising to 'request' class
+  {
+    static inline ptr_uint64::label_t label_of(const quantify_tuple &t)
+    {
+      return t.target[0].label();
+    }
+  };
+
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using quantify_priority_queue_1_t =
-    levelized_node_priority_queue<quantify_tuple, tuple_label, quantify_1_lt, LOOK_AHEAD, mem_mode>;
+    levelized_node_priority_queue<quantify_tuple, quantify_1_label, quantify_1_lt, LOOK_AHEAD, mem_mode>;
 
   template<memory::memory_mode mem_mode>
   using quantify_priority_queue_2_t =
@@ -93,18 +107,17 @@ namespace adiar
       if (r1.is_terminal()) {
         aw.unsafe_push_terminal({ source, r1 });
       } else {
-        quantify_pq_1.push({ r1, r2, source });
+        quantify_pq_1.push({ {r1, r2}, source });
       }
     } else {
       // sort the tuple of requests
-      tuple rec = quantify_policy::resolve_request(op, r1, r2);
-      adiar_debug(fst(rec) == rec.t1 && snd(rec) == rec.t2, "Request recursion should be created in-order");
+      tuple<ptr_uint64, 2, true> rec = quantify_policy::resolve_request(op, r1, r2);
 
-      if (rec.t1.is_terminal() /* && rec.t2.is_terminal() */) {
-        arc out_arc = { source, op(rec.t1, rec.t2) };
+      if (rec[0].is_terminal() /* && rec[1].is_terminal() */) {
+        arc out_arc = { source, op(rec[0], rec[1]) };
         aw.unsafe_push_terminal(out_arc);
       } else {
-        quantify_pq_1.push({ rec.t1, rec.t2, source });
+        quantify_pq_1.push({ rec, source });
       }
     }
   }
@@ -115,9 +128,9 @@ namespace adiar
                                                 ptr_uint64 &source,
                                                 const ptr_uint64 t1, const ptr_uint64 t2)
   {
-    if (quantify_pq_1.can_pull() && quantify_pq_1.top().t1 == t1 && quantify_pq_1.top().t2 == t2) {
+    if (quantify_pq_1.can_pull() && quantify_pq_1.top().target[0] == t1 && quantify_pq_1.top().target[1] == t2) {
       source = quantify_pq_1.pull().source;
-    } else if (!quantify_pq_2.empty() && quantify_pq_2.top().t1 == t1 && quantify_pq_2.top().t2 == t2) {
+    } else if (!quantify_pq_2.empty() && quantify_pq_2.top().target[0] == t1 && quantify_pq_2.top().target[1] == t2) {
       source = quantify_pq_2.top().source;
       quantify_pq_2.pop();
     } else {
@@ -172,19 +185,19 @@ namespace adiar
 
     if (v.uid().label() == label) {
       // Precondition: The input is reduced and will not collapse to a terminal
-      quantify_pq_1.push({ fst(v.low(), v.high()), snd(v.low(), v.high()), ptr_uint64::NIL() });
+      quantify_pq_1.push({ {fst(v.low(), v.high()), snd(v.low(), v.high())}, ptr_uint64::NIL() });
     } else {
       const uid_t out_uid(out_label, out_id++);
 
       if (v.low().is_terminal()) {
         aw.unsafe_push_terminal({ out_uid, v.low() });
       } else {
-        quantify_pq_1.push({ v.low(), ptr_uint64::NIL(), out_uid });
+        quantify_pq_1.push({ {v.low(), ptr_uint64::NIL()}, out_uid });
       }
       if (v.high().is_terminal()) {
         aw.unsafe_push_terminal({ flag(out_uid), v.high() });
       } else {
-        quantify_pq_1.push({ v.high(), ptr_uint64::NIL(), flag(out_uid) });
+        quantify_pq_1.push({ {v.high(), ptr_uint64::NIL()}, flag(out_uid) });
       }
     }
 
@@ -203,23 +216,24 @@ namespace adiar
         max_1level_cut = std::max(max_1level_cut, quantify_pq_1.size());
       }
 
-      ptr_uint64 source, t1, t2;
+      ptr_uint64 source, t1, t2; // TODO: turn t1,t2 into a tuple
       bool with_data = false;
       ptr_uint64 data_low = ptr_uint64::NIL(), data_high = ptr_uint64::NIL();
 
       // Merge requests from quantify_pq_1 and quantify_pq_2 (pretty much just as for Apply)
-      if (quantify_pq_1.can_pull() && (quantify_pq_2.empty() || quantify_pq_1.top().t1 < quantify_pq_2.top().t2)) {
+      if (quantify_pq_1.can_pull()
+          && (quantify_pq_2.empty() || quantify_pq_1.top().target[0] < quantify_pq_2.top().target[1])) {
         with_data = false;
         source = quantify_pq_1.top().source;
-        t1 = quantify_pq_1.top().t1;
-        t2 = quantify_pq_1.top().t2;
+        t1 = quantify_pq_1.top().target[0];
+        t2 = quantify_pq_1.top().target[1];
 
         quantify_pq_1.pop();
       } else {
         with_data = true;
         source = quantify_pq_2.top().source;
-        t1 = quantify_pq_2.top().t1;
-        t2 = quantify_pq_2.top().t2;
+        t1 = quantify_pq_2.top().target[0];
+        t2 = quantify_pq_2.top().target[1];
 
         data_low = quantify_pq_2.top().data_low;
         data_high = quantify_pq_2.top().data_high;
@@ -236,11 +250,11 @@ namespace adiar
 
       // Forward information of node t1 across the level if needed
       if (!with_data && !t2.is_nil() && !t2.is_terminal() && t1.label() == t2.label()) {
-        quantify_pq_2.push({ t1, t2, v.low(), v.high(), source });
+        quantify_pq_2.push({ {t1, t2}, v.low(), v.high(), source });
 
-        while (quantify_pq_1.can_pull() && (quantify_pq_1.top().t1 == t1 && quantify_pq_1.top().t2 == t2)) {
+        while (quantify_pq_1.can_pull() && (quantify_pq_1.top().target[0] == t1 && quantify_pq_1.top().target[1] == t2)) {
           source = quantify_pq_1.pull().source;
-          quantify_pq_2.push({ t1, t2, v.low(), v.high(), source });
+          quantify_pq_2.push({ {t1, t2}, v.low(), v.high(), source });
         }
 
         continue;
