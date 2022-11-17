@@ -107,7 +107,7 @@ namespace adiar {
       }
 
       // Otherwise, recurse
-      pq.push({ r1, r2 });
+      pq.push({ {r1,r2}, {} });
       return false;
     }
 
@@ -174,7 +174,7 @@ namespace adiar {
       }
 
       // Otherwise, recurse
-      pq.push({ r1, r2 });
+      pq.push({ {r1,r2}, {} });
       return false;
     }
 

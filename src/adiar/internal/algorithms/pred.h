@@ -11,6 +11,7 @@
 
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/request.h>
 #include <adiar/internal/data_types/tuple.h>
 
 namespace adiar
@@ -39,16 +40,20 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
+  typedef request<2,0> pred_request_1;
+
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using comparison_priority_queue_1_t =
-    levelized_node_priority_queue<tuple<ptr_uint64>,
-                                  tuple_label<tuple<ptr_uint64>>,
-                                  tuple_fst_lt<tuple<ptr_uint64>>,
+    levelized_node_priority_queue<pred_request_1,
+                                  request_label<pred_request_1>,
+                                  request_fst_lt<pred_request_1>,
                                   LOOK_AHEAD, mem_mode, 2>;
+
+  typedef request<2,1> pred_request_2;
 
   template<memory::memory_mode mem_mode>
   using comparison_priority_queue_2_t =
-    priority_queue<mem_mode, tuple_data, tuple_snd_lt<tuple<ptr_uint64>>>;
+    priority_queue<mem_mode, pred_request_2, request_snd_lt<pred_request_2>>;
 
   template<typename comp_policy, typename pq_1_t, typename pq_2_t>
   bool __comparison_check(const node_file &f1, const node_file &f2,
@@ -104,31 +109,23 @@ namespace adiar
       }
 
       // TODO: merge into request struct
-      ptr_uint64 t1, t2;
+      pred_request_2 req;
       bool with_data;
-      ptr_uint64 data_low = ptr_uint64::NIL(), data_high = ptr_uint64::NIL();
 
       // Merge requests from comparison_pq_1 and comparison_pq_2
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
-                                         comparison_pq_1.top().fst() < comparison_pq_2.top().snd())) {
+                                         comparison_pq_1.top().target.fst() < comparison_pq_2.top().target.snd())) {
         with_data = false;
-        t1 = comparison_pq_1.top()[0];
-        t2 = comparison_pq_1.top()[1];
-
+        req = { comparison_pq_1.top().target, {{ ptr_uint64::NIL() }} };
         comparison_pq_1.pop();
       } else {
         with_data = true;
-        t1 = comparison_pq_2.top()[0];
-        t2 = comparison_pq_2.top()[1];
-
-        data_low = comparison_pq_2.top().data_low;
-        data_high = comparison_pq_2.top().data_high;
-
+        req = comparison_pq_2.top();
         comparison_pq_2.pop();
       }
 
       // Seek request partially in stream
-      ptr_uint64 t_seek = with_data ? snd(t1,t2) : fst(t1,t2);
+      ptr_uint64 t_seek = with_data ? req.target.snd() : req.target.fst();
       while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
         v1 = in_nodes_1.pull();
       }
@@ -137,18 +134,18 @@ namespace adiar
       }
 
       // Skip all requests to the same node
-      while (comparison_pq_1.can_pull() && (comparison_pq_1.top()[0] == t1
-                                            && comparison_pq_1.top()[1] == t2)) {
+      while (comparison_pq_1.can_pull() && (comparison_pq_1.top().target == req.target)) {
         comparison_pq_1.pull();
       }
 
       // Forward information across the level
       if (!with_data
-          && !t1.is_terminal() && !t2.is_terminal() && t1.label() == t2.label()
-          && (v1.uid() != t1 || v2.uid() != t2)) {
-        node v0 = prod_from_1(t1,t2) ? v1 : v2;
+          && !req.target[0].is_terminal() && !req.target[1].is_terminal()
+          && req.target[0].label() == req.target[1].label()
+          && (v1.uid() != req.target[0] || v2.uid() != req.target[1])) {
+        const node v0 = prod_from_1(req.target[0], req.target[1]) ? v1 : v2;
 
-        comparison_pq_2.push({ {t1, t2}, v0.low(), v0.high() });
+        comparison_pq_2.push({ req.target, {{ v0.low(), v0.high() }} });
         continue;
       }
 
@@ -156,15 +153,15 @@ namespace adiar
         return level_checker.termination_value;
       }
 
-      ptr_uint64 low1, high1, low2, high2;
+      ptr_uint64 low1, high1, low2, high2; // TODO: clean up...
       comp_policy::merge_data(low1,high1, low2,high2,
-                              t1, t2, t_seek,
+                              req.target[0], req.target[1], t_seek,
                               v1, v2,
-                              data_low, data_high);
+                              req.children[0][0], req.children[0][1]);
 
       const typename comp_policy::label_t level = t_seek.label();
-      comp_policy::compute_cofactor(t1.on_level(level), low1, high1);
-      comp_policy::compute_cofactor(t2.on_level(level), low2, high2);
+      comp_policy::compute_cofactor(req.target[0].on_level(level), low1, high1);
+      comp_policy::compute_cofactor(req.target[1].on_level(level), low2, high2);
 
       if (comp_policy::resolve_request(comparison_pq_1, low1, low2)
           || comp_policy::resolve_request(comparison_pq_1, high1, high2)) {

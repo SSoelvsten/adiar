@@ -101,6 +101,7 @@ namespace adiar {
     tuple(const tuple &p) = default;
     ~tuple() = default;
 
+  public:
     // Provide other constructors for ease of use
     template<typename = std::enable_if_t<CARDINALITY == 2>>
     tuple(const elem_t &elem1, const elem_t &elem2) : _elems{elem1,elem2}
@@ -144,13 +145,17 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator>= (const tuple &o) const
     { return (o <= *this); }
-  };
 
-  // TODO: remove (add instead 'data' array in the request)
-  struct tuple_data : tuple<ptr_uint64>
-  {
-    ptr_uint64 data_low;
-    ptr_uint64 data_high;
+    ////////////////////////////////////////////////////////////////////////////
+    template<typename = std::enable_if_t<CARDINALITY == 2>>
+    inline bool operator== (const tuple &o) const
+    {
+      return this->_elems[0] == o._elems[0] && this->_elems[1] == o._elems[1];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    inline bool operator!= (const tuple &o) const
+    { return !(*this == o); }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -188,4 +193,5 @@ namespace adiar {
     }
   };
 }
+
 #endif // ADIAR_INTERNAL_DATA_TYPES_TUPLE_H
