@@ -136,7 +136,7 @@ namespace adiar
       }
 
       // No violation, so recurse
-      pq.push({ r1, r2 });
+      pq.push({ {r1,r2}, {} });
       return false;
     }
 
