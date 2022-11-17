@@ -12,7 +12,6 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <adiar/label.h>
 #include <adiar/file_writer.h>
 
 #include <adiar/bdd/bdd_policy.h>
@@ -135,12 +134,12 @@ namespace adiar {
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Label of the current level.
     /////////////////////////////////////////////////////////////////////////////
-    label_t current_label = MAX_LABEL;
+    typename dd_policy::label_t current_label = dd_policy::MAX_LABEL;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Next available level identifier for the current level.
     /////////////////////////////////////////////////////////////////////////////
-    id_t current_id = MAX_ID;
+    typename dd_policy::id_t current_id = dd_policy::MAX_ID;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Unique struct for this builder's current phase.
@@ -181,7 +180,7 @@ namespace adiar {
     ///                               bottom-up order and if pointers from
     ///                               another builder is used.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(label_t label,
+    builder_ptr<dd_policy> add_node(typename dd_policy::label_t label,
                                     const builder_ptr<dd_policy> &low,
                                     const builder_ptr<dd_policy> &high)
     {
@@ -189,7 +188,7 @@ namespace adiar {
       if(low.builder_ref != builder_ref || high.builder_ref != builder_ref) {
         throw std::invalid_argument("Cannot use pointers from a different builder");
       }
-      if(label > MAX_LABEL) {
+      if(label > dd_policy::MAX_LABEL) {
         throw std::invalid_argument("Nodes must have a valid label");
       }
       if(label > current_label) {
@@ -205,7 +204,7 @@ namespace adiar {
       // Update label and ID if necessary
       if(label < current_label) {
         current_label = label;
-        current_id = MAX_ID;
+        current_id = dd_policy::MAX_ID;
       }
 
       // Create potential node
@@ -260,7 +259,7 @@ namespace adiar {
     /// \throws std::invalid_argument If `label` and `high` are illegal (see
     ///                               \ref add_node).
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(const label_t label,
+    builder_ptr<dd_policy> add_node(const typename dd_policy::label_t label,
                                     const bool low,
                                     const builder_ptr<dd_policy> &high)
     {
@@ -285,7 +284,7 @@ namespace adiar {
     /// \throws std::invalid_argument If `label` and `low` are illegal (see
     ///                               \ref add_node).
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(const label_t label,
+    builder_ptr<dd_policy> add_node(const typename dd_policy::label_t label,
                                     const builder_ptr<dd_policy> &low,
                                     const bool high)
     {
@@ -309,7 +308,7 @@ namespace adiar {
     /// \throws std::invalid_argument If `label` violates the bottom-up ordering
     ///                               (see \ref add_node).
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> add_node(const label_t label,
+    builder_ptr<dd_policy> add_node(const typename dd_policy::label_t label,
                                     const bool low,
                                     const bool high)
     {
@@ -393,8 +392,8 @@ namespace adiar {
       nf = node_file();
       nw.attach(nf);
 
-      current_label = MAX_LABEL;
-      current_id = MAX_ID;
+      current_label = dd_policy::MAX_LABEL;
+      current_id = dd_policy::MAX_ID;
       created_terminal = false;
       terminal_val = false;
       builder_ref = std::make_shared<builder_shared>();

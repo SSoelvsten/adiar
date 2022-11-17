@@ -1,8 +1,6 @@
 #ifndef ADIAR_INTERNAL_UTIL_H
 #define ADIAR_INTERNAL_UTIL_H
 
-#include <adiar/label.h>
-
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
@@ -12,11 +10,11 @@
 namespace adiar
 {
   template<typename T>
-  inline label_t __label_of(const T& t)
+  inline ptr_uint64::label_t __label_of(const T& t)
   { return label_of(t); }
 
   template<>
-  inline label_t __label_of(const label_t& l)
+  inline ptr_uint64::label_t __label_of(const ptr_uint64::label_t& l)
   { return l; }
 
   template<typename in1_t = decision_diagram, typename stream1_t = level_info_stream<node>,

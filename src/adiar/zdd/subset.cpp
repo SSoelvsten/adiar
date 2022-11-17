@@ -15,13 +15,13 @@ namespace adiar
   {
     label_stream<> ls;
 
-    label_t l_incl;
-    label_t l_excl;
+    zdd::label_t l_incl;
+    zdd::label_t l_excl;
 
     bool has_excl = false;
 
     // We will rememeber how far the algorithm in substitution.h has got
-    label_t alg_level = 0;
+    zdd::label_t alg_level = 0;
 
   public:
     typedef label_file action_t;
@@ -32,7 +32,7 @@ namespace adiar
     }
 
   private:
-    inline void forward_to_level(const label_t new_level) {
+    inline void forward_to_level(const zdd::label_t new_level) {
       adiar_debug(alg_level <= new_level,
                   "The algorithm should ask for the levels in increasing order.");
 
@@ -49,7 +49,7 @@ namespace adiar
     }
 
   public:
-    substitute_act action_for_level(const label_t new_level) {
+    substitute_act action_for_level(const zdd::label_t new_level) {
       forward_to_level(new_level);
       return l_incl == new_level ? FIX_VALUE : substitute_act::KEEP;
     }
@@ -59,7 +59,7 @@ namespace adiar
       return alg_level <= l_incl || ls.can_pull();
     }
 
-    label_t level_incl()
+    zdd::label_t level_incl()
     {
       return l_incl;
     }
@@ -68,7 +68,7 @@ namespace adiar
       return alg_level < l_incl || has_excl || ls.can_pull();
     }
 
-    label_t level_excl()
+    zdd::label_t level_excl()
     {
       if (alg_level < l_incl) { return l_incl; }
 

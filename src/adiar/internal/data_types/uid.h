@@ -54,7 +54,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(label_t label, id_t id) : ptr_t(label, id)
+    __uid(typename ptr_t::label_t label, typename ptr_t::id_t id) : ptr_t(label, id)
     { }
 
     /* ============================== TERMINALS ============================= */

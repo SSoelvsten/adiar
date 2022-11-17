@@ -1,7 +1,6 @@
 #include <adiar/bdd.h>
 
 #include <adiar/assignment.h>
-#include <adiar/label.h>
 
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
@@ -27,8 +26,8 @@ namespace adiar
 
     ptr_uint64 visit(const node &n)
     {
-      const ptr_uint64 next_ptr = __visitor.visit(n);
-      const label_t label = n.label();
+      const node::ptr_t next_ptr = __visitor.visit(n);
+      const node::label_t label = n.label();
 
       // set default to all skipped levels
       while (label_of(ms.peek()) < label) {

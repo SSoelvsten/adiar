@@ -1,8 +1,6 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_PRED_H
 #define ADIAR_INTERNAL_ALGORITHMS_PRED_H
 
-#include <adiar/label.h>
-
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 
@@ -77,7 +75,7 @@ namespace adiar
     pq_1_t comparison_pq_1({f1, f2}, pq_1_memory, max_pq_size, stats_equality.lpq);
 
     // Check for violation on root children, or 'recurse' otherwise
-    label_t level = fst(v1.uid(), v2.uid()).label();
+    typename comp_policy::label_t level = fst(v1.uid(), v2.uid()).label();
 
     ptr_uint64 low1, high1, low2, high2;
     comp_policy::merge_root(low1,high1, low2,high2, level, v1, v2);
@@ -160,7 +158,7 @@ namespace adiar
                               v1, v2,
                               data_low, data_high);
 
-      label_t level = t_seek.label();
+      const typename comp_policy::label_t level = t_seek.label();
       comp_policy::compute_cofactor(t1.on_level(level), low1, high1);
       comp_policy::compute_cofactor(t2.on_level(level), low2, high2);
 

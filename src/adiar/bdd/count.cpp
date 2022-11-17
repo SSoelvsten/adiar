@@ -1,8 +1,9 @@
 #include <stdint.h>
 
 #include <adiar/bdd.h>
+#include <adiar/bdd/bdd_policy.h>
+
 #include <adiar/domain.h>
-#include <adiar/label.h>
 
 #include <adiar/internal/assert.h>
 
@@ -14,7 +15,7 @@ namespace adiar
   // Data structures
   struct sat_sum : path_sum
   {
-    label_t levels_visited = 0u;
+    bdd::label_t levels_visited = 0u;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -30,15 +31,15 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  class sat_count_policy
+  class sat_count_policy : public bdd_policy
   {
   public:
     typedef sat_sum queue_t;
 
     template<typename count_pq_t>
     inline static uint64_t forward_request(count_pq_t &count_pq,
-                                           const label_t varcount,
-                                           const ptr_uint64 child_to_resolve,
+                                           const bdd::label_t varcount,
+                                           const bdd::ptr_t child_to_resolve,
                                            const queue_t &request)
     {
       adiar_debug(request.sum > 0, "No 'empty' request should be created");
@@ -46,7 +47,7 @@ namespace adiar
       adiar_debug(request.levels_visited < varcount,
                   "Cannot have already visited more levels than are expected");
 
-      label_t levels_visited = request.levels_visited + 1u;
+      bdd::label_t levels_visited = request.levels_visited + 1u;
 
       if (child_to_resolve.is_terminal()) {
         return child_to_resolve.value()
@@ -80,7 +81,7 @@ namespace adiar
     return nodecount(bdd.file);
   }
 
-  label_t bdd_varcount(const bdd &bdd)
+  bdd::label_t bdd_varcount(const bdd &bdd)
   {
     return varcount(bdd.file);
   }
@@ -89,10 +90,10 @@ namespace adiar
   {
     return is_terminal(bdd)
       ? 0
-      : count<path_count_policy>(bdd, bdd_varcount(bdd));
+      : count<path_count_policy<bdd_policy>>(bdd, bdd_varcount(bdd));
   }
 
-  uint64_t bdd_satcount(const bdd& bdd, label_t varcount)
+  uint64_t bdd_satcount(const bdd& bdd, bdd::label_t varcount)
   {
     if (is_terminal(bdd)) {
       return value_of(bdd) ? std::min(1u, varcount) << varcount : 0u;
@@ -106,8 +107,8 @@ namespace adiar
 
   uint64_t bdd_satcount(const bdd &f)
   {
-    const label_t domain_size = adiar_has_domain() ? adiar_get_domain().size() : 0;
-    const label_t varcount = bdd_varcount(f);
+    const bdd::label_t domain_size = adiar_has_domain() ? adiar_get_domain().size() : 0;
+    const bdd::label_t varcount = bdd_varcount(f);
     return bdd_satcount(f, std::max(domain_size, varcount));
   };
 }

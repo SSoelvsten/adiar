@@ -3,8 +3,6 @@
 
 #include <adiar/zdd.h>
 
-#include <adiar/label.h>
-
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
@@ -26,9 +24,9 @@ namespace adiar
   /// \param labels   The variable domain of interest
   /// \param set_size The threshold size to compare to
   //////////////////////////////////////////////////////////////////////////////
-  template <typename pred_t = std::equal_to<label_t>>
-  zdd zdd_sized_sets(const label_file &labels, label_t set_size,
-                     pred_t pred = std::equal_to<label_t>())
+  template <typename pred_t = std::equal_to<zdd::label_t>>
+  zdd zdd_sized_sets(const label_file &labels, zdd::label_t set_size,
+                     pred_t pred = std::equal_to<zdd::label_t>())
   {
     // Generalisation of bdd_counter
     const size_t labels_size = labels.size();
@@ -92,40 +90,40 @@ namespace adiar
     // Compute the maximal id (i.e. the maximal number of elements to count)
     // that should be accounted for in the ZDD. Anything past this should be
     // "reduced" away.
-    const id_t max_id = set_size == 0                      ? gt_terminal_val   // gt_terminal_val == 1
-                      : set_size == 1                      ? 2*gt_terminal_val
-                      : gt_terminal_val && eq_terminal_val ? set_size
-                      : gt_terminal_val                    ? set_size + 1u     // ~eq_terminal
-                      : eq_terminal_val                    ? set_size - 1u     // ~gt_terminal
-                                                           : set_size - 2u     // ~eq_terminal /\ ~gt_terminal
+    const zdd::id_t max_id = set_size == 0                      ? gt_terminal_val   // gt_terminal_val == 1
+                           : set_size == 1                      ? 2*gt_terminal_val
+                           : gt_terminal_val && eq_terminal_val ? set_size
+                           : gt_terminal_val                    ? set_size + 1u     // ~eq_terminal
+                           : eq_terminal_val                    ? set_size - 1u     // ~gt_terminal
+                                                                : set_size - 2u     // ~eq_terminal /\ ~gt_terminal
       ;
 
     const bool not_equal = lt_terminal_val && !eq_terminal_val && gt_terminal_val;
 
-    id_t prior_min_id = MAX_ID; // <-- dummy value to squelch the compiler
+    zdd::id_t prior_min_id = zdd::MAX_ID; // <-- dummy value to squelch the compiler
 
     size_t processed_levels = 0u;
-    label_t prior_label = MAX_LABEL; // <-- dummy value to squelch the compiler
+    zdd::label_t prior_label = zdd::MAX_LABEL; // <-- dummy value to squelch the compiler
 
     do {
-      label_t curr_label = ls.pull();
+      zdd::label_t curr_label = ls.pull();
       size_t level_size = 0u;
 
       // Start with the maximal number the accumulated value can be at
       // up to this level.
-      const id_t remaining_levels = labels_size - processed_levels - 1; // exclusive of current level
-      id_t curr_id = std::min(remaining_levels, max_id);
+      const zdd::id_t remaining_levels = labels_size - processed_levels - 1; // exclusive of current level
+      zdd::id_t curr_id = std::min(remaining_levels, max_id);
 
       // How small has the accumulated sum up to this point to be, such that it
       // is still possible to reach the last node before the last label?
-      const id_t curr_level_width = processed_levels
+      const zdd::id_t curr_level_width = processed_levels
         // Add node for reached-equality/-greater on high
         + ((eq_terminal_val && gt_terminal_val) || gt_terminal_val)
         // Add node for almost-never-reach-equality
         + (not_equal && processed_levels > 0)
         ;
 
-      const id_t min_id = curr_level_width < max_id ? max_id - curr_level_width : 0u;
+      const zdd::id_t min_id = curr_level_width < max_id ? max_id - curr_level_width : 0u;
 
       do {
         ptr_uint64 low;

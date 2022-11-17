@@ -1,6 +1,5 @@
 #include <adiar/bdd.h>
 
-#include <adiar/label.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
@@ -11,6 +10,7 @@
 
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/level_info.h>
+#include <adiar/internal/data_types/ptr.h>
 
 namespace adiar
 {
@@ -29,12 +29,12 @@ namespace adiar
     return build_terminal(false);
   }
 
-  bdd bdd_ithvar(label_t label)
+  bdd bdd_ithvar(bdd::label_t label)
   {
     return build_ithvar(label);
   }
 
-  bdd bdd_nithvar(label_t label)
+  bdd bdd_nithvar(bdd::label_t label)
   {
     return bdd_not(build_ithvar(label));
   }
@@ -49,14 +49,14 @@ namespace adiar
     return build_chain<false, true, false>(labels);
   }
 
-  inline id_t bdd_counter_min_id(label_t label, label_t max_label, uint64_t threshold)
+  inline id_t bdd_counter_min_id(bdd::label_t label, bdd::label_t max_label, uint64_t threshold)
   {
     return label > max_label - threshold
       ? threshold - (max_label - label + 1)
       : 0;
   }
 
-  bdd bdd_counter(label_t min_label, label_t max_label, label_t threshold)
+  bdd bdd_counter(bdd::label_t min_label, bdd::label_t max_label, bdd::label_t threshold)
   {
     adiar_assert(min_label <= max_label,
                  "The given min_label should be smaller than the given max_label");
@@ -81,7 +81,7 @@ namespace adiar
     node_file nf;
     node_writer nw(nf);
 
-    label_t curr_label = max_label;
+    bdd::label_t curr_label = max_label;
 
     do {
       // Start with the maximal number the accumulated value can be at
@@ -120,8 +120,8 @@ namespace adiar
     } while (curr_label-- > min_label);
 
     // Maximum 1-level cut
-    const label_t first_lvl_with_lt = vars - threshold; // 0-indexed
-    const label_t first_lvl_with_gt = threshold;        // 0-indexed
+    const bdd::label_t first_lvl_with_lt = vars - threshold; // 0-indexed
+    const bdd::label_t first_lvl_with_gt = threshold;        // 0-indexed
 
     // A single gt_terminal is created on each level after having seen threshold+1
     // many levels (including said level).
@@ -135,7 +135,7 @@ namespace adiar
     // the end but still needs threshold-i+1 many variable to be set to true.
     const size_t lt_terminals = threshold;
 
-    const label_t shallowest_widest_lvl = std::min(first_lvl_with_lt, first_lvl_with_gt);
+    const bdd::label_t shallowest_widest_lvl = std::min(first_lvl_with_lt, first_lvl_with_gt);
 
     const size_t internal_cut_below_shallowest_lvl = 2u * (shallowest_widest_lvl + 1u)
       // Do not count the one gt_terminal (if any)
@@ -151,7 +151,7 @@ namespace adiar
       ? 1u
       : (2u * (shallowest_widest_lvl + 1u) - 2u);
 
-    const label_t deepest_widest_lvl = std::max(first_lvl_with_lt, first_lvl_with_gt);
+    const bdd::label_t deepest_widest_lvl = std::max(first_lvl_with_lt, first_lvl_with_gt);
 
     const size_t internal_cut_below_deepest_lvl = 2u * (threshold + 1u)
       // Do not count nodes that do not exist due to shortcutting to lt_terminal.
@@ -171,7 +171,7 @@ namespace adiar
     // With 'vars - deepest_widest_lvl' we obtain the number of levels beyond
     // the widest one. But, if 'deepest_widest_lvl < vars' then there are two
     // nodes at the last level which offsets the number of levels by one more.
-    const label_t lvls_after_widest = vars - deepest_widest_lvl - (deepest_widest_lvl < vars);
+    const bdd::label_t lvls_after_widest = vars - deepest_widest_lvl - (deepest_widest_lvl < vars);
 
     // The maximum cut with false terminals is at the deepes widest level. Beyond
     // it, a node (with two children) is removed, which outweighs the gt_terminal

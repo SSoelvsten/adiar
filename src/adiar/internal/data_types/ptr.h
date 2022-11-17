@@ -1,9 +1,9 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_PTR_H
 #define ADIAR_INTERNAL_DATA_TYPES_PTR_H
 
-#include<adiar/label.h>
+#include <stdint.h>
+
 #include<adiar/internal/assert.h>
-#include<adiar/internal/data_types/id.h>
 
 namespace adiar {
   // TODO (ADD (32-bit)):
@@ -16,7 +16,7 @@ namespace adiar {
   //   Create a new 'ptr_templ' class that does not compress all information
   //   into a single 64-bit unsigned integer. The 'label_t' and 'id_t' should be
   //   provided as template parameters and the 'MAX_ID' and 'MAX_LABEL' should
-  //   be derived based on 'std::numeric_limits<size_t>::max()'
+  //   be derived based on 'std::numeric_limits<XXXX_t>::max()'
 
   // TODO (LDD):
   //   Add the 'number' stored in the node to be part of the unique identifier
@@ -73,6 +73,42 @@ namespace adiar {
     friend void output_dot(const T& nodes, std::ostream &out);
 
   public:
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Type able to hold the label of a variable.
+    //////////////////////////////////////////////////////////////////////////////
+    typedef uint32_t label_t;
+
+  private:
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief The number of bits for a label.
+    //////////////////////////////////////////////////////////////////////////////
+    static constexpr uint8_t LABEL_BITS = 24;
+
+  public:
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief The maximal possible value for a unique identifier's label.
+    //////////////////////////////////////////////////////////////////////////////
+    static constexpr label_t MAX_LABEL = (1ull << LABEL_BITS) - 1;
+
+  public:
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of a level identifier.
+    //////////////////////////////////////////////////////////////////////////////
+    typedef uint64_t id_t;
+
+  private:
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief The number of bits for a level identifier.
+    //////////////////////////////////////////////////////////////////////////////
+    static constexpr uint8_t ID_BITS = 64 - 2 - LABEL_BITS;
+
+  public:
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief The maximal possible value for a level identifier.
+    //////////////////////////////////////////////////////////////////////////////
+    static constexpr id_t MAX_ID = (1ull << ID_BITS) - 1;
+
+  public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
     ptr_uint64() = default;
     ptr_uint64(const ptr_uint64 &p) = default;
@@ -95,7 +131,7 @@ namespace adiar {
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief  Whether the pointer is flagged.
+    /// \brief Retrieve the value of the bit-flag within a pointer.
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_flagged() const
     {
@@ -172,6 +208,8 @@ namespace adiar {
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Extract the label from an internal node (label, id).
+    ///
+    /// \pre `is_node()` evaluates to `true.`
     //////////////////////////////////////////////////////////////////////////////
     inline label_t label() const
     {
@@ -180,6 +218,8 @@ namespace adiar {
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Extract the level identifier from an internal node (label, id).
+    ///
+    /// \pre `is_node()` evaluates to `true.`
     //////////////////////////////////////////////////////////////////////////////
     inline id_t id() const
     {
@@ -231,7 +271,10 @@ namespace adiar {
     inline bool value() const
     {
       adiar_precondition(is_terminal());
-      // TODO (Attributed Edges): Negate resulting value based on 'is_flagged()'.
+      // TODO (Attributed Edges):
+      //   Negate resulting value based on 'is_flagged()'? It might actually be
+      //   better to completely ditch the flag for terminals; this will
+      //   simplify quite a lot of the logic.
       return (_raw & ~TERMINAL_BIT) >> 1;
     }
 
@@ -286,14 +329,14 @@ namespace adiar {
     /// \brief Obtain a pointer to the terminal with the negated value of this
     ///        pointer. The 'flag' is kept as-is.
     ///
-    /// \pre `is_terminal()` evaluates to `true`.
+    /// \pre   `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
     ptr_uint64 operator~ () const
     {
       adiar_precondition(this->is_terminal());
 
-      // TODO (ADD): bit-flip all values inside of the 'value' area? Or, maybe
-      //             just delete the function in this case?
+      // TODO (ADD):
+      //   bit-flip all values inside of the 'value' area.
       return ptr_uint64(2u ^ _raw);
     }
 

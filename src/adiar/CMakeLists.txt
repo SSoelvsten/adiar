@@ -15,7 +15,6 @@ set(HEADERS
   file.h
   file_stream.h
   file_writer.h
-  label.h
   statistics.h
 
   # adiar/bdd
@@ -59,7 +58,6 @@ set(HEADERS
   # adiar/internal/data_types
   internal/data_types/arc.h
   internal/data_types/convert.h
-  internal/data_types/id.h
   internal/data_types/level_info.h
   internal/data_types/node.h
   internal/data_types/ptr.h

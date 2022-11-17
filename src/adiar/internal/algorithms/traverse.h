@@ -1,8 +1,6 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_TRAVERSE_H
 #define ADIAR_INTERNAL_ALGORITHMS_TRAVERSE_H
 
-#include <adiar/label.h>
-
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 

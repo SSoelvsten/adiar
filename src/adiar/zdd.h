@@ -17,7 +17,6 @@
 #include <string>
 #include <iostream>
 
-#include <adiar/label.h>
 #include <adiar/bool_op.h>
 
 #include <adiar/file.h>
@@ -68,7 +67,7 @@ namespace adiar
   ///
   /// \param var The label of the desired variable to include
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_ithvar(label_t var);
+  zdd zdd_ithvar(zdd::label_t var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { { 1, 2, ..., k } }.
@@ -370,7 +369,7 @@ namespace adiar
   /// \brief The number of variables that exist in the family of sets, i.e. the
   ///        number of levels in the ZDD.
   //////////////////////////////////////////////////////////////////////////////
-  label_t zdd_varcount(const zdd &A);
+  zdd::label_t zdd_varcount(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The number of sets in the family of sets.

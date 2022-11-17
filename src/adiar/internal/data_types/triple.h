@@ -42,7 +42,7 @@ namespace adiar {
   // Priority queue functions
   struct triple_label
   {
-    static inline label_t label_of(const triple &t)
+    static inline ptr_uint64::label_t label_of(const triple &t)
     {
       return fst(t).label();
     }

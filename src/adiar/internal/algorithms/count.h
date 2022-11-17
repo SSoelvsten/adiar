@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-#include <adiar/label.h>
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/assert.h>
@@ -33,7 +32,7 @@ namespace adiar
 
   struct count_queue_label
   {
-    inline static label_t label_of(const path_sum &s)
+    inline static ptr_uint64::label_t label_of(const path_sum &s)
     {
       return s.target.label();
     }
@@ -56,14 +55,15 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Variadic behaviour
-  class path_count_policy
+  template<typename dd_policy>
+  class path_count_policy : public dd_policy
   {
   public:
     typedef path_sum queue_t;
 
     template<typename count_pq_t>
     inline static uint64_t forward_request(count_pq_t &count_pq,
-                                           const label_t /* varcount */,
+                                           const ptr_uint64::label_t /* varcount */,
                                            const ptr_uint64 child_to_resolve,
                                            const queue_t &request)
     {
@@ -88,8 +88,8 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   template<typename count_policy, typename count_pq_t>
-  uint64_t __count(const decision_diagram &dd,
-                   const label_t varcount,
+  uint64_t __count(const typename count_policy::reduced_t &dd,
+                   const typename count_policy::label_t varcount,
                    const size_t pq_max_memory,
                    const size_t pq_max_size)
   {
@@ -134,7 +134,8 @@ namespace adiar
   }
 
   template<typename count_policy>
-  uint64_t count(const decision_diagram &dd, const label_t varcount)
+  uint64_t count(const typename count_policy::reduced_t &dd,
+                 const typename count_policy::label_t varcount)
   {
     adiar_debug(!is_terminal(dd),
                 "Count algorithm does not work on terminal-only edge case");

@@ -7,7 +7,7 @@
 namespace adiar
 {
   template<bool reverse>
-  label_t extract_label(const node_file &file)
+  node::label_t extract_label(const node_file &file)
   {
     adiar_debug(file.size() > 0, "Invalid node_file: empty");
 
@@ -19,12 +19,12 @@ namespace adiar
     return n.label();
   }
 
-  label_t min_label(const node_file &file)
+  node::label_t min_label(const node_file &file)
   {
     return extract_label<false>(file);
   }
 
-  label_t max_label(const node_file &file)
+  node::label_t max_label(const node_file &file)
   {
     return extract_label<true>(file);
   }

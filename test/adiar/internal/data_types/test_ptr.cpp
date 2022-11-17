@@ -64,7 +64,7 @@ go_bandit([]() {
         });
 
         it("should not be confused with Node Ptr (unflagged)", [&]() {
-          ptr_uint64 arc_node_max = ptr_uint64(MAX_LABEL,MAX_ID);
+          ptr_uint64 arc_node_max = ptr_uint64(ptr_uint64::MAX_LABEL, ptr_uint64::MAX_ID);
           AssertThat(arc_node_max.is_terminal(), Is().False());
           AssertThat(arc_node_max.is_false(), Is().False());
           AssertThat(arc_node_max.is_true(), Is().False());
@@ -81,7 +81,7 @@ go_bandit([]() {
         });
 
         it("should not be confused with Node Ptr (flagged)", [&]() {
-          ptr_uint64 arc_node_max = flag(ptr_uint64(MAX_LABEL,MAX_ID));
+          ptr_uint64 arc_node_max = flag(ptr_uint64(ptr_uint64::MAX_LABEL, ptr_uint64::MAX_ID));
           AssertThat(arc_node_max.is_terminal(), Is().False());
           AssertThat(arc_node_max.is_false(), Is().False());
           AssertThat(arc_node_max.is_true(), Is().False());
@@ -221,7 +221,7 @@ go_bandit([]() {
       describe("internal nodes", [&]() {
         describe("is_node", [&]() {
           it("should recognise Node Ptr (unflagged)", [&]() {
-            const ptr_uint64 p_node_max = ptr_uint64(MAX_LABEL,MAX_ID);
+            const ptr_uint64 p_node_max = ptr_uint64(ptr_uint64::MAX_LABEL, ptr_uint64::MAX_ID);
             AssertThat(p_node_max.is_node(), Is().True());
 
             const ptr_uint64 p_node_min = ptr_uint64(0,0);
@@ -232,7 +232,7 @@ go_bandit([]() {
           });
 
           it("should recognise Node Ptr (flagged)", [&]() {
-            const ptr_uint64 p_node_max = flag(ptr_uint64(MAX_LABEL,MAX_ID));
+            const ptr_uint64 p_node_max = flag(ptr_uint64(ptr_uint64::MAX_LABEL, ptr_uint64::MAX_ID));
             AssertThat(p_node_max.is_node(), Is().True());
 
             const ptr_uint64 p_node_min = flag(ptr_uint64(0,0));
@@ -261,7 +261,7 @@ go_bandit([]() {
 
         describe("label", [&]() {
           it("should store and retrieve label for Ptr with maximal id (unflagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(12,MAX_ID);
+            const ptr_uint64 p = ptr_uint64(12, ptr_uint64::MAX_ID);
             AssertThat(p.label(), Is().EqualTo(12u));
           });
 
@@ -276,12 +276,12 @@ go_bandit([]() {
           });
 
           it("should store and retrieve MAX label Ptr (unflagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(MAX_LABEL, MAX_ID);
-            AssertThat(p.label(), Is().EqualTo(MAX_LABEL));
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::MAX_LABEL, ptr_uint64::MAX_ID);
+            AssertThat(p.label(), Is().EqualTo(ptr_uint64::MAX_LABEL));
           });
 
           it("should store and retrieve label for Ptr with maximal id (flagged)", [&]() {
-            const ptr_uint64 p = flag(ptr_uint64(12,MAX_ID));
+            const ptr_uint64 p = flag(ptr_uint64(12, ptr_uint64::MAX_ID));
             AssertThat(p.label(), Is().EqualTo(12u));
           });
 
@@ -296,8 +296,8 @@ go_bandit([]() {
           });
 
           it("should store and retrieve MAX label Ptr (flagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(MAX_LABEL, MAX_ID);
-            AssertThat(p.label(), Is().EqualTo(MAX_LABEL));
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::MAX_LABEL, ptr_uint64::MAX_ID);
+            AssertThat(p.label(), Is().EqualTo(ptr_uint64::MAX_LABEL));
           });
         });
 
@@ -313,8 +313,8 @@ go_bandit([]() {
           });
 
           it("should store and retrieve MAX id (unflagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(MAX_LABEL, MAX_ID);
-            AssertThat(p.id(), Is().EqualTo(MAX_ID));
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::MAX_LABEL, ptr_uint64::MAX_ID);
+            AssertThat(p.id(), Is().EqualTo(ptr_uint64::MAX_ID));
           });
 
           it("should store and retrieve 42 id (flagged)", [&]() {
@@ -328,8 +328,8 @@ go_bandit([]() {
           });
 
           it("should store and retrieve MAX id (flagged)", [&]() {
-            const ptr_uint64 p = ptr_uint64(MAX_LABEL, MAX_ID);
-            AssertThat(p.id(), Is().EqualTo(MAX_ID));
+            const ptr_uint64 p = ptr_uint64(ptr_uint64::MAX_LABEL, ptr_uint64::MAX_ID);
+            AssertThat(p.id(), Is().EqualTo(ptr_uint64::MAX_ID));
           });
         });
       });
@@ -346,7 +346,7 @@ go_bandit([]() {
 
         it("should sort F terminal after internal node", [&]() {
           // Create a node pointer with the highest possible raw value
-          const ptr_uint64 p_node = ptr_uint64(MAX_LABEL,MAX_ID);
+          const ptr_uint64 p_node = ptr_uint64(ptr_uint64::MAX_LABEL, ptr_uint64::MAX_ID);
 
           AssertThat(p_node < terminal_F, Is().True());
           AssertThat(flag(p_node) < terminal_F, Is().True());
@@ -356,7 +356,7 @@ go_bandit([]() {
 
         it("should sort T terminal after internal node (unflagged)", [&]() {
           // Create a node pointer with the highest possible raw value
-          const ptr_uint64 p_node = ptr_uint64(MAX_LABEL,MAX_ID);
+          const ptr_uint64 p_node = ptr_uint64(ptr_uint64::MAX_LABEL, ptr_uint64::MAX_ID);
 
           AssertThat(p_node < terminal_T, Is().True());
           AssertThat(flag(p_node) < terminal_T, Is().True());

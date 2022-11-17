@@ -28,77 +28,77 @@ go_bandit([]() {
     // { {1} }
     node_file zdd_A_nf;
     { node_writer nw(zdd_A_nf);
-      nw << node(1,MAX_ID, terminal_F, terminal_T);
+      nw << node(1, node::MAX_ID, terminal_F, terminal_T);
     }
 
     node_file zdd_A_nf_copy;
     { node_writer nw(zdd_A_nf_copy);
-      nw << node(1,MAX_ID, terminal_F, terminal_T);
+      nw << node(1, node::MAX_ID, terminal_F, terminal_T);
     }
 
     // { {1}, {1,2} }
     node_file zdd_B_nf;
     { node_writer nw(zdd_B_nf);
-      nw << node(2,MAX_ID, terminal_T, terminal_T)
-         << node(1,MAX_ID, terminal_F, ptr_uint64(2,MAX_ID))
+      nw << node(2, node::MAX_ID, terminal_T, terminal_T)
+         << node(1, node::MAX_ID, terminal_F, ptr_uint64(2, ptr_uint64::MAX_ID))
         ;
     }
 
     // { Ø, {1}, {2}, {1,2} }
     node_file zdd_C_nf;
     { node_writer nw(zdd_C_nf);
-      nw << node(2,MAX_ID, terminal_T,                    terminal_T)
-         << node(1,MAX_ID, ptr_uint64(2,MAX_ID), ptr_uint64(2,MAX_ID))
+      nw << node(2, node::MAX_ID, terminal_T,                    terminal_T)
+         << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
         ;
     }
 
     node_file zdd_C_nf_copy;
     { node_writer nw(zdd_C_nf_copy);
-      nw << node(2,MAX_ID, terminal_T,                    terminal_T)
-         << node(1,MAX_ID, ptr_uint64(2,MAX_ID), ptr_uint64(2,MAX_ID))
+      nw << node(2, node::MAX_ID, terminal_T,                    terminal_T)
+         << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
         ;
     }
 
     // { {1}, {1,2}, {0,1,3} }
     node_file zdd_D_nf;
     { node_writer nw(zdd_D_nf);
-      nw << node(3,MAX_ID,   terminal_F,                      terminal_T)
-         << node(2,MAX_ID,   terminal_T,                      terminal_T)
-         << node(1,MAX_ID,   terminal_F,                      ptr_uint64(3,MAX_ID))
-         << node(1,MAX_ID-1, terminal_F,                      ptr_uint64(2,MAX_ID))
-         << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID))
+      nw << node(3, node::MAX_ID,   terminal_F,                      terminal_T)
+         << node(2, node::MAX_ID,   terminal_T,                      terminal_T)
+         << node(1, node::MAX_ID,   terminal_F,                      ptr_uint64(3, ptr_uint64::MAX_ID))
+         << node(1, node::MAX_ID-1, terminal_F,                      ptr_uint64(2, ptr_uint64::MAX_ID))
+         << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID))
         ;
     }
 
     node_file zdd_D_nf_copy;
     { node_writer nw(zdd_D_nf_copy);
-      nw << node(3,MAX_ID,   terminal_F,                      terminal_T)
-         << node(2,MAX_ID,   terminal_T,                      terminal_T)
-         << node(1,MAX_ID,   terminal_F,                      ptr_uint64(3,MAX_ID))
-         << node(1,MAX_ID-1, terminal_F,                      ptr_uint64(2,MAX_ID))
-         << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID))
+      nw << node(3, node::MAX_ID,   terminal_F,                      terminal_T)
+         << node(2, node::MAX_ID,   terminal_T,                      terminal_T)
+         << node(1, node::MAX_ID,   terminal_F,                      ptr_uint64(3, ptr_uint64::MAX_ID))
+         << node(1, node::MAX_ID-1, terminal_F,                      ptr_uint64(2, ptr_uint64::MAX_ID))
+         << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID))
         ;
     }
 
     // { Ø, {0,3} }
     node_file zdd_E_nf;
     { node_writer nw(zdd_E_nf);
-      nw << node(3,MAX_ID, terminal_F, terminal_T)
-         << node(0,MAX_ID, terminal_T, ptr_uint64(3,MAX_ID))
+      nw << node(3, node::MAX_ID, terminal_F, terminal_T)
+         << node(0, node::MAX_ID, terminal_T, ptr_uint64(3, ptr_uint64::MAX_ID))
         ;
     }
 
     node_file zdd_E_nf_copy;
     { node_writer nw(zdd_E_nf_copy);
-      nw << node(3,MAX_ID, terminal_F, terminal_T)
-         << node(0,MAX_ID, terminal_T, ptr_uint64(3,MAX_ID))
+      nw << node(3, node::MAX_ID, terminal_F, terminal_T)
+         << node(0, node::MAX_ID, terminal_T, ptr_uint64(3, ptr_uint64::MAX_ID))
         ;
     }
 
     // { {2} }
     node_file zdd_F_nf;
     { node_writer nw(zdd_F_nf);
-      nw << node(2,MAX_ID, terminal_F, terminal_T);
+      nw << node(2, node::MAX_ID, terminal_F, terminal_T);
     }
 
     // Equal and unequal will not be tested, since it merely is a call to

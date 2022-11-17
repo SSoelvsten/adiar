@@ -12,33 +12,29 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logic related to being a 'Binary' Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
-  class bdd_policy
+  typedef decision_diagram_policy<bdd, __bdd> bdd_policy;
+
+  template<>
+  inline ptr_uint64 bdd_policy::reduction_rule(const bdd::node_t &n)
   {
-  public:
-    typedef bdd reduced_t;
-    typedef __bdd unreduced_t;
+    // If adding attributed edges, i.e. complement edges:
+    //    remove the 'unflag' below. Currently, it removes any forwarding of
+    //    applying Reduction Rule.
+    if (unflag(n.low()) == unflag(n.high())) { return n.low(); }
+    return n.uid();
+  }
 
-  public:
-    static inline ptr_uint64 reduction_rule(const node &n)
-    {
-      // If adding attributed edges, i.e. complement edges:
-      //    remove the 'unflag' below. Currently, it removes any forwarding of
-      //    applying Reduction Rule.
-      if (unflag(n.low()) == unflag(n.high())) { return n.low(); }
-      return n.uid();
-    }
+  template<>
+  inline tuple bdd_policy::reduction_rule_inv(const bdd::ptr_t &child)
+  {
+    return { child, child };
+  }
 
-    static inline tuple reduction_rule_inv(const ptr_uint64 &child)
-    {
-      return { child, child };
-    }
-
-  public:
-    static inline void compute_cofactor(bool /* on_curr_level */,
-                                        ptr_uint64 & /* low */,
-                                        ptr_uint64 & /* high */)
-    { /* do nothing */ }
-  };
+  template<>
+  inline void bdd_policy::compute_cofactor(bool /* on_curr_level */,
+                                           bdd::ptr_t & /* low */,
+                                           bdd::ptr_t & /* high */)
+  { /* do nothing */ }
 }
 
 #endif // ADIAR_BDD_BDD_POLICY_H

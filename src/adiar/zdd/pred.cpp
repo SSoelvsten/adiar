@@ -42,7 +42,7 @@ namespace adiar {
     ignore_levels(const node_file &/*f1*/, const node_file &/*f2*/)
     { /* do nothing */ }
 
-    void next_level(label_t /* level */)
+    void next_level(zdd::label_t /* level */)
     { /* do nothing */ }
 
     bool on_step()

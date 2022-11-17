@@ -3,7 +3,6 @@
 
 #include <variant>
 
-#include <adiar/label.h>
 #include <adiar/bool_op.h>
 
 #include <adiar/file.h>
@@ -127,7 +126,7 @@ namespace adiar
     return false;
   }
 
-  inline bool quantify_has_label(const label_t label, const decision_diagram &in)
+  inline bool quantify_has_label(const decision_diagram::label_t label, const decision_diagram &in)
   {
     level_info_stream<node> in_meta(in);
     while(in_meta.can_pull()) {
@@ -144,7 +143,7 @@ namespace adiar
 
   template<typename quantify_policy, typename pq_1_t, typename pq_2_t>
   typename quantify_policy::unreduced_t __quantify(const typename quantify_policy::reduced_t &in,
-                                                   const label_t &label,
+                                                   const typename quantify_policy::label_t &label,
                                                    const bool_op &op,
                                                    const size_t pq_1_memory, const size_t max_pq_1_size,
                                                    const size_t pq_2_memory, const size_t max_pq_2_size)
@@ -168,8 +167,8 @@ namespace adiar
     pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
     pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
-    label_t out_label = v.uid().label();
-    id_t out_id = 0;
+    typename quantify_policy::label_t out_label = v.uid().label();
+    typename quantify_policy::id_t out_id = 0;
 
     if (v.uid().label() == label) {
       // Precondition: The input is reduced and will not collapse to a terminal
@@ -269,7 +268,7 @@ namespace adiar
         quantify_policy::compute_cofactor(true, low1, high1);
         quantify_policy::compute_cofactor(t2.on_level(out_label), low2, high2);
 
-        adiar_debug(out_id < MAX_ID, "Has run out of ids");
+        adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
         const uid_t out_uid(out_label, out_id++);
 
         __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, out_uid, low1, low2);
@@ -324,7 +323,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename quantify_policy>
   typename quantify_policy::unreduced_t quantify(const typename quantify_policy::reduced_t &in,
-                                                 const label_t label,
+                                                 const typename quantify_policy::label_t label,
                                                  const bool_op &op)
   {
     adiar_debug(is_commutative(op), "Noncommutative operator used");

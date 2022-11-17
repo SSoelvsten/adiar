@@ -169,7 +169,7 @@ namespace adiar
   {
   public:
     static void merge_root(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
-                           label_t /* level */,
+                           node::label_t /* level */,
                            const node &v1, const node &v2)
     {
       low1 = v1.low();
@@ -196,7 +196,7 @@ namespace adiar
   class prod_mixed_level_merger
   {
   private:
-    static void __merge_root(const node &v, label_t level,
+    static void __merge_root(const node &v, ptr_uint64::label_t level,
                              ptr_uint64 &low, ptr_uint64 &high)
     {
       if (!v.is_terminal() && v.label() == level) {
@@ -209,7 +209,7 @@ namespace adiar
 
   public:
     static void merge_root(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
-                           label_t level,
+                           ptr_uint64::label_t level,
                            const node &v1, const node &v2)
     {
       __merge_root(v1, level, low1, high1);
@@ -271,10 +271,10 @@ namespace adiar
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process root and create initial recursion requests
-    label_t out_label = fst(v1.uid(), v2.uid()).label();
-    id_t out_id = 0;
+    typename prod_policy::label_t out_label = fst(v1.uid(), v2.uid()).label();
+    typename prod_policy::id_t out_id = 0;
 
-    ptr_uint64 low1, low2, high1, high2;
+    typename prod_policy::ptr_t low1, low2, high1, high2;
     prod_policy::merge_root(low1,high1, low2,high2, out_label, v1, v2);
 
     // Shortcut the root (maybe)
@@ -380,7 +380,7 @@ namespace adiar
       if (prod_policy::no_skip || std::holds_alternative<prod_rec_output>(rec_res)) {
         prod_rec_output r = std::get<prod_rec_output>(rec_res);
 
-        adiar_debug(out_id < MAX_ID, "Has run out of ids");
+        adiar_debug(out_id < prod_policy::MAX_ID, "Has run out of ids");
         const uid_t out_uid(out_label, out_id++);
 
         prod_recurse_out(prod_pq_1, aw, op, out_uid, r.low);

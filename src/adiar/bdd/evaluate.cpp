@@ -50,7 +50,7 @@ namespace adiar
 
     inline ptr_uint64 visit(const node &n)
     {
-      const label_t label = n.label();
+      const bdd::label_t label = n.label();
       while (label_of(a) < label) {
         adiar_assert(as.can_pull(), "Given assignment file is insufficient to traverse BDD");
         a = as.pull();

@@ -1,8 +1,6 @@
 #include <adiar/bdd.h>
 #include <adiar/bdd/bdd_policy.h>
 
-#include <adiar/label.h>
-
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
@@ -64,7 +62,7 @@ namespace adiar
   while(true) {                                                     \
     if (is_terminal(bdd_var)) { return bdd_var; }                   \
                                                                     \
-    label_t label = ls.pull();                                      \
+    bdd::label_t label = ls.pull();                                      \
     if (!ls.can_pull()) {                                           \
       return quantify<bdd_quantify_policy>(bdd_var, label, op);     \
     } else {                                                        \
@@ -73,7 +71,7 @@ namespace adiar
   }                                                                 \
 
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &in_bdd, label_t label)
+  __bdd bdd_exists(const bdd &in_bdd, bdd::label_t label)
   {
     return quantify<bdd_quantify_policy>(in_bdd, label, or_op);
   }
@@ -89,7 +87,7 @@ namespace adiar
     multi_quantify_macro(in_bdd, labels, or_op);
   }
 
-  __bdd bdd_forall(const bdd &in_bdd, label_t label)
+  __bdd bdd_forall(const bdd &in_bdd, bdd::label_t label)
   {
     return quantify<bdd_quantify_policy>(in_bdd, label, and_op);
   }

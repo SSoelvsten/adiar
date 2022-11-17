@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include <adiar/label.h>
 #include <adiar/domain.h>
 #include <adiar/file_stream.h>
 

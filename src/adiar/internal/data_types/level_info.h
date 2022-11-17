@@ -1,8 +1,6 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_LEVEL_INFO_H
 #define ADIAR_INTERNAL_DATA_TYPES_LEVEL_INFO_H
 
-#include <adiar/label.h>
-
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Meta information on a single level in a decision diagram.
@@ -12,7 +10,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   struct level_info
   {
-    label_t label;
+    ptr_uint64::label_t label;
     size_t width;
   };
 
@@ -24,7 +22,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Combine all the meta information for a single level
   //////////////////////////////////////////////////////////////////////////////
-  inline level_info_t create_level_info(label_t label, size_t level_width)
+  inline level_info_t create_level_info(ptr_uint64::label_t label, size_t level_width)
   {
     return { label, level_width };
   }
@@ -32,7 +30,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the variable label of a specific level.
   //////////////////////////////////////////////////////////////////////////////
-  inline label_t label_of(const level_info_t &m)
+  inline ptr_uint64::label_t label_of(const level_info_t &m)
   {
     return m.label;
   }
@@ -66,4 +64,3 @@ namespace adiar {
 }
 
 #endif // ADIAR_INTERNAL_DATA_TYPES_LEVEL_INFO_H
-
