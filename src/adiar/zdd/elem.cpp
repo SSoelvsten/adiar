@@ -1,7 +1,5 @@
 #include <adiar/zdd.h>
 
-#include <adiar/label.h>
-
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>

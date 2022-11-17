@@ -1,6 +1,5 @@
 #include <adiar/zdd.h>
 
-#include <adiar/label.h>
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/algorithms/traverse.h>
@@ -13,13 +12,13 @@ namespace adiar
     label_stream<> ls;
 
     bool has_l = false;
-    label_t l;
+    zdd::label_t l;
 
     // First visit is for the root
     bool is_first_visit = true;
 
     // Remember what we saw the last time
-    label_t visited_label;
+    zdd::label_t visited_label;
 
     bool terminal_val = false;
 

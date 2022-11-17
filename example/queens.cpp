@@ -20,7 +20,7 @@ size_t largest_nodes = 0;
  *
  *                                 N*i + j.
  */
-inline adiar::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
+inline typename adiar::bdd::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)
 {
   return (N * i) + j;
 }
@@ -83,7 +83,7 @@ adiar::bdd n_queens_S(int i, int j)
       // On row of the queen in question
       int column = N - 1;
       do {
-        adiar::label_t label = label_of_position(N, row, column);
+        typename adiar::bdd::label_t label = label_of_position(N, row, column);
 
         // If (row, column) == (i,j), then the chain goes through high because
         // then we need to check the queen actually is placed here.
@@ -220,12 +220,12 @@ void n_queens_print_solution(std::vector<uint64_t>& assignment)
 
 /* At this point, we now also need to convert an assignment back into a position
  * on the board. So, we'll also need the following two small functions. */
-inline uint64_t i_of_label(uint64_t N, adiar::label_t label)
+inline uint64_t i_of_label(uint64_t N, typename adiar::bdd::label_t label)
 {
   return label / N;
 }
 
-inline uint64_t j_of_label(uint64_t N, adiar::label_t label)
+inline uint64_t j_of_label(uint64_t N, typename adiar::bdd::label_t label)
 {
   return label % N;
 }

@@ -120,7 +120,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Sorting predicate on the target.
   //////////////////////////////////////////////////////////////////////////////
-  struct arcarget_lt
+  struct arc_target_lt
   {
     bool operator ()(const arc& a, const arc& b) const {
       return a.target() < b.target()
@@ -134,9 +134,9 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Extracts the label from the target of an arc
   //////////////////////////////////////////////////////////////////////////////
-  struct arcarget_label
+  struct arc_target_label
   {
-    static inline label_t label_of(const arc& a)
+    static inline typename arc::ptr_t::label_t label_of(const arc& a)
     {
       return a.target().label();
     }

@@ -27,8 +27,8 @@ go_bandit([]() {
     */
     node_file bdd_1;
 
-    node n1_2 = node(1,MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node n1_1 = node(0,MAX_ID, ptr_uint64(true), n1_2.uid());
+    node n1_2 = node(1, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    node n1_1 = node(0, node::MAX_ID, ptr_uint64(true), n1_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_1(bdd_1);
@@ -48,11 +48,11 @@ go_bandit([]() {
     */
     node_file bdd_2;
 
-    node n2_5 = node(2,MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node n2_4 = node(2,MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
-    node n2_3 = node(1,MAX_ID, n2_5.uid(), ptr_uint64(false));
-    node n2_2 = node(1,MAX_ID-1, n2_4.uid(), n2_5.uid());
-    node n2_1 = node(0,MAX_ID, n2_2.uid(), n2_3.uid());
+    node n2_5 = node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    node n2_4 = node(2, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
+    node n2_3 = node(1, node::MAX_ID, n2_5.uid(), ptr_uint64(false));
+    node n2_2 = node(1, node::MAX_ID-1, n2_4.uid(), n2_5.uid());
+    node n2_1 = node(0, node::MAX_ID, n2_2.uid(), n2_3.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_2(bdd_2);
@@ -72,10 +72,10 @@ go_bandit([]() {
     */
     node_file bdd_3;
 
-    node n3_4 = node(2,MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node n3_3 = node(2,MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
-    node n3_2 = node(1,MAX_ID, n3_3.uid(), n3_4.uid());
-    node n3_1 = node(0,MAX_ID, n3_3.uid(), n3_2.uid());
+    node n3_4 = node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    node n3_3 = node(2, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
+    node n3_2 = node(1, node::MAX_ID, n3_3.uid(), n3_4.uid());
+    node n3_1 = node(0, node::MAX_ID, n3_3.uid(), n3_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_3(bdd_3);
@@ -97,11 +97,11 @@ go_bandit([]() {
     */
     node_file bdd_4;
 
-    node n4_5 = node(3,MAX_ID, ptr_uint64(false), ptr_uint64(true));
-    node n4_4 = node(2,MAX_ID, n4_5.uid(), ptr_uint64(true));
-    node n4_3 = node(2,MAX_ID-1, ptr_uint64(false), n4_5.uid());
-    node n4_2 = node(1,MAX_ID, n4_3.uid(), n4_4.uid());
-    node n4_1 = node(0,MAX_ID, n4_3.uid(), n4_2.uid());
+    node n4_5 = node(3, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+    node n4_4 = node(2, node::MAX_ID, n4_5.uid(), ptr_uint64(true));
+    node n4_3 = node(2, node::MAX_ID-1, ptr_uint64(false), n4_5.uid());
+    node n4_2 = node(1, node::MAX_ID, n4_3.uid(), n4_4.uid());
+    node n4_1 = node(0, node::MAX_ID, n4_3.uid(), n4_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_4(bdd_4);
@@ -121,10 +121,10 @@ go_bandit([]() {
     */
     node_file bdd_5;
 
-    node n5_4 = node(2,MAX_ID, ptr_uint64(true), ptr_uint64(false));
-    node n5_3 = node(2,MAX_ID-1, ptr_uint64(false), ptr_uint64(true));
-    node n5_2 = node(1,MAX_ID, n5_3.uid(), n5_4.uid());
-    node n5_1 = node(0,MAX_ID, ptr_uint64(false), n5_2.uid());
+    node n5_4 = node(2, node::MAX_ID, ptr_uint64(true), ptr_uint64(false));
+    node n5_3 = node(2, node::MAX_ID-1, ptr_uint64(false), ptr_uint64(true));
+    node n5_2 = node(1, node::MAX_ID, n5_3.uid(), n5_4.uid());
+    node n5_1 = node(0, node::MAX_ID, ptr_uint64(false), n5_2.uid());
 
     { // Garbage collect writer to free write-lock
       node_writer nw_5(bdd_5);
@@ -137,7 +137,7 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_x2(bdd_x2);
-      nw_x2 << node(2,MAX_ID, ptr_uint64(false), ptr_uint64(true));
+      nw_x2 << node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -158,14 +158,14 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_6(bdd_6);
-      nw_6 << node(3,MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 8
-           << node(3,MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))      // 7
-           << node(2,MAX_ID,   ptr_uint64(3,MAX_ID),   ptr_uint64(true))       // 6
-           << node(2,MAX_ID-1, ptr_uint64(3,MAX_ID-1), ptr_uint64(false))      // 5
-           << node(2,MAX_ID-2, ptr_uint64(false),      ptr_uint64(3,MAX_ID))   // 4
-           << node(1,MAX_ID,   ptr_uint64(2,MAX_ID-2), ptr_uint64(2,MAX_ID))   // 3
-           << node(1,MAX_ID-1, ptr_uint64(2,MAX_ID),   ptr_uint64(2,MAX_ID-1)) // 2
-           << node(0,MAX_ID,   ptr_uint64(1,MAX_ID),   ptr_uint64(1,MAX_ID-1)) // 1
+      nw_6 << node(3, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 8
+           << node(3, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))      // 7
+           << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(true))       // 6
+           << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID-1), ptr_uint64(false))      // 5
+           << node(2, node::MAX_ID-2, ptr_uint64(false),      ptr_uint64(3, ptr_uint64::MAX_ID))   // 4
+           << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-2), ptr_uint64(2, ptr_uint64::MAX_ID))   // 3
+           << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID-1)) // 2
+           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1)) // 1
         ;
     }
 
@@ -186,11 +186,11 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_7(bdd_7);
-      nw_7 << node(2,MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 5
-           << node(2,MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))      // 4
-           << node(1,MAX_ID,   ptr_uint64(2,MAX_ID),   ptr_uint64(2,MAX_ID-1)) // 3
-           << node(1,MAX_ID-1, ptr_uint64(2,MAX_ID-1), ptr_uint64(2,MAX_ID))   // 2
-           << node(0,MAX_ID,   ptr_uint64(1,MAX_ID),   ptr_uint64(1,MAX_ID-1)) // 1
+      nw_7 << node(2, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 5
+           << node(2, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(false))      // 4
+           << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID-1)) // 3
+           << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))   // 2
+           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1)) // 1
         ;
     }
 
@@ -214,19 +214,19 @@ go_bandit([]() {
 
     { // Garbage collect writer to free write-lock
       node_writer nw_8a(bdd_8a);
-      nw_8a << node(3,MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 5
-            << node(2,MAX_ID,   ptr_uint64(false),      ptr_uint64(3,MAX_ID))   // 4
-            << node(2,MAX_ID-1, ptr_uint64(true),       ptr_uint64(3,MAX_ID))   // 3
-            << node(1,MAX_ID,   ptr_uint64(2,MAX_ID-1), ptr_uint64(2,MAX_ID))   // 2
-            << node(0,MAX_ID,   ptr_uint64(1,MAX_ID),   ptr_uint64(3,MAX_ID))   // 1
+      nw_8a << node(3, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 5
+            << node(2, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(3, ptr_uint64::MAX_ID))   // 4
+            << node(2, node::MAX_ID-1, ptr_uint64(true),       ptr_uint64(3, ptr_uint64::MAX_ID))   // 3
+            << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))   // 2
+            << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(3, ptr_uint64::MAX_ID))   // 1
         ;
 
       node_writer nw_8b(bdd_8b);
-      nw_8b << node(3,MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 5
-            << node(2,MAX_ID,   ptr_uint64(3,MAX_ID),   ptr_uint64(false))      // 4
-            << node(2,MAX_ID-1, ptr_uint64(3,MAX_ID),   ptr_uint64(true))       // 3
-            << node(1,MAX_ID,   ptr_uint64(2,MAX_ID-1), ptr_uint64(2,MAX_ID))   // 2
-            << node(0,MAX_ID,   ptr_uint64(1,MAX_ID),   ptr_uint64(3,MAX_ID))   // 1
+      nw_8b << node(3, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))       // 5
+            << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(false))      // 4
+            << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(true))       // 3
+            << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))   // 2
+            << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(3, ptr_uint64::MAX_ID))   // 1
         ;
     }
 
@@ -624,10 +624,10 @@ go_bandit([]() {
       it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
         node_file bdd_chain;
 
-        node n4 = node(3,MAX_ID, ptr_uint64(false), ptr_uint64(true));
-        node n3 = node(2,MAX_ID, n4.uid(), ptr_uint64(true));
-        node n2 = node(1,MAX_ID, n3.uid(), ptr_uint64(true));
-        node n1 = node(0,MAX_ID, n2.uid(), ptr_uint64(true));
+        node n4 = node(3, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
+        node n3 = node(2, node::MAX_ID, n4.uid(), ptr_uint64(true));
+        node n2 = node(1, node::MAX_ID, n3.uid(), ptr_uint64(true));
+        node n1 = node(0, node::MAX_ID, n2.uid(), ptr_uint64(true));
 
         { // Garbage collect writer to free write-lock
           node_writer bdd_chain_w(bdd_chain);
@@ -931,13 +931,13 @@ go_bandit([]() {
         nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
                                                               ptr_uint64(false),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0,MAX_ID,
-                                                              ptr_uint64(3,MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                              ptr_uint64(3, ptr_uint64::MAX_ID),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -966,13 +966,13 @@ go_bandit([]() {
         nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
                                                               ptr_uint64(false),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0,MAX_ID,
-                                                              ptr_uint64(3,MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                              ptr_uint64(3, ptr_uint64::MAX_ID),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -1001,19 +1001,19 @@ go_bandit([]() {
         nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
                                                               ptr_uint64(false),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1,MAX_ID,
-                                                              ptr_uint64(3,MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                              ptr_uint64(3, ptr_uint64::MAX_ID),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0,MAX_ID,
-                                                              ptr_uint64(3,MAX_ID),
-                                                              ptr_uint64(1,MAX_ID))));
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                              ptr_uint64(3, ptr_uint64::MAX_ID),
+                                                              ptr_uint64(1, ptr_uint64::MAX_ID))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -1044,13 +1044,13 @@ go_bandit([]() {
         nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2,MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
                                                               ptr_uint64(false),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(0,MAX_ID,
-                                                              ptr_uint64(2,MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                              ptr_uint64(2, ptr_uint64::MAX_ID),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -1079,13 +1079,13 @@ go_bandit([]() {
         nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
                                                               ptr_uint64(false),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1,MAX_ID,
-                                                              ptr_uint64(3,MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                              ptr_uint64(3, ptr_uint64::MAX_ID),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -1115,13 +1115,13 @@ go_bandit([]() {
         nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
                                                               ptr_uint64(false),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True());
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(1,MAX_ID,
-                                                              ptr_uint64(3,MAX_ID),
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                              ptr_uint64(3, ptr_uint64::MAX_ID),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().False());
@@ -1529,14 +1529,14 @@ go_bandit([]() {
         nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
                                                               ptr_uint64(false),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (3,_) / (3,4)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2,MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
                                                               ptr_uint64(false),
-                                                              ptr_uint64(3,MAX_ID))));
+                                                              ptr_uint64(3, ptr_uint64::MAX_ID))));
 
         // The node (1,_) is reduced away due to its low child is (3,_)
         // and its high child is (3,4)
@@ -1568,14 +1568,14 @@ go_bandit([]() {
         nodeest_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (5,_) / (5,T)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(3,MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
                                                               ptr_uint64(false),
                                                               ptr_uint64(true))));
 
         AssertThat(out_nodes.can_pull(), Is().True()); // (3,_) / (3,4)
-        AssertThat(out_nodes.pull(), Is().EqualTo(node(2,MAX_ID,
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
                                                               ptr_uint64(false),
-                                                              ptr_uint64(3,MAX_ID))));
+                                                              ptr_uint64(3, ptr_uint64::MAX_ID))));
 
         // The node (1,_) is reduced away due to its low child is (3,_)
         // and its high child is (3,4)

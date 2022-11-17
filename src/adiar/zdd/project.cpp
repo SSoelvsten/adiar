@@ -1,8 +1,6 @@
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
-#include <adiar/label.h>
-
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/cut.h>
@@ -59,11 +57,11 @@ namespace adiar
     level_info_stream<node> dd_meta(dd);
 
     while (dd_meta.can_pull()) {
-      label_t dd_label = label_of(dd_meta.pull());
+      zdd::label_t dd_label = label_of(dd_meta.pull());
       bool found_dd_label = false;
 
       while (ls.can_pull()) {
-        label_t dom_label = ls.pull();
+        zdd::label_t dom_label = ls.pull();
 
         if (dd_label == dom_label) {
           found_dd_label = true;

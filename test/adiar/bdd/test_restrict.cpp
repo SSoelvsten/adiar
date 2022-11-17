@@ -705,8 +705,8 @@ go_bandit([]() {
     it("should return terminal-child of restricted root [assignment = T]", [&]() {
       node_file terminal_child_of_root_bdd;
 
-      node n2 = node(2,MAX_ID, terminal_T, terminal_T);
-      node n1 = node(1,MAX_ID, n2.uid(), terminal_F);
+      node n2 = node(2, node::MAX_ID, terminal_T, terminal_T);
+      node n1 = node(1, node::MAX_ID, n2.uid(), terminal_F);
 
       { // Garbage collect writer to free write-lock
         node_writer dead_w(terminal_child_of_root_bdd);
@@ -743,8 +743,8 @@ go_bandit([]() {
     it("should return terminal-child of restricted root [assignment = F]", [&]() {
       node_file terminal_child_of_root_bdd;
 
-      node n2 = node(2,MAX_ID, terminal_T, terminal_T);
-      node n1 = node(0,MAX_ID, terminal_T, n2.uid());
+      node n2 = node(2, node::MAX_ID, terminal_T, terminal_T);
+      node n1 = node(0, node::MAX_ID, terminal_T, n2.uid());
 
       { // Garbage collect writer to free write-lock
         node_writer dead_w(terminal_child_of_root_bdd);

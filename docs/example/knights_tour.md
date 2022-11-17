@@ -23,7 +23,7 @@ To get around the entire board, the Knight will need to use N<sup>2</sup>
 time-steps. Our variable ordering will represent every *time-slice* together,
 where the board of each slice is similar to the \ref queens example.
 ```cpp
-inline adiar::label_t int_of_position(int N, int r, int c, int t = 0)
+inline typename adiar::zdd::label_t int_of_position(int N, int r, int c, int t = 0)
 {
   return (N * N * t) + (N * r) + c;
 }

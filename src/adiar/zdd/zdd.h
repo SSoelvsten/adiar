@@ -3,7 +3,6 @@
 
 #include <string_view>
 
-#include <adiar/label.h>
 #include <adiar/file.h>
 
 #include <adiar/internal/cnl.h>
@@ -50,7 +49,7 @@ namespace adiar {
 
     // |- functions
     friend size_t zdd_nodecount(const zdd&);
-    friend label_t zdd_varcount(const zdd&);
+    friend zdd::label_t zdd_varcount(const zdd&);
 
     friend bool zdd_subseteq(const zdd&, const zdd&);
     friend bool zdd_disjoint(const zdd &, const zdd &);

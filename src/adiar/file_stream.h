@@ -4,7 +4,6 @@
 #include <tpie/tpie.h>
 #include <tpie/sort.h>
 
-#include <adiar/label.h>
 #include <adiar/assignment.h>
 #include <adiar/file.h>
 
@@ -174,7 +173,7 @@ namespace adiar
   /// \param REVERSE Whether the reading direction should be reversed
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  using label_stream = file_stream<label_t, REVERSE>;
+  using label_stream = file_stream<ptr_uint64::label_t, REVERSE>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief         File stream of files with meta information.

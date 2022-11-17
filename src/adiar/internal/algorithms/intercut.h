@@ -1,8 +1,6 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_INTERCUT_H
 #define ADIAR_INTERNAL_ALGORITHMS_INTERCUT_H
 
-#include <adiar/label.h>
-
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
@@ -28,7 +26,7 @@ namespace adiar
   class intercut_req : public arc
   {
   private:
-    label_t _level = MAX_LABEL + 1u;
+    ptr_uint64::label_t _level = ptr_uint64::MAX_LABEL + 1u;
 
   public:
     intercut_req() = default;
@@ -36,17 +34,17 @@ namespace adiar
     ~intercut_req() = default;
 
   public:
-    intercut_req(ptr_uint64 source, ptr_uint64 target, label_t lvl) : arc(source, target), _level(lvl)
+    intercut_req(ptr_uint64 source, ptr_uint64 target, ptr_uint64::label_t lvl) : arc(source, target), _level(lvl)
     { }
 
   public:
-    label_t level() const
+    ptr_uint64::label_t level() const
     { return _level; }
   };
 
   struct intercut_req_label
   {
-    static label_t label_of(const intercut_req &r)
+    static ptr_uint64::label_t label_of(const intercut_req &r)
     {
       return r.level();
     }
@@ -91,10 +89,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   template<typename intercut_policy>
-  bool cut_terminal(const label_t curr_level, const label_t cut_level, const bool terminal_value)
+  bool cut_terminal(const typename intercut_policy::label_t curr_level,
+                    const typename intercut_policy::label_t cut_level,
+                    const bool terminal_value)
   {
     return curr_level < cut_level
-      && cut_level <= MAX_LABEL
+      && cut_level <= intercut_policy::MAX_LABEL
       && (!terminal_value || intercut_policy::cut_true_terminal)
       && (terminal_value || intercut_policy::cut_false_terminal);
   }
@@ -108,10 +108,15 @@ namespace adiar
     template<typename pq_t>
     static inline void forward(arc_writer &aw,
                                pq_t &pq,
-                               const ptr_uint64 source, const ptr_uint64 target,
-                               const label_t curr_level, const label_t next_cut)
+                               const typename intercut_policy::ptr_t source,
+                               const typename intercut_policy::ptr_t target,
+                               const typename intercut_policy::label_t curr_level,
+                               const typename intercut_policy::label_t next_cut)
     {
-      const label_t target_level = target.is_node() ? target.label() : MAX_LABEL+1;
+      const typename intercut_policy::label_t target_level = target.is_node()
+        ? target.label()
+        : intercut_policy::MAX_LABEL+1;
+
       if (target.is_terminal() && !cut_terminal<intercut_policy>(curr_level, next_cut, target.value())) {
         aw.unsafe_push_terminal(arc(source, target));
         return;
@@ -128,8 +133,10 @@ namespace adiar
     template<typename pq_t>
     static inline void forward(arc_writer &aw,
                                pq_t &/*pq*/,
-                               const ptr_uint64 source, const ptr_uint64 target,
-                               const label_t /*curr_level*/, const label_t /*next_cut*/)
+                               const ptr_uint64 source,
+                               const ptr_uint64 target,
+                               const ptr_uint64::label_t /*curr_level*/,
+                               const ptr_uint64::label_t /*next_cut*/)
     {
       aw.unsafe_push_node(arc(source, target));
     }
@@ -137,11 +144,11 @@ namespace adiar
 
   template<typename intercut_policy, typename in_policy, typename pq_t>
   inline void intercut_in__pq(arc_writer &aw,
-                                pq_t &pq,
-                                const label_t out_label,
-                                const ptr_uint64 pq_target,
-                                const ptr_uint64 out_target,
-                                const label_t l)
+                              pq_t &pq,
+                              const typename intercut_policy::label_t out_label,
+                              const typename intercut_policy::ptr_t pq_target,
+                              const typename intercut_policy::ptr_t out_target,
+                              const typename intercut_policy::label_t l)
   {
     adiar_debug(out_label <= out_target.label(),
                 "should forward/output a node on this level or ahead.");
@@ -185,7 +192,7 @@ namespace adiar
     }
 
     label_stream<> ls(labels);
-    label_t l = ls.pull();
+    typename intercut_policy::label_t l = ls.pull();
 
     arc_file out_arcs;
     arc_writer aw(out_arcs);
@@ -194,9 +201,9 @@ namespace adiar
     pq_t intercut_pq({dd_labels, labels}, pq_memory, max_pq_size, stats_intercut.lpq);
 
     // Add request for root in the queue
-    label_t out_label = std::min(l, n.label());
+    typename intercut_policy::label_t out_label = std::min(l, n.label());
     intercut_pq.push(intercut_req(ptr_uint64::NIL(), n.uid(), out_label));
-    id_t out_id = 0;
+    typename intercut_policy::id_t out_id = 0;
 
     size_t max_1level_cut = 0;
 
@@ -219,7 +226,7 @@ namespace adiar
       }
 
       if(!ls.can_pull() && l <= out_label) {
-        l = MAX_LABEL + 1;
+        l = intercut_policy::MAX_LABEL + 1;
       }
 
       // Resolve requests that end at the cut for this level

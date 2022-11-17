@@ -2101,19 +2101,19 @@ go_bandit([]() {
         node_file bdd_if;
         {
           node_writer nw_if(bdd_if);
-          nw_if << node(0,MAX_ID,terminal_T,terminal_F);
+          nw_if << node(0, node::MAX_ID,terminal_T,terminal_F);
         }
 
         node_file bdd_a;
         {
           node_writer nw_a(bdd_a);
-          nw_a << node(2,MAX_ID,terminal_F,terminal_T);
+          nw_a << node(2, node::MAX_ID,terminal_F,terminal_T);
         }
 
         node_file bdd_b;
         {
           node_writer nw_b(bdd_b);
-          nw_b << node(1,MAX_ID,terminal_T,terminal_F);
+          nw_b << node(1, node::MAX_ID,terminal_T,terminal_F);
         }
 
         bdd out_1 = bdd_ite(bdd_if, bdd_a, bdd_b);
@@ -2134,30 +2134,30 @@ go_bandit([]() {
         node_file bdd_if;
         {
           node_writer nw_if(bdd_if);
-          nw_if << node(0,MAX_ID,terminal_T,terminal_F);
+          nw_if << node(0, node::MAX_ID,terminal_T,terminal_F);
         }
         AssertThat(is_canonical(bdd_if), Is().True());
 
         node_file bdd_a;
         {
           node_writer nw_a(bdd_a);
-          nw_a << node(2,MAX_ID,terminal_F,terminal_T);
+          nw_a << node(2, node::MAX_ID,terminal_F,terminal_T);
         }
         AssertThat(is_canonical(bdd_a), Is().True());
 
         node_file bdd_b;
         {
           node_writer nw_b(bdd_b);
-          nw_b << node(3,MAX_ID,   terminal_F, terminal_T)
-              << node(3,MAX_ID-1, terminal_T, terminal_F)
-              << node(1,MAX_ID,   ptr_uint64(3,MAX_ID), ptr_uint64(3,MAX_ID));
+          nw_b << node(3, node::MAX_ID,   terminal_F, terminal_T)
+              << node(3, node::MAX_ID-1, terminal_T, terminal_F)
+              << node(1, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID));
         }
         AssertThat(is_canonical(bdd_b), Is().True());
 
         node_file bdd_c;
         {
           node_writer nw_c(bdd_c);
-          nw_c << node(1,MAX_ID, terminal_T, terminal_F);
+          nw_c << node(1, node::MAX_ID, terminal_T, terminal_F);
         }
         AssertThat(is_canonical(bdd_c), Is().True());
 
@@ -2178,21 +2178,21 @@ go_bandit([]() {
         node_file bdd_if;
         {
           node_writer nw_if(bdd_if);
-          nw_if << node(1,MAX_ID,   terminal_T,                      terminal_T)
-                << node(1,MAX_ID-1, terminal_F,                      terminal_F)
-                << node(0,MAX_ID,   ptr_uint64(1,MAX_ID-1), ptr_uint64(1,MAX_ID));
+          nw_if << node(1, node::MAX_ID,   terminal_T,                      terminal_T)
+                << node(1, node::MAX_ID-1, terminal_F,                      terminal_F)
+                << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
         }
 
         node_file bdd_a;
         {
           node_writer nw_a(bdd_a);
-          nw_a << node(3,MAX_ID,terminal_F,terminal_T);
+          nw_a << node(3, node::MAX_ID,terminal_F,terminal_T);
         }
 
         node_file bdd_b;
         {
           node_writer nw_b(bdd_b);
-          nw_b << node(2,MAX_ID,terminal_T,terminal_F);
+          nw_b << node(2, node::MAX_ID,terminal_T,terminal_F);
         }
 
         bdd out_1 = bdd_ite(bdd_if, bdd_a, bdd_b);

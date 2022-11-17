@@ -24,7 +24,7 @@ namespace adiar
     return build_terminal(true);
   }
 
-  zdd zdd_ithvar(label_t label)
+  zdd zdd_ithvar(zdd::label_t label)
   {
     return build_ithvar(label);
   }

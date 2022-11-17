@@ -35,9 +35,9 @@ go_bandit([]() {
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_1_nf);
 
-      nw << node(2, MAX_ID, terminal_F_ptr, terminal_T_ptr)
-         << node(1, MAX_ID, ptr_uint64(2, MAX_ID), terminal_T_ptr)
-         << node(0, MAX_ID, ptr_uint64(2, MAX_ID), ptr_uint64(1, MAX_ID));
+      nw << node(2, node::MAX_ID, terminal_F_ptr, terminal_T_ptr)
+         << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), terminal_T_ptr)
+         << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID));
     }
 
     bdd bdd_1(bdd_1_nf);
@@ -57,10 +57,10 @@ go_bandit([]() {
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_2_nf);
 
-      nw << node(2, MAX_ID, terminal_F_ptr, terminal_T_ptr)
-         << node(1, MAX_ID, ptr_uint64(2, MAX_ID), terminal_T_ptr)
-         << node(1, MAX_ID-1, terminal_T_ptr, ptr_uint64(2, MAX_ID))
-         << node(0, MAX_ID, ptr_uint64(1, MAX_ID-1), ptr_uint64(1, MAX_ID));
+      nw << node(2, node::MAX_ID, terminal_F_ptr, terminal_T_ptr)
+         << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), terminal_T_ptr)
+         << node(1, node::MAX_ID-1, terminal_T_ptr, ptr_uint64(2, ptr_uint64::MAX_ID))
+         << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
     }
 
     bdd bdd_2(bdd_2_nf);
@@ -96,19 +96,19 @@ go_bandit([]() {
       nodeest_stream ns(out);
 
       AssertThat(ns.can_pull(), Is().True());
-      AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID,
+      AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
                                                      terminal_F_ptr,
                                                      terminal_T_ptr)));
 
       AssertThat(ns.can_pull(), Is().True());
-      AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                     ptr_uint64(2, MAX_ID),
+      AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                     ptr_uint64(2, ptr_uint64::MAX_ID),
                                                      terminal_T_ptr)));
 
       AssertThat(ns.can_pull(), Is().True());
-      AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                     ptr_uint64(2, MAX_ID),
-                                                     ptr_uint64(1, MAX_ID))));
+      AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                     ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                     ptr_uint64(1, ptr_uint64::MAX_ID))));
 
       AssertThat(ns.can_pull(), Is().False());
     });
@@ -143,19 +143,19 @@ go_bandit([]() {
         nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
                                                        terminal_T_ptr,
                                                        terminal_F_ptr)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                       ptr_uint64(2, MAX_ID),
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
                                                        terminal_F_ptr)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                       ptr_uint64(2, MAX_ID),
-                                                       ptr_uint64(1, MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -168,19 +168,19 @@ go_bandit([]() {
         nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
                                                        terminal_F_ptr,
                                                        terminal_T_ptr)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                       ptr_uint64(2, MAX_ID),
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
                                                        terminal_T_ptr)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                       ptr_uint64(2, MAX_ID),
-                                                       ptr_uint64(1, MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -191,25 +191,25 @@ go_bandit([]() {
         nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
                                                        terminal_T_ptr,
                                                        terminal_F_ptr)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                       ptr_uint64(2, MAX_ID),
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
                                                        terminal_F_ptr)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID-1,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID-1,
                                                        terminal_F_ptr,
-                                                       ptr_uint64(2, MAX_ID))));
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
 
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                       ptr_uint64(1, MAX_ID-1),
-                                                       ptr_uint64(1, MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                       ptr_uint64(1, ptr_uint64::MAX_ID-1),
+                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -245,19 +245,19 @@ go_bandit([]() {
         nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
                                                        terminal_T_ptr,
                                                        terminal_F_ptr)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                       ptr_uint64(2, MAX_ID),
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
                                                        terminal_F_ptr)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                       ptr_uint64(2, MAX_ID),
-                                                       ptr_uint64(1, MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
       });
@@ -268,25 +268,25 @@ go_bandit([]() {
         nodeest_stream ns(out);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
                                                        terminal_T_ptr,
                                                        terminal_F_ptr)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                       ptr_uint64(2, MAX_ID),
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
                                                        terminal_F_ptr)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID-1,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID-1,
                                                        terminal_F_ptr,
-                                                       ptr_uint64(2, MAX_ID))));
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
 
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                       ptr_uint64(1, MAX_ID-1),
-                                                       ptr_uint64(1, MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                       ptr_uint64(1, ptr_uint64::MAX_ID-1),
+                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
       });

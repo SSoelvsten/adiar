@@ -1,11 +1,33 @@
 #ifndef ADIAR_DEPRECATED_H
 #define ADIAR_DEPRECATED_H
 
-#include <adiar/file.h>
-
 namespace adiar
 {
   // LCOV_EXCL_START
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Variable label.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Use 'bdd::label_t' or 'zdd::label_t' instead")]]
+  typedef ptr_uint64::label_t label_t;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The maximal possible value for a unique identifier's label.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Use 'bdd::MAX_LABEL' or 'zdd::MAX_LABEL' instead")]]
+  constexpr label_t MAX_LABEL = ptr_uint64::MAX_LABEL;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Level identifier.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Use 'bdd::id_t' or 'zdd::id_t' instead")]]
+  typedef ptr_uint64::id_t id_t;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief The maximal possible value for a unique identifier's id.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Use 'bdd::MAX_ID' or 'zdd::MAX_ID' instead")]]
+  constexpr id_t MAX_ID = ptr_uint64::MAX_ID;
 
   /* ======================== SORTING SIMPLE FILES ========================== */
 
@@ -29,7 +51,7 @@ namespace adiar
   /// \brief Create a pointer to the uid = (label, id).
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by constructor in 'adiar/internal/data_types/ptr.h'")]]
-  inline ptr_uint64 create_node_ptr(label_t label, id_t id)
+  inline ptr_uint64 create_node_ptr(ptr_uint64::label_t label, ptr_uint64::id_t id)
   { return ptr_uint64(label, id); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -43,7 +65,7 @@ namespace adiar
   /// \brief Extract the label from a uid = (label, id).
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by 'label()' member function in 'adiar/internal/data_types/ptr.h'")]]
-  inline label_t label_of(ptr_uint64 p)
+  inline ptr_uint64::label_t label_of(ptr_uint64 p)
   { return p.label(); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -80,7 +102,7 @@ namespace adiar
   /// \brief Create the uid = (label, id).
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by constructor in 'adiar/internal/data_types/uid.h'")]]
-  inline __uid<ptr_uint64> create_node_uid(label_t label, id_t id)
+  inline __uid<ptr_uint64> create_node_uid(typename uid_uint64::label_t label, id_t id)
   { return __uid<ptr_uint64>(label, id); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -129,7 +151,7 @@ namespace adiar
   /// \brief Whether a pointer is for a node on a given level.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by 'on_level(level)' member function in 'adiar/internal/data_types/ptr.h'")]]
-  inline bool on_level(ptr_uint64 p, label_t level)
+  inline bool on_level(ptr_uint64 p, ptr_uint64::label_t level)
   { return p.on_level(level); }
 
   /* ================================ NODES ================================= */
@@ -208,7 +230,7 @@ namespace adiar
   /// \brief Obtain the id of a non-terminal node.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by member function with same name in 'adiar/internal/data_types/node.h'")]]
-  inline bool on_level(const node &n, label_t lvl)
+  inline bool on_level(const node &n, node::label_t lvl)
   { return n.on_level(lvl); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -216,19 +238,19 @@ namespace adiar
   ///        pointer to its two children.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node create_node(label_t label, id_t id, ptr_uint64 low, ptr_uint64 high)
+  inline node create_node(node::label_t label, node::id_t id, ptr_uint64 low, ptr_uint64 high)
   { return node(label, id, low, high); }
 
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node create_node(label_t label, id_t id, ptr_uint64 low, node high)
+  inline node create_node(node::label_t label, node::id_t id, ptr_uint64 low, node high)
   { return node(label, id, low, high.uid()); }
 
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node create_node(label_t label, id_t id, node low, ptr_uint64 high)
+  inline node create_node(node::label_t label, node::id_t id, node low, ptr_uint64 high)
   { return node(label, id, low.uid(), high); }
 
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline node create_node(label_t label, id_t id, node low, node high)
+  inline node create_node(node::label_t label, node::id_t id, node low, node high)
   { return node(label, id, low.uid(), high.uid()); }
 
   /* ================================= ARC ================================== */

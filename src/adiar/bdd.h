@@ -18,7 +18,6 @@
 #include <iostream>
 
 #include <adiar/assignment.h>
-#include <adiar/label.h>
 #include <adiar/bool_op.h>
 #include <adiar/file.h>
 
@@ -70,7 +69,7 @@ namespace adiar
   ///
   /// \returns   \f$ x_{var} \f$
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_ithvar(label_t var);
+  bdd bdd_ithvar(bdd::label_t var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The BDD representing the negation of the i'th variable.
@@ -83,7 +82,7 @@ namespace adiar
   ///
   /// \returns   \f$ \neg x_{var} \f$
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_nithvar(label_t var);
+  bdd bdd_nithvar(bdd::label_t var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'and' of all the given
@@ -125,7 +124,9 @@ namespace adiar
   /// \param max_var   The maximum label (inclusive) to end counting at
   /// \param threshold The threshold number of variables set to true
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_counter(label_t min_var, label_t max_var, label_t threshold);
+  bdd bdd_counter(bdd::label_t min_var,
+                  bdd::label_t max_var,
+                  bdd::label_t threshold);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -343,7 +344,7 @@ namespace adiar
   ///
   /// \returns   \f$ \exists x_{var} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, label_t var);
+  __bdd bdd_exists(const bdd &f, bdd::label_t var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Existentially quantify multiple variables.
@@ -374,7 +375,7 @@ namespace adiar
   ///
   /// \returns   \f$ \forall x_{var} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, label_t var);
+  __bdd bdd_forall(const bdd &f, bdd::label_t var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Forall quantify multiple variables.
@@ -439,7 +440,7 @@ namespace adiar
   /// \brief The number of variables that influence the outcome of f, i.e. the
   ///        number of levels in the BDD.
   //////////////////////////////////////////////////////////////////////////////
-  label_t bdd_varcount(const bdd &f);
+  bdd::label_t bdd_varcount(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Count all unique (but not necessarily disjoint) paths to the true
@@ -460,7 +461,7 @@ namespace adiar
   ///
   /// \returns        The number of unique assignments.
   //////////////////////////////////////////////////////////////////////////////
-  uint64_t bdd_satcount(const bdd &f, label_t varcount);
+  uint64_t bdd_satcount(const bdd &f, bdd::label_t varcount);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Count the number of assignments x that make f(x) true.

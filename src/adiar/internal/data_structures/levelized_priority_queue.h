@@ -9,7 +9,6 @@
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
 
-#include <adiar/label.h>
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 
@@ -51,7 +50,9 @@ namespace adiar {
   /// \brief Strictly less ' < ' between two levels.
   ////////////////////////////////////////////////////////////////////////////
   template<typename level_comp_t>
-  inline bool level_cmp_lt(const label_t l1, const label_t l2, const level_comp_t &level_comp)
+  inline bool level_cmp_lt(const ptr_uint64::label_t l1,
+                           const ptr_uint64::label_t l2,
+                           const level_comp_t &level_comp)
   {
     return level_comp(l1, l2);
   }
@@ -60,7 +61,9 @@ namespace adiar {
   /// \brief Less or equal ' <= ' between two levels.
   ////////////////////////////////////////////////////////////////////////////
   template<typename level_comp_t>
-  inline bool level_cmp_le(const label_t l1, const label_t l2, const level_comp_t &level_comp)
+  inline bool level_cmp_le(const ptr_uint64::label_t l1,
+                           const ptr_uint64::label_t l2,
+                           const level_comp_t &level_comp)
   {
     return level_comp(l1, l2) || l1 == l2;
   }
@@ -118,13 +121,13 @@ namespace adiar {
       return false;
     }
 
-    label_t peek()
+    ptr_uint64::label_t peek()
     {
       adiar_debug(can_pull(),
                   "Cannot peek past end of all streams");
 
       bool has_min_label = false;
-      label_t min_label = 0u;
+      ptr_uint64::label_t min_label = 0u;
       for (size_t idx = 0u; idx < FILES; idx++) {
         if (_label_streams[idx] -> can_pull()
             && (!has_min_label || _comparator(__label_of<>(_label_streams[idx] -> peek()), min_label))) {
@@ -136,12 +139,12 @@ namespace adiar {
       return min_label;
     }
 
-    label_t pull()
+    ptr_uint64::label_t pull()
     {
       adiar_debug(can_pull(),
                   "Cannot pull past end of all streams");
 
-      label_t min_label = peek();
+      ptr_uint64::label_t min_label = peek();
 
       // pull from all with min_label
       for (const std::unique_ptr<stream_t> &level_info_stream : _label_streams) {
@@ -209,12 +212,12 @@ namespace adiar {
   template <typename elem_t,
             typename elem_level_t,
             typename elem_comp_t         = std::less<elem_t>,
-            label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
+            ptr_uint64::label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
             memory::memory_mode mem_mode = memory::EXTERNAL,
             typename file_t              = meta_file<elem_t>,
             size_t   FILES               = 1u,
-            typename level_comp_t        = std::less<label_t>,
-            label_t  INIT_LEVEL          = 1u
+            typename level_comp_t        = std::less<ptr_uint64::label_t>,
+            ptr_uint64::label_t  INIT_LEVEL          = 1u
             >
   class levelized_priority_queue
   {
@@ -225,7 +228,7 @@ namespace adiar {
     // TODO: LOOK_AHEAD must be strictly smaller than MAX_LABEL (but we need to
     //       close #164 first to do this check at compile time)
 
-    static constexpr label_t OUT_OF_BUCKETS_IDX = static_cast<label_t>(-1);
+    static constexpr ptr_uint64::label_t OUT_OF_BUCKETS_IDX = static_cast<ptr_uint64::label_t>(-1);
 
     static_assert(LOOK_AHEAD + 1 < OUT_OF_BUCKETS_IDX,
                   "LOOK_AHEAD must not be so large to also include '-1'");
@@ -233,7 +236,10 @@ namespace adiar {
     static_assert(OUT_OF_BUCKETS_IDX + 1 == 0,
                   "Overflow to '0' is necessary for internal logic to work");
 
-    static constexpr label_t NO_LABEL = MAX_LABEL+1;
+    static_assert(ptr_uint64::MAX_LABEL+1 > ptr_uint64::MAX_LABEL,
+                  "'ptr_uint64::label_t' should leave a window of at least one above 'MAX_LABEL'");
+
+    static constexpr ptr_uint64::label_t NO_LABEL = ptr_uint64::MAX_LABEL+1;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -314,7 +320,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Instantiation of the comparator between levels.
     ////////////////////////////////////////////////////////////////////////////
-    label_t _current_level = NO_LABEL;
+    ptr_uint64::label_t _current_level = NO_LABEL;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Instantiation of the comparator between levels.
@@ -360,7 +366,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Level of each bucket.
     ////////////////////////////////////////////////////////////////////////////
-    label_t _buckets_level [BUCKETS];
+    ptr_uint64::label_t _buckets_level [BUCKETS];
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Sorter for each bucket.
@@ -370,12 +376,12 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Index of the currently read-from bucket (if any).
     ////////////////////////////////////////////////////////////////////////////
-    label_t _front_bucket_idx = OUT_OF_BUCKETS_IDX;
+    ptr_uint64::label_t _front_bucket_idx = OUT_OF_BUCKETS_IDX;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Index of the last available bucket (if any).
     ////////////////////////////////////////////////////////////////////////////
-    label_t _back_bucket_idx  = OUT_OF_BUCKETS_IDX;
+    ptr_uint64::label_t _back_bucket_idx  = OUT_OF_BUCKETS_IDX;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Next element to take out of the bucket (if any)
@@ -505,14 +511,14 @@ namespace adiar {
     void init_buckets()
     {
       // Initially skip the number of levels
-      for (label_t idx = 0; _level_merger.can_pull() && idx < INIT_LEVEL; idx++) {
+      for (ptr_uint64::label_t idx = 0; _level_merger.can_pull() && idx < INIT_LEVEL; idx++) {
         _level_merger.pull();
       }
 
       // Set up buckets until no levels are left or all buckets have been
       // instantiated. Notice, that _back_bucket_idx was initialised to -1.
       while (_back_bucket_idx + 1 < BUCKETS && _level_merger.can_pull()) {
-        const label_t level = _level_merger.pull();
+        const ptr_uint64::label_t level = _level_merger.pull();
 
         adiar_invariant(_front_bucket_idx == OUT_OF_BUCKETS_IDX,
                         "Front bucket not moved");
@@ -554,7 +560,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The label of the current level.
     ////////////////////////////////////////////////////////////////////////////
-    label_t current_level()
+    ptr_uint64::label_t current_level()
     {
       adiar_debug(has_current_level(),
                   "Needs to have a 'current' level to read the level from");
@@ -573,7 +579,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The label of the next (possibly empty) level.
     ////////////////////////////////////////////////////////////////////////////
-    label_t next_level() const
+    ptr_uint64::label_t next_level() const
     {
       return next_bucket_level();
     }
@@ -594,7 +600,7 @@ namespace adiar {
       adiar_debug(can_push(),
                   "Should only push when there is a yet unvisited level.");
 
-      const label_t level = elem_level_t::label_of(e);
+      const ptr_uint64::label_t level = elem_level_t::label_of(e);
 
       adiar_debug(level_cmp_le<level_comp_t>(next_bucket_level(), level, _level_comparator),
                   "Can only push element to next bucket or later.");
@@ -609,9 +615,9 @@ namespace adiar {
       _actual_max_size = std::max(_actual_max_size, _size);
 #endif
 
-      label_t bucket_offset = 1u;
+      ptr_uint64::label_t bucket_offset = 1u;
       do {
-        const label_t bucket_idx = (_front_bucket_idx + bucket_offset++) % BUCKETS;
+        const ptr_uint64::label_t bucket_idx = (_front_bucket_idx + bucket_offset++) % BUCKETS;
 
         if (_buckets_level[bucket_idx] == level) {
           _buckets_sorter[bucket_idx] -> push(e);
@@ -638,9 +644,9 @@ namespace adiar {
     ///                   stop level is given then the next level is based on
     ///                   the next existing element in the priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    void setup_next_level(label_t stop_level = NO_LABEL)
+    void setup_next_level(ptr_uint64::label_t stop_level = NO_LABEL)
     {
-      adiar_debug(stop_level <= MAX_LABEL || stop_level == NO_LABEL,
+      adiar_debug(stop_level <= ptr_uint64::MAX_LABEL || stop_level == NO_LABEL,
                   "The stop level should be a legal value (or not given)");
 
       adiar_debug(!has_current_level() || empty_level(),
@@ -649,7 +655,7 @@ namespace adiar {
       adiar_debug(stop_level != NO_LABEL || !empty(),
                   "Either a stop level is given or we have some non-empty level to forward to");
 
-      const label_t overflow_level = !_overflow_queue.empty()
+      const ptr_uint64::label_t overflow_level = !_overflow_queue.empty()
         ? elem_level_t::label_of(_overflow_queue.top())
         : stop_level;
 
@@ -842,13 +848,13 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Label of the next bucket.
     ////////////////////////////////////////////////////////////////////////////
-    label_t next_bucket_level() const
+    ptr_uint64::label_t next_bucket_level() const
     {
       adiar_debug(has_next_bucket(),
                   "Cannot obtain level of non-existing next bucket");
 
-      const label_t next_idx   = (_front_bucket_idx + 1) % BUCKETS;
-      const label_t next_level = _buckets_level[next_idx];
+      const ptr_uint64::label_t next_idx   = (_front_bucket_idx + 1) % BUCKETS;
+      const ptr_uint64::label_t next_level = _buckets_level[next_idx];
       return next_level;
     }
 
@@ -864,7 +870,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Level of the front bucket.
     ////////////////////////////////////////////////////////////////////////////
-    label_t front_bucket_level() const
+    ptr_uint64::label_t front_bucket_level() const
     {
       return _buckets_level[_front_bucket_idx];
     }
@@ -872,7 +878,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Level of the back bucket.
     ////////////////////////////////////////////////////////////////////////////
-    label_t back_bucket_level() const
+    ptr_uint64::label_t back_bucket_level() const
     {
       return _buckets_level[_back_bucket_idx];
     }
@@ -889,7 +895,7 @@ namespace adiar {
     ///
     /// \sa    levelized_priority_queue::setup_next_level
     ////////////////////////////////////////////////////////////////////////////
-    inline void forward_to_nonempty_bucket(const label_t stop_level, const bool has_stop_level)
+    inline void forward_to_nonempty_bucket(const ptr_uint64::label_t stop_level, const bool has_stop_level)
     {
       do {
         adiar_invariant(has_next_bucket(),
@@ -906,7 +912,7 @@ namespace adiar {
 
         // Replace the current read-only bucket, if there is one
         if (_level_merger.can_pull() && has_front_bucket()) {
-          const label_t next_level = _level_merger.pull();
+          const ptr_uint64::label_t next_level = _level_merger.pull();
 
           _buckets_level[_front_bucket_idx] = next_level;
           sorter_t::reset_unique(_buckets_sorter[_front_bucket_idx],
@@ -954,7 +960,7 @@ namespace adiar {
     ///
     /// \sa    levelized_priority_queue::setup_next_level
     ////////////////////////////////////////////////////////////////////////////
-    inline void relabel_buckets(const label_t stop_level)
+    inline void relabel_buckets(const ptr_uint64::label_t stop_level)
     {
       adiar_debug(stop_level != NO_LABEL,
                   "Relabelling of buckets require a valid 'stop_level'");
@@ -964,7 +970,7 @@ namespace adiar {
       const size_t old_back_bucket_idx = _back_bucket_idx;
 
       // Create a list of the new levels
-      label_t new_levels[BUCKETS];
+      ptr_uint64::label_t new_levels[BUCKETS];
       _back_bucket_idx = OUT_OF_BUCKETS_IDX;
 
       // Copy over still relevant levels from current buckets
@@ -1023,13 +1029,13 @@ namespace adiar {
             typename file_t,
             size_t   FILES,
             typename level_comp_t,
-            label_t  INIT_LEVEL
+            ptr_uint64::label_t  INIT_LEVEL
             >
   class levelized_priority_queue<elem_t, elem_level_t, elem_comp_t, 0u, // <--
                                  mem_mode, file_t, FILES, level_comp_t, INIT_LEVEL>
   {
   private:
-    static constexpr label_t NO_LABEL = MAX_LABEL+1;
+    static constexpr ptr_uint64::label_t NO_LABEL = ptr_uint64::MAX_LABEL+1;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -1057,7 +1063,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Instantiation of the comparator between levels.
     ////////////////////////////////////////////////////////////////////////////
-    label_t _current_level = NO_LABEL;
+    ptr_uint64::label_t _current_level = NO_LABEL;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Instantiation of the comparator between levels.
@@ -1167,7 +1173,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The label of the current level.
     ////////////////////////////////////////////////////////////////////////////
-    label_t current_level()
+    ptr_uint64::label_t current_level()
     {
       adiar_debug(has_current_level(),
                   "Needs to have a 'current' level to read the level from");
@@ -1183,7 +1189,7 @@ namespace adiar {
       if(_priority_queue.empty()) {
         return false;
       }
-      label_t next_label_from_queue = elem_level_t::label_of(_priority_queue.top());
+      ptr_uint64::label_t next_label_from_queue = elem_level_t::label_of(_priority_queue.top());
       return (has_current_level() && level_cmp_lt<level_comp_t>(_current_level, next_label_from_queue, _level_comparator))
               || (!has_current_level() && !_priority_queue.empty());
     }
@@ -1191,7 +1197,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The label of the next (possibly empty) level.
     ////////////////////////////////////////////////////////////////////////////
-    label_t next_level() /*const*/
+    ptr_uint64::label_t next_level() /*const*/
     {
       return elem_level_t::label_of(_priority_queue.top());
     }
@@ -1223,9 +1229,9 @@ namespace adiar {
     ///                   stop level is given then the next level is based on
     ///                   the next existing element in the priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    void setup_next_level(label_t stop_level = NO_LABEL)
+    void setup_next_level(ptr_uint64::label_t stop_level = NO_LABEL)
     {
-      adiar_debug(stop_level <= MAX_LABEL || stop_level == NO_LABEL,
+      adiar_debug(stop_level <= ptr_uint64::MAX_LABEL || stop_level == NO_LABEL,
                   "The stop level should be a legal value (or not given)");
 
       adiar_debug(!has_current_level() || empty_level(),
@@ -1247,7 +1253,7 @@ namespace adiar {
       //   The stop level is before the next level of the queue
       adiar_debug(has_next_level(),
                   "There should be a next level to go to");
-      label_t next_level_from_queue = next_level();
+      ptr_uint64::label_t next_level_from_queue = next_level();
       if(has_stop_level && level_cmp_le<level_comp_t>(stop_level, next_level_from_queue, _level_comparator)) {
         _current_level = stop_level;
         return;
@@ -1347,40 +1353,40 @@ namespace adiar {
   template <typename elem_t,
             typename elem_level_t,
             typename elem_comp_t         = std::less<elem_t>,
-            label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
+            ptr_uint64::label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
             memory::memory_mode mem_mode = memory::EXTERNAL,
             size_t   FILES       = 1u,
-            label_t  INIT_LEVEL  = 1u>
+            ptr_uint64::label_t  INIT_LEVEL  = 1u>
   using levelized_node_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
                                                                  elem_comp_t, LOOK_AHEAD,
                                                                  mem_mode,
-                                                                 node_file, FILES, std::less<label_t>,
+                                                                 node_file, FILES, std::less<ptr_uint64::label_t>,
                                                                  INIT_LEVEL>;
 
   template <typename elem_t,
             typename elem_level_t,
             typename elem_comp_t         = std::less<elem_t>,
-            label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
+            ptr_uint64::label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
             memory::memory_mode mem_mode = memory::EXTERNAL,
             size_t   FILES               = 1u,
-            label_t  INIT_LEVEL          = 1u>
+            ptr_uint64::label_t  INIT_LEVEL          = 1u>
   using levelized_arc_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
                                                                 elem_comp_t, LOOK_AHEAD,
                                                                 mem_mode,
-                                                                arc_file, FILES, std::greater<label_t>,
+                                                                arc_file, FILES, std::greater<ptr_uint64::label_t>,
                                                                 INIT_LEVEL>;
 
   template <typename elem_t,
             typename elem_level_t,
             typename elem_comp_t         = std::less<elem_t>,
-            label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
+            ptr_uint64::label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
             memory::memory_mode mem_mode = memory::EXTERNAL,
             size_t   FILES               = 1u,
-            label_t  INIT_LEVEL          = 1u>
+            ptr_uint64::label_t  INIT_LEVEL          = 1u>
   using levelized_label_priority_queue = levelized_priority_queue<elem_t, elem_level_t,
                                                                   elem_comp_t, LOOK_AHEAD,
                                                                   mem_mode,
-                                                                  label_file, FILES, std::less<label_t>,
+                                                                  label_file, FILES, std::less<ptr_uint64::label_t>,
                                                                   INIT_LEVEL>;
 }
 

@@ -3,7 +3,6 @@
 
 #include <string_view>
 
-#include <adiar/label.h>
 #include <adiar/file.h>
 
 #include <adiar/internal/decision_diagram.h>
@@ -43,7 +42,7 @@ namespace adiar {
     friend bdd bdd_not(const bdd&);
     friend bdd bdd_not(bdd&&);
     friend size_t bdd_nodecount(const bdd&);
-    friend label_t bdd_varcount(const bdd&);
+    friend typename decision_diagram::label_t bdd_varcount(const bdd&);
 
     friend class apply_prod_policy;
     friend __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else);

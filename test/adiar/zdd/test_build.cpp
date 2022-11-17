@@ -119,7 +119,7 @@ go_bandit([]() {
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node> ms(res);
@@ -149,7 +149,7 @@ go_bandit([]() {
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node> ms(res);
@@ -217,7 +217,7 @@ go_bandit([]() {
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node> ms(res);
@@ -254,11 +254,11 @@ go_bandit([]() {
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID, terminal_F, ptr_uint64(5,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID, terminal_F, ptr_uint64(5, ptr_uint64::MAX_ID))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID, terminal_F, ptr_uint64(2,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID, terminal_F, ptr_uint64(2, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -331,7 +331,7 @@ go_bandit([]() {
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node> ms(res);
@@ -368,11 +368,11 @@ go_bandit([]() {
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::MAX_ID, terminal_F, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID, ptr_uint64(5,MAX_ID), terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID, ptr_uint64(5, ptr_uint64::MAX_ID), terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID, ptr_uint64(2,MAX_ID), terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -438,7 +438,7 @@ go_bandit([]() {
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream<node> ms(res);
@@ -475,15 +475,15 @@ go_bandit([]() {
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(5, MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(5, node::MAX_ID, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                       ptr_uint64(5,MAX_ID),
-                                                       ptr_uint64(5,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                       ptr_uint64(5, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(5, ptr_uint64::MAX_ID))));
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                       ptr_uint64(2,MAX_ID),
-                                                       ptr_uint64(2,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -518,7 +518,7 @@ go_bandit([]() {
       // Edge cases
       it("can compute { s <= Ø | |s| <= 0 } to be { Ø }", [&]() {
         label_file labels;
-        zdd res = zdd_sized_sets(labels, 0, std::less_equal<label_t>());
+        zdd res = zdd_sized_sets(labels, 0, std::less_equal<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -544,7 +544,7 @@ go_bandit([]() {
 
       it("can compute { s <= Ø | |s| > 0 } to be Ø", [&]() {
         label_file labels;
-        zdd res = zdd_sized_sets(labels, 0, std::greater<label_t>());
+        zdd res = zdd_sized_sets(labels, 0, std::greater<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -576,7 +576,7 @@ go_bandit([]() {
           lw << 1 << 2 << 3;
         }
 
-        zdd res = zdd_sized_sets(labels, 0, std::less<label_t>());
+        zdd res = zdd_sized_sets(labels, 0, std::less<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -608,7 +608,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6;
         }
 
-        zdd res = zdd_sized_sets(labels, 0, std::less_equal<label_t>());
+        zdd res = zdd_sized_sets(labels, 0, std::less_equal<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -640,26 +640,26 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6;
         }
 
-        zdd res = zdd_sized_sets(labels, 42, std::less<label_t>());
+        zdd res = zdd_sized_sets(labels, 42, std::less<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(6, MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(6, node::MAX_ID, terminal_T, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(4, MAX_ID,
-                                                       ptr_uint64(6,MAX_ID),
-                                                       ptr_uint64(6,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(4, node::MAX_ID,
+                                                       ptr_uint64(6, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(6, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                       ptr_uint64(4,MAX_ID),
-                                                       ptr_uint64(4,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                       ptr_uint64(4, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(4, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                       ptr_uint64(2,MAX_ID),
-                                                       ptr_uint64(2,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -697,7 +697,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6;
         }
 
-        zdd res = zdd_sized_sets(labels, 42, std::greater<label_t>());
+        zdd res = zdd_sized_sets(labels, 42, std::greater<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -729,21 +729,21 @@ go_bandit([]() {
           lw << 0 << 1 << 2;
         }
 
-        zdd res = zdd_sized_sets(labels, 3, std::less_equal<label_t>());
+        zdd res = zdd_sized_sets(labels, 3, std::less_equal<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID, terminal_T, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
-                                                       ptr_uint64(2,MAX_ID),
-                                                       ptr_uint64(2,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                       ptr_uint64(1,MAX_ID),
-                                                       ptr_uint64(1,MAX_ID))));
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                       ptr_uint64(1, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -779,21 +779,21 @@ go_bandit([]() {
           lw << 0 << 1 << 2;
         }
 
-        zdd res = zdd_sized_sets(labels, 3, std::equal_to<label_t>());
+        zdd res = zdd_sized_sets(labels, 3, std::equal_to<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(2, MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID, terminal_F, terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(1, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
                                                        terminal_F,
-                                                       ptr_uint64(2,MAX_ID))));
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, MAX_ID,
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
                                                        terminal_F,
-                                                       ptr_uint64(1,MAX_ID))));
+                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -829,7 +829,7 @@ go_bandit([]() {
           lw << 0 << 2 << 3;
         }
 
-        zdd res = zdd_sized_sets(labels, 3, std::greater<label_t>());
+        zdd res = zdd_sized_sets(labels, 3, std::greater<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -856,7 +856,7 @@ go_bandit([]() {
           lw << 0 << 1 << 2;
         }
 
-        zdd res = zdd_sized_sets(labels, 1, std::less<label_t>());
+        zdd res = zdd_sized_sets(labels, 1, std::less<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -896,7 +896,7 @@ go_bandit([]() {
           lw << 1 << 3 << 5;
         }
 
-        zdd res = zdd_sized_sets(labels, 2, std::equal_to<label_t>());
+        zdd res = zdd_sized_sets(labels, 2, std::equal_to<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -954,7 +954,7 @@ go_bandit([]() {
           lw << 1 << 2 << 3 << 4 << 6;
         }
 
-        zdd res = zdd_sized_sets(labels, 3, std::equal_to<label_t>());
+        zdd res = zdd_sized_sets(labels, 3, std::equal_to<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1038,7 +1038,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6 << 8;
         }
 
-        zdd res = zdd_sized_sets(labels, 2, std::greater_equal<label_t>());
+        zdd res = zdd_sized_sets(labels, 2, std::greater_equal<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1128,7 +1128,7 @@ go_bandit([]() {
           lw << 0 << 1 << 2 << 3 << 4 << 5;
         }
 
-        zdd res = zdd_sized_sets(labels, 0, std::greater<label_t>());
+        zdd res = zdd_sized_sets(labels, 0, std::greater<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1221,7 +1221,7 @@ go_bandit([]() {
           lw << 0 << 1 << 2 << 3 << 5;
         }
 
-        zdd res = zdd_sized_sets(labels, 1, std::greater<label_t>());
+        zdd res = zdd_sized_sets(labels, 1, std::greater<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1311,7 +1311,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6 << 8;
         }
 
-        zdd res = zdd_sized_sets(labels, 2, std::less<label_t>());
+        zdd res = zdd_sized_sets(labels, 2, std::less<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1381,7 +1381,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6;
         }
 
-        zdd res = zdd_sized_sets(labels, 3, std::less<label_t>());
+        zdd res = zdd_sized_sets(labels, 3, std::less<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1452,7 +1452,7 @@ go_bandit([]() {
           lw << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
         }
 
-        zdd res = zdd_sized_sets(labels, 5, std::less<label_t>());
+        zdd res = zdd_sized_sets(labels, 5, std::less<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1610,7 +1610,7 @@ go_bandit([]() {
           lw << 0 << 2 << 4 << 6 << 8;
         }
 
-        zdd res = zdd_sized_sets(labels, 2, std::less_equal<label_t>());
+        zdd res = zdd_sized_sets(labels, 2, std::less_equal<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -1690,7 +1690,7 @@ go_bandit([]() {
           lw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
         }
 
-        zdd res = zdd_sized_sets(labels, 4, std::not_equal_to<label_t>());
+        zdd res = zdd_sized_sets(labels, 4, std::not_equal_to<zdd::label_t>());
         nodeest_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());

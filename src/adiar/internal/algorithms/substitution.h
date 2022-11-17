@@ -3,7 +3,6 @@
 
 #include <variant>
 
-#include <adiar/label.h>
 #include <adiar/assignment.h>
 
 #include <adiar/file.h>
@@ -30,8 +29,8 @@ namespace adiar
   // Priority queue functions
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using substitute_priority_queue_t =
-    levelized_node_priority_queue<arc, arcarget_label,
-                                  arcarget_lt, LOOK_AHEAD,
+    levelized_node_priority_queue<arc, arc_target_label,
+                                  arc_target_lt, LOOK_AHEAD,
                                   mem_mode>;
 
   struct substitute_rec_output { node out; };
@@ -55,7 +54,7 @@ namespace adiar
       a = as.pull();
     }
 
-    substitute_act action_for_level(label_t level) {
+    substitute_act action_for_level(assignment_t::label_t level) {
       while (label_of(a) < level && as.can_pull()) {
         a = as.pull();
       }
@@ -113,7 +112,7 @@ namespace adiar
 
     pq_t substitute_pq({dd}, pq_memory, pq_max_size, stats_substitute.lpq);
 
-    label_t level = n.label();
+    typename substitute_policy::label_t level = n.label();
     size_t level_size = 0;
 
     substitute_act action = amgr.action_for_level(level);

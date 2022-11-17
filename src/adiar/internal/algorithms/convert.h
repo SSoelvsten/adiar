@@ -1,8 +1,6 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_CONVERT_H
 #define ADIAR_INTERNAL_ALGORITHMS_CONVERT_H
 
-#include<adiar/label.h>
-
 #include<adiar/internal/decision_diagram.h>
 
 #include<adiar/internal/algorithms/intercut.h>
@@ -22,7 +20,15 @@ namespace adiar
 
   public:
     typedef typename from_policy::reduced_t reduced_t;
+    typedef typename from_policy::ptr_t ptr_t;
+    typedef typename from_policy::node_t node_t;
+
     typedef typename to_policy::unreduced_t unreduced_t;
+    typedef typename to_policy::label_t label_t;
+    typedef typename to_policy::id_t id_t;
+
+    static constexpr label_t MAX_LABEL = to_policy::MAX_LABEL;
+    static constexpr id_t MAX_ID = to_policy::MAX_ID;
 
   public:
     static constexpr bool may_skip = true;
@@ -57,14 +63,14 @@ namespace adiar
       label_stream<true> ls(dom);
 
       while(ls.can_pull()) {
-        const label_t next_label = ls.pull();
+        const typename to_policy::label_t next_label = ls.pull();
 
-        adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
+        adiar_assert(next_label <= to_policy::MAX_LABEL, "Cannot represent that large a label");
         adiar_assert(prior_node.is_terminal() || next_label < prior_node.label(),
                      "Labels not given in increasing order");
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
-        const node next_node = node(next_label, MAX_ID, children.t1, children.t2);
+        const node next_node = node(next_label, to_policy::MAX_ID, children.t1, children.t2);
         const ptr_uint64 reduction_result = to_policy::reduction_rule(next_node);
 
         if (reduction_result == next_node.uid()) { // Output

@@ -1,7 +1,6 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_BUILD_H
 #define ADIAR_INTERNAL_ALGORITHMS_BUILD_H
 
-#include <adiar/label.h>
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
@@ -23,13 +22,13 @@ namespace adiar
     return nf;
   }
 
-  inline node_file build_ithvar(label_t label)
+  inline node_file build_ithvar(ptr_uint64::label_t label)
   {
-    adiar_assert(label <= MAX_LABEL, "Cannot represent that large a label");
+    adiar_assert(label <= ptr_uint64::MAX_LABEL, "Cannot represent that large a label");
 
     node_file nf;
     node_writer nw(nf);
-    nw.unsafe_push(node(label, MAX_ID,
+    nw.unsafe_push(node(label, ptr_uint64::MAX_ID,
                                ptr_uint64(false),
                                ptr_uint64(true)));
 
@@ -56,10 +55,10 @@ namespace adiar
 
       label_stream<true> ls(labels);
       while(ls.can_pull()) {
-        label_t next_label = ls.pull();
-        node next_node = node(next_label, MAX_ID, low, high);
+        ptr_uint64::label_t next_label = ls.pull();
+        node next_node = node(next_label, ptr_uint64::MAX_ID, low, high);
 
-        adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
+        adiar_assert(next_label <= ptr_uint64::MAX_LABEL, "Cannot represent that large a label");
         adiar_assert(high.is_terminal() || next_label < high.label(),
                      "Labels not given in increasing order");
 

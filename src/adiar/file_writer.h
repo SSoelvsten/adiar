@@ -4,13 +4,13 @@
 #include <tpie/file_stream.h>
 
 #include <adiar/assignment.h>
-#include <adiar/label.h>
 #include <adiar/file.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
 
 #include <adiar/internal/data_types/level_info.h>
+#include <adiar/internal/data_types/ptr.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
@@ -168,7 +168,7 @@ namespace adiar {
   };
 
   typedef simple_file_writer<assignment_t, std::less<assignment_t>> assignment_writer;
-  typedef simple_file_writer<label_t, no_ordering<label_t>> label_writer;
+  typedef simple_file_writer<ptr_uint64::label_t, no_ordering<ptr_uint64::label_t>> label_writer;
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -383,7 +383,7 @@ namespace adiar {
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
       if (!has_latest_node()) { // First node pushed
-        _canonical = n.is_terminal() || n.id() == MAX_ID;
+        _canonical = n.is_terminal() || n.id() == node::MAX_ID;
       } else { // Check validity of input based on prior written node
         adiar_debug(!_latest_node.is_terminal(),
                      "Cannot push a node after having pushed a terminal");
@@ -399,7 +399,7 @@ namespace adiar {
 
             _canonical = id_diff && children_ordered;
           } else {
-            bool id_reset = n.id() == MAX_ID;
+            bool id_reset = n.id() == node::MAX_ID;
             _canonical = id_reset;
           }
         }
@@ -416,7 +416,7 @@ namespace adiar {
                                                 _curr_1level_short_internal);
 
           _curr_1level_short_internal = 0u;
-          _long_internal_ptr = node::uid_t(_latest_node.label(), MAX_ID);
+          _long_internal_ptr = node::uid_t(_latest_node.label(), node::MAX_ID);
         }
       }
 

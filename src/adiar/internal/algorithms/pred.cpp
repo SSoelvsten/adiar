@@ -3,6 +3,7 @@
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/cut.h>
+#include <adiar/internal/decision_diagram.h>
 #include <adiar/internal/util.h>
 
 namespace adiar
@@ -51,7 +52,7 @@ namespace adiar
         curr_level_processed(1)
     { }
 
-    void next_level(label_t /* level */)
+    void next_level(ptr_uint64::label_t /* level */)
     { // Ignore input, since only used with the isomorphism_policy below.
       curr_level_size = width_of(in_meta_1.pull());
       curr_level_processed = 0;
@@ -75,7 +76,11 @@ namespace adiar
   //  - The number of nodes are the same
   //  - The number of levels are the same
   //  - The label and size of each level are the same
-  class isomorphism_policy : public prod_same_level_merger
+  //
+  // TODO (Decision Diagrams with other kinds of pointers):
+  //   template<class dd_policy>
+  class isomorphism_policy : public prod_same_level_merger,
+                             public decision_diagram_policy<decision_diagram, __decision_diagram>
   {
   public:
     typedef input_bound_levels<false> level_check_t;

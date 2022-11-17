@@ -1,7 +1,5 @@
 #include <adiar/bdd.h>
 
-#include <adiar/label.h>
-
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
@@ -167,7 +165,7 @@ namespace adiar
     return out_nodes;
   }
 
-  inline bool ite_must_forward(node v, ptr_uint64 t, label_t out_label, ptr_uint64 t_seek)
+  inline bool ite_must_forward(node v, bdd::ptr_t t, bdd::label_t out_label, bdd::ptr_t t_seek)
   {
     return
       // is it a node at this level?
@@ -178,7 +176,7 @@ namespace adiar
       && v.uid() != t;
   }
 
-  inline void ite_init_request(node_stream<> &in_nodes, node &v, label_t out_label,
+  inline void ite_init_request(node_stream<> &in_nodes, node &v, bdd::label_t out_label,
                                ptr_uint64 &low, ptr_uint64 &high)
   {
     if (v.label() == out_label) {
@@ -261,8 +259,8 @@ namespace adiar
     pq_3_t ite_pq_3(pq_3_memory, max_pq_3_size);
 
     // Process root and create initial recursion requests
-    label_t out_label = fst(v_if.uid(), v_then.uid(), v_else.uid()).label();
-    id_t out_id = 0;
+    bdd::label_t out_label = fst(v_if.uid(), v_then.uid(), v_else.uid()).label();
+    bdd::id_t out_id = 0;
 
     ptr_uint64 low_if, low_then, low_else, high_if, high_then, high_else;
     ite_init_request(in_nodes_if, v_if, out_label, low_if, high_if);
@@ -459,7 +457,7 @@ namespace adiar
       }
 
       // Resolve request
-      adiar_debug(out_id < MAX_ID, "Has run out of ids");
+      adiar_debug(out_id < bdd::MAX_ID, "Has run out of ids");
       const uid_t out_uid(out_label, out_id++);
 
       __ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);

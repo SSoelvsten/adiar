@@ -46,7 +46,7 @@ namespace adiar
 
   struct reduce_queue_label
   {
-    static label_t label_of(const arc &a)
+    static arc::ptr_t::label_t label_of(const arc &a)
     {
       return a.source().label();
     }
@@ -199,7 +199,7 @@ namespace adiar
   template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
   void __reduce_level(terminal_arc_stream<> &terminal_arcs,
                       node_arc_stream<> &node_arcs,
-                      const label_t label,
+                      const typename dd_policy::label_t label,
                       pq_t &reduce_pq,
                       node_writer &out_writer,
                       cuts_t &global_1level_cut,
@@ -250,7 +250,7 @@ namespace adiar
     // Sort and apply Reduction rule 2
     child_grouping.sort();
 
-    id_t out_id = MAX_ID;
+    typename dd_policy::id_t out_id = dd_policy::MAX_ID;
     node out_node = node(node::uid_t(), ptr_uint64::NIL(), ptr_uint64::NIL());
 
     while (child_grouping.can_pull()) {
@@ -278,7 +278,7 @@ namespace adiar
 
     // Add number of nodes to level information, if any nodes were pushed to the output.
     if (!out_node.low().is_nil() /* && !out_node.high().is_nil() */) {
-      out_writer.unsafe_push(create_level_info(label, MAX_ID - out_id));
+      out_writer.unsafe_push(create_level_info(label, dd_policy::MAX_ID - out_id));
     }
 
     // Sort mappings for Reduction rule 2 back in order of node_arcs
@@ -413,9 +413,9 @@ namespace adiar
         out_writer.set_number_of_terminals(!terminal_val, terminal_val);
         __reduce_cut_add(out_file->max_1level_cut, 0u, !terminal_val, terminal_val);
       } else {
-        const label_t label = e_low.source().label();
+        const typename dd_policy::label_t label = e_low.source().label();
 
-        out_writer.unsafe_push(node(label, MAX_ID, e_low.target(), e_high.target()));
+        out_writer.unsafe_push(node(label, dd_policy::MAX_ID, e_low.target(), e_high.target()));
 
         out_writer.unsafe_push(create_level_info(label,1u));
 
@@ -451,7 +451,7 @@ namespace adiar
     // Process bottom-up each level
     while (terminal_arcs.can_pull() || !reduce_pq.empty()) {
       const level_info_t current_level_info = level_info.pull();
-      const label_t label = label_of(current_level_info);
+      const typename dd_policy::label_t label = label_of(current_level_info);
 
       adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
                       "label and priority queue should be in sync");

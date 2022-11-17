@@ -142,11 +142,11 @@ go_bandit([]() {
     node_file zdd_1;
     {
       node_writer nw(zdd_1);
-      nw << node(4, MAX_ID, terminal_T, terminal_T)
-         << node(3, MAX_ID, terminal_F, ptr_uint64(4, MAX_ID))
-         << node(2, MAX_ID, ptr_uint64(3, MAX_ID), terminal_T)
-         << node(1, MAX_ID, ptr_uint64(2, MAX_ID), ptr_uint64(2, MAX_ID))
-         << node(0, MAX_ID, ptr_uint64(1, MAX_ID), terminal_T)
+      nw << node(4, node::MAX_ID, terminal_T, terminal_T)
+         << node(3, node::MAX_ID, terminal_F, ptr_uint64(4, ptr_uint64::MAX_ID))
+         << node(2, node::MAX_ID, ptr_uint64(3, ptr_uint64::MAX_ID), terminal_T)
+         << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
+         << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), terminal_T)
         ;
     }
 
@@ -167,10 +167,10 @@ go_bandit([]() {
     node_file zdd_2;
     {
       node_writer nw(zdd_2);
-      nw << node(4, MAX_ID, terminal_T, terminal_T)
-         << node(3, MAX_ID, terminal_T, terminal_T)
-         << node(2, MAX_ID, terminal_F, ptr_uint64(4, MAX_ID))
-         << node(0, MAX_ID, ptr_uint64(2, MAX_ID), ptr_uint64(3, MAX_ID))
+      nw << node(4, node::MAX_ID, terminal_T, terminal_T)
+         << node(3, node::MAX_ID, terminal_T, terminal_T)
+         << node(2, node::MAX_ID, terminal_F, ptr_uint64(4, ptr_uint64::MAX_ID))
+         << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID))
         ;
     }
 
@@ -187,10 +187,10 @@ go_bandit([]() {
     node_file zdd_3;
     {
       node_writer nw(zdd_3);
-      nw << node(2, MAX_ID,   terminal_T, terminal_T)
-         << node(2, MAX_ID-1, terminal_F, terminal_T)
-         << node(1, MAX_ID,   ptr_uint64(2, MAX_ID-1), ptr_uint64(2, MAX_ID))
-         << node(0, MAX_ID,   ptr_uint64(1, MAX_ID), ptr_uint64(2, MAX_ID))
+      nw << node(2, node::MAX_ID,   terminal_T, terminal_T)
+         << node(2, node::MAX_ID-1, terminal_F, terminal_T)
+         << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
+         << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
         ;
     }
 
@@ -207,11 +207,11 @@ go_bandit([]() {
     node_file zdd_4;
     {
       node_writer nw(zdd_4);
-      nw << node(4, MAX_ID,   terminal_T, terminal_T)
-         << node(4, MAX_ID-1, terminal_F, terminal_T)
-         << node(2, MAX_ID,   ptr_uint64(4, MAX_ID-1), ptr_uint64(4, MAX_ID))
-         << node(2, MAX_ID-1, ptr_uint64(4, MAX_ID-1), ptr_uint64(4, MAX_ID-1))
-         << node(0, MAX_ID,   ptr_uint64(2, MAX_ID-1), ptr_uint64(2, MAX_ID))
+      nw << node(4, node::MAX_ID,   terminal_T, terminal_T)
+         << node(4, node::MAX_ID-1, terminal_F, terminal_T)
+         << node(2, node::MAX_ID,   ptr_uint64(4, ptr_uint64::MAX_ID-1), ptr_uint64(4, ptr_uint64::MAX_ID))
+         << node(2, node::MAX_ID-1, ptr_uint64(4, ptr_uint64::MAX_ID-1), ptr_uint64(4, ptr_uint64::MAX_ID-1))
+         << node(0, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
         ;
     }
 
@@ -362,18 +362,18 @@ go_bandit([]() {
       nodeest_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
                                                             terminal_T,
                                                             terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(3, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
                                                             terminal_T,
-                                                            ptr_uint64(4, MAX_ID))));
+                                                            ptr_uint64(4, ptr_uint64::MAX_ID))));
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                            ptr_uint64(3, MAX_ID),
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                            ptr_uint64(3, ptr_uint64::MAX_ID),
                                                             terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().False());
@@ -424,19 +424,19 @@ go_bandit([]() {
       nodeest_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
                                                             terminal_T,
                                                             terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(3, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
                                                             terminal_T,
                                                             terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                            ptr_uint64(3, MAX_ID),
-                                                            ptr_uint64(4, MAX_ID))));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                            ptr_uint64(3, ptr_uint64::MAX_ID),
+                                                            ptr_uint64(4, ptr_uint64::MAX_ID))));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -485,14 +485,14 @@ go_bandit([]() {
       nodeest_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
                                                             terminal_T,
                                                             terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                            ptr_uint64(2, MAX_ID),
-                                                            ptr_uint64(2, MAX_ID))));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                            ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                            ptr_uint64(2, ptr_uint64::MAX_ID))));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -537,19 +537,19 @@ go_bandit([]() {
       nodeest_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
                                                             terminal_T,
                                                             terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID-1,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
                                                             terminal_F,
                                                             terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, MAX_ID,
-                                                            ptr_uint64(4, MAX_ID-1),
-                                                            ptr_uint64(4, MAX_ID))));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                            ptr_uint64(4, ptr_uint64::MAX_ID-1),
+                                                            ptr_uint64(4, ptr_uint64::MAX_ID))));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 
@@ -592,19 +592,19 @@ go_bandit([]() {
       nodeest_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID,
                                                      terminal_T,
                                                      terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, MAX_ID-1,
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(4, node::MAX_ID-1,
                                                      terminal_F,
                                                      terminal_T)));
 
       AssertThat(out_nodes.can_pull(), Is().True());
-      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, MAX_ID,
-                                                     ptr_uint64(4, MAX_ID-1),
-                                                     ptr_uint64(4, MAX_ID))));
+      AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                     ptr_uint64(4, ptr_uint64::MAX_ID-1),
+                                                     ptr_uint64(4, ptr_uint64::MAX_ID))));
 
       AssertThat(out_nodes.can_pull(), Is().False());
 

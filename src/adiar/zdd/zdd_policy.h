@@ -12,30 +12,26 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logic related to being a 'Zero-suppressed' Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
-  class zdd_policy
+  typedef decision_diagram_policy<zdd, __zdd> zdd_policy;
+
+  template<>
+  inline ptr_uint64 zdd_policy::reduction_rule(const node &n)
   {
-  public:
-    typedef zdd reduced_t;
-    typedef __zdd unreduced_t;
+    if (n.high().is_false()) { return n.low(); }
+    return n.uid();
+  }
 
-  public:
-    static inline ptr_uint64 reduction_rule(const node &n)
-    {
-      if (n.high().is_false()) { return n.low(); }
-      return n.uid();
-    }
+  template<>
+  inline tuple zdd_policy::reduction_rule_inv(const ptr_uint64 &child)
+  {
+    return { child, ptr_uint64(false) };
+  }
 
-    static inline tuple reduction_rule_inv(const ptr_uint64 &child)
-    {
-      return { child, ptr_uint64(false) };
-    }
-
-  public:
-    static inline void compute_cofactor(bool on_curr_level, ptr_uint64 &, ptr_uint64 &high)
-    {
-      if (!on_curr_level) { high = ptr_uint64(false); }
-    }
-  };
+  template<>
+  inline void zdd_policy::compute_cofactor(bool on_curr_level, ptr_uint64 &, ptr_uint64 &high)
+  {
+    if (!on_curr_level) { high = ptr_uint64(false); }
+  }
 }
 
 #endif // ADIAR_ZDD_ZDD_POLICY_H

@@ -1,4 +1,5 @@
 #include <adiar/zdd.h>
+#include <adiar/zdd/zdd_policy.h>
 
 #include <adiar/internal/assert.h>
 
@@ -11,7 +12,7 @@ namespace adiar
     return nodecount(zdd.file);
   }
 
-  label_t zdd_varcount(const zdd &zdd)
+  zdd::label_t zdd_varcount(const zdd &zdd)
   {
     return varcount(zdd.file);
   }
@@ -20,6 +21,6 @@ namespace adiar
   {
     return is_terminal(zdd)
       ? value_of(zdd)
-      : count<path_count_policy>(zdd, zdd_varcount(zdd));
+      : count<path_count_policy<zdd_policy>>(zdd, zdd_varcount(zdd));
   }
 }

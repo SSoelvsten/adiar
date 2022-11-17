@@ -46,7 +46,7 @@ go_bandit([]() {
      */
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_x0);
-      nw << node(0, MAX_ID, terminal_F, terminal_T);
+      nw << node(0, node::MAX_ID, terminal_F, terminal_T);
     }
 
     // TODO: tests...
@@ -60,7 +60,7 @@ go_bandit([]() {
      */
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_x1_null);
-      nw << node(1, MAX_ID, terminal_T, terminal_T);
+      nw << node(1, node::MAX_ID, terminal_T, terminal_T);
     }
 
     // TODO: tests...
@@ -78,11 +78,11 @@ go_bandit([]() {
               / \/ \
               F T  T
      */
-    const node n1_5 = node(3, MAX_ID,   terminal_T,   terminal_T);
-    const node n1_4 = node(3, MAX_ID-1, terminal_F,   terminal_T);
-    const node n1_3 = node(2, MAX_ID,   n1_4.uid(), n1_5.uid());
-    const node n1_2 = node(1, MAX_ID,   terminal_T,   n1_3.uid());
-    const node n1_1 = node(0, MAX_ID,   n1_2.uid(), n1_3.uid());
+    const node n1_5 = node(3, node::MAX_ID,   terminal_T,   terminal_T);
+    const node n1_4 = node(3, node::MAX_ID-1, terminal_F,   terminal_T);
+    const node n1_3 = node(2, node::MAX_ID,   n1_4.uid(), n1_5.uid());
+    const node n1_2 = node(1, node::MAX_ID,   terminal_T,   n1_3.uid());
+    const node n1_1 = node(0, node::MAX_ID,   n1_2.uid(), n1_3.uid());
 
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_1);
@@ -205,10 +205,10 @@ go_bandit([]() {
              / \/ \
              F T  T
      */
-    const node n2_4 = node(6, MAX_ID,   terminal_T,   terminal_T);
-    const node n2_3 = node(6, MAX_ID-1, terminal_F,   terminal_T);
-    const node n2_2 = node(4, MAX_ID,   n2_3.uid(), n2_4.uid());
-    const node n2_1 = node(2, MAX_ID,   n2_3.uid(), n2_2.uid());
+    const node n2_4 = node(6, node::MAX_ID,   terminal_T,   terminal_T);
+    const node n2_3 = node(6, node::MAX_ID-1, terminal_F,   terminal_T);
+    const node n2_2 = node(4, node::MAX_ID,   n2_3.uid(), n2_4.uid());
+    const node n2_1 = node(2, node::MAX_ID,   n2_3.uid(), n2_2.uid());
 
     { // Garbage collect writers to free write-lock
       node_writer nw(zdd_2);

@@ -288,67 +288,67 @@ go_bandit([]() {
 
     describe("bdd_eval(bdd, assignment_func)", [&]() {
       it("returns F on test BDD with assignment 'l -> l = 3'", [&]() {
-        assignment_func af = [](const label_t l) { return l == 3; };
+        assignment_func af = [](const bdd::label_t l) { return l == 3; };
         AssertThat(bdd_eval(bdd, af), Is().False());
       });
 
       it("returns T on test BDD with assignment 'l -> l % 2 == 0'", [&]() {
-        assignment_func af = [](const label_t l) { return (l & 1u) == 0; };
+        assignment_func af = [](const bdd::label_t l) { return (l & 1u) == 0; };
         AssertThat(bdd_eval(bdd, af), Is().True());
       });
 
       it("returns T on test BDD with assignment 'l -> l > 0'", [&]() {
-        assignment_func af = [](const label_t l) { return l > 0; };
+        assignment_func af = [](const bdd::label_t l) { return l > 0; };
         AssertThat(bdd_eval(bdd, af), Is().True());
       });
 
       it("returns F on test BDD with assignment 'l -> l == 0 || l == 3'", [&]() {
-        assignment_func af = [](const label_t l) { return l == 0 || l == 3; };
+        assignment_func af = [](const bdd::label_t l) { return l == 0 || l == 3; };
         AssertThat(bdd_eval(bdd, af), Is().False());
       });
 
       it("returns F on test BDD with assignment 'l -> l % 2 == 1'", [&]() {
-        assignment_func af = [](const label_t l) { return (l & 1) == 1; };
+        assignment_func af = [](const bdd::label_t l) { return (l & 1) == 1; };
         AssertThat(bdd_eval(bdd, af), Is().False());
       });
 
       it("returns T on test BDD with assignment 'l -> l != 2'", [&]() {
-        assignment_func af = [](const label_t l) { return l != 2; };
+        assignment_func af = [](const bdd::label_t l) { return l != 2; };
         AssertThat(bdd_eval(bdd, af), Is().True());
       });
 
       it("returns F on test BDD with assignment 'l -> l < 3'", [&]() {
-        assignment_func af = [](const label_t l) { return l < 3; };
+        assignment_func af = [](const bdd::label_t l) { return l < 3; };
         AssertThat(bdd_eval(bdd, af), Is().False());
       });
 
       it("returns T on test BDD with assignment '_ -> true'", [&]() {
-        assignment_func af = [](const label_t) { return true; };
+        assignment_func af = [](const bdd::label_t) { return true; };
         AssertThat(bdd_eval(bdd, af), Is().True());
       });
 
       it("returns F on BDD that skips with assignment 'l -> l == 1 || l > 2'", [&]() {
-        assignment_func af = [](const label_t l) { return l == 1 || l > 2; };
+        assignment_func af = [](const bdd::label_t l) { return l == 1 || l > 2; };
         AssertThat(bdd_eval(skip_bdd, af), Is().False());
       });
 
       it("returns F on BDD that skips with assignment 'l -> l != 1 && l < 4'", [&]() {
-        assignment_func af = [](const label_t l) { return l != 1 && l < 4; };
+        assignment_func af = [](const bdd::label_t l) { return l != 1 && l < 4; };
         AssertThat(bdd_eval(skip_bdd, af), Is().False());
       });
 
       it("returns T on BDD with non-zero root with assignment 'l -> l == 1'", [&]() {
-        assignment_func af = [](const label_t l) { return l == 1; };
+        assignment_func af = [](const bdd::label_t l) { return l == 1; };
         AssertThat(bdd_eval(non_zero_bdd, af), Is().True());
       });
 
       it("returns F on F terminal-only BDD with assignment '_ -> true'", [&]() {
-        assignment_func af = [](const label_t) { return true; };
+        assignment_func af = [](const bdd::label_t) { return true; };
         AssertThat(bdd_eval(bdd_F, af), Is().False());
       });
 
       it("returns T on T terminal-only BDD with assignment '_ -> false'", [&]() {
-        assignment_func af = [](const label_t) { return false; };
+        assignment_func af = [](const bdd::label_t) { return false; };
         AssertThat(bdd_eval(bdd_T, af), Is().True());
       });
     });

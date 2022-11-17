@@ -6,6 +6,7 @@
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/tuple.h>
 
 #include <variant>
 
@@ -89,31 +90,37 @@ namespace adiar
   class decision_diagram
   {
     ////////////////////////////////////////////////////////////////////////////
-    // Friends
-    // |- classes
-    friend class __decision_diagram;
+    // Constants
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of nodes of this diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef node node_t;
 
-    template <typename T, bool REVERSE>
-    friend class level_info_stream;
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of pointers of this diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef node_t::ptr_t ptr_t;
 
-    template <bool REVERSE>
-    friend class node_stream;
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of this node's variable label.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef typename node_t::label_t label_t;
 
-    template <typename file_t, typename comp_t, size_t FILES>
-    friend class label_merger;
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief The maximal possible value for a unique identifier's label.
+    //////////////////////////////////////////////////////////////////////////////
+    static constexpr label_t MAX_LABEL = node_t::MAX_LABEL;
 
-    friend bool is_isomorphic(const decision_diagram&, const decision_diagram&);
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of this node's level identifier.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef node_t::id_t id_t;
 
-    template<typename comp_policy>
-    friend bool comparison_check(const decision_diagram &in_1, const decision_diagram &in_2);
-
-    friend bool is_terminal(const decision_diagram &dd);
-    friend bool value_of(const decision_diagram &dd);
-    friend label_t min_label(const decision_diagram &dd);
-    friend label_t max_label(const decision_diagram &dd);
-
-    template<typename to_policy, typename from_policy>
-    friend class convert_decision_diagram_policy;
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief The maximal possible value for this nodes level identifier.
+    //////////////////////////////////////////////////////////////////////////////
+    static constexpr id_t MAX_ID = node_t::MAX_ID;
 
     ////////////////////////////////////////////////////////////////////////////
     // Internal state
@@ -211,6 +218,33 @@ namespace adiar
         return ct;
       }
     }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Friends
+    // |- classes
+    friend class __decision_diagram;
+
+    template <typename T, bool REVERSE>
+    friend class level_info_stream;
+
+    template <bool REVERSE>
+    friend class node_stream;
+
+    template <typename file_t, typename comp_t, size_t FILES>
+    friend class label_merger;
+
+    friend bool is_isomorphic(const decision_diagram&, const decision_diagram&);
+
+    template<typename comp_policy>
+    friend bool comparison_check(const decision_diagram &in_1, const decision_diagram &in_2);
+
+    friend bool is_terminal(const decision_diagram &dd);
+    friend bool value_of(const decision_diagram &dd);
+    friend label_t min_label(const decision_diagram &dd);
+    friend label_t max_label(const decision_diagram &dd);
+
+    template<typename to_policy, typename from_policy>
+    friend class convert_decision_diagram_policy;
   };
 
   inline __decision_diagram::__decision_diagram(const decision_diagram &dd)
@@ -268,7 +302,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
-  inline label_t min_label(const decision_diagram &dd)
+  inline decision_diagram::label_t min_label(const decision_diagram &dd)
   {
     return min_label(dd.file);
   }
@@ -276,10 +310,75 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the maximal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
-  inline label_t max_label(const decision_diagram &dd)
+  inline decision_diagram::label_t max_label(const decision_diagram &dd)
   {
     return max_label(dd.file);
   }
+
+
+  template<typename dd_type, typename __dd_type>
+  class decision_diagram_policy
+  {
+    ////////////////////////////////////////////////////////////////////////////
+    /// Constants
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the class representing the \em reduced decision diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    // TODO: rename to 'dd_t'?
+    typedef dd_type reduced_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the class representing the \em possibly \em unreduced
+    ///        decision diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    // TODO: rename to '__dd_t'?
+    typedef __dd_type unreduced_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Constants
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of nodes of this diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef typename dd_type::node_t node_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of pointers of this diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef typename dd_type::ptr_t ptr_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of this node's variable label.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef typename dd_type::label_t label_t;
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief The maximal possible value for a unique identifier's label.
+    //////////////////////////////////////////////////////////////////////////////
+    static constexpr label_t MAX_LABEL = dd_type::MAX_LABEL;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of this node's level identifier.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef typename dd_type::id_t id_t;
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief The maximal possible value for this nodes level identifier.
+    //////////////////////////////////////////////////////////////////////////////
+    static constexpr id_t MAX_ID = dd_type::MAX_ID;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Function declaration
+  public:
+    static inline ptr_uint64 reduction_rule(const typename dd_type::node_t &n);
+
+    static inline tuple reduction_rule_inv(const typename dd_type::ptr_t &child);
+
+    static inline void compute_cofactor(bool on_curr_level,
+                                        typename dd_type::ptr_t &low,
+                                        typename dd_type::ptr_t &high);
+  };
 }
 
 #endif // ADIAR_INTERNAL_DECISION_DIAGRAM_H
