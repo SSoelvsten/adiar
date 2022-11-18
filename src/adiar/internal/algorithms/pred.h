@@ -116,7 +116,7 @@ namespace adiar
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
                                          comparison_pq_1.top().target.fst() < comparison_pq_2.top().target.snd())) {
         with_data = false;
-        req = { comparison_pq_1.top().target, {{ ptr_uint64::NIL() }} };
+        req = { comparison_pq_1.top().target, {{ ptr_uint64::NIL(), ptr_uint64::NIL() }} };
         comparison_pq_1.pop();
       } else {
         with_data = true;
@@ -143,9 +143,9 @@ namespace adiar
           && !req.target[0].is_terminal() && !req.target[1].is_terminal()
           && req.target[0].label() == req.target[1].label()
           && (v1.uid() != req.target[0] || v2.uid() != req.target[1])) {
-        const node v0 = prod_from_1(req.target[0], req.target[1]) ? v1 : v2;
+        const node v_forwarded = prod_from_1(req.target[0], req.target[1]) ? v1 : v2;
 
-        comparison_pq_2.push({ req.target, {{ v0.low(), v0.high() }} });
+        comparison_pq_2.push({ req.target, { v_forwarded.children() } });
         continue;
       }
 
@@ -157,7 +157,7 @@ namespace adiar
       comp_policy::merge_data(low1,high1, low2,high2,
                               req.target[0], req.target[1], t_seek,
                               v1, v2,
-                              req.children[0][0], req.children[0][1]);
+                              req.node_carry[0][0], req.node_carry[0][1]);
 
       const typename comp_policy::label_t level = t_seek.label();
       comp_policy::compute_cofactor(req.target[0].on_level(level), low1, high1);

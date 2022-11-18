@@ -101,6 +101,18 @@ namespace adiar {
 
   public:
     // Provide other constructors for ease of use
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Initialize a tuple with all elements being the given one.
+    ////////////////////////////////////////////////////////////////////////////
+    tuple(const elem_t &elem) : _elems{elem}
+    {
+      if constexpr (2 <= CARDINALITY) _elems[1] = elem;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Create a 2-ary tuple with the two given elements.
+    ////////////////////////////////////////////////////////////////////////////
     template<typename = std::enable_if_t<CARDINALITY == 2>>
     tuple(const elem_t &elem1, const elem_t &elem2) : _elems{elem1,elem2}
     {
@@ -123,33 +135,15 @@ namespace adiar {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Lexicographical '<='.
-    ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<CARDINALITY == 2>>
-    inline bool operator<= (const tuple &o) const
-    {
-      return this->_elems[0] < o._elems[0]
-        || (this->_elems[0] == o._elems[0] && this->_elems[1] <= o._elems[1]);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief Lexicographical '>'.
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator> (const tuple &o) const
     { return (o < *this); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Lexicographical '>='.
-    ////////////////////////////////////////////////////////////////////////////
-    inline bool operator>= (const tuple &o) const
-    { return (o <= *this); }
-
-    ////////////////////////////////////////////////////////////////////////////
     template<typename = std::enable_if_t<CARDINALITY == 2>>
     inline bool operator== (const tuple &o) const
-    {
-      return this->_elems[0] == o._elems[0] && this->_elems[1] == o._elems[1];
-    }
+    { return this->_elems[0] == o._elems[0] && this->_elems[1] == o._elems[1]; }
 
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator!= (const tuple &o) const
