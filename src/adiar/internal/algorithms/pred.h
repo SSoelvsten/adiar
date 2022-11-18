@@ -40,20 +40,21 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  typedef request<2,0> pred_request_1;
+  template<uint8_t nodes_carried>
+  using pred_request = request<2, false, nodes_carried>;
 
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using comparison_priority_queue_1_t =
-    levelized_node_priority_queue<pred_request_1,
-                                  request_label<pred_request_1>,
-                                  request_fst_lt<pred_request_1>,
+    levelized_node_priority_queue<pred_request<0>,
+                                  request_label<pred_request<0>>,
+                                  request_fst_lt<pred_request<0>>,
                                   LOOK_AHEAD, mem_mode, 2>;
 
-  typedef request<2,1> pred_request_2;
+  typedef request<2, false, 1> pred_request_2;
 
   template<memory::memory_mode mem_mode>
   using comparison_priority_queue_2_t =
-    priority_queue<mem_mode, pred_request_2, request_snd_lt<pred_request_2>>;
+    priority_queue<mem_mode, pred_request<1>, request_snd_lt<pred_request<1>>>;
 
   template<typename comp_policy, typename pq_1_t, typename pq_2_t>
   bool __comparison_check(const node_file &f1, const node_file &f2,
@@ -108,7 +109,6 @@ namespace adiar
         level_checker.next_level(comparison_pq_1.current_level());
       }
 
-      // TODO: merge into request struct
       pred_request_2 req;
       bool with_data;
 
@@ -116,17 +116,20 @@ namespace adiar
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
                                          comparison_pq_1.top().target.fst() < comparison_pq_2.top().target.snd())) {
         with_data = false;
+
         req = { comparison_pq_1.top().target,
                 {{ node::ptr_t::NIL(), node::ptr_t::NIL() }} };
         comparison_pq_1.pop();
       } else {
         with_data = true;
+
         req = comparison_pq_2.top();
         comparison_pq_2.pop();
       }
 
       // Seek request partially in stream
       ptr_uint64 t_seek = with_data ? req.target.snd() : req.target.fst();
+
       while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
         v1 = in_nodes_1.pull();
       }

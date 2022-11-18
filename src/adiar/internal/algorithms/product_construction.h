@@ -31,22 +31,21 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  typedef request_data<2, 0, with_parent> prod_tuple_1;
+  template<uint8_t nodes_carried>
+  using prod2_request = request_data<2, false, nodes_carried, with_parent>;
 
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using prod_priority_queue_1_t =
-    levelized_node_priority_queue<prod_tuple_1,
-                                  request_label<prod_tuple_1>,
-                                  request_fst_lt<prod_tuple_1>,
+    levelized_node_priority_queue<prod2_request<0>,
+                                  request_label<prod2_request<0>>,
+                                  request_data_fst_lt<prod2_request<0>>,
                                   LOOK_AHEAD,
                                   mem_mode,
                                   2>;
 
-  typedef request_data<2, 1, with_parent> prod_tuple_2;
-
   template<memory::memory_mode mem_mode>
   using prod_priority_queue_2_t =
-    priority_queue<mem_mode, prod_tuple_2, request_snd_lt<prod_tuple_2>>;
+    priority_queue<mem_mode, prod2_request<1>, request_data_snd_lt<prod2_request<1>>>;
 
   // TODO: turn into 'tuple<tuple<ptr_uint64>>'
   struct prod_rec_output {
@@ -82,11 +81,11 @@ namespace adiar
                               const extra_arg &ea, ptr_uint64 t1, ptr_uint64 t2)
   {
     while (prod_pq_1.can_pull() && prod_pq_1.top().target[0] == t1 && prod_pq_1.top().target[1] == t2) {
-      out_policy::go(prod_pq_1, aw, ea, prod_pq_1.pull().source);
+      out_policy::go(prod_pq_1, aw, ea, prod_pq_1.pull().data.source);
     }
 
     while (!prod_pq_2.empty() && prod_pq_2.top().target[0] == t1 && prod_pq_2.top().target[1] == t2) {
-      out_policy::go(prod_pq_1, aw, ea, prod_pq_2.top().source);
+      out_policy::go(prod_pq_1, aw, ea, prod_pq_2.top().data.source);
       prod_pq_2.pop();
     }
   }
@@ -288,7 +287,7 @@ namespace adiar
         max_1level_cut = std::max(max_1level_cut, prod_pq_1.size());
       }
 
-      prod_tuple_2 req;
+      prod2_request<1> req;
       bool with_data;
 
       // Merge requests from prod_pq_1 or prod_pq_2
@@ -297,7 +296,7 @@ namespace adiar
         with_data = false;
         req = { prod_pq_1.top().target,
                 {{ node::ptr_t::NIL(), node::ptr_t::NIL() }},
-                {prod_pq_1.top().source} };
+                {prod_pq_1.top().data } };
       } else {
         with_data = true;
         req = prod_pq_2.top();
@@ -325,8 +324,7 @@ namespace adiar
         node v_forwarded = req.target[0] == v1.uid() /*prod_from_1(t1,t2)*/ ? v1 : v2;
 
         while (prod_pq_1.can_pull() && prod_pq_1.top().target == req.target) {
-          const node::ptr_t source = prod_pq_1.pull().source;
-          prod_pq_2.push({ req.target, { v_forwarded.children() }, { source } });
+          prod_pq_2.push({ req.target, { v_forwarded.children() }, prod_pq_1.pull().data });
         }
         continue;
       }
@@ -360,7 +358,7 @@ namespace adiar
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(rec_res);
         if (r[0].is_terminal() && r[1].is_terminal()) {
-          if (req.source.is_nil()) {
+          if (req.data.source.is_nil()) {
             // Skipped in both DAGs all the way from the root until a pair of terminals.
             return prod_terminal(r[0], r[1], op);
           }
