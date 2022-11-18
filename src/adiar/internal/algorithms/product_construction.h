@@ -21,6 +21,7 @@
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
+#include <adiar/internal/data_types/request.h>
 
 namespace adiar
 {
@@ -30,62 +31,22 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct prod_tuple_1
-  {
-    tuple<ptr_uint64> target;
-    ptr_uint64 source;
-  };
-
-  struct prod_tuple_1_lt
-  {
-    bool operator()(const prod_tuple_1 &a, const prod_tuple_1 &b)
-    {
-      return tuple_fst_lt<tuple<ptr_uint64>>()(a.target, b.target)
-#ifndef NDEBUG
-        || (!tuple_fst_lt<tuple<ptr_uint64>>()(b.target, a.target) && a.source < b.source)
-#endif
-        ;
-    }
-  };
-
-  struct prod_tuple_1_label // TODO: remove by generalising to 'request' class
-  {
-    static inline ptr_uint64::label_t label_of(const prod_tuple_1 &t)
-    {
-      return t.target.fst().label();
-    }
-  };
+  typedef request_data<2, 0, with_parent> prod_tuple_1;
 
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using prod_priority_queue_1_t =
-    levelized_node_priority_queue<prod_tuple_1, prod_tuple_1_label,
-                                  prod_tuple_1_lt, LOOK_AHEAD,
+    levelized_node_priority_queue<prod_tuple_1,
+                                  request_label<prod_tuple_1>,
+                                  request_fst_lt<prod_tuple_1>,
+                                  LOOK_AHEAD,
                                   mem_mode,
                                   2>;
 
-  struct prod_tuple_2
-  {
-    tuple<ptr_uint64> target;
-    ptr_uint64 data_low;  // <-- TODO: data array
-    ptr_uint64 data_high; // <-- TODO: data array
-    ptr_uint64 source;
-  };
-
-  struct prod_tuple_2_lt
-  {
-    bool operator()(const prod_tuple_2 &a, const prod_tuple_2 &b)
-    {
-      return tuple_snd_lt<tuple<ptr_uint64>>()(a.target, b.target)
-#ifndef NDEBUG
-        || (!tuple_snd_lt<tuple<ptr_uint64>>()(b.target, a.target) && a.source < b.source)
-#endif
-        ;
-    }
-  };
+  typedef request_data<2, 1, with_parent> prod_tuple_2;
 
   template<memory::memory_mode mem_mode>
   using prod_priority_queue_2_t =
-    priority_queue<mem_mode, prod_tuple_2, prod_tuple_2_lt>;
+    priority_queue<mem_mode, prod_tuple_2, request_snd_lt<prod_tuple_2>>;
 
   // TODO: turn into 'tuple<tuple<ptr_uint64>>'
   struct prod_rec_output {
@@ -111,7 +72,7 @@ namespace adiar
       adiar_debug(source.label() < std::min(target[0], target[1]).label(),
                   "should always push recursion for 'later' level");
 
-      prod_pq_1.push({ target, source });
+      prod_pq_1.push({ target, {}, {source} });
     }
   }
 
@@ -158,7 +119,7 @@ namespace adiar
     static inline void go(pq_1_t &prod_pq_1, arc_writer&,
                           const prod_rec_skipto &r, ptr_uint64 source)
     {
-      prod_pq_1.push({ { r[0], r[1] }, source });
+      prod_pq_1.push({ { r[0], r[1] }, {}, {source} });
     }
   };
 
@@ -305,7 +266,7 @@ namespace adiar
         if (r[0].is_terminal() && r[1].is_terminal()) {
           return prod_terminal(r[0], r[1], op);
         } else {
-          prod_pq_1.push({ { r[0], r[1] }, ptr_uint64::NIL() });
+          prod_pq_1.push({ { r[0], r[1] }, {}, { ptr_uint64::NIL() } });
         }
       }
     }
@@ -327,33 +288,28 @@ namespace adiar
         max_1level_cut = std::max(max_1level_cut, prod_pq_1.size());
       }
 
-      ptr_uint64 source, t1, t2; // TODO: merge t1,t2 in a tuple
-      bool with_data = false;
-      ptr_uint64 data_low = ptr_uint64::NIL(), data_high = ptr_uint64::NIL();
+      prod_tuple_2 req;
+      bool with_data;
 
-      // Merge requests from  prod_pq_1 or prod_pq_2
+      // Merge requests from prod_pq_1 or prod_pq_2
       if (prod_pq_1.can_pull() && (prod_pq_2.empty() ||
                                    prod_pq_1.top().target.fst() < prod_pq_2.top().target.snd())) {
-        source = prod_pq_1.top().source;
-        t1 = prod_pq_1.top().target[0];
-        t2 = prod_pq_1.top().target[1];
+        with_data = false;
+        req = { prod_pq_1.top().target,
+                {{ node::ptr_t::NIL(), node::ptr_t::NIL() }},
+                {prod_pq_1.top().source} };
       } else {
-        source = prod_pq_2.top().source;
-        t1 = prod_pq_2.top().target[0];
-        t2 = prod_pq_2.top().target[1];
-
         with_data = true;
-        data_low = prod_pq_2.top().data_low;
-        data_high = prod_pq_2.top().data_high;
+        req = prod_pq_2.top();
       }
 
-      adiar_invariant(t1.is_terminal() || out_label <= t1.label(),
+      adiar_invariant(req.target[0].is_terminal() || out_label <= req.target[0].label(),
                       "Request should never level-wise be behind current position");
-      adiar_invariant(t2.is_terminal() || out_label <= t2.label(),
+      adiar_invariant(req.target[1].is_terminal() || out_label <= req.target[1].label(),
                       "Request should never level-wise be behind current position");
 
       // Seek request partially in stream
-      ptr_uint64 t_seek = with_data ? snd(t1,t2) : fst(t1,t2);
+      ptr_uint64 t_seek = with_data ? req.target.snd() : req.target.fst();
       while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
         v1 = in_nodes_1.pull();
       }
@@ -362,27 +318,30 @@ namespace adiar
       }
 
       // Forward information across the level
-      if (t1.is_node() && t2.is_node() && t1.label() == t2.label()
-          && !with_data && (v1.uid() != t1 || v2.uid() != t2)) {
-        node v0 = t1 == v1.uid() /*prod_from_1(t1,t2)*/ ? v1 : v2;
+      if (!with_data
+          && req.target[0].is_node() && req.target[1].is_node()
+          && req.target[0].label() == req.target[1].label()
+          && (v1.uid() != req.target[0] || v2.uid() != req.target[1])) {
+        node v_forwarded = req.target[0] == v1.uid() /*prod_from_1(t1,t2)*/ ? v1 : v2;
 
-        while (prod_pq_1.can_pull() && prod_pq_1.top().target[0] == t1 && prod_pq_1.top().target[1] == t2) {
-          source = prod_pq_1.pull().source;
-          prod_pq_2.push({ { t1, t2 }, v0.low(), v0.high(), source });
+        while (prod_pq_1.can_pull() && prod_pq_1.top().target == req.target) {
+          const node::ptr_t source = prod_pq_1.pull().source;
+          prod_pq_2.push({ req.target, { v_forwarded.children() }, { source } });
         }
         continue;
       }
 
       // Resolve current node and recurse
       // remember from above: ptr low1, low2, high1, high2;
+      // TODO: clean up...
       prod_policy::merge_data(low1,high1, low2,high2,
-                              t1, t2, t_seek,
+                              req.target[0], req.target[1], t_seek,
                               v1, v2,
-                              data_low, data_high);
+                              req.node_carry[0][0], req.node_carry[0][1]);
 
       // Resolve request
-      prod_policy::compute_cofactor(t1.on_level(out_label), low1, high1);
-      prod_policy::compute_cofactor(t2.on_level(out_label), low2, high2);
+      prod_policy::compute_cofactor(req.target[0].on_level(out_label), low1, high1);
+      prod_policy::compute_cofactor(req.target[1].on_level(out_label), low2, high2);
 
       prod_rec rec_res = prod_policy::resolve_request(op, low1, low2, high1, high2);
 
@@ -395,18 +354,21 @@ namespace adiar
         prod_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
         prod_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
 
-        prod_recurse_in<prod_recurse_in__output_node>(prod_pq_1, prod_pq_2, aw, out_uid, t1, t2);
+        prod_recurse_in<prod_recurse_in__output_node>(prod_pq_1, prod_pq_2, aw, out_uid,
+                                                      req.target[0], req.target[1]);
 
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(rec_res);
         if (r[0].is_terminal() && r[1].is_terminal()) {
-          if (source.is_nil()) {
+          if (req.source.is_nil()) {
             // Skipped in both DAGs all the way from the root until a pair of terminals.
             return prod_terminal(r[0], r[1], op);
           }
-          prod_recurse_in<prod_recurse_in__output_terminal>(prod_pq_1, prod_pq_2, aw, op(r[0], r[1]), t1, t2);
+          prod_recurse_in<prod_recurse_in__output_terminal>(prod_pq_1, prod_pq_2, aw, op(r[0], r[1]),
+                                                            req.target[0], req.target[1]);
         } else {
-          prod_recurse_in<prod_recurse_in__forward>(prod_pq_1, prod_pq_2, aw, r, t1, t2);
+          prod_recurse_in<prod_recurse_in__forward>(prod_pq_1, prod_pq_2, aw, r,
+                                                    req.target[0], req.target[1]);
         }
       }
     }

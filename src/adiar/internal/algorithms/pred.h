@@ -116,7 +116,8 @@ namespace adiar
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
                                          comparison_pq_1.top().target.fst() < comparison_pq_2.top().target.snd())) {
         with_data = false;
-        req = { comparison_pq_1.top().target, {{ ptr_uint64::NIL(), ptr_uint64::NIL() }} };
+        req = { comparison_pq_1.top().target,
+                {{ node::ptr_t::NIL(), node::ptr_t::NIL() }} };
         comparison_pq_1.pop();
       } else {
         with_data = true;
@@ -140,7 +141,7 @@ namespace adiar
 
       // Forward information across the level
       if (!with_data
-          && !req.target[0].is_terminal() && !req.target[1].is_terminal()
+          && req.target[0].is_node() && req.target[1].is_node()
           && req.target[0].label() == req.target[1].label()
           && (v1.uid() != req.target[0] || v2.uid() != req.target[1])) {
         const node v_forwarded = prod_from_1(req.target[0], req.target[1]) ? v1 : v2;
