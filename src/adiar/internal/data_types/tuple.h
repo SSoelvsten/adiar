@@ -1,9 +1,7 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_TUPLE_H
 #define ADIAR_INTERNAL_DATA_TYPES_TUPLE_H
 
-#include <functional>
-
-#include <adiar/internal/data_types/uid.h>
+#include <adiar/internal/data_types/ptr.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
