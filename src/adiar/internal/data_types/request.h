@@ -7,12 +7,28 @@
 namespace adiar
 {
   // TODO (template): node type, with_source
-  template<uint8_t cardinality = 1, uint8_t children_carried = 0>
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Request struct for the top-down sweep time-forwarding algorithms.
+  ///
+  /// \tparam cardinality   The cardinality of the algorithm, e.g. it is 1 for
+  ///                       `bdd_restrict`, 2 for `bdd_apply` and 3 for
+  ///                       `bdd_ite`.
+  ///
+  /// \tparam nodes_carried Number of children being forwarded with the request.
+  ///                       This is used when `cardinality` is greater than 1
+  ///                       and a per-level priority queue forwards the children
+  ///                       of `target.fst()` to `target.snd()` and so on.
+  //////////////////////////////////////////////////////////////////////////////
+  template<uint8_t cardinality = 1, uint8_t nodes_carried = 0>
   class request
   {
   public:
-    static_assert(children_carried < cardinality,
-                  "'children_carried' ought not to hold more than 'cardinality' number of nodes' children");
+    static_assert(0 < cardinality,
+                  "Request type is not designed for 0-ary algorithms.");
+
+    static_assert(nodes_carried < cardinality,
+                  "'nodes_carried' ought not to hold more than the 'cardinality' of the algorithm");
 
     typedef node::label_t label_t;
 
@@ -24,7 +40,7 @@ namespace adiar
   public:
     target_t target;
 
-    ptr_t children[children_carried][node::OUTDEGREE];
+    node::children_t node_carry[nodes_carried];
 
     /* ============================ CONSTRUCTORS ============================ */
   public:
@@ -35,8 +51,8 @@ namespace adiar
 
     /* ======================== DERIVATED INFORMATION ======================= */
     request(const target_t &t,
-            const ptr_t (& c) [children_carried][node::OUTDEGREE])
-      : target(t), children(c)
+            const node::children_t (& nc) [nodes_carried])
+      : target(t), node_carry(nc)
     { }
   };
 

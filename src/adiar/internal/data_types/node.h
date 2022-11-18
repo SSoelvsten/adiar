@@ -3,6 +3,7 @@
 
 #include<adiar/internal/data_types/ptr.h>
 #include<adiar/internal/data_types/uid.h>
+#include<adiar/internal/data_types/tuple.h>
 
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
@@ -64,12 +65,17 @@ namespace adiar {
     //////////////////////////////////////////////////////////////////////////////
     static constexpr id_t MAX_ID = ptr_t::MAX_ID;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the children tuple.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef tuple<ptr_t, OUTDEGREE> children_t;
+
   private:
     // TODO (Attributed Edges):
     //   Add logic related to flag on children.
 
     uid_t _uid;
-    ptr_uint64 _children[OUTDEGREE];
+    children_t _children;
 
   public:
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
@@ -132,11 +138,15 @@ namespace adiar {
   public:
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
 
+    // TODO (QMDD):
+    //   Add generic version of the two constructors below that takes a
+    //   'children_t' as argument.
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct node `(uid, low, high)`.
     ////////////////////////////////////////////////////////////////////////////
     template<typename = std::enable_if_t<OUTDEGREE == 2>>
-    node(const uid_t u, const ptr_uint64 &l, const ptr_uint64 &h)
+    node(const uid_t u, const ptr_t &l, const ptr_t &h)
       : _uid(u), _children{l, h}
     { }
 
@@ -144,7 +154,7 @@ namespace adiar {
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
     template<typename = std::enable_if_t<OUTDEGREE == 2>>
-    node(const label_t label, const id_t id, const ptr_uint64 &l, const ptr_uint64 &h)
+    node(const label_t label, const id_t id, const ptr_t &l, const ptr_t &h)
       : _uid(label, id), _children{l, h}
     {
       adiar_debug(!l.is_nil(), "Cannot create a node with NIL child");
@@ -160,7 +170,7 @@ namespace adiar {
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
     template<typename = std::enable_if_t<OUTDEGREE == 2>>
-    node(const label_t label, const id_t id, const node &l, const ptr_uint64 &h)
+    node(const label_t label, const id_t id, const node &l, const ptr_t &h)
       : node(label, id, l.uid(), h)
     { }
 
@@ -168,7 +178,7 @@ namespace adiar {
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
     template<typename = std::enable_if_t<OUTDEGREE == 2>>
-    node(const label_t label, const id_t id, const ptr_uint64 &l, const node &h)
+    node(const label_t label, const id_t id, const ptr_t &l, const node &h)
       : node(label, id, l, h.uid())
     { }
 
@@ -212,6 +222,13 @@ namespace adiar {
 
     /* ================================= CHILDREN =========================== */
   public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The node's children sorted based on the semantics of this node.
+    ////////////////////////////////////////////////////////////////////////////
+    // TODO: Change type of _children to 'tuple<ptr_t, OUTDEGREE, false>'
+    inline const children_t& children() const
+    { return _children; }
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The 'low' child (also known as the 'else' child), i.e. reflecting
     ///        assigning `false` to variable with the 'label'.

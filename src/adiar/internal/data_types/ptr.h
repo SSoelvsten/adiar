@@ -9,7 +9,8 @@ namespace adiar {
   // TODO (ADD (32-bit)):
   //   template 'ptr_uint64' with the type of how to interpret the bits of a
   //   terminal. To this end, one wants to use 'std::bit_cast' in the internal
-  //   logic.
+  //   logic. Use 'static_assert' to ensure the desired type indeed fits into
+  //   62 bits of memory.
 
   // TODO (ADD (64-bit)):
   // TODO (10+ TiB Decision Diagrams):
@@ -19,12 +20,14 @@ namespace adiar {
   //   be derived based on 'std::numeric_limits<XXXX_t>::max()'
 
   // TODO (LDD):
-  //   Add the 'number' stored in the node to be part of the unique identifier
-  //   of an internal node.
+  //   add new decorator class for 'ptr' templated with a 'data' struct and use
+  //   it to store the value. Use this as the an alternative type in the
+  //   'node::ptr_t'.
 
   // TODO (QMDD):
-  //   template with 'data' struct (default empty) and use it to store the
-  //   complex-valued weight.
+  //   add new decorator class for 'ptr' templated with a 'data' struct and use
+  //   it to store the complex-valued weight. Use this as the new type for the
+  //   'node::children_t'.
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief A (possibly flagged) unique identifier of a terminal, an internal
@@ -410,6 +413,9 @@ namespace adiar {
   {
     return ~p;
   }
+
+  /* ============================== CONVERSION ============================== */
+  // TODO: Conversion constructor from node
 }
 
 #endif // ADIAR_INTERNAL_DATA_TYPES_PTR_H
