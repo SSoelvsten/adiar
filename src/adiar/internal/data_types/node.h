@@ -92,7 +92,7 @@ namespace adiar {
     /// \brief Construct *terminal* node `(value, NIL, NIL)`.
     ////////////////////////////////////////////////////////////////////////////
     node(const bool value)
-    : _uid(ptr_uint64(value)), _children{ptr_uint64::NIL(), ptr_uint64::NIL()}
+      : _uid(ptr_t(value)), _children(ptr_uint64::NIL(), ptr_uint64::NIL())
     { }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -135,6 +135,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct node `(uid, low, high)`.
     ////////////////////////////////////////////////////////////////////////////
+    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     node(const uid_t u, const ptr_uint64 &l, const ptr_uint64 &h)
       : _uid(u), _children{l, h}
     { }
@@ -142,6 +143,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
+    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     node(const label_t label, const id_t id, const ptr_uint64 &l, const ptr_uint64 &h)
       : _uid(label, id), _children{l, h}
     {
@@ -157,6 +159,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
+    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     node(const label_t label, const id_t id, const node &l, const ptr_uint64 &h)
       : node(label, id, l.uid(), h)
     { }
@@ -164,6 +167,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
+    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     node(const label_t label, const id_t id, const ptr_uint64 &l, const node &h)
       : node(label, id, l, h.uid())
     { }
@@ -171,6 +175,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
+    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     node(const label_t label, const id_t id, const node &l, const node &h)
       : node(label, id, l.uid(), h.uid())
     { }
@@ -211,6 +216,7 @@ namespace adiar {
     /// \brief The 'low' child (also known as the 'else' child), i.e. reflecting
     ///        assigning `false` to variable with the 'label'.
     ////////////////////////////////////////////////////////////////////////////
+    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     inline ptr_uint64 low() const
     { return _children[false]; }
 
@@ -218,6 +224,7 @@ namespace adiar {
     /// \brief The 'high' child (also known as the 'then' child), i.e.
     ///        reflecting assigning `true` to variable with the 'label'.
     ////////////////////////////////////////////////////////////////////////////
+    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     inline ptr_uint64 high() const
     { return _children[true]; }
 
