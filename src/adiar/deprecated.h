@@ -15,7 +15,7 @@ namespace adiar
   /// \brief The maximal possible value for a unique identifier's label.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Use 'bdd::MAX_LABEL' or 'zdd::MAX_LABEL' instead")]]
-  constexpr label_t MAX_LABEL = ptr_uint64::MAX_LABEL;
+  constexpr ptr_uint64::label_t MAX_LABEL = ptr_uint64::MAX_LABEL;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Level identifier.
@@ -27,7 +27,7 @@ namespace adiar
   /// \brief The maximal possible value for a unique identifier's id.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Use 'bdd::MAX_ID' or 'zdd::MAX_ID' instead")]]
-  constexpr id_t MAX_ID = ptr_uint64::MAX_ID;
+  constexpr ptr_uint64::id_t MAX_ID = ptr_uint64::MAX_ID;
 
   /* ======================== SORTING SIMPLE FILES ========================== */
 
@@ -72,7 +72,7 @@ namespace adiar
   /// \brief Extract the level identifier from a uid = (label, id).
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by 'label()' member function in 'adiar/internal/data_types/ptr.h'")]]
-  inline id_t id_of(ptr_uint64 p)
+  inline ptr_uint64::id_t id_of(ptr_uint64 p)
   { return p.id(); }
 
   /* =============== UNIQUE IDENTIFIERS : TERMINAL NODES ==================== */
@@ -102,7 +102,8 @@ namespace adiar
   /// \brief Create the uid = (label, id).
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by constructor in 'adiar/internal/data_types/uid.h'")]]
-  inline __uid<ptr_uint64> create_node_uid(typename uid_uint64::label_t label, id_t id)
+    inline __uid<ptr_uint64> create_node_uid(uid_uint64::label_t label,
+                                             uid_uint64::id_t id)
   { return __uid<ptr_uint64>(label, id); }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -216,14 +217,14 @@ namespace adiar
   /// \brief Obtain the label of a non-terminal node.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by member function 'label' in 'adiar/internal/data_types/node.h'")]]
-  inline bool label_of(const node &n)
+  inline node::label_t label_of(const node &n)
   { return n.label(); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain the id of a non-terminal node.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by member function 'label' in 'adiar/internal/data_types/node.h'")]]
-  inline bool id_of(const node &n)
+  inline node::id_t id_of(const node &n)
   { return n.id(); }
 
   //////////////////////////////////////////////////////////////////////////////
