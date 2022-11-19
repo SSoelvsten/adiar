@@ -1,3 +1,5 @@
+#include "../../../test.h"
+
 go_bandit([]() {
   describe("adiar/internal/convert.h", []() {
     label_file dom_012;

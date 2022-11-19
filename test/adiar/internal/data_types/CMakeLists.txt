@@ -1,0 +1,6 @@
+add_test(adiar-internal-data_types-arc     test_arc.cpp)
+add_test(adiar-internal-data_types-convert test_convert.cpp)
+add_test(adiar-internal-data_types-node    test_node.cpp)
+add_test(adiar-internal-data_types-ptr     test_ptr.cpp)
+add_test(adiar-internal-data_types-tuple   test_tuple.cpp)
+add_test(adiar-internal-data_types-uid     test_uid.cpp)

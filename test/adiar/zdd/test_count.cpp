@@ -1,3 +1,5 @@
+#include "../../test.h"
+
 go_bandit([]() {
   describe("adiar/zdd/count.cpp", [&]() {
     ptr_uint64 terminal_T = ptr_uint64(true);

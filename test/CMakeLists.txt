@@ -1,14 +1,22 @@
-# ============================================================================ #
-# Add main Bandit test file
-add_executable (test_unit test.cpp)
+macro(add_test NAME SOURCE)
+  add_executable (test-${NAME} ${SOURCE})
+
+  # Parse CMake options to executable
+  # TODO
+
+  # Link up with Bandit
+  set(BANDIT_FLAGS "--reporter=info --colorizer=light")
+  target_include_directories (test-${NAME} PRIVATE ${PROJECT_SOURCE_DIR}/external)
+
+  # Link with Adiar
+  target_link_libraries(test-${NAME} adiar)
+endmacro(add_test)
 
 # ============================================================================ #
-# Link up with Bandit
-set(BANDIT_FLAGS "--reporter=info --colorizer=light")
-target_include_directories (test_unit
-PRIVATE
-  ${PROJECT_SOURCE_DIR}/external
-)
+# Add 'test-adiar' target
+add_test(adiar test.cpp)
+target_compile_definitions(test-adiar PRIVATE ADIAR_TEST_PRINT_STATS)
 
-# Link up with adiar source
-target_link_libraries(test_unit adiar)
+# ============================================================================ #
+# Add individual test files
+add_subdirectory (adiar)

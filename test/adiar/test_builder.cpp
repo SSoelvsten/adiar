@@ -1,3 +1,5 @@
+#include "../test.h"
+
 go_bandit([]() {
   describe("adiar/builder.h", []() {
     const ptr_uint64 terminal_T = ptr_uint64(true);

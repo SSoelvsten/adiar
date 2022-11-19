@@ -1,4 +1,4 @@
-#include <adiar/adiar.h>
+#include "../../test.h"
 
 go_bandit([]() {
   describe("adiar/internal/util.h", []() {

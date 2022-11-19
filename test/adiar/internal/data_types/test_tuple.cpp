@@ -1,3 +1,5 @@
+#include "../../../test.h"
+
 go_bandit([]() {
     describe("adiar/internal/data_types/tuple.h", []() {
         describe("tuple<int, 1>", []() {

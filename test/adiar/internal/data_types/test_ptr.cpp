@@ -1,3 +1,5 @@
+#include "../../../test.h"
+
 go_bandit([]() {
   describe("adiar/internal/data_types/ptr_uint64.h", []() {
     describe("NIL", [&](){

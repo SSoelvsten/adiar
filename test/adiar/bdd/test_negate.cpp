@@ -1,3 +1,5 @@
+#include "../../test.h"
+
 go_bandit([]() {
   describe("adiar/bdd/negate.cpp", []() {
     node_file terminal_T_nf;

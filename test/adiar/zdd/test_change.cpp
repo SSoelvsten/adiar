@@ -1,3 +1,5 @@
+#include "../../test.h"
+
 go_bandit([]() {
   describe("adiar/zdd/change.cpp", [&]() {
     node_file zdd_F;

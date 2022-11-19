@@ -1,3 +1,5 @@
+#include "../../test.h"
+
 go_bandit([]() {
   describe("adiar/zdd/subset.cpp", [&]() {
     node_file zdd_F;

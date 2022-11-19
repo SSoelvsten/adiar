@@ -1,3 +1,5 @@
+#include "../../test.h"
+
 go_bandit([]() {
   describe("adiar/zdd/zdd.h", [&]() {
     node_file x0_nf;

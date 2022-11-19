@@ -50,11 +50,11 @@ jobs:
 
     - name: CMake | build unit tests
       working-directory: ${{runner.workspace}}/build
-      run: cmake --build . --target test_unit
+      run: cmake --build . --target test-adiar
 
     - name: Run unit tests
       working-directory: ${{runner.workspace}}/build
-      run: ./test/test_unit --reporter=info --colorizer=light
+      run: ./test/test-adiar --reporter=info --colorizer=light
 
     - name: Generate code coverage report
       working-directory: ${{runner.workspace}}

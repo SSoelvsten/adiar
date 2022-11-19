@@ -1,3 +1,4 @@
+#include "../../../test.h"
 #include <adiar/internal/data_types/convert.h>
 
 go_bandit([]() {
