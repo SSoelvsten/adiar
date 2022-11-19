@@ -1,3 +1,5 @@
+#include "../../test.h"
+
 #include <fstream>
 #include <adiar/internal/dot.h>
 

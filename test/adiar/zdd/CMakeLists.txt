@@ -1,0 +1,13 @@
+add_test(adiar-zdd-binop      test_binop.cpp)
+add_test(adiar-zdd-build      test_build.cpp)
+add_test(adiar-zdd-change     test_change.cpp)
+add_test(adiar-zdd-complement test_complement.cpp)
+add_test(adiar-zdd-contains   test_contains.cpp)
+add_test(adiar-zdd-count      test_count.cpp)
+add_test(adiar-zdd-elem       test_elem.cpp)
+add_test(adiar-zdd-expand     test_expand.cpp)
+add_test(adiar-zdd-pred       test_pred.cpp)
+add_test(adiar-zdd-project    test_project.cpp)
+add_test(adiar-zdd-subset     test_subset.cpp)
+add_test(adiar-zdd-zdd        test_zdd.cpp)
+

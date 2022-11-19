@@ -1,3 +1,5 @@
+#include "../test.h"
+
 go_bandit([]() {
     describe("adiar/bool_op.h", []() {
         const ptr_uint64 terminal_F = ptr_uint64(false);

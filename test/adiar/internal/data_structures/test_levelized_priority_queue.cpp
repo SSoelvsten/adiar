@@ -1,3 +1,5 @@
+#include "../../../test.h"
+
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 
 using namespace adiar;

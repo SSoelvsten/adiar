@@ -1,3 +1,5 @@
+#include "../../../test.h"
+
 go_bandit([]() {
   describe("adiar/internal/reduce.h", [&]() {
     // The reduce<dd_policy> function is used within the constructors of the BDD

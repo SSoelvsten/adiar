@@ -1,3 +1,4 @@
+#include "../../../test.h"
 #include <adiar/internal/algorithms/pred.h>
 
 go_bandit([]() {

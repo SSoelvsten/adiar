@@ -1,3 +1,5 @@
+#include "../../test.h"
+
 go_bandit([]() {
   describe("adiar/bdd/if_then_else.cpp", []() {
     ptr_uint64 terminal_T = ptr_uint64(true);

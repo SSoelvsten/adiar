@@ -1,3 +1,5 @@
+#include "../test.h"
+
 go_bandit([]() {
   describe("adiar/assignment.h", []() {
     describe("assignment_t", [&]() {

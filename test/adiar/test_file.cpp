@@ -1,3 +1,5 @@
+#include "../test.h"
+
 #include <filesystem>
 
 namespace adiar
