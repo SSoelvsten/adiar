@@ -156,6 +156,7 @@ namespace snowhouse
 #include "adiar/internal/data_types/test_uid.cpp"
 #include "adiar/internal/data_types/test_node.cpp"
 #include "adiar/internal/data_types/test_arc.cpp"
+#include "adiar/internal/data_types/test_tuple.cpp"
 #include "adiar/internal/data_types/test_convert.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
