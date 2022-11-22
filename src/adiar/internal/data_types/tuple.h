@@ -166,16 +166,7 @@ namespace adiar {
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  // Priority queue functions
-  template<class tuple_t>
-  struct tuple_label
-  {
-    static inline ptr_uint64::label_t label_of(const tuple_t &t)
-    {
-      return t.fst().label();
-    }
-  };
-
+  // Non-lexicographical comparators
   template<class tuple_t>
   struct tuple_fst_lt
   {
