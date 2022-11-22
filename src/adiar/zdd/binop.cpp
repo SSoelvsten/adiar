@@ -4,7 +4,7 @@
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/algorithms/product_construction.h>
+#include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/data_types/tuple.h>
 
 namespace adiar
@@ -41,7 +41,7 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // ZDD product construction policy
-  class zdd_prod_policy : public zdd_policy, public prod_mixed_level_merger
+  class zdd_prod_policy : public zdd_policy, public prod2_mixed_level_merger
   {
   public:
     static __zdd resolve_same_file(const zdd &zdd_1, const zdd &/* zdd_2 */,
@@ -140,6 +140,6 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_binop(const zdd &A, const zdd &B, const bool_op &op)
   {
-    return product_construction<zdd_prod_policy>(A, B, op);
+    return prod2<zdd_prod_policy>(A, B, op);
   }
 }

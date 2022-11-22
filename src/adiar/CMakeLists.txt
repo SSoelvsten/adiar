@@ -44,7 +44,7 @@ set(HEADERS
   internal/algorithms/count.h
   internal/algorithms/intercut.h
   internal/algorithms/pred.h
-  internal/algorithms/product_construction.h
+  internal/algorithms/prod2.h
   internal/algorithms/quantify.h
   internal/algorithms/reduce.h
   internal/algorithms/substitution.h
@@ -107,7 +107,7 @@ set(SOURCES
   internal/algorithms/count.cpp
   internal/algorithms/intercut.cpp
   internal/algorithms/pred.cpp
-  internal/algorithms/product_construction.cpp
+  internal/algorithms/prod2.cpp
   internal/algorithms/quantify.cpp
   internal/algorithms/reduce.cpp
   internal/algorithms/substitution.cpp

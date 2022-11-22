@@ -8,7 +8,7 @@
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/algorithms/pred.h>
-#include <adiar/internal/algorithms/product_construction.h>
+#include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/algorithms/substitution.h>
 
@@ -28,7 +28,7 @@ namespace adiar
       stats_equality,
       stats_if_else,
       stats_intercut,
-      stats_product_construction,
+      stats_prod2,
       stats_quantify,
       stats_reduce,
       stats_substitute,
@@ -42,7 +42,7 @@ namespace adiar
     stats_if_else = {};
     stats_intercut = {};
     stats_levelized_priority_queue = {};
-    stats_product_construction = {};
+    stats_prod2 = {};
     stats_quantify = {};
     stats_reduce = {};
     stats_substitute = {};
@@ -274,10 +274,10 @@ namespace adiar
 
     indent_level -= 2;
   }
-  void __printstat_product_construction(std::ostream &o)
+  void __printstat_prod2(std::ostream &o)
   {
-    uintwide_t total_runs = stats_product_construction.lpq.total();
-    o << indent << bold_on << label << "Product Construction" << bold_off << total_runs << endl;
+    uintwide_t total_runs = stats_prod2.lpq.total();
+    o << indent << bold_on << label << "Product Construction (2-ary)" << bold_off << total_runs << endl;
 
     indent_level++;
     if (total_runs == 0u) {
@@ -286,7 +286,7 @@ namespace adiar
       return;
     }
 
-    __printstat_alg_base(o, stats_product_construction);
+    __printstat_alg_base(o, stats_prod2);
     indent_level--;
   }
 
@@ -396,7 +396,7 @@ namespace adiar
     __printstat_isomorphism(o);
     o << endl;
 
-    __printstat_product_construction(o);
+    __printstat_prod2(o);
     o << endl;
 
     __printstat_reduce(o);

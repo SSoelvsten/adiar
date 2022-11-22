@@ -6,7 +6,7 @@
 
 #include <adiar/internal/decision_diagram.h>
 
-#include <adiar/internal/algorithms/product_construction.h>
+#include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 
 #include <adiar/internal/data_types/uid.h>
@@ -147,7 +147,7 @@ namespace adiar
           && req.target[0].is_node() && req.target[1].is_node()
           && req.target[0].label() == req.target[1].label()
           && (v1.uid() != req.target[0] || v2.uid() != req.target[1])) {
-        const node v_forwarded = prod_from_1(req.target[0], req.target[1]) ? v1 : v2;
+        const node v_forwarded = req.target[0] == v1.uid() ? v1 : v2;
 
         comparison_pq_2.push({ req.target, { v_forwarded.children() } });
         continue;

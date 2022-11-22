@@ -79,7 +79,7 @@ namespace adiar
   //
   // TODO (Decision Diagrams with other kinds of pointers):
   //   template<class dd_policy>
-  class isomorphism_policy : public prod_same_level_merger,
+  class isomorphism_policy : public prod2_same_level_merger,
                              public decision_diagram_policy<decision_diagram, __decision_diagram>
   {
   public:

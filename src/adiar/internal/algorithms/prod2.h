@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_ALGORITHMS_PRODUCT_CONSTRUCTION_H
-#define ADIAR_INTERNAL_ALGORITHMS_PRODUCT_CONSTRUCTION_H
+#ifndef ADIAR_INTERNAL_ALGORITHMS_PROD2_H
+#define ADIAR_INTERNAL_ALGORITHMS_PROD2_H
 
 #include <variant>
 
@@ -27,7 +27,7 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
-  extern stats_t::product_construction_t stats_product_construction;
+  extern stats_t::prod2_t stats_prod2;
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
@@ -60,9 +60,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   template<typename pq_1_t>
-  inline void prod_recurse_out(pq_1_t &prod_pq_1, arc_writer &aw,
-                               const bool_op &op,
-                               ptr_uint64 source, tuple<ptr_uint64> target)
+  inline void __prod2_recurse_out(pq_1_t &prod_pq_1, arc_writer &aw,
+                                  const bool_op &op,
+                                  ptr_uint64 source, tuple<ptr_uint64> target)
   {
     if (target[0].is_terminal() && target[1].is_terminal()) {
       arc out_arc = { source, op(target[0], target[1]) };
@@ -76,9 +76,9 @@ namespace adiar
   }
 
   template<typename out_policy, typename extra_arg, typename pq_1_t, typename pq_2_t>
-  inline void prod_recurse_in(pq_1_t &prod_pq_1, pq_2_t &prod_pq_2,
-                              arc_writer &aw,
-                              const extra_arg &ea, ptr_uint64 t1, ptr_uint64 t2)
+  inline void __prod2_recurse_in(pq_1_t &prod_pq_1, pq_2_t &prod_pq_2,
+                                 arc_writer &aw,
+                                 const extra_arg &ea, ptr_uint64 t1, ptr_uint64 t2)
   {
     while (prod_pq_1.can_pull() && prod_pq_1.top().target[0] == t1 && prod_pq_1.top().target[1] == t2) {
       out_policy::go(prod_pq_1, aw, ea, prod_pq_1.pull().data.source);
@@ -90,7 +90,7 @@ namespace adiar
     }
   }
 
-  struct prod_recurse_in__output_node
+  struct __prod2_recurse_in__output_node
   {
     template<typename pq_1_t>
     static inline void go(pq_1_t& /*prod_pq_1*/, arc_writer &aw,
@@ -102,7 +102,7 @@ namespace adiar
     }
   };
 
-  struct prod_recurse_in__output_terminal
+  struct __prod2_recurse_in__output_terminal
   {
     template<typename pq_1_t>
     static inline void go(pq_1_t& /*prod_pq_1*/, arc_writer &aw,
@@ -112,7 +112,7 @@ namespace adiar
     }
   };
 
-  struct prod_recurse_in__forward
+  struct __prod2_recurse_in__forward
   {
     template<typename pq_1_t>
     static inline void go(pq_1_t &prod_pq_1, arc_writer&,
@@ -122,19 +122,14 @@ namespace adiar
     }
   };
 
-  inline node_file prod_terminal(ptr_uint64 t1, ptr_uint64 t2, const bool_op &op)
+  inline node_file __prod2_terminal(ptr_uint64 t1, ptr_uint64 t2, const bool_op &op)
   {
     // TODO: Abuse that op(t1,t2) already is a pointer.
     return build_terminal(op(t1,t2).value());
   }
 
-  inline bool prod_from_1(ptr_uint64 t1, ptr_uint64 t2)
-  {
-    return fst(t1,t2) == t1;
-  }
-
   //////////////////////////////////////////////////////////////////////////////
-  class prod_same_level_merger
+  class prod2_same_level_merger
   {
   public:
     static void merge_root(ptr_uint64 &low1, ptr_uint64 &high1, ptr_uint64 &low2, ptr_uint64 &high2,
@@ -162,7 +157,7 @@ namespace adiar
     }
   };
 
-  class prod_mixed_level_merger
+  class prod2_mixed_level_merger
   {
   private:
     static void __merge_root(const node &v, ptr_uint64::label_t level,
@@ -202,7 +197,7 @@ namespace adiar
           high2 = v2.high();
         }
       } else {
-        prod_same_level_merger::merge_data(low1,high1, low2,high2,
+        prod2_same_level_merger::merge_data(low1,high1, low2,high2,
                                            t1, t2, t_seek,
                                            v1, v2,
                                            data_low, data_high);
@@ -212,11 +207,11 @@ namespace adiar
 
   template<typename prod_policy, typename pq_1_t, typename pq_2_t>
   typename prod_policy::unreduced_t
-  __product_construction(const typename prod_policy::reduced_t &in_1,
-                         const typename prod_policy::reduced_t &in_2,
-                         const bool_op &op,
-                         const size_t pq_1_memory, const size_t max_pq_1_size,
-                         const size_t pq_2_memory, const size_t max_pq_2_size)
+  __prod2(const typename prod_policy::reduced_t &in_1,
+          const typename prod_policy::reduced_t &in_2,
+          const bool_op &op,
+          const size_t pq_1_memory, const size_t max_pq_1_size,
+          const size_t pq_2_memory, const size_t max_pq_2_size)
   {
     node_stream<> in_nodes_1(in_1);
     node_stream<> in_nodes_2(in_2);
@@ -236,7 +231,7 @@ namespace adiar
     arc_file out_arcs;
     arc_writer aw(out_arcs);
 
-    pq_1_t prod_pq_1({in_1, in_2}, pq_1_memory, max_pq_1_size, stats_product_construction.lpq);
+    pq_1_t prod_pq_1({in_1, in_2}, pq_1_memory, max_pq_1_size, stats_prod2.lpq);
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process root and create initial recursion requests
@@ -257,13 +252,13 @@ namespace adiar
         prod_rec_output r = std::get<prod_rec_output>(root_rec);
         const uid_t out_uid(out_label, out_id++);
 
-        prod_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
-        prod_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
+        __prod2_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
+        __prod2_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
         prod_rec_skipto r = std::get<prod_rec_skipto>(root_rec);
 
         if (r[0].is_terminal() && r[1].is_terminal()) {
-          return prod_terminal(r[0], r[1], op);
+          return __prod2_terminal(r[0], r[1], op);
         } else {
           prod_pq_1.push({ { r[0], r[1] }, {}, { ptr_uint64::NIL() } });
         }
@@ -321,7 +316,7 @@ namespace adiar
           && req.target[0].is_node() && req.target[1].is_node()
           && req.target[0].label() == req.target[1].label()
           && (v1.uid() != req.target[0] || v2.uid() != req.target[1])) {
-        node v_forwarded = req.target[0] == v1.uid() /*prod_from_1(t1,t2)*/ ? v1 : v2;
+        node v_forwarded = req.target[0] == v1.uid() ? v1 : v2;
 
         while (prod_pq_1.can_pull() && prod_pq_1.top().target == req.target) {
           prod_pq_2.push({ req.target, { v_forwarded.children() }, prod_pq_1.pull().data });
@@ -349,10 +344,10 @@ namespace adiar
         adiar_debug(out_id < prod_policy::MAX_ID, "Has run out of ids");
         const uid_t out_uid(out_label, out_id++);
 
-        prod_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
-        prod_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
+        __prod2_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
+        __prod2_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
 
-        prod_recurse_in<prod_recurse_in__output_node>(prod_pq_1, prod_pq_2, aw, out_uid,
+        __prod2_recurse_in<__prod2_recurse_in__output_node>(prod_pq_1, prod_pq_2, aw, out_uid,
                                                       req.target[0], req.target[1]);
 
       } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
@@ -360,12 +355,12 @@ namespace adiar
         if (r[0].is_terminal() && r[1].is_terminal()) {
           if (req.data.source.is_nil()) {
             // Skipped in both DAGs all the way from the root until a pair of terminals.
-            return prod_terminal(r[0], r[1], op);
+            return __prod2_terminal(r[0], r[1], op);
           }
-          prod_recurse_in<prod_recurse_in__output_terminal>(prod_pq_1, prod_pq_2, aw, op(r[0], r[1]),
+          __prod2_recurse_in<__prod2_recurse_in__output_terminal>(prod_pq_1, prod_pq_2, aw, op(r[0], r[1]),
                                                             req.target[0], req.target[1]);
         } else {
-          prod_recurse_in<prod_recurse_in__forward>(prod_pq_1, prod_pq_2, aw, r,
+          __prod2_recurse_in<__prod2_recurse_in__forward>(prod_pq_1, prod_pq_2, aw, r,
                                                     req.target[0], req.target[1]);
         }
       }
@@ -386,9 +381,9 @@ namespace adiar
   /// product of the maximum i-level cut of both inputs.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy, typename cut, size_t const_size_inc>
-  size_t __prod_ilevel_upper_bound(const typename prod_policy::reduced_t &in_1,
-                                   const typename prod_policy::reduced_t &in_2,
-                                   const bool_op &op)
+  size_t __prod2_ilevel_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                    const typename prod_policy::reduced_t &in_2,
+                                    const bool_op &op)
   {
     // Cuts for left-hand side
     const safe_size_t left_cut_internal = cut::get(in_1, cut_type::INTERNAL);
@@ -414,9 +409,9 @@ namespace adiar
   /// using the max 1 and 2-level cuts and the number of relevant terminals.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
-  size_t __prod_2level_upper_bound(const typename prod_policy::reduced_t &in_1,
-                                   const typename prod_policy::reduced_t &in_2,
-                                   const bool_op &op)
+  size_t __prod2_2level_upper_bound(const typename prod_policy::reduced_t &in_1,
+                                    const typename prod_policy::reduced_t &in_2,
+                                    const bool_op &op)
   {
     // Left-hand side
     const safe_size_t left_2level_cut = in_1.max_2level_cut(cut_type::INTERNAL);
@@ -449,7 +444,7 @@ namespace adiar
   /// in the output.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
-  size_t __prod_ilevel_upper_bound(const typename prod_policy::reduced_t &in_1,
+  size_t __prod2_ilevel_upper_bound(const typename prod_policy::reduced_t &in_1,
                                    const typename prod_policy::reduced_t &in_2,
                                    const bool_op &op)
   {
@@ -510,9 +505,10 @@ namespace adiar
   ///              the product of the two given DAGs.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>
-  typename prod_policy::unreduced_t product_construction(const typename prod_policy::reduced_t &in_1,
-                                                         const typename prod_policy::reduced_t &in_2,
-                                                         const bool_op &op)
+  typename prod_policy::unreduced_t
+  prod2(const typename prod_policy::reduced_t &in_1,
+        const typename prod_policy::reduced_t &in_2,
+        const bool_op &op)
   {
     if (in_1.file_ptr() == in_2.file_ptr()) {
       return prod_policy::resolve_same_file(in_1, in_2, op);
@@ -550,46 +546,46 @@ namespace adiar
     const bool internal_only = memory::mode == memory::INTERNAL;
     const bool external_only = memory::mode == memory::EXTERNAL;
 
-    const size_t pq_1_bound = std::min({__prod_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_1, in_2, op),
-                                        __prod_2level_upper_bound<prod_policy>(in_1, in_2, op),
-                                        __prod_ilevel_upper_bound<prod_policy>(in_1, in_2, op)});
+    const size_t pq_1_bound = std::min({__prod2_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_1, in_2, op),
+                                        __prod2_2level_upper_bound<prod_policy>(in_1, in_2, op),
+                                        __prod2_ilevel_upper_bound<prod_policy>(in_1, in_2, op)});
 
     const size_t max_pq_1_size = internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
 
-    const size_t pq_2_bound = __prod_ilevel_upper_bound<prod_policy, get_1level_cut, 0u>(in_1, in_2, op);
+    const size_t pq_2_bound = __prod2_ilevel_upper_bound<prod_policy, get_1level_cut, 0u>(in_1, in_2, op);
 
     const size_t max_pq_2_size = internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
 
     if(!external_only && max_pq_1_size <= no_lookahead_bound(2)) {
 #ifdef ADIAR_STATS
-      stats_product_construction.lpq.unbucketed++;
+      stats_prod2.lpq.unbucketed++;
 #endif
-      return __product_construction<prod_policy,
-                                    prod_priority_queue_1_t<0, memory::INTERNAL>,
-                                    prod_priority_queue_2_t<memory::INTERNAL>>
+      return __prod2<prod_policy,
+                     prod_priority_queue_1_t<0, memory::INTERNAL>,
+                     prod_priority_queue_2_t<memory::INTERNAL>>
         (in_1, in_2, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_product_construction.lpq.internal++;
+      stats_prod2.lpq.internal++;
 #endif
-      return __product_construction<prod_policy,
-                                    prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>,
-                                    prod_priority_queue_2_t<memory::INTERNAL>>
+      return __prod2<prod_policy,
+                     prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>,
+                     prod_priority_queue_2_t<memory::INTERNAL>>
         (in_1, in_2, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_product_construction.lpq.external++;
+      stats_prod2.lpq.external++;
 #endif
       const size_t pq_1_memory = aux_available_memory / 2;
       const size_t pq_2_memory = pq_1_memory;
 
-      return __product_construction<prod_policy,
-                                    prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::EXTERNAL>,
-                                    prod_priority_queue_2_t<memory::EXTERNAL>>
+      return __prod2<prod_policy,
+                     prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::EXTERNAL>,
+                     prod_priority_queue_2_t<memory::EXTERNAL>>
         (in_1, in_2, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
   }
 }
 
-#endif // ADIAR_INTERNAL_ALGORITHMS_PRODUCT_CONSTRUCTION_H
+#endif // ADIAR_INTERNAL_ALGORITHMS_PROD2_H
