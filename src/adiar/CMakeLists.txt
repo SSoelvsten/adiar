@@ -33,7 +33,7 @@ set(HEADERS
   internal/assert.h
   internal/cnl.h
   internal/cut.h
-  internal/decision_diagram.h
+  internal/dd.h
   internal/dot.h
   internal/memory.h
   internal/util.h

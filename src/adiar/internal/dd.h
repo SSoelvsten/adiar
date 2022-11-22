@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_DECISION_DIAGRAM_H
-#define ADIAR_INTERNAL_DECISION_DIAGRAM_H
+#ifndef ADIAR_INTERNAL_DD_H
+#define ADIAR_INTERNAL_DD_H
 
 #include <adiar/file.h>
 
@@ -12,7 +12,7 @@
 
 namespace adiar
 {
-  class decision_diagram;
+  class dd;
 
   //////////////////////////////////////////////////////////////////////////////
   /// A std::variant is used to distinguish the type of file. This uses
@@ -36,7 +36,7 @@ namespace adiar
   /// In most cases, this should be ignored and will otherwise lead to
   /// exceptions.
   //////////////////////////////////////////////////////////////////////////////
-  class __decision_diagram
+  class __dd
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -54,13 +54,16 @@ namespace adiar
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
-    __decision_diagram() { }
+    __dd()
+    { }
 
-    __decision_diagram(const node_file &f) : _union(f) { }
+    __dd(const node_file &f) : _union(f)
+    { }
 
-    __decision_diagram(const arc_file &f) : _union(f) { }
+    __dd(const arc_file &f) : _union(f)
+    { }
 
-    __decision_diagram(const decision_diagram &dd);
+    __dd(const dd &dd);
 
     ////////////////////////////////////////////////////////////////////////////
     // Accessors
@@ -83,11 +86,13 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// Container for the files that represent a Decision Diagram. To ensure the
-  /// most disk-space is available, try to garbage collect objects of this type
-  /// as quickly as possible and/or minimise the number of lvalues of this type.
+  /// \brief Container for the files that represent a Decision Diagram.
+  ///
+  /// \remark To ensure the most disk-space is available, try to garbage collect
+  ///         objects of this type as quickly as possible and/or minimise the
+  ///         number of lvalues of this type.
   //////////////////////////////////////////////////////////////////////////////
-  class decision_diagram
+  class dd
   {
     ////////////////////////////////////////////////////////////////////////////
     // Constants
@@ -149,11 +154,13 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
   public:
-    decision_diagram(const node_file &f, bool negate = false)
-      : file(f), negate(negate) { }
+    dd(const node_file &f, bool negate = false)
+      : file(f), negate(negate)
+    { }
 
-    decision_diagram(const decision_diagram &dd)
-      : file(dd.file), negate(dd.negate) { }
+    dd(const dd &dd)
+      : file(dd.file), negate(dd.negate)
+    { }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -222,7 +229,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     // Friends
     // |- classes
-    friend class __decision_diagram;
+    friend class __dd;
 
     template <typename T, bool REVERSE>
     friend class level_info_stream;
@@ -233,22 +240,23 @@ namespace adiar
     template <typename file_t, typename comp_t, size_t FILES>
     friend class label_merger;
 
-    friend bool is_isomorphic(const decision_diagram&, const decision_diagram&);
+    friend bool is_isomorphic(const dd&, const dd&);
 
     template<typename comp_policy>
-    friend bool comparison_check(const decision_diagram &in_1, const decision_diagram &in_2);
+    friend bool comparison_check(const dd &in_1, const dd &in_2);
 
-    friend bool is_terminal(const decision_diagram &dd);
-    friend bool value_of(const decision_diagram &dd);
-    friend label_t min_label(const decision_diagram &dd);
-    friend label_t max_label(const decision_diagram &dd);
+    friend bool is_terminal(const dd &dd);
+    friend bool value_of(const dd &dd);
+    friend label_t min_label(const dd &dd);
+    friend label_t max_label(const dd &dd);
 
     template<typename to_policy, typename from_policy>
     friend class convert_decision_diagram_policy;
   };
 
-  inline __decision_diagram::__decision_diagram(const decision_diagram &dd)
-    : _union(dd.file), negate(dd.negate) { };
+  inline __dd::__dd(const dd &dd)
+    : _union(dd.file), negate(dd.negate)
+  { }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Check whether a given decision diagram is canonical, i.e. has the
@@ -262,7 +270,7 @@ namespace adiar
   /// If this is true, then equality checking can be done in a single cheap
   /// linear scan rather than with an *O(N log N)* time-forwarding algorithm.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_canonical(const decision_diagram &dd)
+  inline bool is_canonical(const dd &dd)
   {
     return dd->canonical;
   }
@@ -270,7 +278,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a given decision diagram represents a terminal.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_terminal(const decision_diagram &dd)
+  inline bool is_terminal(const dd &dd)
   {
     return is_terminal(dd.file);
   }
@@ -278,7 +286,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain the terminal's value (if 'is_terminal' is true).
   //////////////////////////////////////////////////////////////////////////////
-  inline bool value_of(const decision_diagram &dd)
+  inline bool value_of(const dd &dd)
   {
     return dd.negate ^ value_of(dd.file);
   }
@@ -286,7 +294,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a given decision diagram represents the false terminal.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_false(const decision_diagram &dd)
+  inline bool is_false(const dd &dd)
   {
     return is_terminal(dd) && !value_of(dd);
   }
@@ -294,7 +302,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a given decision diagram represents the true terminal.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_true(const decision_diagram &dd)
+  inline bool is_true(const dd &dd)
   {
     return is_terminal(dd) && value_of(dd);
   }
@@ -302,7 +310,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
-  inline decision_diagram::label_t min_label(const decision_diagram &dd)
+  inline dd::label_t min_label(const dd &dd)
   {
     return min_label(dd.file);
   }
@@ -310,14 +318,14 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the maximal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
-  inline decision_diagram::label_t max_label(const decision_diagram &dd)
+  inline dd::label_t max_label(const dd &dd)
   {
     return max_label(dd.file);
   }
 
 
   template<typename dd_type, typename __dd_type>
-  class decision_diagram_policy
+  class dd_policy
   {
     ////////////////////////////////////////////////////////////////////////////
     /// Constants
@@ -374,7 +382,6 @@ namespace adiar
     static inline ptr_uint64
     reduction_rule(const typename dd_type::node_t &n);
 
-    // TODO: replace 'tuple' with 2-ary array.
     static inline tuple<ptr_uint64>
     reduction_rule_inv(const typename dd_type::ptr_t &child);
 
@@ -385,4 +392,4 @@ namespace adiar
   };
 }
 
-#endif // ADIAR_INTERNAL_DECISION_DIAGRAM_H
+#endif // ADIAR_INTERNAL_DD_H

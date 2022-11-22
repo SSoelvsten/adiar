@@ -13,7 +13,7 @@
 
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
-#include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/dd.h>
 
 #include <adiar/internal/algorithms/build.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
@@ -501,7 +501,7 @@ namespace adiar
   /// \param op    Binary boolean operator to be applied. See data.h for the
   ///              ones directly provided by Adiar.
   ///
-  /// \return      A class that inherits from __decision_diagram and describes
+  /// \return      A class that inherits from __dd and describes
   ///              the product of the two given DAGs.
   //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy>

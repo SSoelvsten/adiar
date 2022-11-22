@@ -19,18 +19,18 @@
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   // Constructors
-  __bdd::__bdd() : __decision_diagram() { }
-  __bdd::__bdd(const node_file &f) : __decision_diagram(f) { }
-  __bdd::__bdd(const arc_file &f) : __decision_diagram(f) { }
+  __bdd::__bdd() : __dd() { }
+  __bdd::__bdd(const node_file &f) : __dd(f) { }
+  __bdd::__bdd(const arc_file &f) : __dd(f) { }
 
-  __bdd::__bdd(const bdd &dd) : __decision_diagram(dd) { }
+  __bdd::__bdd(const bdd &dd) : __dd(dd) { }
 
-  bdd::bdd(const node_file &f, bool negate) : decision_diagram(f, negate) { }
+  bdd::bdd(const node_file &f, bool negate) : dd(f, negate) { }
 
-  bdd::bdd(const bdd &o) : decision_diagram(o) { }
-  bdd::bdd(bdd &&o) : decision_diagram(o) { }
+  bdd::bdd(const bdd &o) : dd(o) { }
+  bdd::bdd(bdd &&o) : dd(o) { }
 
-  bdd::bdd(__bdd &&o) : decision_diagram(reduce<bdd_policy>(std::forward<__bdd>(o))) { }
+  bdd::bdd(__bdd &&o) : dd(reduce<bdd_policy>(std::forward<__bdd>(o))) { }
 
   bdd::bdd(bool v) : bdd(bdd_terminal(v)) { }
   bdd::bdd() : bdd(false) { }

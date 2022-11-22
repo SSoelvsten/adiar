@@ -12,7 +12,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logic related to being a 'Zero-suppressed' Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
-  typedef decision_diagram_policy<zdd, __zdd> zdd_policy;
+  typedef dd_policy<zdd, __zdd> zdd_policy;
 
   template<>
   inline ptr_uint64

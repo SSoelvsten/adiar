@@ -7,7 +7,7 @@
 
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
-#include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/dd.h>
 #include <adiar/internal/util.h>
 
 namespace adiar {
@@ -21,9 +21,9 @@ namespace adiar {
   ///
   /// \relates zdd
   ///
-  /// \copydoc __decision_diagram
+  /// \copydoc __dd
   //////////////////////////////////////////////////////////////////////////////
-  class __zdd : public __decision_diagram {
+  class __zdd : public __dd {
   public:
     __zdd();
     __zdd(const node_file &f);
@@ -40,7 +40,7 @@ namespace adiar {
   ///
   /// \copydoc decision_diagram
   //////////////////////////////////////////////////////////////////////////////
-  class zdd : public decision_diagram
+  class zdd : public dd
   {
     ////////////////////////////////////////////////////////////////////////////
     // Friends

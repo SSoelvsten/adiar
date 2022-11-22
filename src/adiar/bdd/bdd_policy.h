@@ -12,7 +12,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logic related to being a 'Binary' Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
-  typedef decision_diagram_policy<bdd, __bdd> bdd_policy;
+  typedef dd_policy<bdd, __bdd> bdd_policy;
 
   template<>
   inline ptr_uint64

@@ -99,7 +99,7 @@ namespace adiar
     return false;
   }
 
-  inline bool quantify_has_label(const decision_diagram::label_t label, const decision_diagram &in)
+  inline bool quantify_has_label(const dd::label_t label, const dd &in)
   {
     level_info_stream<node> in_meta(in);
     while(in_meta.can_pull()) {

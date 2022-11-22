@@ -8,7 +8,7 @@
 #include <adiar/file.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/dd.h>
 #include <adiar/internal/memory.h>
 
 #include <adiar/internal/data_types/arc.h>
@@ -218,7 +218,7 @@ namespace adiar
       : meta_file_stream<node, 0, !REVERSE>(file, negate)
     { }
 
-    node_stream(const decision_diagram &dd)
+    node_stream(const dd &dd)
       : meta_file_stream<node, 0, !REVERSE>(dd.file, dd.negate)
     { }
   };
@@ -350,7 +350,7 @@ namespace adiar
     //////////////////////////////////////////////////////////////////////////////
     /// Access the level information stream of a decision diagram.
     //////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const decision_diagram &dd)
+    level_info_stream(const dd &dd)
       : level_info_stream(dd.file)
     { }
 
@@ -358,7 +358,7 @@ namespace adiar
     //////////////////////////////////////////////////////////////////////////////
     /// For unit testing only!
     //////////////////////////////////////////////////////////////////////////////
-    meta_file<T> __obtain_file(const __decision_diagram &dd)
+    meta_file<T> __obtain_file(const __dd &dd)
     {
       if constexpr (std::is_same<node, T>::value) {
         return dd.get<node_file>();
@@ -373,7 +373,7 @@ namespace adiar
     ///
     /// Access to level information of an unreduced decision diagram.
     //////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const __decision_diagram &dd)
+    level_info_stream(const __dd &dd)
       : level_info_stream(__obtain_file(dd))
     { }
 

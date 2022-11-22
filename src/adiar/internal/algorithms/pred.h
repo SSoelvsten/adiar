@@ -4,7 +4,7 @@
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 
-#include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/dd.h>
 
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
@@ -36,7 +36,7 @@ namespace adiar
   bool is_isomorphic(const node_file &f1, const node_file &f2,
                      bool negate1 = false, bool negate2 = false);
 
-  bool is_isomorphic(const decision_diagram &a, const decision_diagram &b);
+  bool is_isomorphic(const dd &a, const dd &b);
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
@@ -276,7 +276,7 @@ namespace adiar
   }
 
   template<typename comp_policy>
-  bool comparison_check(const decision_diagram &a, const decision_diagram &b)
+  bool comparison_check(const dd &a, const dd &b)
   {
     return comparison_check<comp_policy>(a.file, b.file, a.negate, b.negate);
   }

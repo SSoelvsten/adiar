@@ -12,7 +12,7 @@
 #include <adiar/file.h>
 #include <adiar/file_stream.h>
 
-#include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/dd.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
 
@@ -104,7 +104,7 @@ namespace adiar {
       }
     }
 
-    void hook(const decision_diagram (&dds) [FILES])
+    void hook(const dd (&dds) [FILES])
     {
       for (size_t idx = 0u; idx < FILES; idx++) {
         _label_streams[idx] = std::make_unique<stream_t>(dds[idx].file);
@@ -490,7 +490,7 @@ namespace adiar {
     ///
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const decision_diagram (& dds) [FILES],
+    levelized_priority_queue(const dd (& dds) [FILES],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)
@@ -1136,7 +1136,7 @@ namespace adiar {
     ///
     /// \param memory_given Total amount of memory to use
     ////////////////////////////////////////////////////////////////////////////
-    levelized_priority_queue(const decision_diagram (& /*dds*/) [FILES],
+    levelized_priority_queue(const dd (& /*dds*/) [FILES],
                              tpie::memory_size_type memory_given,
                              size_t max_size,
                              stats_t::levelized_priority_queue_t &stats)

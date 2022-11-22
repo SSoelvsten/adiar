@@ -1,7 +1,7 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_CONVERT_H
 #define ADIAR_INTERNAL_ALGORITHMS_CONVERT_H
 
-#include<adiar/internal/decision_diagram.h>
+#include<adiar/internal/dd.h>
 
 #include<adiar/internal/algorithms/intercut.h>
 
@@ -13,10 +13,10 @@ namespace adiar
   template<typename to_policy, typename from_policy>
   class convert_decision_diagram_policy
   {
-    static_assert(std::is_base_of<decision_diagram,   typename from_policy::reduced_t>::value);
-    static_assert(std::is_base_of<__decision_diagram, typename from_policy::unreduced_t>::value);
-    static_assert(std::is_base_of<decision_diagram,   typename to_policy::reduced_t>::value);
-    static_assert(std::is_base_of<__decision_diagram, typename to_policy::unreduced_t>::value);
+    static_assert(std::is_base_of<dd,   typename from_policy::reduced_t>::value);
+    static_assert(std::is_base_of<__dd, typename from_policy::unreduced_t>::value);
+    static_assert(std::is_base_of<dd,   typename to_policy::reduced_t>::value);
+    static_assert(std::is_base_of<__dd, typename to_policy::unreduced_t>::value);
 
   public:
     typedef typename from_policy::reduced_t reduced_t;
