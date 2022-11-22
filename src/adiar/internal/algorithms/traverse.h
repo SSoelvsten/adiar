@@ -7,7 +7,7 @@
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
 
-namespace adiar
+namespace adiar::internal
 {
   template<typename dd_t, typename traverse_visitor>
   void traverse(const dd_t &dd, traverse_visitor &visitor)

@@ -12,10 +12,10 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logic related to being a 'Zero-suppressed' Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
-  typedef dd_policy<zdd, __zdd> zdd_policy;
+  typedef internal::dd_policy<zdd, __zdd> zdd_policy;
 
   template<>
-  inline ptr_uint64
+  inline zdd::ptr_t
   zdd_policy::reduction_rule(const node &n)
   {
     if (n.high().is_false()) { return n.low(); }
@@ -23,17 +23,17 @@ namespace adiar
   }
 
   template<>
-  inline tuple<ptr_uint64>
-  zdd_policy::reduction_rule_inv(const ptr_uint64 &child)
+  inline internal::tuple<zdd::ptr_t>
+  zdd_policy::reduction_rule_inv(const zdd::ptr_t &child)
   {
-    return { child, ptr_uint64(false) };
+    return { child, zdd::ptr_t(false) };
   }
 
   template<>
   inline void
-  zdd_policy::compute_cofactor(bool on_curr_level, ptr_uint64 &, ptr_uint64 &high)
+  zdd_policy::compute_cofactor(bool on_curr_level, zdd::ptr_t &, zdd::ptr_t &high)
   {
-    if (!on_curr_level) { high = ptr_uint64(false); }
+    if (!on_curr_level) { high = zdd::ptr_t(false); }
   }
 }
 

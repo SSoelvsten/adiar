@@ -18,25 +18,38 @@
 #include <adiar/zdd/zdd_policy.h>
 #include <adiar/bdd/bdd_policy.h>
 
-namespace adiar {
+namespace adiar
+{
   //////////////////////////////////////////////////////////////////////////////
   // Constructors
-  __zdd::__zdd() : __dd() { }
+  __zdd::__zdd() : internal::__dd()
+  { }
 
-  __zdd::__zdd(const node_file &f) : __dd(f) { }
-  __zdd::__zdd(const arc_file &f) : __dd(f) { }
+  __zdd::__zdd(const node_file &f) : internal::__dd(f)
+  { }
 
-  __zdd::__zdd(const zdd &dd) : __dd(dd) { }
+  __zdd::__zdd(const arc_file &f) : internal::__dd(f)
+  { }
 
-  zdd::zdd(const node_file &f, bool negate) : dd(f, negate) { }
+  __zdd::__zdd(const zdd &dd) : internal::__dd(dd)
+  { }
 
-  zdd::zdd() : zdd(zdd_empty()) { }
-  zdd::zdd(bool v) : zdd(zdd_terminal(v)) { }
+  zdd::zdd(const node_file &f, bool negate) : internal::dd(f, negate)
+  { }
 
-  zdd::zdd(const zdd &o) : dd(o) { }
-  zdd::zdd(zdd &&o) : dd(o) { }
+  zdd::zdd() : zdd(zdd_empty())
+  { }
 
-  zdd::zdd(__zdd &&o) : dd(reduce<zdd_policy>(std::forward<__zdd>(o))) { }
+  zdd::zdd(bool v) : zdd(zdd_terminal(v))
+  { }
+
+  zdd::zdd(const zdd &o) : internal::dd(o)
+  { }
+
+  zdd::zdd(zdd &&o) : internal::dd(o)
+  { }
+
+  zdd::zdd(__zdd &&o) : internal::dd(internal::reduce<zdd_policy>(std::forward<__zdd>(o))) { }
 
   //////////////////////////////////////////////////////////////////////////////
   // Operators
@@ -74,7 +87,7 @@ namespace adiar {
   zdd& zdd::operator= (__zdd &&other)
   {
     free();
-    return (*this = reduce<zdd_policy>(std::forward<__zdd>(other)));
+    return (*this = internal::reduce<zdd_policy>(std::forward<__zdd>(other)));
   }
 
   __zdd operator~ (const zdd &A)
@@ -176,24 +189,24 @@ namespace adiar {
   // Conversion
   __zdd zdd_from(const bdd &f, const label_file &dom)
   {
-    return intercut<convert_decision_diagram_policy<zdd_policy, bdd_policy>>(f, dom);
+    return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>(f, dom);
   }
 
   __zdd zdd_from(const bdd &f)
   {
     const label_file dom = adiar_get_domain();
-    return intercut<convert_decision_diagram_policy<zdd_policy, bdd_policy>>(f, dom);
+    return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>(f, dom);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Debug
   void zdd_printdot(const zdd &A, std::ostream &out)
   {
-    output_dot<zdd>(A, out);
+    internal::output_dot<zdd>(A, out);
   }
 
   void zdd_printdot(const zdd &A, const std::string &file_name)
   {
-    output_dot<zdd>(A, file_name);
+    internal::output_dot<zdd>(A, file_name);
   }
 }

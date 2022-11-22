@@ -23,7 +23,7 @@
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/data_types/request.h>
 
-namespace adiar
+namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
@@ -48,14 +48,14 @@ namespace adiar
     priority_queue<mem_mode, prod2_request<1>, request_data_snd_lt<prod2_request<1>>>;
 
   // TODO: turn into 'tuple<tuple<ptr_uint64>>'
-  struct prod_rec_output {
+  struct prod2_rec_output {
     tuple<ptr_uint64> low;
     tuple<ptr_uint64> high;
   };
 
-  typedef tuple<ptr_uint64> prod_rec_skipto;
+  typedef tuple<ptr_uint64> prod2_rec_skipto;
 
-  typedef std::variant<prod_rec_output, prod_rec_skipto> prod_rec;
+  typedef std::variant<prod2_rec_output, prod2_rec_skipto> prod2_rec;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
@@ -116,7 +116,7 @@ namespace adiar
   {
     template<typename pq_1_t>
     static inline void go(pq_1_t &prod_pq_1, arc_writer&,
-                          const prod_rec_skipto &r, ptr_uint64 source)
+                          const prod2_rec_skipto &r, ptr_uint64 source)
     {
       prod_pq_1.push({ { r[0], r[1] }, {}, {source} });
     }
@@ -246,16 +246,16 @@ namespace adiar
       prod_policy::compute_cofactor(v1.on_level(out_label), low1, high1);
       prod_policy::compute_cofactor(v2.on_level(out_label), low2, high2);
 
-      prod_rec root_rec = prod_policy::resolve_request(op, low1, low2, high1, high2);
+      prod2_rec root_rec = prod_policy::resolve_request(op, low1, low2, high1, high2);
 
-      if (std::holds_alternative<prod_rec_output>(root_rec)) {
-        prod_rec_output r = std::get<prod_rec_output>(root_rec);
+      if (std::holds_alternative<prod2_rec_output>(root_rec)) {
+        prod2_rec_output r = std::get<prod2_rec_output>(root_rec);
         const uid_t out_uid(out_label, out_id++);
 
         __prod2_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
         __prod2_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
-      } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
-        prod_rec_skipto r = std::get<prod_rec_skipto>(root_rec);
+      } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
+        prod2_rec_skipto r = std::get<prod2_rec_skipto>(root_rec);
 
         if (r[0].is_terminal() && r[1].is_terminal()) {
           return __prod2_terminal(r[0], r[1], op);
@@ -336,10 +336,10 @@ namespace adiar
       prod_policy::compute_cofactor(req.target[0].on_level(out_label), low1, high1);
       prod_policy::compute_cofactor(req.target[1].on_level(out_label), low2, high2);
 
-      prod_rec rec_res = prod_policy::resolve_request(op, low1, low2, high1, high2);
+      prod2_rec rec_res = prod_policy::resolve_request(op, low1, low2, high1, high2);
 
-      if (prod_policy::no_skip || std::holds_alternative<prod_rec_output>(rec_res)) {
-        prod_rec_output r = std::get<prod_rec_output>(rec_res);
+      if (prod_policy::no_skip || std::holds_alternative<prod2_rec_output>(rec_res)) {
+        prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
 
         adiar_debug(out_id < prod_policy::MAX_ID, "Has run out of ids");
         const uid_t out_uid(out_label, out_id++);
@@ -350,8 +350,8 @@ namespace adiar
         __prod2_recurse_in<__prod2_recurse_in__output_node>(prod_pq_1, prod_pq_2, aw, out_uid,
                                                       req.target[0], req.target[1]);
 
-      } else { // std::holds_alternative<prod_rec_skipto>(root_rec)
-        prod_rec_skipto r = std::get<prod_rec_skipto>(rec_res);
+      } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
+        prod2_rec_skipto r = std::get<prod2_rec_skipto>(rec_res);
         if (r[0].is_terminal() && r[1].is_terminal()) {
           if (req.data.source.is_nil()) {
             // Skipped in both DAGs all the way from the root until a pair of terminals.

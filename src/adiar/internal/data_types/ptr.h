@@ -5,7 +5,8 @@
 
 #include<adiar/internal/assert.h>
 
-namespace adiar {
+namespace adiar::internal
+{
   // TODO (ADD (32-bit)):
   //   template 'ptr_uint64' with the type of how to interpret the bits of a
   //   terminal. To this end, one wants to use 'std::bit_cast' in the internal

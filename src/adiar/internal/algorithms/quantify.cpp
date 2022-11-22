@@ -1,5 +1,6 @@
 #include "quantify.h"
 
-namespace adiar {
+namespace adiar::internal
+{
   stats_t::quantify_t stats_quantify;
 }

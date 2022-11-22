@@ -35,25 +35,25 @@ namespace adiar
     }
     // LCOV_EXCL_END
 
-    static inline intercut_rec hit_existing(const node &/*n*/)
+    static inline internal::intercut_rec hit_existing(const zdd::node_t &/*n*/)
     {
       // The user should NOT have supplied a label that hits any existing nodes.
       adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
-    static inline intercut_rec_output hit_cut(const ptr_uint64 target)
+    static inline internal::intercut_rec_output hit_cut(const zdd::ptr_t target)
     {
-      return intercut_rec_output { target, target };
+      return internal::intercut_rec_output { target, target };
     }
 
-    static inline intercut_rec_output miss_existing(const node &n)
+    static inline internal::intercut_rec_output miss_existing(const zdd::node_t &n)
     {
-      return intercut_rec_output { n.low(), n.high() };
+      return internal::intercut_rec_output { n.low(), n.high() };
     }
   };
 
   __zdd zdd_expand(const zdd &dd, const label_file &labels)
   {
-    return intercut<zdd_expand_policy>(dd, labels);
+    return internal::intercut<zdd_expand_policy>(dd, labels);
   }
 }

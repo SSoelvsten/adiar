@@ -9,7 +9,7 @@
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
 
-namespace adiar
+namespace adiar::internal
 {
   inline node_file build_terminal(bool value)
   {

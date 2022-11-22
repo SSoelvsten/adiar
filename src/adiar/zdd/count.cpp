@@ -21,6 +21,6 @@ namespace adiar
   {
     return is_terminal(zdd)
       ? value_of(zdd)
-      : count<path_count_policy<zdd_policy>>(zdd, zdd_varcount(zdd));
+      : internal::count<internal::path_count_policy<zdd_policy>>(zdd, zdd_varcount(zdd));
   }
 }

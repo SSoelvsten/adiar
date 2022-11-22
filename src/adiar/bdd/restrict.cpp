@@ -18,18 +18,17 @@ namespace adiar
   class bdd_restrict_policy : public bdd_policy
   {
   public:
-    static substitute_rec keep_node(const node &n, substitute_assignment_act &/*amgr*/)
-    { return substitute_rec_output { n }; }
+    static internal::substitute_rec keep_node(const bdd::node_t &n, internal::substitute_assignment_act &/*amgr*/)
+    { return internal::substitute_rec_output { n }; }
 
-    static substitute_rec fix_false(const node &n, substitute_assignment_act &/*amgr*/)
-    { return substitute_rec_skipto { n.low() }; }
+    static internal::substitute_rec fix_false(const bdd::node_t &n, internal::substitute_assignment_act &/*amgr*/)
+    { return internal::substitute_rec_skipto { n.low() }; }
 
-    static substitute_rec fix_true(const node &n, substitute_assignment_act &/*amgr*/)
-    { return substitute_rec_skipto { n.high() }; }
+    static internal::substitute_rec fix_true(const bdd::node_t &n, internal::substitute_assignment_act &/*amgr*/)
+    { return internal::substitute_rec_skipto { n.high() }; }
 
   public:
-    static inline bdd terminal(bool terminal_val,
-                           substitute_assignment_act &/*amgr*/)
+    static inline bdd terminal(bool terminal_val, internal::substitute_assignment_act &/*amgr*/)
     { return bdd_terminal(terminal_val); }
   };
 
@@ -38,11 +37,11 @@ namespace adiar
   {
     if (a.size() == 0
         || is_terminal(dd)
-        || disjoint_labels<assignment_file, assignment_stream<>>(a, dd)) {
+        || internal::disjoint_labels<assignment_file, assignment_stream<>>(a, dd)) {
       return dd;
     }
 
-    substitute_assignment_act amgr(a);
-    return substitute<bdd_restrict_policy>(dd, amgr);
+    internal::substitute_assignment_act amgr(a);
+    return internal::substitute<bdd_restrict_policy>(dd, amgr);
   }
 }

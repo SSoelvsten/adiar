@@ -29,9 +29,9 @@ namespace adiar
     {
       return terminal_value
         // The entire universe minus Ø
-        ? build_chain<false, true, true, false, true>(universe)
+        ? internal::build_chain<false, true, true, false, true>(universe)
         // The entire universe
-        : build_chain<true, true, true, true, true>(universe);
+        : internal::build_chain<true, true, true, true, true>(universe);
     }
 
     // LCOV_EXCL_START
@@ -45,39 +45,39 @@ namespace adiar
     // Yet, this is only 2 nodes that we can kill; that is 4 arcs. This is 32
     // bytes of data and very few computation cycles. For very large cases the
     // shortcutting in branch-prediction probably offsets this?
-    static intercut_rec_output hit_existing(const node &n)
+    static internal::intercut_rec_output hit_existing(const zdd::node_t &n)
     {
-      const ptr_uint64 low = n.low().is_terminal() ? negate(n.low()) : n.low();
-      const ptr_uint64 high = n.high().is_terminal() ? negate(n.high()) : n.high();
+      const zdd::ptr_t low = n.low().is_terminal() ? negate(n.low()) : n.low();
+      const zdd::ptr_t high = n.high().is_terminal() ? negate(n.high()) : n.high();
 
-      return intercut_rec_output { low, high };
+      return internal::intercut_rec_output { low, high };
     }
 
-    static intercut_rec_output hit_cut(const ptr_uint64 target)
+    static internal::intercut_rec_output hit_cut(const zdd::ptr_t target)
     {
       // T chain: We are definitely outside of the given set
       if (target.is_true()) {
-        return intercut_rec_output { target, target };
+        return internal::intercut_rec_output { target, target };
       }
 
       // Otherwise, check whether this variable is true and so we move to the T chain
-      return intercut_rec_output { target, ptr_uint64(true) };
+      return internal::intercut_rec_output { target, zdd::ptr_t(true) };
     }
 
     // LCOV_EXCL_START
-    static intercut_rec_output miss_existing(const node &/*n*/)
+    static internal::intercut_rec_output miss_existing(const zdd::node_t &/*n*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_END
   };
 
   __zdd zdd_complement(const zdd &dd, const label_file &universe)
   {
-    return intercut<zdd_complement_policy>(dd, universe);
+    return internal::intercut<zdd_complement_policy>(dd, universe);
   }
 
   __zdd zdd_complement(const zdd &dd)
   {
     const label_file universe = adiar_get_domain();
-    return intercut<zdd_complement_policy>(dd, universe);
+    return internal::intercut<zdd_complement_policy>(dd, universe);
   }
 }

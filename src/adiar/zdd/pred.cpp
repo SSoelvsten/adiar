@@ -6,14 +6,15 @@
 #include <adiar/internal/algorithms/pred.h>
 #include <adiar/internal/algorithms/prod2.h>
 
-namespace adiar {
+namespace adiar
+{
   bool zdd_equal(const zdd &s1, const zdd &s2)
   {
-    return is_isomorphic(s2, s1);
+    return internal::is_isomorphic(s2, s1);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  template<cut_type ct_1, cut_type ct_2>
+  template<internal::cut_type ct_1, internal::cut_type ct_2>
   class ignore_levels
   {
   public:
@@ -51,10 +52,10 @@ namespace adiar {
     static constexpr bool termination_value = false;
   };
 
-  class zdd_subseteq_policy : public zdd_policy, public prod2_mixed_level_merger
+  class zdd_subseteq_policy : public zdd_policy, public internal::prod2_mixed_level_merger
   {
   public:
-    typedef ignore_levels<cut_type::INTERNAL_TRUE, cut_type::INTERNAL_TRUE> level_check_t;
+    typedef ignore_levels<internal::cut_type::INTERNAL_TRUE, internal::cut_type::INTERNAL_TRUE> level_check_t;
 
   public:
     static constexpr size_t lookahead_bound()
@@ -63,7 +64,7 @@ namespace adiar {
     }
 
   public:
-    static bool resolve_terminals(const node &v1, const node &v2, bool &ret_value)
+    static bool resolve_terminals(const zdd::node_t &v1, const zdd::node_t &v2, bool &ret_value)
     {
       if (v1.is_terminal() && v2.is_terminal()) {
         ret_value = !v1.value() || v2.value();
@@ -79,7 +80,7 @@ namespace adiar {
     }
 
   public:
-    static bool resolve_singletons(const node &v1, const node &v2)
+    static bool resolve_singletons(const zdd::node_t &v1, const zdd::node_t &v2)
     {
       return v1.label() == v2.label()
         && v1.low() <= v2.low() && v1.high() <= v2.high();
@@ -87,7 +88,7 @@ namespace adiar {
 
   public:
     template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, ptr_uint64 r1, ptr_uint64 r2)
+    static bool resolve_request(pq_1_t &pq, zdd::ptr_t r1, zdd::ptr_t r2)
     {
       // Are they both a terminal? If so, check whether the left-hand side is true
       // and not the right, which would contradict being an implication (i.e.
@@ -122,14 +123,14 @@ namespace adiar {
       return true;
     }
 
-    return comparison_check<zdd_subseteq_policy>(s1, s2);
+    return internal::comparison_check<zdd_subseteq_policy>(s1, s2);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class zdd_disjoint_policy : public zdd_policy, public prod2_mixed_level_merger
+  class zdd_disjoint_policy : public zdd_policy, public internal::prod2_mixed_level_merger
   {
   public:
-    typedef ignore_levels<cut_type::ALL, cut_type::ALL> level_check_t;
+    typedef ignore_levels<internal::cut_type::ALL, internal::cut_type::ALL> level_check_t;
 
   public:
     static constexpr size_t lookahead_bound()
@@ -138,14 +139,14 @@ namespace adiar {
     }
 
   public:
-    static bool resolve_terminals(const node &v1, const node &v2, bool &ret_value)
+    static bool resolve_terminals(const zdd::node_t &v1, const zdd::node_t &v2, bool &ret_value)
     {
       ret_value = v1.is_false() || v2.is_false();
       return (v1.is_terminal() && v2.is_terminal()) || ret_value;
     }
 
   public:
-    static bool resolve_singletons(const node &v1, const node &v2)
+    static bool resolve_singletons(const zdd::node_t &v1, const zdd::node_t &v2)
     {
       return v1.label() != v2.label()
         || v1.low() != v2.low()
@@ -154,7 +155,7 @@ namespace adiar {
 
   public:
   template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, ptr_uint64 r1, ptr_uint64 r2)
+    static bool resolve_request(pq_1_t &pq, zdd::ptr_t r1, zdd::ptr_t r2)
     {
       // Are they both a terminal? If so, check whether they both are true, which
       // verify there is a satisfiying conjunction (i.e. representing a shared
@@ -189,6 +190,6 @@ namespace adiar {
       return is_false(s1);
     }
 
-    return comparison_check<zdd_disjoint_policy>(s1, s2);
+    return internal::comparison_check<zdd_disjoint_policy>(s1, s2);
   }
 }

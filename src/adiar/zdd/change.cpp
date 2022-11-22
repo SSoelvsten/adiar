@@ -32,29 +32,28 @@ namespace adiar
       return zdd_terminal(terminal_value);
     }
 
-    static intercut_rec hit_existing(const node &n)
+    static internal::intercut_rec hit_existing(const zdd::node_t &n)
     {
       if (n.low().is_false()) {
-        return intercut_rec_skipto { n.high() };
+        return internal::intercut_rec_skipto { n.high() };
       }
 
-      return intercut_rec_output { n.high(), n.low() };
+      return internal::intercut_rec_output { n.high(), n.low() };
     }
 
-    static intercut_rec_output hit_cut(const ptr_uint64 target)
+    static internal::intercut_rec_output hit_cut(const zdd::ptr_t target)
     {
-      return intercut_rec_output { ptr_uint64(false), target };
+      return internal::intercut_rec_output { zdd::ptr_t(false), target };
     }
 
-    static intercut_rec_output miss_existing(const node &n)
+    static internal::intercut_rec_output miss_existing(const zdd::node_t &n)
     {
-      return intercut_rec_output { n.low(), n.high() };
+      return internal::intercut_rec_output { n.low(), n.high() };
     }
   };
 
-
   __zdd zdd_change(const zdd &dd, const label_file &labels)
   {
-    return intercut<zdd_change_policy>(dd, labels);
+    return internal::intercut<zdd_change_policy>(dd, labels);
   }
 }

@@ -21,7 +21,8 @@
 
 #include <adiar/statistics.h>
 
-namespace adiar {
+namespace adiar::internal
+{
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Defines at compile time the type of the file stream to use for
   ///        reading the levels from some file(s).

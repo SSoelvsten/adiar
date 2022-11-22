@@ -6,7 +6,8 @@
 #include<adiar/internal/assert.h>
 #include<adiar/internal/data_types/ptr.h>
 
-namespace adiar {
+namespace adiar::internal
+{
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   A unique identifier a decision diagram node.
   ///

@@ -23,9 +23,9 @@ namespace adiar
   public:
     zdd_sat_label_writer_visitor() : lw(lf) { }
 
-    ptr_uint64 visit(const node n)
+    zdd::ptr_t visit(const zdd::node_t n)
     {
-      const ptr_uint64 next_ptr = visitor.visit(n);
+      const zdd::ptr_t next_ptr = visitor.visit(n);
 
       if (next_ptr == n.high() && (next_ptr != n.low() || visitor_t::keep_dont_cares)) {
         lw << n.label();
@@ -46,7 +46,7 @@ namespace adiar
     }
   };
 
-  class zdd_satmin_visitor : public traverse_satmin_visitor
+  class zdd_satmin_visitor : public internal::traverse_satmin_visitor
   {
   public:
     static constexpr bool keep_dont_cares = false;
@@ -55,7 +55,7 @@ namespace adiar
   std::optional<label_file> zdd_minelem(const zdd &A)
   {
     zdd_sat_label_writer_visitor<zdd_satmin_visitor> v;
-    traverse(A, v);
+    internal::traverse(A, v);
     return v.get_result();
   }
 
@@ -64,7 +64,7 @@ namespace adiar
   public:
     static constexpr bool keep_dont_cares = true;
 
-    inline ptr_uint64 visit(const node n) {
+    inline zdd::ptr_t visit(const zdd::node_t n) {
       adiar_debug(!n.high().is_terminal() || n.high().value(), "high terminals are never false");
       return n.high();
     }
@@ -76,7 +76,7 @@ namespace adiar
   std::optional<label_file> zdd_maxelem(const zdd &A)
   {
     zdd_sat_label_writer_visitor<zdd_satmax_visitor> v;
-    traverse(A, v);
+    internal::traverse(A, v);
     return v.get_result();
   }
 }

@@ -12,6 +12,20 @@
 
 namespace adiar
 {
+  // declaration of 'level_info_stream' in <adiar/file_stream.h> in parent
+  // namespace. This ugliness will be removed when these also are moved into the
+  // 'adiar::internal' namespace.
+
+  template <typename T, bool REVERSE>
+  class level_info_stream;
+
+  template <bool REVERSE>
+  class node_stream;
+}
+
+
+namespace adiar::internal
+{
   class dd;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -42,7 +56,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     // Friends
     template <typename T, bool REVERSE>
-    friend class level_info_stream;
+    friend class adiar::level_info_stream;
 
     ////////////////////////////////////////////////////////////////////////////
     // Union of node_file and arc_file (with std::monostate for 'error')
@@ -232,10 +246,10 @@ namespace adiar
     friend class __dd;
 
     template <typename T, bool REVERSE>
-    friend class level_info_stream;
+    friend class adiar::level_info_stream;
 
     template <bool REVERSE>
-    friend class node_stream;
+    friend class adiar::node_stream;
 
     template <typename file_t, typename comp_t, size_t FILES>
     friend class label_merger;
@@ -251,7 +265,7 @@ namespace adiar
     friend label_t max_label(const dd &dd);
 
     template<typename to_policy, typename from_policy>
-    friend class convert_decision_diagram_policy;
+    friend class convert_dd_policy;
   };
 
   inline __dd::__dd(const dd &dd)
@@ -322,7 +336,6 @@ namespace adiar
   {
     return max_label(dd.file);
   }
-
 
   template<typename dd_type, typename __dd_type>
   class dd_policy

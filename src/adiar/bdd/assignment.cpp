@@ -19,15 +19,15 @@ namespace adiar
     assignment_file af;
     assignment_writer aw;
 
-    level_info_stream<node> ms;
+    level_info_stream<bdd::node_t> ms;
 
   public:
     bdd_sat_assignment_writer_visitor(const bdd& f) : aw(af), ms(f) { }
 
-    ptr_uint64 visit(const node &n)
+    bdd::ptr_t visit(const bdd::node_t &n)
     {
-      const node::ptr_t next_ptr = __visitor.visit(n);
-      const node::label_t label = n.label();
+      const bdd::ptr_t next_ptr = __visitor.visit(n);
+      const bdd::label_t label = n.label();
 
       // set default to all skipped levels
       while (label_of(ms.peek()) < label) {
@@ -57,15 +57,15 @@ namespace adiar
 
   assignment_file bdd_satmin(const bdd &f)
   {
-    bdd_sat_assignment_writer_visitor<traverse_satmin_visitor, false> v(f);
-    traverse(f,v);
+    bdd_sat_assignment_writer_visitor<internal::traverse_satmin_visitor, false> v(f);
+    internal::traverse(f,v);
     return v.get_result();
   }
 
   assignment_file bdd_satmax(const bdd &f)
   {
-    bdd_sat_assignment_writer_visitor<traverse_satmax_visitor, true> v(f);
-    traverse(f,v);
+    bdd_sat_assignment_writer_visitor<internal::traverse_satmax_visitor, true> v(f);
+    internal::traverse(f,v);
     return v.get_result();
   }
 }

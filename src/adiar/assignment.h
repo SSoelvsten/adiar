@@ -6,15 +6,16 @@
 #include<adiar/internal/assert.h>
 #include<adiar/internal/data_types/ptr.h>
 
-namespace adiar {
+namespace adiar
+{
   //////////////////////////////////////////////////////////////////////////////
   /// \brief An assignment [label -> value] to a variable with the given label to
   ///        which is assigned the given value.
   //////////////////////////////////////////////////////////////////////////////
   struct assignment {
-    typedef ptr_uint64::label_t label_t;
+    typedef internal::ptr_uint64::label_t label_t;
 
-    ptr_uint64::label_t label;
+    label_t label;
     bool value;
   };
 
@@ -26,9 +27,9 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create an assignment [label -> value].
   //////////////////////////////////////////////////////////////////////////////
-  inline assignment_t create_assignment(ptr_uint64::label_t label, bool value)
+  inline assignment_t create_assignment(assignment::label_t label, bool value)
   {
-    adiar_debug(label <= ptr_uint64::MAX_LABEL, "Cannot represent that large a label");
+    adiar_debug(label <= internal::ptr_uint64::MAX_LABEL, "Cannot represent that large a label");
 
     return { label, value };
   }
@@ -36,7 +37,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Extract the label from an assignment [label -> value].
   //////////////////////////////////////////////////////////////////////////////
-  inline ptr_uint64::label_t label_of(const assignment_t &a)
+  inline assignment::label_t label_of(const assignment_t &a)
   {
     return a.label;
   }
@@ -81,7 +82,7 @@ namespace adiar {
   /// \brief   Function that computs Boolean assignment to variables with given
   ///          label.
   //////////////////////////////////////////////////////////////////////////////
-  typedef std::function<bool(ptr_uint64::label_t)> assignment_func;
+  typedef std::function<bool(assignment::label_t)> assignment_func;
 }
 
 #endif // ADIAR_ASSIGNMENT_H

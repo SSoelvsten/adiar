@@ -12,7 +12,8 @@
 #include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
 
-namespace adiar {
+namespace adiar::internal
+{
   template <memory::memory_mode mem_mode, typename elem_t, typename comp_t = std::less<elem_t>>
   class sorter;
 

@@ -17,7 +17,7 @@ namespace adiar
     bdd_eval_func_visitor(const assignment_func& f) : af(f)
     { }
 
-    inline ptr_uint64 visit(const node &n)
+    inline bdd::ptr_t visit(const bdd::node_t &n)
     {
       return af(n.label()) ? n.high() : n.low();
     }
@@ -48,7 +48,7 @@ namespace adiar
     bdd_eval_file_visitor(const assignment_file& af) : as(af)
     { if (as.can_pull()) { a = as.pull(); } }
 
-    inline ptr_uint64 visit(const node &n)
+    inline bdd::ptr_t visit(const bdd::node_t &n)
     {
       const bdd::label_t label = n.label();
       while (label_of(a) < label) {
@@ -70,7 +70,7 @@ namespace adiar
   bool bdd_eval(const bdd &bdd, const assignment_file &af)
   {
     bdd_eval_file_visitor v(af);
-    traverse(bdd, v);
+    internal::traverse(bdd, v);
     return v.get_result();
   }
 }

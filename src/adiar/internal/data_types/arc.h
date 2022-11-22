@@ -3,7 +3,8 @@
 
 #include<adiar/internal/data_types/uid.h>
 
-namespace adiar {
+namespace adiar::internal
+{
   //////////////////////////////////////////////////////////////////////////////
   /// \brief An arc from some source to a target.
   ///

@@ -148,7 +148,7 @@ namespace adiar
   /// A reduced Decision Diagram is given by a single sorted file by nodes.
   //////////////////////////////////////////////////////////////////////////////
   template <>
-  struct FILE_CONSTANTS<node>
+  struct FILE_CONSTANTS<internal::node>
   {
     static constexpr size_t files = 1u;
 
@@ -168,7 +168,8 @@ namespace adiar
       ///
       /// \sa    cut_type
       //////////////////////////////////////////////////////////////////////////
-      cuts_t max_1level_cut = { MAX_CUT, MAX_CUT, MAX_CUT, MAX_CUT };
+      internal::cuts_t max_1level_cut =
+        { internal::MAX_CUT, internal::MAX_CUT, internal::MAX_CUT, internal::MAX_CUT };
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum 2-level cut of the DAG (with or
@@ -177,7 +178,8 @@ namespace adiar
       ///
       /// \sa    cut_type
       //////////////////////////////////////////////////////////////////////////
-      cuts_t max_2level_cut = { MAX_CUT, MAX_CUT, MAX_CUT, MAX_CUT };
+      internal::cuts_t max_2level_cut =
+        { internal::MAX_CUT, internal::MAX_CUT, internal::MAX_CUT, internal::MAX_CUT };
     };
   };
 
@@ -189,7 +191,7 @@ namespace adiar
   /// - [2] : node-to-terminal arcs (not sorted)
   //////////////////////////////////////////////////////////////////////////////
   template <>
-  struct FILE_CONSTANTS<arc>
+  struct FILE_CONSTANTS<internal::arc>
   {
     static constexpr size_t files = 3u;
 
@@ -201,7 +203,7 @@ namespace adiar
       ///
       /// TODO: use array of size 1?
       //////////////////////////////////////////////////////////////////////////
-      size_t max_1level_cut = MAX_CUT;
+      internal::cut_size_t max_1level_cut = internal::MAX_CUT;
     };
   };
 
@@ -241,7 +243,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Meta information on a level by level granularity.
     ////////////////////////////////////////////////////////////////////////////
-    file<level_info> _level_info_file;
+    file<internal::level_info> _level_info_file;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Files describing the directed acyclic graph.
@@ -314,7 +316,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     size_t file_size() const
     {
-      return size() * sizeof(elem_t) + meta_size() * sizeof(level_info_t);
+      return size() * sizeof(elem_t) + meta_size() * sizeof(internal::level_info_t);
     }
   };
 
@@ -446,7 +448,7 @@ namespace adiar
   ////////////////////////////////////////////////////////////////////////////
   /// \brief A file of variable labels
   ////////////////////////////////////////////////////////////////////////////
-  typedef simple_file<ptr_uint64::label_t> label_file;
+  typedef simple_file<internal::ptr_uint64::label_t> label_file;
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Provides sorting for <tt>simple_file</tt>.
@@ -480,12 +482,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Files of arcs to represent an unreduced decision diagram.
   //////////////////////////////////////////////////////////////////////////////
-  typedef meta_file<arc> arc_file;
+  typedef meta_file<internal::arc> arc_file;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief File of nodes to represent a reduced decision diagram.
   //////////////////////////////////////////////////////////////////////////////
-  class node_file : public meta_file<node>
+  class node_file : public meta_file<internal::node>
   {
   public:
     static constexpr std::string_view false_print = "0";
@@ -540,12 +542,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The minimal label, i.e. the label of the root.
   //////////////////////////////////////////////////////////////////////////////
-  node::label_t min_label(const node_file &file);
+  internal::node::label_t min_label(const node_file &file);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The maximal label, i.e. the label of the deepest node.
   //////////////////////////////////////////////////////////////////////////////
-  node::label_t max_label(const node_file &file);
+  internal::node::label_t max_label(const node_file &file);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Number of nodes in the DAG.

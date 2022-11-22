@@ -12,10 +12,10 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logic related to being a 'Binary' Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
-  typedef dd_policy<bdd, __bdd> bdd_policy;
+  typedef internal::dd_policy<bdd, __bdd> bdd_policy;
 
   template<>
-  inline ptr_uint64
+  inline bdd::ptr_t
   bdd_policy::reduction_rule(const bdd::node_t &n)
   {
     // If adding attributed edges, i.e. complement edges:
@@ -26,7 +26,7 @@ namespace adiar
   }
 
   template<>
-  inline tuple<ptr_uint64>
+  inline internal::tuple<bdd::ptr_t>
   bdd_policy::reduction_rule_inv(const bdd::ptr_t &child)
   {
     return { child, child };

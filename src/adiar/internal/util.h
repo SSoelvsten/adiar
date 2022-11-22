@@ -7,7 +7,7 @@
 
 #include <adiar/internal/dd.h>
 
-namespace adiar
+namespace adiar::internal
 {
   template<typename T>
   inline ptr_uint64::label_t __label_of(const T& t)

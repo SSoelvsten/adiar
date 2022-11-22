@@ -23,29 +23,29 @@ namespace adiar
 #endif
 
     return {
-      stats_levelized_priority_queue,
-      stats_count,
-      stats_equality,
-      stats_intercut,
-      stats_prod2,
+      internal::stats_levelized_priority_queue,
+      internal::stats_count,
+      internal::stats_equality,
+      internal::stats_intercut,
+      internal::stats_prod2,
       stats_prod3,
-      stats_quantify,
-      stats_reduce,
-      stats_substitute,
+      internal::stats_quantify,
+      internal::stats_reduce,
+      internal::stats_substitute,
     };
   }
 
   void adiar_statsreset()
   {
-    stats_count = {};
-    stats_equality = {};
-    stats_intercut = {};
-    stats_levelized_priority_queue = {};
-    stats_prod2 = {};
-    stats_prod3 = {};
-    stats_quantify = {};
-    stats_reduce = {};
-    stats_substitute = {};
+    internal::stats_count      = {};
+    internal::stats_equality   = {};
+    internal::stats_intercut   = {};
+    internal::stats_levelized_priority_queue = {};
+    internal::stats_prod2      = {};
+    stats_prod3                = {};
+    internal::stats_quantify   = {};
+    internal::stats_reduce     = {};
+    internal::stats_substitute = {};
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -150,7 +150,7 @@ namespace adiar
 
   void __printstat_count(std::ostream &o)
   {
-    uintwide_t total_runs = stats_count.lpq.total();
+    uintwide_t total_runs = internal::stats_count.lpq.total();
     o << indent << bold_on << label << "Count" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -160,13 +160,13 @@ namespace adiar
       return;
     }
 
-    __printstat_alg_base(o, stats_count);
+    __printstat_alg_base(o, internal::stats_count);
     indent_level--;
   }
 
   void __printstat_comparison_check(std::ostream &o)
   {
-    uintwide_t total_runs = stats_equality.lpq.total();
+    uintwide_t total_runs = internal::stats_equality.lpq.total();
     o << indent << bold_on << label << "Comparison Check" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -176,13 +176,13 @@ namespace adiar
       return;
     }
 
-    __printstat_alg_base(o, stats_equality);
+    __printstat_alg_base(o, internal::stats_equality);
     indent_level--;
   }
 
   void __printstat_intercut(std::ostream &o)
   {
-    uintwide_t total_runs = stats_intercut.lpq.total();
+    uintwide_t total_runs = internal::stats_intercut.lpq.total();
     o << indent << bold_on << label << "Intercut" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -192,19 +192,19 @@ namespace adiar
       return;
     }
 
-    __printstat_alg_base(o, stats_intercut);
+    __printstat_alg_base(o, internal::stats_intercut);
     indent_level--;
   }
 
   void __printstat_isomorphism(std::ostream &o)
   {
-    const uintwide_t total_runs = stats_equality.exit_on_same_file
-                                + stats_equality.exit_on_nodecount
-                                + stats_equality.exit_on_varcount
-                                + stats_equality.exit_on_terminalcount
-                                + stats_equality.exit_on_levels_mismatch
-                                + stats_equality.slow_check.runs
-                                + stats_equality.fast_check.runs;
+    const uintwide_t total_runs = internal::stats_equality.exit_on_same_file
+                                + internal::stats_equality.exit_on_nodecount
+                                + internal::stats_equality.exit_on_varcount
+                                + internal::stats_equality.exit_on_terminalcount
+                                + internal::stats_equality.exit_on_levels_mismatch
+                                + internal::stats_equality.slow_check.runs
+                                + internal::stats_equality.fast_check.runs;
 
     o << indent << bold_on << label << "Isomorphism Check" << bold_off << total_runs << endl;
 
@@ -220,33 +220,44 @@ namespace adiar
     indent_level++;
     o << indent << "O(1) termination cases" << endl;
     indent_level++;
-    o << indent << label << "same file" << stats_equality.exit_on_same_file << endl;
-    o << indent << label << "node count mismatch" << stats_equality.exit_on_nodecount << endl;
-    o << indent << label << "var count mismatch" << stats_equality.exit_on_varcount << endl;
-    o << indent << label << "terminal count mismatch" << stats_equality.exit_on_terminalcount << endl;
+    o << indent << label << "same file"
+      << internal::stats_equality.exit_on_same_file << endl;
+    o << indent << label << "node count mismatch"
+      << internal::stats_equality.exit_on_nodecount << endl;
+    o << indent << label << "var count mismatch"
+      << internal::stats_equality.exit_on_varcount << endl;
+    o << indent << label << "terminal count mismatch"
+      << internal::stats_equality.exit_on_terminalcount << endl;
     indent_level--;
 
     o << indent << endl;
 
     o << indent << "O(L/B) termination cases" << endl;
     indent_level++;
-    o << indent << label << "level info mismatch" << stats_equality.exit_on_levels_mismatch << endl;
+    o << indent << label << "level info mismatch"
+      << internal::stats_equality.exit_on_levels_mismatch << endl;
     indent_level--;
 
     o << indent << endl;
 
-    o << indent << label << "O(sort(N)) algorithm" << stats_equality.slow_check.runs << endl;
+    o << indent << label << "O(sort(N)) algorithm"
+      << internal::stats_equality.slow_check.runs << endl;
     indent_level++;
-    o << indent << label << "local violation (root)" << stats_equality.slow_check.exit_on_root << endl;
-    o << indent << label << "local violation (other)" << stats_equality.slow_check.exit_on_children << endl;
-    o << indent << label << "too many requests" << stats_equality.slow_check.exit_on_processed_on_level << endl;
+    o << indent << label << "local violation (root)"
+      << internal::stats_equality.slow_check.exit_on_root << endl;
+    o << indent << label << "local violation (other)"
+      << internal::stats_equality.slow_check.exit_on_children << endl;
+    o << indent << label << "too many requests"
+      << internal::stats_equality.slow_check.exit_on_processed_on_level << endl;
     indent_level--;
 
     o << indent << endl;
 
-    o << indent << label << "O(N/B) algorithm" << stats_equality.fast_check.runs << endl;
+    o << indent << label << "O(N/B) algorithm"
+      << internal::stats_equality.fast_check.runs << endl;
     indent_level++;
-    o << indent << label << "node mismatch" << stats_equality.fast_check.exit_on_mismatch << endl;
+    o << indent << label << "node mismatch"
+      << internal::stats_equality.fast_check.exit_on_mismatch << endl;
 
     indent_level -= 2;
 
@@ -260,7 +271,7 @@ namespace adiar
   }
   void __printstat_prod2(std::ostream &o)
   {
-    uintwide_t total_runs = stats_prod2.lpq.total();
+    uintwide_t total_runs = internal::stats_prod2.lpq.total();
     o << indent << bold_on << label << "Product Construction (2-ary)" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -270,7 +281,7 @@ namespace adiar
       return;
     }
 
-    __printstat_alg_base(o, stats_prod2);
+    __printstat_alg_base(o, internal::stats_prod2);
     indent_level--;
   }
 
@@ -292,7 +303,7 @@ namespace adiar
 
   void __printstat_reduce(std::ostream &o)
   {
-    uintwide_t total_runs = stats_reduce.lpq.total();
+    uintwide_t total_runs = internal::stats_reduce.lpq.total();
     o << indent << bold_on << label << "Reduce" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -303,42 +314,51 @@ namespace adiar
       return;
     }
 
-    uintwide_t total_arcs = stats_reduce.sum_node_arcs + stats_reduce.sum_terminal_arcs;
-    o << indent << bold_on << label << "inputs size" << bold_off << total_arcs << " arcs = " << total_arcs / 2 << " nodes" << endl;
+    uintwide_t total_arcs = internal::stats_reduce.sum_node_arcs + internal::stats_reduce.sum_terminal_arcs;
+    o << indent << bold_on << label << "inputs size" << bold_off
+      << total_arcs << " arcs = " << total_arcs / 2 << " nodes" << endl;
 
     indent_level++;
     o << indent << label << "node arcs:"
-      << stats_reduce.sum_node_arcs << " = " << percent_frac(stats_reduce.sum_node_arcs, total_arcs) << percent << endl;
+      << internal::stats_reduce.sum_node_arcs
+      << " = " << percent_frac(internal::stats_reduce.sum_node_arcs, total_arcs) << percent
+      << endl;
 
     o << indent << label << "terminal arcs:"
-      << stats_reduce.sum_terminal_arcs << " = " << percent_frac(stats_reduce.sum_terminal_arcs, total_arcs) << percent << endl;
+      << internal::stats_reduce.sum_terminal_arcs
+      << " = " << percent_frac(internal::stats_reduce.sum_terminal_arcs, total_arcs) << percent
+      << endl;
     indent_level--;
 
     o << indent << endl;
-    uintwide_t total_removed = stats_reduce.removed_by_rule_1 + stats_reduce.removed_by_rule_2;
+    uintwide_t total_removed = internal::stats_reduce.removed_by_rule_1 + internal::stats_reduce.removed_by_rule_2;
     o << indent << bold_on << label << "nodes removed" << bold_off;
     if (total_removed > 0u) {
       o << total_removed << " = " << percent_frac(total_removed, total_arcs) << percent << endl;
       indent_level++;
       o << indent << label << "rule 1:"
-        << stats_reduce.removed_by_rule_1 << " = " << percent_frac(stats_reduce.removed_by_rule_1, total_removed) << percent << endl;
+        << internal::stats_reduce.removed_by_rule_1
+        << " = " << percent_frac(internal::stats_reduce.removed_by_rule_1, total_removed) << percent
+        << endl;
 
       o << indent << label <<  "rule 2:"
-        << stats_reduce.removed_by_rule_2 << " = " << percent_frac(stats_reduce.removed_by_rule_2, total_removed) << percent << endl;
+        << internal::stats_reduce.removed_by_rule_2
+        << " = " << percent_frac(internal::stats_reduce.removed_by_rule_2, total_removed) << percent
+        << endl;
       indent_level--;
     } else {
       o << "none" << endl;
     }
 
     o << indent << endl;
-    __printstat_alg_base(o, stats_reduce);
+    __printstat_alg_base(o, internal::stats_reduce);
 
     indent_level--;
   }
 
   void __printstat_quantify(std::ostream &o)
   {
-    uintwide_t total_runs = stats_quantify.lpq.total();
+    uintwide_t total_runs = internal::stats_quantify.lpq.total();
     o << indent << bold_on << label << "Quantification" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -348,13 +368,13 @@ namespace adiar
       return;
     }
 
-    __printstat_alg_base(o, stats_quantify);
+    __printstat_alg_base(o, internal::stats_quantify);
     indent_level--;
   }
 
   void __printstat_substitute(std::ostream &o)
   {
-    uintwide_t total_runs = stats_substitute.lpq.total();
+    uintwide_t total_runs = internal::stats_substitute.lpq.total();
     o << indent << bold_on << label << "Substitution" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -364,7 +384,7 @@ namespace adiar
       return;
     }
 
-    __printstat_alg_base(o, stats_substitute);
+    __printstat_alg_base(o, internal::stats_substitute);
     indent_level--;
   }
 
@@ -377,7 +397,7 @@ namespace adiar
 #else
     o << std::fixed << std::setprecision(FLOAT_PRECISION);
 
-    __printstat_lpq(o, stats_levelized_priority_queue);
+    __printstat_lpq(o, internal::stats_levelized_priority_queue);
     o << endl;
 
     __printstat_count(o);

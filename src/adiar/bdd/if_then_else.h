@@ -1,7 +1,8 @@
 #ifndef ADIAR_BDD_IF_THEN_ELSE_H
 #define ADIAR_BDD_IF_THEN_ELSE_H
 
-namespace adiar {
+namespace adiar
+{
 
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics

@@ -18,7 +18,7 @@
 
 #include <adiar/statistics.h>
 
-namespace adiar
+namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics
