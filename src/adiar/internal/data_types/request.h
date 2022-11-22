@@ -115,6 +115,15 @@ namespace adiar
     }
   };
 
+  template<class request_t>
+  struct request_trd_lt
+  {
+    inline bool operator()(const request_t &a, const request_t &b)
+    {
+      return tuple_trd_lt<typename request_t::target_t>()(a.target, b.target);
+    }
+  };
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Extension of the request struct to carry extra data. That data can
   ///        also impact the ordering.
@@ -179,6 +188,18 @@ namespace adiar
         return a.data < b.data;
       }
       return request_snd_lt<request_t>()(a, b);
+    }
+  };
+
+  template<class request_t>
+  struct request_data_trd_lt
+  {
+    inline bool operator()(const request_t &a, const request_t &b)
+    {
+      if (request_t::data_t::sort_on_tiebreak && a.target == b.target) {
+        return a.data < b.data;
+      }
+      return request_trd_lt<request_t>()(a, b);
     }
   };
 

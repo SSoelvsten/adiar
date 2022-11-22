@@ -63,10 +63,10 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_1(bdd_1);
-      nw_1 << node(3,0,terminal_F,terminal_T)                             // 7
-           << node(2,2,terminal_F,terminal_T)                             // 6
-           << node(2,1,terminal_T,ptr_uint64(3,0))               // 5
-           << node(2,0,ptr_uint64(3,0),terminal_T)               // 4
+      nw_1 << node(3,0,terminal_F,terminal_T)           // 7
+           << node(2,2,terminal_F,terminal_T)           // 6
+           << node(2,1,terminal_T,ptr_uint64(3,0))      // 5
+           << node(2,0,ptr_uint64(3,0),terminal_T)      // 4
            << node(1,1,ptr_uint64(2,1),ptr_uint64(2,0)) // 3
            << node(1,0,ptr_uint64(2,2),ptr_uint64(2,1)) // 2
            << node(0,0,ptr_uint64(1,0),ptr_uint64(1,1)) // 1
@@ -88,12 +88,12 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_2(bdd_2);
-      nw_2 << node(3,1,terminal_F,terminal_T)                              // 9
-           << node(3,0,terminal_T,terminal_F)                              // 8
-           << node(2,3,terminal_F,terminal_T)                              // 7
-           << node(2,2,terminal_T,terminal_F)                              // 6
-           << node(2,1,terminal_F,ptr_uint64(3,1))                // 5
-           << node(2,0,terminal_F,ptr_uint64(3,0))                // 4
+      nw_2 << node(3,1,terminal_F,terminal_T)            // 9
+           << node(3,0,terminal_T,terminal_F)            // 8
+           << node(2,3,terminal_F,terminal_T)            // 7
+           << node(2,2,terminal_T,terminal_F)            // 6
+           << node(2,1,terminal_F,ptr_uint64(3,1))       // 5
+           << node(2,0,terminal_F,ptr_uint64(3,0))       // 4
            << node(1,1,ptr_uint64(2,2),ptr_uint64(2,3))  // 3
            << node(1,0,ptr_uint64(2,0),ptr_uint64(2,1))  // 2
            << node(0,0,ptr_uint64(1,0),ptr_uint64(1,1))  // 1
@@ -115,10 +115,10 @@ go_bandit([]() {
 
     { // Garbage collect writers to free write-lock
       node_writer nw_3(bdd_3);
-      nw_3 << node(3,0,terminal_F,terminal_T)                             // 6
-           << node(2,2,terminal_F,terminal_T)                             // 5
-           << node(2,1,terminal_F,ptr_uint64(3,0))               // 4
-           << node(2,0,terminal_T,terminal_F)                             // 3
+      nw_3 << node(3,0,terminal_F,terminal_T)           // 6
+           << node(2,2,terminal_F,terminal_T)           // 5
+           << node(2,1,terminal_F,ptr_uint64(3,0))      // 4
+           << node(2,0,terminal_T,terminal_F)           // 3
            << node(1,0,ptr_uint64(2,0),ptr_uint64(2,1)) // 2
            << node(0,0,ptr_uint64(1,0),ptr_uint64(2,2)) // 1
         ;
@@ -138,11 +138,11 @@ go_bandit([]() {
     */
     { // Garbage collect writers to free write-lock
       node_writer nw_4(bdd_4);
-      nw_4 << node(3,1,terminal_F,terminal_T)                             // 7
-           << node(3,0,terminal_T,terminal_F)                             // 6
-           << node(2,2,terminal_F,ptr_uint64(3,1))               // 5
-           << node(2,1,ptr_uint64(3,0),terminal_T)               // 4
-           << node(2,0,terminal_T,terminal_F)                             // 3
+      nw_4 << node(3,1,terminal_F,terminal_T)           // 7
+           << node(3,0,terminal_T,terminal_F)           // 6
+           << node(2,2,terminal_F,ptr_uint64(3,1))      // 5
+           << node(2,1,ptr_uint64(3,0),terminal_T)      // 4
+           << node(2,0,terminal_T,terminal_F)           // 3
            << node(1,0,ptr_uint64(2,1),ptr_uint64(2,2)) // 2
            << node(0,0,ptr_uint64(1,0),ptr_uint64(2,0)) // 1
         ;
@@ -162,10 +162,10 @@ go_bandit([]() {
     */
     { // Garbage collect writers to free write-lock
       node_writer nw_5(bdd_5);
-      nw_5 << node(3,0,terminal_T,terminal_F)                             // 6
-           << node(2,2,terminal_F,ptr_uint64(3,0))               // 5
-           << node(2,1,terminal_F,terminal_T)                             // 4
-           << node(2,0,terminal_T,terminal_F)                             // 3
+      nw_5 << node(3,0,terminal_T,terminal_F)           // 6
+           << node(2,2,terminal_F,ptr_uint64(3,0))      // 5
+           << node(2,1,terminal_F,terminal_T)           // 4
+           << node(2,0,terminal_T,terminal_F)           // 3
            << node(1,0,ptr_uint64(2,2),ptr_uint64(2,0)) // 2
            << node(0,0,ptr_uint64(1,0),ptr_uint64(2,1)) // 1
         ;
@@ -226,9 +226,9 @@ go_bandit([]() {
 
     {
       node_writer nw_7(bdd_7);
-      nw_7 << node(3,0,terminal_F,terminal_T)                             // 5
-           << node(2,1,ptr_uint64(3,0),terminal_T)               // 4
-           << node(2,0,terminal_F,ptr_uint64(3,0))               // 3
+      nw_7 << node(3,0,terminal_F,terminal_T)           // 5
+           << node(2,1,ptr_uint64(3,0),terminal_T)      // 4
+           << node(2,0,terminal_F,ptr_uint64(3,0))      // 3
            << node(1,0,ptr_uint64(2,0),ptr_uint64(2,1)) // 2
            << node(0,0,ptr_uint64(1,0),ptr_uint64(2,1)) // 1
         ;
@@ -248,8 +248,8 @@ go_bandit([]() {
     */
     {
       node_writer nw_8(bdd_8);
-      nw_8 << node(3,0,terminal_T,terminal_F)                             // 4
-           << node(2,0,terminal_T,ptr_uint64(3,0))               // 3
+      nw_8 << node(3,0,terminal_T,terminal_F)            // 4
+           << node(2,0,terminal_T,ptr_uint64(3,0))      // 3
            << node(1,0,ptr_uint64(2,0),ptr_uint64(3,0)) // 2
            << node(0,0,ptr_uint64(1,0),ptr_uint64(3,0)) // 1
         ;
@@ -1101,15 +1101,15 @@ go_bandit([]() {
                                  /               \
                              (2,2,2)              \         ---- x1
                           ____/   \____            \
-                          /             \            \
+                         /             \            \
                       (3,4,5)        (4,5,3)     (5,3,4)    ---- x2
                         \ /           /   \       /   \
                          X            T   |       F   F
                        _/ \_              |
                       /     \             |
                   (T,6,_) (F,_,6)      (6,7,F)              ---- x3
-                    /   \   /   \        /   \
-                    T   F   T   F        F   T
+                   /   \   /   \        /   \
+                   T   F   T   F        F   T
 
                   Forwarding for each node is needed for level x2 twice, but due
                   to the ids involved one will only obtain the nodes in question
