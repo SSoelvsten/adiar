@@ -3,7 +3,183 @@
 go_bandit([]() {
     describe("adiar/internal/data_types/tuple.h", []() {
         describe("tuple<int, 1>", []() {
-            // TODO
+            it("statically provides its cardinality of 1.", []() {
+                const auto cardinality = tuple<int, 1>::CARDINALITY;
+                AssertThat(cardinality, Is().EqualTo(1u));
+              });
+
+            it("is trivially sorted even though not specified.", []() {
+                const auto is_sorted = tuple<int, 1>::IS_SORTED;
+                AssertThat(is_sorted, Is().EqualTo(true));
+              });
+
+            describe("unordered access: '[]' operator", []() {
+                it("provides unordered access [42]", []() {
+                    const tuple<int,1> t = { 42 };
+                    AssertThat(t[0], Is().EqualTo(42));
+                  });
+
+                it("provides unordered access [0]", []() {
+                    const tuple<int,1> t = { 0 };
+                    AssertThat(t[0], Is().EqualTo(0));
+                  });
+
+                it("provides unordered access [1]", []() {
+                    const tuple<int,1> t = { 1 };
+                    AssertThat(t[0], Is().EqualTo(1));
+                  });
+
+                it("provides unordered access [-1]", []() {
+                    const tuple<int,1> t = { -1 };
+                    AssertThat(t[0], Is().EqualTo(-1));
+                  });
+
+                // TODO: Index out-of-bounds?
+              });
+
+            describe("ordered access: 'fst' operator", []() {
+                it("provides ordered access to first element [42]", []() {
+                    const tuple<int,1> t = { 42 };
+                    AssertThat(t.fst(), Is().EqualTo(42));
+                  });
+
+                it("provides ordered access to first element [0]", []() {
+                    const tuple<int,1> t = { 0 };
+                    AssertThat(t.fst(), Is().EqualTo(0));
+                  });
+
+                it("provides ordered access to first element [1]", []() {
+                    const tuple<int,1> t = { 1 };
+                    AssertThat(t.fst(), Is().EqualTo(1));
+                  });
+
+                it("provides ordered access to first element [-1]", []() {
+                    const tuple<int,1> t = { -1 };
+                    AssertThat(t.fst(), Is().EqualTo(-1));
+                  });
+              });
+
+            describe("Lexicographical Ordering '<'", []() {
+                it("claims   {0}  < {1}", []() {
+                    const tuple<int,1> t1 = { 0 };
+                    const tuple<int,1> t2 = { 1 };
+
+                    AssertThat(t1, Is().LessThan(t2));
+                    AssertThat(t2, Is().Not().LessThan(t1));
+                    AssertThat(t1, Is().Not().GreaterThan(t2));
+                  });
+
+                it("claims  {-1}  < {0}", []() {
+                    const tuple<int,1> t1 = { -0 };
+                    const tuple<int,1> t2 = { 1 };
+
+                    AssertThat(t1, Is().LessThan(t2));
+                    AssertThat(t2, Is().Not().LessThan(t1));
+                    AssertThat(t1, Is().Not().GreaterThan(t2));
+                  });
+
+                it("claims  {21}  < {42}", []() {
+                    const tuple<int,1> t1 = { 21 };
+                    const tuple<int,1> t2 = { 42 };
+
+                    AssertThat(t1, Is().LessThan(t2));
+                    AssertThat(t2, Is().Not().LessThan(t1));
+                    AssertThat(t1, Is().Not().GreaterThan(t2));
+                  });
+
+                it("claims {-42}  < {42}", []() {
+                    const tuple<int,1> t1 = { -42 };
+                    const tuple<int,1> t2 = { 42 };
+
+                    AssertThat(t1, Is().LessThan(t2));
+                    AssertThat(t2, Is().Not().LessThan(t1));
+                    AssertThat(t1, Is().Not().GreaterThan(t2));
+                  });
+
+                it("claims  {42} !< {42}", []() {
+                    const tuple<int,1> t1 = { 42 };
+                    const tuple<int,1> t2 = { 42 };
+
+                    AssertThat(t1, Is().Not().LessThan(t2));
+                    AssertThat(t2, Is().Not().LessThan(t1));
+                    AssertThat(t1, Is().Not().GreaterThan(t2));
+                  });
+
+                it("claims   {0} !< {0}", []() {
+                    const tuple<int,1> t1 = { 0 };
+                    const tuple<int,1> t2 = { 0 };
+
+                    AssertThat(t1, Is().Not().LessThan(t2));
+                    AssertThat(t2, Is().Not().LessThan(t1));
+                    AssertThat(t1, Is().Not().GreaterThan(t2));
+                  });
+
+                it("claims   {1} !< {1}", []() {
+                    const tuple<int,1> t1 = { 1 };
+                    const tuple<int,1> t2 = { 1 };
+
+                    AssertThat(t1, Is().Not().LessThan(t2));
+                    AssertThat(t2, Is().Not().LessThan(t1));
+                    AssertThat(t1, Is().Not().GreaterThan(t2));
+                  });
+              });
+
+            describe("tuple_fst_lt", []() {
+                it("claims   {0}  < {1}", []() {
+                    const tuple<int,1> t1 = { 0 };
+                    const tuple<int,1> t2 = { 1 };
+
+                    const bool lt_lr = tuple_fst_lt<tuple<int,1>>()(t1,t2);
+                    AssertThat(lt_lr, Is().True());
+
+                    const bool lt_rl = tuple_fst_lt<tuple<int,1>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
+
+                it("claims  {-1}  < {1}", []() {
+                    const tuple<int,1> t1 = { -1 };
+                    const tuple<int,1> t2 = { 1 };
+
+                    const bool lt_lr = tuple_fst_lt<tuple<int,1>>()(t1,t2);
+                    AssertThat(lt_lr, Is().True());
+
+                    const bool lt_rl = tuple_fst_lt<tuple<int,1>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
+
+                it("claims  {21}  < {42}", []() {
+                    const tuple<int,1> t1 = { 21 };
+                    const tuple<int,1> t2 = { 42 };
+
+                    const bool lt_lr = tuple_fst_lt<tuple<int,1>>()(t1,t2);
+                    AssertThat(lt_lr, Is().True());
+
+                    const bool lt_rl = tuple_fst_lt<tuple<int,1>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
+
+                it("claims  {42} !< {42}", []() {
+                    const tuple<int,1> t1 = { 42 };
+                    const tuple<int,1> t2 = { 42 };
+
+                    const bool lt_lr = tuple_fst_lt<tuple<int,1>>()(t1,t2);
+                    AssertThat(lt_lr, Is().False());
+
+                    const bool lt_rl = tuple_fst_lt<tuple<int,1>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
+
+                it("claims   {0} !< {0}", []() {
+                    const tuple<int,1> t1 = { 0 };
+                    const tuple<int,1> t2 = { 0 };
+
+                    const bool lt_lr = tuple_fst_lt<tuple<int,1>>()(t1,t2);
+                    AssertThat(lt_lr, Is().False());
+
+                    const bool lt_rl = tuple_fst_lt<tuple<int,1>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
+              });
           });
 
         describe("tuple<int, 2>", []() {
@@ -12,15 +188,20 @@ go_bandit([]() {
                 AssertThat(cardinality, Is().EqualTo(2u));
               });
 
+            it("is not trivially sorted.", []() {
+                const auto is_sorted = tuple<int, 2>::IS_SORTED;
+                AssertThat(is_sorted, Is().EqualTo(false));
+              });
+
             describe("unordered access: '[]' operator", []() {
-                it("provides unordered access with '[]' operator [42,22]", []() {
+                it("provides unordered access [42,22]", []() {
                     const tuple<int,2> t = { 42,22 };
 
                     AssertThat(t[0], Is().EqualTo(42));
                     AssertThat(t[1], Is().EqualTo(22));
                   });
 
-                it("provides unordered access with '[]' operator [0, -1]", []() {
+                it("provides unordered access [0, -1]", []() {
                     const tuple<int,2> t = { 0, -1 };
 
                     AssertThat(t[0], Is().EqualTo(0));
@@ -112,8 +293,50 @@ go_bandit([]() {
                 AssertThat(t[1], Is().EqualTo(42));
               });
 
+            describe("Coordinate-wise Equality '=='", []() {
+                it("claims {42, 21} == {42, 21}", []() {
+                    const tuple<int,2> t1 = { 42, 21 };
+                    const tuple<int,2> t2 = { 42, 21 };
+
+                    AssertThat(t1, Is().EqualTo(t2));
+                    AssertThat(t2, Is().EqualTo(t1));
+                  });
+
+                it("claims   {0, 0} == {0, 0}", []() {
+                    const tuple<int,2> t1 = { 0, 0 };
+                    const tuple<int,2> t2 = { 0, 0 };
+
+                    AssertThat(t1, Is().EqualTo(t2));
+                    AssertThat(t2, Is().EqualTo(t1));
+                  });
+
+                it("claims   {1, 0} == {1, 0}", []() {
+                    const tuple<int,2> t1 = { 1, 0 };
+                    const tuple<int,2> t2 = { 1, 0 };
+
+                    AssertThat(t1, Is().EqualTo(t2));
+                    AssertThat(t2, Is().EqualTo(t1));
+                  });
+
+                it("claims   {1, 0} != {0, 1}", []() {
+                    const tuple<int,2> t1 = { 1, 0 };
+                    const tuple<int,2> t2 = { 0, 1 };
+
+                    AssertThat(t1, Is().Not().EqualTo(t2));
+                    AssertThat(t2, Is().Not().EqualTo(t1));
+                  });
+
+                it("claims {42, 21} != {42, 20}", []() {
+                    const tuple<int,2> t1 = { 42, 21 };
+                    const tuple<int,2> t2 = { 42, 20 };
+
+                    AssertThat(t1, Is().Not().EqualTo(t2));
+                    AssertThat(t2, Is().Not().EqualTo(t1));
+                  });
+              });
+
             describe("Lexicographical Ordering '<'", []() {
-                it("{0, 2} < {1, 2}", []() {
+                it("claims   {0, 2}  < {1, 2}", []() {
                     const tuple<int,2> t1 = { 0, 2 };
                     const tuple<int,2> t2 = { 1, 2 };
 
@@ -122,7 +345,7 @@ go_bandit([]() {
                     AssertThat(t1, Is().Not().GreaterThan(t2));
                   });
 
-                it("{1, 2} < {2, 0}", []() {
+                it("claims   {1, 2}  < {2, 0}", []() {
                     const tuple<int,2> t1 = { 0, 2 };
                     const tuple<int,2> t2 = { 1, 0 };
 
@@ -131,7 +354,7 @@ go_bandit([]() {
                     AssertThat(t1, Is().Not().GreaterThan(t2));
                   });
 
-                it("{0, 0} < {0, 1}", []() {
+                it("claims   {0, 0}  < {0, 1}", []() {
                     const tuple<int,2> t1 = { 0, 0 };
                     const tuple<int,2> t2 = { 0, 1 };
 
@@ -140,18 +363,45 @@ go_bandit([]() {
                     AssertThat(t1, Is().Not().GreaterThan(t2));
                   });
 
-                it("{0, 0} < {0, 1}", []() {
+                it("claims   {0, 0}  < {0, 1}", []() {
                     const tuple<int,2> t1 = { 0, 0 };
                     const tuple<int,2> t2 = { 0, 1 };
 
                     AssertThat(t1, Is().LessThan(t2));
+                    AssertThat(t2, Is().Not().LessThan(t1));
+                    AssertThat(t1, Is().Not().GreaterThan(t2));
+                  });
+
+                it("claims   {0, 0} !< {0, 0}", []() {
+                    const tuple<int,2> t1 = { 0, 0 };
+                    const tuple<int,2> t2 = { 0, 0 };
+
+                    AssertThat(t1, Is().Not().LessThan(t2));
+                    AssertThat(t2, Is().Not().LessThan(t1));
+                    AssertThat(t1, Is().Not().GreaterThan(t2));
+                  });
+
+                it("claims   {1, 0} !< {1, 0}", []() {
+                    const tuple<int,2> t1 = { 1, 0 };
+                    const tuple<int,2> t2 = { 1, 0 };
+
+                    AssertThat(t1, Is().Not().LessThan(t2));
+                    AssertThat(t2, Is().Not().LessThan(t1));
+                    AssertThat(t1, Is().Not().GreaterThan(t2));
+                  });
+
+                it("claims {21, 42} !< {21, 42}", []() {
+                    const tuple<int,2> t1 = { 21, 42 };
+                    const tuple<int,2> t2 = { 21, 42 };
+
+                    AssertThat(t1, Is().Not().LessThan(t2));
                     AssertThat(t2, Is().Not().LessThan(t1));
                     AssertThat(t1, Is().Not().GreaterThan(t2));
                   });
               });
 
             describe("tuple_fst_lt", []() {
-                it("{0, 2} < {1, 2}", []() {
+                it("claims   {0, 2}  < {1, 2}", []() {
                     const tuple<int,2> t1 = { 0, 2 };
                     const tuple<int,2> t2 = { 1, 2 };
 
@@ -162,7 +412,7 @@ go_bandit([]() {
                     AssertThat(lt_rl, Is().False());
                   });
 
-                it("{2, 0} < {1, 2}", []() {
+                it("claims   {2, 0}  < {1, 2}", []() {
                     const tuple<int,2> t1 = { 2, 0 };
                     const tuple<int,2> t2 = { 1, 2 };
 
@@ -173,7 +423,7 @@ go_bandit([]() {
                     AssertThat(lt_rl, Is().False());
                   });
 
-                it("{0, 1} < {2, 0}", []() {
+                it("claims   {0, 1}  < {2, 0}", []() {
                     const tuple<int,2> t1 = { 0, 1 };
                     const tuple<int,2> t2 = { 2, 0 };
 
@@ -183,10 +433,43 @@ go_bandit([]() {
                     const bool lt_rl = tuple_fst_lt<tuple<int,2>>()(t2,t1);
                     AssertThat(lt_rl, Is().False());
                   });
+
+                it("claims   {0, 0} !< {0, 0}", []() {
+                    const tuple<int,2> t1 = { 0, 0 };
+                    const tuple<int,2> t2 = { 0, 0 };
+
+                    const bool lt_lr = tuple_fst_lt<tuple<int,2>>()(t1,t2);
+                    AssertThat(lt_lr, Is().False());
+
+                    const bool lt_rl = tuple_fst_lt<tuple<int,2>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
+
+                it("claims   {1, 0} !< {1, 0}", []() {
+                    const tuple<int,2> t1 = { 1, 0 };
+                    const tuple<int,2> t2 = { 1, 0 };
+
+                    const bool lt_lr = tuple_fst_lt<tuple<int,2>>()(t1,t2);
+                    AssertThat(lt_lr, Is().False());
+
+                    const bool lt_rl = tuple_fst_lt<tuple<int,2>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
+
+                it("claims {42, 21} !< {42, 21}", []() {
+                    const tuple<int,2> t1 = { 42, 21 };
+                    const tuple<int,2> t2 = { 42, 21 };
+
+                    const bool lt_lr = tuple_fst_lt<tuple<int,2>>()(t1,t2);
+                    AssertThat(lt_lr, Is().False());
+
+                    const bool lt_rl = tuple_fst_lt<tuple<int,2>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
               });
 
             describe("tuple_snd_lt", []() {
-                it("{1, 0} < {2, 0}", []() {
+                it("claims   {1, 0}  < {2, 0}", []() {
                     const tuple<int,2> t1 = { 1, 0 };
                     const tuple<int,2> t2 = { 2, 0 };
 
@@ -197,7 +480,7 @@ go_bandit([]() {
                     AssertThat(lt_rl, Is().False());
                   });
 
-                it("{2, 1} < {3, 0}", []() {
+                it("claims   {2, 1}  < {3, 0}", []() {
                     const tuple<int,2> t1 = { 2, 1 };
                     const tuple<int,2> t2 = { 3, 0 };
 
@@ -208,7 +491,7 @@ go_bandit([]() {
                     AssertThat(lt_rl, Is().False());
                   });
 
-                it("{2, 3} < {3, 1}", []() {
+                it("claims   {2, 3}  < {3, 1}", []() {
                     const tuple<int,2> t1 = { 2, 3 };
                     const tuple<int,2> t2 = { 3, 1 };
 
@@ -219,12 +502,45 @@ go_bandit([]() {
                     AssertThat(lt_rl, Is().False());
                   });
 
-                it("{2, -1} < {2, 0}", []() {
+                it("claims   {2, -1}  < {2, 0}", []() {
                     const tuple<int,2> t1 = { 2, -1 };
                     const tuple<int,2> t2 = { 2, 0 };
 
                     const bool lt_lr = tuple_snd_lt<tuple<int,2>>()(t1,t2);
                     AssertThat(lt_lr, Is().True());
+
+                    const bool lt_rl = tuple_snd_lt<tuple<int,2>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
+
+                it("claims   {0, 0} !< {0, 0}", []() {
+                    const tuple<int,2> t1 = { 0, 0 };
+                    const tuple<int,2> t2 = { 0, 0 };
+
+                    const bool lt_lr = tuple_snd_lt<tuple<int,2>>()(t1,t2);
+                    AssertThat(lt_lr, Is().False());
+
+                    const bool lt_rl = tuple_snd_lt<tuple<int,2>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
+
+                it("claims   {1, 0} !< {1, 0}", []() {
+                    const tuple<int,2> t1 = { 1, 0 };
+                    const tuple<int,2> t2 = { 1, 0 };
+
+                    const bool lt_lr = tuple_snd_lt<tuple<int,2>>()(t1,t2);
+                    AssertThat(lt_lr, Is().False());
+
+                    const bool lt_rl = tuple_snd_lt<tuple<int,2>>()(t2,t1);
+                    AssertThat(lt_rl, Is().False());
+                  });
+
+                it("claims {42, 21} !< {42, 21}", []() {
+                    const tuple<int,2> t1 = { 42, 21 };
+                    const tuple<int,2> t2 = { 42, 21 };
+
+                    const bool lt_lr = tuple_snd_lt<tuple<int,2>>()(t1,t2);
+                    AssertThat(lt_lr, Is().False());
 
                     const bool lt_rl = tuple_snd_lt<tuple<int,2>>()(t2,t1);
                     AssertThat(lt_rl, Is().False());
