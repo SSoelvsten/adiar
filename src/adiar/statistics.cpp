@@ -26,9 +26,9 @@ namespace adiar
       stats_levelized_priority_queue,
       stats_count,
       stats_equality,
-      stats_if_else,
       stats_intercut,
       stats_prod2,
+      stats_prod3,
       stats_quantify,
       stats_reduce,
       stats_substitute,
@@ -39,10 +39,10 @@ namespace adiar
   {
     stats_count = {};
     stats_equality = {};
-    stats_if_else = {};
     stats_intercut = {};
     stats_levelized_priority_queue = {};
     stats_prod2 = {};
+    stats_prod3 = {};
     stats_quantify = {};
     stats_reduce = {};
     stats_substitute = {};
@@ -180,22 +180,6 @@ namespace adiar
     indent_level--;
   }
 
-  void __printstat_ite(std::ostream &o)
-  {
-    uintwide_t total_runs = stats_if_else.lpq.total();
-    o << indent << bold_on << label << "If-Then-Else" << bold_off << total_runs << endl;
-
-    indent_level++;
-    if (total_runs == 0u) {
-      o << indent << "Not used" << endl;
-      indent_level--;
-      return;
-    }
-
-    __printstat_alg_base(o, stats_if_else);
-    indent_level--;
-  }
-
   void __printstat_intercut(std::ostream &o)
   {
     uintwide_t total_runs = stats_intercut.lpq.total();
@@ -290,6 +274,22 @@ namespace adiar
     indent_level--;
   }
 
+  void __printstat_prod3(std::ostream &o)
+  {
+    uintwide_t total_runs = stats_prod3.lpq.total();
+    o << indent << bold_on << label << "Product Construction (3-ary)" << bold_off << total_runs << endl;
+
+    indent_level++;
+    if (total_runs == 0u) {
+      o << indent << "Not used" << endl;
+      indent_level--;
+      return;
+    }
+
+    __printstat_alg_base(o, stats_prod3);
+    indent_level--;
+  }
+
   void __printstat_reduce(std::ostream &o)
   {
     uintwide_t total_runs = stats_reduce.lpq.total();
@@ -302,7 +302,6 @@ namespace adiar
       indent_level--;
       return;
     }
-
 
     uintwide_t total_arcs = stats_reduce.sum_node_arcs + stats_reduce.sum_terminal_arcs;
     o << indent << bold_on << label << "inputs size" << bold_off << total_arcs << " arcs = " << total_arcs / 2 << " nodes" << endl;
@@ -387,9 +386,6 @@ namespace adiar
     __printstat_comparison_check(o);
     o << endl;
 
-    __printstat_ite(o);
-    o << endl;
-
     __printstat_intercut(o);
     o << endl;
 
@@ -397,6 +393,9 @@ namespace adiar
     o << endl;
 
     __printstat_prod2(o);
+    o << endl;
+
+    __printstat_prod3(o);
     o << endl;
 
     __printstat_reduce(o);
