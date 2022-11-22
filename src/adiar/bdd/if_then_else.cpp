@@ -443,9 +443,9 @@ namespace adiar
   /// product of the maximum i-level cut of all three inputs.
   //////////////////////////////////////////////////////////////////////////////
   template<typename cut, size_t const_size_inc>
-  size_t __ite_ilevel_upper_bound(const decision_diagram &in_if,
-                                  const decision_diagram &in_then,
-                                  const decision_diagram &in_else)
+  size_t __ite_ilevel_upper_bound(const dd &in_if,
+                                  const dd &in_then,
+                                  const dd &in_else)
   {
     // 2-level cuts for 'if', where we split the false and true arcs away.
     const safe_size_t if_cut_internal = cut::get(in_if, cut_type::INTERNAL);
@@ -476,9 +476,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// Derives an upper bound on the output's maximum i-level cut given its size.
   //////////////////////////////////////////////////////////////////////////////
-  size_t __ite_ilevel_upper_bound(const decision_diagram &in_if,
-                                  const decision_diagram &in_then,
-                                  const decision_diagram &in_else)
+  size_t __ite_ilevel_upper_bound(const dd &in_if,
+                                  const dd &in_then,
+                                  const dd &in_else)
   {
     const safe_size_t if_size = in_if->size();
     const safe_size_t then_size = in_then->size();

@@ -271,8 +271,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether a given decision diagram represents a constant value.
   //////////////////////////////////////////////////////////////////////////////
-  [[deprecated("Replaced by is_terminal in 'adiar/internal/decision_diagram.h'")]]
-  inline bdd is_sink(const decision_diagram& dd)
+  [[deprecated("Replaced by is_terminal in 'adiar/internal/dd.h'")]]
+  inline bdd is_sink(const dd& dd)
   { return is_terminal(dd); }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -3,7 +3,7 @@
 #include <adiar/file_stream.h>
 
 #include <adiar/internal/cut.h>
-#include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/dd.h>
 #include <adiar/internal/util.h>
 
 namespace adiar
@@ -80,7 +80,7 @@ namespace adiar
   // TODO (Decision Diagrams with other kinds of pointers):
   //   template<class dd_policy>
   class isomorphism_policy : public prod2_same_level_merger,
-                             public decision_diagram_policy<decision_diagram, __decision_diagram>
+                             public dd_policy<dd, __dd>
   {
   public:
     typedef input_bound_levels<false> level_check_t;
@@ -260,7 +260,7 @@ namespace adiar
     }
   }
 
-  bool is_isomorphic(const decision_diagram &a, const decision_diagram &b)
+  bool is_isomorphic(const dd &a, const dd &b)
   {
     return is_isomorphic(a.file, b.file, a.negate, b.negate);
   }

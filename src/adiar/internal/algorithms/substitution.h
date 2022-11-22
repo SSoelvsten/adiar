@@ -11,7 +11,7 @@
 
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
-#include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/dd.h>
 
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 

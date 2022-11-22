@@ -21,22 +21,22 @@
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   // Constructors
-  __zdd::__zdd() : __decision_diagram() { }
+  __zdd::__zdd() : __dd() { }
 
-  __zdd::__zdd(const node_file &f) : __decision_diagram(f) { }
-  __zdd::__zdd(const arc_file &f) : __decision_diagram(f) { }
+  __zdd::__zdd(const node_file &f) : __dd(f) { }
+  __zdd::__zdd(const arc_file &f) : __dd(f) { }
 
-  __zdd::__zdd(const zdd &dd) : __decision_diagram(dd) { }
+  __zdd::__zdd(const zdd &dd) : __dd(dd) { }
 
-  zdd::zdd(const node_file &f, bool negate) : decision_diagram(f, negate) { }
+  zdd::zdd(const node_file &f, bool negate) : dd(f, negate) { }
 
   zdd::zdd() : zdd(zdd_empty()) { }
   zdd::zdd(bool v) : zdd(zdd_terminal(v)) { }
 
-  zdd::zdd(const zdd &o) : decision_diagram(o) { }
-  zdd::zdd(zdd &&o) : decision_diagram(o) { }
+  zdd::zdd(const zdd &o) : dd(o) { }
+  zdd::zdd(zdd &&o) : dd(o) { }
 
-  zdd::zdd(__zdd &&o) : decision_diagram(reduce<zdd_policy>(std::forward<__zdd>(o))) { }
+  zdd::zdd(__zdd &&o) : dd(reduce<zdd_policy>(std::forward<__zdd>(o))) { }
 
   //////////////////////////////////////////////////////////////////////////////
   // Operators

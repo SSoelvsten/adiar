@@ -5,7 +5,7 @@
 
 #include <adiar/file.h>
 
-#include <adiar/internal/decision_diagram.h>
+#include <adiar/internal/dd.h>
 
 namespace adiar {
   class bdd;
@@ -17,9 +17,9 @@ namespace adiar {
   ///
   /// \relates bdd
   ///
-  /// \copydoc __decision_diagram
+  /// \copydoc __dd
   //////////////////////////////////////////////////////////////////////////////
-  class __bdd : public __decision_diagram
+  class __bdd : public __dd
   {
   public:
     __bdd();
@@ -33,16 +33,16 @@ namespace adiar {
   ///
   /// \brief A reduced Binary Decision Diagram.
   ///
-  /// \copydoc decision_diagram
+  /// \copydoc dd
   //////////////////////////////////////////////////////////////////////////////
-  class bdd : public decision_diagram
+  class bdd : public dd
   {
     friend __bdd;
 
     friend bdd bdd_not(const bdd&);
     friend bdd bdd_not(bdd&&);
     friend size_t bdd_nodecount(const bdd&);
-    friend typename decision_diagram::label_t bdd_varcount(const bdd&);
+    friend typename dd::label_t bdd_varcount(const bdd&);
 
     friend class apply_prod_policy;
     friend __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else);
