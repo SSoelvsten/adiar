@@ -14,7 +14,7 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/arc.h>
 
-namespace adiar
+namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics

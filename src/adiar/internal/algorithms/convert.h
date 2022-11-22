@@ -8,10 +8,10 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
 
-namespace adiar
+namespace adiar::internal
 {
   template<typename to_policy, typename from_policy>
-  class convert_decision_diagram_policy
+  class convert_dd_policy
   {
     static_assert(std::is_base_of<dd,   typename from_policy::reduced_t>::value);
     static_assert(std::is_base_of<__dd, typename from_policy::unreduced_t>::value);

@@ -4,7 +4,7 @@
 #include<adiar/internal/data_types/node.h>
 #include<adiar/internal/data_types/tuple.h>
 
-namespace adiar
+namespace adiar::internal
 {
   // TODO (ADD (64-bit)):
   // TODO (10+ TiB Decision Diagrams):

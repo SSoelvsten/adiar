@@ -44,19 +44,19 @@ go_bandit([]() {
     meta_file<int> test_file_meta_1;
     meta_file<int> test_file_meta_2;
 
-    node_file nodeest_file;
+    node_file node_test_file;
 
-    node n2 = node(1,1, ptr_uint64(false), ptr_uint64(true));
-    node n1 = node(1,0, ptr_uint64(true), ptr_uint64(false));
-    node n0 = node(0,0, ptr_uint64(1,1), ptr_uint64(1,0));
+    node n2 = node(1,1, node::ptr_t(false), node::ptr_t(true));
+    node n1 = node(1,0, node::ptr_t(true),  node::ptr_t(false));
+    node n0 = node(0,0, node::ptr_t(1,1),   node::ptr_t(1,0));
 
     arc_file arcest_file;
 
-    arc node_arc_1 = { ptr_uint64(0,0), ptr_uint64(1,0) };
-    arc terminal_arc_1 = { flag(ptr_uint64(0,0)), ptr_uint64(false) };
+    arc node_arc_1 = { arc::ptr_t(0,0), arc::ptr_t(1,0) };
+    arc terminal_arc_1 = { flag(arc::ptr_t(0,0)), arc::ptr_t(false) };
 
-    arc terminal_arc_2 = { ptr_uint64(1,0), ptr_uint64(true) };
-    arc terminal_arc_3 = { flag(ptr_uint64(1,0)), ptr_uint64(false) };
+    arc terminal_arc_2 = { arc::ptr_t(1,0), arc::ptr_t(true) };
+    arc terminal_arc_3 = { flag(arc::ptr_t(1,0)), arc::ptr_t(false) };
 
     describe("adiar/file_writer", [&]() {
       describe("simple_file_writer", [&]() {
@@ -142,16 +142,16 @@ go_bandit([]() {
         });
 
         describe("node_writer", [&]() {
-          const ptr_uint64 terminal_F = ptr_uint64(false);
-          const ptr_uint64 terminal_T = ptr_uint64(true);
+          const node::ptr_t terminal_F = node::ptr_t(false);
+          const node::ptr_t terminal_T = node::ptr_t(true);
 
-          it("can hook into and write to nodeest_file", [&]() {
-            AssertThat(nodeest_file.is_read_only(), Is().False());
+          it("can hook into and write to node_test_file", [&]() {
+            AssertThat(node_test_file.is_read_only(), Is().False());
 
-            node_writer nw(nodeest_file);
+            node_writer nw(node_test_file);
             nw << n2 << n1 << n0;
 
-            AssertThat(nodeest_file.is_read_only(), Is().False());
+            AssertThat(node_test_file.is_read_only(), Is().False());
           });
 
           // -------------------------------------------------------------------
@@ -208,7 +208,7 @@ go_bandit([]() {
           {
             node_writer nw(nf_0and1);
             nw << node(1, node::MAX_ID, terminal_F, terminal_T)
-               << node(0, node::MAX_ID, terminal_F, ptr_uint64(1, ptr_uint64::MAX_ID));
+               << node(0, node::MAX_ID, terminal_F, node::ptr_t(1, node::ptr_t::MAX_ID));
           }
 
           /*
@@ -224,8 +224,8 @@ go_bandit([]() {
           {
             node_writer nw(nf_0and1and2);
             nw << node(2, node::MAX_ID, terminal_F, terminal_T)
-               << node(1, node::MAX_ID, terminal_F, ptr_uint64(2, ptr_uint64::MAX_ID))
-               << node(0, node::MAX_ID, terminal_F, ptr_uint64(1, ptr_uint64::MAX_ID));
+               << node(1, node::MAX_ID, terminal_F, node::ptr_t(2, node::ptr_t::MAX_ID))
+               << node(0, node::MAX_ID, terminal_F, node::ptr_t(1, node::ptr_t::MAX_ID));
           }
 
           /*
@@ -241,8 +241,8 @@ go_bandit([]() {
           {
             node_writer nw(nf_0and1_or_2);
             nw << node(2, node::MAX_ID, terminal_F, terminal_T)
-               << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), terminal_T)
-               << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID));
+               << node(1, node::MAX_ID, node::ptr_t(2, node::ptr_t::MAX_ID), terminal_T)
+               << node(0, node::MAX_ID, node::ptr_t(2, node::ptr_t::MAX_ID), node::ptr_t(1, node::ptr_t::MAX_ID));
           }
 
           /*
@@ -257,7 +257,7 @@ go_bandit([]() {
             node_writer nw(nf_21xor42);
             nw << node(42, node::MAX_ID, terminal_F, terminal_T)
                << node(42, node::MAX_ID-1, terminal_T, terminal_F)
-               << node(21, node::MAX_ID, ptr_uint64(42, ptr_uint64::MAX_ID), ptr_uint64(42, ptr_uint64::MAX_ID-1));
+               << node(21, node::MAX_ID, node::ptr_t(42, node::ptr_t::MAX_ID), node::ptr_t(42, node::ptr_t::MAX_ID-1));
           }
 
           /*
@@ -273,9 +273,9 @@ go_bandit([]() {
           {
             node_writer nw(nf_0xnor1_or_2);
             nw << node(2, node::MAX_ID, terminal_F, terminal_T)
-               << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), terminal_T)
-               << node(1, node::MAX_ID-1, terminal_T, ptr_uint64(2, ptr_uint64::MAX_ID))
-               << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+               << node(1, node::MAX_ID, node::ptr_t(2, node::ptr_t::MAX_ID), terminal_T)
+               << node(1, node::MAX_ID-1, terminal_T, node::ptr_t(2, node::ptr_t::MAX_ID))
+               << node(0, node::MAX_ID, node::ptr_t(1, node::ptr_t::MAX_ID-1), node::ptr_t(1, node::ptr_t::MAX_ID));
           }
 
           /*
@@ -291,9 +291,9 @@ go_bandit([]() {
           {
             node_writer nw(nf_0xor1_or_2);
             nw << node(2, node::MAX_ID, terminal_F, terminal_T)
-               << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), terminal_T)
-               << node(1, node::MAX_ID-1, terminal_T, ptr_uint64(2, ptr_uint64::MAX_ID))
-               << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID-1));
+               << node(1, node::MAX_ID, node::ptr_t(2, node::ptr_t::MAX_ID), terminal_T)
+               << node(1, node::MAX_ID-1, terminal_T, node::ptr_t(2, node::ptr_t::MAX_ID))
+               << node(0, node::MAX_ID, node::ptr_t(1, node::ptr_t::MAX_ID), node::ptr_t(1, node::ptr_t::MAX_ID-1));
           }
 
           /*
@@ -316,13 +316,13 @@ go_bandit([]() {
             node_writer nw(nf_sum01234_mod2);
             nw << node(4, node::MAX_ID,   terminal_F, terminal_T)                                            // 0
                << node(4, node::MAX_ID-1, terminal_T, terminal_F)                                            // 1
-               << node(3, node::MAX_ID,   ptr_uint64(4, ptr_uint64::MAX_ID-1), ptr_uint64(4, ptr_uint64::MAX_ID))    // 1
-               << node(3, node::MAX_ID-1, ptr_uint64(4, ptr_uint64::MAX_ID),   ptr_uint64(4, ptr_uint64::MAX_ID-1))  // 0
-               << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID-1), ptr_uint64(3, ptr_uint64::MAX_ID))    // 0
-               << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID),   ptr_uint64(3, ptr_uint64::MAX_ID-1))  // 1
-               << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))    // 1
-               << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID-1))  // 0
-               << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));   // 0
+               << node(3, node::MAX_ID,   node::ptr_t(4, node::ptr_t::MAX_ID-1), node::ptr_t(4, node::ptr_t::MAX_ID))    // 1
+               << node(3, node::MAX_ID-1, node::ptr_t(4, node::ptr_t::MAX_ID),   node::ptr_t(4, node::ptr_t::MAX_ID-1))  // 0
+               << node(2, node::MAX_ID,   node::ptr_t(3, node::ptr_t::MAX_ID-1), node::ptr_t(3, node::ptr_t::MAX_ID))    // 0
+               << node(2, node::MAX_ID-1, node::ptr_t(3, node::ptr_t::MAX_ID),   node::ptr_t(3, node::ptr_t::MAX_ID-1))  // 1
+               << node(1, node::MAX_ID,   node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(2, node::ptr_t::MAX_ID))    // 1
+               << node(1, node::MAX_ID-1, node::ptr_t(2, node::ptr_t::MAX_ID),   node::ptr_t(2, node::ptr_t::MAX_ID-1))  // 0
+               << node(0, node::MAX_ID,   node::ptr_t(1, node::ptr_t::MAX_ID-1), node::ptr_t(1, node::ptr_t::MAX_ID));   // 0
           }
 
           // -------------------------------------------------------------------
@@ -349,11 +349,11 @@ go_bandit([]() {
             node_writer nw(nf_larger_2level_cut_A);
             nw << node(3, node::MAX_ID,   terminal_F, terminal_T)
                << node(3, node::MAX_ID-1, terminal_T, terminal_F)
-               << node(2, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID),   terminal_T)
-               << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID-1), ptr_uint64(3, ptr_uint64::MAX_ID))
-               << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), terminal_T)
-               << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
-               << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
+               << node(2, node::MAX_ID,   node::ptr_t(3, node::ptr_t::MAX_ID),   terminal_T)
+               << node(2, node::MAX_ID-1, node::ptr_t(3, node::ptr_t::MAX_ID-1), node::ptr_t(3, node::ptr_t::MAX_ID))
+               << node(1, node::MAX_ID,   node::ptr_t(2, node::ptr_t::MAX_ID-1), terminal_T)
+               << node(1, node::MAX_ID-1, node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(2, node::ptr_t::MAX_ID))
+               << node(0, node::MAX_ID,   node::ptr_t(1, node::ptr_t::MAX_ID-1), node::ptr_t(1, node::ptr_t::MAX_ID));
           }
 
           /*
@@ -377,9 +377,9 @@ go_bandit([]() {
             node_writer nw(nf_larger_2level_cut_B);
             nw << node(3, node::MAX_ID,   terminal_F, terminal_T)
                << node(2, node::MAX_ID,   terminal_F, terminal_T)
-               << node(2, node::MAX_ID-1, ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID))
-               << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID-1))
-               << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID));
+               << node(2, node::MAX_ID-1, node::ptr_t(3, node::ptr_t::MAX_ID), node::ptr_t(3, node::ptr_t::MAX_ID))
+               << node(1, node::MAX_ID,   node::ptr_t(2, node::ptr_t::MAX_ID), node::ptr_t(2, node::ptr_t::MAX_ID-1))
+               << node(0, node::MAX_ID,   node::ptr_t(1, node::ptr_t::MAX_ID), node::ptr_t(3, node::ptr_t::MAX_ID));
           }
 
           describe("canonicity", [&]() {
@@ -419,7 +419,7 @@ go_bandit([]() {
                 node_writer nw(nf);
                 nw << node(42, node::MAX_ID, terminal_T, terminal_F)
                    << node(42, node::MAX_ID-1, terminal_F, terminal_T)
-                   << node(21, node::MAX_ID, ptr_uint64(42, ptr_uint64::MAX_ID), ptr_uint64(42, ptr_uint64::MAX_ID-1));
+                   << node(21, node::MAX_ID, node::ptr_t(42, node::ptr_t::MAX_ID), node::ptr_t(42, node::ptr_t::MAX_ID-1));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -431,7 +431,7 @@ go_bandit([]() {
                 node_writer nw(nf);
                 nw << node(42, node::MAX_ID, terminal_F, terminal_T)
                    << node(42, node::MAX_ID-1, terminal_T, terminal_F)
-                   << node(21, node::MAX_ID-2, ptr_uint64(42, ptr_uint64::MAX_ID), ptr_uint64(42, ptr_uint64::MAX_ID-1));
+                   << node(21, node::MAX_ID-2, node::ptr_t(42, node::ptr_t::MAX_ID), node::ptr_t(42, node::ptr_t::MAX_ID-1));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -443,7 +443,7 @@ go_bandit([]() {
                 node_writer nw(nf);
                 nw << node(42, node::MAX_ID, terminal_F, terminal_T)
                    << node(42, node::MAX_ID-2, terminal_T, terminal_F)
-                   << node(21, node::MAX_ID, ptr_uint64(42, ptr_uint64::MAX_ID), ptr_uint64(42, ptr_uint64::MAX_ID-2));
+                   << node(21, node::MAX_ID, node::ptr_t(42, node::ptr_t::MAX_ID), node::ptr_t(42, node::ptr_t::MAX_ID-2));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -462,9 +462,9 @@ go_bandit([]() {
               {
                 node_writer nw(nf);
                 nw << node(2, node::MAX_ID, terminal_F, terminal_T)
-                   << node(1, node::MAX_ID, terminal_T, ptr_uint64(2, ptr_uint64::MAX_ID))
-                   << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID), terminal_F)
-                   << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID-1));
+                   << node(1, node::MAX_ID, terminal_T, node::ptr_t(2, node::ptr_t::MAX_ID))
+                   << node(1, node::MAX_ID-1, node::ptr_t(2, node::ptr_t::MAX_ID), terminal_F)
+                   << node(0, node::MAX_ID, node::ptr_t(1, node::ptr_t::MAX_ID), node::ptr_t(1, node::ptr_t::MAX_ID-1));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -476,10 +476,10 @@ go_bandit([]() {
                 node_writer nw(nf);
                 nw << node(3, node::MAX_ID,   terminal_F, terminal_T)
                    << node(2, node::MAX_ID,   terminal_F, terminal_T)
-                   << node(2, node::MAX_ID-1, terminal_T, ptr_uint64(3, ptr_uint64::MAX_ID))
-                   << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
-                   << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(2, ptr_uint64::MAX_ID))
-                   << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1));
+                   << node(2, node::MAX_ID-1, terminal_T, node::ptr_t(3, node::ptr_t::MAX_ID))
+                   << node(1, node::MAX_ID,   node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(2, node::ptr_t::MAX_ID))
+                   << node(1, node::MAX_ID-1, node::ptr_t(2, node::ptr_t::MAX_ID),   node::ptr_t(2, node::ptr_t::MAX_ID))
+                   << node(0, node::MAX_ID,   node::ptr_t(1, node::ptr_t::MAX_ID),   node::ptr_t(1, node::ptr_t::MAX_ID-1));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -491,10 +491,10 @@ go_bandit([]() {
                 node_writer nw(nf);
                 nw << node(3, node::MAX_ID,   terminal_F, terminal_T)
                    << node(2, node::MAX_ID,   terminal_F, terminal_T)
-                   << node(2, node::MAX_ID-1, terminal_T, ptr_uint64(3, ptr_uint64::MAX_ID))
-                   << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID-1))
-                   << node(1, node::MAX_ID-1, ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(2, ptr_uint64::MAX_ID))
-                   << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1));
+                   << node(2, node::MAX_ID-1, terminal_T, node::ptr_t(3, node::ptr_t::MAX_ID))
+                   << node(1, node::MAX_ID,   node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(2, node::ptr_t::MAX_ID-1))
+                   << node(1, node::MAX_ID-1, node::ptr_t(2, node::ptr_t::MAX_ID-1), node::ptr_t(2, node::ptr_t::MAX_ID))
+                   << node(0, node::MAX_ID,   node::ptr_t(1, node::ptr_t::MAX_ID),   node::ptr_t(1, node::ptr_t::MAX_ID-1));
               }
 
               AssertThat(is_canonical(nf), Is().False());
@@ -903,8 +903,8 @@ go_bandit([]() {
             AssertThat(ms.can_pull(), Is().False());
           });
 
-          it("can read level_info stream of nodeest_file", [&]() {
-            level_info_stream ms(nodeest_file);
+          it("can read level_info stream of node_test_file", [&]() {
+            level_info_stream ms(node_test_file);
 
             AssertThat(ms.can_pull(), Is().True());
             AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -915,8 +915,8 @@ go_bandit([]() {
         });
 
         describe("node_stream", [&]() {
-          it("can read node stream of nodeest_file", [&]() {
-            node_stream<> ns(nodeest_file);
+          it("can read node stream of node_test_file", [&]() {
+            node_stream<> ns(node_test_file);
 
             AssertThat(ns.can_pull(), Is().True());
             AssertThat(ns.pull(), Is().EqualTo(n0));
@@ -927,8 +927,8 @@ go_bandit([]() {
             AssertThat(ns.can_pull(), Is().False());
           });
 
-          it("can read negated node stream of nodeest_file", [&]() {
-            node_stream<> ns(nodeest_file, true);
+          it("can read negated node stream of node_test_file", [&]() {
+            node_stream<> ns(node_test_file, true);
 
             AssertThat(ns.can_pull(), Is().True());
             AssertThat(ns.pull(), Is().EqualTo(!n0));
@@ -1135,9 +1135,7 @@ go_bandit([]() {
 
           {
             node_writer nw_0(x0);
-            nw_0 << node(0, node::MAX_ID,
-                                ptr_uint64(false),
-                                ptr_uint64(true));
+            nw_0 << node(0, node::MAX_ID, node::ptr_t(false), node::ptr_t(true));
           }
 
           node_file x0_and_x1;
@@ -1145,13 +1143,9 @@ go_bandit([]() {
           {
             node_writer nw_01(x0_and_x1);
 
-            nw_01 << node(1, node::MAX_ID,
-                                 ptr_uint64(false),
-                                 ptr_uint64(true));
+            nw_01 << node(1, node::MAX_ID, node::ptr_t(false), node::ptr_t(true));
 
-            nw_01 << node(0, node::MAX_ID,
-                                 ptr_uint64(false),
-                                 ptr_uint64(1, ptr_uint64::MAX_ID));
+            nw_01 << node(0, node::MAX_ID, node::ptr_t(false), node::ptr_t(1, node::ptr_t::MAX_ID));
           }
 
           node_file terminal_T;
@@ -1169,10 +1163,10 @@ go_bandit([]() {
           }
 
           describe("size computation", [&]() {
-            it("can compute size of nodeest_file", [&]() {
-              AssertThat(nodeest_file.size(), Is().EqualTo(3u));
-              AssertThat(nodeest_file.meta_size(), Is().EqualTo(2u));
-              AssertThat(nodeest_file.file_size(), Is().EqualTo(3u * sizeof(node) + 2u * sizeof(level_info_t)));
+            it("can compute size of node_test_file", [&]() {
+              AssertThat(node_test_file.size(), Is().EqualTo(3u));
+              AssertThat(node_test_file.meta_size(), Is().EqualTo(2u));
+              AssertThat(node_test_file.file_size(), Is().EqualTo(3u * sizeof(node) + 2u * sizeof(level_info_t)));
             });
 
             it("can compute size of x0", [&]() {
@@ -1225,9 +1219,9 @@ go_bandit([]() {
               AssertThat(max_label(x0_and_x1), Is().EqualTo(1u));
             });
 
-            it("should extract labels from nodeest_file", [&]() {
-              AssertThat(min_label(nodeest_file), Is().EqualTo(0u));
-              AssertThat(max_label(nodeest_file), Is().EqualTo(1u));
+            it("should extract labels from node_test_file", [&]() {
+              AssertThat(min_label(node_test_file), Is().EqualTo(0u));
+              AssertThat(max_label(node_test_file), Is().EqualTo(1u));
             });
           });
         });

@@ -20,7 +20,8 @@
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
 
-namespace adiar {
+namespace adiar
+{
   //////////////////////////////////////////////////////////////////////////////
   /// \addtogroup module__builder
   ///
@@ -58,7 +59,7 @@ namespace adiar {
     /// \brief The unique identifier of a prior node.
     ///////////////////////////////////////////////////////////////////////////////
     // TODO: rename to 'ptr ptr' when using complement edges
-    /*const*/ uid_t uid;
+    /*const*/ internal::node::uid_t uid;
 
     ///////////////////////////////////////////////////////////////////////////////
     /// \brief Unique shared reference for the parent builder object.
@@ -76,7 +77,8 @@ namespace adiar {
     builder_ptr(const builder_ptr&) = default;
 
   private:
-    builder_ptr(const uid_t p, const std::shared_ptr<const builder_shared> &sp)
+    builder_ptr(const internal::node::uid_t &p,
+                const std::shared_ptr<const builder_shared> &sp)
       : uid(p), builder_ref(sp)
     { }
   };
@@ -108,8 +110,13 @@ namespace adiar {
   template<typename dd_policy>
   class builder
   {
-  private:
     // TODO: code duplication with .reset().
+
+  private:
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of nodes created within the file.
+    /////////////////////////////////////////////////////////////////////////////
+    typedef internal::node node_t;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief File containing all prior pushed nodes.
@@ -208,10 +215,10 @@ namespace adiar {
       }
 
       // Create potential node
-      const node n(label, current_id, low.uid, high.uid);
+      const node_t n(label, current_id, low.uid, high.uid);
 
       // Check whether this node is 'redundant'
-      const uid_t res_uid = dd_policy::reduction_rule(n);
+      const node_t::uid_t res_uid = dd_policy::reduction_rule(n);
 
       if (res_uid.is_terminal()) {
         created_terminal = true;
@@ -263,7 +270,7 @@ namespace adiar {
                                     const bool low,
                                     const builder_ptr<dd_policy> &high)
     {
-      builder_ptr<dd_policy> low_ptr = make_ptr(ptr_uint64(low));
+      builder_ptr<dd_policy> low_ptr = make_ptr(node_t::ptr_t(low));
       return add_node(label, low_ptr, high);
     }
 
@@ -288,7 +295,7 @@ namespace adiar {
                                     const builder_ptr<dd_policy> &low,
                                     const bool high)
     {
-      builder_ptr<dd_policy> high_ptr = make_ptr(ptr_uint64(high));
+      builder_ptr<dd_policy> high_ptr = make_ptr(node_t::ptr_t(high));
       return add_node(label, low, high_ptr);
     }
 
@@ -312,8 +319,8 @@ namespace adiar {
                                     const bool low,
                                     const bool high)
     {
-      builder_ptr<dd_policy> low_ptr = make_ptr(ptr_uint64(low));
-      builder_ptr<dd_policy> high_ptr = make_ptr(ptr_uint64(high));
+      builder_ptr<dd_policy> low_ptr = make_ptr(node_t::ptr_t(low));
+      builder_ptr<dd_policy> high_ptr = make_ptr(node_t::ptr_t(high));
       return add_node(label, low_ptr, high_ptr);
     }
 
@@ -331,7 +338,7 @@ namespace adiar {
       created_terminal = true;
       terminal_val = terminal_value;
 
-      return make_ptr(ptr_uint64(terminal_value));
+      return make_ptr(node_t::ptr_t(terminal_value));
     }
 
     /////////////////////////////////////////////////////////////////////////////
@@ -354,7 +361,7 @@ namespace adiar {
     {
       if(!nw.has_pushed()) {
         if(created_terminal) {
-          nw.push(node(terminal_val));
+          nw.push(node_t(terminal_val));
         } else {
           throw std::domain_error("There must be at least one node or terminal in the decision diagram");
         }
@@ -403,7 +410,7 @@ namespace adiar {
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Create a builder_ptr with 'this' builder as its parent.
     /////////////////////////////////////////////////////////////////////////////
-    builder_ptr<dd_policy> make_ptr(const ptr_uint64 p) noexcept
+    builder_ptr<dd_policy> make_ptr(const node_t::ptr_t &p) noexcept
     {
       return builder_ptr<dd_policy>(p, builder_ref);
     }

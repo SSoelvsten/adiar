@@ -5,7 +5,8 @@
 #include<adiar/internal/data_types/uid.h>
 #include<adiar/internal/data_types/tuple.h>
 
-namespace adiar {
+namespace adiar::internal
+{
   //////////////////////////////////////////////////////////////////////////////
   /// \brief A Decision Diagram node triple (uid, low, high).
   ///

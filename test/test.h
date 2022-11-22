@@ -10,6 +10,7 @@ using namespace bandit;
 #include <adiar/adiar.h>
 
 using namespace adiar;
+using namespace adiar::internal;
 
 ////////////////////////////////////////////////////////////////////////////////
 // To improve the relationship between the tests and the algorithms, we will not
@@ -50,7 +51,7 @@ public:
 // To improve the error messages
 namespace snowhouse
 {
-  std::string string_of_adiar_ptr(adiar::ptr_uint64 p)
+  std::string string_of_adiar_ptr(adiar::internal::ptr_uint64 p)
   {
     std::stringstream stream;
     if (p.is_nil()) {
@@ -63,7 +64,7 @@ namespace snowhouse
     return stream.str();
   }
 
-  std::string string_of_adiar_uid(adiar::uid_uint64 u)
+  std::string string_of_adiar_uid(adiar::internal::uid_uint64 u)
   {
     std::stringstream stream;
     if (u.is_terminal()) {
@@ -77,7 +78,7 @@ namespace snowhouse
   template<>
   struct Stringizer<arc>
   {
-    static std::string ToString(const arc& a)
+    static std::string ToString(const adiar::internal::arc& a)
     {
       std::stringstream stream;
       stream << "arc: "
@@ -92,7 +93,7 @@ namespace snowhouse
   template<>
   struct Stringizer<node>
   {
-    static std::string ToString(const node& n)
+    static std::string ToString(const adiar::internal::node& n)
     {
       std::stringstream stream;
       if (n.is_terminal()) {
@@ -114,7 +115,7 @@ namespace snowhouse
   template<>
   struct Stringizer<level_info_t>
   {
-    static std::string ToString(const level_info_t& m)
+    static std::string ToString(const adiar::internal::level_info_t& m)
     {
       std::stringstream stream;
       stream << "level_info: (x" << label_of(m) << ", #nodes = " << width_of(m) << ")";
@@ -125,7 +126,7 @@ namespace snowhouse
   template<>
   struct Stringizer<assignment_t>
   {
-    static std::string ToString(const assignment_t& a)
+    static std::string ToString(const adiar::assignment_t& a)
     {
       std::stringstream stream;
       stream << "assignment: [x" << label_of(a) << "|->" << value_of(a) << "]";

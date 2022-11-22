@@ -7,7 +7,8 @@
 
 #include <adiar/internal/dd.h>
 
-namespace adiar {
+namespace adiar
+{
   class bdd;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -19,7 +20,7 @@ namespace adiar {
   ///
   /// \copydoc __dd
   //////////////////////////////////////////////////////////////////////////////
-  class __bdd : public __dd
+  class __bdd : public internal::__dd
   {
   public:
     __bdd();
@@ -35,14 +36,14 @@ namespace adiar {
   ///
   /// \copydoc dd
   //////////////////////////////////////////////////////////////////////////////
-  class bdd : public dd
+  class bdd : public internal::dd
   {
     friend __bdd;
 
     friend bdd bdd_not(const bdd&);
     friend bdd bdd_not(bdd&&);
     friend size_t bdd_nodecount(const bdd&);
-    friend typename dd::label_t bdd_varcount(const bdd&);
+    friend typename internal::dd::label_t bdd_varcount(const bdd&);
 
     friend class apply_prod_policy;
     friend __bdd bdd_ite(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else);

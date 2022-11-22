@@ -3,7 +3,8 @@
 
 #include <adiar/internal/data_types/ptr.h>
 
-namespace adiar {
+namespace adiar::internal
+{
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access to a set of arguments.
   // TODO: move into tuple template when no longer used anywhere else but here.
@@ -91,9 +92,9 @@ namespace adiar {
       if constexpr (IS_SORTED) {
         return _elems[0];
       } else if constexpr (CARDINALITY == 2) {
-        return adiar::fst(_elems[0], _elems[1]);
+        return adiar::internal::fst(_elems[0], _elems[1]);
       } else if constexpr (CARDINALITY == 3) {
-        return adiar::fst(_elems[0], _elems[1], _elems[2]);
+        return adiar::internal::fst(_elems[0], _elems[1], _elems[2]);
       }
     }
 
@@ -108,9 +109,9 @@ namespace adiar {
       if constexpr (IS_SORTED) {
         return _elems[1];
       } else if constexpr (CARDINALITY == 2) {
-        return adiar::snd(_elems[0], _elems[1]);
+        return adiar::internal::snd(_elems[0], _elems[1]);
       } else if constexpr (CARDINALITY == 3) {
-        return adiar::snd(_elems[0], _elems[1], _elems[2]);
+        return adiar::internal::snd(_elems[0], _elems[1], _elems[2]);
       }
     }
 
@@ -125,7 +126,7 @@ namespace adiar {
       if constexpr (IS_SORTED) {
         return _elems[2];
       } else if constexpr (CARDINALITY == 3) {
-        return adiar::trd(_elems[0], _elems[1], _elems[2]);
+        return adiar::internal::trd(_elems[0], _elems[1], _elems[2]);
       }
     }
 

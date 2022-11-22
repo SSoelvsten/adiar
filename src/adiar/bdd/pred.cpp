@@ -6,6 +6,6 @@ namespace adiar
 {
     bool bdd_equal(const bdd &f, const bdd &g)
     {
-        return is_isomorphic(f, g);
+        return internal::is_isomorphic(f, g);
     }
 }

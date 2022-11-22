@@ -6,7 +6,7 @@
 #include <adiar/internal/dd.h>
 #include <adiar/internal/util.h>
 
-namespace adiar
+namespace adiar::internal
 {
   stats_t::equality_t stats_equality;
 

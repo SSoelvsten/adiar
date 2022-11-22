@@ -10,7 +10,8 @@
 #include <adiar/internal/dd.h>
 #include <adiar/internal/util.h>
 
-namespace adiar {
+namespace adiar
+{
   // Class declarations to be able to reference it
   class zdd;
 
@@ -23,7 +24,7 @@ namespace adiar {
   ///
   /// \copydoc __dd
   //////////////////////////////////////////////////////////////////////////////
-  class __zdd : public __dd {
+  class __zdd : public internal::__dd {
   public:
     __zdd();
     __zdd(const node_file &f);
@@ -40,7 +41,7 @@ namespace adiar {
   ///
   /// \copydoc decision_diagram
   //////////////////////////////////////////////////////////////////////////////
-  class zdd : public dd
+  class zdd : public internal::dd
   {
     ////////////////////////////////////////////////////////////////////////////
     // Friends
@@ -80,7 +81,7 @@ namespace adiar {
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    cut_size_t max_1level_cut(const cut_type ct) const
+    internal::cut_size_t max_1level_cut(const internal::cut_type ct) const
     {
       return add_false_cofactor(ct, file._file_ptr->max_1level_cut);
     }
@@ -91,7 +92,7 @@ namespace adiar {
     ///
     /// \param ct The type of the cut to obtain
     ////////////////////////////////////////////////////////////////////////////
-    cut_size_t max_2level_cut(const cut_type ct) const
+    internal::cut_size_t max_2level_cut(const internal::cut_type ct) const
     {
       return add_false_cofactor(ct, file._file_ptr->max_2level_cut);
     }
@@ -115,14 +116,14 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Accounts for the false arc added due to using a co-factor.
     ////////////////////////////////////////////////////////////////////////////
-    cut_size_t add_false_cofactor(const cut_type ct, const cuts_t &ilevel_cuts) const
+    internal::cut_size_t add_false_cofactor(const internal::cut_type ct, const internal::cuts_t &ilevel_cuts) const
     {
       const safe_size_t cut_size = ilevel_cuts[ct];
 
       // Bit-mask (allowing implicit conversion to size_t with bit-operators) to
       // get the cut-type WITHOUT the false arcs.
-      constexpr size_t bit_mask = cut_type::INTERNAL_TRUE;
-      const cut_type ct_excl_false = static_cast<cut_type>(ct & bit_mask);
+      constexpr size_t bit_mask = internal::cut_type::INTERNAL_TRUE;
+      const internal::cut_type ct_excl_false = static_cast<internal::cut_type>(ct & bit_mask);
 
       // In product construction algorithms we need to take into account the
       // (single) suppressed false arc, which may suddenly become visible (e.g.

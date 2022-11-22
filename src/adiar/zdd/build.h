@@ -36,14 +36,14 @@ namespace adiar
     }
 
     const bool lt_terminal_val = pred(set_size, set_size+1);
-    const ptr_uint64 lt_terminal = ptr_uint64(lt_terminal_val);
+    const zdd::ptr_t lt_terminal = zdd::ptr_t(lt_terminal_val);
 
     if (labels_size < set_size) {
       return lt_terminal_val ? zdd_powerset(labels) : zdd_empty();
     }
 
     const bool eq_terminal_val = pred(set_size, set_size);
-    const ptr_uint64 eq_terminal = ptr_uint64(eq_terminal_val);
+    const zdd::ptr_t eq_terminal = zdd::ptr_t(eq_terminal_val);
 
     if (labels_size == set_size) {
       if (lt_terminal_val == eq_terminal_val) {
@@ -54,7 +54,7 @@ namespace adiar
     }
 
     const bool gt_terminal_val = pred(set_size + 1, set_size);
-    const ptr_uint64 gt_terminal = ptr_uint64(gt_terminal_val);
+    const zdd::ptr_t gt_terminal = zdd::ptr_t(gt_terminal_val);
 
     if (lt_terminal_val && eq_terminal_val && gt_terminal_val) {
       return zdd_powerset(labels);
@@ -126,7 +126,7 @@ namespace adiar
       const zdd::id_t min_id = curr_level_width < max_id ? max_id - curr_level_width : 0u;
 
       do {
-        ptr_uint64 low;
+        zdd::ptr_t low;
         if (processed_levels == 0) { // lowest level
           low = curr_id == set_size+1 ? gt_terminal
               : curr_id == set_size   ? eq_terminal
@@ -134,18 +134,18 @@ namespace adiar
         } else if (curr_id < prior_min_id) { // guaranteed to be in lt case
           if (not_equal) {
             low = curr_id == min_id
-              ? ptr_uint64(prior_label, max_id)
+              ? zdd::ptr_t(prior_label, max_id)
               : lt_terminal; // <- When processed_levels == 1 and happens twice
           } else {
             low = lt_terminal_val
-              ? ptr_uint64(prior_label, prior_min_id)
+              ? zdd::ptr_t(prior_label, prior_min_id)
               : lt_terminal;
           }
         } else {
-          low = ptr_uint64(prior_label, curr_id);
+          low = zdd::ptr_t(prior_label, curr_id);
         }
 
-        ptr_uint64 high;
+        zdd::ptr_t high;
         if (processed_levels == 0) {
           high = curr_id >= set_size    ? gt_terminal
                : curr_id == set_size-1u ? eq_terminal
@@ -157,18 +157,18 @@ namespace adiar
         } else if (not_equal && processed_levels == 1 && curr_id == min_id){
           high = lt_terminal; // <-- true terminal
         } else {
-          high = ptr_uint64(prior_label, curr_id + 1u);
+          high = zdd::ptr_t(prior_label, curr_id + 1u);
         }
 
-        adiar_debug(high != ptr_uint64(false), "Should not create a reducible node");
+        adiar_debug(high != zdd::ptr_t(false), "Should not create a reducible node");
 
-        nw.unsafe_push(node(curr_label, curr_id, low, high));
+        nw.unsafe_push(zdd::node_t(curr_label, curr_id, low, high));
 
         level_size++;
       } while (curr_id-- > min_id);
 
       adiar_debug(level_size > 0, "Should have output a node");
-      nw.unsafe_push(create_level_info(curr_label, level_size));
+      nw.unsafe_push(internal::create_level_info(curr_label, level_size));
 
       prior_label = curr_label;
       prior_min_id = curr_id + 1;

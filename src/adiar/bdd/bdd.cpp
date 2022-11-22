@@ -16,24 +16,39 @@
 #include <adiar/bdd/bdd_policy.h>
 #include <adiar/zdd/zdd_policy.h>
 
-namespace adiar {
+namespace adiar
+{
   //////////////////////////////////////////////////////////////////////////////
   // Constructors
-  __bdd::__bdd() : __dd() { }
-  __bdd::__bdd(const node_file &f) : __dd(f) { }
-  __bdd::__bdd(const arc_file &f) : __dd(f) { }
+  __bdd::__bdd() : internal::__dd()
+  { }
 
-  __bdd::__bdd(const bdd &dd) : __dd(dd) { }
+  __bdd::__bdd(const node_file &f) : internal::__dd(f)
+  { }
 
-  bdd::bdd(const node_file &f, bool negate) : dd(f, negate) { }
+  __bdd::__bdd(const arc_file &f) : internal::__dd(f)
+  { }
 
-  bdd::bdd(const bdd &o) : dd(o) { }
-  bdd::bdd(bdd &&o) : dd(o) { }
+  __bdd::__bdd(const bdd &dd) : internal::__dd(dd)
+  { }
 
-  bdd::bdd(__bdd &&o) : dd(reduce<bdd_policy>(std::forward<__bdd>(o))) { }
+  bdd::bdd(const node_file &f, bool negate) : internal::dd(f, negate)
+  { }
 
-  bdd::bdd(bool v) : bdd(bdd_terminal(v)) { }
-  bdd::bdd() : bdd(false) { }
+  bdd::bdd(const bdd &o) : internal::dd(o)
+  { }
+
+  bdd::bdd(bdd &&o) : internal::dd(o)
+  { }
+
+  bdd::bdd(__bdd &&o) : internal::dd(internal::reduce<bdd_policy>(std::forward<__bdd>(o)))
+  { }
+
+  bdd::bdd(bool v) : bdd(bdd_terminal(v))
+  { }
+
+  bdd::bdd() : bdd(false)
+  { }
 
   //////////////////////////////////////////////////////////////////////////////
   // Operators
@@ -68,7 +83,7 @@ namespace adiar {
   bdd& bdd::operator= (__bdd &&other)
   {
     free();
-    return (*this = reduce<bdd_policy>(std::forward<__bdd>(other)));
+    return (*this = internal::reduce<bdd_policy>(std::forward<__bdd>(other)));
   }
 
   bdd& bdd::operator&= (const bdd &other)
@@ -141,24 +156,24 @@ namespace adiar {
   // Conversion
   __bdd bdd_from(const zdd &A, const label_file &dom)
   {
-    return intercut<convert_decision_diagram_policy<bdd_policy, zdd_policy>>(A, dom);
+    return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>(A, dom);
   }
 
   __bdd bdd_from(const zdd &A)
   {
     const label_file dom = adiar_get_domain();
-    return intercut<convert_decision_diagram_policy<bdd_policy, zdd_policy>>(A, dom);
+    return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>(A, dom);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Debug
   void bdd_printdot(const bdd &f, std::ostream &out)
   {
-    output_dot<bdd>(f, out);
+    internal::output_dot<bdd>(f, out);
   }
 
   void bdd_printdot(const bdd &f, const std::string &file_name)
   {
-    output_dot<bdd>(f, file_name);
+    internal::output_dot<bdd>(f, file_name);
   }
 }

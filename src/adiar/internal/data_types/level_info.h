@@ -1,7 +1,8 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_LEVEL_INFO_H
 #define ADIAR_INTERNAL_DATA_TYPES_LEVEL_INFO_H
 
-namespace adiar {
+namespace adiar::internal
+{
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Meta information on a single level in a decision diagram.
   ///

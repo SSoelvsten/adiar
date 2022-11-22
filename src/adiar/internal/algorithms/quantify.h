@@ -17,7 +17,7 @@
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/data_types/request.h>
 
-namespace adiar
+namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics

@@ -10,7 +10,7 @@
 
 namespace adiar
 {
-  template<substitute_act FIX_VALUE>
+  template<internal::substitute_act FIX_VALUE>
   class zdd_subset_label_act
   {
     label_stream<> ls;
@@ -49,9 +49,9 @@ namespace adiar
     }
 
   public:
-    substitute_act action_for_level(const zdd::label_t new_level) {
+    internal::substitute_act action_for_level(const zdd::label_t new_level) {
       forward_to_level(new_level);
-      return l_incl == new_level ? FIX_VALUE : substitute_act::KEEP;
+      return l_incl == new_level ? FIX_VALUE : internal::substitute_act::KEEP;
     }
 
   public:
@@ -86,20 +86,20 @@ namespace adiar
   class zdd_offset_policy : public zdd_policy
   {
   public:
-    static substitute_rec keep_node(const node &n, zdd_subset_act &/*amgr*/)
-    { return substitute_rec_output { n }; }
+    static internal::substitute_rec keep_node(const zdd::node_t &n, zdd_subset_act &/*amgr*/)
+    { return internal::substitute_rec_output { n }; }
 
-    static substitute_rec fix_false(const node &n, zdd_subset_act &/*amgr*/)
-    { return substitute_rec_skipto { n.low() }; }
+    static internal::substitute_rec fix_false(const zdd::node_t &n, zdd_subset_act &/*amgr*/)
+    { return internal::substitute_rec_skipto { n.low() }; }
 
-    static substitute_rec fix_true(const node &/*n*/, zdd_subset_act &/*amgr*/)
+    static internal::substitute_rec fix_true(const zdd::node_t &/*n*/, zdd_subset_act &/*amgr*/)
     {
       adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
   public:
     static inline zdd terminal(bool terminal_val,
-                           zdd_subset_label_act<substitute_act::FIX_FALSE>& /*amgr*/)
+                               zdd_subset_label_act<internal::substitute_act::FIX_FALSE>& /*amgr*/)
     { return zdd_terminal(terminal_val); }
   };
 
@@ -107,12 +107,12 @@ namespace adiar
   {
     if (l.size() == 0
         || is_terminal(dd)
-        || disjoint_labels<label_file, label_stream<>>(l, dd)) {
+        || internal::disjoint_labels<label_file, label_stream<>>(l, dd)) {
       return dd;
     }
 
-    zdd_subset_label_act<substitute_act::FIX_FALSE> amgr(l);
-    return substitute<zdd_offset_policy<zdd_subset_label_act<substitute_act::FIX_FALSE>>>(dd, amgr);
+    zdd_subset_label_act<internal::substitute_act::FIX_FALSE> amgr(l);
+    return internal::substitute<zdd_offset_policy<zdd_subset_label_act<internal::substitute_act::FIX_FALSE>>>(dd, amgr);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -120,42 +120,42 @@ namespace adiar
   class zdd_onset_policy : public zdd_policy
   {
   public:
-    static substitute_rec keep_node(const node &n, zdd_subset_act &amgr)
+    static internal::substitute_rec keep_node(const zdd::node_t &n, zdd_subset_act &amgr)
     {
       if (amgr.has_level_incl()) {
         // If recursion goes past the intended level, then it is replaced with
         // the false terminal.
-        const ptr_uint64 low  = n.low().is_terminal() || n.low().label() > amgr.level_incl()
-          ? ptr_uint64(false)
+        const zdd::ptr_t low  = n.low().is_terminal() || n.low().label() > amgr.level_incl()
+          ? zdd::ptr_t(false)
           : n.low();
 
         // If this applies to high, then the node should be skipped entirely.
         if (n.high().is_terminal() || n.high().label() > amgr.level_incl()) {
-          return substitute_rec_skipto { low };
+          return internal::substitute_rec_skipto { low };
         }
-        return substitute_rec_output { node(n.uid(), low, n.high()) };
+        return internal::substitute_rec_output { zdd::node_t(n.uid(), low, n.high()) };
       }
-      return substitute_rec_output { n };
+      return internal::substitute_rec_output { n };
     }
 
-    static substitute_rec fix_false(const node &/*n*/, zdd_subset_act &/*amgr*/)
+    static internal::substitute_rec fix_false(const zdd::node_t &/*n*/, zdd_subset_act &/*amgr*/)
     {
       adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
-    static substitute_rec fix_true(const node &n, zdd_subset_act &amgr)
+    static internal::substitute_rec fix_true(const zdd::node_t &n, zdd_subset_act &amgr)
     {
       if (amgr.has_level_excl()) {
         if (n.high().is_terminal() || n.high().label() > amgr.level_excl()) {
-          return substitute_rec_skipto { ptr_uint64(false) };
+          return internal::substitute_rec_skipto { zdd::ptr_t(false) };
         }
       }
-      return substitute_rec_output { node(n.uid(), ptr_uint64(false), n.high()) };
+      return internal::substitute_rec_output { zdd::node_t(n.uid(), zdd::ptr_t(false), n.high()) };
     }
 
   public:
     static inline zdd terminal(bool terminal_val,
-                           zdd_subset_label_act<substitute_act::FIX_TRUE>& amgr)
+                               zdd_subset_label_act<internal::substitute_act::FIX_TRUE>& amgr)
     {
       return zdd_terminal(!amgr.has_level_excl() && terminal_val);
     }
@@ -164,11 +164,11 @@ namespace adiar
   __zdd zdd_onset(const zdd &dd, const label_file &l)
   {
     if (l.size() == 0 || (is_false(dd))) { return dd; }
-    if ((is_true(dd)) || disjoint_labels<label_file, label_stream<>>(l, dd)) {
+    if ((is_true(dd)) || internal::disjoint_labels<label_file, label_stream<>>(l, dd)) {
       return zdd_empty();
     }
 
-    zdd_subset_label_act<substitute_act::FIX_TRUE> amgr(l);
-    return substitute<zdd_onset_policy<zdd_subset_label_act<substitute_act::FIX_TRUE>>>(dd, amgr);
+    zdd_subset_label_act<internal::substitute_act::FIX_TRUE> amgr(l);
+    return internal::substitute<zdd_onset_policy<zdd_subset_label_act<internal::substitute_act::FIX_TRUE>>>(dd, amgr);
   }
 }

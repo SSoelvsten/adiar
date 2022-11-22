@@ -9,7 +9,8 @@
 #include <adiar/file_stream.h>
 #include <adiar/file_writer.h>
 
-namespace adiar {
+namespace adiar::internal
+{
   template <typename T>
   void output_dot(const T& nodes, std::ostream &out)
   {

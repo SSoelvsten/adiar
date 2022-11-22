@@ -29,20 +29,20 @@ namespace adiar
       l = has_l ? ls.pull() : 0;
     }
 
-    inline ptr_uint64 visit(const node &n)
+    inline zdd::ptr_t visit(const zdd::node_t &n)
     {
       visited_label = n.label();
 
-      const ptr_uint64 next_ptr = has_l && l == visited_label ? n.high() : n.low();
+      const zdd::ptr_t next_ptr = has_l && l == visited_label ? n.high() : n.low();
 
       if (has_l) {
         // Did we miss a label before the root?
-        if (is_first_visit && l < visited_label) { return ptr_uint64::NIL(); }
+        if (is_first_visit && l < visited_label) { return zdd::ptr_t::NIL(); }
 
         // Will we miss a label?
         if (l == visited_label && ls.can_pull()) { l = ls.pull(); }
         if (next_ptr.is_node() && visited_label < l && l < next_ptr.label()) {
-          return ptr_uint64::NIL();
+          return zdd::ptr_t::NIL();
         }
       }
 
@@ -60,7 +60,7 @@ namespace adiar
   bool zdd_contains(const zdd &zdd, const label_file &labels)
   {
     zdd_contains_visitor v(labels);
-    traverse(zdd, v);
+    internal::traverse(zdd, v);
     return v.get_result();
   }
 }

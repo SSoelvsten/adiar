@@ -13,7 +13,7 @@ namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct sat_sum : path_sum
+  struct sat_sum : internal::path_sum
   {
     bdd::label_t levels_visited = 0u;
   };
@@ -21,7 +21,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
   template<>
-  struct count_queue_lt<sat_sum>
+  struct internal::count_queue_lt<sat_sum>
   {
     bool operator()(const sat_sum &a, const sat_sum &b)
     {
@@ -90,7 +90,7 @@ namespace adiar
   {
     return is_terminal(bdd)
       ? 0
-      : count<path_count_policy<bdd_policy>>(bdd, bdd_varcount(bdd));
+      : internal::count<internal::path_count_policy<bdd_policy>>(bdd, bdd_varcount(bdd));
   }
 
   uint64_t bdd_satcount(const bdd& bdd, bdd::label_t varcount)
@@ -102,7 +102,7 @@ namespace adiar
     adiar_assert(bdd_varcount(bdd) <= varcount,
                  "number of variables in domain should be greater than the ones present in the BDD.");
 
-    return count<sat_count_policy>(bdd, varcount);
+    return internal::count<sat_count_policy>(bdd, varcount);
   }
 
   uint64_t bdd_satcount(const bdd &f)

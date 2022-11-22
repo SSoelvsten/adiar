@@ -16,37 +16,37 @@ namespace adiar
 {
   bdd bdd_terminal(bool value)
   {
-    return build_terminal(value);
+    return internal::build_terminal(value);
   }
 
   bdd bdd_true()
   {
-    return build_terminal(true);
+    return internal::build_terminal(true);
   }
 
   bdd bdd_false()
   {
-    return build_terminal(false);
+    return internal::build_terminal(false);
   }
 
   bdd bdd_ithvar(bdd::label_t label)
   {
-    return build_ithvar(label);
+    return internal::build_ithvar(label);
   }
 
   bdd bdd_nithvar(bdd::label_t label)
   {
-    return bdd_not(build_ithvar(label));
+    return bdd_not(internal::build_ithvar(label));
   }
 
   bdd bdd_and(const label_file &labels)
   {
-    return build_chain<true, false, true>(labels);
+    return internal::build_chain<true, false, true>(labels);
   }
 
   bdd bdd_or(const label_file &labels)
   {
-    return build_chain<false, true, false>(labels);
+    return internal::build_chain<false, true, false>(labels);
   }
 
   inline id_t bdd_counter_min_id(bdd::label_t label, bdd::label_t max_label, uint64_t threshold)
@@ -61,9 +61,9 @@ namespace adiar
     adiar_assert(min_label <= max_label,
                  "The given min_label should be smaller than the given max_label");
 
-    const ptr_uint64 gt_terminal = ptr_uint64(false);
-    const ptr_uint64 eq_terminal = ptr_uint64(true);
-    const ptr_uint64 lt_terminal = ptr_uint64(false);
+    const bdd::ptr_t gt_terminal = bdd::ptr_t(false);
+    const bdd::ptr_t eq_terminal = bdd::ptr_t(true);
+    const bdd::ptr_t lt_terminal = bdd::ptr_t(false);
 
     const size_t vars = max_label - min_label + 1u;
     if (vars < threshold) {
@@ -94,28 +94,28 @@ namespace adiar
       id_t min_id = bdd_counter_min_id(curr_label, max_label, threshold);
 
       do {
-        ptr_uint64 low;
+        bdd::ptr_t low;
         if (curr_label == max_label) {
           low = curr_id == threshold ? eq_terminal : lt_terminal;
         } else if (curr_id < bdd_counter_min_id(curr_label+1, max_label, threshold)) {
           low = lt_terminal;
         } else {
-          low = adiar::ptr_uint64(curr_label + 1, curr_id);
+          low = adiar::bdd::ptr_t(curr_label + 1, curr_id);
         }
 
-        ptr_uint64 high;
+        bdd::ptr_t high;
         if (curr_label == max_label) {
           high = curr_id + 1 == threshold ? eq_terminal : gt_terminal;
         } else if (curr_id == threshold) {
           high = gt_terminal;
         } else {
-          high = adiar::ptr_uint64(curr_label + 1, curr_id + 1);
+          high = bdd::ptr_t(curr_label + 1, curr_id + 1);
         }
 
-        nw.unsafe_push(adiar::node(curr_label, curr_id, low, high));
+        nw.unsafe_push(bdd::node_t(curr_label, curr_id, low, high));
 
       } while (curr_id-- > min_id);
-      nw.unsafe_push(create_level_info(curr_label, (max_id - min_id) + 1));
+      nw.unsafe_push(internal::create_level_info(curr_label, (max_id - min_id) + 1));
 
     } while (curr_label-- > min_label);
 
@@ -163,7 +163,7 @@ namespace adiar
       // Do not count the one lt_terminal (if any)
       - (lt_terminals > 0);
 
-    nf->max_1level_cut[cut_type::INTERNAL] = std::max({
+    nf->max_1level_cut[internal::cut_type::INTERNAL] = std::max({
         internal_cut_above_shallowest_lvl,
         internal_cut_below_shallowest_lvl,
         internal_cut_below_deepest_lvl});
@@ -176,19 +176,19 @@ namespace adiar
     // The maximum cut with false terminals is at the deepes widest level. Beyond
     // it, a node (with two children) is removed, which outweighs the gt_terminal
     // and possible lt_terminal added.
-    nf->max_1level_cut[cut_type::INTERNAL_FALSE] =
+    nf->max_1level_cut[internal::cut_type::INTERNAL_FALSE] =
       std::max(internal_cut_below_deepest_lvl + lt_terminals + gt_terminals - 2u * lvls_after_widest,
                lt_terminals + gt_terminals);
 
     // Compare the cut at deepest widest level and below the last level.
-    nf->max_1level_cut[cut_type::INTERNAL_TRUE] = std::max(nf->max_1level_cut[cut_type::INTERNAL],
-                                                           eq_terminals);
+    nf->max_1level_cut[internal::cut_type::INTERNAL_TRUE] = std::max(nf->max_1level_cut[internal::cut_type::INTERNAL],
+                                                                     eq_terminals);
 
     // Counting both false and true terminals is only different from counting false
     // terminals, if the number of eq_terminals outweighs the number of internal nodes
     // since the true terminals are only spawned at the very bottom.
-    nf->max_1level_cut[cut_type::ALL] = std::max(nf->max_1level_cut[cut_type::INTERNAL_FALSE],
-                                                 lt_terminals + eq_terminals + gt_terminals);
+    nf->max_1level_cut[internal::cut_type::ALL] = std::max(nf->max_1level_cut[internal::cut_type::INTERNAL_FALSE],
+                                                           lt_terminals + eq_terminals + gt_terminals);
 
     // Maximum 2-level cut
     //
@@ -196,7 +196,7 @@ namespace adiar
     // out-degree. The out-degree is also 2 (assuming we count all arcs). So, we
     // do not increase the size of the cut by abusing the added freedom of a
     // 2-level cut when all arcs are present.
-    nf->max_2level_cut[cut_type::ALL] = nf->max_1level_cut[cut_type::ALL];
+    nf->max_2level_cut[internal::cut_type::ALL] = nf->max_1level_cut[internal::cut_type::ALL];
 
     // When only looking at internal arcs, then the exception to the above are
     // the nodes with id '0'and id 'threshold'. Both have only an out-degree of
@@ -210,17 +210,17 @@ namespace adiar
        && shallowest_widest_lvl > 0u
        ) ? 1u : 0u;
 
-    nf->max_2level_cut[cut_type::INTERNAL] = std::min(nf->max_1level_cut[cut_type::ALL],
-                                                      nf->max_1level_cut[cut_type::INTERNAL] + extra_2level_cut);
+    nf->max_2level_cut[internal::cut_type::INTERNAL] = std::min(nf->max_1level_cut[internal::cut_type::ALL],
+                                                                nf->max_1level_cut[internal::cut_type::INTERNAL] + extra_2level_cut);
 
     // When including the false terminal, then these two 'edge-case nodes' already
     // have an out-degree of two, except again if the same edge-case applies.
-    nf->max_2level_cut[cut_type::INTERNAL_FALSE] = std::min(nf->max_1level_cut[cut_type::ALL],
-                                                            nf->max_1level_cut[cut_type::INTERNAL_FALSE] + extra_2level_cut);
+    nf->max_2level_cut[internal::cut_type::INTERNAL_FALSE] = std::min(nf->max_1level_cut[internal::cut_type::ALL],
+                                                                      nf->max_1level_cut[internal::cut_type::INTERNAL_FALSE] + extra_2level_cut);
 
     // And similarly, if we only include the true terminals
-    nf->max_2level_cut[cut_type::INTERNAL_TRUE] = std::min(nf->max_1level_cut[cut_type::ALL],
-                                                           nf->max_1level_cut[cut_type::INTERNAL_TRUE] + extra_2level_cut);
+    nf->max_2level_cut[internal::cut_type::INTERNAL_TRUE] = std::min(nf->max_1level_cut[internal::cut_type::ALL],
+                                                                     nf->max_1level_cut[internal::cut_type::INTERNAL_TRUE] + extra_2level_cut);
 
     return nf;
   }

@@ -11,7 +11,7 @@
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_types/uid.h>
 
-namespace adiar
+namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics

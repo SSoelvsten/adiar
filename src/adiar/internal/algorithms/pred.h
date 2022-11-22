@@ -14,7 +14,7 @@
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/data_types/tuple.h>
 
-namespace adiar
+namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
   /// Struct to hold statistics for equality checking
