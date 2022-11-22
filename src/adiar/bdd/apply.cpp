@@ -7,7 +7,7 @@
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 
-#include <adiar/internal/algorithms/product_construction.h>
+#include <adiar/internal/algorithms/prod2.h>
 
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 
@@ -15,7 +15,7 @@
 
 namespace adiar
 {
-  class apply_prod_policy : public bdd_policy, public prod_mixed_level_merger
+  class apply_prod_policy : public bdd_policy, public prod2_mixed_level_merger
   {
   public:
     static __bdd resolve_same_file(const bdd &bdd_1, const bdd &bdd_2,
@@ -112,7 +112,7 @@ namespace adiar
 
   __bdd bdd_apply(const bdd &bdd_1, const bdd &bdd_2, const bool_op &op)
   {
-    return product_construction<apply_prod_policy>(bdd_1, bdd_2, op);
+    return prod2<apply_prod_policy>(bdd_1, bdd_2, op);
   }
 };
 

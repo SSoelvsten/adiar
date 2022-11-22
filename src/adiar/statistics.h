@@ -250,10 +250,10 @@ namespace adiar
     ///
     /// \see bdd_apply zdd_binop
     //////////////////////////////////////////////////////////////////////////////
-    struct product_construction_t : public __alg_base
+    struct prod2_t : public __alg_base
     { }
-    /// \copydoc product_construction_t
-    product_construction;
+    /// \copydoc prod2_t
+    prod2;
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Quantification algorithm statistics.

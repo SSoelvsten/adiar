@@ -4,7 +4,7 @@
 #include <adiar/internal/cnl.h>
 
 #include <adiar/internal/algorithms/pred.h>
-#include <adiar/internal/algorithms/product_construction.h>
+#include <adiar/internal/algorithms/prod2.h>
 
 namespace adiar {
   bool zdd_equal(const zdd &s1, const zdd &s2)
@@ -51,7 +51,7 @@ namespace adiar {
     static constexpr bool termination_value = false;
   };
 
-  class zdd_subseteq_policy : public zdd_policy, public prod_mixed_level_merger
+  class zdd_subseteq_policy : public zdd_policy, public prod2_mixed_level_merger
   {
   public:
     typedef ignore_levels<cut_type::INTERNAL_TRUE, cut_type::INTERNAL_TRUE> level_check_t;
@@ -126,7 +126,7 @@ namespace adiar {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class zdd_disjoint_policy : public zdd_policy, public prod_mixed_level_merger
+  class zdd_disjoint_policy : public zdd_policy, public prod2_mixed_level_merger
   {
   public:
     typedef ignore_levels<cut_type::ALL, cut_type::ALL> level_check_t;
