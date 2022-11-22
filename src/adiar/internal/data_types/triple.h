@@ -3,6 +3,7 @@
 
 #include <functional>
 
+#include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/data_types/uid.h>
 
 namespace adiar {
@@ -17,24 +18,9 @@ namespace adiar {
 
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access
-  inline ptr_uint64 fst(const ptr_uint64 t1, const ptr_uint64 t2, const ptr_uint64 t3)
-  {
-    return std::min({t1, t2, t3});
-  }
-
   inline ptr_uint64 fst(const triple &t) { return fst(t.t1, t.t2, t.t3); }
 
-  inline ptr_uint64 snd(const ptr_uint64 t1, const ptr_uint64 t2, const ptr_uint64 t3)
-  {
-    return std::max(std::min(t1, t2), std::min(std::max(t1,t2),t3));
-  }
-
   inline ptr_uint64 snd(const triple &t) { return snd(t.t1, t.t2, t.t3); }
-
-  inline ptr_uint64 trd(const ptr_uint64 t1, const ptr_uint64 t2, const ptr_uint64 t3)
-  {
-    return std::max({t1, t2, t3});
-  }
 
   inline ptr_uint64 trd(const triple &t) { return trd(t.t1, t.t2, t.t3); }
 

@@ -6,10 +6,7 @@
 namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   // Ordered access to a set of arguments.
-  // TODO: uncomment when triples are moved into tuple<..., 3>.
-  //  template<typename elem_t>
-  //  inline elem_t fst(const elem_t t1)
-  //  { return t1; }
+  // TODO: move into tuple template when no longer used anywhere else but here.
 
   template<typename elem_t>
   inline elem_t fst(const elem_t t1, const elem_t t2)
@@ -18,6 +15,21 @@ namespace adiar {
   template<typename elem_t>
   inline elem_t snd(const elem_t t1, const elem_t t2)
   { return std::max(t1, t2); }
+
+  template<typename elem_t>
+  inline elem_t fst(const elem_t t1, const elem_t t2, const elem_t t3)
+  { return std::min({t1, t2, t3}); }
+
+  template<typename elem_t>
+  inline elem_t snd(const elem_t t1, const elem_t t2, const elem_t t3)
+  { return std::max(std::min(t1, t2), std::min(std::max(t1,t2),t3)); }
+
+  template<typename elem_t>
+  inline elem_t trd(const elem_t t1, const elem_t t2, const elem_t t3)
+  { return std::max({t1, t2, t3}); }
+
+  // TODO (QMDD):
+  //   Add 4-ary tuples (and possibly a generic implementation?)
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Tuple holding two elements and providing an ordered access.
@@ -47,7 +59,7 @@ namespace adiar {
     static constexpr uint8_t CARDINALITY = cardinality;
 
     static_assert(CARDINALITY > 0, "A tuple cannot be 'unit' type.");
-    static_assert(CARDINALITY <= 2, "No support (yet) for tuples of that cardinality.");
+    static_assert(CARDINALITY <= 3, "No support (yet) for tuples of that cardinality.");
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether elements are supposed to be in sorted order.
@@ -80,6 +92,8 @@ namespace adiar {
         return _elems[0];
       } else if constexpr (CARDINALITY == 2) {
         return adiar::fst(_elems[0], _elems[1]);
+      } else if constexpr (CARDINALITY == 3) {
+        return adiar::fst(_elems[0], _elems[1], _elems[2]);
       }
     }
 
@@ -95,6 +109,23 @@ namespace adiar {
         return _elems[1];
       } else if constexpr (CARDINALITY == 2) {
         return adiar::snd(_elems[0], _elems[1]);
+      } else if constexpr (CARDINALITY == 3) {
+        return adiar::snd(_elems[0], _elems[1], _elems[2]);
+      }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Access to the second element wrt. the elements ordering.
+    ////////////////////////////////////////////////////////////////////////////
+    inline elem_t trd() const
+    {
+      adiar_debug(3 <= CARDINALITY,
+                  "Need at least a 3-ary tuple to retrieve the third element.");
+
+      if constexpr (IS_SORTED) {
+        return _elems[2];
+      } else if constexpr (CARDINALITY == 3) {
+        return adiar::trd(_elems[0], _elems[1], _elems[2]);
       }
     }
 
@@ -111,20 +142,43 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Initialize a tuple with all elements being the given one.
     ////////////////////////////////////////////////////////////////////////////
-    tuple(const elem_t &elem) : _elems{elem}
+    tuple(const elem_t &elem)
+      : _elems{elem}
     {
       if constexpr (2 <= CARDINALITY) _elems[1] = elem;
+      if constexpr (3 <= CARDINALITY) _elems[2] = elem;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create a 2-ary tuple with the two given elements.
     ////////////////////////////////////////////////////////////////////////////
-    tuple(const elem_t &elem1, const elem_t &elem2) : _elems{elem1,elem2}
+    tuple(const elem_t &elem1, const elem_t &elem2)
+      : _elems{elem1,elem2}
     {
+      adiar_debug(CARDINALITY == 2,
+                  "Constructor is only designed for 2-ary tuples.");
+
       if constexpr (IS_SORTED) {
         adiar_debug(elem1 <= elem2,
                     "A sorted tuple should be given its elements in sorted order");
       }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Create a 3-ary tuple with the three given elements.
+    ////////////////////////////////////////////////////////////////////////////
+    tuple(const elem_t &elem1, const elem_t &elem2, const elem_t &elem3)
+      : _elems{elem1,elem2,elem3}
+    {
+      adiar_debug(CARDINALITY == 3,
+                  "Constructor is only designed for 3-ary tuples.");
+
+      if constexpr (IS_SORTED) {
+          adiar_debug(elem1 <= elem2,
+                      "A sorted tuple should be given its elements in sorted order");
+          adiar_debug(elem2 <= elem3,
+                      "A sorted tuple should be given its elements in sorted order");
+        }
     }
 
     /* ============================== COMPARATORS =========================== */
@@ -140,7 +194,12 @@ namespace adiar {
 
       const bool lt_2 = lt_1 || (this->_elems[0] == o._elems[0]
                                  && this->_elems[1] < o._elems[1]);
-      return lt_2;
+      if constexpr (CARDINALITY == 2) return lt_2;
+
+      const bool lt_3 = lt_2 || (this->_elems[0] == o._elems[0]
+                                 && this->_elems[1] == o._elems[1]
+                                 && this->_elems[2] < o._elems[2]);
+      return lt_3;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -157,7 +216,10 @@ namespace adiar {
       if constexpr (CARDINALITY == 1) return eq_1;
 
       const bool eq_2 = eq_1 && this->_elems[1] == o._elems[1];
-      return eq_2;
+      if constexpr (CARDINALITY == 2) return eq_2;
+
+      const bool eq_3 = eq_2 && this->_elems[2] == o._elems[2];
+      return eq_3;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -189,8 +251,20 @@ namespace adiar {
     {
       // Sort primarily by the element to be encountered second
       return a.snd() < b.snd() ||
-        // Group requests to the same tuple together by sorting on the coordinates
+        // Sort secondly lexicographically.
         (a.snd() == b.snd() && a < b);
+    }
+  };
+
+  template<class tuple_t>
+  struct tuple_trd_lt
+  {
+    inline bool operator()(const tuple_t &a, const tuple_t &b)
+    {
+      // Sort primarily by the element to be encountered second
+      return a.trd() < b.trd() ||
+        // Sort secondly lexicographically.
+        (a.trd() == b.trd() && a < b);
     }
   };
 }
