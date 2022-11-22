@@ -63,7 +63,6 @@ set(HEADERS
   internal/data_types/ptr.h
   internal/data_types/request
   internal/data_types/tuple.h
-  internal/data_types/triple.h
   internal/data_types/uid.h
 )
 
