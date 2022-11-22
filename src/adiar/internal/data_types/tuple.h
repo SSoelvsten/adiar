@@ -69,7 +69,6 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Access to the first element wrt. the elements ordering.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<1 <= CARDINALITY>>
     inline elem_t fst() const
     {
       if constexpr (IS_SORTED) {
@@ -82,9 +81,11 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Access to the second element wrt. the elements ordering.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<2 <= CARDINALITY>>
     inline elem_t snd() const
     {
+      adiar_debug(2 <= CARDINALITY,
+                  "Need at least a 2-ary tuple to retrieve the second element.");
+
       if constexpr (IS_SORTED) {
         return _elems[1];
       } else if constexpr (CARDINALITY == 2) {
@@ -113,7 +114,6 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create a 2-ary tuple with the two given elements.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<CARDINALITY == 2>>
     tuple(const elem_t &elem1, const elem_t &elem2) : _elems{elem1,elem2}
     {
       if constexpr (IS_SORTED) {
@@ -127,9 +127,11 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Lexicographical '<'.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<CARDINALITY == 2>>
     inline bool operator< (const tuple &o) const
     {
+      adiar_debug(2 <= CARDINALITY,
+                  "Not implemented for that cardinality.");
+
       return this->_elems[0] < o._elems[0]
         || (this->_elems[0] == o._elems[0] && this->_elems[1] < o._elems[1]);
     }
@@ -141,9 +143,13 @@ namespace adiar {
     { return (o < *this); }
 
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<CARDINALITY == 2>>
     inline bool operator== (const tuple &o) const
-    { return this->_elems[0] == o._elems[0] && this->_elems[1] == o._elems[1]; }
+    {
+      adiar_debug(2 <= CARDINALITY,
+                  "Not implemented for that cardinality.");
+
+      return this->_elems[0] == o._elems[0] && this->_elems[1] == o._elems[1];
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     inline bool operator!= (const tuple &o) const
