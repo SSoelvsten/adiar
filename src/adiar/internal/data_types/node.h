@@ -145,7 +145,6 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct node `(uid, low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     node(const uid_t u, const ptr_t &l, const ptr_t &h)
       : _uid(u), _children{l, h}
     { }
@@ -153,7 +152,6 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     node(const label_t label, const id_t id, const ptr_t &l, const ptr_t &h)
       : _uid(label, id), _children{l, h}
     {
@@ -169,26 +167,29 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     node(const label_t label, const id_t id, const node &l, const ptr_t &h)
       : node(label, id, l.uid(), h)
-    { }
+    {
+      adiar_debug(OUTDEGREE == 2, "Constructor is for binary node only.");
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     node(const label_t label, const id_t id, const ptr_t &l, const node &h)
       : node(label, id, l, h.uid())
-    { }
+    {
+      adiar_debug(OUTDEGREE == 2, "Constructor is for binary node only.");
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct *internal* node `((label, id), low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     node(const label_t label, const id_t id, const node &l, const node &h)
       : node(label, id, l.uid(), h.uid())
-    { }
+    {
+      adiar_debug(OUTDEGREE == 2, "Constructor is for binary node only.");
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the label of a node.
@@ -222,10 +223,11 @@ namespace adiar {
 
     /* ================================= CHILDREN =========================== */
   public:
+    // TODO: indexable retrieval of children.
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The node's children sorted based on the semantics of this node.
     ////////////////////////////////////////////////////////////////////////////
-    // TODO: Change type of _children to 'tuple<ptr_t, OUTDEGREE, false>'
     inline const children_t& children() const
     { return _children; }
 
@@ -233,17 +235,25 @@ namespace adiar {
     /// \brief The 'low' child (also known as the 'else' child), i.e. reflecting
     ///        assigning `false` to variable with the 'label'.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     inline ptr_uint64 low() const
-    { return _children[false]; }
+    {
+      adiar_debug(OUTDEGREE == 2,
+                  "Semantics of 'low' is only defined for binary nodes.");
+
+      return _children[false];
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The 'high' child (also known as the 'then' child), i.e.
     ///        reflecting assigning `true` to variable with the 'label'.
     ////////////////////////////////////////////////////////////////////////////
-    template<typename = std::enable_if_t<OUTDEGREE == 2>>
     inline ptr_uint64 high() const
-    { return _children[true]; }
+    {
+      adiar_debug(OUTDEGREE == 2,
+                  "Semantics of 'high' is only defined for binary node.");
+
+      return _children[true];
+    }
 
     /* =============================== COMPARATORS ========================== */
   public:
