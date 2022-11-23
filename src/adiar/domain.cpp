@@ -2,10 +2,10 @@
 
 namespace adiar
 {
-  std::shared_ptr<internal::label_file> domain_ptr;
+  shared_ptr<internal::label_file> domain_ptr;
 
   void adiar_set_domain(const internal::label_file &dom) {
-    domain_ptr = std::make_shared<internal::label_file>(dom);
+    domain_ptr = make_shared<internal::label_file>(dom);
   }
 
   bool adiar_has_domain() {

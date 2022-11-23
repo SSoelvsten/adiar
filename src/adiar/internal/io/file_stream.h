@@ -44,20 +44,20 @@ namespace adiar::internal
     /// The file stream includes a shared pointer to hook into the reference
     /// counting and garbage collection of the file.
     ////////////////////////////////////////////////////////////////////////////
-    std::shared_ptr<SharedPtr_T> _file_ptr;
+    shared_ptr<SharedPtr_T> _file_ptr;
 
   protected:
     file_stream() { }
 
     file_stream(file<T> &f,
-                const std::shared_ptr<SharedPtr_T> &shared_ptr,
+                const shared_ptr<SharedPtr_T> &shared_ptr,
                 bool negate = false)
     {
       attach(f, shared_ptr, negate);
     }
 
     void attach(file<T> &f,
-                const std::shared_ptr<SharedPtr_T> &shared_ptr,
+                const shared_ptr<SharedPtr_T> &shared_ptr,
                 bool negate = false)
     {
       if (attached()) { detach(); }
@@ -72,7 +72,7 @@ namespace adiar::internal
     }
 
   public:
-    file_stream(const std::shared_ptr<file<T>> &f, bool negate = false)
+    file_stream(const shared_ptr<file<T>> &f, bool negate = false)
     {
       attach(*f, f, negate);
     }
