@@ -12,6 +12,10 @@
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file.h>
+#include <adiar/internal/io/simple_file.h>
+#include <adiar/internal/io/meta_file.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/node_file.h>
 
 namespace adiar::internal
 {

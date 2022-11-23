@@ -18,7 +18,7 @@
 #include <iostream>
 
 #include <adiar/bool_op.h>
-#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/simple_file.h>
 #include <adiar/zdd/zdd.h>
 #include <adiar/bdd/bdd.h>
 

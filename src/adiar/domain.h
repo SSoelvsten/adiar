@@ -11,7 +11,7 @@
 /// using it when needed.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/simple_file.h>
 
 namespace adiar
 {
