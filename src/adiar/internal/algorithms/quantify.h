@@ -147,7 +147,7 @@ namespace adiar::internal
       // Precondition: The input is reduced and will not collapse to a terminal
       quantify_pq_1.push({ {fst(v.low(), v.high()), snd(v.low(), v.high())}, {}, {ptr_uint64::NIL()} });
     } else {
-      const uid_t out_uid(out_label, out_id++);
+      const node::uid_t out_uid(out_label, out_id++);
 
       if (v.low().is_terminal()) {
         aw.unsafe_push_terminal({ out_uid, v.low() });
@@ -244,7 +244,7 @@ namespace adiar::internal
         quantify_policy::compute_cofactor(req.target.snd().on_level(out_label), low2, high2);
 
         adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
-        const uid_t out_uid(out_label, out_id++);
+        const node::uid_t out_uid(out_label, out_id++);
 
         __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, out_uid, low1, low2);
         __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, flag(out_uid), high1, high2);

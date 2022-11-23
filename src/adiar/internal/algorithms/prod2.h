@@ -94,7 +94,7 @@ namespace adiar::internal
   {
     template<typename pq_1_t>
     static inline void go(pq_1_t& /*prod_pq_1*/, arc_writer &aw,
-                          uid_t out_uid, ptr_uint64 source)
+                          node::uid_t out_uid, node::ptr_t source)
     {
       if (!source.is_nil()) {
         aw.unsafe_push_node({ source, out_uid });
@@ -250,7 +250,7 @@ namespace adiar::internal
 
       if (std::holds_alternative<prod2_rec_output>(root_rec)) {
         prod2_rec_output r = std::get<prod2_rec_output>(root_rec);
-        const uid_t out_uid(out_label, out_id++);
+        const node::uid_t out_uid(out_label, out_id++);
 
         __prod2_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
         __prod2_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
@@ -342,7 +342,7 @@ namespace adiar::internal
         prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
 
         adiar_debug(out_id < prod_policy::MAX_ID, "Has run out of ids");
-        const uid_t out_uid(out_label, out_id++);
+        const node::uid_t out_uid(out_label, out_id++);
 
         __prod2_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
         __prod2_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
