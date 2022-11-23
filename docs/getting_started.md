@@ -66,4 +66,5 @@ int main()
 }
 ```
 
-In between, you to create \ref module__bdd and \ref module__zdd.
+In between, you can create and manipulate the \ref module__bdd and
+\ref module__zdd decision diagrams.
