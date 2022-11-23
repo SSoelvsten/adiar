@@ -2,8 +2,6 @@
 
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 
-using namespace adiar;
-
 struct pq_test_data {
   ptr_uint64::label_t label;
   uint64_t nonce;
@@ -11,7 +9,7 @@ struct pq_test_data {
 
 stats_t::levelized_priority_queue_t stats_lpq_tests;
 
-namespace adiar
+namespace adiar::internal
 {
   template <>
   struct FILE_CONSTANTS<pq_test_data>

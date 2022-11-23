@@ -5,8 +5,6 @@
 #include "adiar/test_assignment.cpp"
 #include "adiar/test_bool_op.cpp"
 
-#include "adiar/test_file.cpp"
-
 #include "adiar/test_domain.cpp"
 #include "adiar/test_builder.cpp"
 
@@ -27,6 +25,8 @@
 #include "adiar/internal/data_types/test_arc.cpp"
 #include "adiar/internal/data_types/test_tuple.cpp"
 #include "adiar/internal/data_types/test_convert.cpp"
+
+#include "adiar/internal/io/test_file.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR BDD unit tests

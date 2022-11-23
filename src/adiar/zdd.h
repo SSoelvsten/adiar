@@ -18,9 +18,7 @@
 #include <iostream>
 
 #include <adiar/bool_op.h>
-
-#include <adiar/file.h>
-
+#include <adiar/internal/io/file.h>
 #include <adiar/zdd/zdd.h>
 #include <adiar/bdd/bdd.h>
 
@@ -78,7 +76,7 @@ namespace adiar
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_vars(const label_file &vars);
+  zdd zdd_vars(const internal::label_file &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { {1}, {2}, ..., {k} }.
@@ -89,7 +87,7 @@ namespace adiar
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singletons(const label_file &vars);
+  zdd zdd_singletons(const internal::label_file &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The powerset of all given variables.
@@ -100,7 +98,7 @@ namespace adiar
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_powerset(const label_file &vars);
+  zdd zdd_powerset(const internal::label_file &vars);
 
   // For templated constructors see 'adiar/zdd/build.h'
 
@@ -178,7 +176,7 @@ namespace adiar
   /// \returns
   /// \f$ \{ \mathit{vars} \Delta a \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_change(const zdd &A, const label_file &vars);
+  __zdd zdd_change(const zdd &A, const internal::label_file &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the given domain.
@@ -189,7 +187,7 @@ namespace adiar
   ///
   /// \returns    \f$ 2^{\mathit{dom}} \setminus A \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_complement(const zdd &A, const label_file &dom);
+  __zdd zdd_complement(const zdd &A, const internal::label_file &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Complement of A within the global \ref module__domain
@@ -227,7 +225,7 @@ namespace adiar
   /// \returns
   /// \f$ \bigcup_{a \in A, i \in 2^{vars}} (a \cup i) \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_expand(const zdd &A, const label_file &vars);
+  __zdd zdd_expand(const zdd &A, const internal::label_file &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that do \em not include the given set of variables.
@@ -239,7 +237,7 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \not\in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_offset(const zdd &A, const label_file &vars);
+  __zdd zdd_offset(const zdd &A, const internal::label_file &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Subset that \em do include the given set of variables.
@@ -251,7 +249,7 @@ namespace adiar
   /// \returns
   /// \f$ \{ a \in A \mid \forall i \in \mathit{vars} : i \in a \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_onset(const zdd &A, const label_file &vars);
+  __zdd zdd_onset(const zdd &A, const internal::label_file &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Project family of sets onto a domain, i.e. remove from every
@@ -264,10 +262,10 @@ namespace adiar
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_project(const zdd &A, const label_file &dom);
+  zdd zdd_project(const zdd &A, const internal::label_file &dom);
 
   /// \cond
-  zdd zdd_project(zdd &&A, const label_file &dom);
+  zdd zdd_project(zdd &&A, const internal::label_file &dom);
   /// \endcond
 
   /// \}
@@ -389,7 +387,7 @@ namespace adiar
   ///
   /// \returns Whether \f$ a \in A \f$
   //////////////////////////////////////////////////////////////////////////////
-  bool zdd_contains(const zdd &A, const label_file &a);
+  bool zdd_contains(const zdd &A, const internal::label_file &a);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically smallest set a in A.
@@ -398,7 +396,7 @@ namespace adiar
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   //////////////////////////////////////////////////////////////////////////////
-  std::optional<label_file> zdd_minelem(const zdd &A);
+  std::optional<internal::label_file> zdd_minelem(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically largest set a in A.
@@ -407,12 +405,12 @@ namespace adiar
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   //////////////////////////////////////////////////////////////////////////////
-  std::optional<label_file> zdd_maxelem(const zdd &A);
+  std::optional<internal::label_file> zdd_maxelem(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Get the labels of the levels of the ZDD
   //////////////////////////////////////////////////////////////////////////////
-  label_file zdd_varprofile(const zdd &A);
+  internal::label_file zdd_varprofile(const zdd &A);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -433,7 +431,7 @@ namespace adiar
   /// \returns   ZDD that is true for the exact same assignments to variables in
   ///            the given domain.
   //////////////////////////////////////////////////////////////////////////////
-  __zdd zdd_from(const bdd &f, const label_file &dom);
+  __zdd zdd_from(const bdd &f, const internal::label_file &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Obtains the ZDD that represents the same function/set as the

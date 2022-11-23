@@ -1,10 +1,8 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_CONVERT_H
 #define ADIAR_INTERNAL_ALGORITHMS_CONVERT_H
 
-#include<adiar/internal/dd.h>
-
-#include<adiar/internal/algorithms/intercut.h>
-
+#include <adiar/internal/dd.h>
+#include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
 

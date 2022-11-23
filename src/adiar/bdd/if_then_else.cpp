@@ -1,19 +1,15 @@
 #include <adiar/bdd.h>
 
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
-
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/util.h>
-
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
-
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/data_types/tuple.h>
-
 #include <adiar/statistics.h>
 
 namespace adiar
@@ -37,26 +33,27 @@ namespace adiar
 
   template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
   using ite_priority_queue_1_t =
-    internal::levelized_node_priority_queue<ite_request<0>,
-                                            internal::request_label<ite_request<0>>,
-                                            internal::request_data_fst_lt<ite_request<0>>,
-                                            LOOK_AHEAD, mem_mode, 3>;
+  internal::levelized_node_priority_queue<ite_request<0>,
+                                          internal::request_label<ite_request<0>>,
+                                          internal::request_data_fst_lt<ite_request<0>>,
+                                          LOOK_AHEAD, mem_mode, 3>;
 
   template<memory::memory_mode mem_mode>
   using ite_priority_queue_2_t =
-    internal::priority_queue<mem_mode,
-                             ite_request<1>,
-                             internal::request_data_snd_lt<ite_request<1>>>;
+  internal::priority_queue<mem_mode,
+                            ite_request<1>,
+                            internal::request_data_snd_lt<ite_request<1>>>;
 
   template<memory::memory_mode mem_mode>
   using ite_priority_queue_3_t =
-    internal::priority_queue<mem_mode,
-                             ite_request<2>,
-                             internal::request_data_trd_lt<ite_request<2>>>;
+  internal::priority_queue<mem_mode,
+                            ite_request<2>,
+                            internal::request_data_trd_lt<ite_request<2>>>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  node_file __ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
+  internal::node_file
+  __ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
   {
     // TODO: What is the performance of '<<' rather than 'unsafe_push'? If there
     // is a major difference, then we may want to "inline" the '<<' with its
@@ -69,12 +66,12 @@ namespace adiar
     internal::node::ptr_t root_then = internal::node::ptr_t::NIL();
     internal::node::ptr_t root_else = internal::node::ptr_t::NIL();
 
-    node_file out_nodes;
-    node_writer nw(out_nodes);
+    internal::node_file out_nodes;
+    internal::node_writer nw(out_nodes);
 
     // zip 'then' and 'else' cases
-    node_stream<true> in_nodes_then(bdd_then);
-    node_stream<true> in_nodes_else(bdd_else);
+    internal::node_stream<true> in_nodes_then(bdd_then);
+    internal::node_stream<true> in_nodes_else(bdd_else);
 
     while (in_nodes_then.can_pull() || in_nodes_else.can_pull()) {
       bool from_then = in_nodes_then.can_pull()
@@ -93,7 +90,7 @@ namespace adiar
     adiar_debug(!root_then.is_nil(), "Did not obtain root from then stream");
     adiar_debug(!root_else.is_nil(), "Did not obtain root from else stream");
 
-    node_stream<true> in_nodes_if(bdd_if);
+    internal::node_stream<true> in_nodes_if(bdd_if);
 
     while (in_nodes_if.can_pull()) {
       const internal::node n = in_nodes_if.pull();
@@ -135,7 +132,7 @@ namespace adiar
       && v.uid() != t;
   }
 
-  inline void ite_init_request(node_stream<> &in_nodes,
+  inline void ite_init_request(internal::node_stream<> &in_nodes,
                                internal::node &v,
                                const internal::node::label_t out_label,
                                internal::node::ptr_t &low,
@@ -153,7 +150,7 @@ namespace adiar
 
   template<typename pq_1_t>
   inline void __ite_resolve_request(pq_1_t &ite_pq_1,
-                                    arc_writer &aw,
+                                    internal::arc_writer &aw,
                                     const internal::node::ptr_t source,
                                     internal::node::ptr_t r_if,
                                     internal::node::ptr_t r_then,
@@ -193,17 +190,17 @@ namespace adiar
     // Now, at this point we will not defer to using the Apply, so we can take
     // up memory by opening the input streams and evaluating trivial
     // conditionals.
-    node_stream<> in_nodes_if(bdd_if);
+    internal::node_stream<> in_nodes_if(bdd_if);
     internal::node v_if = in_nodes_if.pull();
 
     if (v_if.is_terminal()) {
       return v_if.value() ? bdd_then : bdd_else;
     }
 
-    node_stream<> in_nodes_then(bdd_then);
+    internal::node_stream<> in_nodes_then(bdd_then);
     internal::node v_then = in_nodes_then.pull();
 
-    node_stream<> in_nodes_else(bdd_else);
+    internal::node_stream<> in_nodes_else(bdd_else);
     internal::node v_else = in_nodes_else.pull();
 
     // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
@@ -217,8 +214,8 @@ namespace adiar
     // From here on forward, we probably cannot circumvent actually having to do
     // the product construction.
 
-    arc_file out_arcs;
-    arc_writer aw(out_arcs);
+    internal::arc_file out_arcs;
+    internal::arc_writer aw(out_arcs);
 
     pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, pq_1_memory, max_pq_1_size, stats_prod3.lpq);
     pq_2_t ite_pq_2(pq_2_memory, max_pq_2_size);
@@ -548,9 +545,9 @@ namespace adiar
     // memory variant.
     const tpie::memory_size_type aux_available_memory = memory::available()
       // Input streams
-      - 3*node_stream<>::memory_usage()
+      - 3*internal::node_stream<>::memory_usage()
       // Output stream
-      - arc_writer::memory_usage();
+      - internal::arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
       ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>::DATA_STRUCTURES;

@@ -1,19 +1,17 @@
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
-#include <adiar/file_stream.h>
-
 #include <adiar/internal/assert.h>
 #include <adiar/internal/util.h>
-
 #include <adiar/internal/algorithms/substitution.h>
+#include <adiar/internal/io/file_stream.h>
 
 namespace adiar
 {
   template<internal::substitute_act FIX_VALUE>
   class zdd_subset_label_act
   {
-    label_stream<> ls;
+    internal::label_stream<> ls;
 
     zdd::label_t l_incl;
     zdd::label_t l_excl;
@@ -24,7 +22,7 @@ namespace adiar
     zdd::label_t alg_level = 0;
 
   public:
-    typedef label_file action_t;
+    typedef internal::label_file action_t;
 
     zdd_subset_label_act(const action_t &lf) : ls(lf)
     {
@@ -103,11 +101,11 @@ namespace adiar
     { return zdd_terminal(terminal_val); }
   };
 
-  __zdd zdd_offset(const zdd &dd, const label_file &l)
+  __zdd zdd_offset(const zdd &dd, const internal::label_file &l)
   {
     if (l.size() == 0
         || is_terminal(dd)
-        || internal::disjoint_labels<label_file, label_stream<>>(l, dd)) {
+        || internal::disjoint_labels<internal::label_file, internal::label_stream<>>(l, dd)) {
       return dd;
     }
 
@@ -161,10 +159,10 @@ namespace adiar
     }
   };
 
-  __zdd zdd_onset(const zdd &dd, const label_file &l)
+  __zdd zdd_onset(const zdd &dd, const internal::label_file &l)
   {
     if (l.size() == 0 || (is_false(dd))) { return dd; }
-    if ((is_true(dd)) || internal::disjoint_labels<label_file, label_stream<>>(l, dd)) {
+    if ((is_true(dd)) || internal::disjoint_labels<internal::label_file, internal::label_stream<>>(l, dd)) {
       return zdd_empty();
     }
 

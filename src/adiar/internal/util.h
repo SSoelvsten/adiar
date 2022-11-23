@@ -1,10 +1,9 @@
 #ifndef ADIAR_INTERNAL_UTIL_H
 #define ADIAR_INTERNAL_UTIL_H
 
-#include <adiar/file.h>
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
-
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/dd.h>
 
 namespace adiar::internal

@@ -4,24 +4,19 @@
 #include <variant>
 
 #include <adiar/bool_op.h>
-
-#include <adiar/file.h>
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
-
 #include <adiar/bdd/bdd.h>
-
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>
-
 #include <adiar/internal/algorithms/build.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
-
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/data_types/request.h>
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 
 namespace adiar::internal
 {

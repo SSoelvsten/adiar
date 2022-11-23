@@ -1,28 +1,13 @@
 #ifndef ADIAR_INTERNAL_DD_H
 #define ADIAR_INTERNAL_DD_H
 
-#include <adiar/file.h>
-
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
+#include <adiar/internal/io/file.h>
 
 #include <variant>
-
-namespace adiar
-{
-  // declaration of 'level_info_stream' in <adiar/file_stream.h> in parent
-  // namespace. This ugliness will be removed when these also are moved into the
-  // 'adiar::internal' namespace.
-
-  template <typename T, bool REVERSE>
-  class level_info_stream;
-
-  template <bool REVERSE>
-  class node_stream;
-}
-
 
 namespace adiar::internal
 {
@@ -56,7 +41,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     // Friends
     template <typename T, bool REVERSE>
-    friend class adiar::level_info_stream;
+    friend class level_info_stream;
 
     ////////////////////////////////////////////////////////////////////////////
     // Union of node_file and arc_file (with std::monostate for 'error')
@@ -246,10 +231,10 @@ namespace adiar::internal
     friend class __dd;
 
     template <typename T, bool REVERSE>
-    friend class adiar::level_info_stream;
+    friend class level_info_stream;
 
     template <bool REVERSE>
-    friend class adiar::node_stream;
+    friend class node_stream;
 
     template <typename file_t, typename comp_t, size_t FILES>
     friend class label_merger;

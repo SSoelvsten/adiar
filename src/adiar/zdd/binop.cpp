@@ -1,11 +1,11 @@
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
-#include <adiar/file_stream.h>
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/data_types/tuple.h>
+#include <adiar/internal/io/file_stream.h>
 
 namespace adiar
 {

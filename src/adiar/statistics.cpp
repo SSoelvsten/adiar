@@ -3,7 +3,6 @@
 #include <iomanip>
 
 #include <adiar/bdd/if_then_else.h>
-
 #include <adiar/internal/algorithms/count.h>
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/algorithms/intercut.h>
@@ -11,7 +10,6 @@
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/algorithms/substitution.h>
-
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 
 namespace adiar

@@ -1,13 +1,12 @@
 #ifndef ADIAR_INTERNAL_ALGORITHMS_BUILD_H
 #define ADIAR_INTERNAL_ALGORITHMS_BUILD_H
 
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
-
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 
 namespace adiar::internal
 {

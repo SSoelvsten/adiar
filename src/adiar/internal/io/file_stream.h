@@ -5,17 +5,15 @@
 #include <tpie/sort.h>
 
 #include <adiar/assignment.h>
-#include <adiar/file.h>
-
 #include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/memory.h>
-
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/io/file.h>
 
-namespace adiar
+namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream to a file with a one-way reading direction.
@@ -173,7 +171,7 @@ namespace adiar
   /// \param REVERSE Whether the reading direction should be reversed
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  using label_stream = file_stream<internal::ptr_uint64::label_t, REVERSE>;
+  using label_stream = file_stream<ptr_uint64::label_t, REVERSE>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief         File stream of files with meta information.
@@ -211,15 +209,15 @@ namespace adiar
   /// \sa node_file
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  class node_stream : public meta_file_stream<internal::node, 0, !REVERSE>
+  class node_stream : public meta_file_stream<node, 0, !REVERSE>
   {
   public:
     node_stream(const node_file &file, bool negate = false)
-      : meta_file_stream<internal::node, 0, !REVERSE>(file, negate)
+      : meta_file_stream<node, 0, !REVERSE>(file, negate)
     { }
 
-    node_stream(const internal::dd &diagram)
-      : meta_file_stream<internal::node, 0, !REVERSE>(diagram.file, diagram.negate)
+    node_stream(const dd &diagram)
+      : meta_file_stream<node, 0, !REVERSE>(diagram.file, diagram.negate)
     { }
   };
 
@@ -229,15 +227,15 @@ namespace adiar
   /// \sa arc_file
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  using node_arc_stream = meta_file_stream<internal::arc, 0, !REVERSE>;
+  using node_arc_stream = meta_file_stream<arc, 0, !REVERSE>;
 
   // TODO: Move inside of terminal_arc_stream below ?
   template<bool REVERSE = false>
-  using in_order_arc_stream = meta_file_stream<internal::arc, 1, !REVERSE>;
+  using in_order_arc_stream = meta_file_stream<arc, 1, !REVERSE>;
 
   // TODO: Move inside of terminal_arc_stream below ?
   template<bool REVERSE = false>
-  using out_of_order_arc_stream = meta_file_stream<internal::arc, 2, !REVERSE>;
+  using out_of_order_arc_stream = meta_file_stream<arc, 2, !REVERSE>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream for terminal arcs of an arc file.
@@ -281,8 +279,8 @@ namespace adiar
         return in_order_pull;
       }
 
-      const internal::arc::ptr_t in_order_source = in_order_arc_stream<REVERSE>::peek().source();
-      const internal::arc::ptr_t out_of_order_source = out_of_order_arc_stream<REVERSE>::peek().source();
+      const arc::ptr_t in_order_source = in_order_arc_stream<REVERSE>::peek().source();
+      const arc::ptr_t out_of_order_source = out_of_order_arc_stream<REVERSE>::peek().source();
 
       return (REVERSE && in_order_source < out_of_order_source)
         || (!REVERSE && in_order_source > out_of_order_source);
@@ -311,9 +309,9 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next arc (and move the read head)
     ////////////////////////////////////////////////////////////////////////////
-    const internal::arc pull()
+    const arc pull()
     {
-      const internal::arc a = pull_in_order()
+      const arc a = pull_in_order()
         ? in_order_arc_stream<REVERSE>::pull()
         : out_of_order_arc_stream<REVERSE>::pull();
 
@@ -325,7 +323,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next arc (but do not move the read head)
     ////////////////////////////////////////////////////////////////////////////
-    const internal::arc peek()
+    const arc peek()
     {
       return pull_in_order()
         ? in_order_arc_stream<REVERSE>::peek()
@@ -337,20 +335,20 @@ namespace adiar
   /// \brief Stream for the levelized meta information.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, bool REVERSE = false>
-  class level_info_stream : public file_stream<internal::level_info_t, !REVERSE, __meta_file<T>>
+  class level_info_stream : public file_stream<level_info_t, !REVERSE, __meta_file<T>>
   {
   public:
     //////////////////////////////////////////////////////////////////////////////
     /// Access the level information of a file with meta information.
     //////////////////////////////////////////////////////////////////////////////
     level_info_stream(const meta_file<T> &f)
-      : file_stream<internal::level_info_t, !REVERSE, __meta_file<T>>(f->_level_info_file, f._file_ptr)
+      : file_stream<level_info_t, !REVERSE, __meta_file<T>>(f->_level_info_file, f._file_ptr)
     { }
 
     //////////////////////////////////////////////////////////////////////////////
     /// Access the level information stream of a decision diagram.
     //////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const internal::dd &diagram)
+    level_info_stream(const dd &diagram)
       : level_info_stream(diagram.file)
     { }
 
@@ -358,9 +356,9 @@ namespace adiar
     //////////////////////////////////////////////////////////////////////////////
     /// For unit testing only!
     //////////////////////////////////////////////////////////////////////////////
-    meta_file<T> __obtain_file(const internal::__dd &diagram)
+    meta_file<T> __obtain_file(const __dd &diagram)
     {
-      if constexpr (std::is_same<internal::node, T>::value) {
+      if constexpr (std::is_same<node, T>::value) {
         return diagram.get<node_file>();
       } else {
         return diagram.get<arc_file>();
@@ -373,7 +371,7 @@ namespace adiar
     ///
     /// Access to level information of an unreduced decision diagram.
     //////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const internal::__dd &diagram)
+    level_info_stream(const __dd &diagram)
       : level_info_stream(__obtain_file(diagram))
     { }
 

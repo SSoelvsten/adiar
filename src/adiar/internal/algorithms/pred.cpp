@@ -1,7 +1,6 @@
 #include "pred.h"
 
-#include <adiar/file_stream.h>
-
+#include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/util.h>

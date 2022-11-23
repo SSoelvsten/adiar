@@ -72,9 +72,6 @@ test/adiar/builder:
 test/adiar/domain:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=domain
 
-test/adiar/file:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=file
-
 test/adiar/bdd/apply:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=apply
 
@@ -140,6 +137,9 @@ test/adiar/internal/data_types/tuple:
 
 test/adiar/internal/data_types/uid:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=uid
+
+test/adiar/internal/io/file:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=file
 
 test/adiar/zdd/binop:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=binop

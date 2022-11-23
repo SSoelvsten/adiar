@@ -1,12 +1,11 @@
 #include <adiar/zdd.h>
 
-#include <adiar/file.h>
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
-
 #include <adiar/internal/algorithms/traverse.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/uid.h>
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 
 namespace adiar
 {
@@ -17,8 +16,8 @@ namespace adiar
 
     bool has_elem = false;
 
-    label_file lf;
-    label_writer lw;
+    internal::label_file lf;
+    internal::label_writer lw;
 
   public:
     zdd_sat_label_writer_visitor() : lw(lf) { }
@@ -40,7 +39,7 @@ namespace adiar
       has_elem = s;
     }
 
-    const std::optional<label_file> get_result() const
+    const std::optional<internal::label_file> get_result() const
     {
       if (has_elem) { return lf; } else { return std::nullopt; }
     }
@@ -52,7 +51,8 @@ namespace adiar
     static constexpr bool keep_dont_cares = false;
   };
 
-  std::optional<label_file> zdd_minelem(const zdd &A)
+  std::optional<internal::label_file>
+  zdd_minelem(const zdd &A)
   {
     zdd_sat_label_writer_visitor<zdd_satmin_visitor> v;
     internal::traverse(A, v);
@@ -73,7 +73,8 @@ namespace adiar
     { }
   };
 
-  std::optional<label_file> zdd_maxelem(const zdd &A)
+  std::optional<internal::label_file>
+  zdd_maxelem(const zdd &A)
   {
     zdd_sat_label_writer_visitor<zdd_satmax_visitor> v;
     internal::traverse(A, v);

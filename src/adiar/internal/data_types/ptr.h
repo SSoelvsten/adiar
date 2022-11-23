@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include<adiar/internal/assert.h>
+#include <adiar/internal/assert.h>
 
 namespace adiar::internal
 {

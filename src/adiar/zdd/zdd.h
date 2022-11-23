@@ -3,8 +3,7 @@
 
 #include <string_view>
 
-#include <adiar/file.h>
-
+#include <adiar/internal/io/file.h>
 #include <adiar/internal/cnl.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>
@@ -27,8 +26,8 @@ namespace adiar
   class __zdd : public internal::__dd {
   public:
     __zdd();
-    __zdd(const node_file &f);
-    __zdd(const arc_file &f);
+    __zdd(const internal::node_file &f);
+    __zdd(const internal::arc_file &f);
     __zdd(const zdd &zdd);
   };
 
@@ -62,7 +61,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
   public:
-    zdd(const node_file &f, bool negate = false);
+    zdd(const internal::node_file &f, bool negate = false);
 
     zdd();
     zdd(bool v);

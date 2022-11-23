@@ -4,15 +4,13 @@
 #include <tpie/file_stream.h>
 
 #include <adiar/assignment.h>
-#include <adiar/file.h>
-
 #include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
-
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/ptr.h>
+#include <adiar/internal/io/file.h>
 
-namespace adiar
+namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Write-only access to a simple file including a consistency check
@@ -169,7 +167,7 @@ namespace adiar
   };
 
   typedef simple_file_writer<assignment_t, std::less<assignment_t>> assignment_writer;
-  typedef simple_file_writer<internal::ptr_uint64::label_t, no_ordering<internal::ptr_uint64::label_t>> label_writer;
+  typedef simple_file_writer<ptr_uint64::label_t, no_ordering<ptr_uint64::label_t>> label_writer;
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -184,7 +182,7 @@ namespace adiar
     static size_t memory_usage()
     {
       return FILE_CONSTANTS<T>::files * tpie::file_stream<T>::memory_usage()
-        + tpie::file_stream<internal::level_info>::memory_usage();
+        + tpie::file_stream<level_info>::memory_usage();
     }
 
   protected:
@@ -194,7 +192,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     std::shared_ptr<__meta_file<T>> _file_ptr;
 
-    tpie::file_stream<internal::level_info_t> _meta_stream;
+    tpie::file_stream<level_info_t> _meta_stream;
     tpie::file_stream<T> _streams [FILE_CONSTANTS<T>::files];
 
   public:
@@ -259,7 +257,7 @@ namespace adiar
     ///
     /// \param m Level information to push
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const internal::level_info_t &m)
+    void unsafe_push(const level_info_t &m)
     {
       _meta_stream.write(m);
     }
@@ -326,25 +324,25 @@ namespace adiar
   ///
   /// \sa node_file
   //////////////////////////////////////////////////////////////////////////////
-  class node_writer: public meta_file_writer<internal::node>
+  class node_writer: public meta_file_writer<node>
   {
   private:
     ////////////////////////////////////////////////////////////////////////////
     /// Construct a dummy node, that is invalid within a decision diagram and
     /// hence easy to recognise.
     ////////////////////////////////////////////////////////////////////////////
-    internal::node dummy()
+    node dummy()
     {
-      // Notice, this goes around any of the consistency checks of 'internal::node'!
-      return internal::node(internal::node::uid_t(0, 0),
-                            internal::node::ptr_t::NIL(),
-                            internal::node::ptr_t::NIL());
+      // Notice, this goes around any of the consistency checks of 'node'!
+      return node(node::uid_t(0, 0),
+                            node::ptr_t::NIL(),
+                            node::ptr_t::NIL());
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// Buffer of latest pushed element, such that one can compare with it.
     ////////////////////////////////////////////////////////////////////////////
-    internal::node _latest_node = dummy();
+    node _latest_node = dummy();
 
     ////////////////////////////////////////////////////////////////////////////
     /// Canonicity flag.
@@ -367,11 +365,11 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     size_t _terminals_at_bottom[2] = { 0u, 0u };
 
-    internal::cut_size_t _max_1level_short_internal = 0u;
-    internal::cut_size_t _curr_1level_short_internal = 0u;
+    cut_size_t _max_1level_short_internal = 0u;
+    cut_size_t _curr_1level_short_internal = 0u;
 
-    internal::node::ptr_t _long_internal_ptr = internal::node::ptr_t::NIL();
-    internal::cut_size_t _number_of_long_internal_arcs = 0u;
+    node::ptr_t _long_internal_ptr = node::ptr_t::NIL();
+    cut_size_t _number_of_long_internal_arcs = 0u;
 
   public:
     node_writer() : meta_file_writer() { }
@@ -391,12 +389,12 @@ namespace adiar
     ///          properly checked), and must be topologically prior to any nodes
     ///          already written to the file (checked).
     ////////////////////////////////////////////////////////////////////////////
-    void push(const internal::node &n)
+    void push(const node &n)
     {
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
       if (_latest_node == dummy()) { // First node pushed
-        _canonical = n.is_terminal() || n.id() == internal::node::MAX_ID;
+        _canonical = n.is_terminal() || n.id() == node::MAX_ID;
       } else { // Check validity of input based on prior written node
         adiar_debug(!_latest_node.is_terminal(),
                      "Cannot push a node after having pushed a terminal");
@@ -412,7 +410,7 @@ namespace adiar
 
             _canonical = id_diff && children_ordered;
           } else {
-            bool id_reset = n.id() == internal::node::MAX_ID;
+            bool id_reset = n.id() == node::MAX_ID;
             _canonical = id_reset;
           }
         }
@@ -420,7 +418,7 @@ namespace adiar
         // Check if this is the first node of a new level
         if (n.label() != _latest_node.label()) {
           // Update level information with the level just finished
-          meta_file_writer::unsafe_push(internal::create_level_info(_latest_node.label(),
+          meta_file_writer::unsafe_push(create_level_info(_latest_node.label(),
                                                                     _level_size));
           _level_size = 0u;
 
@@ -429,12 +427,12 @@ namespace adiar
                                                 _curr_1level_short_internal);
 
           _curr_1level_short_internal = 0u;
-          _long_internal_ptr = internal::node::uid_t(_latest_node.label(), internal::node::MAX_ID);
+          _long_internal_ptr = node::uid_t(_latest_node.label(), node::MAX_ID);
         }
       }
 
       // 1-level cut
-      const bool is_pushing_to_bottom = _long_internal_ptr == internal::node::ptr_t::NIL();
+      const bool is_pushing_to_bottom = _long_internal_ptr == node::ptr_t::NIL();
       if (is_pushing_to_bottom && !n.is_terminal()) {
         _terminals_at_bottom[n.low().value()]++;
         _terminals_at_bottom[n.high().value()]++;
@@ -462,7 +460,7 @@ namespace adiar
       meta_file_writer::unsafe_push(n, 0);
     }
 
-    node_writer& operator<< (const internal::node& n)
+    node_writer& operator<< (const node& n)
     {
       this -> push(n);
       return *this;
@@ -471,13 +469,13 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to level information file without any checks.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const internal::level_info_t &m)
+    void unsafe_push(const level_info_t &m)
     { meta_file_writer::unsafe_push(m); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to the underlying node file without any checks.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const internal::node &n)
+    void unsafe_push(const node &n)
     {
       meta_file_writer::unsafe_push(n, 0);
 
@@ -498,7 +496,7 @@ namespace adiar
     /// \brief Increase the 1-level cut size to the maximum of the current or
     ///        the given cuts.
     ////////////////////////////////////////////////////////////////////////////
-    void inc_1level_cut(const internal::cuts_t &o)
+    void inc_1level_cut(const cuts_t &o)
     {
       inc_cut(_file_ptr->max_1level_cut, o);
     }
@@ -507,7 +505,7 @@ namespace adiar
     /// \brief Increase the 2-level cut size to the maximum of the current or
     ///        the given cuts.
     ////////////////////////////////////////////////////////////////////////////
-    void inc_2level_cut(const internal::cuts_t &o)
+    void inc_2level_cut(const cuts_t &o)
     {
       inc_cut(_file_ptr->max_2level_cut, o);
     }
@@ -519,9 +517,9 @@ namespace adiar
       meta_file_writer::attach(f);
 
       //Reset all meta-data
-      _latest_node = internal::node(internal::node::uid_t(0, 0),
-                                    internal::node::ptr_t::NIL(),
-                                    internal::node::ptr_t::NIL());
+      _latest_node = node(node::uid_t(0, 0),
+                                    node::ptr_t::NIL(),
+                                    node::ptr_t::NIL());
 
       _canonical = true;
 
@@ -533,7 +531,7 @@ namespace adiar
       _max_1level_short_internal = 0u;
       _curr_1level_short_internal = 0u;
 
-      _long_internal_ptr = internal::node::ptr_t::NIL();
+      _long_internal_ptr = node::ptr_t::NIL();
       _number_of_long_internal_arcs = 0u;
     }
 
@@ -556,7 +554,7 @@ namespace adiar
       if (_latest_node != dummy()) {
         // Output level information of the final level
         if (!_latest_node.is_terminal()) {
-          meta_file_writer::unsafe_push(internal::create_level_info(_latest_node.label(),
+          meta_file_writer::unsafe_push(create_level_info(_latest_node.label(),
                                                                     _level_size));
         }
 
@@ -566,25 +564,25 @@ namespace adiar
         _max_1level_short_internal = std::max(_max_1level_short_internal,
                                               _curr_1level_short_internal);
 
-        const internal::cut_size_t max_1level_internal_cut =
+        const cut_size_t max_1level_internal_cut =
           _max_1level_short_internal + _number_of_long_internal_arcs;
 
-        _file_ptr->max_1level_cut[internal::cut_type::INTERNAL] = max_1level_internal_cut;
+        _file_ptr->max_1level_cut[cut_type::INTERNAL] = max_1level_internal_cut;
 
         const size_t terminals_above_bottom[2] = {
           _file_ptr->number_of_terminals[false] - _terminals_at_bottom[false],
           _file_ptr->number_of_terminals[true]  - _terminals_at_bottom[true]
         };
 
-        _file_ptr->max_1level_cut[internal::cut_type::INTERNAL_FALSE] =
+        _file_ptr->max_1level_cut[cut_type::INTERNAL_FALSE] =
           std::max(max_1level_internal_cut + terminals_above_bottom[false],
                    _file_ptr->number_of_terminals[false]);
 
-        _file_ptr->max_1level_cut[internal::cut_type::INTERNAL_TRUE] =
+        _file_ptr->max_1level_cut[cut_type::INTERNAL_TRUE] =
           std::max(max_1level_internal_cut + terminals_above_bottom[true],
                    _file_ptr->number_of_terminals[true]);
 
-        _file_ptr->max_1level_cut[internal::cut_type::ALL] =
+        _file_ptr->max_1level_cut[cut_type::ALL] =
           std::max(max_1level_internal_cut + terminals_above_bottom[false] + terminals_above_bottom[true],
                    _file_ptr->number_of_terminals[false] + _file_ptr->number_of_terminals[true]);
       }
@@ -620,21 +618,21 @@ namespace adiar
 
       // -----------------------------------------------------------------------
       // Upper bound for any directed cut based on number of internal nodes.
-      const internal::cut_size_t max_cut = number_of_nodes < internal::MAX_CUT
+      const cut_size_t max_cut = number_of_nodes < MAX_CUT
         ? number_of_nodes + 1
-        : internal::MAX_CUT;
+        : MAX_CUT;
 
       // -----------------------------------------------------------------------
       // Upper bound on just 'all arcs'. This is better than 'max_cut' above, if
       // there are 'number_of_nodes' or more arcs to terminals.
-      const bool noa_overflow_safe = number_of_nodes <= internal::MAX_CUT / 2u;
+      const bool noa_overflow_safe = number_of_nodes <= MAX_CUT / 2u;
       const size_t number_of_arcs = 2u * number_of_nodes;
 
-      const internal::cuts_t all_arcs_cut = {
-        noa_overflow_safe ? number_of_arcs - number_of_false - number_of_true : internal::MAX_CUT,
-        noa_overflow_safe ? number_of_arcs - number_of_true                   : internal::MAX_CUT,
-        noa_overflow_safe ? number_of_arcs - number_of_false                  : internal::MAX_CUT,
-        noa_overflow_safe ? number_of_arcs                                    : internal::MAX_CUT
+      const cuts_t all_arcs_cut = {
+        noa_overflow_safe ? number_of_arcs - number_of_false - number_of_true : MAX_CUT,
+        noa_overflow_safe ? number_of_arcs - number_of_true                   : MAX_CUT,
+        noa_overflow_safe ? number_of_arcs - number_of_false                  : MAX_CUT,
+        noa_overflow_safe ? number_of_arcs                                    : MAX_CUT
       };
 
       // -----------------------------------------------------------------------
@@ -642,12 +640,12 @@ namespace adiar
       const bool is_terminal = number_of_false + number_of_true == 1;
 
       if (is_terminal) {
-        _file_ptr->max_1level_cut[internal::cut_type::INTERNAL]       = 0u;
-        _file_ptr->max_1level_cut[internal::cut_type::INTERNAL_FALSE] = number_of_false;
-        _file_ptr->max_1level_cut[internal::cut_type::INTERNAL_TRUE]  = number_of_true;
-        _file_ptr->max_1level_cut[internal::cut_type::ALL]            = 1u;
+        _file_ptr->max_1level_cut[cut_type::INTERNAL]       = 0u;
+        _file_ptr->max_1level_cut[cut_type::INTERNAL_FALSE] = number_of_false;
+        _file_ptr->max_1level_cut[cut_type::INTERNAL_TRUE]  = number_of_true;
+        _file_ptr->max_1level_cut[cut_type::ALL]            = 1u;
       } else {
-        for(size_t ct = 0u; ct < internal::CUT_TYPES; ct++) {
+        for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
           // Use smallest sound upper bound. Since it is not a terminal, then there
           // must be at least one in-going arc to the root.
           _file_ptr->max_1level_cut[ct] = std::max(1lu, std::min({
@@ -663,17 +661,17 @@ namespace adiar
       const size_t number_of_levels = meta_file_writer::levels();
 
       if (is_terminal || number_of_nodes == number_of_levels) {
-        for(size_t ct = 0u; ct < internal::CUT_TYPES; ct++) {
+        for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
           _file_ptr->max_2level_cut[ct] = _file_ptr->max_1level_cut[ct];
         }
       } else { // General case
-        for(size_t ct = 0u; ct < internal::CUT_TYPES; ct++) {
+        for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
           // Upper bound based on 1-level cut
-          const internal::cut_size_t ub_from_1level_cut =
-            _file_ptr->max_1level_cut[ct] < internal::MAX_CUT / 3u
-            ? ((_file_ptr->max_1level_cut[internal::cut_type::INTERNAL] * 3u) / 2u
-               + (_file_ptr->max_1level_cut[ct] - _file_ptr->max_1level_cut[internal::cut_type::INTERNAL]))
-            : internal::MAX_CUT;
+          const cut_size_t ub_from_1level_cut =
+            _file_ptr->max_1level_cut[ct] < MAX_CUT / 3u
+            ? ((_file_ptr->max_1level_cut[cut_type::INTERNAL] * 3u) / 2u
+               + (_file_ptr->max_1level_cut[ct] - _file_ptr->max_1level_cut[cut_type::INTERNAL]))
+            : MAX_CUT;
 
           // Use smallest sound upper bound.
           _file_ptr->max_2level_cut[ct] = std::min({
@@ -686,9 +684,9 @@ namespace adiar
       }
     }
 
-    void inc_cut(internal::cuts_t &c, const internal::cuts_t &o)
+    void inc_cut(cuts_t &c, const cuts_t &o)
     {
-      for(size_t ct = 0u; ct < internal::CUT_TYPES; ct++) {
+      for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
         c[ct] = std::max(c[ct], o[ct]);
       }
     }
@@ -699,11 +697,11 @@ namespace adiar
   ///
   /// \sa arc_file
   //////////////////////////////////////////////////////////////////////////////
-  class arc_writer: public meta_file_writer<internal::arc>
+  class arc_writer: public meta_file_writer<arc>
   {
   private:
     bool __has_latest_terminal = false;
-    internal::arc __latest_terminal;
+    arc __latest_terminal;
 
   public:
     arc_writer() { }
@@ -719,7 +717,7 @@ namespace adiar
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to level information file without any checks.
     //////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const internal::level_info_t &m)
+    void unsafe_push(const level_info_t &m)
     { meta_file_writer::unsafe_push(m); }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -727,7 +725,7 @@ namespace adiar
     ///
     /// \sa unsafe_push_node unsafe_push_terminal
     //////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const internal::arc &a)
+    void unsafe_push(const arc &a)
     {
       adiar_debug(!a.target().is_nil(), "Should not push an arc to NIL.");
       if (a.target().is_node()) {
@@ -740,7 +738,7 @@ namespace adiar
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Write an internal arc to its file, i.e. where the target is a node.
     //////////////////////////////////////////////////////////////////////////////
-    void unsafe_push_node(const internal::arc &a)
+    void unsafe_push_node(const arc &a)
     {
       adiar_precondition(a.target().is_node());
       meta_file_writer::unsafe_push(a, 0);
@@ -749,7 +747,7 @@ namespace adiar
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Write a terminal arc to its file, i.e. where the target is a terminal.
     //////////////////////////////////////////////////////////////////////////////
-    void unsafe_push_terminal(const internal::arc &a)
+    void unsafe_push_terminal(const arc &a)
     {
       adiar_precondition(a.target().is_terminal());
 
@@ -785,7 +783,7 @@ namespace adiar
     void detach() {
       if (attached() && _streams[2].size() > 0) {
         tpie::progress_indicator_null pi;
-        tpie::sort(_streams[2], internal::arc_source_lt(), pi);
+        tpie::sort(_streams[2], arc_source_lt(), pi);
       }
 
       return meta_file_writer::detach();
