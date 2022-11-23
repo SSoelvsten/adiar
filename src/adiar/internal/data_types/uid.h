@@ -63,7 +63,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a uid of a terminal node (v).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(bool v) : ptr_t(v)
+    __uid(typename ptr_t::value_t v) : ptr_t(v)
     { }
 
   public:
@@ -83,9 +83,6 @@ namespace adiar::internal
   }
 
   typedef __uid<ptr_uint64> uid_uint64;
-
-  // TODO: remove?
-  typedef uid_uint64 uid_t;
 }
 
 #endif // ADIAR_INTERNAL_DATA_TYPES_UID_H

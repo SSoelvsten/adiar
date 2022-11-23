@@ -28,8 +28,8 @@ namespace adiar::internal
   // Data structures
   struct mapping
   {
-    uid_t old_uid;
-    uid_t new_uid;
+    node::uid_t old_uid;
+    node::uid_t new_uid;
   };
 
   //////////////////////////////////////////////////////////////////////////////

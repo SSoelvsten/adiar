@@ -257,7 +257,7 @@ namespace adiar::internal
             (aw, intercut_pq, out_label, n.uid(), rs.tgt, l);
         } else {
           const intercut_rec_output ro = std::get<intercut_rec_output>(r);
-          const uid_t out_uid(out_label, out_id++);
+          const node::uid_t out_uid(out_label, out_id++);
 
           intercut_out__pq<intercut_policy>::forward
             (aw, intercut_pq, out_uid, ro.low, out_label, l);
@@ -277,7 +277,7 @@ namespace adiar::internal
 
         const intercut_req request = intercut_pq.top();
         const intercut_rec_output ro = intercut_policy::hit_cut(request.target());
-        const uid_t out_uid(out_label, out_id++);
+        const node::uid_t out_uid(out_label, out_id++);
 
         intercut_out__pq<intercut_policy>::forward
           (aw, intercut_pq, out_uid, ro.low, out_label, l);

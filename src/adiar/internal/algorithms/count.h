@@ -21,7 +21,7 @@ namespace adiar::internal
   // Data structures
   struct path_sum
   {
-    uid_t target;
+    node::uid_t target;
     uint64_t sum;
   };
 

@@ -47,6 +47,9 @@ namespace adiar
   [[deprecated("Use the 'ptr' class type directly 'adiar/internal/data_types/ptr.h'")]]
   typedef internal::ptr_uint64 ptr_t;
 
+  [[deprecated("Use the '__uid<ptr_uint64>' class directly 'adiar/internal/data_types/ptr.h'")]]
+  typedef internal::uid_uint64 uid_t;
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Create a pointer to the uid = (label, id).
   //////////////////////////////////////////////////////////////////////////////
@@ -182,7 +185,9 @@ namespace adiar
   ///        pointer to its two children.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by node constructor in 'adiar/internal/data_types/node.h'")]]
-  inline internal::node create_node(uid_t uid, internal::ptr_uint64 low, internal::ptr_uint64 high)
+  inline internal::node create_node(internal::node::uid_t uid,
+                                    internal::ptr_uint64 low,
+                                    internal::ptr_uint64 high)
   { return internal::node(uid, low, high); }
 
   //////////////////////////////////////////////////////////////////////////////

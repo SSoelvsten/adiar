@@ -8,7 +8,7 @@
 namespace adiar::internal
 {
   // TODO (ADD (32-bit)):
-  //   template 'ptr_uint64' with the type of how to interpret the bits of a
+  //   template 'ptr_uint64' with 'value_t' of how to interpret the bits of a
   //   terminal. To this end, one wants to use 'std::bit_cast' in the internal
   //   logic. Use 'static_assert' to ensure the desired type indeed fits into
   //   62 bits of memory.
@@ -18,7 +18,9 @@ namespace adiar::internal
   //   Create a new 'ptr_templ' class that does not compress all information
   //   into a single 64-bit unsigned integer. The 'label_t' and 'id_t' should be
   //   provided as template parameters and the 'MAX_ID' and 'MAX_LABEL' should
-  //   be derived based on 'std::numeric_limits<XXXX_t>::max()'
+  //   be derived based on 'std::numeric_limits<XXXX_t>::max()'.
+  //
+  //   For ADDs it should furthermore be templated with 'value_t'.
 
   // TODO (LDD):
   //   add new decorator class for 'ptr' templated with a 'data' struct and use
@@ -75,6 +77,12 @@ namespace adiar::internal
     // befriend other functions that need access to 'raw'
     template <typename T>
     friend void output_dot(const T& nodes, std::ostream &out);
+
+  public:
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of terminal values.
+    //////////////////////////////////////////////////////////////////////////////
+    typedef bool value_t;
 
   public:
     //////////////////////////////////////////////////////////////////////////////
@@ -255,7 +263,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to a terminal node (v).
     ////////////////////////////////////////////////////////////////////////////
-    ptr_uint64(const bool v) : _raw(TERMINAL_BIT | (v << 1))
+    ptr_uint64(const value_t v) : _raw(TERMINAL_BIT | (v << 1))
     { }
 
   public:
@@ -272,7 +280,7 @@ namespace adiar::internal
     ///
     /// \pre `is_terminal()` evaluates to `true`.
     //////////////////////////////////////////////////////////////////////////////
-    inline bool value() const
+    inline value_t value() const
     {
       adiar_precondition(is_terminal());
       // TODO (Attributed Edges):
