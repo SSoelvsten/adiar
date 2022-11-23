@@ -151,7 +151,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct node `(uid, low, high)`.
     ////////////////////////////////////////////////////////////////////////////
-    node(const uid_t u, const ptr_t &l, const ptr_t &h)
+    node(const uid_t &u, const ptr_t &l, const ptr_t &h)
       : _uid(u), _children{l, h}
     { }
 
@@ -224,7 +224,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a node is on a given level, i.e. has the given label.
     ////////////////////////////////////////////////////////////////////////////
-    inline bool on_level(label_t level) const
+    inline bool on_level(const label_t level) const
     { return uid().on_level(level); }
 
     /* ================================= CHILDREN =========================== */

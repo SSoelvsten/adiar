@@ -47,7 +47,8 @@ namespace adiar::internal
     ///
     /// \pre The flags on both `source` and `target` are already set correctly.
     ////////////////////////////////////////////////////////////////////////////
-    arc(ptr_t source, ptr_t target) : _source(source), _target(target)
+    arc(const ptr_t &source, const ptr_t &target)
+      : _source(source), _target(target)
     { }
 
     /* ================================ NODES =============================== */

@@ -41,7 +41,7 @@ namespace adiar
       adiar_unreachable(); // LCOV_EXCL_LINE
     }
 
-    static inline internal::intercut_rec_output hit_cut(const zdd::ptr_t target)
+    static inline internal::intercut_rec_output hit_cut(const zdd::ptr_t &target)
     {
       return internal::intercut_rec_output { target, target };
     }

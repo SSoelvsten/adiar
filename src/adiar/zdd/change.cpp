@@ -41,7 +41,7 @@ namespace adiar
       return internal::intercut_rec_output { n.high(), n.low() };
     }
 
-    static internal::intercut_rec_output hit_cut(const zdd::ptr_t target)
+    static internal::intercut_rec_output hit_cut(const zdd::ptr_t &target)
     {
       return internal::intercut_rec_output { zdd::ptr_t(false), target };
     }

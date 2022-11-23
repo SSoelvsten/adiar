@@ -23,7 +23,7 @@ namespace adiar
   }
 
   template<>
-  inline internal::tuple<zdd::ptr_t>
+  inline zdd::node_t::children_t
   zdd_policy::reduction_rule_inv(const zdd::ptr_t &child)
   {
     return { child, zdd::ptr_t(false) };
@@ -31,7 +31,9 @@ namespace adiar
 
   template<>
   inline void
-  zdd_policy::compute_cofactor(bool on_curr_level, zdd::ptr_t &, zdd::ptr_t &high)
+  zdd_policy::compute_cofactor(bool on_curr_level,
+                               /*const*/ zdd::ptr_t &,
+                               zdd::ptr_t &high)
   {
     if (!on_curr_level) { high = zdd::ptr_t(false); }
   }

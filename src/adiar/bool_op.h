@@ -18,12 +18,12 @@ namespace adiar
   /// \remark  For each operator, we provide the truth table
   ///          [(1,1), (1,0), (0,1), (0,0)].
   //////////////////////////////////////////////////////////////////////////////
-  typedef std::function<internal::uid_uint64(internal::ptr_uint64, internal::ptr_uint64)> bool_op;
+  typedef std::function<internal::uid_uint64(const internal::ptr_uint64&, const internal::ptr_uint64&)> bool_op;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'and' operator, i.e. the truth table: [1,0,0,0].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op and_op = [](internal::ptr_uint64 terminal1, internal::ptr_uint64 terminal2) -> internal::uid_uint64
+  const bool_op and_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
     return unflag(terminal1 & terminal2);
   };
@@ -31,7 +31,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'not and' operator, i.e. the truth table: [0,1,1,1].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op nand_op = [](internal::ptr_uint64 terminal1, internal::ptr_uint64 terminal2) -> internal::uid_uint64
+  const bool_op nand_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
     return negate(and_op(terminal1, terminal2));
   };
@@ -39,7 +39,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'or' operator, i.e. the truth table: [1,1,1,0].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op or_op = [](internal::ptr_uint64 terminal1, internal::ptr_uint64 terminal2) -> internal::uid_uint64
+  const bool_op or_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
     return unflag(terminal1 | terminal2);
   };
@@ -47,7 +47,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'not or' operator, i.e. the truth table: [0,0,0,1].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op nor_op = [](internal::ptr_uint64 terminal1, internal::ptr_uint64 terminal2) -> internal::uid_uint64
+  const bool_op nor_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
     return negate(or_op(terminal1, terminal2));
   };
@@ -55,7 +55,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'xor' operator, i.e. the truth table: [0,1,1,0].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op xor_op = [](internal::ptr_uint64 terminal1, internal::ptr_uint64 terminal2) -> internal::uid_uint64
+  const bool_op xor_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
     return unflag(terminal1 ^ terminal2);
   };
@@ -63,7 +63,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'xor' operator, i.e. the truth table: [1,0,0,1].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op xnor_op  = [](internal::ptr_uint64 terminal1, internal::ptr_uint64 terminal2) -> internal::uid_uint64
+  const bool_op xnor_op  = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
     return negate(xor_op(terminal1, terminal2));
   };
@@ -71,7 +71,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'implication' operator, i.e. the truth table: [1,0,1,1].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op imp_op = [](internal::ptr_uint64 terminal1, internal::ptr_uint64 terminal2) -> internal::uid_uint64
+  const bool_op imp_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
     return internal::ptr_uint64(unflag(terminal1) <= unflag(terminal2));
   };
@@ -79,7 +79,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'implication' operator, i.e. the truth table: [1,1,0,1].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op invimp_op = [](internal::ptr_uint64 terminal1, internal::ptr_uint64 terminal2) -> internal::ptr_uint64
+  const bool_op invimp_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::ptr_uint64
   {
     return internal::ptr_uint64(unflag(terminal2) <= unflag(terminal1));
   };
@@ -92,7 +92,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'set difference' operator, i.e. the truth table [0,1,0,0].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op diff_op = [](internal::ptr_uint64 terminal1, internal::ptr_uint64 terminal2) -> internal::ptr_uint64
+  const bool_op diff_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::ptr_uint64
   {
     return and_op(terminal1, negate(terminal2));
   };
@@ -100,7 +100,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Logical 'less' operator, i.e. the truth table [0,0,1,0].
   //////////////////////////////////////////////////////////////////////////////
-  const bool_op less_op = [](internal::ptr_uint64 terminal1, internal::ptr_uint64 terminal2) -> internal::ptr_uint64
+  const bool_op less_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::ptr_uint64
   {
     return and_op(negate(terminal1), terminal2);
   };
@@ -109,7 +109,7 @@ namespace adiar
   /// \brief Whether the terminal shortcuts the operator from the right,
   ///        i.e. op(T,terminal) = op(F,terminal).
   //////////////////////////////////////////////////////////////////////////////
-  inline bool can_right_shortcut(const bool_op &op, const internal::ptr_uint64 terminal)
+  inline bool can_right_shortcut(const bool_op &op, const internal::ptr_uint64 &terminal)
   {
     return op(internal::ptr_uint64(false), terminal) == op(internal::ptr_uint64(true), terminal);
   }
@@ -118,7 +118,7 @@ namespace adiar
   /// \brief Whether the terminal shortcuts the operator from the left,
   ///        i.e. op(terminal, T) = op(terminal, F).
   //////////////////////////////////////////////////////////////////////////////
-  inline bool can_left_shortcut(const bool_op &op, const internal::ptr_uint64 terminal)
+  inline bool can_left_shortcut(const bool_op &op, const internal::ptr_uint64 &terminal)
   {
     return op(terminal, internal::ptr_uint64(false)) == op(terminal, internal::ptr_uint64(true));
   }
@@ -127,7 +127,7 @@ namespace adiar
   /// \brief Whether the terminal is irrelevant for the operator from the right,
   ///        i.e. op(X, terminal) = X.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_right_irrelevant(const bool_op &op, const internal::ptr_uint64 terminal)
+  inline bool is_right_irrelevant(const bool_op &op, const internal::ptr_uint64 &terminal)
   {
     return op(internal::ptr_uint64(false), terminal) == internal::ptr_uint64(false)
       && op(internal::ptr_uint64(true), terminal) == internal::ptr_uint64(true);
@@ -137,7 +137,7 @@ namespace adiar
   /// \brief Whether the terminal is irrelevant for the operator from the left,
   ///        i.e. op(terminal, X) = X.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_left_irrelevant(const bool_op &op, const internal::ptr_uint64 terminal)
+  inline bool is_left_irrelevant(const bool_op &op, const internal::ptr_uint64 &terminal)
   {
     return op(terminal, internal::ptr_uint64(false)) == internal::ptr_uint64(false)
       && op(terminal, internal::ptr_uint64(true)) == internal::ptr_uint64(true);
@@ -147,7 +147,7 @@ namespace adiar
   /// \brief Whether the terminal for this operator negates the value of the other
   ///        from the right, i.e. op(X, terminal) = ~X.
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_right_negating(const bool_op &op, const internal::ptr_uint64 terminal)
+  inline bool is_right_negating(const bool_op &op, const internal::ptr_uint64 &terminal)
   {
     return op(terminal, internal::ptr_uint64(false)) == internal::ptr_uint64(true)
       && op(terminal, internal::ptr_uint64(true)) == internal::ptr_uint64(false);
@@ -157,7 +157,7 @@ namespace adiar
   /// \brief Whether the terminal for this operator negates the value of the other
   ///        from the left, i.e. op(terminal, X) = ~X
   //////////////////////////////////////////////////////////////////////////////
-  inline bool is_left_negating(const bool_op &op, const internal::ptr_uint64 terminal)
+  inline bool is_left_negating(const bool_op &op, const internal::ptr_uint64 &terminal)
   {
     return op(terminal, internal::ptr_uint64(false)) == internal::ptr_uint64(true)
       && op(terminal, internal::ptr_uint64(true)) == internal::ptr_uint64(false);

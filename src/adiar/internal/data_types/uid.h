@@ -31,7 +31,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a uid of an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(const ptr_t& p) : ptr_t(unflag(p))
+    __uid(const ptr_t &p) : ptr_t(unflag(p))
     {
 #ifndef NDEBUG
       if (p.is_nil()) throw std::invalid_argument("Pointer must be non-NIL");
@@ -55,7 +55,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a pointer to an internal node (label, id).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(typename ptr_t::label_t label, typename ptr_t::id_t id) : ptr_t(label, id)
+    __uid(const typename ptr_t::label_t label, const typename ptr_t::id_t id)
+      : ptr_t(label, id)
     { }
 
     /* ============================== TERMINALS ============================= */
@@ -63,7 +64,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructor for a uid of a terminal node (v).
     ////////////////////////////////////////////////////////////////////////////
-    __uid(typename ptr_t::value_t v) : ptr_t(v)
+    __uid(typename ptr_t::value_t v)
+      : ptr_t(v)
     { }
 
   public:
