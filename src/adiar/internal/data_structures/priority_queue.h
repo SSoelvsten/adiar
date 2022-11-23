@@ -6,19 +6,20 @@
 #include <tpie/tpie.h>
 #include <tpie/priority_queue.h>
 
+#include <adiar/memory_mode.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
 
 namespace adiar::internal
 {
-  template <memory::memory_mode mem_mode, typename elem_t, typename comp_t = std::less<elem_t>>
+  template <memory_mode_t mem_mode, typename elem_t, typename comp_t = std::less<elem_t>>
   class priority_queue;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
   template<typename elem_t, typename comp_t>
-  class priority_queue<memory::EXTERNAL, elem_t, comp_t>
+  class priority_queue<memory_mode_t::EXTERNAL, elem_t, comp_t>
   {
   public:
     static constexpr size_t DATA_STRUCTURES = 1u;
@@ -50,7 +51,7 @@ namespace adiar::internal
   /// \brief Wrapper for TPIE's internal binary heap.
   //////////////////////////////////////////////////////////////////////////////
   template<typename elem_t, typename comp_t>
-  class priority_queue<memory::INTERNAL, elem_t, comp_t>
+  class priority_queue<memory_mode_t::INTERNAL, elem_t, comp_t>
   {
   public:
     static tpie::memory_size_type unsafe_memory_usage(tpie::memory_size_type no_elements)
@@ -110,14 +111,14 @@ namespace adiar::internal
   ///        'internal' memory type.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, typename comp_t = std::less<elem_t>>
-  using internal_priority_queue = priority_queue<memory::INTERNAL, elem_t, comp_t>;
+  using internal_priority_queue = priority_queue<memory_mode_t::INTERNAL, elem_t, comp_t>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Type alias for sorter for partial type application of the
   ///        'external' memory type.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, typename comp_t = std::less<elem_t>>
-  using external_priority_queue = priority_queue<memory::EXTERNAL, elem_t, comp_t>;
+  using external_priority_queue = priority_queue<memory_mode_t::EXTERNAL, elem_t, comp_t>;
 }
 
 #endif // ADIAR_INTERNAL_DATA_STRUCTURES_PRIORITY_QUEUE_H

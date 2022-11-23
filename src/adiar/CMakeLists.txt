@@ -12,6 +12,7 @@ set(HEADERS
   data.h
   deprecated.h
   domain.h
+  memory_mode.h
   statistics.h
 
   # adiar/bdd
@@ -28,6 +29,7 @@ set(HEADERS
 
   # adiar/internal
   internal/assert.h
+  internal/block_size.h
   internal/cnl.h
   internal/cut.h
   internal/dd.h
@@ -73,6 +75,7 @@ set(SOURCES
   adiar.cpp
   domain.cpp
   statistics.cpp
+  memory_mode.cpp
 
   # adiar/bdd/
   bdd/apply.cpp
@@ -100,9 +103,6 @@ set(SOURCES
   zdd/project.cpp
   zdd/subset.cpp
   zdd/zdd.cpp
-
-  # adiar/internal
-  internal/memory.cpp
 
   # adiar/internal/algorithms
   internal/algorithms/count.cpp

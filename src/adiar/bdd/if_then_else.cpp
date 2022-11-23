@@ -31,20 +31,20 @@ namespace adiar
   template<uint8_t nodes_carried>
   using ite_request = internal::request_data<3, false, nodes_carried, internal::with_parent>;
 
-  template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
+  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using ite_priority_queue_1_t =
   internal::levelized_node_priority_queue<ite_request<0>,
                                           internal::request_label<ite_request<0>>,
                                           internal::request_data_fst_lt<ite_request<0>>,
                                           LOOK_AHEAD, mem_mode, 3>;
 
-  template<memory::memory_mode mem_mode>
+  template<memory_mode_t mem_mode>
   using ite_priority_queue_2_t =
   internal::priority_queue<mem_mode,
                             ite_request<1>,
                             internal::request_data_snd_lt<ite_request<1>>>;
 
-  template<memory::memory_mode mem_mode>
+  template<memory_mode_t mem_mode>
   using ite_priority_queue_3_t =
   internal::priority_queue<mem_mode,
                             ite_request<2>,
@@ -543,20 +543,20 @@ namespace adiar
     // We then may derive an upper bound on the size of auxiliary data
     // structures and check whether we can run them with a faster internal
     // memory variant.
-    const tpie::memory_size_type aux_available_memory = memory::available()
+    const tpie::memory_size_type aux_available_memory = internal::memory_available()
       // Input streams
       - 3*internal::node_stream<>::memory_usage()
       // Output stream
       - internal::arc_writer::memory_usage();
 
     constexpr size_t data_structures_in_pq_1 =
-      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>::DATA_STRUCTURES;
+      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::DATA_STRUCTURES;
 
     constexpr size_t data_structures_in_pq_2 =
-      ite_priority_queue_2_t<memory::INTERNAL>::DATA_STRUCTURES;
+      ite_priority_queue_2_t<memory_mode_t::INTERNAL>::DATA_STRUCTURES;
 
     constexpr size_t data_structures_in_pq_3 =
-      ite_priority_queue_3_t<memory::INTERNAL>::DATA_STRUCTURES;
+      ite_priority_queue_3_t<memory_mode_t::INTERNAL>::DATA_STRUCTURES;
 
     const size_t pq_1_internal_memory =
       (aux_available_memory / (data_structures_in_pq_1 + data_structures_in_pq_2 + data_structures_in_pq_3)) * data_structures_in_pq_1;
@@ -568,16 +568,16 @@ namespace adiar
       aux_available_memory - pq_1_internal_memory - pq_2_internal_memory;
 
     const size_t pq_1_memory_fits =
-      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>::memory_fits(pq_1_internal_memory);
+      ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_1_internal_memory);
 
     const size_t pq_2_memory_fits =
-      ite_priority_queue_2_t<memory::INTERNAL>::memory_fits(pq_2_internal_memory);
+      ite_priority_queue_2_t<memory_mode_t::INTERNAL>::memory_fits(pq_2_internal_memory);
 
     const size_t pq_3_memory_fits =
-      ite_priority_queue_3_t<memory::INTERNAL>::memory_fits(pq_3_internal_memory);
+      ite_priority_queue_3_t<memory_mode_t::INTERNAL>::memory_fits(pq_3_internal_memory);
 
-    const bool internal_only = memory::mode == memory::INTERNAL;
-    const bool external_only = memory::mode == memory::EXTERNAL;
+    const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
+    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
 
     const size_t pq_1_bound = std::min({__ite_ilevel_upper_bound<internal::get_2level_cut, 2u>(bdd_if, bdd_then, bdd_else),
                                         __ite_ilevel_upper_bound(bdd_if, bdd_then, bdd_else)});
@@ -596,9 +596,9 @@ namespace adiar
 #ifdef ADIAR_STATS
       stats_prod3.lpq.unbucketed++;
 #endif
-      return __bdd_ite<ite_priority_queue_1_t<0, memory::INTERNAL>,
-                       ite_priority_queue_2_t<memory::INTERNAL>,
-                       ite_priority_queue_3_t<memory::INTERNAL>>
+      return __bdd_ite<ite_priority_queue_1_t<0, memory_mode_t::INTERNAL>,
+                       ite_priority_queue_2_t<memory_mode_t::INTERNAL>,
+                       ite_priority_queue_3_t<memory_mode_t::INTERNAL>>
         (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, max_pq_1_size,
          pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
@@ -607,9 +607,9 @@ namespace adiar
 #ifdef ADIAR_STATS
       stats_prod3.lpq.internal++;
 #endif
-      return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>,
-                       ite_priority_queue_2_t<memory::INTERNAL>,
-                       ite_priority_queue_3_t<memory::INTERNAL>>
+      return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>,
+                       ite_priority_queue_2_t<memory_mode_t::INTERNAL>,
+                       ite_priority_queue_3_t<memory_mode_t::INTERNAL>>
         (bdd_if, bdd_then, bdd_else, pq_1_internal_memory, max_pq_1_size,
          pq_2_internal_memory, max_pq_2_size, pq_3_internal_memory, max_pq_3_size);
     } else {
@@ -620,9 +620,9 @@ namespace adiar
       const size_t pq_2_memory = pq_1_memory;
       const size_t pq_3_memory = pq_1_memory;
 
-      return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory::EXTERNAL>,
-                       ite_priority_queue_2_t<memory::EXTERNAL>,
-                       ite_priority_queue_3_t<memory::EXTERNAL>>
+      return __bdd_ite<ite_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>,
+                       ite_priority_queue_2_t<memory_mode_t::EXTERNAL>,
+                       ite_priority_queue_3_t<memory_mode_t::EXTERNAL>>
         (bdd_if, bdd_then, bdd_else, pq_1_memory, max_pq_1_size,
          pq_2_memory, max_pq_2_size, pq_3_memory, max_pq_3_size);
     }

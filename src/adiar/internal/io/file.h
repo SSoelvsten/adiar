@@ -13,6 +13,7 @@
 #include <adiar/assignment.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
+#include <adiar/internal/memory.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/level_info.h>
@@ -322,10 +323,10 @@ namespace adiar::internal
   /// a whole new set of problems. Furthermore, the user may reuse the same
   /// result in multiple places.
   ///
-  /// So, we use a std::shared_ptr to be able to:
+  /// So, we use a `shared_ptr` to be able to:
   ///
-  /// - Place the files on the heap, so the __shared_file can be returned with a
-  ///   copy-constructor without breaking any of the tpie::files
+  /// - Place the files on the heap, so the `__shared_file` can be returned with
+  ///   a copy-constructor without breaking any of the `tpie::files`
   ///
   /// - Provides reference counting, so everything is garbage collected as fast
   ///   as possible. With TPIE this specifically means, that disk space is freed
@@ -349,7 +350,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The raw file underneath
     ////////////////////////////////////////////////////////////////////////////
-    std::shared_ptr<T> _file_ptr;
+    shared_ptr<T> _file_ptr;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Member access for the underlying file, i.e. this is similar to
@@ -363,12 +364,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a temporary shared file
     ////////////////////////////////////////////////////////////////////////////
-    __shared_file() : _file_ptr(std::make_shared<T>()) { }
+    __shared_file() : _file_ptr(adiar::make_shared<T>()) { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a persistent shared file given a specific filename
     ////////////////////////////////////////////////////////////////////////////
-    __shared_file(const std::string &filename) : _file_ptr(std::make_shared<T>(filename)) { }
+    __shared_file(const std::string &filename) : _file_ptr(adiar::make_shared<T>(filename)) { }
 
     // Copy constructor
     __shared_file(const __shared_file<T> &other) : _file_ptr(other._file_ptr) { }

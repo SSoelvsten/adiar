@@ -52,7 +52,7 @@ namespace adiar::internal
   /// \brief Decorator on the levelized priority queue to also keep track of
   ///        the number of arcs to each terminal.
   ////////////////////////////////////////////////////////////////////////////
-  template<size_t LOOK_AHEAD, memory::memory_mode mem_mode>
+  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   class reduce_priority_queue : public levelized_arc_priority_queue<arc, reduce_queue_label,
                                                                     reduce_queue_lt, LOOK_AHEAD,
                                                                     mem_mode>
@@ -498,7 +498,7 @@ namespace adiar::internal
     // We then may derive an upper bound on the size of auxiliary data
     // structures and check whether we can run them with a faster internal
     // memory variant.
-    const size_t aux_available_memory = memory::available()
+    const size_t aux_available_memory = memory_available()
       // Input streams
       - node_arc_stream<>::memory_usage() - terminal_arc_stream<>::memory_usage() - level_info_stream<arc>::memory_usage()
       // Output streams
@@ -508,10 +508,10 @@ namespace adiar::internal
     const size_t sorters_memory = aux_available_memory - pq_memory - tpie::file_stream<mapping>::memory_usage();
 
     const tpie::memory_size_type pq_memory_fits =
-      reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>::memory_fits(pq_memory);
+      reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_memory);
 
-    const bool internal_only = memory::mode == memory::INTERNAL;
-    const bool external_only = memory::mode == memory::EXTERNAL;
+    const bool internal_only = memory_mode== memory_mode_t::INTERNAL;
+    const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
 
     const size_t pq_bound = in_file->max_1level_cut;
 
@@ -521,19 +521,19 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_reduce.lpq.unbucketed++;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>>
+      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
         (in_file, pq_memory, sorters_memory);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.internal++;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory::INTERNAL>>
+      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
         (in_file, pq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
       stats_reduce.lpq.external++;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory::EXTERNAL>>
+      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
         (in_file, pq_memory, sorters_memory);
     }
   }

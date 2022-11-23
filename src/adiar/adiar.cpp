@@ -1,8 +1,11 @@
 #include "adiar.h"
 
 #include <tpie/tpie.h>
+#include <tpie/memory.h>
+#include <tpie/tempname.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/block_size.h>
 #include <adiar/internal/memory.h>
 
 namespace adiar
@@ -22,11 +25,24 @@ namespace adiar
     // Initialise TPIE
     tpie::tpie_init();
 
-    // Memory management
-    memory::mode = memory::AUTO;
-    memory::set_path(temp_dir);
-    memory::set_limit(memory_limit_bytes);
-    memory::set_block_size(memory::recommended_block_size(memory_limit_bytes));
+    // External Memory
+    // - Temporary files and their directory
+    tpie::tempname::set_default_base_name("ADIAR");
+    tpie::tempname::set_default_extension("adiar");
+
+    if (temp_dir != "") {
+      tpie::tempname::set_default_path(temp_dir);
+    }
+
+    // - Block size
+    internal::set_block_size(internal::recommended_block_size(memory_limit_bytes));
+
+    // Internal Memory
+    // - Memory Mode
+    memory_mode = memory_mode_t::AUTO;
+
+    // - Amount of internal memory
+    internal::memory_set_limit(memory_limit_bytes);
   }
 
   bool adiar_initialized() noexcept

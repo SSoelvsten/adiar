@@ -53,7 +53,7 @@ namespace adiar::internal
     /// The file stream includes a shared pointer to hook into the reference
     /// counting and garbage collection of the file.
     ////////////////////////////////////////////////////////////////////////////
-    std::shared_ptr<file<T>> _file_ptr;
+    shared_ptr<file<T>> _file_ptr;
 
     tpie::file_stream<T> _stream;
 
@@ -190,7 +190,7 @@ namespace adiar::internal
     /// The file stream includes a shared pointer to hook into the reference
     /// counting and garbage collection of the file.
     ////////////////////////////////////////////////////////////////////////////
-    std::shared_ptr<__meta_file<T>> _file_ptr;
+    shared_ptr<__meta_file<T>> _file_ptr;
 
     tpie::file_stream<level_info_t> _meta_stream;
     tpie::file_stream<T> _streams [FILE_CONSTANTS<T>::files];

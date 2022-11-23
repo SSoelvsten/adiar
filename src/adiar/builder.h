@@ -15,6 +15,7 @@
 
 #include <adiar/bdd/bdd_policy.h>
 #include <adiar/zdd/zdd_policy.h>
+#include <adiar/internal/memory.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file_writer.h>
@@ -63,13 +64,13 @@ namespace adiar
     ///////////////////////////////////////////////////////////////////////////////
     /// \brief Unique shared reference for the parent builder object.
     ///////////////////////////////////////////////////////////////////////////////
-    /*const*/ std::shared_ptr<const builder_shared> builder_ref;
+    /*const*/ shared_ptr<const builder_shared> builder_ref;
 
     ///////////////////////////////////////////////////////////////////////////////
     /// \brief Reference for this specific 'uid' recording whether it is a child
     ///        of a node created later than itself.
     ///////////////////////////////////////////////////////////////////////////////
-    /*const*/ std::shared_ptr<bool> unreferenced = std::make_shared<bool>(true);
+    /*const*/ shared_ptr<bool> unreferenced = make_shared<bool>(true);
 
   public:
     builder_ptr() = default;
@@ -77,7 +78,7 @@ namespace adiar
 
   private:
     builder_ptr(const internal::node::uid_t &p,
-                const std::shared_ptr<const builder_shared> &sp)
+                const shared_ptr<const builder_shared> &sp)
       : uid(p), builder_ref(sp)
     { }
   };
@@ -150,7 +151,7 @@ namespace adiar
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Unique struct for this builder's current phase.
     /////////////////////////////////////////////////////////////////////////////
-    std::shared_ptr<builder_shared> builder_ref = std::make_shared<builder_shared>();
+    shared_ptr<builder_shared> builder_ref = make_shared<builder_shared>();
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Number of yet unreferenced nodes.
@@ -402,7 +403,7 @@ namespace adiar
       current_id = dd_policy::MAX_ID;
       created_terminal = false;
       terminal_val = false;
-      builder_ref = std::make_shared<builder_shared>();
+      builder_ref = make_shared<builder_shared>();
       unref_nodes = 0;
     }
 
