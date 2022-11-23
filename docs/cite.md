@@ -109,3 +109,21 @@ in practice.
     url           = {https://arxiv.org/abs/2104.12101},
   }
   ```
+
+v1.1
+------------------------
+
+With [v1.1.0](https://github.com/SSoelvsten/adiar/releases/tag/v1.1.0) we add
+support for *Zero-suppressed Decision Diagrams* to *Adiar*.
+
+
+v1.2
+------------------------
+
+With [v1.2.0](https://github.com/SSoelvsten/adiar/releases/tag/v1.2.0) (and its
+patches [v1.2.1](https://github.com/SSoelvsten/adiar/releases/tag/v1.2.1),
+[v1.2.2](https://github.com/SSoelvsten/adiar/releases/tag/v1.2.2)) we introduce
+the notion of an *i-level cut* of a graph and use these to derive sound upper
+bounds on the size of the data structures. This drastically decreases the
+threshold as to when *Adiar*'s running time is only a small constant factor
+slower than other implementations.
