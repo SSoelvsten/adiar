@@ -32,7 +32,7 @@ namespace adiar
 
   public:
     static internal::tuple<bdd::ptr_t, 2, true>
-    resolve_request(const bool_op &op, bdd::ptr_t r1, bdd::ptr_t r2)
+    resolve_request(const bool_op &op, const bdd::ptr_t &r1, const bdd::ptr_t &r2)
     {
       adiar_debug(!r1.is_nil() && !r2.is_nil(), "Resolve request is only used for tuple cases");
 

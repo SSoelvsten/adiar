@@ -53,7 +53,7 @@ namespace adiar
       return internal::intercut_rec_output { low, high };
     }
 
-    static internal::intercut_rec_output hit_cut(const zdd::ptr_t target)
+    static internal::intercut_rec_output hit_cut(const zdd::ptr_t &target)
     {
       // T chain: We are definitely outside of the given set
       if (target.is_true()) {

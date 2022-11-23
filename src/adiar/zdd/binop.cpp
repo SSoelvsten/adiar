@@ -9,7 +9,7 @@
 
 namespace adiar
 {
-  bool can_right_shortcut_zdd(const bool_op &op, const zdd::ptr_t terminal)
+  bool can_right_shortcut_zdd(const bool_op &op, const zdd::ptr_t &terminal)
   {
     zdd::ptr_t terminal_F = zdd::ptr_t(false);
     zdd::ptr_t terminal_T = zdd::ptr_t(true);
@@ -20,7 +20,7 @@ namespace adiar
       && op(terminal_F, terminal_F) == terminal_F && op(terminal_T,  terminal_F) == terminal_F;
   }
 
-  bool can_left_shortcut_zdd(const bool_op &op, const zdd::ptr_t terminal)
+  bool can_left_shortcut_zdd(const bool_op &op, const zdd::ptr_t &terminal)
   {
     zdd::ptr_t terminal_F = zdd::ptr_t(false);
     zdd::ptr_t terminal_T = zdd::ptr_t(true);
@@ -31,7 +31,7 @@ namespace adiar
       && op(terminal_F, terminal_F) == terminal_F && op(terminal_F,  terminal_T) == terminal_F;
   }
 
-  bool zdd_skippable(const bool_op &op, zdd::ptr_t high1, zdd::ptr_t high2)
+  bool zdd_skippable(const bool_op &op, const zdd::ptr_t &high1, const zdd::ptr_t &high2)
   {
     return (high1.is_terminal() && high2.is_terminal()
             && op(high1, high2) == zdd::ptr_t(false))
@@ -108,7 +108,7 @@ namespace adiar
 
   private:
     static internal::tuple<zdd::ptr_t>
-    __resolve_request(const bool_op &op, zdd::ptr_t r1, zdd::ptr_t r2)
+    __resolve_request(const bool_op &op, const zdd::ptr_t &r1, const zdd::ptr_t &r2)
     {
       if (r1.is_terminal() && can_left_shortcut_zdd(op, r1)) {
         return { r1, zdd::ptr_t(true) };

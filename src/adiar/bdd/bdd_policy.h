@@ -26,7 +26,7 @@ namespace adiar
   }
 
   template<>
-  inline internal::tuple<bdd::ptr_t>
+  inline bdd::node_t::children_t
   bdd_policy::reduction_rule_inv(const bdd::ptr_t &child)
   {
     return { child, child };
@@ -34,7 +34,9 @@ namespace adiar
 
   template<>
   inline void
-  bdd_policy::compute_cofactor(bool, bdd::ptr_t &, bdd::ptr_t &)
+  bdd_policy::compute_cofactor(bool,
+                               /*const*/ bdd::ptr_t &,
+                               /*const*/ bdd::ptr_t &)
   { /* do nothing */ }
 }
 

@@ -88,7 +88,7 @@ namespace adiar
 
   public:
     template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, zdd::ptr_t r1, zdd::ptr_t r2)
+    static bool resolve_request(pq_1_t &pq, zdd::ptr_t &r1, zdd::ptr_t &r2)
     {
       // Are they both a terminal? If so, check whether the left-hand side is true
       // and not the right, which would contradict being an implication (i.e.
@@ -155,7 +155,7 @@ namespace adiar
 
   public:
   template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, zdd::ptr_t r1, zdd::ptr_t r2)
+    static bool resolve_request(pq_1_t &pq, zdd::ptr_t &r1, zdd::ptr_t &r2)
     {
       // Are they both a terminal? If so, check whether they both are true, which
       // verify there is a satisfiying conjunction (i.e. representing a shared

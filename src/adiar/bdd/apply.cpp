@@ -85,7 +85,7 @@ namespace adiar
 
   private:
     static internal::tuple<bdd::ptr_t>
-    __resolve_request(const bool_op &op, bdd::ptr_t r1, bdd::ptr_t r2)
+    __resolve_request(const bool_op &op, const bdd::ptr_t &r1, const bdd::ptr_t &r2)
     {
       if (r1.is_terminal() && can_left_shortcut(op, r1)) {
         return { r1, bdd::ptr_t(true) };

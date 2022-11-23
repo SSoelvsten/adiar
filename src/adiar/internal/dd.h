@@ -395,7 +395,7 @@ namespace adiar::internal
     static inline ptr_uint64
     reduction_rule(const typename dd_type::node_t &n);
 
-    static inline tuple<ptr_uint64>
+    static inline node::children_t
     reduction_rule_inv(const typename dd_type::ptr_t &child);
 
     static inline void

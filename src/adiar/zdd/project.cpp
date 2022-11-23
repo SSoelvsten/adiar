@@ -25,7 +25,7 @@ namespace adiar
 
   public:
     static inline internal::tuple<zdd::ptr_t, 2, true>
-    resolve_request(const bool_op &/* op */, zdd::ptr_t r1, zdd::ptr_t r2)
+    resolve_request(const bool_op &/* op */, const zdd::ptr_t &r1, const zdd::ptr_t &r2)
     {
       adiar_debug(!r1.is_nil() && !r2.is_nil(),
                   "Resolve request is only used for tuple cases");
