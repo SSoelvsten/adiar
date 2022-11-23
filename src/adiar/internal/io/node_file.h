@@ -2,7 +2,7 @@
 #define ADIAR_INTERNAL_IO_NODE_FILE_H
 
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/io/meta_file.h>
+#include <adiar/internal/io/levelized_file.h>
 
 namespace adiar::internal
 {
@@ -48,7 +48,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief File of nodes to represent a reduced decision diagram.
   //////////////////////////////////////////////////////////////////////////////
-  class node_file : public meta_file<node>
+  class node_file : public levelized_file<node>
   {
   public:
     static constexpr std::string_view false_print = "0";

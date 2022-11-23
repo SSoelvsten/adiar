@@ -2,7 +2,7 @@
 #define ADIAR_INTERNAL_IO_ARC_FILE_H
 
 #include <adiar/internal/data_types/arc.h>
-#include <adiar/internal/io/meta_file.h>
+#include <adiar/internal/io/levelized_file.h>
 
 namespace adiar::internal
 {
@@ -33,7 +33,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Files of arcs to represent an unreduced decision diagram.
   //////////////////////////////////////////////////////////////////////////////
-  typedef meta_file<arc> arc_file;
+  typedef levelized_file<arc> arc_file;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Number of nodes in the DAG.

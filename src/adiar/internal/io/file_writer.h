@@ -10,7 +10,7 @@
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/simple_file.h>
-#include <adiar/internal/io/meta_file.h>
+#include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/node_file.h>
 
@@ -180,7 +180,7 @@ namespace adiar::internal
   /// \sa node_writer arc_writer
   //////////////////////////////////////////////////////////////////////////////
   template <typename T>
-  class meta_file_writer
+  class levelized_file_writer
   {
   public:
     static size_t memory_usage()
@@ -194,25 +194,25 @@ namespace adiar::internal
     /// The file stream includes a shared pointer to hook into the reference
     /// counting and garbage collection of the file.
     ////////////////////////////////////////////////////////////////////////////
-    shared_ptr<__meta_file<T>> _file_ptr;
+    shared_ptr<__levelized_file<T>> _file_ptr;
 
     tpie::file_stream<level_info_t> _meta_stream;
     tpie::file_stream<T> _streams [FILE_CONSTANTS<T>::files];
 
   public:
-    meta_file_writer() { }
+    levelized_file_writer() { }
 
-    meta_file_writer(const meta_file<T> &f)
+    levelized_file_writer(const levelized_file<T> &f)
     {
       attach(f);
     }
 
-    ~meta_file_writer() { detach(); }
+    ~levelized_file_writer() { detach(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a file
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const meta_file<T> &f)
+    void attach(const levelized_file<T> &f)
     {
       if (attached()) { detach(); }
       _file_ptr = f._file_ptr;
@@ -328,7 +328,7 @@ namespace adiar::internal
   ///
   /// \sa node_file
   //////////////////////////////////////////////////////////////////////////////
-  class node_writer: public meta_file_writer<node>
+  class node_writer: public levelized_file_writer<node>
   {
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -376,10 +376,10 @@ namespace adiar::internal
     cut_size_t _number_of_long_internal_arcs = 0u;
 
   public:
-    node_writer() : meta_file_writer() { }
+    node_writer() : levelized_file_writer() { }
     node_writer(const node_file &nf)
-      : meta_file_writer(nf),
-        _canonical(!meta_file_writer::has_pushed()|| nf->canonical)
+      : levelized_file_writer(nf),
+        _canonical(!levelized_file_writer::has_pushed()|| nf->canonical)
     { }
 
     ~node_writer() { detach(); }
@@ -422,7 +422,7 @@ namespace adiar::internal
         // Check if this is the first node of a new level
         if (n.label() != _latest_node.label()) {
           // Update level information with the level just finished
-          meta_file_writer::unsafe_push(create_level_info(_latest_node.label(),
+          levelized_file_writer::unsafe_push(create_level_info(_latest_node.label(),
                                                                     _level_size));
           _level_size = 0u;
 
@@ -461,7 +461,7 @@ namespace adiar::internal
       _latest_node = n;
       _level_size++;
 
-      meta_file_writer::unsafe_push(n, 0);
+      levelized_file_writer::unsafe_push(n, 0);
     }
 
     node_writer& operator<< (const node& n)
@@ -474,14 +474,14 @@ namespace adiar::internal
     /// \brief Write directly to level information file without any checks.
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const level_info_t &m)
-    { meta_file_writer::unsafe_push(m); }
+    { levelized_file_writer::unsafe_push(m); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to the underlying node file without any checks.
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const node &n)
     {
-      meta_file_writer::unsafe_push(n, 0);
+      levelized_file_writer::unsafe_push(n, 0);
 
       if (n.low().is_terminal()) { _file_ptr->number_of_terminals[n.low().value()]++; }
       if (n.high().is_terminal()) { _file_ptr->number_of_terminals[n.high().value()]++; }
@@ -518,7 +518,7 @@ namespace adiar::internal
     /// \brief Attach to a file
     ////////////////////////////////////////////////////////////////////////////
     void attach(const node_file &f) {
-      meta_file_writer::attach(f);
+      levelized_file_writer::attach(f);
 
       //Reset all meta-data
       _latest_node = node(node::uid_t(0, 0),
@@ -543,7 +543,7 @@ namespace adiar::internal
     /// \brief Whether the writer currently is attached.
     ////////////////////////////////////////////////////////////////////////////
     bool attached() const
-    { return meta_file_writer::attached(); }
+    { return levelized_file_writer::attached(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detach from a file (if need be)
@@ -558,7 +558,7 @@ namespace adiar::internal
       if (_latest_node != dummy()) {
         // Output level information of the final level
         if (!_latest_node.is_terminal()) {
-          meta_file_writer::unsafe_push(create_level_info(_latest_node.label(),
+          levelized_file_writer::unsafe_push(create_level_info(_latest_node.label(),
                                                                     _level_size));
         }
 
@@ -594,20 +594,20 @@ namespace adiar::internal
       // Run final i-level cut computations
       fixup_ilevel_cuts();
 
-      meta_file_writer::detach();
+      levelized_file_writer::detach();
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether anything has been pushed to any of the underlying files.
     ////////////////////////////////////////////////////////////////////////////
     bool has_pushed()
-    { return meta_file_writer::has_pushed(); }
+    { return levelized_file_writer::has_pushed(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the underlying file is empty.
     ////////////////////////////////////////////////////////////////////////////
     bool empty()
-    { return meta_file_writer::empty(); }
+    { return levelized_file_writer::empty(); }
 
   private:
     ////////////////////////////////////////////////////////////////////////////
@@ -616,7 +616,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void fixup_ilevel_cuts()
     {
-      const size_t number_of_nodes = meta_file_writer::size();
+      const size_t number_of_nodes = levelized_file_writer::size();
       const size_t number_of_false = _file_ptr->number_of_terminals[false];
       const size_t number_of_true = _file_ptr->number_of_terminals[true];
 
@@ -662,7 +662,7 @@ namespace adiar::internal
 
       // -----------------------------------------------------------------------
       // Maximum 2-level cut
-      const size_t number_of_levels = meta_file_writer::levels();
+      const size_t number_of_levels = levelized_file_writer::levels();
 
       if (is_terminal || number_of_nodes == number_of_levels) {
         for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
@@ -701,7 +701,7 @@ namespace adiar::internal
   ///
   /// \sa arc_file
   //////////////////////////////////////////////////////////////////////////////
-  class arc_writer: public meta_file_writer<arc>
+  class arc_writer: public levelized_file_writer<arc>
   {
   private:
     bool __has_latest_terminal = false;
@@ -722,7 +722,7 @@ namespace adiar::internal
     /// \brief Write directly to level information file without any checks.
     //////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const level_info_t &m)
-    { meta_file_writer::unsafe_push(m); }
+    { levelized_file_writer::unsafe_push(m); }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Write an arc to the relevant underlying file without any checks
@@ -745,7 +745,7 @@ namespace adiar::internal
     void unsafe_push_node(const arc &a)
     {
       adiar_precondition(a.target().is_node());
-      meta_file_writer::unsafe_push(a, 0);
+      levelized_file_writer::unsafe_push(a, 0);
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -758,9 +758,9 @@ namespace adiar::internal
       if (!__has_latest_terminal || a.source() > __latest_terminal.source()) { // in-order
         __has_latest_terminal = true;
         __latest_terminal = a;
-        meta_file_writer::unsafe_push(a, 1);
+        levelized_file_writer::unsafe_push(a, 1);
       } else { // out-of-order
-        meta_file_writer::unsafe_push(a, 2);
+        levelized_file_writer::unsafe_push(a, 2);
       }
 
       _file_ptr->number_of_terminals[a.target().value()]++;
@@ -770,15 +770,15 @@ namespace adiar::internal
     /// \brief Attach to a file
     //////////////////////////////////////////////////////////////////////////////
     void attach(const arc_file &af) {
-      meta_file_writer::attach(af);
-      adiar_debug(meta_file_writer::empty(), "Attached to non-empty arc_file");
+      levelized_file_writer::attach(af);
+      adiar_debug(levelized_file_writer::empty(), "Attached to non-empty arc_file");
     }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the writer currently is attached.
     //////////////////////////////////////////////////////////////////////////////
     bool attached() const
-    { return meta_file_writer::attached(); }
+    { return levelized_file_writer::attached(); }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Sort the out-of-order terminal arcs and then detach from a file (if
@@ -790,7 +790,7 @@ namespace adiar::internal
         tpie::sort(_streams[2], arc_source_lt(), pi);
       }
 
-      return meta_file_writer::detach();
+      return levelized_file_writer::detach();
     }
   };
 }

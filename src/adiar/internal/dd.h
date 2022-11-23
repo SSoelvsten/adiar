@@ -174,7 +174,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Read-only access to the raw files and meta information.
     ////////////////////////////////////////////////////////////////////////////
-    const shared_ptr<const __meta_file<node>> file_ptr() const
+    const shared_ptr<const __levelized_file<node>> file_ptr() const
     {
       return file._file_ptr;
     }
@@ -184,7 +184,7 @@ namespace adiar::internal
     ///        information, i.e. this is similar to writing
     ///        `.file_ptr()->`.
     ////////////////////////////////////////////////////////////////////////////
-    const __meta_file<node>* operator->() const
+    const __levelized_file<node>* operator->() const
     {
       return file_ptr().get();
     }

@@ -29,7 +29,7 @@ namespace adiar::internal
   ///              granularity of the information.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T>
-  class __meta_file : public FILE_CONSTANTS<T>::stats
+  class __levelized_file : public FILE_CONSTANTS<T>::stats
   {
     static constexpr size_t FILES = FILE_CONSTANTS<T>::files;
 
@@ -60,12 +60,12 @@ namespace adiar::internal
     file<T> _files [FILES];
 
   public:
-    __meta_file() {
+    __levelized_file() {
       adiar_debug(!is_read_only(), "Should be writable on creation");
     }
 
     // TODO: Opening a persistent file with meta information given a path.
-    // __meta_file(const std::string& filename) : ? { ? }
+    // __levelized_file(const std::string& filename) : ? { ? }
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief  Make the file read-only. This disallows use of any writers but
@@ -135,7 +135,7 @@ namespace adiar::internal
   /// \param T     Type of the file's content
   ////////////////////////////////////////////////////////////////////////////
   template<typename T>
-  using meta_file = __shared_file<__meta_file<T>>;
+  using levelized_file = __shared_file<__levelized_file<T>>;
 }
 
 #endif // ADIAR_INTERNAL_IO_META_FILE_H

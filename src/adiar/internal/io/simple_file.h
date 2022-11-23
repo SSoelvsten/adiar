@@ -8,7 +8,7 @@
 namespace adiar::internal
 {
   ////////////////////////////////////////////////////////////////////////////
-  /// The <tt>file</tt> and <tt>__meta_file</tt> classes are hidden behind a
+  /// The <tt>file</tt> and <tt>__levelized_file</tt> classes are hidden behind a
   /// shared pointer, such that we can parse it around. That is, all actual
   /// files we are going to deal with are a <tt>__shared_file<x_file<T>></tt>.
   ///
