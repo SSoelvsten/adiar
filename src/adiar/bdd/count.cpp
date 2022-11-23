@@ -4,9 +4,7 @@
 #include <adiar/bdd/bdd_policy.h>
 
 #include <adiar/domain.h>
-
 #include <adiar/internal/assert.h>
-
 #include <adiar/internal/algorithms/count.h>
 
 namespace adiar

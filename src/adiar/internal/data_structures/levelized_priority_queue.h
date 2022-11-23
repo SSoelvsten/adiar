@@ -9,16 +9,13 @@
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
 
-#include <adiar/file.h>
-#include <adiar/file_stream.h>
-
 #include <adiar/internal/dd.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/util.h>
-
 #include <adiar/internal/data_structures/priority_queue.h>
 #include <adiar/internal/data_structures/sorter.h>
-
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/file_stream.h>
 #include <adiar/statistics.h>
 
 namespace adiar::internal

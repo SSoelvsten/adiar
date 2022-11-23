@@ -2,12 +2,12 @@
 #define ADIAR_INTERNAL_DOT_H
 
 #include <string.h>
-#include <adiar/file.h>
 
 #include <fstream>
 
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 
 namespace adiar::internal
 {

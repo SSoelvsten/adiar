@@ -12,13 +12,12 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <adiar/file_writer.h>
 
 #include <adiar/bdd/bdd_policy.h>
 #include <adiar/zdd/zdd_policy.h>
-
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/io/file_writer.h>
 
 namespace adiar
 {
@@ -121,12 +120,12 @@ namespace adiar
     /////////////////////////////////////////////////////////////////////////////
     /// \brief File containing all prior pushed nodes.
     /////////////////////////////////////////////////////////////////////////////
-    node_file nf;
+    internal::node_file nf;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Node writer to push new nodes into 'nf'.
     /////////////////////////////////////////////////////////////////////////////
-    node_writer nw;
+    internal::node_writer nw;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a terminal value has been returned in 'add_node'.
@@ -396,7 +395,7 @@ namespace adiar
     void reset() noexcept
     {
       nw.detach();
-      nf = node_file();
+      nf = internal::node_file();
       nw.attach(nf);
 
       current_label = dd_policy::MAX_LABEL;

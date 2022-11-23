@@ -1,8 +1,8 @@
-#include "../test.h"
+#include "../../../test.h"
 
 #include <filesystem>
 
-namespace adiar
+namespace adiar::internal
 {
   template <>
   struct FILE_CONSTANTS<int>

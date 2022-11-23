@@ -2,7 +2,6 @@
 #include <adiar/zdd/zdd_policy.h>
 
 #include <adiar/internal/assert.h>
-
 #include <adiar/internal/algorithms/count.h>
 
 namespace adiar

@@ -22,7 +22,7 @@ namespace adiar
       return dd;
     }
 
-    static zdd on_terminal_input(const bool terminal_value, const zdd& dd, const label_file &labels)
+    static zdd on_terminal_input(const bool terminal_value, const zdd& dd, const internal::label_file &labels)
     {
       return terminal_value ? zdd_vars(labels) : dd;
     }
@@ -52,7 +52,7 @@ namespace adiar
     }
   };
 
-  __zdd zdd_change(const zdd &dd, const label_file &labels)
+  __zdd zdd_change(const zdd &dd, const internal::label_file &labels)
   {
     return internal::intercut<zdd_change_policy>(dd, labels);
   }

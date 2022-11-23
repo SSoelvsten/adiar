@@ -1,8 +1,8 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_REQUEST_H
 #define ADIAR_INTERNAL_DATA_TYPES_REQUEST_H
 
-#include<adiar/internal/data_types/node.h>
-#include<adiar/internal/data_types/tuple.h>
+#include <adiar/internal/data_types/node.h>
+#include <adiar/internal/data_types/tuple.h>
 
 namespace adiar::internal
 {

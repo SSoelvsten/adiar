@@ -5,8 +5,7 @@
 #include <memory>
 
 #include <adiar/domain.h>
-#include <adiar/file_stream.h>
-
+#include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/dot.h>
 #include <adiar/internal/util.h>
 #include <adiar/internal/algorithms/convert.h>
@@ -14,9 +13,8 @@
 #include <adiar/internal/algorithms/reduce.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
-
-#include <adiar/zdd/zdd_policy.h>
 #include <adiar/bdd/bdd_policy.h>
+#include <adiar/zdd/zdd_policy.h>
 
 namespace adiar
 {
@@ -25,16 +23,16 @@ namespace adiar
   __zdd::__zdd() : internal::__dd()
   { }
 
-  __zdd::__zdd(const node_file &f) : internal::__dd(f)
+  __zdd::__zdd(const internal::node_file &f) : internal::__dd(f)
   { }
 
-  __zdd::__zdd(const arc_file &f) : internal::__dd(f)
+  __zdd::__zdd(const internal::arc_file &f) : internal::__dd(f)
   { }
 
   __zdd::__zdd(const zdd &dd) : internal::__dd(dd)
   { }
 
-  zdd::zdd(const node_file &f, bool negate) : internal::dd(f, negate)
+  zdd::zdd(const internal::node_file &f, bool negate) : internal::dd(f, negate)
   { }
 
   zdd::zdd() : zdd(zdd_empty())
@@ -180,21 +178,21 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
-  label_file zdd_varprofile(const zdd &A)
+  internal::label_file zdd_varprofile(const zdd &A)
   {
     return varprofile(A);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __zdd zdd_from(const bdd &f, const label_file &dom)
+  __zdd zdd_from(const bdd &f, const internal::label_file &dom)
   {
     return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>(f, dom);
   }
 
   __zdd zdd_from(const bdd &f)
   {
-    const label_file dom = adiar_get_domain();
+    const internal::label_file dom = adiar_get_domain();
     return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>(f, dom);
   }
 

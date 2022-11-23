@@ -12,9 +12,6 @@ set(HEADERS
   data.h
   deprecated.h
   domain.h
-  file.h
-  file_stream.h
-  file_writer.h
   statistics.h
 
   # adiar/bdd
@@ -64,13 +61,17 @@ set(HEADERS
   internal/data_types/request
   internal/data_types/tuple.h
   internal/data_types/uid.h
+
+  # adiar/internal/io
+  internal/io/file.h
+  internal/io/file_stream.h
+  internal/io/file_writer.h
 )
 
 set(SOURCES
   # adiar/
   adiar.cpp
   domain.cpp
-  file.cpp
   statistics.cpp
 
   # adiar/bdd/
@@ -114,6 +115,9 @@ set(SOURCES
 
   # adiar/internal/data_structures
   internal/data_structures/levelized_priority_queue.cpp
+
+  # adiar/internal/io
+  internal/io/file.cpp
 )
 
 # ============================================================================ #

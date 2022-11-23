@@ -19,8 +19,7 @@
 
 #include <adiar/assignment.h>
 #include <adiar/bool_op.h>
-#include <adiar/file.h>
-
+#include <adiar/internal/io/file.h>
 #include <adiar/bdd/bdd.h>
 #include <adiar/zdd/zdd.h>
 
@@ -98,7 +97,7 @@ namespace adiar
   ///
   /// \pre        Labels in `vars` are provided in ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_and(const label_file &vars);
+  bdd bdd_and(const internal::label_file &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'or' of all the given
@@ -114,7 +113,7 @@ namespace adiar
   ///
   /// \pre        Labels in `vars` are provided in ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_or(const label_file &vars);
+  bdd bdd_or(const internal::label_file &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief           The BDD representing the function that is true exactly if
@@ -330,7 +329,7 @@ namespace adiar
   ///
   /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const bdd &f, const assignment_file &xs);
+  __bdd bdd_restrict(const bdd &f, const internal::assignment_file &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existentially quantify a single variable.
@@ -357,10 +356,10 @@ namespace adiar
   ///
   /// \returns    \f$ \exists x_{i_1}, \dots, x_{i_k} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, const label_file &vars);
+  __bdd bdd_exists(const bdd &f, const internal::label_file &vars);
 
   /// \cond
-  __bdd bdd_exists(bdd &&f, const label_file &vars);
+  __bdd bdd_exists(bdd &&f, const internal::label_file &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -388,10 +387,10 @@ namespace adiar
   ///
   /// \returns    \f$ \forall x_{i_1}, \dots, x_{i_k} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, const label_file &vars);
+  __bdd bdd_forall(const bdd &f, const internal::label_file &vars);
 
   /// \cond
-  __bdd bdd_forall(bdd &&f, const label_file &vars);
+  __bdd bdd_forall(bdd &&f, const internal::label_file &vars);
   /// \endcond
 
   /// \}
@@ -493,7 +492,7 @@ namespace adiar
   /// \returns An <tt>assignment_file</tt> with an assignment to every variable
   ///          mentioned by the given BDD.
   //////////////////////////////////////////////////////////////////////////////
-  assignment_file bdd_satmin(const bdd &f);
+  internal::assignment_file bdd_satmin(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
@@ -505,7 +504,7 @@ namespace adiar
   /// \returns An <tt>assignment_file</tt> with an assignment to every variable
   ///          mentioned by the given BDD.
   //////////////////////////////////////////////////////////////////////////////
-  assignment_file bdd_satmax(const bdd &f);
+  internal::assignment_file bdd_satmax(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment
@@ -529,12 +528,12 @@ namespace adiar
   ///
   /// \pre      Assignment tuples in `xs` is in ascending order
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_eval(const bdd &f, const assignment_file &xs);
+  bool bdd_eval(const bdd &f, const internal::assignment_file &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Get the labels of the levels of the BDD
   //////////////////////////////////////////////////////////////////////////////
-  label_file bdd_varprofile(const bdd &f);
+  internal::label_file bdd_varprofile(const bdd &f);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -557,7 +556,7 @@ namespace adiar
   ///
   /// \pre       Labels in `dom` are provided in ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_from(const zdd &A, const label_file &dom);
+  __bdd bdd_from(const zdd &A, const internal::label_file &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \copybrief bdd_from

@@ -1,13 +1,10 @@
 #include <adiar/bdd.h>
 
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
-
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
-
 #include <adiar/internal/algorithms/build.h>
-
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/ptr.h>
@@ -39,12 +36,12 @@ namespace adiar
     return bdd_not(internal::build_ithvar(label));
   }
 
-  bdd bdd_and(const label_file &labels)
+  bdd bdd_and(const internal::label_file &labels)
   {
     return internal::build_chain<true, false, true>(labels);
   }
 
-  bdd bdd_or(const label_file &labels)
+  bdd bdd_or(const internal::label_file &labels)
   {
     return internal::build_chain<false, true, false>(labels);
   }
@@ -78,8 +75,8 @@ namespace adiar
 
     // Construct parallelogram-shaped BDD where each node stores the number of
     // variables up to said point has been set to true.
-    node_file nf;
-    node_writer nw(nf);
+    internal::node_file nf;
+    internal::node_writer nw(nf);
 
     bdd::label_t curr_label = max_label;
 

@@ -1,12 +1,11 @@
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
-#include <adiar/file_stream.h>
-
 #include <adiar/internal/cut.h>
 #include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/io/file_stream.h>
 
 namespace adiar
 {
@@ -50,13 +49,14 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  label_file extract_non_dom(const zdd &dd, const label_file &dom)
+  internal::label_file
+  extract_non_dom(const zdd &dd, const internal::label_file &dom)
   {
-    label_file dom_inv;
-    label_writer diw(dom_inv);
+    internal::label_file dom_inv;
+    internal::label_writer diw(dom_inv);
 
-    label_stream<> ls(dom);
-    level_info_stream<zdd::node_t> dd_meta(dd);
+    internal::label_stream<> ls(dom);
+    internal::level_info_stream<zdd::node_t> dd_meta(dd);
 
     while (dd_meta.can_pull()) {
       zdd::label_t dd_label = label_of(dd_meta.pull());
@@ -86,11 +86,11 @@ namespace adiar
                                                                             \
   if (dom.size() == 0) { return zdd_null(); }                               \
                                                                             \
-  label_file dom_inv = extract_non_dom(zdd_var, dom);                       \
+  internal::label_file dom_inv = extract_non_dom(zdd_var, dom);   \
                                                                             \
   if (dom_inv.size() == zdd_varcount(zdd_var)) { return zdd_null(); }       \
                                                                             \
-  label_stream<> ls(dom_inv);                                               \
+  internal::label_stream<> ls(dom_inv);                                     \
   while (ls.can_pull()) {                                                   \
     if (is_terminal(zdd_var)) { return zdd_var; };                          \
                                                                             \
@@ -98,13 +98,13 @@ namespace adiar
   }                                                                         \
   return zdd_var;                                                           \
 
-  zdd zdd_project(const zdd &dd, const label_file &dom)
+  zdd zdd_project(const zdd &dd, const internal::label_file &dom)
   {
     zdd temp = dd;
     multi_project_macro(temp, dom);
   }
 
-  zdd zdd_project(zdd &&dd, const label_file &dom)
+  zdd zdd_project(zdd &&dd, const internal::label_file &dom)
   {
     multi_project_macro(dd, dom);
   }

@@ -11,7 +11,7 @@
 /// using it when needed.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <adiar/file.h>
+#include <adiar/internal/io/file.h>
 
 namespace adiar
 {
@@ -26,7 +26,7 @@ namespace adiar
   /// \param dom A \ref label_file containing all labels of the problem domain
   ///            in ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_set_domain(const label_file &dom);
+  void adiar_set_domain(const internal::label_file &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether Adiar has a global domain.
@@ -39,7 +39,7 @@ namespace adiar
   /// \throws std::domain_error If no domain is yet set, i.e.
   ///         `adiar_has_domain() == false`.
   //////////////////////////////////////////////////////////////////////////////
-  label_file adiar_get_domain();
+  internal::label_file adiar_get_domain();
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

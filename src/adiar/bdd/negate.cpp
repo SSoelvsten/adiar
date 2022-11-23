@@ -1,7 +1,7 @@
 #include <adiar/bdd.h>
 
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 
 namespace adiar
 {

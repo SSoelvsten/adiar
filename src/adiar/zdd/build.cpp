@@ -1,11 +1,9 @@
 #include "build.h"
 
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
-
 #include <adiar/internal/assert.h>
-
 #include <adiar/internal/algorithms/build.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 
 namespace adiar
 {
@@ -29,17 +27,17 @@ namespace adiar
     return internal::build_ithvar(label);
   }
 
-  zdd zdd_vars(const label_file &labels)
+  zdd zdd_vars(const internal::label_file &labels)
   {
     return internal::build_chain<true, false, true>(labels);
   }
 
-  zdd zdd_singletons(const label_file &labels)
+  zdd zdd_singletons(const internal::label_file &labels)
   {
     return internal::build_chain<false, true, false>(labels);
   }
 
-  zdd zdd_powerset(const label_file &labels)
+  zdd zdd_powerset(const internal::label_file &labels)
   {
     return internal::build_chain<true, true, true, true>(labels);
   }

@@ -5,14 +5,11 @@
 #include <memory>
 
 #include <adiar/domain.h>
-
 #include <adiar/internal/dot.h>
 #include <adiar/internal/util.h>
-
 #include <adiar/internal/algorithms/convert.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/algorithms/reduce.h>
-
 #include <adiar/bdd/bdd_policy.h>
 #include <adiar/zdd/zdd_policy.h>
 
@@ -23,16 +20,16 @@ namespace adiar
   __bdd::__bdd() : internal::__dd()
   { }
 
-  __bdd::__bdd(const node_file &f) : internal::__dd(f)
+  __bdd::__bdd(const internal::node_file &f) : internal::__dd(f)
   { }
 
-  __bdd::__bdd(const arc_file &f) : internal::__dd(f)
+  __bdd::__bdd(const internal::arc_file &f) : internal::__dd(f)
   { }
 
   __bdd::__bdd(const bdd &dd) : internal::__dd(dd)
   { }
 
-  bdd::bdd(const node_file &f, bool negate) : internal::dd(f, negate)
+  bdd::bdd(const internal::node_file &f, bool negate) : internal::dd(f, negate)
   { }
 
   bdd::bdd(const bdd &o) : internal::dd(o)
@@ -147,21 +144,21 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
-  label_file bdd_varprofile(const bdd &f)
+  internal::label_file bdd_varprofile(const bdd &f)
   {
     return varprofile(f);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __bdd bdd_from(const zdd &A, const label_file &dom)
+  __bdd bdd_from(const zdd &A, const internal::label_file &dom)
   {
     return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>(A, dom);
   }
 
   __bdd bdd_from(const zdd &A)
   {
-    const label_file dom = adiar_get_domain();
+    const internal::label_file dom = adiar_get_domain();
     return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>(A, dom);
   }
 

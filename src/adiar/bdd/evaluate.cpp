@@ -1,9 +1,7 @@
 #include <adiar/bdd.h>
 
-#include <adiar/file_stream.h>
-
+#include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/assert.h>
-
 #include <adiar/internal/algorithms/traverse.h>
 
 namespace adiar
@@ -39,13 +37,13 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   class bdd_eval_file_visitor
   {
-    assignment_stream<> as;
+    internal::assignment_stream<> as;
     assignment_t a;
 
     bool result = false;
 
   public:
-    bdd_eval_file_visitor(const assignment_file& af) : as(af)
+    bdd_eval_file_visitor(const internal::assignment_file& af) : as(af)
     { if (as.can_pull()) { a = as.pull(); } }
 
     inline bdd::ptr_t visit(const bdd::node_t &n)
@@ -67,7 +65,7 @@ namespace adiar
     { return result; }
   };
 
-  bool bdd_eval(const bdd &bdd, const assignment_file &af)
+  bool bdd_eval(const bdd &bdd, const internal::assignment_file &af)
   {
     bdd_eval_file_visitor v(af);
     internal::traverse(bdd, v);

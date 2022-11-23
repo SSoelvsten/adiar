@@ -1,6 +1,9 @@
 #ifndef ADIAR_INTERNAL_CUT_H
 #define ADIAR_INTERNAL_CUT_H
 
+#include <stddef.h>
+#include <limits>
+
 namespace adiar::internal
 {
   ////////////////////////////////////////////////////////////////////////////

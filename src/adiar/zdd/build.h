@@ -3,16 +3,14 @@
 
 #include <adiar/zdd.h>
 
-#include <adiar/file.h>
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
+#include <functional>
 
 #include <adiar/internal/cut.h>
-
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
-
-#include <functional>
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 
 namespace adiar
 {
@@ -25,7 +23,8 @@ namespace adiar
   /// \param set_size The threshold size to compare to
   //////////////////////////////////////////////////////////////////////////////
   template <typename pred_t = std::equal_to<zdd::label_t>>
-  zdd zdd_sized_sets(const label_file &labels, zdd::label_t set_size,
+  zdd zdd_sized_sets(const internal::label_file &labels,
+                     zdd::label_t set_size,
                      pred_t pred = std::equal_to<zdd::label_t>())
   {
     // Generalisation of bdd_counter
@@ -78,10 +77,10 @@ namespace adiar
       if (!eq_terminal_val && !gt_terminal_val) { return zdd_null(); }
     }
 
-    node_file nf;
-    node_writer nw(nf);
+    internal::node_file nf;
+    internal::node_writer nw(nf);
 
-    label_stream<true> ls(labels);
+    internal::label_stream<true> ls(labels);
 
     // We use the id to store the number of elements, that we have already seen.
     // This does (often) make it non-canonical, but it does not seem worth the

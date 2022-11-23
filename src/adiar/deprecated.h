@@ -37,9 +37,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   template<typename T, typename pred_t = std::less<>>
   [[deprecated("Use 'simple_file_sorter' in 'adiar/file.h'.")]]
-  void sort(simple_file<T> f, pred_t pred = pred_t())
+  void sort(internal::simple_file<T> f, pred_t pred = pred_t())
   {
-    simple_file_sorter<T, pred_t>::sort(f, pred);
+    internal::simple_file_sorter<T, pred_t>::sort(f, pred);
   }
 
   /* =============== UNIQUE IDENTIFIERS : INTERNAL NODES ==================== */

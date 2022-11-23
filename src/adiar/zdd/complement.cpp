@@ -2,7 +2,6 @@
 #include <adiar/zdd/zdd_policy.h>
 
 #include <adiar/domain.h>
-
 #include <adiar/internal/algorithms/build.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/data_types/uid.h>
@@ -25,7 +24,7 @@ namespace adiar
       return dd;
     }
 
-    static zdd on_terminal_input(const bool terminal_value, const zdd& /*dd*/, const label_file &universe)
+    static zdd on_terminal_input(const bool terminal_value, const zdd& /*dd*/, const internal::label_file &universe)
     {
       return terminal_value
         // The entire universe minus Ø
@@ -70,14 +69,14 @@ namespace adiar
     // LCOV_EXCL_END
   };
 
-  __zdd zdd_complement(const zdd &dd, const label_file &universe)
+  __zdd zdd_complement(const zdd &dd, const internal::label_file &universe)
   {
     return internal::intercut<zdd_complement_policy>(dd, universe);
   }
 
   __zdd zdd_complement(const zdd &dd)
   {
-    const label_file universe = adiar_get_domain();
+    const internal::label_file universe = adiar_get_domain();
     return internal::intercut<zdd_complement_policy>(dd, universe);
   }
 }

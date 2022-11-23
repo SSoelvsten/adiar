@@ -1,12 +1,9 @@
 #include <adiar/bdd.h>
 
 #include <adiar/assignment.h>
-
-#include <adiar/file_stream.h>
-#include <adiar/file_writer.h>
-
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/algorithms/traverse.h>
-
 #include <adiar/internal/data_types/level_info.h>
 
 namespace adiar
@@ -16,10 +13,10 @@ namespace adiar
   {
     visitor __visitor;
 
-    assignment_file af;
-    assignment_writer aw;
+    internal::assignment_file af;
+    internal::assignment_writer aw;
 
-    level_info_stream<bdd::node_t> ms;
+    internal::level_info_stream<bdd::node_t> ms;
 
   public:
     bdd_sat_assignment_writer_visitor(const bdd& f) : aw(af), ms(f) { }
@@ -49,20 +46,20 @@ namespace adiar
       }
     }
 
-    const assignment_file get_result() const
+    const internal::assignment_file get_result() const
     {
       return af;
     }
   };
 
-  assignment_file bdd_satmin(const bdd &f)
+  internal::assignment_file bdd_satmin(const bdd &f)
   {
     bdd_sat_assignment_writer_visitor<internal::traverse_satmin_visitor, false> v(f);
     internal::traverse(f,v);
     return v.get_result();
   }
 
-  assignment_file bdd_satmax(const bdd &f)
+  internal::assignment_file bdd_satmax(const bdd &f)
   {
     bdd_sat_assignment_writer_visitor<internal::traverse_satmax_visitor, true> v(f);
     internal::traverse(f,v);

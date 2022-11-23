@@ -3,8 +3,7 @@
 
 #include <string_view>
 
-#include <adiar/file.h>
-
+#include <adiar/internal/io/file.h>
 #include <adiar/internal/dd.h>
 
 namespace adiar
@@ -24,8 +23,8 @@ namespace adiar
   {
   public:
     __bdd();
-    __bdd(const node_file &f);
-    __bdd(const arc_file &f);
+    __bdd(const internal::node_file &f);
+    __bdd(const internal::arc_file &f);
     __bdd(const bdd &bdd);
   };
 
@@ -54,7 +53,7 @@ namespace adiar
 
   public:
     bdd();
-    bdd(const node_file &f, bool negate = false);
+    bdd(const internal::node_file &f, bool negate = false);
     bdd(const bdd &o);
     bdd(bdd &&o);
     bdd(__bdd &&o);
