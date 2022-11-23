@@ -1,6 +1,8 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_LEVEL_INFO_H
 #define ADIAR_INTERNAL_DATA_TYPES_LEVEL_INFO_H
 
+#include <adiar/internal/data_types/ptr.h>
+
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////

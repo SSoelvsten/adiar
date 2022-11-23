@@ -5,7 +5,8 @@
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
-#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/node_file.h>
 
 #include <variant>
 
