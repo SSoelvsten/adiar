@@ -60,7 +60,7 @@ namespace adiar::internal
     friend class simple_file_writer;
 
     template <typename elem_t>
-    friend class meta_file_writer;
+    friend class levelized_file_writer;
 
     template <typename elem_t, bool REVERSE, typename SharedPtr_T>
     friend class file_stream;

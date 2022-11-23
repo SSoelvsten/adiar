@@ -47,8 +47,8 @@ struct pq_test_gt {
   }
 };
 
-typedef meta_file<pq_test_data> pq_test_file;
-typedef meta_file_writer<pq_test_data> pq_test_writer;
+typedef levelized_file<pq_test_data> pq_test_file;
+typedef levelized_file_writer<pq_test_data> pq_test_writer;
 
 template <typename file_t, size_t LOOK_AHEAD>
 using test_priority_queue = levelized_priority_queue<pq_test_data, pq_test_label_ext,

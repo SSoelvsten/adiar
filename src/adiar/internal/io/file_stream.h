@@ -13,7 +13,7 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/simple_file.h>
-#include <adiar/internal/io/meta_file.h>
+#include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/node_file.h>
 
@@ -192,13 +192,13 @@ namespace adiar::internal
   ///         the \c REVERSE parameter.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, size_t File, bool REVERSE = false>
-  class meta_file_stream : public file_stream<T, REVERSE, __meta_file<T>>
+  class levelized_file_stream : public file_stream<T, REVERSE, __levelized_file<T>>
   {
     static_assert(File < FILE_CONSTANTS<T>::files, "The file to pick must be a valid index");
 
   public:
-    meta_file_stream(const meta_file<T> &file, bool negate = false)
-      : file_stream<T, REVERSE, __meta_file<T>>(file->_files[File], file._file_ptr, negate)
+    levelized_file_stream(const levelized_file<T> &file, bool negate = false)
+      : file_stream<T, REVERSE, __levelized_file<T>>(file->_files[File], file._file_ptr, negate)
     { }
 
     // TODO: 'attach', 'attached', and 'detach'
@@ -213,15 +213,15 @@ namespace adiar::internal
   /// \sa node_file
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  class node_stream : public meta_file_stream<node, 0, !REVERSE>
+  class node_stream : public levelized_file_stream<node, 0, !REVERSE>
   {
   public:
     node_stream(const node_file &file, bool negate = false)
-      : meta_file_stream<node, 0, !REVERSE>(file, negate)
+      : levelized_file_stream<node, 0, !REVERSE>(file, negate)
     { }
 
     node_stream(const dd &diagram)
-      : meta_file_stream<node, 0, !REVERSE>(diagram.file, diagram.negate)
+      : levelized_file_stream<node, 0, !REVERSE>(diagram.file, diagram.negate)
     { }
   };
 
@@ -231,15 +231,15 @@ namespace adiar::internal
   /// \sa arc_file
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
-  using node_arc_stream = meta_file_stream<arc, 0, !REVERSE>;
+  using node_arc_stream = levelized_file_stream<arc, 0, !REVERSE>;
 
   // TODO: Move inside of terminal_arc_stream below ?
   template<bool REVERSE = false>
-  using in_order_arc_stream = meta_file_stream<arc, 1, !REVERSE>;
+  using in_order_arc_stream = levelized_file_stream<arc, 1, !REVERSE>;
 
   // TODO: Move inside of terminal_arc_stream below ?
   template<bool REVERSE = false>
-  using out_of_order_arc_stream = meta_file_stream<arc, 2, !REVERSE>;
+  using out_of_order_arc_stream = levelized_file_stream<arc, 2, !REVERSE>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream for terminal arcs of an arc file.
@@ -339,14 +339,14 @@ namespace adiar::internal
   /// \brief Stream for the levelized meta information.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, bool REVERSE = false>
-  class level_info_stream : public file_stream<level_info_t, !REVERSE, __meta_file<T>>
+  class level_info_stream : public file_stream<level_info_t, !REVERSE, __levelized_file<T>>
   {
   public:
     //////////////////////////////////////////////////////////////////////////////
     /// Access the level information of a file with meta information.
     //////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const meta_file<T> &f)
-      : file_stream<level_info_t, !REVERSE, __meta_file<T>>(f->_level_info_file, f._file_ptr)
+    level_info_stream(const levelized_file<T> &f)
+      : file_stream<level_info_t, !REVERSE, __levelized_file<T>>(f->_level_info_file, f._file_ptr)
     { }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -360,7 +360,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     /// For unit testing only!
     //////////////////////////////////////////////////////////////////////////////
-    meta_file<T> __obtain_file(const __dd &diagram)
+    levelized_file<T> __obtain_file(const __dd &diagram)
     {
       if constexpr (std::is_same<node, T>::value) {
         return diagram.get<node_file>();

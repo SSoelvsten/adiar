@@ -213,7 +213,7 @@ namespace adiar::internal
             typename elem_comp_t         = std::less<elem_t>,
             ptr_uint64::label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
             memory_mode_t mem_mode = memory_mode_t::EXTERNAL,
-            typename file_t              = meta_file<elem_t>,
+            typename file_t              = levelized_file<elem_t>,
             size_t   FILES               = 1u,
             typename level_comp_t        = std::less<ptr_uint64::label_t>,
             ptr_uint64::label_t  INIT_LEVEL          = 1u

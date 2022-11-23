@@ -72,7 +72,7 @@ namespace adiar
   using unique_ptr = std::unique_ptr<T>;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Creates a new object on the heap with shared ownership.
+  /// \brief Creates a new object on the heap with unique ownership.
   //////////////////////////////////////////////////////////////////////////////
   template <typename T, typename ... TT>
   inline unique_ptr<T> make_unique(TT && ... tt) {
