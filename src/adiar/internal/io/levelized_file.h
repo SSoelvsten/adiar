@@ -63,9 +63,6 @@ namespace adiar::internal
     __levelized_file() {
       adiar_debug(!is_read_only(), "Should be writable on creation");
     }
-
-    // TODO: Opening a persistent file with meta information given a path.
-    // __levelized_file(const std::string& filename) : ? { ? }
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief  Make the file read-only. This disallows use of any writers but

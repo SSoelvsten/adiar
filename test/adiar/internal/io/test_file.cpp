@@ -990,30 +990,6 @@ go_bandit([]() {
           AssertThat(fs.can_pull(), Is().False());
         });
 
-        it("can construct a new named simple_file", [&]() {
-          simple_file<int> file("simple_file_test.adiar");
-
-          AssertThat(std::filesystem::exists("simple_file_test.adiar"), Is().True());
-
-          {
-            simple_file_writer<int> fw(file);
-            fw.push(1);
-            fw.push(2);
-            fw.push(3);
-          }
-          AssertThat(file.is_read_only(), Is().False());
-
-          {
-            file_stream<int, false> fs(file);
-            AssertThat(file.is_read_only(), Is().True());
-            AssertThat(fs.pull(), Is().EqualTo(1));
-            AssertThat(fs.pull(), Is().EqualTo(2));
-            AssertThat(fs.pull(), Is().EqualTo(3));
-            AssertThat(fs.can_pull(), Is().False());
-          }
-          AssertThat(file.is_read_only(), Is().True());
-        });
-
         it("should have two temporary simple_files be two different files", [&]() {
           simple_file<int> file1;
           simple_file<int> file2;
@@ -1033,19 +1009,6 @@ go_bandit([]() {
 
           file_stream<int, false> fs(file2);
           AssertThat(fs.pull(), Is().EqualTo(42));
-          AssertThat(fs.can_pull(), Is().False());
-        });
-
-        it("can construct a prior named simple_file (i.e. reopen a stored file)", [&]() {
-          AssertThat(std::filesystem::exists("simple_file_test.adiar"), Is().True());
-          simple_file<int> file("simple_file_test.adiar");
-          AssertThat(file.is_read_only(), Is().True());
-
-          file_stream<int, false> fs(file);
-          AssertThat(file.is_read_only(), Is().True());
-          AssertThat(fs.pull(), Is().EqualTo(1));
-          AssertThat(fs.pull(), Is().EqualTo(2));
-          AssertThat(fs.pull(), Is().EqualTo(3));
           AssertThat(fs.can_pull(), Is().False());
         });
 

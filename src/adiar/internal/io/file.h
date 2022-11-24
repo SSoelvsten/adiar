@@ -77,11 +77,6 @@ namespace adiar::internal
   public:
     file() : _tpie_file() { touch_file(); }
 
-    file(const std::string &filename) : _tpie_file(filename, true) {
-      touch_file();
-      if (!empty()) { make_read_only(); }
-    }
-
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Mark file to be read-only.
     ////////////////////////////////////////////////////////////////////////////
@@ -172,22 +167,20 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct a temporary shared file
+    /// \brief Construct a new temporary shared file
     ////////////////////////////////////////////////////////////////////////////
     __shared_file() : _file_ptr(adiar::make_shared<T>())
     { }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct a persistent shared file given a specific filename
+    /// \brief Copy-constructor.
     ////////////////////////////////////////////////////////////////////////////
-    __shared_file(const std::string &filename) : _file_ptr(adiar::make_shared<T>(filename))
-    { }
-
-    // Copy constructor
     __shared_file(const __shared_file<T> &other) : _file_ptr(other._file_ptr)
     { }
 
-    // Move constructor
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Move-constructor.
+    /////////////////////////////////////////////////////////////////////////
     __shared_file(__shared_file<T> &&other) : _file_ptr(other._file_ptr)
     { }
 
