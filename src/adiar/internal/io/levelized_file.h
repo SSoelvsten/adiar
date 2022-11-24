@@ -2,44 +2,36 @@
 #define ADIAR_INTERNAL_IO_META_FILE_H
 
 #include <adiar/internal/io/file.h>
+#include <adiar/internal/io/shared_file.h>
+
+#include <adiar/internal/cut.h>
+#include <adiar/internal/data_types/level_info.h>
 
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// We also provide not-so simple files for some type of elements 'T'. These
-  /// files include meta information and split the file content into one or more
-  /// files. All of these constants are provided as \c static and \c constexpr
-  /// or are mere type declarations.
-  ///
-  /// \param T Element type in the file
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename T>
-  struct FILE_CONSTANTS;
-
-  //////////////////////////////////////////////////////////////////////////////
   /// \brief       File(s) with meta information.
   ///
-  /// \param T     Type of the file's content
+  /// \param elem_type Type of the file's content.
   ///
-  /// \details     The entities of Adiar that represents DAGs, which are
-  ///              represented by one or more files of type <tt>T</tt>. To
-  ///              optimise several algorithms, these files also carry around
-  ///              'meta' information. This information is stored in the
-  ///              variables and in a levelized fashion depending on the
-  ///              granularity of the information.
+  /// \details The entities of Adiar that represents DAGs, which are represented
+  ///          by one or more files of type <tt>T</tt>. To optimise several
+  ///          algorithms, these files also carry around 'meta' information.
+  ///          This information is stored in the variables and in a levelized
+  ///          fashion depending on the granularity of the information.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T>
-  class __levelized_file : public FILE_CONSTANTS<T>::stats
+  template <typename elem_type>
+  class __levelized_file : public FILE_CONSTANTS<elem_type>::stats
   {
-    static constexpr size_t FILES = FILE_CONSTANTS<T>::files;
-
-    static_assert(0 < FILES, "The number of files must be positive");
-
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
     ////////////////////////////////////////////////////////////////////////////
-    typedef T elem_t;
+    typedef elem_type elem_t;
+
+  private:
+    static constexpr size_t FILES = FILE_CONSTANTS<elem_t>::files;
+    static_assert(0 < FILES, "The number of files must be positive");
 
   public:
     ///////////////////////////////////////////////////////////////////////////
@@ -49,6 +41,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     size_t number_of_terminals[2] = { 0, 0 };
 
+  public: // TODO: privatize
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Meta information on a level by level granularity.
     ////////////////////////////////////////////////////////////////////////////
@@ -57,41 +50,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Files describing the directed acyclic graph.
     ////////////////////////////////////////////////////////////////////////////
-    file<T> _files [FILES];
+    file<elem_t> _files [FILES];
 
   public:
-    __levelized_file() {
-      adiar_debug(!is_read_only(), "Should be writable on creation");
-    }
+    __levelized_file()
+    { }
+
   public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief  Make the file read-only. This disallows use of any writers but
-    ///         (multiple) access by several readers.
-    ///
-    /// \remark Any writer should be detached from this object before making it
-    ///         read only.
-    ////////////////////////////////////////////////////////////////////////////
-    void make_read_only() const
-    {
-      _level_info_file.make_read_only();
-      for (size_t idx = 0u; idx < FILES; idx++) {
-        _files[idx].make_read_only();
-      }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the file is read-only.
-    ////////////////////////////////////////////////////////////////////////////
-    bool is_read_only() const
-    {
-      for (size_t idx = 0u; idx < FILES; idx++) {
-        if (!_files[idx].is_read_only()) {
-          return false;
-        };
-      }
-      return _level_info_file.is_read_only();
-    }
-
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of elements in the file(s)
     ////////////////////////////////////////////////////////////////////////////
@@ -112,17 +77,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of elements in the levelized meta information file
     ////////////////////////////////////////////////////////////////////////////
-    size_t meta_size() const
+    size_t levels() const
     {
       return _level_info_file.size();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief The size of the file(s) in bytes.
-    ////////////////////////////////////////////////////////////////////////////
-    size_t file_size() const
-    {
-      return size() * sizeof(elem_t) + meta_size() * sizeof(level_info_t);
     }
   };
 
@@ -131,8 +88,8 @@ namespace adiar::internal
   ///
   /// \param T     Type of the file's content
   ////////////////////////////////////////////////////////////////////////////
-  template<typename T>
-  using levelized_file = __shared_file<__levelized_file<T>>;
+  template<typename elem_type>
+  using levelized_file = __shared_file<__levelized_file<elem_type>>;
 }
 
 #endif // ADIAR_INTERNAL_IO_META_FILE_H

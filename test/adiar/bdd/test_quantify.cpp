@@ -257,7 +257,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+        AssertThat(out.get<node_file>().levels(), Is().EqualTo(0u));
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
@@ -277,7 +277,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>().meta_size(), Is().EqualTo(0u));
+        AssertThat(out.get<node_file>().levels(), Is().EqualTo(0u));
 
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
