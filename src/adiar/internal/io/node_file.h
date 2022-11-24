@@ -61,9 +61,6 @@ namespace adiar::internal
     // Temporary node_file constructor
     node_file() = default;
 
-    // TODO: Persistent files with a filename
-    // node_file(const std::string &filename) : __shared_file(filename) { }
-
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Size of the meta file
     //////////////////////////////////////////////////////////////////////////////
