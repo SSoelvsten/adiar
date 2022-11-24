@@ -64,9 +64,9 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Size of the meta file
     //////////////////////////////////////////////////////////////////////////////
-    size_t meta_size() const
+    size_t levels() const
     {
-      return _file_ptr -> meta_size();
+      return _file_ptr -> levels();
     }
   };
 
@@ -120,7 +120,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline uint64_t varcount(const node_file &nodes)
   {
-    return nodes.meta_size();
+    return nodes.levels();
   }
 }
 

@@ -67,6 +67,7 @@ set(HEADERS
   # adiar/internal/io
   internal/io/file.h
   internal/io/levelized_file.h
+  internal/io/shared_file.h
 
   internal/io/file_stream.h
   internal/io/file_writer.h

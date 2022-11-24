@@ -1,58 +1,80 @@
 #ifndef ADIAR_INTERNAL_IO_FILE_H
 #define ADIAR_INTERNAL_IO_FILE_H
 
-#include <string.h>
-#include <memory>
-#include <limits>
+#include <string>
+#include <exception>
+#include <filesystem>
+#include <limits> // TODO <-- remove?
 
 #include <tpie/tpie.h>
-#include <tpie/file_stream.h>
 #include <tpie/file.h>
+
+// TODO: move?
+#include <tpie/file_stream.h>
 #include <tpie/sort.h>
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/cut.h>
-#include <adiar/internal/memory.h>
-#include <adiar/internal/data_types/level_info.h>
 
 namespace adiar::internal
 {
-  constexpr tpie::access_type ADIAR_READ_ACCESS  = tpie::access_type::access_read;
-  constexpr tpie::access_type ADIAR_WRITE_ACCESS = tpie::access_type::access_write;
-
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief   Wrapper for TPIE's <tt>temp_file</tt>.
+  /// \brief Provides compile-time known settings and meta information variables
+  ///        used in `file<elem_type>` and `levelized_file<elem_type>`.
   ///
-  /// \param T Type of the file's content
+  /// \details Files also contain various pieces of meta information. Instead of
+  ///          creating a larger object-oriented hierarchy, we provide this
+  ///          `FILE_CONSTANTS` template to provide at compile-time the settings
+  ///          and meta information to include.
+  ///
+  /// \param elem_type Element type in the file.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T>
-  class file
-  {
-    static_assert(std::is_pod<T>::value, "File content must be a POD");
+  template <typename elem_type>
+  struct FILE_CONSTANTS;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief   A file on disk.
+  ///
+  /// \details A shallow wrapper TPIE's <tt>temp_file</tt> class to ensure the
+  ///          file's content is part of the type and to provide auxiliary
+  ///          functions.
+  ///
+  /// \param   elem_type Type of the file's content.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename elem_type>
+  class file // : public FILE_CONSTANTS<elem_type>::stats
+  {
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
     ////////////////////////////////////////////////////////////////////////////
-    typedef T elem_t;
+    typedef elem_type elem_t;
+
+    static_assert(std::is_pod<elem_t>::value, "File content must be a POD");
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Access flags to be used privately within reader's and writers.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef tpie::access_type access_t;
+
+    static constexpr access_t read_access  = tpie::access_type::access_read;
+    static constexpr access_t write_access = tpie::access_type::access_write;
 
   private:
     ////////////////////////////////////////////////////////////////////////////
-    // The variables above are 'mutable' to allow them to be used with
-    // 'non-const' operations (opening a stream) in a 'const' context.
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the file has been read (and hence should not be further)
-    ////////////////////////////////////////////////////////////////////////////
-    mutable bool _is_read_only = false;
-
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief The underlying TPIE file
+    ///
+    /// \remark This variable is made 'mutable' to allow it to be used with
+    //          'non-const' operations (opening a read-only stream) in a 'const'
+    //          context.
     ////////////////////////////////////////////////////////////////////////////
     mutable tpie::temp_file _tpie_file;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Befriend the few places that need direct access to these variables.
+    // TODO: atomic read-write counter?
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Befriend the few places that need direct access to these variables.
     template <typename elem_t, typename pred_t>
     friend class simple_file_sorter;
 
@@ -65,171 +87,169 @@ namespace adiar::internal
     template <typename elem_t, bool REVERSE, typename SharedPtr_T>
     friend class file_stream;
 
-  private:
-    void touch_file()
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Constructor for a new unammed \em temporary file.
+    ////////////////////////////////////////////////////////////////////////////
+    file() : _tpie_file()
+    { }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Constructor for a prior named \em persistent file.
+    ///
+    /// \throws std::runtime_error If the path does not point to an \em existing
+    ///                            file on disk.
+    ////////////////////////////////////////////////////////////////////////////
+    file(const std::string &path) : _tpie_file(path, true)
     {
-      // Opening the file with 'access_read_write' automatically creates the
-      // file with header on disk.
-      tpie::file_stream<elem_t> fs;
-      fs.open(_tpie_file, tpie::access_type::access_read_write);
+      if (!exists()) { throw std::runtime_error("'"+path+"' not found."); }
     }
 
   public:
-    file() : _tpie_file() { touch_file(); }
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether this file is persistent or temporary, i.e. the file on
+    ///        disk will \em not be removed when this object is destructed.
+    ///
+    /// \sa make_persistent
+    ////////////////////////////////////////////////////////////////////////////
+    bool is_persistent() const
+    { return _tpie_file.is_persistent(); }
 
+  public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Mark file to be read-only.
+    /// \brief Make the file persistent: if the `file<>` object is destructed,
+    ///        the physical file on disk will not be deleted.
+    ///
+    /// \sa is_persistent
     ////////////////////////////////////////////////////////////////////////////
-    void make_read_only() const
+    void make_persistent()
     {
-      _is_read_only = true;
+      _tpie_file.set_persistent(true);
+      if (!exists()) { touch(); }
     }
 
+  public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the file is currently in read-only mode, i.e. some
-    /// adiar::file_stream has been attached to it and has marked it.
+    /// \copydoc is_persistent
     ////////////////////////////////////////////////////////////////////////////
-    bool is_read_only() const
+    bool is_temp() const
+    { return !is_persistent(); }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the path for this file.
+    ///
+    /// \sa exists, move
+    ////////////////////////////////////////////////////////////////////////////
+    const std::string & path() const
+    { return _tpie_file.path(); }
+
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Set the path for this file.
+    ////////////////////////////////////////////////////////////////////////////
+    void set_path(const std::string &p)
+    { _tpie_file.set_path(p); }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the file actually exists on disk.
+    ///
+    /// \sa path
+    ////////////////////////////////////////////////////////////////////////////
+    bool exists() const
+    { return std::filesystem::exists(path()); }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Move file from one place to another.
+    ///
+    /// \param new_path Path to move the file to.
+    ///
+    /// \pre `is_persistentd() == false` (other's might depend on it) and
+    ///      `new_path` names a yet non-existing file.
+    ///
+    /// \throws std::runtime_error If (a) `is_persisted() == true` and (b)
+    ///                            `new_path` names an existing file.
+    ////////////////////////////////////////////////////////////////////////////
+    void move(const std::string &new_path)
     {
-      return _is_read_only;
+      // Disallow moving the file, if it is persisted
+      if (is_persistent()) {
+        throw std::runtime_error("'"+path()+"' is persisted.");
+      }
+
+      // Disallow moving the file on-top of another.
+      if (std::filesystem::exists(new_path)) {
+        throw std::runtime_error("'"+new_path+"' already exists.");
+      }
+
+      // Move the (existing?) file or at least change the path.
+      if (exists()) {
+        try { // Try to move it
+          std::filesystem::rename(path(), new_path);
+        } catch(std::filesystem::filesystem_error& e) {
+          // Is the problem that happens
+          const std::string err_msg = e.what();
+          if (!err_msg.find("Invalid cross-device link")) throw e;
+
+          // Try to copy-delete it.
+          std::filesystem::copy(path(), new_path);
+          std::filesystem::remove(path());
+        }
+      }
+      set_path(new_path);
     }
 
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Creates the file on disk, if it does not yet exist.
+    ////////////////////////////////////////////////////////////////////////////
+    void touch()
+    {
+      if (exists()) return;
+
+      // The file exists on disk, after opening it with write_access.
+      tpie::file_stream<elem_t> fs;
+      fs.open(_tpie_file, write_access);
+    }
+
+  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of elements in the file.
     ////////////////////////////////////////////////////////////////////////////
     size_t size() const
     {
+      if (!exists()) { return 0u; }
+
       tpie::file_stream<elem_t> fs;
-      fs.open(_tpie_file, ADIAR_READ_ACCESS);
+      fs.open(_tpie_file, read_access);
       return fs.size();
     }
 
+  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the file is empty.
     ////////////////////////////////////////////////////////////////////////////
     bool empty() const
-    {
-      return size() == 0u;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Size of the file in bytes.
-    ////////////////////////////////////////////////////////////////////////////
-    size_t file_size() const
-    {
-      return size() * sizeof(elem_t);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// We want to be able to construct files like the ones above and return them
-  /// out of a function. For that, we cannot place them on the stack, but have
-  /// to place them on the heap. Yet, placing things on the heap brings with it
-  /// a whole new set of problems. Furthermore, the user may reuse the same
-  /// result in multiple places.
-  ///
-  /// So, we use a `shared_ptr` to be able to:
-  ///
-  /// - Place the files on the heap, so the `__shared_file` can be returned with
-  ///   a copy-constructor without breaking any of the `tpie::files`
-  ///
-  /// - Provides reference counting, so everything is garbage collected as fast
-  ///   as possible. With TPIE this specifically means, that disk space is freed
-  ///   up as early as possible.
-  ///
-  /// - It is thread-safe in the reference counting, so we now have ADIAR to be
-  ///   thread-safe for free!
-  ///
-  /// \param T The type of the underlying file
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename T>
-  class __shared_file
-  {
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of the file's elements.
-    ////////////////////////////////////////////////////////////////////////////
-    typedef typename T::elem_t elem_t;
+    { return size() == 0u; }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief The raw file underneath
-    ////////////////////////////////////////////////////////////////////////////
-    shared_ptr<T> _file_ptr;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Member access for the underlying file, i.e. this is similar to
-    ///        writing <tt>._file_ptr-></tt>.
-    ////////////////////////////////////////////////////////////////////////////
-    T* operator->() const
-    {
-      return _file_ptr.get();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct a new temporary shared file
-    ////////////////////////////////////////////////////////////////////////////
-    __shared_file() : _file_ptr(adiar::make_shared<T>())
-    { }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Copy-constructor.
-    ////////////////////////////////////////////////////////////////////////////
-    __shared_file(const __shared_file<T> &other) : _file_ptr(other._file_ptr)
-    { }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Move-constructor.
-    /////////////////////////////////////////////////////////////////////////
-    __shared_file(__shared_file<T> &&other) : _file_ptr(other._file_ptr)
-    { }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief  Make the file read-only. This disallows use of any writers but
-    ///         (multiple) access by several readers.
+    /// \brief Create a copy of another file on disk.
     ///
-    /// \remark Any writer should be detached from this object before making it
-    ///         read only.
+    /// \remark This new file is a temporary file and must be marked persisted
+    ///         to be kept existing beyond the object's lifetime.
     ////////////////////////////////////////////////////////////////////////////
-    void make_read_only() const
+    static file<elem_t> copy(const file<elem_t> &other)
     {
-      _file_ptr -> make_read_only();
-    }
+      if (!other.exists()) { return file<elem_t>(); }
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the file is read-only.
-    ////////////////////////////////////////////////////////////////////////////
-    bool is_read_only() const
-    {
-      return _file_ptr -> is_read_only();
+      file<elem_t> ret;
+      std::filesystem::copy(other.path(), ret.path());
+      return ret;
     }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief The number of elements in the file
-    ////////////////////////////////////////////////////////////////////////////
-    size_t size() const
-    {
-      return _file_ptr -> size();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether there are no elements in the file
-    ////////////////////////////////////////////////////////////////////////////
-    bool empty() const
-    {
-      return _file_ptr -> empty();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief The size of the file in bytes.
-    ////////////////////////////////////////////////////////////////////////////
-    size_t file_size() const
-    {
-      return _file_ptr -> file_size();
-    }
-
-    __shared_file<T>& operator= (const __shared_file<T> &o) = default;
-    __shared_file<T>& operator= (__shared_file<T> &&o) = default;
   };
 }
 

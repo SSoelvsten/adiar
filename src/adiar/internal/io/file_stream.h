@@ -12,7 +12,7 @@
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/simple_file.h>
+#include <adiar/internal/io/shared_file.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/node_file.h>
@@ -22,75 +22,129 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream to a file with a one-way reading direction.
   ///
-  /// \param T           The type of the file's elements
+  /// \param elem_type   The type of the file's elements
   ///
   /// \param REVERSE     Whether the reading direction should be reversed
   ///
-  /// \param SharedPtr_T The type of the shared pointer to a file
+  /// \param file_t      The type of the shared pointer to a file
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, bool REVERSE = false, typename SharedPtr_T = file<T>>
+  template <typename elem_type, bool REVERSE = false, typename file_type = file<elem_type>>
   class file_stream
   {
   public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the file's elements.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef elem_type elem_t;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
     static size_t memory_usage()
     {
-      return tpie::file_stream<T>::memory_usage();
+      return tpie::file_stream<elem_t>::memory_usage();
     }
 
   private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Buffer of a single element, since TPIE does not support peeking
+    ///        in revese.
+    ////////////////////////////////////////////////////////////////////////////
+    elem_t _peeked;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether an \em unpulled element is stored in `_peeked`.
+    ////////////////////////////////////////////////////////////////////////////
     bool _has_peeked = false;
-    T _peeked;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether elements should be \em negated on-the-fly.
+    ////////////////////////////////////////////////////////////////////////////
     bool _negate = false;
 
-    typename tpie::file_stream<T> _stream;
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief TPIE's file stream object to read the file with.
+    ////////////////////////////////////////////////////////////////////////////
+    typename tpie::file_stream<elem_t> _stream;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// The file stream includes a shared pointer to hook into the reference
-    /// counting and garbage collection of the file.
+    /// \brief If attached to a shared file then hook into the reference
+    ///        counting such that the file is not garbage collected while we
+    ///        read from it.
     ////////////////////////////////////////////////////////////////////////////
-    shared_ptr<SharedPtr_T> _file_ptr;
+    shared_ptr<file_type> _file_ptr;
 
   protected:
-    file_stream() { }
-
-    file_stream(file<T> &f,
-                const shared_ptr<SharedPtr_T> &shared_ptr,
-                bool negate = false)
-    {
-      attach(f, shared_ptr, negate);
-    }
-
-    void attach(file<T> &f,
-                const shared_ptr<SharedPtr_T> &shared_ptr,
+    void attach(file<elem_t> &f,
+                const shared_ptr<file_type> &shared_ptr,
                 bool negate = false)
     {
       if (attached()) { detach(); }
 
       _file_ptr = shared_ptr;
-      _file_ptr -> make_read_only();
 
-      _stream.open(f._tpie_file, ADIAR_READ_ACCESS);
+      _stream.open(f._tpie_file, file<elem_t>::read_access);
       _negate = negate;
 
       reset();
     }
 
   public:
-    file_stream(const shared_ptr<file<T>> &f, bool negate = false)
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct an unattached file stream.
+    ////////////////////////////////////////////////////////////////////////////
+    file_stream() { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct a file stream attached to the given shared file.
+    ////////////////////////////////////////////////////////////////////////////
+    file_stream(const shared_ptr<file<elem_t>> &f, bool negate = false)
     {
       attach(*f, f, negate);
     }
 
-    file_stream(const simple_file<T> &f, bool negate = false) : file_stream(f._file_ptr, negate) { }
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct a file stream attached to the given shared file.
+    ////////////////////////////////////////////////////////////////////////////
+    file_stream(const simple_file<elem_t> &f, bool negate = false)
+      : file_stream(f._file_ptr, negate)
+    { }
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Detaches and cleans up when destructed.
+    ////////////////////////////////////////////////////////////////////////////
     ~file_stream()
     {
       detach();
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a file
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(const simple_file<elem_t> &f, bool negate = false)
+    {
+      attach(f, f._file_ptr, negate);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the reader is currently attached.
+    ////////////////////////////////////////////////////////////////////////////
+    bool attached()
+    {
+      return _stream.is_open();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Detach from the file, i.e. close the stream.
+    ////////////////////////////////////////////////////////////////////////////
+    void detach()
+    {
+      _stream.close();
+      // if (_file_ptr) { _file_ptr.reset(); }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Reset the read head back to the beginning (relatively to the
-    /// reading direction).
+    ///        reading direction).
     ////////////////////////////////////////////////////////////////////////////
     void reset()
     {
@@ -113,20 +167,20 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next element (and move the read head)
     ////////////////////////////////////////////////////////////////////////////
-    const T pull()
+    const elem_t pull()
     {
       if (_has_peeked) {
         _has_peeked = false;
         return _peeked;
       }
-      T t = REVERSE ? _stream.read_back() : _stream.read();
+      const elem_t t = REVERSE ? _stream.read_back() : _stream.read();
       return _negate ? !t : t;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next element (but do not move the read head)
     ////////////////////////////////////////////////////////////////////////////
-    const T peek()
+    const elem_t peek()
     {
       if (!_has_peeked) {
         _peeked = pull();
@@ -134,51 +188,14 @@ namespace adiar::internal
       }
       return _peeked;
     }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a file
-    ////////////////////////////////////////////////////////////////////////////
-    void attach(const simple_file<T> &f, bool negate = false)
-    {
-      attach(f, f._file_ptr, negate);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the reader is currently attached.
-    ////////////////////////////////////////////////////////////////////////////
-    bool attached()
-    {
-      return _stream.is_open();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Detach from the file, i.e. close the stream.
-    ////////////////////////////////////////////////////////////////////////////
-    void detach()
-    {
-      _stream.close();
-      // if (_file_ptr) { _file_ptr.reset(); }
-    }
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief File streams for assignments (label, value).
-  ///
-  /// \param REVERSE Whether the reading direction should be reversed
-  //////////////////////////////////////////////////////////////////////////////
-  template<bool REVERSE = false>
-  using assignment_stream = file_stream<assignment_t, REVERSE>;
+
+
+
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief File streams for variable labels.
-  ///
-  /// \param REVERSE Whether the reading direction should be reversed
-  //////////////////////////////////////////////////////////////////////////////
-  template<bool REVERSE = false>
-  using label_stream = file_stream<ptr_uint64::label_t, REVERSE>;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief         File stream of files with meta information.
+  /// \brief         File stream of levelized files.
   ///
   /// \param T       The type of the file(s)'s elements
   ///
@@ -191,15 +208,16 @@ namespace adiar::internal
   ///         reversing the underlying stream. Hence, we do hide a a negation of
   ///         the \c REVERSE parameter.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, size_t File, bool REVERSE = false>
-  class levelized_file_stream : public file_stream<T, REVERSE, __levelized_file<T>>
+  template <typename elem_t, size_t file_idx, bool REVERSE = false>
+  class levelized_file_stream : public file_stream<elem_t, REVERSE, __levelized_file<elem_t>>
   {
-    static_assert(File < FILE_CONSTANTS<T>::files, "The file to pick must be a valid index");
+    static_assert(file_idx < FILE_CONSTANTS<elem_t>::files, "The file to pick must be a valid index");
 
   public:
-    levelized_file_stream(const levelized_file<T> &file, bool negate = false)
-      : file_stream<T, REVERSE, __levelized_file<T>>(file->_files[File], file._file_ptr, negate)
-    { }
+    levelized_file_stream(const levelized_file<elem_t> &file, bool negate = false)
+    {
+      file_stream<elem_t, REVERSE, __levelized_file<elem_t>>::attach(file->_files[file_idx], file._file_ptr, negate);
+    }
 
     // TODO: 'attach', 'attached', and 'detach'
   };
@@ -233,14 +251,6 @@ namespace adiar::internal
   template<bool REVERSE = false>
   using node_arc_stream = levelized_file_stream<arc, 0, !REVERSE>;
 
-  // TODO: Move inside of terminal_arc_stream below ?
-  template<bool REVERSE = false>
-  using in_order_arc_stream = levelized_file_stream<arc, 1, !REVERSE>;
-
-  // TODO: Move inside of terminal_arc_stream below ?
-  template<bool REVERSE = false>
-  using out_of_order_arc_stream = levelized_file_stream<arc, 2, !REVERSE>;
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream for terminal arcs of an arc file.
   ///
@@ -248,57 +258,67 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
   class terminal_arc_stream
-    : private in_order_arc_stream<REVERSE>, private out_of_order_arc_stream<REVERSE>
   {
   private:
+    typedef levelized_file_stream<arc, 1, !REVERSE> in_order_t;
+    in_order_t in_order;
+
+    typedef levelized_file_stream<arc, 2, !REVERSE> out_of_order_t;
+    out_of_order_t out_of_order;
+
     size_t _unread[2] = { 0u, 0u };
 
   public:
     static size_t memory_usage()
     {
-      return in_order_arc_stream<REVERSE>::memory_usage()
-        + out_of_order_arc_stream<REVERSE>::memory_usage();
+      return in_order_t::memory_usage() + out_of_order_t::memory_usage();
     }
 
   public:
     terminal_arc_stream(const arc_file &file, bool negate = false)
-      : in_order_arc_stream<REVERSE>(file, negate),
-        out_of_order_arc_stream<REVERSE>(file, negate),
-        _unread{ file->number_of_terminals[false], file->number_of_terminals[true] }
+      : in_order(file, negate)
+      , out_of_order(file, negate)
+      , _unread{ file->number_of_terminals[false], file->number_of_terminals[true] }
     { }
 
   public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the number of unread terminals of a specific value.
+    ////////////////////////////////////////////////////////////////////////////
     const size_t& unread(const bool terminal_value) const
     {
       return _unread[terminal_value];
     }
 
   private:
-    bool pull_in_order()
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the next element ought to be pulled from `in_order`.
+    ////////////////////////////////////////////////////////////////////////////
+    bool next_from_in_order()
     {
-      const bool in_order_pull = in_order_arc_stream<REVERSE>::can_pull();
-      const bool out_of_order_pull = out_of_order_arc_stream<REVERSE>::can_pull();
+      const bool in_order_pull = in_order.can_pull();
+      const bool out_of_order_pull = out_of_order.can_pull();
 
       if (in_order_pull != out_of_order_pull) {
         return in_order_pull;
       }
 
-      const arc::ptr_t in_order_source = in_order_arc_stream<REVERSE>::peek().source();
-      const arc::ptr_t out_of_order_source = out_of_order_arc_stream<REVERSE>::peek().source();
+      const arc::ptr_t in_order_source = in_order.peek().source();
+      const arc::ptr_t out_of_order_source = out_of_order.peek().source();
 
       return (REVERSE && in_order_source < out_of_order_source)
-        || (!REVERSE && in_order_source > out_of_order_source);
+         || (!REVERSE && in_order_source > out_of_order_source);
     }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Reset the read head back to the beginning (relatively to the
-    /// reading direction).
+    ///        reading direction).
     ////////////////////////////////////////////////////////////////////////////
     void reset()
     {
-      in_order_arc_stream<REVERSE>::reset();
-      out_of_order_arc_stream<REVERSE>::reset();
+      in_order.reset();
+      out_of_order.reset();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -306,8 +326,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     bool can_pull()
     {
-      return in_order_arc_stream<REVERSE>::can_pull()
-        || out_of_order_arc_stream<REVERSE>::can_pull();
+      return in_order.can_pull() || out_of_order.can_pull();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -315,12 +334,8 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     const arc pull()
     {
-      const arc a = pull_in_order()
-        ? in_order_arc_stream<REVERSE>::pull()
-        : out_of_order_arc_stream<REVERSE>::pull();
-
+      const arc a = next_from_in_order() ? in_order.pull() : out_of_order.pull();
       _unread[a.target().value()]--;
-
       return a;
     }
 
@@ -329,25 +344,24 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     const arc peek()
     {
-      return pull_in_order()
-        ? in_order_arc_stream<REVERSE>::peek()
-        : out_of_order_arc_stream<REVERSE>::peek();
+      return next_from_in_order() ? in_order.peek() : out_of_order.peek();
     }
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Stream for the levelized meta information.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T, bool REVERSE = false>
-  class level_info_stream : public file_stream<level_info_t, !REVERSE, __levelized_file<T>>
+  template <typename elem_t, bool REVERSE = false>
+  class level_info_stream : public file_stream<level_info_t, !REVERSE, __levelized_file<elem_t>>
   {
   public:
     //////////////////////////////////////////////////////////////////////////////
     /// Access the level information of a file with meta information.
     //////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const levelized_file<T> &f)
-      : file_stream<level_info_t, !REVERSE, __levelized_file<T>>(f->_level_info_file, f._file_ptr)
-    { }
+    level_info_stream(const levelized_file<elem_t> &f)
+    {
+      file_stream<level_info_t, !REVERSE, __levelized_file<elem_t>>::attach(f->_level_info_file, f._file_ptr);
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     /// Access the level information stream of a decision diagram.
@@ -360,9 +374,9 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     /// For unit testing only!
     //////////////////////////////////////////////////////////////////////////////
-    levelized_file<T> __obtain_file(const __dd &diagram)
+    levelized_file<elem_t> __obtain_file(const __dd &diagram)
     {
-      if constexpr (std::is_same<node, T>::value) {
+      if constexpr (std::is_same<node, elem_t>::value) {
         return diagram.get<node_file>();
       } else {
         return diagram.get<arc_file>();

@@ -80,9 +80,7 @@ namespace adiar::internal
       if (attached()) { detach(); }
       _file_ptr = f._file_ptr;
 
-      adiar_assert(!(_file_ptr -> is_read_only()), "Cannot attach a writer onto a read-only file");
-
-      _stream.open(_file_ptr -> _tpie_file, ADIAR_WRITE_ACCESS);
+      _stream.open(_file_ptr -> _tpie_file, file<T>::write_access);
       _stream.seek(0, tpie::file_stream_base::end);
 
       // Set up tracker of latest element added
@@ -106,8 +104,6 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void detach()
     {
-      adiar_assert(!(_file_ptr && _file_ptr -> is_read_only()),
-                   "Stream was detached after someone started reading from it");
       _stream.close();
       // if (_file_ptr) { _file_ptr.reset(); }
     }
@@ -217,16 +213,10 @@ namespace adiar::internal
       if (attached()) { detach(); }
       _file_ptr = f._file_ptr;
 
-      adiar_assert(!(_file_ptr -> _level_info_file.is_read_only()),
-                   "Cannot attach a writer onto a read-only meta file");
-
       _meta_stream.open(_file_ptr->_level_info_file._tpie_file);
       _meta_stream.seek(0, tpie::file_stream_base::end);
 
       for (size_t idx = 0; idx < FILE_CONSTANTS<T>::files; idx++) {
-        adiar_assert(!(_file_ptr->_files[idx].is_read_only()),
-                     "Cannot attach a writer onto a read-only content file");
-
         _streams[idx].open(_file_ptr->_files[idx]._tpie_file);
         _streams[idx].seek(0, tpie::file_stream_base::end);
       }
