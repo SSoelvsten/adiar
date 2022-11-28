@@ -936,7 +936,7 @@ go_bandit([]() {
           simple_file<int> file1;
           simple_file<int> file2;
 
-          AssertThat(file1._file_ptr, Is().Not().EqualTo(file2._file_ptr));
+          AssertThat(file1, Is().Not().EqualTo(file2));
         });
 
         it("can construct a copy of a simple_file", [&]() {
@@ -1005,7 +1005,7 @@ go_bandit([]() {
           levelized_file<int> file1;
           levelized_file<int> file2;
 
-          AssertThat(file1._file_ptr, Is().Not().EqualTo(file2._file_ptr));
+          AssertThat(file1, Is().Not().EqualTo(file2));
         });
 
         it("can construct a copy of a levelized_file", [&]() {

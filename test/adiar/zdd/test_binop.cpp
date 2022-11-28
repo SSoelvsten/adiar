@@ -30,22 +30,22 @@ go_bandit([]() {
     describe("zdd_union", [&]() {
       it("should shortcut Ø on same file", [&]() {
         __zdd out = zdd_union(zdd_F, zdd_F);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_F._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_F));
       });
 
       it("should shortcut { Ø } on same file", [&]() {
         __zdd out = zdd_union(zdd_T, zdd_T);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_T._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_T));
       });
 
       it("should shortcut { {0} } on same file", [&]() {
         __zdd out = zdd_union(zdd_x0, zdd_x0);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_x0));
       });
 
       it("should shortcut { {1} } on same file", [&]() {
         __zdd out = zdd_union(zdd_x1, zdd_x1);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_x1._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_x1));
       });
 
       it("computes Ø U { {Ø} }", [&]() {
@@ -98,10 +98,10 @@ go_bandit([]() {
         */
 
         __zdd out_1 = zdd_union(zdd_x0, zdd_F);
-        AssertThat(out_1.get<node_file>()._file_ptr, Is().EqualTo(zdd_x0._file_ptr));
+        AssertThat(out_1.get<node_file>(), Is().EqualTo(zdd_x0));
 
         __zdd out_2 = zdd_union(zdd_F, zdd_x0);
-        AssertThat(out_2.get<node_file>()._file_ptr, Is().EqualTo(zdd_x0._file_ptr));
+        AssertThat(out_2.get<node_file>(), Is().EqualTo(zdd_x0));
       });
 
       it("computes { {0} } U { Ø }", [&]() {
@@ -449,10 +449,10 @@ go_bandit([]() {
     describe("zdd_intsec", [&]() {
       it("should shortcut on same file", [&]() {
         __zdd out_1 = zdd_intsec(zdd_x0, zdd_x0);
-        AssertThat(out_1.get<node_file>()._file_ptr, Is().EqualTo(zdd_x0._file_ptr));
+        AssertThat(out_1.get<node_file>(), Is().EqualTo(zdd_x0));
 
         __zdd out_2 = zdd_intsec(zdd_x1, zdd_x1);
-        AssertThat(out_2.get<node_file>()._file_ptr, Is().EqualTo(zdd_x1._file_ptr));
+        AssertThat(out_2.get<node_file>(), Is().EqualTo(zdd_x1));
       });
 
       it("computes Ø ∩ { {Ø} }", [&]() {
@@ -1286,12 +1286,12 @@ go_bandit([]() {
 
       it("should shortcut on irrelevance on { {x0} } \\ Ø", [&]() {
         __zdd out_1 = zdd_diff(zdd_x0, zdd_F);
-        AssertThat(out_1.get<node_file>()._file_ptr, Is().EqualTo(zdd_x0._file_ptr));
+        AssertThat(out_1.get<node_file>(), Is().EqualTo(zdd_x0));
       });
 
       it("should shortcut on irrelevance on { {x1} } \\ Ø", [&]() {
         __zdd out_2 = zdd_diff(zdd_x1, zdd_F);
-        AssertThat(out_2.get<node_file>()._file_ptr, Is().EqualTo(zdd_x1._file_ptr));
+        AssertThat(out_2.get<node_file>(), Is().EqualTo(zdd_x1));
       });
 
       it("computes (and shortcut) Ø  \\ { {0} }", [&]() {

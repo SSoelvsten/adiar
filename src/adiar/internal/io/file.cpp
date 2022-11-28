@@ -1,14 +1,14 @@
 #include "file.h"
 
 #include <adiar/internal/assert.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/levelized_file_stream.h>
 
 namespace adiar::internal
 {
   template<bool reverse>
   node::label_t extract_label(const node_file &file)
   {
-    adiar_debug(file.size() > 0, "Invalid node_file: empty");
+    adiar_debug(file->size() > 0, "Invalid node_file: empty");
 
     node_stream<reverse> ns(file);
     node n = ns.pull();

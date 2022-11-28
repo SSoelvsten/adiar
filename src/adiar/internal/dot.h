@@ -6,8 +6,7 @@
 #include <fstream>
 
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/file_writer.h>
+#include <adiar/internal/io/levelized_file_stream.h>
 
 namespace adiar::internal
 {
@@ -16,7 +15,9 @@ namespace adiar::internal
   {
     out << "digraph BDD {" << std::endl;
 
+    std::cout << "huh 1 ?" << std::endl;
     node_stream<> ns(nodes);
+    std::cout << "huh 2 ?" << std::endl;
 
     if (is_terminal(nodes)) {
       out << "\t"

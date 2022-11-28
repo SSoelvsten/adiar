@@ -55,21 +55,21 @@ go_bandit([]() {
       label_file labels;
 
       __zdd out = zdd_change(zdd_F, labels);
-      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_F._file_ptr));
+      AssertThat(out.get<node_file>(), Is().EqualTo(zdd_F));
     });
 
     it("returns same file for { Ø } on empty labels", [&]() {
       label_file labels;
 
       __zdd out = zdd_change(zdd_T, labels);
-      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_T._file_ptr));
+      AssertThat(out.get<node_file>(), Is().EqualTo(zdd_T));
     });
 
     it("returns same file for { {1} } on empty labels", [&]() {
       label_file labels;
 
       __zdd out = zdd_change(zdd_x1, labels);
-      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_x1._file_ptr));
+      AssertThat(out.get<node_file>(), Is().EqualTo(zdd_x1));
     });
 
     it("returns same file for Ø on (1,2)", [&]() {
@@ -81,7 +81,7 @@ go_bandit([]() {
       }
 
       __zdd out = zdd_change(zdd_F, labels);
-      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_F._file_ptr));
+      AssertThat(out.get<node_file>(), Is().EqualTo(zdd_F));
     });
 
     it("returns { {1,2} } for { Ø } on (1,2)", [&]() {

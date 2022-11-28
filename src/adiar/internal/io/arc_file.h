@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_IO_ARC_FILE_H
 #define ADIAR_INTERNAL_IO_ARC_FILE_H
 
+#include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/io/levelized_file.h>
 
@@ -40,7 +41,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline uint64_t nodecount(const arc_file &arcs)
   {
-    return arcs.size() / node::OUTDEGREE;
+    return arcs->size() / node::OUTDEGREE;
   }
 }
 

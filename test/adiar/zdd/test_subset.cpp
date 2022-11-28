@@ -78,7 +78,7 @@ go_bandit([]() {
         }
 
         __zdd out = zdd_offset(zdd_F, labels);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_F._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_F));
       });
 
       it("should return input unchanged when given { Ø }", [&]() {
@@ -90,14 +90,14 @@ go_bandit([]() {
         }
 
         __zdd out = zdd_offset(zdd_T, labels);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_T._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_T));
       });
 
       it("should return input unchanged when given empty set of labels", [&]() {
         label_file labels;
 
         __zdd out = zdd_offset(zdd_1, labels);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_1._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_1));
       });
 
       it("should return input unchanged when given { { 2 }, { 1,2 } } without (0,3,4,5,6)", [&]() {
@@ -117,7 +117,7 @@ go_bandit([]() {
         }
 
         __zdd out = zdd_offset(in, labels);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(in._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(in));
       });
 
       it("should return { Ø } when given { Ø, { 1,2 } } without (0,2)", [&]() {
@@ -569,21 +569,21 @@ go_bandit([]() {
         }
 
         __zdd out = zdd_onset(zdd_F, labels);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_F._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_F));
       });
 
       it("should return input unchanged when given { Ø } for ()", [&]() {
         label_file labels;
 
         __zdd out = zdd_onset(zdd_T, labels);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_T._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_T));
       });
 
       it("should return input unchanged when given [1] for ()", [&]() {
           label_file labels;
 
           __zdd out = zdd_onset(zdd_1, labels);
-          AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_1._file_ptr));
+          AssertThat(out.get<node_file>(), Is().EqualTo(zdd_1));
         });
 
       it("should return Ø when given { Ø } for (0)", [&]() {

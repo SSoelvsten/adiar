@@ -237,14 +237,14 @@ go_bandit([]() {
       it("should quantify T terminal-only BDD as itself", [&]() {
         __bdd out = bdd_exists(terminal_T, 42);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_T._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
       it("should quantify F terminal-only BDD as itself", [&]() {
         __bdd out = bdd_exists(terminal_F, 21);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_F._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_F));
         AssertThat(out.negate, Is().False());
       });
 
@@ -291,7 +291,7 @@ go_bandit([]() {
       it("should shortcut quantification on non-existent label in input [BDD 1]", [&]() {
         __bdd out = bdd_exists(bdd_1, 42);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_1._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_1));
         AssertThat(out.negate, Is().False());
       });
 
@@ -901,7 +901,7 @@ go_bandit([]() {
 
         __bdd out = bdd_exists(terminal_T, labels);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_T._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
@@ -916,7 +916,7 @@ go_bandit([]() {
         bdd in_bdd = terminal_T;
         __bdd out = bdd_exists(in_bdd, labels);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_T._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
@@ -1184,7 +1184,7 @@ go_bandit([]() {
 
         // __bdd is used to access the node_file
         __bdd out = bdd_exists(bdd_3, labels);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_3));
       });
 
       it("should quantify list [] into the original file [BDD 3 : const &bdd]", [&]() {
@@ -1192,7 +1192,7 @@ go_bandit([]() {
 
         bdd in_bdd = bdd_3;
         __bdd out = bdd_exists(in_bdd, labels);
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_3));
       });
     });
 
@@ -1203,14 +1203,14 @@ go_bandit([]() {
       it("should quantify T terminal-only BDD as itself", [&]() {
         __bdd out = bdd_forall(terminal_T, 42);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_T._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
       it("should quantify F terminal-only BDD as itself", [&]() {
         __bdd out = bdd_forall(terminal_F, 21);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(terminal_F._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_F));
         AssertThat(out.negate, Is().False());
       });
 
@@ -1601,7 +1601,7 @@ go_bandit([]() {
         // __bdd is used to access the node_file
         __bdd out = bdd_forall(bdd_3, labels);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_3));
         AssertThat(out.negate, Is().False());
       });
 
@@ -1611,7 +1611,7 @@ go_bandit([]() {
         bdd in_bdd = bdd_3;
         __bdd out = bdd_forall(in_bdd, labels);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_3._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_3));
         AssertThat(out.negate, Is().False());
       });
     });

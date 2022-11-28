@@ -401,7 +401,7 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(T_file, assignment);
 
-      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(T_file._file_ptr));
+      AssertThat(out.get<node_file>(), Is().EqualTo(T_file));
       AssertThat(out.negate, Is().False());
     });
 
@@ -424,7 +424,7 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(F_file, assignment);
 
-      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(F_file._file_ptr));
+      AssertThat(out.get<node_file>(), Is().EqualTo(F_file));
       AssertThat(out.negate, Is().False());
     });
 
@@ -433,7 +433,7 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd._file_ptr));
+      AssertThat(out.get<node_file>(), Is().EqualTo(bdd));
       AssertThat(out.negate, Is().False());
     });
 
@@ -449,7 +449,7 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd._file_ptr));
+      AssertThat(out.get<node_file>(), Is().EqualTo(bdd));
       AssertThat(out.negate, Is().False());
     });
 

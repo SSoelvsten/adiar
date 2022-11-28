@@ -148,7 +148,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void free()
     {
-      file._file_ptr.reset();
+      file.reset();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -176,7 +176,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     const shared_ptr<const __levelized_file<node>> file_ptr() const
     {
-      return file._file_ptr;
+      return file;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -197,7 +197,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     cut_size_t max_1level_cut(const cut_type ct) const
     {
-      return file._file_ptr->max_1level_cut[negate_cut_type(ct)];
+      return file->max_1level_cut[negate_cut_type(ct)];
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -208,7 +208,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     cut_size_t max_2level_cut(const cut_type ct) const
     {
-      return file._file_ptr->max_2level_cut[negate_cut_type(ct)];
+      return file->max_2level_cut[negate_cut_type(ct)];
     }
 
   private:

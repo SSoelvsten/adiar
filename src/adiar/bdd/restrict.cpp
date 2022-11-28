@@ -5,9 +5,8 @@
 #include <adiar/internal/util.h>
 #include <adiar/internal/algorithms/substitution.h>
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/file_writer.h>
+#include <adiar/internal/io/simple_file.h>
 
 namespace adiar
 {
@@ -31,7 +30,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_restrict(const bdd &dd, const internal::assignment_file &a)
   {
-    if (a.size() == 0
+    if (a->size() == 0
         || is_terminal(dd)
         || internal::disjoint_labels<internal::assignment_file, internal::assignment_stream<>>(a, dd)) {
       return dd;

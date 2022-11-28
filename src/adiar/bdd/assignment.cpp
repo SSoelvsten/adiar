@@ -3,6 +3,7 @@
 #include <adiar/assignment.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/file_writer.h>
+#include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/internal/algorithms/traverse.h>
 #include <adiar/internal/data_types/level_info.h>
 

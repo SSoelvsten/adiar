@@ -49,7 +49,7 @@ namespace adiar::internal
                   const typename from_policy::reduced_t& /*dd*/,
                   const label_file &dom)
     {
-      adiar_debug(dom.size() > 0, "Emptiness check is before terminal check");
+      adiar_debug(dom->size() > 0, "Emptiness check is before terminal check");
 
       ptr_uint64 prior_node = ptr_uint64(terminal_value);
 

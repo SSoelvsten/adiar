@@ -30,7 +30,7 @@ go_bandit([]() {
 
       adiar_set_domain(dom);
 
-      AssertThat(adiar_get_domain()._file_ptr, Is().EqualTo(dom._file_ptr));
+      AssertThat(adiar_get_domain(), Is().EqualTo(dom));
     });
 
     it("should return the correct domain on adiar_get_domain() after domain change", [&]() {
@@ -50,7 +50,7 @@ go_bandit([]() {
 
       adiar_set_domain(dom2);
 
-      AssertThat(adiar_get_domain()._file_ptr, Is().EqualTo(dom2._file_ptr));
+      AssertThat(adiar_get_domain(), Is().EqualTo(dom2));
     });
 
   });

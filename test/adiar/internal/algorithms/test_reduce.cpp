@@ -29,7 +29,7 @@ go_bandit([]() {
       // Use a __bdd that stores the node file from a bdd.
       bdd out(__bdd(bdd(x0x1_node_file, false)));
 
-      AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file._file_ptr));
+      AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file));
       AssertThat(out.is_negated(), Is().False());
     });
 
@@ -45,7 +45,7 @@ go_bandit([]() {
       // Use a __bdd that stores the node file from a bdd.
       bdd out(__bdd(bdd(x0x1_node_file, true)));
 
-      AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file._file_ptr));
+      AssertThat(out.file_ptr(), Is().EqualTo(x0x1_node_file));
       AssertThat(out.is_negated(), Is().True());
     });
 

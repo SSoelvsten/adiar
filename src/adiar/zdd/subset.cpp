@@ -103,7 +103,7 @@ namespace adiar
 
   __zdd zdd_offset(const zdd &dd, const internal::label_file &l)
   {
-    if (l.size() == 0
+    if (l->size() == 0
         || is_terminal(dd)
         || internal::disjoint_labels<internal::label_file, internal::label_stream<>>(l, dd)) {
       return dd;
@@ -161,7 +161,7 @@ namespace adiar
 
   __zdd zdd_onset(const zdd &dd, const internal::label_file &l)
   {
-    if (l.size() == 0 || (is_false(dd))) { return dd; }
+    if (l->size() == 0 || (is_false(dd))) { return dd; }
     if ((is_true(dd)) || internal::disjoint_labels<internal::label_file, internal::label_stream<>>(l, dd)) {
       return zdd_empty();
     }

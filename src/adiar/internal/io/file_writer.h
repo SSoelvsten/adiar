@@ -9,10 +9,10 @@
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/simple_file.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/node_file.h>
+#include <adiar/internal/io/simple_file.h>
 
 namespace adiar::internal
 {
@@ -78,7 +78,7 @@ namespace adiar::internal
     void attach(const simple_file<T> &f)
     {
       if (attached()) { detach(); }
-      _file_ptr = f._file_ptr;
+      _file_ptr = f;
 
       _stream.open(_file_ptr -> _tpie_file, file<T>::write_access);
       _stream.seek(0, tpie::file_stream_base::end);
@@ -211,7 +211,7 @@ namespace adiar::internal
     void attach(const levelized_file<T> &f)
     {
       if (attached()) { detach(); }
-      _file_ptr = f._file_ptr;
+      _file_ptr = f;
 
       _meta_stream.open(_file_ptr->_level_info_file._tpie_file);
       _meta_stream.seek(0, tpie::file_stream_base::end);

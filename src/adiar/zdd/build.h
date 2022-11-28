@@ -28,7 +28,7 @@ namespace adiar
                      pred_t pred = std::equal_to<zdd::label_t>())
   {
     // Generalisation of bdd_counter
-    const size_t labels_size = labels.size();
+    const size_t labels_size = labels->size();
 
     if (labels_size == 0) {
       return zdd_terminal(pred(0,set_size));
