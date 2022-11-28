@@ -84,7 +84,7 @@ namespace adiar::internal
     template <typename elem_t>
     friend class levelized_file_writer;
 
-    template <typename elem_t, bool REVERSE, typename SharedPtr_T>
+    template <typename elem_t, bool REVERSE>
     friend class file_stream;
 
   public:
