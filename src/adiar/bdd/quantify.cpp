@@ -1,14 +1,14 @@
 #include <adiar/bdd.h>
 #include <adiar/bdd/bdd_policy.h>
 
-#include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/quantify.h>
-
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/file_writer.h>
+#include <adiar/internal/io/levelized_file_stream.h>
 
 namespace adiar
 {
@@ -56,7 +56,7 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
 # define multi_quantify_macro(bdd_var, labels, op)                           \
-  if (labels.size() == 0) { return bdd_var; }                                \
+  if (labels->size() == 0) { return bdd_var; }                                \
   internal::label_stream<> ls(labels);                                       \
   while(true) {                                                              \
     if (is_terminal(bdd_var)) { return bdd_var; }                            \

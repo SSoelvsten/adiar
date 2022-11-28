@@ -52,7 +52,7 @@ go_bandit([]() {
         label_file dom_empty;
         __zdd out = zdd_complement(zdd_F, dom_empty);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_F._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_F));
         AssertThat(out.negate, Is().False());
       });
 
@@ -60,7 +60,7 @@ go_bandit([]() {
         label_file dom_empty;
         __zdd out = zdd_complement(zdd_F, dom_empty);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(zdd_F._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(zdd_F));
         AssertThat(out.negate, Is().False());
       });
 

@@ -5,106 +5,122 @@
 
 namespace adiar::internal
 {
+  // TODO: switch to derive `file_t` from `elem_t`.
   //////////////////////////////////////////////////////////////////////////////
-  /// We want to be able to construct files like the ones above and return them
-  /// out of a function. For that, we cannot place them on the stack, but have
-  /// to place them on the heap. Yet, placing things on the heap brings with it
-  /// a whole new set of problems. Furthermore, the user may reuse the same
-  /// result in multiple places.
-  ///
-  /// So, we use a `shared_ptr` to be able to:
-  ///
-  /// - Place the files on the heap, so the `__shared_file` can be returned with
-  ///   a copy-constructor without breaking any of the `tpie::files`
-  ///
-  /// - Provides reference counting, so everything is garbage collected as fast
-  ///   as possible. With TPIE this specifically means, that disk space is freed
-  ///   up as early as possible.
-  ///
-  /// - It is thread-safe in the reference counting, so we now have ADIAR to be
-  ///   thread-safe for free!
-  ///
-  /// \param T The type of the underlying file
+  /// \brief Provides compile-time known settings and meta information variables
+  ///        used in `shared_file<elem_type>`.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename T>
-  class __shared_file
+  //template <typename elem_type>
+  //struct SHARED_FILE_CONSTANTS
+  //{ };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Provides shared ownership of a single file. This also includes
+  ///        (thread-safe) reference counting and automatic garbage collection.
+  ///
+  /// \details This is a wrapper on the `adiar::shared_ptr` (which in itself is
+  ///          just a wrapper on `std::shared_ptr`) to slightly change its
+  ///          semantics:
+  ///          - Default constructor creates a new fresh file rather than being
+  ///            null (TODO: change?)
+  ///          - If `const` then not only can the pointer not be moved, but the
+  ///            file underneath cannot be changed either.
+  ///
+  /// \param file_type The type of the underlying file
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename file_type>
+  class shared_file : public shared_ptr<file_type>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the file object.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef file_type file_t;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the file's elements.
     ////////////////////////////////////////////////////////////////////////////
-    typedef typename T::elem_t elem_t;
+    typedef typename file_t::elem_t elem_t;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief The raw file underneath
+    /// \brief Default constructor with a new fresh temporary file.
     ////////////////////////////////////////////////////////////////////////////
-    shared_ptr<T> _file_ptr;
+    shared_file() : shared_ptr<file_t>(adiar::make_shared<file_t>())
+    { }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Member access for the underlying file, i.e. this is similar to
-    ///        writing <tt>._file_ptr-></tt>.
+    /// \brief Conversion-constructor from raw `shared_ptr<file_t>`.
     ////////////////////////////////////////////////////////////////////////////
-    T* operator->() const
-    {
-      return _file_ptr.get();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct a new temporary shared file
-    ////////////////////////////////////////////////////////////////////////////
-    __shared_file() : _file_ptr(adiar::make_shared<T>())
+    shared_file(const shared_ptr<file_t> &other) : shared_ptr<file_t>(other)
     { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Copy-constructor.
     ////////////////////////////////////////////////////////////////////////////
-    __shared_file(const __shared_file<T> &other) : _file_ptr(other._file_ptr)
-    { }
+    shared_file(const shared_file<file_t> &other) = default;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Move-constructor.
-    /////////////////////////////////////////////////////////////////////////
-    __shared_file(__shared_file<T> &&other) : _file_ptr(other._file_ptr)
-    { }
+    ////////////////////////////////////////////////////////////////////////////
+    shared_file(shared_file<file_t> &&other) = default;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    shared_file<file_t>& operator= (const shared_file<file_t> &o) = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief The number of elements in the file
+    shared_file<file_t>& operator= (shared_file<file_t> &&o) = default;
+
+  public:
     ////////////////////////////////////////////////////////////////////////////
-    size_t size() const
-    {
-      return _file_ptr -> size();
-    }
+    /// \brief Obtain the raw pointer (read-only).
+    ////////////////////////////////////////////////////////////////////////////
+    const file_t* get() const
+    { return shared_ptr<file_t>::get(); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether there are no elements in the file
+    /// \brief Obtain the raw pointer.
     ////////////////////////////////////////////////////////////////////////////
-    bool empty() const
-    {
-      return _file_ptr -> empty();
-    }
+    file_t* get()
+    { return shared_ptr<file_t>::get(); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief The size of the file in bytes.
+    /// \brief Dereference the pointer to obtain the file (read-only).
     ////////////////////////////////////////////////////////////////////////////
-    size_t file_size() const
-    {
-      return _file_ptr -> file_size();
-    }
+    const file_t& operator*() const
+    { return *get(); }
 
-    __shared_file<T>& operator= (const __shared_file<T> &o) = default;
-    __shared_file<T>& operator= (__shared_file<T> &&o) = default;
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Dereference the pointer to obtain the file.
+    ////////////////////////////////////////////////////////////////////////////
+    file_t& operator*()
+    { return *get(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Member access (read-only) to the file.
+    ////////////////////////////////////////////////////////////////////////////
+    const file_t* operator->() const
+    { return get(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Member access for the underlying file.
+    ////////////////////////////////////////////////////////////////////////////
+    file_t* operator->()
+    { return get(); }
   };
 
   ////////////////////////////////////////////////////////////////////////////
   /// The <tt>file</tt> and <tt>__levelized_file</tt> classes are hidden behind a
   /// shared pointer, such that we can parse it around. That is, all actual
-  /// files we are going to deal with are a <tt>__shared_file<x_file<T>></tt>.
+  /// files we are going to deal with are a <tt>shared_file<x_file<T>></tt>.
   ///
   /// \param T Type of the file's content
+  ///
+  /// TODO: remove...
   ////////////////////////////////////////////////////////////////////////////
-  template<typename T>
-  using simple_file = __shared_file<file<T>>;
+  template<typename elem_type>
+  using simple_file = shared_file<file<elem_type>>;
 }
 
 #endif // ADIAR_INTERNAL_IO_SHARED_FILE_H

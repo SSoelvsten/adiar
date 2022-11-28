@@ -84,11 +84,11 @@ namespace adiar
 # define multi_project_macro(zdd_var, dom)                                  \
   if (is_terminal(zdd_var)) { return zdd_var; }                             \
                                                                             \
-  if (dom.size() == 0) { return zdd_null(); }                               \
+  if (dom->size() == 0) { return zdd_null(); }                               \
                                                                             \
   internal::label_file dom_inv = extract_non_dom(zdd_var, dom);   \
                                                                             \
-  if (dom_inv.size() == zdd_varcount(zdd_var)) { return zdd_null(); }       \
+  if (dom_inv->size() == zdd_varcount(zdd_var)) { return zdd_null(); }       \
                                                                             \
   internal::label_stream<> ls(dom_inv);                                     \
   while (ls.can_pull()) {                                                   \

@@ -260,7 +260,7 @@ go_bandit([]() {
       it("should give back first file on if-true (true ? x0 : x1)", [&]() {
         __bdd out = bdd_ite(bdd_T, bdd_x0, bdd_x1);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x0));
         AssertThat(out.negate, Is().False());
       });
 
@@ -269,14 +269,14 @@ go_bandit([]() {
         // different files.
         __bdd out = bdd_ite(bdd_T, bdd_not(bdd_x0), bdd_not_x0);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x0));
         AssertThat(out.negate, Is().True());
       });
 
       it("should give back second file on if-false (false ? x0 : x1)", [&]() {
         __bdd out = bdd_ite(bdd_F, bdd_x0, bdd_x1);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x1._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x1));
         AssertThat(out.negate, Is().False());
       });
 
@@ -285,7 +285,7 @@ go_bandit([]() {
         // different files.
         __bdd out = bdd_ite(bdd_F, bdd_not_x1, bdd_not(bdd_x1));
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x1._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x1));
         AssertThat(out.negate, Is().True());
       });
 
@@ -293,14 +293,14 @@ go_bandit([]() {
       it("should return 'then' file if 'else' file is the same [1]", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_x1, bdd_x1);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x1._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x1));
         AssertThat(out.negate, Is().False());
       });
 
       it("should return 'then' file if 'else' file is the same [2]", [&]() {
         __bdd out = bdd_ite(bdd_x0, bdd_not(bdd_x1), bdd_not(bdd_x1));
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x1._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x1));
         AssertThat(out.negate, Is().True());
       });
     });
@@ -758,7 +758,7 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat((std::get<arc_file>(out._union)._file_ptr)->max_1level_cut, Is().EqualTo(2u));
+        AssertThat((std::get<arc_file>(out._union))->max_1level_cut, Is().EqualTo(2u));
 
         AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(2u));
         AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));

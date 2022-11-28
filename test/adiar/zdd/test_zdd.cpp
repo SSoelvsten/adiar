@@ -57,7 +57,7 @@ go_bandit([]() {
       it("should copy-construct values from zdd", [&]() {
         __zdd t1 = x0_or_x1;
         AssertThat(t1.has<node_file>(), Is().True());
-        AssertThat(t1.get<node_file>()._file_ptr, Is().EqualTo(x0_or_x1_nf._file_ptr));
+        AssertThat(t1.get<node_file>(), Is().EqualTo(x0_or_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
@@ -65,14 +65,14 @@ go_bandit([]() {
         __zdd t1 = x0_or_x1;
         __zdd t2 = t1;
         AssertThat(t2.has<node_file>(), Is().True());
-        AssertThat(t2.get<node_file>()._file_ptr, Is().EqualTo(x0_or_x1_nf._file_ptr));
+        AssertThat(t2.get<node_file>(), Is().EqualTo(x0_or_x1_nf));
         AssertThat(t2.negate, Is().False());
       });
 
       it("should copy-construct values from node_file", [&]() {
         __zdd t1 = x0_or_x1;
         AssertThat(t1.has<node_file>(), Is().True());
-        AssertThat(t1.get<node_file>()._file_ptr, Is().EqualTo(x0_or_x1_nf._file_ptr));
+        AssertThat(t1.get<node_file>(), Is().EqualTo(x0_or_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
@@ -95,7 +95,7 @@ go_bandit([]() {
       it("should copy-construct values from arc_file", [&]() {
         __zdd t1 = af;
         AssertThat(t1.has<arc_file>(), Is().True());
-        AssertThat(t1.get<arc_file>()._file_ptr, Is().EqualTo(af._file_ptr));
+        AssertThat(t1.get<arc_file>(), Is().EqualTo(af));
         AssertThat(t1.negate, Is().False());
       });
 
@@ -199,7 +199,7 @@ go_bandit([]() {
 
     it("should copy-construct node_file and negation back to zdd", [&]() {
       zdd t2 = zdd(__zdd(x0_or_x1));
-      AssertThat(t2.file_ptr(), Is().EqualTo(x0_or_x1_nf._file_ptr));
+      AssertThat(t2.file_ptr(), Is().EqualTo(x0_or_x1_nf));
       AssertThat(t2.is_negated(), Is().False());
     });
 

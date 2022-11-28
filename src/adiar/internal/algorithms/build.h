@@ -41,7 +41,7 @@ namespace adiar::internal
     bool high_terminal_value = true>
   inline node_file build_chain(const label_file &labels)
     {
-      const size_t number_of_levels = labels.size();
+      const size_t number_of_levels = labels->size();
       if (number_of_levels == 0) {
         return build_terminal(on_empty);
       }

@@ -5,7 +5,6 @@
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/prod2.h>
 #include <adiar/internal/data_types/tuple.h>
-#include <adiar/internal/io/file_stream.h>
 
 namespace adiar
 {

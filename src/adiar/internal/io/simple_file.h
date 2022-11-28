@@ -9,7 +9,6 @@
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/shared_file.h>
 #include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/file_writer.h>
 
 namespace adiar::internal
 {

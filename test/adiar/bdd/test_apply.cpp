@@ -185,7 +185,7 @@ go_bandit([]() {
       it("should shortcut on irrelevance on x0 /\\ T", [&]() {
         __bdd out = bdd_and(bdd_x0, bdd_T);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x0));
         AssertThat(out.negate, Is().False());
       });
 
@@ -360,7 +360,7 @@ go_bandit([]() {
       it("should return input on being given the same BDD twice", [&]() {
         __bdd out = bdd_and(bdd_1, bdd_1);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_1._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_1));
         AssertThat(out.negate, Is().False());
       });
 
@@ -470,14 +470,14 @@ go_bandit([]() {
       it("should shortcut on negating on T and x0", [&]() {
         __bdd out = bdd_nand(bdd_x0, bdd_T);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x0));
         AssertThat(out.negate, Is().True());
       });
 
       it("should shortcut on negating on T and x0", [&]() {
         __bdd out = bdd_nand(bdd_x0, bdd_T);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x0));
         AssertThat(out.negate, Is().True());
       });
 
@@ -554,14 +554,14 @@ go_bandit([]() {
       it("should shortcut on irrelevance on x0 \\/ F", [&]() {
         __bdd out = bdd_or(bdd_x0, bdd_F);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x0));
         AssertThat(out.negate, Is().False());
       });
 
       it("should OR shortcut on irrelevance F \\/ x0", [&]() {
         __bdd out = bdd_or(bdd_F, bdd_x0);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x0));
         AssertThat(out.negate, Is().False());
       });
 
@@ -803,14 +803,14 @@ go_bandit([]() {
       it("should shortcut on negating on x0 ^ T", [&]() {
         __bdd out = bdd_xor(bdd_x0, bdd_T);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x0));
         AssertThat(out.negate, Is().True());
       });
 
       it("should shortcut on negating on T ^ x0", [&]() {
         __bdd out = bdd_xor(bdd_x0, bdd_T);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x0));
         AssertThat(out.negate, Is().True());
       });
 
@@ -1257,7 +1257,7 @@ go_bandit([]() {
       it("should shortcut on irrelevance on T -> x0", [&]() {
         __bdd out = bdd_imp(bdd_T, bdd_x0);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_x0._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_x0));
         AssertThat(out.negate, Is().False());
       });
 
@@ -1334,14 +1334,14 @@ go_bandit([]() {
       it("should return the input when given the same BDD twice, where one is negated [1]", [&]() {
         __bdd out = bdd_imp(bdd_not(bdd_2), bdd_2);
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_2._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_2));
         AssertThat(out.negate, Is().False()); // negated the already negated input doubly-negating
       });
 
       it("should return input when given the same BDD twice, where one is negated [2]", [&]() {
         __bdd out = bdd_imp(bdd_2, bdd_not(bdd_2));
 
-        AssertThat(out.get<node_file>()._file_ptr, Is().EqualTo(bdd_2._file_ptr));
+        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_2));
         AssertThat(out.negate, Is().True()); // negated the first of the two
       });
     });

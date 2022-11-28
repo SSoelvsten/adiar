@@ -82,7 +82,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     internal::cut_size_t max_1level_cut(const internal::cut_type ct) const
     {
-      return add_false_cofactor(ct, file._file_ptr->max_1level_cut);
+      return add_false_cofactor(ct, file->max_1level_cut);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     internal::cut_size_t max_2level_cut(const internal::cut_type ct) const
     {
-      return add_false_cofactor(ct, file._file_ptr->max_2level_cut);
+      return add_false_cofactor(ct, file->max_2level_cut);
     }
 
     ////////////////////////////////////////////////////////////////////////////

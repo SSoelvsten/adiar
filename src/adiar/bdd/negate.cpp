@@ -1,8 +1,5 @@
 #include <adiar/bdd.h>
 
-#include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/file_writer.h>
-
 namespace adiar
 {
   bdd bdd_not(const bdd &in)

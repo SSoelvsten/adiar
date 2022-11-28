@@ -16,7 +16,7 @@
 #include <adiar/internal/data_structures/priority_queue.h>
 #include <adiar/internal/data_structures/sorter.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/statistics.h>
 
 namespace adiar::internal
@@ -79,8 +79,7 @@ namespace adiar::internal
   template <typename file_t, typename comp_t, size_t FILES>
   class label_merger
   {
-    static_assert(0 < FILES,
-                  "At least one file should be merged");
+    static_assert(0 < FILES, "At least one file should be merged");
 
     typedef typename label_stream_t<file_t>::stream_t stream_t;
 
@@ -99,14 +98,14 @@ namespace adiar::internal
     void hook(const file_t (&fs) [FILES])
     {
       for (size_t idx = 0u; idx < FILES; idx++) {
-        _label_streams[idx] = make_unique<stream_t>(fs[idx]);
+        _label_streams[idx] = adiar::make_unique<stream_t>(fs[idx]);
       }
     }
 
     void hook(const dd (&dds) [FILES])
     {
       for (size_t idx = 0u; idx < FILES; idx++) {
-        _label_streams[idx] = make_unique<stream_t>(dds[idx].file);
+        _label_streams[idx] = adiar::make_unique<stream_t>(dds[idx].file);
       }
     }
 

@@ -14,8 +14,8 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/data_types/request.h>
-#include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/levelized_file.h>
+#include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/internal/io/file_writer.h>
 
 namespace adiar::internal

@@ -1,8 +1,8 @@
 #ifndef ADIAR_INTERNAL_UTIL_H
 #define ADIAR_INTERNAL_UTIL_H
 
-#include <adiar/internal/io/file.h>
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/levelized_file.h>
+#include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/dd.h>
 

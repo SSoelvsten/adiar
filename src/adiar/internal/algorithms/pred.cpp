@@ -1,6 +1,6 @@
 #include "pred.h"
 
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/util.h>
@@ -190,7 +190,7 @@ namespace adiar::internal
                      bool negate1, bool negate2)
   {
     // Are they literally referring to the same underlying file?
-    if (f1._file_ptr == f2._file_ptr) {
+    if (f1 == f2) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_same_file++;
 #endif

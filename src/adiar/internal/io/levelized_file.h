@@ -89,7 +89,7 @@ namespace adiar::internal
   /// \param T     Type of the file's content
   ////////////////////////////////////////////////////////////////////////////
   template<typename elem_type>
-  using levelized_file = __shared_file<__levelized_file<elem_type>>;
+  using levelized_file = shared_file<__levelized_file<elem_type>>;
 }
 
 #endif // ADIAR_INTERNAL_IO_META_FILE_H

@@ -63,14 +63,14 @@ go_bandit([]() {
       it("should copy-construct values from bdd", [&]() {
         __bdd t1 = bdd(x0_and_x1);
         AssertThat(t1.has<node_file>(), Is().True());
-        AssertThat(t1.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
+        AssertThat(t1.get<node_file>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
       it("should copy-construct values from negated bdd", [&]() {
         __bdd t2 = bdd(x0_nand_x1);
         AssertThat(t2.has<node_file>(), Is().True());
-        AssertThat(t2.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
+        AssertThat(t2.get<node_file>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t2.negate, Is().True());
       });
 
@@ -78,14 +78,14 @@ go_bandit([]() {
         __bdd t1 = x0_and_x1;
         __bdd t2 = t1;
         AssertThat(t2.has<node_file>(), Is().True());
-        AssertThat(t2.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
+        AssertThat(t2.get<node_file>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t2.negate, Is().False());
       });
 
       it("should copy-construct values from node_file", [&]() {
         __bdd t1 = x0_and_x1;
         AssertThat(t1.has<node_file>(), Is().True());
-        AssertThat(t1.get<node_file>()._file_ptr, Is().EqualTo(x0_and_x1_nf._file_ptr));
+        AssertThat(t1.get<node_file>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
@@ -108,7 +108,7 @@ go_bandit([]() {
       it("should copy-construct values from arc_file", [&]() {
         __bdd t1 = af;
         AssertThat(t1.has<arc_file>(), Is().True());
-        AssertThat(t1.get<arc_file>()._file_ptr, Is().EqualTo(af._file_ptr));
+        AssertThat(t1.get<arc_file>(), Is().EqualTo(af));
         AssertThat(t1.negate, Is().False());
       });
 
@@ -130,7 +130,7 @@ go_bandit([]() {
 
     it("should copy-construct node_file and negation back to bdd", [&]() {
       bdd t2 = bdd(__bdd(x0_and_x1));
-      AssertThat(t2.file_ptr(), Is().EqualTo(x0_and_x1_nf._file_ptr));
+      AssertThat(t2.file_ptr(), Is().EqualTo(x0_and_x1_nf));
       AssertThat(t2.is_negated(), Is().False());
     });
 

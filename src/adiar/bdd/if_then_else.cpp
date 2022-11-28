@@ -1,6 +1,6 @@
 #include <adiar/bdd.h>
 
-#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cnl.h>
@@ -509,18 +509,18 @@ namespace adiar
     // Randal E. Bryant.
 
     // Resolve being given the same underlying file in both cases
-    if (bdd_then.file._file_ptr == bdd_else.file._file_ptr) {
+    if (bdd_then.file == bdd_else.file) {
       return bdd_then.negate == bdd_else.negate
         ? __bdd(bdd_then)
         : bdd_xnor(bdd_if, bdd_then);
     }
 
     // Resolve being given the same underlying file for conditional and a case
-    if (bdd_if.file._file_ptr == bdd_then.file._file_ptr) {
+    if (bdd_if.file == bdd_then.file) {
       return bdd_if.negate == bdd_then.negate
         ? bdd_or(bdd_if, bdd_else)
         : bdd_and(bdd_not(bdd_if), bdd_else);
-    } else if (bdd_if.file._file_ptr == bdd_else.file._file_ptr) {
+    } else if (bdd_if.file == bdd_else.file) {
       return bdd_if.negate == bdd_else.negate
         ? bdd_and(bdd_if, bdd_then)
         : bdd_imp(bdd_if, bdd_then);

@@ -11,6 +11,9 @@
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/file_writer.h>
+#include <adiar/internal/io/levelized_file.h>
+#include <adiar/internal/io/levelized_file_stream.h>
+
 
 namespace adiar::internal
 {
@@ -311,7 +314,7 @@ namespace adiar::internal
   typename intercut_policy::unreduced_t intercut(const typename intercut_policy::reduced_t &dd,
                                                  const label_file &labels)
   {
-    if (labels.size() == 0) {
+    if (labels->size() == 0) {
       return intercut_policy::on_empty_labels(dd);
     }
 

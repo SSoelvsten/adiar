@@ -66,7 +66,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     size_t levels() const
     {
-      return _file_ptr -> levels();
+      return get()->levels();
     }
   };
 
@@ -94,7 +94,7 @@ namespace adiar::internal
     // Since the sum of the number of terminals is exactly one, then we can use the
     // value of the number of true terminals to indirectly derive the value of the
     // terminal.
-    return file._file_ptr -> number_of_terminals[true];
+    return file->number_of_terminals[true];
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline uint64_t nodecount(const node_file &nodes)
   {
-    return is_terminal(nodes) ? 0u : nodes.size();
+    return is_terminal(nodes) ? 0u : nodes->size();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -120,7 +120,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline uint64_t varcount(const node_file &nodes)
   {
-    return nodes.levels();
+    return nodes->levels();
   }
 }
 

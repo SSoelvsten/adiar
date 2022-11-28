@@ -105,7 +105,7 @@ namespace adiar
 
   uint64_t bdd_satcount(const bdd &f)
   {
-    const bdd::label_t domain_size = adiar_has_domain() ? adiar_get_domain().size() : 0;
+    const bdd::label_t domain_size = adiar_has_domain() ? adiar_get_domain()->size() : 0;
     const bdd::label_t varcount = bdd_varcount(f);
     return bdd_satcount(f, std::max(domain_size, varcount));
   };

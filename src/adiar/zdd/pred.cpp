@@ -118,7 +118,7 @@ namespace adiar
 
   bool zdd_subseteq(const zdd &s1, const zdd &s2)
   {
-    if (s1.file._file_ptr == s2.file._file_ptr) {
+    if (s1.file == s2.file) {
       return true;
     }
 
@@ -185,7 +185,7 @@ namespace adiar
 
   bool zdd_disjoint(const zdd &s1, const zdd &s2)
   {
-    if (s1.file._file_ptr == s2.file._file_ptr) {
+    if (s1.file == s2.file) {
       return is_false(s1);
     }
 

@@ -1,12 +1,9 @@
 #include <adiar/bdd.h>
 #include <adiar/bdd/bdd_policy.h>
 
-#include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/algorithms/prod2.h>
-#include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_types/tuple.h>
 
 namespace adiar
@@ -111,4 +108,3 @@ namespace adiar
     return internal::prod2<apply_prod_policy>(bdd_1, bdd_2, op);
   }
 };
-
