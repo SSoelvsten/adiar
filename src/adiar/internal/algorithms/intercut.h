@@ -10,7 +10,7 @@
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/file_writer.h>
+#include <adiar/internal/io/levelized_file_writer.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/levelized_file_stream.h>
 

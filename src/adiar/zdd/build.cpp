@@ -2,8 +2,6 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/build.h>
-#include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/file_writer.h>
 
 namespace adiar
 {

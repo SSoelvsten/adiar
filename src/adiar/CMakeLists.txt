@@ -67,13 +67,13 @@ set(HEADERS
   # adiar/internal/io
   internal/io/file.h
   internal/io/file_stream.h
+  internal/io/file_writer.h
 
   internal/io/levelized_file.h
   internal/io/levelized_file_stream.h
+  internal/io/levelized_file_writer.h
 
   internal/io/shared_file.h
-
-  internal/io/file_writer.h
 
   internal/io/arc_file.h
   internal/io/node_file.h

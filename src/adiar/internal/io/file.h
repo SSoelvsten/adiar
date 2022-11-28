@@ -75,17 +75,20 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     // Befriend the few places that need direct access to these variables.
-    template <typename elem_t, typename pred_t>
-    friend class simple_file_sorter;
+    template <typename elem_t, bool REVERSE>
+    friend class file_stream;
 
-    template <typename elem_t, typename Comp>
-    friend class simple_file_writer;
+    template <typename elem_t>
+    friend class file_writer;
 
+    // Remove?
     template <typename elem_t>
     friend class levelized_file_writer;
 
-    template <typename elem_t, bool REVERSE>
-    friend class file_stream;
+    // Remove?
+    template <typename elem_t, typename pred_t>
+    friend class simple_file_sorter;
+
 
   public:
     ////////////////////////////////////////////////////////////////////////////

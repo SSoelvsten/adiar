@@ -14,7 +14,7 @@
 #include <adiar/internal/data_types/convert.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/io/file_writer.h>
+#include <adiar/internal/io/levelized_file_writer.h>
 
 namespace adiar::internal
 {

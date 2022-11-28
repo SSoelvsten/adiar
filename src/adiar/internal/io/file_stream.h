@@ -36,8 +36,8 @@ namespace adiar::internal
 
   private:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Buffer of a single element, since TPIE does not support peeking
-    ///        in revese.
+    /// \brief Buffer of a single element, since TPIE does not support a
+    ///        `peek_back` function yet (TPIE Issue #187).
     ////////////////////////////////////////////////////////////////////////////
     elem_t _peeked;
 
@@ -99,19 +99,30 @@ namespace adiar::internal
                 const shared_ptr<void> &shared_ptr,
                 bool negate = false)
     {
+      // Detach from prior file, if any.
       if (attached()) { detach(); }
 
+      // Hook into reference counting.
       _file_ptr = shared_ptr;
 
-      _stream.open(f._tpie_file, file<elem_t>::read_access);
-      _negate = negate;
+      // Open file stream with the smallest access type to guarantee the file
+      // exists on disk.
+      const typename file<elem_t>::access_t access_type = f.exists()
+        ? file<elem_t>::read_access
+        : file<elem_t>::write_access;
 
+      _stream.open(f._tpie_file, access_type);
       reset();
+
+      // Store negation flag.
+      _negate = negate;
     }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a shared file
+    /// \brief Attach to a file.
+    ///
+    /// \pre No `file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
     void attach(const file<elem_t> &f, bool negate = false)
     {
@@ -119,7 +130,9 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Attach to a shared file
+    /// \brief Attach to a shared file.
+    ///
+    /// \pre No `file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
     void attach(const adiar::shared_ptr<file<elem_t>> &f, bool negate = false)
     {
@@ -140,7 +153,7 @@ namespace adiar::internal
     void detach()
     {
       _stream.close();
-      // if (_file_ptr) { _file_ptr.reset(); }
+      if (_file_ptr) { _file_ptr.reset(); }
     }
 
     ////////////////////////////////////////////////////////////////////////////
