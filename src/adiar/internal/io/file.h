@@ -14,6 +14,7 @@
 #include <tpie/sort.h>
 
 #include <adiar/internal/assert.h>
+#include <adiar/internal/memory.h>
 
 namespace adiar::internal
 {
@@ -84,11 +85,6 @@ namespace adiar::internal
     // Remove?
     template <typename elem_t>
     friend class levelized_file_writer;
-
-    // Remove?
-    template <typename elem_t, typename pred_t>
-    friend class simple_file_sorter;
-
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -240,17 +236,35 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Sort the content of this file in relation to a given predicate.
+    ///
+    /// \pre No `file_stream` and `file_writer` is attached to this file.
+    ////////////////////////////////////////////////////////////////////////////
+    template <typename pred_t = std::less<elem_t>>
+    void sort(pred_t pred = pred_t())
+    {
+      if (size() == 0u) return;
+
+      tpie::file_stream<elem_t> fs;
+      fs.open(_tpie_file);
+
+      tpie::progress_indicator_null pi;
+      tpie::sort(fs, pred, pi);
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Create a copy of another file on disk.
     ///
     /// \remark This new file is a temporary file and must be marked persisted
     ///         to be kept existing beyond the object's lifetime.
     ////////////////////////////////////////////////////////////////////////////
-    static file<elem_t> copy(const file<elem_t> &other)
+    static file<elem_t> copy(const file<elem_t> &f)
     {
-      if (!other.exists()) { return file<elem_t>(); }
+      if (!f.exists()) { return file<elem_t>(); }
 
       file<elem_t> ret;
-      std::filesystem::copy(other.path(), ret.path());
+      std::filesystem::copy(f.path(), ret.path());
       return ret;
     }
   };

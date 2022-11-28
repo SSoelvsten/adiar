@@ -42,25 +42,6 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   template<bool REVERSE = false>
   using label_stream = file_stream<ptr_uint64::label_t, REVERSE>;
-
-  ////////////////////////////////////////////////////////////////////////////
-  /// \brief Provides sorting for <tt>simple_file</tt>.
-  ///
-  /// TODO: Move to 'sorter.h'?
-  ////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t, typename pred_t = std::less<elem_t>>
-  class simple_file_sorter
-  {
-  public:
-    static void sort(simple_file<elem_t> f, pred_t pred = pred_t())
-    {
-      tpie::file_stream<elem_t> fs;
-      fs.open(f->_tpie_file);
-
-      tpie::progress_indicator_null pi;
-      tpie::sort(fs, pred, pi);
-    }
-  };
 }
 
 #endif // ADIAR_INTERNAL_IO_SIMPLE_FILE_H

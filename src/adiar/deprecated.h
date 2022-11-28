@@ -36,11 +36,20 @@ namespace adiar
   /// predicate.
   //////////////////////////////////////////////////////////////////////////////
   template<typename T, typename pred_t = std::less<>>
-  [[deprecated("Use 'simple_file_sorter' in 'adiar/file.h'.")]]
+  [[deprecated("Use 'f->sort()' in 'adiar/file.h'.")]]
   void sort(internal::simple_file<T> f, pred_t pred = pred_t())
+  { f->sort(pred); }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Provides sorting for <tt>simple_file</tt>.
+  ////////////////////////////////////////////////////////////////////////////
+  template <typename elem_t, typename pred_t = std::less<elem_t>>
+  class [[deprecated("Use 'f->sort()' in 'adiar/file.h'.")]] simple_file_sorter
   {
-    internal::simple_file_sorter<T, pred_t>::sort(f, pred);
-  }
+  public:
+    static void sort(internal::simple_file<elem_t> f, pred_t pred = pred_t())
+    { f->sort(pred); }
+  };
 
   /* =============== UNIQUE IDENTIFIERS : INTERNAL NODES ==================== */
 
