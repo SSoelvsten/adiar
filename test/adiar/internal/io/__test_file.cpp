@@ -37,16 +37,16 @@ go_bandit([]() {
     arc terminal_arc_3 = { flag(arc::ptr_t(1,0)), arc::ptr_t(false) };
 
     describe("adiar/file_writer", [&]() {
-      describe("simple_file_writer", [&]() {
+      describe("file_writer", [&]() {
         it("can hook into and write to test_file_simple", [&]() {
-          simple_file_writer<int> fw(test_file_simple);
+          file_writer<int> fw(test_file_simple);
 
           fw.unsafe_push(21);
           fw.unsafe_push(42);
         });
 
         it("can sort after pushing out-of-order", [&]() {
-          simple_file_writer<int, std::less<int>> fw(test_file_simple_sorted);
+          file_writer<int, std::less<int>> fw(test_file_simple_sorted);
 
           fw.unsafe_push(5);
           fw.unsafe_push(3);
@@ -59,7 +59,7 @@ go_bandit([]() {
 
         it("does not break when source file is destructed early [simple_file]", [&]() {
           simple_file<int>* f = new simple_file<int>();
-          simple_file_writer<int> fw(*f);
+          file_writer<int> fw(*f);
 
           fw.unsafe_push(21);
 
@@ -706,7 +706,7 @@ go_bandit([]() {
           simple_file<int>* f = new simple_file<int>();
 
           { // Garbage collect the writer early, releasing it's reference counter
-            simple_file_writer<int> fw(*f);
+            file_writer<int> fw(*f);
             fw.unsafe_push(21);
           }
 
@@ -915,7 +915,7 @@ go_bandit([]() {
           auto t = []() {
             simple_file<int> f;
 
-            simple_file_writer<int> fw(f);
+            file_writer<int> fw(f);
             fw.unsafe_push(42);
             fw.unsafe_push(7);
 
@@ -943,7 +943,7 @@ go_bandit([]() {
           simple_file<int> file1;
 
           { // Garbage collect the writer to detach it before the reader
-            simple_file_writer<int> fw(file1);
+            file_writer<int> fw(file1);
             fw.push(42);
           }
 
@@ -962,7 +962,7 @@ go_bandit([]() {
           simple_file<int> file;
 
           { // Garbage collect the writer to detach it before the reader
-            simple_file_writer<int> fw(file);
+            file_writer<int> fw(file);
             fw.push(42);
             fw.push(7);
             fw.push(21);

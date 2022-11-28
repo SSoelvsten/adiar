@@ -4,7 +4,7 @@
 
 go_bandit([]() {
     describe("adiar/file.h", []() {
-        describe("file()", []() {
+        describe("file() [empty]", []() {
             std::string path;
 
             it("creates a file marked as 'temporary'", []() {
@@ -165,7 +165,7 @@ go_bandit([]() {
               });
           });
 
-        describe("file(path)", []() {
+        describe("file(path) [empty]", []() {
             it("throws exception on path to non-existing file", []() {
                 AssertThrows(std::runtime_error,
                              file<int>("./non-existing-file.adiar"));
@@ -224,7 +224,7 @@ go_bandit([]() {
             }
           });
 
-        describe("::copy(const file&)", []() {
+        describe("::copy(const file&) [empty]", []() {
             it("can copy over a non-existing file", []() {
                 file<int> f1;
                 AssertThat(f1.exists(), Is().False());
@@ -280,6 +280,49 @@ go_bandit([]() {
                 }
                 std::filesystem::remove(path);
               });
+          });
+
+        describe("file() [empty] + file_stream", []() {
+            it("can attach to an empty file [constructor]", []() {
+                file<int> f;
+                file_stream<int> fs(f);
+              });
+
+            it("can attach to an empty file [member function]", []() {
+                file<int> f;
+                file_stream<int> fs;
+                fs.attach(f);
+              });
+
+            it("remembers it was attached", []() {
+              file<int> f;
+              file_stream<int> fs(f);
+              AssertThat(fs.attached(), Is().True());
+            });
+
+            it("cannot be pulled from", []() {
+                file<int> f;
+                file_stream<int> fs(f);
+
+                AssertThat(fs.can_pull(), Is().False());
+              });
+
+            it("can be reset", []() {
+                file<int> f;
+                file_stream<int> fs(f);
+
+                fs.reset();
+                AssertThat(fs.attached(), Is().True());
+                AssertThat(fs.can_pull(), Is().False());
+              });
+
+            it("can be detached again", []() {
+              file<int> f;
+              file_stream<int> fs(f);
+              AssertThat(fs.attached(), Is().True());
+              fs.detach();
+              AssertThat(fs.attached(), Is().False());
+            });
           });
       });
   });

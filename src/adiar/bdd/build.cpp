@@ -1,7 +1,7 @@
 #include <adiar/bdd.h>
 
 #include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/file_writer.h>
+#include <adiar/internal/io/levelized_file_writer.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/algorithms/build.h>
