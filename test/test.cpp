@@ -10,15 +10,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR Internal unit tests
-#include "adiar/internal/test_dot.cpp"
-#include "adiar/internal/test_util.cpp"
-
-#include "adiar/internal/algorithms/test_convert.cpp"
-#include "adiar/internal/algorithms/test_isomorphism.cpp"
-#include "adiar/internal/algorithms/test_reduce.cpp"
-
-#include "adiar/internal/data_structures/test_levelized_priority_queue.cpp"
-
 #include "adiar/internal/data_types/test_ptr.cpp"
 #include "adiar/internal/data_types/test_uid.cpp"
 #include "adiar/internal/data_types/test_node.cpp"
@@ -27,6 +18,16 @@
 #include "adiar/internal/data_types/test_convert.cpp"
 
 #include "adiar/internal/io/test_file.cpp"
+#include "adiar/internal/io/test_levelized_file.cpp"
+
+#include "adiar/internal/data_structures/test_levelized_priority_queue.cpp"
+
+#include "adiar/internal/test_dot.cpp"
+#include "adiar/internal/test_util.cpp"
+
+#include "adiar/internal/algorithms/test_convert.cpp"
+#include "adiar/internal/algorithms/test_isomorphism.cpp"
+#include "adiar/internal/algorithms/test_reduce.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // ADIAR BDD unit tests

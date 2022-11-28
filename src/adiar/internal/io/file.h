@@ -137,6 +137,48 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the file actually exists on disk.
+    ///
+    /// \sa path
+    ////////////////////////////////////////////////////////////////////////////
+    bool exists() const
+    { return std::filesystem::exists(path()); }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of elements in the file.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t size() const
+    {
+      if (!exists()) { return 0u; }
+
+      tpie::file_stream<elem_t> fs;
+      fs.open(_tpie_file, read_access);
+      return fs.size();
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the file is empty.
+    ////////////////////////////////////////////////////////////////////////////
+    bool empty() const
+    { return size() == 0u; }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Creates the file on disk, if it does not yet exist.
+    ////////////////////////////////////////////////////////////////////////////
+    void touch()
+    {
+      if (exists()) return;
+
+      // The file exists on disk, after opening it with write_access.
+      tpie::file_stream<elem_t> fs;
+      fs.open(_tpie_file, write_access);
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the path for this file.
     ///
     /// \sa exists, move
@@ -153,24 +195,15 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the file actually exists on disk.
-    ///
-    /// \sa path
-    ////////////////////////////////////////////////////////////////////////////
-    bool exists() const
-    { return std::filesystem::exists(path()); }
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////
     /// \brief Move file from one place to another.
     ///
     /// \param new_path Path to move the file to.
     ///
-    /// \pre `is_persistentd() == false` (other's might depend on it) and
-    ///      `new_path` names a yet non-existing file.
+    /// \pre `is_persistent() == false` (other's might depend on it) and
+    ///      `new_path` names a yet non-existing file. Neither should a
+    ///      `file_stream` nor a `file_writer` be hooked into this file.
     ///
-    /// \throws std::runtime_error If (a) `is_persisted() == true` and (b)
-    ///                            `new_path` names an existing file.
+    /// \throws std::runtime_error Preconditions are violated
     ////////////////////////////////////////////////////////////////////////////
     void move(const std::string &new_path)
     {
@@ -200,39 +233,6 @@ namespace adiar::internal
       }
       set_path(new_path);
     }
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Creates the file on disk, if it does not yet exist.
-    ////////////////////////////////////////////////////////////////////////////
-    void touch()
-    {
-      if (exists()) return;
-
-      // The file exists on disk, after opening it with write_access.
-      tpie::file_stream<elem_t> fs;
-      fs.open(_tpie_file, write_access);
-    }
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of elements in the file.
-    ////////////////////////////////////////////////////////////////////////////
-    size_t size() const
-    {
-      if (!exists()) { return 0u; }
-
-      tpie::file_stream<elem_t> fs;
-      fs.open(_tpie_file, read_access);
-      return fs.size();
-    }
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the file is empty.
-    ////////////////////////////////////////////////////////////////////////////
-    bool empty() const
-    { return size() == 0u; }
 
   public:
     ////////////////////////////////////////////////////////////////////////////

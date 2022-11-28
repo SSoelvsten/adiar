@@ -198,8 +198,8 @@ namespace adiar::internal
     }
 
     // Are they trivially not the same, since they have different number of
-    // nodes (in _files[0])?
-    if (f1->_files[0].size() != f2->_files[0].size()) {
+    // nodes?
+    if (f1->size() != f2->size()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_nodecount++;
 #endif
@@ -207,8 +207,8 @@ namespace adiar::internal
     }
 
     // Are they trivially not the same, since they have different number of
-    // levels (in the _level_info_file)?
-    if (f1->_level_info_file.size() != f2->_level_info_file.size()) {
+    // levels?
+    if (f1->levels() != f2->levels()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_varcount++;
 #endif

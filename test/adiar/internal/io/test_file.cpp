@@ -5,8 +5,6 @@
 go_bandit([]() {
   describe("adiar/internal/io/file.h , file_stream.h , file_writer.h", []() {
     describe("file() [empty]", []() {
-      std::string path;
-
       it("creates a file marked as 'temporary'", []() {
         file<int> f;
         AssertThat(f.is_persistent(), Is().False());
@@ -19,30 +17,29 @@ go_bandit([]() {
         AssertThat(f.empty(), Is().True());
       });
 
-      it("does not (yet) 'exist' on disk", [&path]() {
+      it("does not (yet) 'exist' on disk", []() {
         file<int> f;
+
         AssertThat(f.exists(), Is().False());
-
-        path = f.path();
-        AssertThat(std::filesystem::exists(path), Is().False());
+        AssertThat(std::filesystem::exists(f.path()), Is().False());
       });
 
-      it("'exists' after a 'touch'", [&path]() {
+      it("'exists' after a 'touch'", []() {
         file<int> f;
         f.touch();
+
         AssertThat(f.exists(), Is().True());
-
-        path = f.path();
-        AssertThat(std::filesystem::exists(path), Is().True());
+        AssertThat(std::filesystem::exists(f.path()), Is().True());
       });
 
-      it("is a fresh file", [&path]() {
-        file<int> f;
-        f.touch();
-        AssertThat(f.path(), Is().Not().EqualTo(path));
+      it("is a fresh file", []() {
+        file<int> f1;
+        file<int> f2;
+        AssertThat(f1.path(), Is().Not().EqualTo(f2.path()));
       });
 
-      it("is temporary (removed from disk after destruct)", [&path]() {
+      it("is temporary (removed from disk after destruct)", []() {
+        std::string path;
         { // Scope to destruct 'f' early
           file<int> f;
           f.touch();
@@ -53,7 +50,7 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(path), Is().False());
       });
 
-      it("can be 'moved' when not existing", [&path]() {
+      it("can be 'moved' when not existing", []() {
         std::string new_path = "./after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
           // Clean up after prior test run
@@ -77,7 +74,7 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(new_path), Is().True());
       });
 
-      it("can be 'moved' when existing", [&path]() {
+      it("can be 'moved' when existing", []() {
         std::string new_path = "./after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
           // Clean up after prior test run
@@ -97,7 +94,7 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(new_path), Is().True());
       });
 
-      it("cannot be 'moved' on-top of another (non-empty) file", [&path]() {
+      it("cannot be 'moved' on-top of another (non-empty) file", []() {
         file<int> f1;
         f1.touch();
 
@@ -107,7 +104,7 @@ go_bandit([]() {
         AssertThrows(std::runtime_error, f1.move(f2.path()));
       });
 
-      it("is still temporary after move", [&path]() {
+      it("is still temporary after move", []() {
         std::string new_path = "./after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
           // Clean up after prior test run
@@ -129,7 +126,8 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(new_path), Is().False());
       });
 
-      it("can be made persistent (not removed from disk)", [&path]() {
+      it("can be made persistent (not removed from disk)", []() {
+        std::string path;
         { // Scope to destruct 'f' early
           file<int> f;
           f.touch();
@@ -147,7 +145,8 @@ go_bandit([]() {
         std::filesystem::remove(path);
       });
 
-      it("exists on disk after being made persistent", [&path]() {
+      it("exists on disk after being made persistent", []() {
+        std::string path;
         { // Scope to destruct 'f' early
           file<int> f;
           path = f.path();
@@ -218,6 +217,7 @@ go_bandit([]() {
         AssertThrows(std::runtime_error, f.move(new_path));
       });
 
+      // Clean up for this test
       if (std::filesystem::exists(path)) {
         std::filesystem::remove(path);
       }
