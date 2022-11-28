@@ -30,14 +30,14 @@ namespace adiar::internal
   ///         the \c REVERSE parameter.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, size_t file_idx, bool REVERSE = false>
-  class levelized_file_stream : public file_stream<elem_t, REVERSE, __levelized_file<elem_t>>
+  class levelized_file_stream : public file_stream<elem_t, REVERSE>
   {
     static_assert(file_idx < FILE_CONSTANTS<elem_t>::files, "The file to pick must be a valid index");
 
   public:
     levelized_file_stream(const levelized_file<elem_t> &file, bool negate = false)
     {
-      file_stream<elem_t, REVERSE, __levelized_file<elem_t>>::attach(file->_files[file_idx], file, negate);
+      file_stream<elem_t, REVERSE>::attach(file->_files[file_idx], file, negate);
     }
 
     // TODO: 'attach', 'attached', and 'detach'
@@ -173,7 +173,7 @@ namespace adiar::internal
   /// \brief Stream for the levelized meta information.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, bool REVERSE = false>
-  class level_info_stream : public file_stream<level_info_t, !REVERSE, __levelized_file<elem_t>>
+  class level_info_stream : public file_stream<level_info_t, !REVERSE>
   {
   public:
     //////////////////////////////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ namespace adiar::internal
     //////////////////////////////////////////////////////////////////////////////
     level_info_stream(const levelized_file<elem_t> &f)
     {
-      file_stream<level_info_t, !REVERSE, __levelized_file<elem_t>>::attach(f->_level_info_file, f);
+      file_stream<level_info_t, !REVERSE>::attach(f->_level_info_file, f);
     }
 
     //////////////////////////////////////////////////////////////////////////////

@@ -18,7 +18,7 @@ namespace adiar::internal
   ///
   /// \param file_t      The type of the shared pointer to a file
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_type, bool REVERSE = false, typename file_type = file<elem_type>>
+  template <typename elem_type, bool REVERSE = false>
   class file_stream
   {
   public:
@@ -61,31 +61,24 @@ namespace adiar::internal
     ///        counting such that the file is not garbage collected while we
     ///        read from it.
     ////////////////////////////////////////////////////////////////////////////
-    shared_ptr<file_type> _file_ptr;
-
-  protected:
-    void attach(const file<elem_t> &f,
-                const shared_ptr<file_type> &shared_ptr,
-                bool negate = false)
-    {
-      if (attached()) { detach(); }
-
-      _file_ptr = shared_ptr;
-
-      _stream.open(f._tpie_file, file<elem_t>::read_access);
-      _negate = negate;
-
-      reset();
-    }
+    shared_ptr<void> _file_ptr;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct an unattached file stream.
+    /// \brief Construct unattached to any file.
     ////////////////////////////////////////////////////////////////////////////
     file_stream() { }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct a file stream attached to the given shared file.
+    /// \brief Construct attached to a given shared `file<elem_t>`.
+    ////////////////////////////////////////////////////////////////////////////
+    file_stream(const file<elem_t> &f, bool negate = false)
+    {
+      attach(f, nullptr, negate);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to a given shared `file<elem_t>`.
     ////////////////////////////////////////////////////////////////////////////
     file_stream(const shared_ptr<file<elem_t>> &f, bool negate = false)
     {
@@ -100,10 +93,35 @@ namespace adiar::internal
       detach();
     }
 
+  protected:
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(const file<elem_t> &f,
+                const shared_ptr<void> &shared_ptr,
+                bool negate = false)
+    {
+      if (attached()) { detach(); }
+
+      _file_ptr = shared_ptr;
+
+      _stream.open(f._tpie_file, file<elem_t>::read_access);
+      _negate = negate;
+
+      reset();
+    }
+
+  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a shared file
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const adiar::shared_ptr<file_type> &f, bool negate = false)
+    void attach(const file<elem_t> &f, bool negate = false)
+    {
+      attach(f, nullptr, negate);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a shared file
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(const adiar::shared_ptr<file<elem_t>> &f, bool negate = false)
     {
       attach(*f, f, negate);
     }
