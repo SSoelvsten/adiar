@@ -141,6 +141,9 @@ test/adiar/internal/data_types/uid:
 test/adiar/internal/io/file:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=file
 
+test/adiar/internal/io/levelized_file:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=levelized_file
+
 test/adiar/zdd/binop:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/zdd TEST_NAME=binop
 

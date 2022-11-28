@@ -369,11 +369,12 @@ namespace adiar::internal
 
   template<typename dd_policy, typename pq_t>
   typename dd_policy::reduced_t __reduce(const arc_file &in_file,
-                                         const size_t lpq_memory, const size_t sorters_memory)
+                                         const size_t lpq_memory,
+                                         const size_t sorters_memory)
   {
 #ifdef ADIAR_STATS
-    stats_reduce.sum_node_arcs += in_file->_files[0].size();
-    stats_reduce.sum_terminal_arcs += in_file->_files[1].size();
+    stats_reduce.sum_node_arcs += in_file->size(0);
+    stats_reduce.sum_terminal_arcs += in_file->size(1) + in_file->size(2);
 #endif
 
     node_arc_stream<> node_arcs(in_file);
