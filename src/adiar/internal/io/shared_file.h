@@ -3,6 +3,9 @@
 
 #include <adiar/internal/memory.h>
 
+#include <adiar/internal/io/file.h>
+#include <adiar/internal/io/levelized_file.h>
+
 namespace adiar::internal
 {
   // TODO: switch to derive `file_t` from `elem_t`.
@@ -111,7 +114,7 @@ namespace adiar::internal
   };
 
   ////////////////////////////////////////////////////////////////////////////
-  /// The <tt>file</tt> and <tt>__levelized_file</tt> classes are hidden behind a
+  /// The <tt>file</tt> and <tt>levelized_file</tt> classes are hidden behind a
   /// shared pointer, such that we can parse it around. That is, all actual
   /// files we are going to deal with are a <tt>shared_file<x_file<T>></tt>.
   ///

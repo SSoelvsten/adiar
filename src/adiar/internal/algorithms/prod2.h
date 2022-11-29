@@ -14,9 +14,9 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/data_types/request.h>
-#include <adiar/internal/io/levelized_file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/node_stream.h>
 
 namespace adiar::internal
 {
@@ -61,7 +61,7 @@ namespace adiar::internal
   {
     if (target[0].is_terminal() && target[1].is_terminal()) {
       arc out_arc = { source, op(target[0], target[1]) };
-      aw.unsafe_push_terminal(out_arc);
+      aw.push_terminal(out_arc);
     } else {
       adiar_debug(source.label() < std::min(target[0], target[1]).label(),
                   "should always push recursion for 'later' level");
@@ -92,7 +92,7 @@ namespace adiar::internal
                           node::uid_t out_uid, node::ptr_t source)
     {
       if (!source.is_nil()) {
-        aw.unsafe_push_node({ source, out_uid });
+        aw.push_internal({ source, out_uid });
       }
     }
   };
@@ -103,7 +103,7 @@ namespace adiar::internal
     static inline void go(pq_1_t& /*prod_pq_1*/, arc_writer &aw,
                           ptr_uint64 out_terminal, ptr_uint64 source)
     {
-      aw.unsafe_push_terminal({ source, out_terminal });
+      aw.push_terminal({ source, out_terminal });
     }
   };
 
@@ -267,7 +267,7 @@ namespace adiar::internal
       if (prod_pq_1.empty_level() && prod_pq_2.empty()) {
         if (prod_policy::no_skip || out_id > 0) {
           // Only output level_info information on prior level, if output
-          aw.unsafe_push(create_level_info(out_label, out_id));
+          aw.push(create_level_info(out_label, out_id));
         }
 
         prod_pq_1.setup_next_level();
@@ -363,7 +363,7 @@ namespace adiar::internal
 
     if (prod_policy::no_skip || out_id > 0) {
       // Push the level of the very last iteration
-      aw.unsafe_push(create_level_info(out_label, out_id));
+      aw.push(create_level_info(out_label, out_id));
     }
 
     out_arcs->max_1level_cut = max_1level_cut;

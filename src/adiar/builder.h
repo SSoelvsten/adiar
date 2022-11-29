@@ -18,7 +18,8 @@
 #include <adiar/internal/memory.h>
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
-#include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/node_file.h>
+#include <adiar/internal/io/node_writer.h>
 
 namespace adiar
 {

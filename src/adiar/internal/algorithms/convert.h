@@ -5,6 +5,8 @@
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
+#include <adiar/internal/io/node_file.h>
+#include <adiar/internal/io/node_writer.h>
 
 namespace adiar::internal
 {
@@ -25,8 +27,8 @@ namespace adiar::internal
     typedef typename to_policy::label_t label_t;
     typedef typename to_policy::id_t id_t;
 
-    static constexpr label_t MAX_LABEL = to_policy::MAX_LABEL;
-    static constexpr id_t MAX_ID = to_policy::MAX_ID;
+    static constexpr typename to_policy::label_t MAX_LABEL = to_policy::MAX_LABEL;
+    static constexpr typename to_policy::id_t MAX_ID = to_policy::MAX_ID;
 
   public:
     static constexpr bool may_skip = true;
@@ -51,7 +53,7 @@ namespace adiar::internal
     {
       adiar_debug(dom->size() > 0, "Emptiness check is before terminal check");
 
-      ptr_uint64 prior_node = ptr_uint64(terminal_value);
+      node::uid_t prior_node = node::uid_t(terminal_value);
 
       node_file nf;
 
@@ -69,7 +71,7 @@ namespace adiar::internal
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
         const node next_node = node(next_label, to_policy::MAX_ID, children[0], children[1]);
-        const ptr_uint64 reduction_result = to_policy::reduction_rule(next_node);
+        const node::ptr_t reduction_result = to_policy::reduction_rule(next_node);
 
         if (reduction_result == next_node.uid()) { // Output
           prior_node = next_node.uid();
@@ -99,14 +101,14 @@ namespace adiar::internal
 
     static intercut_rec hit_existing(const node &n)
     {
-      const ptr_uint64 to_reduction = to_policy::reduction_rule(n);
+      const node::ptr_t to_reduction = to_policy::reduction_rule(n);
       if (to_reduction != n.uid()) {
         return intercut_rec_skipto { to_reduction };
       }
       return intercut_rec_output { n.low(), n.high() };
     }
 
-    static intercut_rec_output hit_cut(const ptr_uint64 target)
+    static intercut_rec_output hit_cut(const node::ptr_t target)
    {
       const tuple children = from_policy::reduction_rule_inv(target);
 

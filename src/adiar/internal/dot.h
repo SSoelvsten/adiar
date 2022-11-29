@@ -5,19 +5,19 @@
 
 #include <fstream>
 
-#include <adiar/internal/io/file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/dd.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/arc_stream.h>
+#include <adiar/internal/io/node_stream.h>
 
 namespace adiar::internal
 {
-  template <typename T>
-  void output_dot(const T& nodes, std::ostream &out)
+  template <typename file_t>
+  void output_dot(const file_t& nodes, std::ostream &out)
   {
     out << "digraph BDD {" << std::endl;
 
-    std::cout << "huh 1 ?" << std::endl;
     node_stream<> ns(nodes);
-    std::cout << "huh 2 ?" << std::endl;
 
     if (is_terminal(nodes)) {
       out << "\t"
@@ -28,7 +28,7 @@ namespace adiar::internal
       out << "\tnode [shape=box];" << std::endl;
 
       while (ns.can_pull()) {
-        node node = ns.pull();
+        const node node = ns.pull();
 
         out << "\tn"
             << node.uid()._raw
@@ -39,14 +39,16 @@ namespace adiar::internal
             << std::endl;
       }
 
-      out << "\tn" << ptr_uint64(false)._raw << " [label=\"" << T::false_print << "\"];" << std::endl;
-      out << "\tn" << ptr_uint64(true)._raw << " [label=\"" << T::true_print << "\"];" << std::endl;
+      out << "\tn" << ptr_uint64(false)._raw
+          << " [label=\"" << file_t::false_print << "\"];" << std::endl;
+      out << "\tn" << ptr_uint64(true)._raw
+          << " [label=\"" << file_t::true_print << "\"];" << std::endl;
 
       out <<  std::endl << "\t// Arcs" << std::endl;
 
       ns.reset();
       while (ns.can_pull()) {
-        node node = ns.pull();
+        const node node = ns.pull();
 
         out << "\tn" << node.uid()._raw
             << " -> "
@@ -64,7 +66,7 @@ namespace adiar::internal
       out << "\t{ rank=same; " << "n" << ns.pull().uid()._raw << " }" << std::endl;
 
       while (ns.can_pull()) {
-        node current_node = ns.pull();
+        const node current_node = ns.pull();
 
         out << "\t{ rank=same; " << "n" << current_node.uid()._raw << " ";
 
@@ -77,8 +79,8 @@ namespace adiar::internal
     out << "}" << std::endl;
   }
 
-  template <typename T>
-  void output_dot(const T& nodes, const std::string &filename)
+  template <typename file_t>
+  void output_dot(const file_t& nodes, const std::string &filename)
   {
     std::ofstream out;
     out.open(filename);
@@ -96,9 +98,9 @@ namespace adiar::internal
 
     out << "\t// Node Arcs" << std::endl;
 
-    node_arc_stream<> nas(arcs);
-    while (nas.can_pull()) {
-      arc a = nas.pull();
+    arc_stream<> as(arcs);
+    while (as.can_pull_internal()) {
+      const arc a = as.pull_internal();
       out << "\t"
           << "n" << a.target().label() << "_" << a.target().id()
           << " -> "
@@ -112,9 +114,8 @@ namespace adiar::internal
     out << "\ts0 [shape=box, label=\"0\"];" << std::endl;
     out << "\ts1 [shape=box, label=\"1\"];" << std::endl;
 
-    terminal_arc_stream<> sas(arcs);
-    while (sas.can_pull()) {
-      arc a = sas.pull();
+    while (as.can_pull_terminal()) {
+      const arc a = as.pull_terminal();
       out << "\t"
           << "n" << a.source().label() << "_" << a.source().id()
           << " -> "

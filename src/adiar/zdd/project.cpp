@@ -56,7 +56,7 @@ namespace adiar
     internal::label_writer diw(dom_inv);
 
     internal::label_stream<> ls(dom);
-    internal::level_info_stream<zdd::node_t> dd_meta(dd);
+    internal::level_info_stream<> dd_meta(dd);
 
     while (dd_meta.can_pull()) {
       zdd::label_t dd_label = label_of(dd_meta.pull());

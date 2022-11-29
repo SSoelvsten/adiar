@@ -17,7 +17,7 @@ namespace adiar
     internal::assignment_file af;
     internal::assignment_writer aw;
 
-    internal::level_info_stream<bdd::node_t> ms;
+    internal::level_info_stream<> ms;
 
   public:
     bdd_sat_assignment_writer_visitor(const bdd& f) : aw(af), ms(f) { }

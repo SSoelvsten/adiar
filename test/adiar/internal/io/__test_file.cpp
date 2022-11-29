@@ -639,18 +639,18 @@ go_bandit([]() {
           arc_writer aw(arcest_file);
 
           it("can hook into arcest_file and write node arcs", [&]() {
-            aw.unsafe_push_node(node_arc_1);
+            aw.push_internal(node_arc_1);
           });
 
           it("can hook into arcest_file and write level_info", [&]() {
-            aw.unsafe_push(create_level_info(0,1u));
-            aw.unsafe_push(create_level_info(1,1u));
+            aw.push(create_level_info(0,1u));
+            aw.push(create_level_info(1,1u));
           });
 
           it("can hook into arcest_file and  write terminal arcs out of order", [&]() {
-            aw.unsafe_push_terminal(terminal_arc_3);
-            aw.unsafe_push_terminal(terminal_arc_1);
-            aw.unsafe_push_terminal(terminal_arc_2);
+            aw.push_terminal(terminal_arc_3);
+            aw.push_terminal(terminal_arc_1);
+            aw.push_terminal(terminal_arc_2);
           });
         });
       });

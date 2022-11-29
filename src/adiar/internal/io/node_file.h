@@ -2,17 +2,37 @@
 #define ADIAR_INTERNAL_IO_NODE_FILE_H
 
 #include <adiar/internal/data_types/node.h>
+#include <adiar/internal/io/file.h>
 #include <adiar/internal/io/levelized_file.h>
+#include <adiar/internal/io/shared_file.h>
 
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// A reduced Decision Diagram is given by a single sorted file by nodes.
+  /// \brief A reduced Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
   template <>
   struct FILE_CONSTANTS<node>
   {
+    // TODO: reading direction?
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of files to store a node-based representation.
+    ///
+    /// \details The nodes are only in a single file at index 0 (sorted
+    ///          descendingly by <tt>node.uid()</tt>)
+    ////////////////////////////////////////////////////////////////////////////
     static constexpr size_t files = 1u;
+
+    //////////////////////////////////////////////////////////////////////////
+    /// \brief Text to pretty-print in '.dot' output.
+    //////////////////////////////////////////////////////////////////////////
+    static constexpr std::string_view false_print = "0";
+
+    //////////////////////////////////////////////////////////////////////////
+    /// \brief Text to pretty-print in '.dot' output.
+    //////////////////////////////////////////////////////////////////////////
+    static constexpr std::string_view true_print = "1";
 
     struct stats
     {
@@ -42,33 +62,24 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       cuts_t max_2level_cut =
         { MAX_CUT, MAX_CUT, MAX_CUT, MAX_CUT };
+
+      ///////////////////////////////////////////////////////////////////////////
+      /// \brief The number of false and true terminals in the file. Index 0
+      ///        gives the number of false terminals and index 1 gives the
+      ///        number of true terminals.
+      ////////////////////////////////////////////////////////////////////////////
+      size_t number_of_terminals[2] = { 0, 0 };
     };
   };
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief File of nodes to represent a reduced decision diagram.
   //////////////////////////////////////////////////////////////////////////////
-  class node_file : public levelized_file<node>
-  {
-  public:
-    static constexpr std::string_view false_print = "0";
-    static constexpr std::string_view true_print = "1";
+  typedef shared_file<levelized_file<node>> node_file;
 
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    // Constructors
 
-    // Temporary node_file constructor
-    node_file() = default;
 
-    //////////////////////////////////////////////////////////////////////////////
-    /// \brief Size of the meta file
-    //////////////////////////////////////////////////////////////////////////////
-    size_t levels() const
-    {
-      return get()->levels();
-    }
-  };
+  // TODO: move into 'node_file', rename or similar?
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Check whether a given node_file represents a terminal-only DAG.
@@ -83,7 +94,8 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Obtain the terminal value of a node_file where 'is_terminal' is true.
+  /// \brief      Obtain the terminal value of a node_file where 'is_terminal'
+  ///             is true.
   ///
   /// \param file The node_file to check its content
   //////////////////////////////////////////////////////////////////////////////

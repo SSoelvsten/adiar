@@ -2,7 +2,7 @@
 #include <adiar/internal/algorithms/pred.h>
 
 go_bandit([]() {
-  describe("adiar/internal/pred.h", []() {
+  describe("adiar/internal/algoritms/pred.h", []() {
     describe("is_isomorphic", []() {
       describe("Trivial cases", []() {
         node_file terminal_F, x21, x42, x21_and_x22, x21_and_x22_and_x42, x21_and_x42, x21_xor_x42;

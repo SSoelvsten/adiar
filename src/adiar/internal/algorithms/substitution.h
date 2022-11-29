@@ -12,9 +12,11 @@
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/convert.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/node_stream.h>
 
 namespace adiar::internal
 {
@@ -88,7 +90,7 @@ namespace adiar::internal
                                          arc_writer &aw)
   {
     if(request.target().is_terminal()) {
-      aw.unsafe_push_terminal(request);
+      aw.push_terminal(request);
     } else {
       pq.push(request);
     }
@@ -142,7 +144,7 @@ namespace adiar::internal
     while(!substitute_pq.empty()) {
       if (substitute_pq.empty_level()) {
         if (level_size > 0) {
-          aw.unsafe_push(create_level_info(level, level_size));
+          aw.push(create_level_info(level, level_size));
         }
         substitute_pq.setup_next_level();
 
@@ -174,7 +176,7 @@ namespace adiar::internal
           const arc parent_arc = substitute_pq.pull();
 
           if(!parent_arc.source().is_nil()) {
-            aw.unsafe_push_node(parent_arc);
+            aw.push_internal(parent_arc);
           }
         }
 
@@ -198,7 +200,7 @@ namespace adiar::internal
 
     // Push the level of the very last iteration
     if (level_size > 0) {
-      aw.unsafe_push(create_level_info(level, level_size));
+      aw.push(create_level_info(level, level_size));
     }
 
     out_arcs->max_1level_cut = max_1level_cut;

@@ -80,14 +80,14 @@ go_bandit([]() {
 
       {
         arc_writer aw(af);
-        aw.unsafe_push_node(arc {ptr_uint64(0,0), ptr_uint64(1,0)});
+        aw.push_internal(arc {ptr_uint64(0,0), ptr_uint64(1,0)});
 
-        aw.unsafe_push_terminal(arc {flag(ptr_uint64(0,0)), ptr_uint64(true)});
-        aw.unsafe_push_terminal(arc {ptr_uint64(1,0), ptr_uint64(false)});
-        aw.unsafe_push_terminal(arc {flag(ptr_uint64(1,0)), ptr_uint64(true)});
+        aw.push_terminal(arc {flag(ptr_uint64(0,0)), ptr_uint64(true)});
+        aw.push_terminal(arc {ptr_uint64(1,0), ptr_uint64(false)});
+        aw.push_terminal(arc {flag(ptr_uint64(1,0)), ptr_uint64(true)});
 
-        aw.unsafe_push(create_level_info(0,1u));
-        aw.unsafe_push(create_level_info(1,1u));
+        aw.push(create_level_info(0,1u));
+        aw.push(create_level_info(1,1u));
       }
 
       af->max_1level_cut = 1;

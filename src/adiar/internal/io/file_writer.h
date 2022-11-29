@@ -2,6 +2,7 @@
 #define ADIAR_FILE_WRITER_H
 
 #include <tpie/file_stream.h>
+#include <tpie/sort.h>
 
 #include <adiar/assignment.h>
 #include <adiar/internal/assert.h>
@@ -68,7 +69,7 @@ namespace adiar::internal
     ///
     /// \pre No `file_stream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer(const shared_ptr<file<elem_t>> &f)
+    file_writer(adiar::shared_ptr<file<elem_t>> &f)
     { attach(f); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -79,8 +80,11 @@ namespace adiar::internal
 
   protected:
     ////////////////////////////////////////////////////////////////////////////
-    void attach(file<elem_t> &f, const adiar::shared_ptr<void> &p)
+    void attach(file<elem_t> &f, adiar::shared_ptr<void> p)
     {
+      if (f.is_persistent())
+        throw std::runtime_error("Cannot attach writer to a persisted file");
+
       if (attached()) { detach(); }
       _file_ptr = p;
 
@@ -88,34 +92,37 @@ namespace adiar::internal
       _stream.seek(0, tpie::file_stream_base::end);
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Befriend the few places that need direct access to the above 'attach'.
+    template <typename tparam__elem_t>
+    friend class levelized_file_writer;
+
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a file.
     ///
     /// \pre No `file_stream` is currently attached to this file.
+    ///
+    /// \warning Since ownership is \em not shared with this writer, you have to
+    ///          ensure, that the file in question is not destructed before
+    ///          `.detach()` is called.
     ////////////////////////////////////////////////////////////////////////////
     void attach(file<elem_t> &f)
-    {
-      attach(f, nullptr);
-    }
+    { attach(f, nullptr); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a shared file.
     ///
     /// \pre No `file_stream` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const adiar::shared_ptr<file<elem_t>> &f)
-    {
-      attach(*f, f);
-    }
+    void attach(adiar::shared_ptr<file<elem_t>> f)
+    { attach(*f, f); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the writer currently is attached to any file.
     ////////////////////////////////////////////////////////////////////////////
     bool attached() const
-    {
-      return _stream.is_open();
-    }
+    { return _stream.is_open(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detach from a file (if need be).
@@ -126,22 +133,61 @@ namespace adiar::internal
       if (_file_ptr) { _file_ptr.reset(); }
     }
 
-  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Push an element to the end of the file.
+    ///
+    /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
     void push(const elem_t &e)
-    {
-      _stream.write(e);
-    }
+    { _stream.write(e); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Push an element to the end of the file.
+    ///
+    /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
     file_writer<elem_t>& operator<< (const elem_t& e)
     {
       this->push(e);
       return *this;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether anything has been pushed the file.
+    ///
+    /// \pre `attached() == true`.
+    ////////////////////////////////////////////////////////////////////////////
+    bool has_pushed() const
+    { return _stream.size() > 0; }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether the underlying file is empty.
+    ///
+    /// \pre `attached() == true`.
+    ////////////////////////////////////////////////////////////////////////////
+    bool empty() const
+    { return !has_pushed(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of elements written to this file.
+    ///
+    /// \pre `attached() == true`.
+    ////////////////////////////////////////////////////////////////////////////
+    size_t size() const
+    { return _stream.size(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Sort the content of the attached file.
+    ///
+    /// \pre `attached() == true`.
+    ////////////////////////////////////////////////////////////////////////////
+    template <typename pred_t = std::less<elem_t>>
+    void sort(const pred_t pred = pred_t())
+    {
+      if (empty()) return;
+
+      tpie::progress_indicator_null pi;
+      tpie::sort(_stream, pred, pi);
     }
   };
 

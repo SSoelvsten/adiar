@@ -3,14 +3,14 @@
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
-#include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/level_info.h>
-#include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/levelized_file.h>
 
-// TODO: move
+// TODO: move?
+#include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/node_file.h>
 
 namespace adiar::internal
@@ -20,200 +20,248 @@ namespace adiar::internal
   ///
   /// \param T       The type of the file(s)'s elements
   ///
-  /// \param File    Index for the file to read from
+  /// \param reverse Whether the reading direction should be reversed
   ///
-  /// \param REVERSE Whether the reading direction should be reversed
-  ///
-  /// \remark Since all files are written to in reverse of the desired reading
-  ///         order, then 'reversing' the reversed input is equivalent to not
-  ///         reversing the underlying stream. Hence, we do hide a a negation of
-  ///         the \c REVERSE parameter.
+  /// \remark Since the content of all levelized files are generated in reverse
+  ///         of the desired reading order, then 'reversing' the reversed input
+  ///         is equivalent to not reversing the underlying stream. Hence, we do
+  ///         hide a negation of the \em reverse parameter.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t, size_t file_idx, bool REVERSE = false>
-  class levelized_file_stream : public file_stream<elem_t, REVERSE>
-  {
-    static_assert(file_idx < FILE_CONSTANTS<elem_t>::files, "The file to pick must be a valid index");
-
-  public:
-    levelized_file_stream(const levelized_file<elem_t> &file, bool negate = false)
-    {
-      file_stream<elem_t, REVERSE>::attach(file->_files[file_idx], file, negate);
-    }
-
-    // TODO: 'attach', 'attached', and 'detach'
-  };
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief         Stream of nodes from a node file.
-  ///
-  /// \param REVERSE Whether the reading direction should be reversed
-  ///                (relatively to the ordering of nodes within the file).
-  ///
-  /// \sa node_file
-  //////////////////////////////////////////////////////////////////////////////
-  template<bool REVERSE = false>
-  class node_stream : public levelized_file_stream<node, 0, !REVERSE>
+  template <typename elem_t, bool reverse = false>
+  class levelized_file_stream
   {
   public:
-    node_stream(const node_file &file, bool negate = false)
-      : levelized_file_stream<node, 0, !REVERSE>(file, negate)
-    { }
+    static constexpr size_t streams = FILE_CONSTANTS<elem_t>::files;
+    static_assert(0 < streams, "There must be at least a single file to attach to.");
 
-    node_stream(const dd &diagram)
-      : levelized_file_stream<node, 0, !REVERSE>(diagram.file, diagram.negate)
-    { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Stream for internal (reversed) arcs of an arc file.
-  ///
-  /// \sa arc_file
-  //////////////////////////////////////////////////////////////////////////////
-  template<bool REVERSE = false>
-  using node_arc_stream = levelized_file_stream<arc, 0, !REVERSE>;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Stream for terminal arcs of an arc file.
-  ///
-  /// \sa arc_file
-  //////////////////////////////////////////////////////////////////////////////
-  template<bool REVERSE = false>
-  class terminal_arc_stream
-  {
-  private:
-    typedef levelized_file_stream<arc, 1, !REVERSE> in_order_t;
-    in_order_t in_order;
-
-    typedef levelized_file_stream<arc, 2, !REVERSE> out_of_order_t;
-    out_of_order_t out_of_order;
-
-    size_t _unread[2] = { 0u, 0u };
-
-  public:
     static size_t memory_usage()
     {
-      return in_order_t::memory_usage() + out_of_order_t::memory_usage();
-    }
-
-  public:
-    terminal_arc_stream(const arc_file &file, bool negate = false)
-      : in_order(file, negate)
-      , out_of_order(file, negate)
-      , _unread{ file->number_of_terminals[false], file->number_of_terminals[true] }
-    { }
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain the number of unread terminals of a specific value.
-    ////////////////////////////////////////////////////////////////////////////
-    const size_t& unread(const bool terminal_value) const
-    {
-      return _unread[terminal_value];
+      return streams * file_stream<elem_t, reverse>::memory_usage();
     }
 
   private:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the next element ought to be pulled from `in_order`.
-    ////////////////////////////////////////////////////////////////////////////
-    bool next_from_in_order()
-    {
-      const bool in_order_pull = in_order.can_pull();
-      const bool out_of_order_pull = out_of_order.can_pull();
-
-      if (in_order_pull != out_of_order_pull) {
-        return in_order_pull;
-      }
-
-      const arc::ptr_t in_order_source = in_order.peek().source();
-      const arc::ptr_t out_of_order_source = out_of_order.peek().source();
-
-      return (REVERSE && in_order_source < out_of_order_source)
-         || (!REVERSE && in_order_source > out_of_order_source);
-    }
+    file_stream<elem_t, reverse> _streams[streams];
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Reset the read head back to the beginning (relatively to the
+    /// \brief Create unattached to any file.
+    ////////////////////////////////////////////////////////////////////////////
+    levelized_file_stream()
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Create attached to a levelized file.
+    ////////////////////////////////////////////////////////////////////////////
+    levelized_file_stream(const levelized_file<elem_t> &lf,
+                          bool negate = false)
+    { attach(lf, negate); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Create attached to a shared levelized file.
+    ////////////////////////////////////////////////////////////////////////////
+    levelized_file_stream(const shared_ptr<levelized_file<elem_t>> &lf,
+                          bool negate = false)
+    { attach(lf, negate); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Detaches and cleans up when destructed.
+    ////////////////////////////////////////////////////////////////////////////
+    ~levelized_file_stream() = default; // <-- detach is within 'file_stream'.
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a levelized file.
+    ///
+    /// \pre No `levelized_file_writer` is currently attached to this file.
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(const levelized_file<elem_t> &f,
+                bool negate = false)
+    {
+      for (size_t s_idx = 0; s_idx < streams; s_idx++)
+        _streams[s_idx].attach(f._files[s_idx], nullptr, negate);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a shared levelized file.
+    ///
+    /// \pre No `levelized_file_writer` is currently attached to this file.
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(const shared_ptr<levelized_file<elem_t>> &f,
+                bool negate = false)
+    {
+      for (size_t s_idx = 0; s_idx < streams; s_idx++)
+        _streams[s_idx].attach(f->_files[s_idx], f, negate);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether this stream is attached to a levelized file.
+    ////////////////////////////////////////////////////////////////////////////
+    bool attached() const
+    {
+      const bool res = _streams[0].attached();
+#ifndef NDEBUG
+      for (size_t s_idx = 1; s_idx < streams; s_idx++) {
+        adiar_debug(_streams[s_idx].attached() == res,
+                    "Attachment ought to be synchronised.");
+      }
+#endif
+      return res;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Detaches the stream from a levelized file.
+    ////////////////////////////////////////////////////////////////////////////
+    void detach()
+    {
+      for (size_t s_idx = 0; s_idx < streams; s_idx++)
+        _streams[s_idx].detach();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Reset the read heads back to the beginning (relatively to the
     ///        reading direction).
     ////////////////////////////////////////////////////////////////////////////
     void reset()
     {
-      in_order.reset();
-      out_of_order.reset();
+      for (size_t s_idx = 0; s_idx < streams; s_idx++)
+        _streams[s_idx].reset();
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Whether the stream contains more arcs.
+    /// \brief Whether the sub-stream contains more elements.
     ////////////////////////////////////////////////////////////////////////////
-    bool can_pull()
+    template<size_t s_idx>
+    bool can_pull() const
     {
-      return in_order.can_pull() || out_of_order.can_pull();
+      static_assert(s_idx < streams, "Sub-stream index must be within [0; streams).");
+      return _streams[s_idx].can_pull();
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain the next arc (and move the read head)
+    /// \brief Obtain next element from a sub-stream (and move its read head).
+    ///
+    /// \pre `can_pull<s_idx>() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const arc pull()
+    template<size_t s_idx>
+    elem_t pull()
     {
-      const arc a = next_from_in_order() ? in_order.pull() : out_of_order.pull();
-      _unread[a.target().value()]--;
-      return a;
+      static_assert(s_idx < streams, "Sub-stream index must be within [0; streams)");
+      return _streams[s_idx].pull();
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain the next arc (but do not move the read head)
+    /// \brief Obtain the next element from the specified sub-stream (but do not
+    ///        move the read head).
+    ///
+    /// \pre `can_pull<s_idx>() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    const arc peek()
+    template<size_t s_idx>
+    elem_t peek()
     {
-      return next_from_in_order() ? in_order.peek() : out_of_order.peek();
+      static_assert(s_idx < streams, "Sub-stream index must be within [0; streams)");
+      return _streams[s_idx].peek();
     }
   };
 
+
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Stream for the levelized meta information.
+  /// \brief Stream to access per-level meta information.
   //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t, bool REVERSE = false>
+  template <bool REVERSE = false>
   class level_info_stream : public file_stream<level_info_t, !REVERSE>
   {
+    using parent_t = file_stream<level_info_t, !REVERSE>;
+
   public:
-    //////////////////////////////////////////////////////////////////////////////
-    /// Access the level information of a file with meta information.
-    //////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const levelized_file<elem_t> &f)
-    {
-      file_stream<level_info_t, !REVERSE>::attach(f->_level_info_file, f);
-    }
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct unattached to a levelized file.
+    ////////////////////////////////////////////////////////////////////////////
+    level_info_stream() = default;
 
-    //////////////////////////////////////////////////////////////////////////////
-    /// Access the level information stream of a decision diagram.
-    //////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const dd &diagram) : level_info_stream(diagram.file)
-    { }
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to a file<level_info>.
+    ////////////////////////////////////////////////////////////////////////////
+    level_info_stream(const file<level_info_t> &f)
+    { parent_t::attach(f); }
 
-  private:
-    //////////////////////////////////////////////////////////////////////////////
-    /// For unit testing only!
-    //////////////////////////////////////////////////////////////////////////////
-    levelized_file<elem_t> __obtain_file(const __dd &diagram)
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to a file<level_info>.
+    ////////////////////////////////////////////////////////////////////////////
+    level_info_stream(const adiar::shared_ptr<file<level_info_t>> &f)
+    { parent_t::attach(f); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to a levelized file.
+    ////////////////////////////////////////////////////////////////////////////
+    template<typename elem_t>
+    level_info_stream(const levelized_file<elem_t, false> &lf)
+    { attach(lf); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to a shared levelized file.
+    ////////////////////////////////////////////////////////////////////////////
+    template<typename elem_t>
+    level_info_stream(const adiar::shared_ptr<levelized_file<elem_t, false>> &lf)
+    { attach(lf); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to a (reduced) decision diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    level_info_stream(const dd &diagram)
+    { attach(diagram); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct attached to a (possibly unreduced) decision diagram.
+    ///
+    /// \warning Intended for unit testing only!
+    ////////////////////////////////////////////////////////////////////////////
+    level_info_stream(const __dd &diagram)
+    { attach(diagram); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Detaches and cleans up when destructed.
+    ////////////////////////////////////////////////////////////////////////////
+    ~level_info_stream() = default; // <-- detach in '~file<level_info_t>()'
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a levelized file.
+    ////////////////////////////////////////////////////////////////////////////
+    template<typename elem_t>
+    void attach(const levelized_file<elem_t, false> &lf)
+    { parent_t::attach(lf._level_info_file, nullptr, false); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a shared levelized file.
+    ////////////////////////////////////////////////////////////////////////////
+    template<typename elem_t>
+    void attach(const adiar::shared_ptr<levelized_file<elem_t, false>> &lf)
+    { parent_t::attach(lf->_level_info_file, lf, false); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a (reduced) decision diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(const dd &diagram)
+    { attach<node>(diagram.file); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a (possibly unreduced) decision diagram.
+    ///
+    /// \warning Intended for unit testing only!
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(const __dd &diagram)
     {
-      if constexpr (std::is_same<node, elem_t>::value) {
-        return diagram.get<node_file>();
+      if (diagram.has<node_file>()) {
+        attach<node>(diagram.get<node_file>());
+      } else if (diagram.has<arc_file>()) {
+        attach<arc>(diagram.get<arc_file>());
       } else {
-        return diagram.get<arc_file>();
+        // We should never be in the case of hooking into a 'no_file'. That type
+        // should only be used internally within an algorithm an never escape
+        // into its output.
+        adiar_unreachable();
       }
     }
-
-  public:
-    //////////////////////////////////////////////////////////////////////////////
-    /// For unit testing only!
-    ///
-    /// Access to level information of an unreduced decision diagram.
-    //////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const __dd &diagram)
-      : level_info_stream(__obtain_file(diagram))
-    { }
-
-    // TODO: 'attach', 'attached', and 'detach'
   };
 }
 
