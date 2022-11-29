@@ -105,13 +105,12 @@ namespace adiar::internal
       // Hook into reference counting.
       _file_ptr = shared_ptr;
 
-      // Open file stream with the smallest access type to guarantee the file
-      // exists on disk.
-      const typename file<elem_t>::access_t access_type = f.exists()
-        ? file<elem_t>::read_access
-        : file<elem_t>::write_access;
+      // Touch the file to make sure it exists on disk. Since 'f' is const, use
+      // the private '__touch()' member function instead.
+      f.__touch();
 
-      _stream.open(f._tpie_file, access_type);
+      // Open the stream to the file
+      _stream.open(f._tpie_file, file<elem_t>::read_access);
       reset();
 
       // Store negation flag.
