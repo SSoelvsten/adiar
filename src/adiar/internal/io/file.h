@@ -217,20 +217,26 @@ namespace adiar::internal
         throw std::runtime_error("'"+new_path+"' already exists.");
       }
 
-      // Move the (existing?) file or at least change the path.
+      // Move the file on disk, if it exists.
       if (exists()) {
-        try { // Try to move it
+        try { // Try to move it in O(1) time.
           std::filesystem::rename(path(), new_path);
         } catch(std::filesystem::filesystem_error& e) {
-          // Is the problem that happens
-          const std::string err_msg = e.what();
-          if (!err_msg.find("Invalid cross-device link")) throw e;
+          //tpie::log_error() << "Adiar: unable to move file<elem_t>" << std::endl
+          //                  << "       what(): " << e.what() <<  std::endl;
 
-          // Try to copy-delete it.
+          // Did the file disappear and everything just is in shambles?
+          if (!std::filesystem::exists(path())) throw e;
+
+          // Most likely scenario is "Invalid cross-device link": try to
+          // copy-delete it instead in O(N) time.
           std::filesystem::copy(path(), new_path);
           std::filesystem::remove(path());
         }
       }
+
+      // Set the path on the TPIE object (which does not attempt to delete the
+      // old path).
       set_path(new_path);
     }
 
