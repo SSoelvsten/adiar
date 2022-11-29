@@ -680,6 +680,59 @@ go_bandit([]() {
         AssertThat(fs.can_pull(), Is().False());
         fs.detach();
       });
+
+      it("cannot sort a persisted empty file", []() {
+        std::string path;
+        { // Scope to destruct 'f' early
+          file<int> f;
+          f.touch();
+
+          path = f.path();
+          f.make_persistent();
+          AssertThat(std::filesystem::exists(path), Is().True());
+
+          AssertThrows(std::runtime_error, f.sort<std::less<int>>());
+        }
+        AssertThat(std::filesystem::exists(path), Is().True());
+
+        // Clean up for this test
+        std::filesystem::remove(path);
+      });
+
+      it("cannot sort a persisted non-empty file", []() {
+        std::string path;
+        { // Scope to destruct 'f' early
+          file<int> f;
+          f.touch();
+
+          file_writer<int> fw(f);
+          fw << -1 << 8 << 3;
+          fw.detach();
+
+          path = f.path();
+          f.make_persistent();
+          AssertThat(std::filesystem::exists(path), Is().True());
+
+          AssertThrows(std::runtime_error, f.sort<std::less<int>>());
+        }
+        AssertThat(std::filesystem::exists(path), Is().True());
+
+        { // Check is not sorted
+          file<int> f(path);
+          file_stream<int> fs(f);
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(-1));
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(8));
+          AssertThat(fs.can_pull(), Is().True());
+          AssertThat(fs.pull(), Is().EqualTo(3));
+          AssertThat(fs.can_pull(), Is().False());
+          fs.detach();
+        }
+
+        // Clean up for this test
+        std::filesystem::remove(path);
+      });
     });
 
     describe("::copy(const file&)", []() {

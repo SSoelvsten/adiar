@@ -253,13 +253,20 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Sort the content of this file in relation to a given predicate.
     ///
-    /// \pre No `file_stream` and `file_writer` is attached to this file.
+    /// \pre `is_persistent() == false` and `file_stream` nor `file_writer` is
+    ///      attached to this file.
     ////////////////////////////////////////////////////////////////////////////
     template <typename pred_t = std::less<elem_t>>
     void sort(pred_t pred = pred_t())
     {
+      // Disallow sorting a persistent file
+      if (is_persistent())
+        throw std::runtime_error("'"+path()+"' is persisted.");
+
+      // If empty, just skip all the work
       if (size() == 0u) return;
 
+      // Use TPIE's file sorting.
       tpie::file_stream<elem_t> fs;
       fs.open(_tpie_file);
 
