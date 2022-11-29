@@ -221,17 +221,26 @@ namespace adiar::internal
       if (exists()) {
         try { // Try to move it in O(1) time.
           std::filesystem::rename(path(), new_path);
-        } catch(std::filesystem::filesystem_error& e) {
-          //tpie::log_error() << "Adiar: unable to move file<elem_t>" << std::endl
-          //                  << "       what(): " << e.what() <<  std::endl;
-
+        } catch(std::filesystem::filesystem_error& e1) {
+#ifndef NDEBUG
+          std::cerr << "Adiar: unable to move file<elem_t> in O(1) time" << std::endl
+                    << "       what(): " << e1.what() <<  std::endl;
+#endif
           // Did the file disappear and everything just is in shambles?
-          if (!std::filesystem::exists(path())) throw e;
+          if (!std::filesystem::exists(path())) throw e1;
 
-          // Most likely scenario is "Invalid cross-device link": try to
-          // copy-delete it instead in O(N) time.
-          std::filesystem::copy(path(), new_path);
-          std::filesystem::remove(path());
+          try {
+            // Most likely, this catch-case is an "Invalid cross-device link":
+            // try to copy-delete it instead in O(N) time.
+            std::filesystem::copy(path(), new_path);
+            std::filesystem::remove(path());
+          } catch (std::filesystem::filesystem_error& e2) {
+#ifndef NDEBUG
+            std::cerr << "Adiar: unable to copy-delete file<elem_t> in O(N) time" << std::endl
+                      << "       what(): " << e2.what() <<  std::endl;
+#endif
+            throw e2;
+          }
         }
       }
 
