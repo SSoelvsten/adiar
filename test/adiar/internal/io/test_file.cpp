@@ -4,7 +4,19 @@
 
 go_bandit([]() {
   describe("adiar/internal/io/file.h , file_stream.h , file_writer.h", []() {
-    describe("file() [empty]", []() {
+    // The default folder for temporary files is '/tmp/' on Ubuntu and '/var/tmp/'
+    // on Fedora. Both of these are to the OS not on the same drive and so you get
+    // a 'cross-device link' error when using std::filesystem::rename(...) to move
+    // it to './'.
+    //
+    // To ensure our tests properly cover BOTH cases, we have to move it inside of
+    // the '/tmp/' folder and also to './'.
+    //
+    // HACK: get the temporary folder itself directly from TPIE.
+    const std::string tmp_path = tpie::tempname::get_actual_path() + "/";
+    const std::string curr_path = "./";
+
+    describe("file() [empty]", [&tmp_path, &curr_path]() {
       it("creates a file marked as 'temporary'", []() {
         file<int> f;
         AssertThat(f.is_persistent(), Is().False());
@@ -50,8 +62,8 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(path), Is().False());
       });
 
-      it("can be 'moved' when not existing", []() {
-        std::string new_path = "./after-move-path.adiar";
+      it("can be 'moved' when not existing [./]", [&curr_path]() {
+        std::string new_path = curr_path + "after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
           // Clean up after prior test run
           std::filesystem::remove(new_path);
@@ -74,7 +86,37 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(new_path), Is().True());
       });
 
-      it("can be 'moved' when existing", []() {
+      it("cannot be 'moved' on-top of an existing file", []() {
+        file<int> f1;
+        f1.touch();
+
+        file<int> f2;
+        f2.touch();
+
+        AssertThrows(std::runtime_error, f1.move(f2.path()));
+      });
+
+      it("can be 'moved' when existing [/tmp/]", [&tmp_path]() {
+        std::string new_path = tmp_path + "after-move-path.adiar";
+        if (std::filesystem::exists(new_path)) {
+          // Clean up after prior test run
+          std::filesystem::remove(new_path);
+        }
+
+        file<int> f;
+        f.touch();
+        std::string old_path = f.path();
+
+        AssertThat(std::filesystem::exists(old_path), Is().True());
+        AssertThat(std::filesystem::exists(new_path), Is().False());
+
+        f.move(new_path);
+
+        AssertThat(std::filesystem::exists(old_path), Is().False());
+        AssertThat(std::filesystem::exists(new_path), Is().True());
+      });
+
+      it("can be 'moved' when existing [./]", [&curr_path]() {
         std::string new_path = "./after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
           // Clean up after prior test run
@@ -94,18 +136,30 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(new_path), Is().True());
       });
 
-      it("cannot be 'moved' on-top of another (non-empty) file", []() {
-        file<int> f1;
-        f1.touch();
+      it("is still temporary after move [/tmp/]", [&tmp_path]() {
+        std::string new_path = tmp_path + "after-move-path.adiar";
+        if (std::filesystem::exists(new_path)) {
+          // Clean up after prior test run
+          std::filesystem::remove(new_path);
+        }
 
-        file<int> f2;
-        f2.touch();
+        {
+          file<int> f;
+          f.touch();
+          std::string old_path = f.path();
 
-        AssertThrows(std::runtime_error, f1.move(f2.path()));
+          f.move(new_path);
+
+          AssertThat(std::filesystem::exists(new_path), Is().True());
+
+          AssertThat(f.is_persistent(), Is().False());
+          AssertThat(f.is_temp(), Is().True());
+        }
+        AssertThat(std::filesystem::exists(new_path), Is().False());
       });
 
-      it("is still temporary after move", []() {
-        std::string new_path = "./after-move-path.adiar";
+      it("is still temporary after move [./]", [&curr_path]() {
+        std::string new_path = curr_path + "after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
           // Clean up after prior test run
           std::filesystem::remove(new_path);
@@ -266,7 +320,7 @@ go_bandit([]() {
       });
     });
 
-    describe("file() + file_writer", []() {
+    describe("file() + file_writer", [&tmp_path, &curr_path]() {
       it("can attach to an empty file [constructor]", []() {
         file<int> f;
         file_writer<int> fw(f);
@@ -322,8 +376,32 @@ go_bandit([]() {
         AssertThat(f.size(), Is().EqualTo(2u));
       });
 
-      it("can be 'moved' after write", []() {
-        std::string new_path = "./after-move-path.adiar";
+      it("can be 'moved' after write [/tmp/]", [&tmp_path]() {
+        std::string new_path = tmp_path + "after-move-path.adiar";
+        if (std::filesystem::exists(new_path)) {
+          // Clean up after prior test run
+          std::filesystem::remove(new_path);
+        }
+
+        file<int> f;
+
+        file_writer<int> fw(f);
+        fw << 42 << 21;
+        fw.detach();
+
+        std::string old_path = f.path();
+
+        AssertThat(std::filesystem::exists(old_path), Is().True());
+        AssertThat(std::filesystem::exists(new_path), Is().False());
+
+        f.move(new_path);
+
+        AssertThat(std::filesystem::exists(old_path), Is().False());
+        AssertThat(std::filesystem::exists(new_path), Is().True());
+      });
+
+      it("can be 'moved' after write [./]", [&curr_path]() {
+        std::string new_path = curr_path + "after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
           // Clean up after prior test run
           std::filesystem::remove(new_path);
@@ -347,7 +425,7 @@ go_bandit([]() {
       });
     });
 
-    describe("file() + file_stream + file_writer", []() {
+    describe("file() + file_stream + file_writer", [&tmp_path, &curr_path]() {
       it("can read written content [1]", []() {
         file<int> f;
 
@@ -420,8 +498,8 @@ go_bandit([]() {
         fs.detach();
       });
 
-      it("can read from 'moved' file", []() {
-        std::string new_path = "./after-move-path.adiar";
+      it("can read from 'moved' file [/tmp/]", [&tmp_path]() {
+        std::string new_path = tmp_path + "after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
           // Clean up after prior test run
           std::filesystem::remove(new_path);
@@ -446,8 +524,62 @@ go_bandit([]() {
         fs.detach();
       });
 
-      it("can read from 'moved' file in reverse", []() {
-        std::string new_path = "./after-move-path.adiar";
+      it("can read from 'moved' file [./]", [&curr_path]() {
+        std::string new_path = curr_path + "after-move-path.adiar";
+        if (std::filesystem::exists(new_path)) {
+          // Clean up after prior test run
+          std::filesystem::remove(new_path);
+        }
+
+        file<int> f;
+
+        file_writer<int> fw(f);
+        fw << 12 << 9 << 1;
+        fw.detach();
+
+        f.move(new_path);
+
+        file_stream<int, false> fs(f);
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(12));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(9));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(1));
+        AssertThat(fs.can_pull(), Is().False());
+        fs.detach();
+      });
+
+      it("can read from 'moved' file in reverse [/tmp/]", [&tmp_path]() {
+        std::string new_path = tmp_path + "after-move-path.adiar";
+        if (std::filesystem::exists(new_path)) {
+          // Clean up after prior test run
+          std::filesystem::remove(new_path);
+        }
+
+        file<int> f;
+
+        file_writer<int> fw(f);
+        fw << 8 << 9 << 4 << 2;
+        fw.detach();
+
+        f.move(new_path);
+
+        file_stream<int, true> fs(f);
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(2));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(4));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(9));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(8));
+        AssertThat(fs.can_pull(), Is().False());
+        fs.detach();
+      });
+
+      it("can read from 'moved' file in reverse [./]", [&curr_path]() {
+        std::string new_path = curr_path + "after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
           // Clean up after prior test run
           std::filesystem::remove(new_path);
