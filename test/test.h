@@ -9,42 +9,38 @@ using namespace bandit;
 
 #include <adiar/adiar.h>
 
-using namespace adiar;
-using namespace adiar::internal;
-
 ////////////////////////////////////////////////////////////////////////////////
 // To improve the relationship between the tests and the algorithms, we will not
 // reverse the order in which we read the output.
 //
 // We also do a few little hacks, to read unreduced output from the file_union
 // class.
-template <typename T>
-using level_info_test_stream = level_info_stream<T, true>;
+#include <adiar/internal/io/arc_stream.h>
+#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_writer.h>
 
-class nodeest_stream: public node_stream<true>
+using namespace adiar;
+using namespace adiar::internal;
+
+using level_info_test_stream = level_info_stream<true>;
+
+class node_test_stream: public node_stream<true>
 {
 public:
-  nodeest_stream(node_file &f): node_stream<true>(f) { }
-  nodeest_stream(bdd &f): node_stream<true>(f) { }
-  nodeest_stream(__bdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
-  nodeest_stream(zdd &f): node_stream<true>(f) { }
-  nodeest_stream(__zdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
+  node_test_stream(node_file &f): node_stream<true>(f) { }
+  node_test_stream(bdd &f): node_stream<true>(f) { }
+  node_test_stream(__bdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
+  node_test_stream(zdd &f): node_stream<true>(f) { }
+  node_test_stream(__zdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
 };
 
-class node_arcest_stream: public node_arc_stream<true>
+class arc_test_stream: public arc_stream<true>
 {
 public:
-  node_arcest_stream(arc_file &f): node_arc_stream<true>(f) { }
-  node_arcest_stream(__bdd &bdd): node_arc_stream<true>(bdd.get<arc_file>()) { }
-  node_arcest_stream(__zdd &zdd): node_arc_stream<true>(zdd.get<arc_file>()) { }
-};
-
-class terminal_arcest_stream: public terminal_arc_stream<true>
-{
-public:
-  terminal_arcest_stream(arc_file &f): terminal_arc_stream<true>(f) { }
-  terminal_arcest_stream(__bdd &bdd): terminal_arc_stream<true>(bdd.get<arc_file>()) { }
-  terminal_arcest_stream(__zdd &zdd): terminal_arc_stream<true>(zdd.get<arc_file>()) { }
+  arc_test_stream(arc_file &f): arc_stream<true>(f) { }
+  arc_test_stream(__bdd &bdd): arc_stream<true>(bdd.get<arc_file>()) { }
+  arc_test_stream(__zdd &zdd): arc_stream<true>(zdd.get<arc_file>()) { }
 };
 
 ////////////////////////////////////////////////////////////////////////////////

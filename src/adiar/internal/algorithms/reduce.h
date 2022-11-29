@@ -9,9 +9,10 @@
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/convert.h>
-#include <adiar/internal/io/file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/arc_stream.h>
+#include <adiar/internal/io/node_file.h>
+#include <adiar/internal/io/node_writer.h>
 #include <adiar/statistics.h>
 
 namespace adiar::internal
@@ -160,11 +161,12 @@ namespace adiar::internal
   /// \brief Merging priority queue with terminal_arc stream.
   //////////////////////////////////////////////////////////////////////////////
   template <typename pq_t>
-  inline arc __reduce_get_next(pq_t &reduce_pq, terminal_arc_stream<> &terminal_arcs)
+  inline arc __reduce_get_next(pq_t &reduce_pq, arc_stream<> &arcs)
   {
     if (!reduce_pq.can_pull()
-        || (terminal_arcs.can_pull() && terminal_arcs.peek().source() > reduce_pq.top().source())) {
-      return terminal_arcs.pull();
+        || (arcs.can_pull_terminal()
+            && arcs.peek_terminal().source() > reduce_pq.top().source())) {
+      return arcs.pull_terminal();
     } else {
       return reduce_pq.pull();
     }
@@ -193,8 +195,7 @@ namespace adiar::internal
   }
 
   template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
-  void __reduce_level(terminal_arc_stream<> &terminal_arcs,
-                      node_arc_stream<> &node_arcs,
+  void __reduce_level(arc_stream<> &arcs,
                       const typename dd_policy::label_t label,
                       pq_t &reduce_pq,
                       node_writer &out_writer,
@@ -213,15 +214,18 @@ namespace adiar::internal
       red2_mapping(sorters_memory, level_width, 2);
 
     // Pull out all nodes from reduce_pq and terminal_arcs for this level
-    while ((terminal_arcs.can_pull() && terminal_arcs.peek().source().label() == label)
+    while ((arcs.can_pull_terminal() && arcs.peek_terminal().source().label() == label)
             || reduce_pq.can_pull()) {
-      const arc e_high = __reduce_get_next(reduce_pq, terminal_arcs);
-      const arc e_low = __reduce_get_next(reduce_pq, terminal_arcs);
+      // TODO (MDD):
+      // TODO (QMDD):
+      //   Use __reduce_get_next node_t::OUTDEGREE times to create a node_t::children_t.
+      const arc e_high = __reduce_get_next(reduce_pq, arcs);
+      const arc e_low = __reduce_get_next(reduce_pq, arcs);
 
       node n = node_of(e_low, e_high);
 
       // Apply Reduction rule 1
-      ptr_uint64 reduction_rule_ret = dd_policy::reduction_rule(n);
+      node::ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
       if (reduction_rule_ret != n.uid()) {
         // Open red1_mapping first (and create file on disk) when at least one
         // element is written to it.
@@ -240,8 +244,8 @@ namespace adiar::internal
 
     __reduce_cut_add(local_1level_cut,
                      reduce_pq.size_without_terminals(),
-                     reduce_pq.terminals(false) + terminal_arcs.unread(false),
-                     reduce_pq.terminals(true) + terminal_arcs.unread(true));
+                     reduce_pq.terminals(false) + arcs.unread_terminals(false),
+                     reduce_pq.terminals(true) + arcs.unread_terminals(true));
 
     // Sort and apply Reduction rule 2
     child_grouping.sort();
@@ -277,7 +281,7 @@ namespace adiar::internal
       out_writer.unsafe_push(create_level_info(label, dd_policy::MAX_ID - out_id));
     }
 
-    // Sort mappings for Reduction rule 2 back in order of node_arcs
+    // Sort mappings for Reduction rule 2 back in order of arcs.internal
     red2_mapping.sort();
 
     // Merging of red1_mapping and red2_mapping
@@ -301,13 +305,14 @@ namespace adiar::internal
                               (has_next_red1 && next_red1.old_uid > next_red2.old_uid);
       mapping current_map = is_red1_current ? next_red1 : next_red2;
 
-      adiar_invariant(!node_arcs.can_pull() || current_map.old_uid == node_arcs.peek().target(),
+      adiar_invariant(!arcs.can_pull_internal()
+                      || current_map.old_uid == arcs.peek_internal().target(),
                       "Mapping forwarded in sync with node_arcs");
 
       // Find all arcs that have sources that match the current mapping's old_uid
-      while (node_arcs.can_pull() && current_map.old_uid == node_arcs.peek().target()) {
+      while (arcs.can_pull_internal() && current_map.old_uid == arcs.peek_internal().target()) {
         // The is_high flag is included in arc.source() pulled from node_arcs.
-        ptr_uint64 s = node_arcs.pull().source();
+        ptr_uint64 s = arcs.pull_internal().source();
 
         // If Reduction Rule 1 was used, then tell the parents to add to the global cut.
         ptr_uint64 t = is_red1_current ? flag(current_map.new_uid) : current_map.new_uid;
@@ -336,22 +341,22 @@ namespace adiar::internal
     out_writer.inc_1level_cut(local_1level_cut);
 
     if (!reduce_pq.empty()) {
-      adiar_debug(!terminal_arcs.can_pull() || terminal_arcs.peek().source().label() < label,
+      adiar_debug(!arcs.can_pull_terminal() || arcs.peek_terminal().source().label() < label,
                   "All terminal arcs for 'label' should be processed");
 
-      adiar_debug(!node_arcs.can_pull() || node_arcs.peek().target().label() < label,
-                  "All node arcs for 'label' should be processed");
+      adiar_debug(!arcs.can_pull_internal() || arcs.peek_internal().target().label() < label,
+                  "All internal arcs for 'label' should be processed");
 
       adiar_debug(reduce_pq.empty() || !reduce_pq.can_pull(),
                   "All forwarded arcs for 'label' should be processed");
 
-      if (terminal_arcs.can_pull()) {
-        reduce_pq.setup_next_level(terminal_arcs.peek().source().label());
+      if (arcs.can_pull_terminal()) {
+        reduce_pq.setup_next_level(arcs.peek_terminal().source().label());
       } else {
         reduce_pq.setup_next_level();
       }
     } else if (!out_writer.has_pushed()) {
-      adiar_debug(!node_arcs.can_pull() && !terminal_arcs.can_pull(),
+      adiar_debug(!arcs.can_pull_internal() && !arcs.can_pull_terminal(),
                   "All nodes should be processed at this point");
 
       adiar_debug(reduce_pq.empty(),
@@ -377,9 +382,8 @@ namespace adiar::internal
     stats_reduce.sum_terminal_arcs += in_file->size(1) + in_file->size(2);
 #endif
 
-    node_arc_stream<> node_arcs(in_file);
-    terminal_arc_stream<> terminal_arcs(in_file);
-    level_info_stream<arc> level_info(in_file);
+    arc_stream<> arcs(in_file);
+    level_info_stream<> level_info(in_file);
 
     // Set up output
     node_file out_file;
@@ -393,9 +397,9 @@ namespace adiar::internal
     node_writer out_writer(out_file);
 
     // Trivial single-node case
-    if (!node_arcs.can_pull()) {
-      const arc e_high = terminal_arcs.pull();
-      const arc e_low = terminal_arcs.pull();
+    if (!arcs.can_pull_internal()) {
+      const arc e_high = arcs.pull_terminal();
+      const arc e_low = arcs.pull_terminal();
 
       // Apply reduction rule 1, if applicable
       const ptr_uint64 reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
@@ -446,7 +450,7 @@ namespace adiar::internal
     const size_t internal_sorter_can_fit = internal_sorter<node>::memory_fits(sorters_memory / 2);
 
     // Process bottom-up each level
-    while (terminal_arcs.can_pull() || !reduce_pq.empty()) {
+    while (arcs.can_pull_terminal() || !reduce_pq.empty()) {
       const level_info_t current_level_info = level_info.pull();
       const typename dd_policy::label_t label = label_of(current_level_info);
 
@@ -457,10 +461,10 @@ namespace adiar::internal
 
       if(level_width <= internal_sorter_can_fit) {
         __reduce_level<dd_policy, pq_t, internal_sorter>
-          (terminal_arcs, node_arcs, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
+          (arcs, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
       } else {
         __reduce_level<dd_policy, pq_t, external_sorter>
-          (terminal_arcs, node_arcs, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
+          (arcs, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
       }
     }
 
@@ -501,7 +505,8 @@ namespace adiar::internal
     // memory variant.
     const size_t aux_available_memory = memory_available()
       // Input streams
-      - node_arc_stream<>::memory_usage() - terminal_arc_stream<>::memory_usage() - level_info_stream<arc>::memory_usage()
+      - arc_stream<>::memory_usage()
+      - level_info_stream<>::memory_usage()
       // Output streams
       - node_writer::memory_usage();
 

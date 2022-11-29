@@ -92,15 +92,15 @@ go_bandit([]() {
       { // Garbage collect writer early
         arc_writer uw(unreduced_bdd);
 
-        uw.unsafe_push_terminal({ flag(ptr_uint64(2,0)), ptr_uint64(true) });
-        uw.unsafe_push_terminal({ ptr_uint64(2,0), ptr_uint64(true) });
-        uw.unsafe_push_terminal({ ptr_uint64(1,1), ptr_uint64(true) });
+        uw.push_terminal({ flag(ptr_uint64(2,0)), ptr_uint64(true) });
+        uw.push_terminal({ ptr_uint64(2,0), ptr_uint64(true) });
+        uw.push_terminal({ ptr_uint64(1,1), ptr_uint64(true) });
 
-        uw.unsafe_push_node({ ptr_uint64(0,0), ptr_uint64(1,0) });
-        uw.unsafe_push_node({ ptr_uint64(0,0), ptr_uint64(1,1) });
-        uw.unsafe_push_node({ ptr_uint64(1,0), ptr_uint64(2,0) });
-        uw.unsafe_push_node({ flag(ptr_uint64(1,0)), ptr_uint64(2,0) });
-        uw.unsafe_push_node({ flag(ptr_uint64(1,1)), ptr_uint64(2,0) });
+        uw.push_internal({ ptr_uint64(0,0), ptr_uint64(1,0) });
+        uw.push_internal({ ptr_uint64(0,0), ptr_uint64(1,1) });
+        uw.push_internal({ ptr_uint64(1,0), ptr_uint64(2,0) });
+        uw.push_internal({ flag(ptr_uint64(1,0)), ptr_uint64(2,0) });
+        uw.push_internal({ flag(ptr_uint64(1,1)), ptr_uint64(2,0) });
       }
 
       output_dot(unreduced_bdd, "dot_test_unreduced.dot");

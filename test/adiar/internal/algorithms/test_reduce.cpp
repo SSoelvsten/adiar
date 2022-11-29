@@ -1,7 +1,7 @@
 #include "../../../test.h"
 
 go_bandit([]() {
-  describe("adiar/internal/reduce.h", [&]() {
+  describe("adiar/internal/algorithms/reduce.h", [&]() {
     // The reduce<dd_policy> function is used within the constructors of the BDD
     // and ZDD classes.
 
@@ -71,19 +71,19 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ flag(n1),n2 });
-          aw.unsafe_push_node({ n1,n3 });
-          aw.unsafe_push_node({ n2,n4 });
+          aw.push_internal({ flag(n1),n2 });
+          aw.push_internal({ n1,n3 });
+          aw.push_internal({ n2,n4 });
 
-          aw.unsafe_push_terminal({ flag(n2),terminal_T });
-          aw.unsafe_push_terminal({ n3,terminal_F });
-          aw.unsafe_push_terminal({ flag(n3),terminal_T });
-          aw.unsafe_push_terminal({ n4,terminal_F });
-          aw.unsafe_push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ flag(n2),terminal_T });
+          aw.push_terminal({ n3,terminal_F });
+          aw.push_terminal({ flag(n3),terminal_T });
+          aw.push_terminal({ n4,terminal_F });
+          aw.push_terminal({ flag(n4),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
-          aw.unsafe_push(create_level_info(2,2u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
+          aw.push(create_level_info(2,2u));
         }
 
         in->max_1level_cut = 2;
@@ -94,7 +94,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -116,7 +116,7 @@ go_bandit([]() {
                                                               ptr_uint64(1, ptr_uint64::MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -171,21 +171,21 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1, n2 });
-          aw.unsafe_push_node({ flag(n1), n3 });
-          aw.unsafe_push_node({ n3, n4 });
-          aw.unsafe_push_node({ flag(n2), n5 });
+          aw.push_internal({ n1, n2 });
+          aw.push_internal({ flag(n1), n3 });
+          aw.push_internal({ n3, n4 });
+          aw.push_internal({ flag(n2), n5 });
 
-          aw.unsafe_push_terminal({ n2, terminal_F });
-          aw.unsafe_push_terminal({ flag(n3), terminal_T });
-          aw.unsafe_push_terminal({ n4, terminal_F });
-          aw.unsafe_push_terminal({ flag(n4), terminal_T });
-          aw.unsafe_push_terminal({ n5, terminal_F });
-          aw.unsafe_push_terminal({ flag(n5), terminal_T });
+          aw.push_terminal({ n2, terminal_F });
+          aw.push_terminal({ flag(n3), terminal_T });
+          aw.push_terminal({ n4, terminal_F });
+          aw.push_terminal({ flag(n4), terminal_T });
+          aw.push_terminal({ n5, terminal_F });
+          aw.push_terminal({ flag(n5), terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(2,2u));
-          aw.unsafe_push(create_level_info(3,2u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(2,2u));
+          aw.push(create_level_info(3,2u));
         }
 
         in->max_1level_cut = 2;
@@ -196,7 +196,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
@@ -219,7 +219,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -275,24 +275,24 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ flag(n1),n2 });
-          aw.unsafe_push_node({ n1,n3 });
-          aw.unsafe_push_node({ n2,n4 });
-          aw.unsafe_push_node({ n3,n5 });
-          aw.unsafe_push_node({ n4,n5 });
-          aw.unsafe_push_node({ flag(n3),n6 });
-          aw.unsafe_push_node({ flag(n4),n6 });
+          aw.push_internal({ flag(n1),n2 });
+          aw.push_internal({ n1,n3 });
+          aw.push_internal({ n2,n4 });
+          aw.push_internal({ n3,n5 });
+          aw.push_internal({ n4,n5 });
+          aw.push_internal({ flag(n3),n6 });
+          aw.push_internal({ flag(n4),n6 });
 
-          aw.unsafe_push_terminal({ flag(n2),terminal_T });
-          aw.unsafe_push_terminal({ n5,terminal_F });
-          aw.unsafe_push_terminal({ flag(n5),terminal_T });
-          aw.unsafe_push_terminal({ n6,terminal_T });
-          aw.unsafe_push_terminal({ flag(n6),terminal_F });
+          aw.push_terminal({ flag(n2),terminal_T });
+          aw.push_terminal({ n5,terminal_F });
+          aw.push_terminal({ flag(n5),terminal_T });
+          aw.push_terminal({ n6,terminal_T });
+          aw.push_terminal({ flag(n6),terminal_F });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
-          aw.unsafe_push(create_level_info(2,2u));
-          aw.unsafe_push(create_level_info(3,2u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
+          aw.push(create_level_info(2,2u));
+          aw.push(create_level_info(3,2u));
         }
 
         in->max_1level_cut = 4;
@@ -303,7 +303,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -334,7 +334,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,2u)));
@@ -392,22 +392,22 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ flag(n1),n2 });
-          aw.unsafe_push_node({ n1,n3 });
-          aw.unsafe_push_node({ n2,n4 });
-          aw.unsafe_push_node({ n3,n5 });
-          aw.unsafe_push_node({ n4,n5 });
+          aw.push_internal({ flag(n1),n2 });
+          aw.push_internal({ n1,n3 });
+          aw.push_internal({ n2,n4 });
+          aw.push_internal({ n3,n5 });
+          aw.push_internal({ n4,n5 });
 
-          aw.unsafe_push_terminal({ flag(n2),terminal_T });
-          aw.unsafe_push_terminal({ flag(n3),terminal_T });
-          aw.unsafe_push_terminal({ flag(n4),terminal_T });
-          aw.unsafe_push_terminal({ n5,terminal_F });
-          aw.unsafe_push_terminal({ flag(n5),terminal_T });
+          aw.push_terminal({ flag(n2),terminal_T });
+          aw.push_terminal({ flag(n3),terminal_T });
+          aw.push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n5,terminal_F });
+          aw.push_terminal({ flag(n5),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
-          aw.unsafe_push(create_level_info(2,2u));
-          aw.unsafe_push(create_level_info(3,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
+          aw.push(create_level_info(2,2u));
+          aw.push(create_level_info(3,1u));
         }
 
         in->max_1level_cut = 4;
@@ -418,7 +418,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -444,7 +444,7 @@ go_bandit([]() {
                                                               ptr_uint64(1, ptr_uint64::MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -510,26 +510,26 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ flag(n1),n3 });
-          aw.unsafe_push_node({ n2,n4 });
-          aw.unsafe_push_node({ flag(n2),n5 });
-          aw.unsafe_push_node({ n3,n5 });
-          aw.unsafe_push_node({ flag(n3),n6 });
-          aw.unsafe_push_node({ n5,n7 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ flag(n1),n3 });
+          aw.push_internal({ n2,n4 });
+          aw.push_internal({ flag(n2),n5 });
+          aw.push_internal({ n3,n5 });
+          aw.push_internal({ flag(n3),n6 });
+          aw.push_internal({ n5,n7 });
 
-          aw.unsafe_push_terminal({ n4,terminal_F });
-          aw.unsafe_push_terminal({ flag(n4),terminal_T });
-          aw.unsafe_push_terminal({ flag(n5),terminal_T });
-          aw.unsafe_push_terminal({ n6,terminal_F });
-          aw.unsafe_push_terminal({ flag(n6),terminal_T });
-          aw.unsafe_push_terminal({ n7,terminal_F });
-          aw.unsafe_push_terminal({ flag(n7),terminal_T });
+          aw.push_terminal({ n4,terminal_F });
+          aw.push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ flag(n5),terminal_T });
+          aw.push_terminal({ n6,terminal_F });
+          aw.push_terminal({ flag(n6),terminal_T });
+          aw.push_terminal({ n7,terminal_F });
+          aw.push_terminal({ flag(n7),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,2u));
-          aw.unsafe_push(create_level_info(2,3u));
-          aw.unsafe_push(create_level_info(3,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,2u));
+          aw.push(create_level_info(2,3u));
+          aw.push(create_level_info(3,1u));
         }
 
         in->max_1level_cut = 4;
@@ -540,7 +540,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -580,7 +580,7 @@ go_bandit([]() {
                                                               ptr_uint64(1, ptr_uint64::MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -641,23 +641,23 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ flag(n1),n3 });
-          aw.unsafe_push_node({ n2,n4 });
-          aw.unsafe_push_node({ flag(n2),n5 });
-          aw.unsafe_push_node({ n3,n5 });
-          aw.unsafe_push_node({ flag(n3),n6 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ flag(n1),n3 });
+          aw.push_internal({ n2,n4 });
+          aw.push_internal({ flag(n2),n5 });
+          aw.push_internal({ n3,n5 });
+          aw.push_internal({ flag(n3),n6 });
 
-          aw.unsafe_push_terminal({ n4,terminal_F });
-          aw.unsafe_push_terminal({ flag(n4),terminal_T });
-          aw.unsafe_push_terminal({ n5,terminal_F });
-          aw.unsafe_push_terminal({ flag(n5),terminal_T });
-          aw.unsafe_push_terminal({ n6,terminal_T });
-          aw.unsafe_push_terminal({ flag(n6),terminal_F });
+          aw.push_terminal({ n4,terminal_F });
+          aw.push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n5,terminal_F });
+          aw.push_terminal({ flag(n5),terminal_T });
+          aw.push_terminal({ n6,terminal_T });
+          aw.push_terminal({ flag(n6),terminal_F });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,2u));
-          aw.unsafe_push(create_level_info(2,3u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,2u));
+          aw.push(create_level_info(2,3u));
         }
 
         in->max_1level_cut = 4;
@@ -668,7 +668,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 5
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
@@ -692,7 +692,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
@@ -749,23 +749,23 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ flag(n1),n3 });
-          aw.unsafe_push_node({ n2,n4 });
-          aw.unsafe_push_node({ flag(n2),n5 });
-          aw.unsafe_push_node({ n3,n5 });
-          aw.unsafe_push_node({ flag(n3),n6 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ flag(n1),n3 });
+          aw.push_internal({ n2,n4 });
+          aw.push_internal({ flag(n2),n5 });
+          aw.push_internal({ n3,n5 });
+          aw.push_internal({ flag(n3),n6 });
 
-          aw.unsafe_push_terminal({ n4,terminal_T });
-          aw.unsafe_push_terminal({ flag(n4),terminal_F });
-          aw.unsafe_push_terminal({ n5,terminal_T });
-          aw.unsafe_push_terminal({ flag(n5),terminal_F });
-          aw.unsafe_push_terminal({ n6,terminal_F });
-          aw.unsafe_push_terminal({ flag(n6),terminal_T });
+          aw.push_terminal({ n4,terminal_T });
+          aw.push_terminal({ flag(n4),terminal_F });
+          aw.push_terminal({ n5,terminal_T });
+          aw.push_terminal({ flag(n5),terminal_F });
+          aw.push_terminal({ n6,terminal_F });
+          aw.push_terminal({ flag(n6),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,2u));
-          aw.unsafe_push(create_level_info(2,3u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,2u));
+          aw.push(create_level_info(2,3u));
         }
 
         in->max_1level_cut = 4;
@@ -776,7 +776,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // 6
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
@@ -800,7 +800,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
@@ -856,19 +856,19 @@ go_bandit([]() {
         { // Garbage collect writer early
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ flag(n1),n2 });
-          aw.unsafe_push_node({ n1,n3 });
-          aw.unsafe_push_node({ n2,n3 });
-          aw.unsafe_push_node({ flag(n2),n4 });
+          aw.push_internal({ flag(n1),n2 });
+          aw.push_internal({ n1,n3 });
+          aw.push_internal({ n2,n3 });
+          aw.push_internal({ flag(n2),n4 });
 
-          aw.unsafe_push_terminal({ n3,terminal_F });
-          aw.unsafe_push_terminal({ flag(n3),terminal_T });
-          aw.unsafe_push_terminal({ n4,terminal_T });
-          aw.unsafe_push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n3,terminal_F });
+          aw.push_terminal({ flag(n3),terminal_T });
+          aw.push_terminal({ n4,terminal_T });
+          aw.push_terminal({ flag(n4),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
-          aw.unsafe_push(create_level_info(2,2u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
+          aw.push(create_level_info(2,2u));
         }
 
         in->max_1level_cut = 3;
@@ -879,7 +879,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -902,7 +902,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -957,22 +957,22 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ flag(n1),n2 });
-          aw.unsafe_push_node({ n1,n3 });
-          aw.unsafe_push_node({ n2,n3 });
-          aw.unsafe_push_node({ flag(n2),n4 });
-          aw.unsafe_push_node({ n4,n5 });
-          aw.unsafe_push_node({ flag(n4),n5 });
+          aw.push_internal({ flag(n1),n2 });
+          aw.push_internal({ n1,n3 });
+          aw.push_internal({ n2,n3 });
+          aw.push_internal({ flag(n2),n4 });
+          aw.push_internal({ n4,n5 });
+          aw.push_internal({ flag(n4),n5 });
 
-          aw.unsafe_push_terminal({ n3,terminal_F });
-          aw.unsafe_push_terminal({ flag(n3),terminal_T });
-          aw.unsafe_push_terminal({ n5,terminal_F });
-          aw.unsafe_push_terminal({ flag(n5),terminal_T });
+          aw.push_terminal({ n3,terminal_F });
+          aw.push_terminal({ flag(n3),terminal_T });
+          aw.push_terminal({ n5,terminal_F });
+          aw.push_terminal({ flag(n5),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
-          aw.unsafe_push(create_level_info(2,2u));
-          aw.unsafe_push(create_level_info(3,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
+          aw.push(create_level_info(2,2u));
+          aw.push(create_level_info(3,1u));
         }
 
         in->max_1level_cut = 3;
@@ -983,7 +983,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1008,7 +1008,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -1068,21 +1068,21 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ flag(n1),n3 });
-          aw.unsafe_push_node({ n2,n4 });
-          aw.unsafe_push_node({ flag(n2),n4 });
-          aw.unsafe_push_node({ n3,n5 });
-          aw.unsafe_push_node({ flag(n3),n5 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ flag(n1),n3 });
+          aw.push_internal({ n2,n4 });
+          aw.push_internal({ flag(n2),n4 });
+          aw.push_internal({ n3,n5 });
+          aw.push_internal({ flag(n3),n5 });
 
-          aw.unsafe_push_terminal({ n4,terminal_F });
-          aw.unsafe_push_terminal({ flag(n4),terminal_T });
-          aw.unsafe_push_terminal({ n5,terminal_T });
-          aw.unsafe_push_terminal({ flag(n5),terminal_F });
+          aw.push_terminal({ n4,terminal_F });
+          aw.push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n5,terminal_T });
+          aw.push_terminal({ flag(n5),terminal_F });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,2u));
-          aw.unsafe_push(create_level_info(2,2u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,2u));
+          aw.push(create_level_info(2,2u));
         }
 
         in->max_1level_cut = 4;
@@ -1093,7 +1093,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1112,7 +1112,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
@@ -1165,19 +1165,19 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ n2,n3 });
-          aw.unsafe_push_node({ flag(n2),n4 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ n2,n3 });
+          aw.push_internal({ flag(n2),n4 });
 
-          aw.unsafe_push_terminal({ flag(n1),terminal_T });
-          aw.unsafe_push_terminal({ n3,terminal_F });
-          aw.unsafe_push_terminal({ flag(n3),terminal_T });
-          aw.unsafe_push_terminal({ n4,terminal_F });
-          aw.unsafe_push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ flag(n1),terminal_T });
+          aw.push_terminal({ n3,terminal_F });
+          aw.push_terminal({ flag(n3),terminal_T });
+          aw.push_terminal({ n4,terminal_F });
+          aw.push_terminal({ flag(n4),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
-          aw.unsafe_push(create_level_info(2,2u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
+          aw.push(create_level_info(2,2u));
         }
 
         in->max_1level_cut = 2;
@@ -1188,7 +1188,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1204,7 +1204,7 @@ go_bandit([]() {
                                                               terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -1261,24 +1261,24 @@ go_bandit([]() {
           { // Garbage collect writer to free write-lock
             arc_writer aw(in);
 
-            aw.unsafe_push_node({ n1, n2 });
-            aw.unsafe_push_node({ flag(n1), n3 });
-            aw.unsafe_push_node({ flag(n2), n4 });
-            aw.unsafe_push_node({ n3, n4 });
-            aw.unsafe_push_node({ flag(n3), n5 });
-            aw.unsafe_push_node({ n2, n6 });
+            aw.push_internal({ n1, n2 });
+            aw.push_internal({ flag(n1), n3 });
+            aw.push_internal({ flag(n2), n4 });
+            aw.push_internal({ n3, n4 });
+            aw.push_internal({ flag(n3), n5 });
+            aw.push_internal({ n2, n6 });
 
-            aw.unsafe_push_terminal({ n4, terminal_F });
-            aw.unsafe_push_terminal({ flag(n4), terminal_T });
-            aw.unsafe_push_terminal({ n5, terminal_F });
-            aw.unsafe_push_terminal({ flag(n5), terminal_T });
-            aw.unsafe_push_terminal({ n6, terminal_F });
-            aw.unsafe_push_terminal({ flag(n6), terminal_T });
+            aw.push_terminal({ n4, terminal_F });
+            aw.push_terminal({ flag(n4), terminal_T });
+            aw.push_terminal({ n5, terminal_F });
+            aw.push_terminal({ flag(n5), terminal_T });
+            aw.push_terminal({ n6, terminal_F });
+            aw.push_terminal({ flag(n6), terminal_T });
 
-            aw.unsafe_push(create_level_info(0,1u));
-            aw.unsafe_push(create_level_info(1,2u));
-            aw.unsafe_push(create_level_info(2,2u));
-            aw.unsafe_push(create_level_info(3,1u));
+            aw.push(create_level_info(0,1u));
+            aw.push(create_level_info(1,2u));
+            aw.push(create_level_info(2,2u));
+            aw.push(create_level_info(3,1u));
           }
 
           in->max_1level_cut = 4;
@@ -1289,7 +1289,7 @@ go_bandit([]() {
           AssertThat(is_canonical(out), Is().True());
 
           // Check it looks all right
-          nodeest_stream out_nodes(out);
+          node_test_stream out_nodes(out);
 
           // n6
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1316,7 +1316,7 @@ go_bandit([]() {
                                                                 ptr_uint64(2, ptr_uint64::MAX_ID))));
           AssertThat(out_nodes.can_pull(), Is().False());
 
-          level_info_test_stream<node> out_meta(out);
+          level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
           AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -1382,19 +1382,19 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ flag(n1),n2 });
-          aw.unsafe_push_node({ n1,n3 });
-          aw.unsafe_push_node({ n2,n3 });
-          aw.unsafe_push_node({ flag(n2),n4 });
+          aw.push_internal({ flag(n1),n2 });
+          aw.push_internal({ n1,n3 });
+          aw.push_internal({ n2,n3 });
+          aw.push_internal({ flag(n2),n4 });
 
-          aw.unsafe_push_terminal({ n3,terminal_F });
-          aw.unsafe_push_terminal({ flag(n3),terminal_T });
-          aw.unsafe_push_terminal({ n4,terminal_F });
-          aw.unsafe_push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n3,terminal_F });
+          aw.push_terminal({ flag(n3),terminal_T });
+          aw.push_terminal({ n4,terminal_F });
+          aw.push_terminal({ flag(n4),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
-          aw.unsafe_push(create_level_info(2,2u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
+          aw.push(create_level_info(2,2u));
         }
 
         in->max_1level_cut = 3;
@@ -1405,7 +1405,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1413,7 +1413,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -1459,24 +1459,24 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ n2,n3 });
-          aw.unsafe_push_node({ n3,n4 });
-          aw.unsafe_push_node({ flag(n3),n5 });
-          aw.unsafe_push_node({ flag(n1),n6 });
-          aw.unsafe_push_node({ flag(n2),n6 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ n2,n3 });
+          aw.push_internal({ n3,n4 });
+          aw.push_internal({ flag(n3),n5 });
+          aw.push_internal({ flag(n1),n6 });
+          aw.push_internal({ flag(n2),n6 });
 
-          aw.unsafe_push_terminal({ n4,terminal_T });
-          aw.unsafe_push_terminal({ flag(n4),terminal_F });
-          aw.unsafe_push_terminal({ n5,terminal_F });
-          aw.unsafe_push_terminal({ flag(n5),terminal_T });
-          aw.unsafe_push_terminal({ n6,terminal_T });
-          aw.unsafe_push_terminal({ flag(n6),terminal_T });
+          aw.push_terminal({ n4,terminal_T });
+          aw.push_terminal({ flag(n4),terminal_F });
+          aw.push_terminal({ n5,terminal_F });
+          aw.push_terminal({ flag(n5),terminal_T });
+          aw.push_terminal({ n6,terminal_T });
+          aw.push_terminal({ flag(n6),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
-          aw.unsafe_push(create_level_info(2,1u));
-          aw.unsafe_push(create_level_info(3,3u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
+          aw.push(create_level_info(2,1u));
+          aw.push(create_level_info(3,3u));
         }
 
         in->max_1level_cut = 4;
@@ -1487,7 +1487,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
           // Check it looks all right
-          nodeest_stream out_nodes(out);
+          node_test_stream out_nodes(out);
 
           // n4
           AssertThat(out_nodes.can_pull(), Is().True());
@@ -1519,7 +1519,7 @@ go_bandit([]() {
                                                                 terminal_T)));
           AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,2u)));
@@ -1574,10 +1574,10 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_terminal({ n1,terminal_F });
-          aw.unsafe_push_terminal({ flag(n1),terminal_F });
+          aw.push_terminal({ n1,terminal_F });
+          aw.push_terminal({ flag(n1),terminal_F });
 
-          aw.unsafe_push(create_level_info(0,1u));
+          aw.push(create_level_info(0,1u));
         }
 
         in->max_1level_cut = 0;
@@ -1588,7 +1588,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -1596,7 +1596,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -1630,14 +1630,14 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ flag(n1),n2 });
+          aw.push_internal({ flag(n1),n2 });
 
-          aw.unsafe_push_terminal({ n1,terminal_T });
-          aw.unsafe_push_terminal({ n2,terminal_T });
-          aw.unsafe_push_terminal({ flag(n2),terminal_T });
+          aw.push_terminal({ n1,terminal_T });
+          aw.push_terminal({ n2,terminal_T });
+          aw.push_terminal({ flag(n2),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
         }
 
         in->max_1level_cut = 1;
@@ -1648,13 +1648,13 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -1685,10 +1685,10 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_terminal({ n1,terminal_F });
-          aw.unsafe_push_terminal({ flag(n1),terminal_T });
+          aw.push_terminal({ n1,terminal_F });
+          aw.push_terminal({ flag(n1),terminal_T });
 
-          aw.unsafe_push(create_level_info(0u,1u));
+          aw.push(create_level_info(0u,1u));
         }
 
         in->max_1level_cut = 0;
@@ -1699,13 +1699,13 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0u,1u)));
@@ -1759,36 +1759,36 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ flag(n1),n3 });
-          aw.unsafe_push_node({ n2,n4 });
-          aw.unsafe_push_node({ flag(n2),n4 });
-          aw.unsafe_push_node({ n3,n4 });
-          aw.unsafe_push_node({ flag(n3),n5 });
-          aw.unsafe_push_node({ n4,n6 });
-          aw.unsafe_push_node({ flag(n4),n6 });
-          aw.unsafe_push_node({ n5,n6 });
-          aw.unsafe_push_node({ flag(n5),n7 });
-          aw.unsafe_push_node({ n6,n8 });
-          aw.unsafe_push_node({ flag(n6),n8 });
-          aw.unsafe_push_node({ n7,n8 });
-          aw.unsafe_push_node({ flag(n7),n9 });
-          aw.unsafe_push_node({ n8,n10 });
-          aw.unsafe_push_node({ flag(n8),n10 });
-          aw.unsafe_push_node({ n9,n10 });
-          aw.unsafe_push_node({ flag(n9),n11 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ flag(n1),n3 });
+          aw.push_internal({ n2,n4 });
+          aw.push_internal({ flag(n2),n4 });
+          aw.push_internal({ n3,n4 });
+          aw.push_internal({ flag(n3),n5 });
+          aw.push_internal({ n4,n6 });
+          aw.push_internal({ flag(n4),n6 });
+          aw.push_internal({ n5,n6 });
+          aw.push_internal({ flag(n5),n7 });
+          aw.push_internal({ n6,n8 });
+          aw.push_internal({ flag(n6),n8 });
+          aw.push_internal({ n7,n8 });
+          aw.push_internal({ flag(n7),n9 });
+          aw.push_internal({ n8,n10 });
+          aw.push_internal({ flag(n8),n10 });
+          aw.push_internal({ n9,n10 });
+          aw.push_internal({ flag(n9),n11 });
 
-          aw.unsafe_push_terminal({ n10,terminal_T });
-          aw.unsafe_push_terminal({ flag(n10),terminal_F });
-          aw.unsafe_push_terminal({ n11,terminal_F });
-          aw.unsafe_push_terminal({ flag(n11),terminal_T });
+          aw.push_terminal({ n10,terminal_T });
+          aw.push_terminal({ flag(n10),terminal_F });
+          aw.push_terminal({ n11,terminal_F });
+          aw.push_terminal({ flag(n11),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,2u));
-          aw.unsafe_push(create_level_info(2,2u));
-          aw.unsafe_push(create_level_info(3,2u));
-          aw.unsafe_push(create_level_info(4,2u));
-          aw.unsafe_push(create_level_info(5,2u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,2u));
+          aw.push(create_level_info(2,2u));
+          aw.push(create_level_info(3,2u));
+          aw.push(create_level_info(4,2u));
+          aw.push(create_level_info(5,2u));
         }
 
         in->max_1level_cut = 4;
@@ -1799,7 +1799,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n11
         AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
@@ -1839,7 +1839,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(5,2u)));
@@ -1920,42 +1920,42 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ flag(n1),n3 });
-          aw.unsafe_push_node({ n2,n4 });
-          aw.unsafe_push_node({ flag(n2),n5 });
-          aw.unsafe_push_node({ n3,n5 });
-          aw.unsafe_push_node({ flag(n3),n6 });
-          aw.unsafe_push_node({ n4,n7 });
-          aw.unsafe_push_node({ flag(n4),n8 });
-          aw.unsafe_push_node({ n5,n8 });
-          aw.unsafe_push_node({ flag(n5),n8 });
-          aw.unsafe_push_node({ n6,n8 });
-          aw.unsafe_push_node({ flag(n6),n9 });
-          aw.unsafe_push_node({ n7,n10 });
-          aw.unsafe_push_node({ flag(n7),n11 });
-          aw.unsafe_push_node({ n8,n11 });
-          aw.unsafe_push_node({ flag(n8),n11 });
-          aw.unsafe_push_node({ n9,n11 });
-          aw.unsafe_push_node({ flag(n9),n12 });
-          aw.unsafe_push_node({ flag(n10),n13 });
-          aw.unsafe_push_node({ n11,n13 });
-          aw.unsafe_push_node({ flag(n11),n13 });
-          aw.unsafe_push_node({ n12,n13 });
-          aw.unsafe_push_node({ n10,n14 });
-          aw.unsafe_push_node({ flag(n12),n14 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ flag(n1),n3 });
+          aw.push_internal({ n2,n4 });
+          aw.push_internal({ flag(n2),n5 });
+          aw.push_internal({ n3,n5 });
+          aw.push_internal({ flag(n3),n6 });
+          aw.push_internal({ n4,n7 });
+          aw.push_internal({ flag(n4),n8 });
+          aw.push_internal({ n5,n8 });
+          aw.push_internal({ flag(n5),n8 });
+          aw.push_internal({ n6,n8 });
+          aw.push_internal({ flag(n6),n9 });
+          aw.push_internal({ n7,n10 });
+          aw.push_internal({ flag(n7),n11 });
+          aw.push_internal({ n8,n11 });
+          aw.push_internal({ flag(n8),n11 });
+          aw.push_internal({ n9,n11 });
+          aw.push_internal({ flag(n9),n12 });
+          aw.push_internal({ flag(n10),n13 });
+          aw.push_internal({ n11,n13 });
+          aw.push_internal({ flag(n11),n13 });
+          aw.push_internal({ n12,n13 });
+          aw.push_internal({ n10,n14 });
+          aw.push_internal({ flag(n12),n14 });
 
-          aw.unsafe_push_terminal({ n13,terminal_T });
-          aw.unsafe_push_terminal({ flag(n13),terminal_F });
-          aw.unsafe_push_terminal({ n14,terminal_F });
-          aw.unsafe_push_terminal({ flag(n14),terminal_T });
+          aw.push_terminal({ n13,terminal_T });
+          aw.push_terminal({ flag(n13),terminal_F });
+          aw.push_terminal({ n14,terminal_F });
+          aw.push_terminal({ flag(n14),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,2u));
-          aw.unsafe_push(create_level_info(2,3u));
-          aw.unsafe_push(create_level_info(3,3u));
-          aw.unsafe_push(create_level_info(4,3u));
-          aw.unsafe_push(create_level_info(5,2u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,2u));
+          aw.push(create_level_info(2,3u));
+          aw.push(create_level_info(3,3u));
+          aw.push(create_level_info(4,3u));
+          aw.push(create_level_info(5,2u));
         }
 
         in->max_1level_cut = 8;
@@ -1966,7 +1966,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n14
         AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
@@ -2025,7 +2025,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(5,2u)));
@@ -2090,19 +2090,19 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ flag(n1),n3 });
-          aw.unsafe_push_node({ flag(n2),n4 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ flag(n1),n3 });
+          aw.push_internal({ flag(n2),n4 });
 
-          aw.unsafe_push_terminal({ n2,terminal_F });
-          aw.unsafe_push_terminal({ n3,terminal_F });
-          aw.unsafe_push_terminal({ flag(n3),terminal_T });
-          aw.unsafe_push_terminal({ n4,terminal_T });
-          aw.unsafe_push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n2,terminal_F });
+          aw.push_terminal({ n3,terminal_F });
+          aw.push_terminal({ flag(n3),terminal_T });
+          aw.push_terminal({ n4,terminal_T });
+          aw.push_terminal({ flag(n4),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,2u));
-          aw.unsafe_push(create_level_info(2,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,2u));
+          aw.push(create_level_info(2,1u));
         }
 
         in->max_1level_cut = 2;
@@ -2113,14 +2113,14 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID, terminal_F, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
@@ -2161,14 +2161,14 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ flag(n1),n2 });
+          aw.push_internal({ flag(n1),n2 });
 
-          aw.unsafe_push_terminal({ n1,terminal_T });
-          aw.unsafe_push_terminal({ n2,terminal_T });
-          aw.unsafe_push_terminal({ flag(n2),terminal_F });
+          aw.push_terminal({ n1,terminal_T });
+          aw.push_terminal({ n2,terminal_T });
+          aw.push_terminal({ flag(n2),terminal_F });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
         }
 
         in->max_1level_cut = 1;
@@ -2179,14 +2179,14 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID, terminal_T, terminal_T)));
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -2231,22 +2231,22 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ flag(n1),n2 });
-          aw.unsafe_push_node({ n1,n3 });
-          aw.unsafe_push_node({ n2,n3 });
-          aw.unsafe_push_node({ flag(n2),n4 });
-          aw.unsafe_push_node({ n4,n5 });
+          aw.push_internal({ flag(n1),n2 });
+          aw.push_internal({ n1,n3 });
+          aw.push_internal({ n2,n3 });
+          aw.push_internal({ flag(n2),n4 });
+          aw.push_internal({ n4,n5 });
 
-          aw.unsafe_push_terminal({ n3,terminal_F });
-          aw.unsafe_push_terminal({ flag(n3),terminal_T });
-          aw.unsafe_push_terminal({ flag(n4),terminal_F });
-          aw.unsafe_push_terminal({ n5,terminal_F });
-          aw.unsafe_push_terminal({ flag(n5),terminal_T });
+          aw.push_terminal({ n3,terminal_F });
+          aw.push_terminal({ flag(n3),terminal_T });
+          aw.push_terminal({ flag(n4),terminal_F });
+          aw.push_terminal({ n5,terminal_F });
+          aw.push_terminal({ flag(n5),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
-          aw.unsafe_push(create_level_info(2,2u));
-          aw.unsafe_push(create_level_info(3,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
+          aw.push(create_level_info(2,2u));
+          aw.push(create_level_info(3,1u));
         }
 
         in->max_1level_cut = 3;
@@ -2257,7 +2257,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -2282,7 +2282,7 @@ go_bandit([]() {
         AssertThat(out_nodes.can_pull(), Is().False());
 
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
@@ -2345,19 +2345,19 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ flag(n1),n3 });
-          aw.unsafe_push_node({ flag(n3),n4 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ flag(n1),n3 });
+          aw.push_internal({ flag(n3),n4 });
 
-          aw.unsafe_push_terminal({ n2,terminal_F });
-          aw.unsafe_push_terminal({ flag(n2),terminal_T });
-          aw.unsafe_push_terminal({ n3,terminal_F });
-          aw.unsafe_push_terminal({ n4,terminal_T });
-          aw.unsafe_push_terminal({ flag(n4),terminal_F });
+          aw.push_terminal({ n2,terminal_F });
+          aw.push_terminal({ flag(n2),terminal_T });
+          aw.push_terminal({ n3,terminal_F });
+          aw.push_terminal({ n4,terminal_T });
+          aw.push_terminal({ flag(n4),terminal_F });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,2u));
-          aw.unsafe_push(create_level_info(2,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,2u));
+          aw.push(create_level_info(2,1u));
         }
 
         in->max_1level_cut = 2;
@@ -2368,7 +2368,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -2384,7 +2384,7 @@ go_bandit([]() {
                                                               ptr_uint64(1, ptr_uint64::MAX_ID))));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
@@ -2432,10 +2432,10 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_terminal({ n1,terminal_T });
-          aw.unsafe_push_terminal({ flag(n1),terminal_F });
+          aw.push_terminal({ n1,terminal_T });
+          aw.push_terminal({ flag(n1),terminal_F });
 
-          aw.unsafe_push(create_level_info(0,1u));
+          aw.push(create_level_info(0,1u));
         }
 
         in->max_1level_cut = 0;
@@ -2446,7 +2446,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -2454,7 +2454,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -2488,14 +2488,14 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
+          aw.push_internal({ n1,n2 });
 
-          aw.unsafe_push_terminal({ flag(n1),terminal_F });
-          aw.unsafe_push_terminal({ n2,terminal_F });
-          aw.unsafe_push_terminal({ flag(n2),terminal_T });
+          aw.push_terminal({ flag(n1),terminal_F });
+          aw.push_terminal({ n2,terminal_F });
+          aw.push_terminal({ flag(n2),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
         }
 
         in->max_1level_cut = 1;
@@ -2506,7 +2506,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
 
@@ -2514,7 +2514,7 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
@@ -2552,14 +2552,14 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ flag(n1),n2 });
+          aw.push_internal({ flag(n1),n2 });
 
-          aw.unsafe_push_terminal({ n1,terminal_F });
-          aw.unsafe_push_terminal({ n2,terminal_F });
-          aw.unsafe_push_terminal({ flag(n2),terminal_F });
+          aw.push_terminal({ n1,terminal_F });
+          aw.push_terminal({ n2,terminal_F });
+          aw.push_terminal({ flag(n2),terminal_F });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,1u));
         }
 
         in->max_1level_cut = 1;
@@ -2570,13 +2570,13 @@ go_bandit([]() {
         AssertThat(out->canonical, Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -2607,10 +2607,10 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_terminal({ n1,terminal_F });
-          aw.unsafe_push_terminal({ flag(n1),terminal_T });
+          aw.push_terminal({ n1,terminal_F });
+          aw.push_terminal({ flag(n1),terminal_T });
 
-          aw.unsafe_push(create_level_info(42,1u));
+          aw.push(create_level_info(42,1u));
         }
 
         in->max_1level_cut = 0;
@@ -2621,13 +2621,13 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(42, node::MAX_ID, terminal_F, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(42u,1u)));
@@ -2661,10 +2661,10 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_terminal({ n1,terminal_T });
-          aw.unsafe_push_terminal({ flag(n1),terminal_T });
+          aw.push_terminal({ n1,terminal_T });
+          aw.push_terminal({ flag(n1),terminal_T });
 
-          aw.unsafe_push(create_level_info(12,1u));
+          aw.push(create_level_info(12,1u));
         }
 
         in->max_1level_cut = 0;
@@ -2675,13 +2675,13 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True());
         AssertThat(out_nodes.pull(), Is().EqualTo(node(12, node::MAX_ID, terminal_T, terminal_T)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(12u,1u)));
@@ -2736,36 +2736,36 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ flag(n1),n3 });
-          aw.unsafe_push_node({ n2,n4 });
-          aw.unsafe_push_node({ flag(n2),n5 });
-          aw.unsafe_push_node({ n3,n5 });
-          aw.unsafe_push_node({ n4,n6 });
-          aw.unsafe_push_node({ flag(n4),n7 });
-          aw.unsafe_push_node({ n5,n7 });
-          aw.unsafe_push_node({ n6,n8 });
-          aw.unsafe_push_node({ flag(n6),n9 });
-          aw.unsafe_push_node({ n7,n9 });
-          aw.unsafe_push_node({ n8,n10 });
-          aw.unsafe_push_node({ flag(n8),n11 });
-          aw.unsafe_push_node({ n9,n11 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ flag(n1),n3 });
+          aw.push_internal({ n2,n4 });
+          aw.push_internal({ flag(n2),n5 });
+          aw.push_internal({ n3,n5 });
+          aw.push_internal({ n4,n6 });
+          aw.push_internal({ flag(n4),n7 });
+          aw.push_internal({ n5,n7 });
+          aw.push_internal({ n6,n8 });
+          aw.push_internal({ flag(n6),n9 });
+          aw.push_internal({ n7,n9 });
+          aw.push_internal({ n8,n10 });
+          aw.push_internal({ flag(n8),n11 });
+          aw.push_internal({ n9,n11 });
 
-          aw.unsafe_push_terminal({ flag(n3),terminal_F });
-          aw.unsafe_push_terminal({ flag(n5),terminal_F });
-          aw.unsafe_push_terminal({ flag(n7),terminal_F });
-          aw.unsafe_push_terminal({ flag(n9),terminal_F });
-          aw.unsafe_push_terminal({ n10,terminal_F });
-          aw.unsafe_push_terminal({ flag(n10),terminal_T });
-          aw.unsafe_push_terminal({ n11,terminal_T });
-          aw.unsafe_push_terminal({ flag(n11),terminal_T });
+          aw.push_terminal({ flag(n3),terminal_F });
+          aw.push_terminal({ flag(n5),terminal_F });
+          aw.push_terminal({ flag(n7),terminal_F });
+          aw.push_terminal({ flag(n9),terminal_F });
+          aw.push_terminal({ n10,terminal_F });
+          aw.push_terminal({ flag(n10),terminal_T });
+          aw.push_terminal({ n11,terminal_T });
+          aw.push_terminal({ flag(n11),terminal_T });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,2u));
-          aw.unsafe_push(create_level_info(2,2u));
-          aw.unsafe_push(create_level_info(3,2u));
-          aw.unsafe_push(create_level_info(4,2u));
-          aw.unsafe_push(create_level_info(5,2u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,2u));
+          aw.push(create_level_info(2,2u));
+          aw.push(create_level_info(3,2u));
+          aw.push(create_level_info(4,2u));
+          aw.push(create_level_info(5,2u));
         }
 
         in->max_1level_cut = 4;
@@ -2776,7 +2776,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n11
         AssertThat(out_nodes.pull(), Is().EqualTo(node(5, node::MAX_ID,
@@ -2816,7 +2816,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(5,2u)));
@@ -2881,19 +2881,19 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.unsafe_push_node({ n1,n2 });
-          aw.unsafe_push_node({ flag(n1),n3 });
-          aw.unsafe_push_node({ flag(n2),n4 });
+          aw.push_internal({ n1,n2 });
+          aw.push_internal({ flag(n1),n3 });
+          aw.push_internal({ flag(n2),n4 });
 
-          aw.unsafe_push_terminal({ n2,terminal_F });
-          aw.unsafe_push_terminal({ n3,terminal_F });
-          aw.unsafe_push_terminal({ flag(n3),terminal_T });
-          aw.unsafe_push_terminal({ n4,terminal_T });
-          aw.unsafe_push_terminal({ flag(n4),terminal_F });
+          aw.push_terminal({ n2,terminal_F });
+          aw.push_terminal({ n3,terminal_F });
+          aw.push_terminal({ flag(n3),terminal_T });
+          aw.push_terminal({ n4,terminal_T });
+          aw.push_terminal({ flag(n4),terminal_F });
 
-          aw.unsafe_push(create_level_info(0,1u));
-          aw.unsafe_push(create_level_info(1,2u));
-          aw.unsafe_push(create_level_info(2,1u));
+          aw.push(create_level_info(0,1u));
+          aw.push(create_level_info(1,2u));
+          aw.push(create_level_info(2,1u));
         }
 
         in->max_1level_cut = 2;
@@ -2904,7 +2904,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out), Is().True());
 
         // Check it looks all right
-        nodeest_stream out_nodes(out);
+        node_test_stream out_nodes(out);
 
         AssertThat(out_nodes.can_pull(), Is().True()); // n2
         AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID, terminal_F, terminal_T)));
@@ -2914,7 +2914,7 @@ go_bandit([]() {
 
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        level_info_test_stream<node> out_meta(out);
+        level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
         AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));

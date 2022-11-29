@@ -40,11 +40,6 @@ namespace adiar::internal
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
-    // Friends
-    template <typename T, bool REVERSE>
-    friend class level_info_stream;
-
-    ////////////////////////////////////////////////////////////////////////////
     // Union of node_file and arc_file (with std::monostate for 'error')
     const std::variant<no_file, node_file, arc_file> _union;
 
@@ -174,7 +169,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Read-only access to the raw files and meta information.
     ////////////////////////////////////////////////////////////////////////////
-    const shared_ptr<const __levelized_file<node>> file_ptr() const
+    const shared_ptr<const levelized_file<node>> file_ptr() const
     {
       return file;
     }
@@ -184,7 +179,7 @@ namespace adiar::internal
     ///        information, i.e. this is similar to writing
     ///        `.file_ptr()->`.
     ////////////////////////////////////////////////////////////////////////////
-    const __levelized_file<node>* operator->() const
+    const levelized_file<node>* operator->() const
     {
       return file_ptr().get();
     }
@@ -231,7 +226,7 @@ namespace adiar::internal
     // |- classes
     friend class __dd;
 
-    template <typename T, bool REVERSE>
+    template <bool REVERSE>
     friend class level_info_stream;
 
     template <bool REVERSE>

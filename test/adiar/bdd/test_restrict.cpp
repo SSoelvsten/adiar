@@ -52,31 +52,29 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      node_arcest_stream node_arcs(out);
+      arc_test_stream arcs(out);
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid()), n2.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n2.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2.uid()), n5.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n2.uid()), n5.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().False());
+      AssertThat(arcs.can_pull_internal(), Is().False());
 
-      terminal_arcest_stream terminal_arcs(out);
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1.uid(), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n1.uid(), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n2.uid(), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n5.uid(), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n5.uid()), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n5.uid()), terminal_T }));
-
-      level_info_test_stream<arc> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
       AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -115,25 +113,23 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      node_arcest_stream node_arcs(out);
+      arc_test_stream arcs(out);
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1.uid(), n3.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), n3.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid()), n3.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n3.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().False());
+      AssertThat(arcs.can_pull_internal(), Is().False());
 
-      terminal_arcest_stream terminal_arcs(out);
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n3.uid(), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
-
-      level_info_test_stream<arc> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
       AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -171,37 +167,35 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      node_arcest_stream node_arcs(out);
+      arc_test_stream arcs(out);
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1.uid(), n3.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), n3.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid()), n4.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n4.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n4.uid()), n5.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n4.uid()), n5.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().False());
+      AssertThat(arcs.can_pull_internal(), Is().False());
 
-      terminal_arcest_stream terminal_arcs(out);
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n3.uid(), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4.uid(), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n4.uid(), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n5.uid(), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n5.uid()), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n5.uid()), terminal_T }));
-
-      level_info_test_stream<arc> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
       AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -240,31 +234,29 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      node_arcest_stream node_arcs(out);
+      arc_test_stream arcs(out);
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { n2.uid(), n3.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n2.uid(), n3.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n2.uid()), n4.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n2.uid()), n4.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().False());
+      AssertThat(arcs.can_pull_internal(), Is().False());
 
-      terminal_arcest_stream terminal_arcs(out);
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n3.uid(), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4.uid(), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n4.uid(), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n4.uid()), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n4.uid()), terminal_F }));
-
-      level_info_test_stream<arc> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
       AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
@@ -298,19 +290,17 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      node_arcest_stream node_arcs(out);
+      arc_test_stream arcs(out);
 
-      AssertThat(node_arcs.can_pull(), Is().False());
+      AssertThat(arcs.can_pull_internal(), Is().False());
 
-      terminal_arcest_stream terminal_arcs(out);
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n3.uid(), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
-
-      level_info_test_stream<arc> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
       AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
@@ -334,13 +324,13 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      nodeest_stream out_nodes(out);
+      node_test_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
-      level_info_test_stream<node> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -364,13 +354,13 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      nodeest_stream out_nodes(out);
+      node_test_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
-      level_info_test_stream<node> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -487,33 +477,31 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(node_input, assignment);
 
-      node_arcest_stream node_arcs(out);
+      arc_test_stream arcs(out);
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1.uid(), n2.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), n2.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid()), n3.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n3.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().False());
+      AssertThat(arcs.can_pull_internal(), Is().False());
 
-      terminal_arcest_stream terminal_arcs(out);
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n2.uid(), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n2.uid()), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n2.uid()), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n3.uid(), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n3.uid()), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().False());
 
-      AssertThat(terminal_arcs.can_pull(), Is().False());
-
-      level_info_test_stream<arc> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
       AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -564,33 +552,31 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(node_input, assignment);
 
-      node_arcest_stream node_arcs(out);
+      arc_test_stream arcs(out);
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1.uid(), n2.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), n2.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid()), n3.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n3.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().False());
+      AssertThat(arcs.can_pull_internal(), Is().False());
 
-      terminal_arcest_stream terminal_arcs(out);
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n2.uid(), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n2.uid()), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n2.uid()), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n3.uid(), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_F} ));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n3.uid()), terminal_F} ));
+      AssertThat(arcs.can_pull_terminal(), Is().False());
 
-      AssertThat(terminal_arcs.can_pull(), Is().False());
-
-      level_info_test_stream<arc> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
       AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -647,45 +633,43 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(dead_bdd, assignment);
 
-      node_arcest_stream node_arcs(out);
+      arc_test_stream arcs(out);
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { n1.uid(), n5.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), n5.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n1.uid()), n7.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n7.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { flag(n5.uid()), n8.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n5.uid()), n8.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().True());
-      AssertThat(node_arcs.pull(), Is().EqualTo(arc { n7.uid(), n9.uid() }));
+      AssertThat(arcs.can_pull_internal(), Is().True());
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n7.uid(), n9.uid() }));
 
-      AssertThat(node_arcs.can_pull(), Is().False());
+      AssertThat(arcs.can_pull_internal(), Is().False());
 
-      terminal_arcest_stream terminal_arcs(out);
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n5.uid(), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n7.uid()), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n7.uid()), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n8.uid(), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n8.uid(), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n8.uid()), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n8.uid()), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n9.uid(), terminal_T }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { n9.uid(), terminal_T }));
+      AssertThat(arcs.can_pull_terminal(), Is().True());
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n9.uid()), terminal_F }));
 
-      AssertThat(terminal_arcs.can_pull(), Is().True());
-      AssertThat(terminal_arcs.pull(), Is().EqualTo(arc { flag(n9.uid()), terminal_F }));
+      AssertThat(arcs.can_pull_terminal(), Is().False());
 
-      AssertThat(terminal_arcs.can_pull(), Is().False());
-
-      level_info_test_stream<arc> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
       AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
@@ -724,13 +708,13 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(terminal_child_of_root_bdd, assignment);
 
-      nodeest_stream out_nodes(out);
+      node_test_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(node(false)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
-      level_info_test_stream<node> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
@@ -762,13 +746,13 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(terminal_child_of_root_bdd, assignment);
 
-      nodeest_stream out_nodes(out);
+      node_test_stream out_nodes(out);
 
       AssertThat(out_nodes.can_pull(), Is().True());
       AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
       AssertThat(out_nodes.can_pull(), Is().False());
 
-      level_info_test_stream<node> meta_arcs(out);
+      level_info_test_stream meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
       AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));

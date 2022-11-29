@@ -6,7 +6,7 @@
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/node_writer.h>
 #include <adiar/internal/io/simple_file.h>
 
 namespace adiar::internal

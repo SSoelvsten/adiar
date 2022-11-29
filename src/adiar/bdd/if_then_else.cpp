@@ -10,6 +10,11 @@
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/request.h>
 #include <adiar/internal/data_types/tuple.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/node_file.h>
+#include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/io/node_writer.h>
 #include <adiar/statistics.h>
 
 namespace adiar
@@ -161,7 +166,7 @@ namespace adiar
     if (r_then.is_terminal() && r_else.is_terminal() &&
         r_then.value() == r_else.value()) {
 
-      aw.unsafe_push_terminal(internal::arc { source, r_then });
+      aw.push_terminal(internal::arc { source, r_then });
       return;
     }
 
@@ -172,10 +177,10 @@ namespace adiar
 
     if (r_if.is_terminal() && r_then.is_terminal()) {
       // => ~internal::node::ptr_t::NIL() => r_if is a terminal with the 'true' value
-      aw.unsafe_push_terminal(internal::arc(source, r_then));
+      aw.push_terminal(internal::arc(source, r_then));
     } else if (r_if.is_terminal() && r_else.is_terminal()) {
       // => ~internal::node::ptr_t::NIL() => r_if is a terminal with the 'false' value
-      aw.unsafe_push_terminal(internal::arc(source, r_else));
+      aw.push_terminal(internal::arc(source, r_else));
     } else {
       ite_pq_1.push({ {r_if, r_then, r_else}, {}, {source} });
     }
@@ -241,7 +246,7 @@ namespace adiar
     // Process all nodes in topological order of both BDDs
     while (!ite_pq_1.empty() || !ite_pq_2.empty() || !ite_pq_3.empty()) {
       if (ite_pq_1.empty_level() && ite_pq_2.empty() && ite_pq_3.empty()) {
-        aw.unsafe_push(internal::create_level_info(out_label, out_id));
+        aw.push(internal::create_level_info(out_label, out_id));
 
         ite_pq_1.setup_next_level();
         out_label = ite_pq_1.current_level();
@@ -421,7 +426,7 @@ namespace adiar
       internal::node::ptr_t source = req.data.source;
       while (true) {
         internal::arc out_arc = { source, out_uid };
-        aw.unsafe_push_node(out_arc);
+        aw.push_internal(out_arc);
 
         if (ite_pq_1.can_pull() && ite_pq_1.top().target == req.target) {
           source = ite_pq_1.pull().data.source;
@@ -438,7 +443,7 @@ namespace adiar
     }
 
     // Push the level of the very last iteration
-    aw.unsafe_push(internal::create_level_info(out_label, out_id));
+    aw.push(internal::create_level_info(out_label, out_id));
 
     out_arcs->max_1level_cut = max_1level_cut;
     return out_arcs;

@@ -21,7 +21,7 @@ namespace adiar::internal
   class input_bound_levels
   {
   private:
-    level_info_stream<node> in_meta_1;
+    level_info_stream<> in_meta_1;
 
     size_t curr_level_size;
     size_t curr_level_processed;
@@ -41,7 +41,7 @@ namespace adiar::internal
 
     static constexpr size_t memory_usage()
     {
-      return level_info_stream<node>::memory_usage();
+      return level_info_stream<>::memory_usage();
     }
 
   public:
@@ -228,8 +228,8 @@ namespace adiar::internal
     // Are they trivially not the same, since the labels or the size of each
     // level does not match?
     { // Create new scope to garbage collect the two meta_streams early
-      level_info_stream<node> in_meta_1(f1);
-      level_info_stream<node> in_meta_2(f2);
+      level_info_stream<> in_meta_1(f1);
+      level_info_stream<> in_meta_2(f2);
 
       while (in_meta_1.can_pull()) {
         adiar_debug(in_meta_2.can_pull(), "level_info files are same size");

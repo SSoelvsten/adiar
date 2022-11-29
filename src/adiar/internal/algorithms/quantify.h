@@ -10,9 +10,11 @@
 
 #include <adiar/internal/data_types/tuple.h>
 #include <adiar/internal/data_types/request.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/io/levelized_file_writer.h>
+#include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/node_stream.h>
 
 namespace adiar::internal
 {
@@ -62,7 +64,7 @@ namespace adiar::internal
 
     if (r2.is_nil()) {
       if (r1.is_terminal()) {
-        aw.unsafe_push_terminal({ source, r1 });
+        aw.push_terminal({ source, r1 });
       } else {
         quantify_pq_1.push({ {r1, r2}, {}, {source} });
       }
@@ -72,7 +74,7 @@ namespace adiar::internal
 
       if (rec[0].is_terminal() /* && rec[1].is_terminal() */) {
         arc out_arc = { source, op(rec[0], rec[1]) };
-        aw.unsafe_push_terminal(out_arc);
+        aw.push_terminal(out_arc);
       } else {
         quantify_pq_1.push({ rec, {}, {source} });
       }
@@ -98,7 +100,7 @@ namespace adiar::internal
 
   inline bool quantify_has_label(const dd::label_t label, const dd &in)
   {
-    level_info_stream<node> in_meta(in);
+    level_info_stream<> in_meta(in);
     while(in_meta.can_pull()) {
       level_info_t m = in_meta.pull();
 
@@ -147,12 +149,12 @@ namespace adiar::internal
       const node::uid_t out_uid(out_label, out_id++);
 
       if (v.low().is_terminal()) {
-        aw.unsafe_push_terminal({ out_uid, v.low() });
+        aw.push_terminal({ out_uid, v.low() });
       } else {
         quantify_pq_1.push({ {v.low(), ptr_uint64::NIL()}, {}, {out_uid} });
       }
       if (v.high().is_terminal()) {
-        aw.unsafe_push_terminal({ flag(out_uid), v.high() });
+        aw.push_terminal({ flag(out_uid), v.high() });
       } else {
         quantify_pq_1.push({ {v.high(), ptr_uint64::NIL()}, {}, {flag(out_uid)} });
       }
@@ -163,7 +165,7 @@ namespace adiar::internal
     while(!quantify_pq_1.empty() || !quantify_pq_2.empty()) {
       if (quantify_pq_1.empty_level() && quantify_pq_2.empty()) {
         if (out_label != label) {
-          aw.unsafe_push(create_level_info(out_label, out_id));
+          aw.push(create_level_info(out_label, out_id));
         }
 
         quantify_pq_1.setup_next_level();
@@ -249,7 +251,7 @@ namespace adiar::internal
         if (!req.data.source.is_nil()) {
           do {
             arc out_arc = { req.data.source, out_uid };
-            aw.unsafe_push_node(out_arc);
+            aw.push_internal(out_arc);
           } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                       req.data.source,
                                                       req.target[0], req.target[1]));
@@ -259,7 +261,7 @@ namespace adiar::internal
 
     // Push the level of the very last iteration
     if (out_label != label) {
-      aw.unsafe_push(create_level_info(out_label, out_id));
+      aw.push(create_level_info(out_label, out_id));
     }
 
     out_arcs->max_1level_cut = max_1level_cut;

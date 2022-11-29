@@ -8,8 +8,6 @@
 
 #include <tpie/tpie.h>
 #include <tpie/file.h>
-
-// TODO: move?
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
 
@@ -82,6 +80,9 @@ namespace adiar::internal
     template <typename elem_t>
     friend class file_writer;
 
+    template <typename elem_t, bool split_on_levels>
+    friend class levelized_file;
+
     // Remove?
     template <typename elem_t>
     friend class levelized_file_writer;
@@ -95,7 +96,7 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Constructor for a prior named \em persistent file.
+    /// \brief Constructor for a prior named \em persisted file.
     ///
     /// \throws std::runtime_error If the path does not point to an \em existing
     ///                            file on disk.
@@ -220,13 +221,22 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether this file can be moved.
+    ////////////////////////////////////////////////////////////////////////////
+    bool can_move()
+    {
+      return is_temp();
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Move file from one place to another.
     ///
     /// \param new_path Path to move the file to.
     ///
-    /// \pre `is_persistent() == false` (other's might depend on it) and
-    ///      `new_path` names a yet non-existing file. Neither should a
-    ///      `file_stream` nor a `file_writer` be hooked into this file.
+    /// \pre `can_move()`and `new_path` names a yet non-existing file. Neither
+    ///      should any `file_stream`s or `file_writer`s be hooked into this
+    ///      file.
     ///
     /// \throws std::runtime_error Preconditions are violated
     ////////////////////////////////////////////////////////////////////////////
@@ -301,7 +311,7 @@ namespace adiar::internal
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Create a copy of another file on disk.
+    /// \brief Create a copy of a file.
     ///
     /// \remark This new file is a temporary file and must be marked persisted
     ///         to be kept existing beyond the object's lifetime.

@@ -76,7 +76,13 @@ set(HEADERS
   internal/io/shared_file.h
 
   internal/io/arc_file.h
+  internal/io/arc_stream.h
+  internal/io/arc_writer
+
   internal/io/node_file.h
+  internal/io/node_stream.h
+  internal/io/node_writer.h
+
   internal/io/simple_file.h
 )
 

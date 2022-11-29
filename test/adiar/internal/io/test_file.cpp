@@ -75,6 +75,7 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(old_path), Is().False());
         AssertThat(std::filesystem::exists(new_path), Is().False());
 
+        AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
         AssertThat(std::filesystem::exists(old_path), Is().False());
@@ -93,6 +94,7 @@ go_bandit([]() {
         file<int> f2;
         f2.touch();
 
+        AssertThat(f1.can_move(), Is().True());
         AssertThrows(std::runtime_error, f1.move(f2.path()));
       });
 
@@ -110,6 +112,7 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(old_path), Is().True());
         AssertThat(std::filesystem::exists(new_path), Is().False());
 
+        AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
         AssertThat(std::filesystem::exists(old_path), Is().False());
@@ -130,6 +133,7 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(old_path), Is().True());
         AssertThat(std::filesystem::exists(new_path), Is().False());
 
+        AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
         AssertThat(std::filesystem::exists(old_path), Is().False());
@@ -148,6 +152,7 @@ go_bandit([]() {
           f.touch();
           std::string old_path = f.path();
 
+          AssertThat(f.can_move(), Is().True());
           f.move(new_path);
 
           AssertThat(std::filesystem::exists(new_path), Is().True());
@@ -170,6 +175,7 @@ go_bandit([]() {
           f.touch();
           std::string old_path = f.path();
 
+          AssertThat(f.can_move(), Is().True());
           f.move(new_path);
 
           AssertThat(std::filesystem::exists(new_path), Is().True());
@@ -218,72 +224,13 @@ go_bandit([]() {
       });
     });
 
-    describe("file(path) [empty]", []() {
-      it("throws exception on path to non-existing file", []() {
-        AssertThrows(std::runtime_error,
-                     file<int>("./non-existing-file.adiar"));
-      });
-
-      std::string path;
-      {
-        file<int> f;
-        f.touch();
-
-        path = f.path();
-        f.make_persistent();
-      }
-
-      it("can reopen existing file", [&path]() {
-        file<int> f(path);
-        AssertThat(f.path(), Is().EqualTo(path));
-
-        AssertThat(f.exists(), Is().True());
-        AssertThat(f.size(), Is().EqualTo(0u));
-      });
-
-      it("is marked persistent", [&path]() {
-        file<int> f(path);
-        AssertThat(f.is_persistent(), Is().True());
-        AssertThat(f.is_temp(), Is().False());
-      });
-
-      it("is unchanged after marking it persistent once more", [&path]() {
-        {
-          file<int> f(path);
-          f.make_persistent();
-
-          AssertThat(f.is_persistent(), Is().True());
-          AssertThat(f.is_temp(), Is().False());
-        }
-        AssertThat(std::filesystem::exists(path), Is().True());
-      });
-
-      it("cannot be 'moved'", [&path]() {
-        std::string new_path = "./after-move-path.adiar";
-        if (std::filesystem::exists(new_path)) {
-          // Clean up after prior test run
-          std::filesystem::remove(new_path);
-        }
-
-        file<int> f(path);
-        std::string old_path = f.path();
-
-        AssertThrows(std::runtime_error, f.move(new_path));
-      });
-
-      // Clean up for this test
-      if (std::filesystem::exists(path)) {
-        std::filesystem::remove(path);
-      }
-    });
-
     describe("file() + file_stream", []() {
-      it("can attach to an empty file [constructor]", []() {
+      it("can attach to and detach from an empty file [con-/destructor]", []() {
         file<int> f;
         file_stream<int> fs(f);
       });
 
-      it("can attach to an empty file [member function]", []() {
+      it("can attach to and detach from an empty file [member functions]", []() {
         file<int> f;
         file_stream<int> fs;
         fs.attach(f);
@@ -293,6 +240,8 @@ go_bandit([]() {
         file<int> f;
         file_stream<int> fs(f);
         AssertThat(fs.attached(), Is().True());
+        fs.detach();
+        AssertThat(fs.attached(), Is().False());
       });
 
       it("cannot be pulled from", []() {
@@ -310,35 +259,21 @@ go_bandit([]() {
         AssertThat(fs.attached(), Is().True());
         AssertThat(fs.can_pull(), Is().False());
       });
-
-      it("can be detached again", []() {
-        file<int> f;
-        file_stream<int> fs(f);
-        AssertThat(fs.attached(), Is().True());
-        fs.detach();
-        AssertThat(fs.attached(), Is().False());
-      });
     });
 
     describe("file() + file_writer", [&tmp_path, &curr_path]() {
-      it("can attach to an empty file [constructor]", []() {
+      it("can attach to and detach from an empty file [con-/destructor]", []() {
         file<int> f;
         file_writer<int> fw(f);
       });
 
-      it("can attach to an empty file [member function]", []() {
+      it("can attach to and detach from an empty file [member functions]", []() {
         file<int> f;
         file_writer<int> fw;
-        fw.attach(f);
+        fw.detach();
       });
 
       it("remembers it was attached", []() {
-        file<int> f;
-        file_writer<int> fw(f);
-        AssertThat(fw.attached(), Is().True());
-      });
-
-      it("can be detached again", []() {
         file<int> f;
         file_writer<int> fw(f);
         AssertThat(fw.attached(), Is().True());
@@ -346,7 +281,7 @@ go_bandit([]() {
         AssertThat(fw.attached(), Is().False());
       });
 
-      it("exists on writer attach", []() {
+      it("exists after writer attach", []() {
         file<int> f;
         AssertThat(f.exists(), Is().False());
 
@@ -356,11 +291,33 @@ go_bandit([]() {
         AssertThat(f.exists(), Is().True());
       });
 
+      it("reports whether elements were pushed", []() {
+        file<int> f;
+        file_writer<int> fw(f);
+
+        AssertThat(fw.has_pushed(), Is().False());
+        AssertThat(fw.empty(), Is().True());
+        fw << 1;
+
+        AssertThat(fw.has_pushed(), Is().True());
+        AssertThat(fw.empty(), Is().False());
+
+        fw << 2 << 3;
+
+        AssertThat(fw.has_pushed(), Is().True());
+        AssertThat(fw.empty(), Is().False());
+      });
+
       it("changes size when writing content to file [1]", []() {
         file<int> f;
 
         file_writer<int> fw(f);
-        fw << 1 << 2 << 3;
+
+        AssertThat(fw.size(), Is().EqualTo(0u));
+        fw << 1 << 2;
+        AssertThat(fw.size(), Is().EqualTo(2u));
+        fw << 3;
+        AssertThat(fw.size(), Is().EqualTo(3u));
         fw.detach();
 
         AssertThat(f.size(), Is().EqualTo(3u));
@@ -370,7 +327,11 @@ go_bandit([]() {
         file<int> f;
 
         file_writer<int> fw(f);
-        fw << 42 << 21;
+        AssertThat(fw.size(), Is().EqualTo(0u));
+        fw << 42;
+        AssertThat(fw.size(), Is().EqualTo(1u));
+        fw << 21;
+        AssertThat(fw.size(), Is().EqualTo(2u));
         fw.detach();
 
         AssertThat(f.size(), Is().EqualTo(2u));
@@ -394,6 +355,7 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(old_path), Is().True());
         AssertThat(std::filesystem::exists(new_path), Is().False());
 
+        AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
         AssertThat(std::filesystem::exists(old_path), Is().False());
@@ -418,6 +380,7 @@ go_bandit([]() {
         AssertThat(std::filesystem::exists(old_path), Is().True());
         AssertThat(std::filesystem::exists(new_path), Is().False());
 
+        AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
         AssertThat(std::filesystem::exists(old_path), Is().False());
@@ -498,6 +461,28 @@ go_bandit([]() {
         fs.detach();
       });
 
+      it("can sort written content", []() {
+        file<int> f;
+
+        file_writer<int> fw(f);
+        fw << 42 << 2 << 32 << 21;
+        fw.sort<std::less<>>();
+        fw.detach();
+        AssertThat(fw.attached(), Is().False());
+
+        file_stream<int> fs(f);
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(2));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(21));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(32));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(42));
+        AssertThat(fs.can_pull(), Is().False());
+        fs.detach();
+      });
+
       it("can read from 'moved' file [/tmp/]", [&tmp_path]() {
         std::string new_path = tmp_path + "after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
@@ -511,6 +496,7 @@ go_bandit([]() {
         fw << 12 << 9 << 1;
         fw.detach();
 
+        AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
         file_stream<int, false> fs(f);
@@ -537,6 +523,7 @@ go_bandit([]() {
         fw << 12 << 9 << 1;
         fw.detach();
 
+        AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
         file_stream<int, false> fs(f);
@@ -563,6 +550,7 @@ go_bandit([]() {
         fw << 8 << 9 << 4 << 2;
         fw.detach();
 
+        AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
         file_stream<int, true> fs(f);
@@ -591,6 +579,7 @@ go_bandit([]() {
         fw << 8 << 9 << 4 << 2;
         fw.detach();
 
+        AssertThat(f.can_move(), Is().True());
         f.move(new_path);
 
         file_stream<int, true> fs(f);
@@ -607,7 +596,154 @@ go_bandit([]() {
       });
     });
 
-    describe("file.sort()", []() {
+    describe("file(path)", []() {
+      it("throws exception on path to non-existing file", []() {
+        AssertThrows(std::runtime_error,
+                     file<int>("./non-existing-file.adiar"));
+      });
+
+      std::string path;
+      {
+        file<int> f;
+        f.touch();
+
+        path = f.path();
+        f.make_persistent();
+      }
+
+      it("can reopen existing file", [&path]() {
+        file<int> f(path);
+        AssertThat(f.path(), Is().EqualTo(path));
+
+        AssertThat(f.exists(), Is().True());
+        AssertThat(f.size(), Is().EqualTo(0u));
+      });
+
+      it("is marked persistent", [&path]() {
+        file<int> f(path);
+        AssertThat(f.is_persistent(), Is().True());
+        AssertThat(f.is_temp(), Is().False());
+      });
+
+      it("is unchanged after marking it persistent once more", [&path]() {
+        {
+          file<int> f(path);
+          f.make_persistent();
+
+          AssertThat(f.is_persistent(), Is().True());
+          AssertThat(f.is_temp(), Is().False());
+        }
+       AssertThat(std::filesystem::exists(path), Is().True());
+      });
+
+      it("cannot be 'moved'", [&path]() {
+        std::string new_path = "./after-move-path.adiar";
+        if (std::filesystem::exists(new_path)) {
+          // Clean up after prior test run
+          std::filesystem::remove(new_path);
+        }
+
+        file<int> f(path);
+        std::string old_path = f.path();
+
+        AssertThat(f.can_move(), Is().False());
+        AssertThrows(std::runtime_error, f.move(new_path));
+      });
+
+      // Clean up for above tests
+      if (std::filesystem::exists(path)) {
+        std::filesystem::remove(path);
+      }
+
+      {
+        file<int> f;
+
+        file_writer<int> fw(f);
+        fw << 0 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9;
+        fw.detach();
+
+        f.move(path);
+        f.make_persistent();
+      }
+
+      it("can reopen a non-empty persisted file", [&path]() {
+        file<int> f(path);
+      });
+
+      it("has expected size after reopening a persisted non-empty file", [&path]() {
+        file<int> f(path);
+
+        AssertThat(f.empty(), Is().False());
+        AssertThat(f.size(), Is().EqualTo(10u));
+      });
+
+      it("can read content with a stream", [&path]() {
+        file<int> f(path);
+        file_stream<int> fs(f);
+
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(0));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(1));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(2));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(3));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(4));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(5));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(6));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(7));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(8));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(9));
+        AssertThat(fs.can_pull(), Is().False());
+      });
+
+      it("can read content in reverse with a stream", [&path]() {
+        file<int> f(path);
+        file_stream<int, true> fs(f);
+
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(9));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(8));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(7));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(6));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(5));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(4));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(3));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(2));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(1));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.pull(), Is().EqualTo(0));
+        AssertThat(fs.can_pull(), Is().False());
+      });
+
+      it("cannot reattach a writer to a persisted file", [&path]() {
+        file<int> f(path);
+        file_writer<int> fw;
+        AssertThrows(std::runtime_error, fw.attach(f));
+      });
+
+      // Clean up for above tests
+      if (std::filesystem::exists(path)) {
+        std::filesystem::remove(path);
+      }
+    });
+
+    describe("file.sort(const pred_t&)", []() {
       it("can sort non-existing file", []() {
         file<int> f;
         AssertThat(f.exists(), Is().False());
@@ -735,7 +871,7 @@ go_bandit([]() {
       });
     });
 
-    describe("::copy(const file&)", []() {
+    describe("file::copy(const file&)", []() {
       it("can copy over non-existing file", []() {
         file<int> f1;
         AssertThat(f1.exists(), Is().False());
@@ -876,11 +1012,10 @@ go_bandit([]() {
         std::string path;
         {
           file<int> f1;
-          f1.make_persistent();
-
           file_writer<int> fw(f1);
           fw << 0 << 1 << 2 << 3 << 4;
           fw.detach();
+          f1.make_persistent();
 
           file<int> f2 = file<int>::copy(f1);
           AssertThat(f2.exists(), Is().True());

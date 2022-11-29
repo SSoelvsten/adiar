@@ -39,12 +39,12 @@ namespace adiar::internal
     /// \brief Buffer of a single element, since TPIE does not support a
     ///        `peek_back` function yet (TPIE Issue #187).
     ////////////////////////////////////////////////////////////////////////////
-    elem_t _peeked;
+    mutable elem_t _peeked;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether an \em unpulled element is stored in `_peeked`.
     ////////////////////////////////////////////////////////////////////////////
-    bool _has_peeked = false;
+    mutable bool _has_peeked = false;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether elements should be \em negated on-the-fly.
@@ -54,7 +54,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief TPIE's file stream object to read the file with.
     ////////////////////////////////////////////////////////////////////////////
-    typename tpie::file_stream<elem_t> _stream;
+    mutable typename tpie::file_stream<elem_t> _stream;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief If attached to a shared file then hook into the reference
@@ -72,32 +72,28 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared `file<elem_t>`.
     ////////////////////////////////////////////////////////////////////////////
-    file_stream(const file<elem_t> &f, bool negate = false)
-    {
-      attach(f, nullptr, negate);
-    }
+    file_stream(const file<elem_t> &f,
+                bool negate = false)
+    { attach(f, negate); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a given shared `file<elem_t>`.
     ////////////////////////////////////////////////////////////////////////////
-    file_stream(const shared_ptr<file<elem_t>> &f, bool negate = false)
-    {
-      attach(*f, f, negate);
-    }
+    file_stream(const adiar::shared_ptr<file<elem_t>> &f,
+                bool negate = false)
+    { attach(f, negate); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////
     ~file_stream()
-    {
-      detach();
-    }
+    { detach(); }
 
   protected:
     ////////////////////////////////////////////////////////////////////////////
     void attach(const file<elem_t> &f,
-                const shared_ptr<void> &shared_ptr,
-                bool negate = false)
+                const adiar::shared_ptr<void> &shared_ptr,
+                bool negate)
     {
       // Detach from prior file, if any.
       if (attached()) { detach(); }
@@ -117,13 +113,19 @@ namespace adiar::internal
       _negate = negate;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Befriend the few places that need direct access to the above 'attach'.
+    template <typename tparam__elem_t, bool tparam__REVERSE>
+    friend class levelized_file_stream;
+
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a file.
     ///
     /// \pre No `file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const file<elem_t> &f, bool negate = false)
+    void attach(const file<elem_t> &f,
+                bool negate = false)
     {
       attach(f, nullptr, negate);
     }
@@ -133,7 +135,8 @@ namespace adiar::internal
     ///
     /// \pre No `file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const adiar::shared_ptr<file<elem_t>> &f, bool negate = false)
+    void attach(const adiar::shared_ptr<file<elem_t>> &f,
+                bool negate = false)
     {
       attach(*f, f, negate);
     }
@@ -141,7 +144,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the reader is currently attached.
     ////////////////////////////////////////////////////////////////////////////
-    bool attached()
+    bool attached() const
     {
       return _stream.is_open();
     }
@@ -171,14 +174,16 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the stream contains more elements.
     ////////////////////////////////////////////////////////////////////////////
-    bool can_pull()
+    bool can_pull() const
     {
       return _has_peeked
         || (REVERSE ? _stream.can_read_back() : _stream.can_read());
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain the next element (and move the read head)
+    /// \brief Obtain the next element (and move the read head).
+    ///
+    /// \pre `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
     const elem_t pull()
     {
@@ -192,6 +197,8 @@ namespace adiar::internal
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next element (but do not move the read head)
+    ///
+    /// \pre `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
     const elem_t peek()
     {

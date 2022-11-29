@@ -8,11 +8,11 @@
 #include <adiar/internal/data_types/uid.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/arc.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/levelized_file_writer.h>
-#include <adiar/internal/io/levelized_file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/node_stream.h>
 
 
 namespace adiar::internal
@@ -119,7 +119,7 @@ namespace adiar::internal
         : intercut_policy::MAX_LABEL+1;
 
       if (target.is_terminal() && !cut_terminal<intercut_policy>(curr_level, next_cut, target.value())) {
-        aw.unsafe_push_terminal(arc(source, target));
+        aw.push_terminal(arc(source, target));
         return;
       }
       pq.push(intercut_req(source, target, std::min(target_level, next_cut)));
@@ -139,7 +139,7 @@ namespace adiar::internal
                                const ptr_uint64::label_t /*curr_level*/,
                                const ptr_uint64::label_t /*next_cut*/)
     {
-      aw.unsafe_push_node(arc(source, target));
+      aw.push_internal(arc(source, target));
     }
   };
 
@@ -170,7 +170,7 @@ namespace adiar::internal
     label_file labels;
     label_writer writer(labels);
 
-    level_info_stream<node> info_stream(dd);
+    level_info_stream<> info_stream(dd);
 
     while(info_stream.can_pull()) {
       writer << label_of(info_stream.pull());
@@ -210,7 +210,7 @@ namespace adiar::internal
 
     // Process nodes of the decision diagram in topological order
     while (!intercut_pq.empty()) {
-      if (out_id > 0) { aw.unsafe_push(create_level_info(out_label, out_id)); }
+      if (out_id > 0) { aw.push(create_level_info(out_label, out_id)); }
 
       intercut_pq.setup_next_level();
       out_label = intercut_pq.current_level();
@@ -293,7 +293,7 @@ namespace adiar::internal
 
     // Push the level of the very last iteration
     if (out_id > 0) {
-      aw.unsafe_push(create_level_info(out_label, out_id));
+      aw.push(create_level_info(out_label, out_id));
     }
 
     out_arcs->max_1level_cut = max_1level_cut;

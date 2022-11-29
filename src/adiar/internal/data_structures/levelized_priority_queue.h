@@ -28,7 +28,7 @@ namespace adiar::internal
   template <typename file_t>
   struct label_stream_t
   {
-    typedef level_info_stream<typename file_t::elem_t> stream_t;
+    typedef level_info_stream<> stream_t;
   };
 
   template <>
@@ -208,14 +208,14 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
 
   template <typename elem_t,
-            typename elem_level_t,
-            typename elem_comp_t         = std::less<elem_t>,
-            ptr_uint64::label_t  LOOK_AHEAD          = ADIAR_LPQ_LOOKAHEAD,
-            memory_mode_t mem_mode = memory_mode_t::EXTERNAL,
-            typename file_t              = levelized_file<elem_t>,
-            size_t   FILES               = 1u,
-            typename level_comp_t        = std::less<ptr_uint64::label_t>,
-            ptr_uint64::label_t  INIT_LEVEL          = 1u
+            typename elem_level_t, // <-- TODO: move as .level() into 'elem_t'
+            typename elem_comp_t            = std::less<elem_t>,
+            ptr_uint64::label_t  LOOK_AHEAD = ADIAR_LPQ_LOOKAHEAD,
+            memory_mode_t mem_mode          = memory_mode_t::EXTERNAL,
+            typename file_t                 = shared_file<levelized_file<elem_t>>,
+            size_t   FILES                  = 1u,
+            typename level_comp_t           = std::less<ptr_uint64::label_t>,
+            ptr_uint64::label_t  INIT_LEVEL = 1u
             >
   class levelized_priority_queue
   {
