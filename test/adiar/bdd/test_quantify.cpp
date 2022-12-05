@@ -4,14 +4,14 @@ go_bandit([]() {
   describe("adiar/bdd/quantify.cpp", []() {
     ////////////////////////////////////////////////////////////////////////
     // Sink only BDDs
-    node_file terminal_F;
+    shared_levelized_file<bdd::node_t> terminal_F;
 
     { // Garbage collect writer to free write-lock}
       node_writer nw_F(terminal_F);
       nw_F << node(false);
     }
 
-    node_file terminal_T;
+    shared_levelized_file<bdd::node_t> terminal_T;
 
     { // Garbage collect writer to free write-lock
       node_writer nw_T(terminal_T);
@@ -27,7 +27,7 @@ go_bandit([]() {
     //   / \
     //   F T
     */
-    node_file bdd_1;
+    shared_levelized_file<bdd::node_t> bdd_1;
 
     node n1_2 = node(1, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
     node n1_1 = node(0, node::MAX_ID, ptr_uint64(true), n1_2.uid());
@@ -48,7 +48,7 @@ go_bandit([]() {
     //  / \ / \
     //  T F F T
     */
-    node_file bdd_2;
+    shared_levelized_file<bdd::node_t> bdd_2;
 
     node n2_5 = node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
     node n2_4 = node(2, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
@@ -72,7 +72,7 @@ go_bandit([]() {
     //      / \ / \
     //      T F F T
     */
-    node_file bdd_3;
+    shared_levelized_file<bdd::node_t> bdd_3;
 
     node n3_4 = node(2, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
     node n3_3 = node(2, node::MAX_ID-1, ptr_uint64(true), ptr_uint64(false));
@@ -97,7 +97,7 @@ go_bandit([]() {
     //        / \
     //        F T
     */
-    node_file bdd_4;
+    shared_levelized_file<bdd::node_t> bdd_4;
 
     node n4_5 = node(3, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
     node n4_4 = node(2, node::MAX_ID, n4_5.uid(), ptr_uint64(true));
@@ -121,7 +121,7 @@ go_bandit([]() {
     //  / \ / \
     //  F T T F
     */
-    node_file bdd_5;
+    shared_levelized_file<bdd::node_t> bdd_5;
 
     node n5_4 = node(2, node::MAX_ID, ptr_uint64(true), ptr_uint64(false));
     node n5_3 = node(2, node::MAX_ID-1, ptr_uint64(false), ptr_uint64(true));
@@ -135,7 +135,7 @@ go_bandit([]() {
 
     ////////////////////////////////////////////////////////////////////////////
     // x2 variable BDD
-    node_file bdd_x2;
+    shared_levelized_file<bdd::node_t> bdd_x2;
 
     { // Garbage collect writer to free write-lock
       node_writer nw_x2(bdd_x2);
@@ -156,7 +156,7 @@ go_bandit([]() {
     //       / \     / \
     //       F T     T F
     */
-    node_file bdd_6;
+    shared_levelized_file<bdd::node_t> bdd_6;
 
     { // Garbage collect writer to free write-lock
       node_writer nw_6(bdd_6);
@@ -184,7 +184,7 @@ go_bandit([]() {
     //          / \  / \
     //          T F  F T
     */
-    node_file bdd_7;
+    shared_levelized_file<bdd::node_t> bdd_7;
 
     { // Garbage collect writer to free write-lock
       node_writer nw_7(bdd_7);
@@ -212,7 +212,7 @@ go_bandit([]() {
     //                 / \
     //                 F T
     */
-    node_file bdd_8a, bdd_8b;
+    shared_levelized_file<bdd::node_t> bdd_8a, bdd_8b;
 
     { // Garbage collect writer to free write-lock
       node_writer nw_8a(bdd_8a);
@@ -237,14 +237,14 @@ go_bandit([]() {
       it("should quantify T terminal-only BDD as itself", [&]() {
         __bdd out = bdd_exists(terminal_T, 42);
 
-        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_T));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
       it("should quantify F terminal-only BDD as itself", [&]() {
         __bdd out = bdd_exists(terminal_F, 21);
 
-        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_F));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(terminal_F));
         AssertThat(out.negate, Is().False());
       });
 
@@ -257,15 +257,15 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()->levels(), Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->levels(), Is().EqualTo(0u));
 
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should shortcut quantification of root into T terminal [x2]", [&]() {
@@ -277,26 +277,25 @@ go_bandit([]() {
         AssertThat(out_nodes.pull(), Is().EqualTo(node(true)));
         AssertThat(out_nodes.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()->levels(), Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->levels(), Is().EqualTo(0u));
 
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should shortcut quantification on non-existent label in input [BDD 1]", [&]() {
         __bdd out = bdd_exists(bdd_1, 42);
 
-        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_1));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
         AssertThat(out.negate, Is().False());
       });
 
       it("should quantify bottom-most nodes [BDD 1]", [&]() {
-        tpie::file_stream<arc> reduce_node_arcs;
         __bdd out = bdd_exists(bdd_1, 1);
 
         arc_test_stream arcs(out);
@@ -319,10 +318,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("should quantify root without terminal arcs [BDD 2]", [&]() {
@@ -368,10 +367,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("should quantify nodes with terminal or nodes as children [BDD 2]", [&]() {
@@ -417,10 +416,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("should output terminal arcs in order, despite the order of resolvement [BDD 2]", [&]() {
@@ -466,10 +465,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("should keep nodes as is when skipping quantified level [BDD 3]", [&]() {
@@ -517,10 +516,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("should output terminal arcs in order, despite the order of resolvement [BDD 3]", [&]() {
@@ -560,10 +559,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("should resolve terminal-terminal requests in [BDD 5]", [&]() {
@@ -603,14 +602,14 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
-        node_file bdd_chain;
+        shared_levelized_file<bdd::node_t> bdd_chain;
 
         node n4 = node(3, node::MAX_ID, ptr_uint64(false), ptr_uint64(true));
         node n3 = node(2, node::MAX_ID, n4.uid(), ptr_uint64(true));
@@ -655,10 +654,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -720,10 +719,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(5u));
       });
 
       it("can forward multiple arcs to the same node across a level [BDD 7]", [&]() {
@@ -759,10 +758,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -810,10 +809,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8b]", [&]() {
@@ -861,14 +860,14 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
       it("can quantify list [x1, x2] in terminal-only BDD [&&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -877,12 +876,12 @@ go_bandit([]() {
 
         __bdd out = bdd_exists(terminal_T, labels);
 
-        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_T));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
       it("can quantify list [x1, x2] in terminal-only BDD [const &bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -892,12 +891,12 @@ go_bandit([]() {
         bdd in_bdd = terminal_T;
         __bdd out = bdd_exists(in_bdd, labels);
 
-        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_T));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
       it("can quantify list [x1, x2] [BDD 4 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -932,7 +931,7 @@ go_bandit([]() {
       });
 
       it("can quantify list [x2, x1] [BDD 4 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -967,7 +966,7 @@ go_bandit([]() {
       });
 
       it("should quantify singleton list [x2] [BDD 4 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1010,7 +1009,7 @@ go_bandit([]() {
       });
 
       it("should quantify list [x1, x3] [BDD 4 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1045,7 +1044,7 @@ go_bandit([]() {
       });
 
       it("should quantify list [x0, x2] [BDD 4 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1080,7 +1079,7 @@ go_bandit([]() {
       });
 
       it("should quantify list [x0, x2] [BDD 4 : const &bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1116,7 +1115,7 @@ go_bandit([]() {
       });
 
       it("should quantify list [x3, x1, x0, x2] where it is terminal-only already before x2 [BDD 4 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1136,7 +1135,7 @@ go_bandit([]() {
       });
 
       it("should quantify list [x2, x1] into T terminal [x2 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1156,19 +1155,19 @@ go_bandit([]() {
       });
 
       it("should quantify list [] into the original file [BDD 3 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
-        // __bdd is used to access the node_file
+        // __bdd is used to access the shared_levelized_file<bdd::node_t>
         __bdd out = bdd_exists(bdd_3, labels);
-        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_3));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_3));
       });
 
       it("should quantify list [] into the original file [BDD 3 : const &bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         bdd in_bdd = bdd_3;
         __bdd out = bdd_exists(in_bdd, labels);
-        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_3));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_3));
       });
     });
 
@@ -1179,14 +1178,14 @@ go_bandit([]() {
       it("should quantify T terminal-only BDD as itself", [&]() {
         __bdd out = bdd_forall(terminal_T, 42);
 
-        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_T));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(terminal_T));
         AssertThat(out.negate, Is().False());
       });
 
       it("should quantify F terminal-only BDD as itself", [&]() {
         __bdd out = bdd_forall(terminal_F, 21);
 
-        AssertThat(out.get<node_file>(), Is().EqualTo(terminal_F));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(terminal_F));
         AssertThat(out.negate, Is().False());
       });
 
@@ -1214,10 +1213,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should quantify root of [BDD 3]", [&]() {
@@ -1263,10 +1262,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should prune shortcuttable requests [BDD 4]", [&]() {
@@ -1315,10 +1314,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -1380,10 +1379,10 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(5u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -1431,14 +1430,14 @@ go_bandit([]() {
 
         AssertThat(level_info.can_pull(), Is().False());
 
-        AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
       });
 
       it("should quantify list [x0, x2, x1] [BDD 4 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1456,12 +1455,12 @@ go_bandit([]() {
         level_info_test_stream ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("should quantify list [x0, x2, x1] [BDD 4 : const &bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1480,12 +1479,12 @@ go_bandit([]() {
         level_info_test_stream ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(0u));
       });
 
       it("should quantify list [x1] [BDD 4 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1523,7 +1522,7 @@ go_bandit([]() {
       });
 
       it("should quantify list [x1] [BDD 4 : const &bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1562,22 +1561,22 @@ go_bandit([]() {
       });
 
       it("should quantify list [] into the original file [BDD 3 : &&bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
-        // __bdd is used to access the node_file
+        // __bdd is used to access the shared_levelized_file<bdd::node_t>
         __bdd out = bdd_forall(bdd_3, labels);
 
-        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_3));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_3));
         AssertThat(out.negate, Is().False());
       });
 
       it("should quantify list [] into the original file [BDD 3 : const &bdd]", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         bdd in_bdd = bdd_3;
         __bdd out = bdd_forall(in_bdd, labels);
 
-        AssertThat(out.get<node_file>(), Is().EqualTo(bdd_3));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_3));
         AssertThat(out.negate, Is().False());
       });
     });

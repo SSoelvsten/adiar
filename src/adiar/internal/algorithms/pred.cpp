@@ -27,13 +27,15 @@ namespace adiar::internal
     size_t curr_level_processed;
 
   public:
-    static size_t pq1_upper_bound(const node_file &in_1, const node_file &in_2)
+    static size_t pq1_upper_bound(const shared_levelized_file<node> &in_1,
+                                  const shared_levelized_file<node> &in_2)
     {
       return std::max(in_1->max_2level_cut[cut_type::INTERNAL],
                       in_2->max_2level_cut[cut_type::INTERNAL]);
     }
 
-    static size_t pq2_upper_bound(const node_file &in_1, const node_file &in_2)
+    static size_t pq2_upper_bound(const shared_levelized_file<node> &in_1,
+                                  const shared_levelized_file<node> &in_2)
     {
       return std::max(in_1->max_1level_cut[cut_type::INTERNAL],
                       in_2->max_1level_cut[cut_type::INTERNAL]);
@@ -45,7 +47,8 @@ namespace adiar::internal
     }
 
   public:
-    input_bound_levels(const node_file &f1, const node_file &/*f2*/)
+    input_bound_levels(const shared_levelized_file<node> &f1,
+                       const shared_levelized_file<node> &/*f2*/)
       : in_meta_1(f1),
         curr_level_size(width_of(in_meta_1.pull())),
         curr_level_processed(1)
@@ -71,13 +74,13 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  // Precondition:
-  //  - The number of nodes are the same
-  //  - The number of levels are the same
-  //  - The label and size of each level are the same
-  //
-  // TODO (Decision Diagrams with other kinds of pointers):
-  //   template<class dd_policy>
+  /// \pre Precondition:
+  ///  - The number of nodes are the same
+  ///  - The number of levels are the same
+  ///  - The label and size of each level are the same
+  ///
+  /// TODO (Decision Diagrams with other kinds of pointers):
+  ///   template<class dd_policy>
   class isomorphism_policy : public prod2_same_level_merger,
                              public dd_policy<dd, __dd>
   {
@@ -87,11 +90,11 @@ namespace adiar::internal
   public:
     static constexpr size_t lookahead_bound()
     {
-      return 2;
+      return 2u;
     }
 
   public:
-    static bool resolve_terminals(const node &v1, const node &v2, bool &ret_value)
+    static bool resolve_terminals(const dd::node_t &v1, const dd::node_t &v2, bool &ret_value)
     {
       ret_value = v1.is_terminal() && v2.is_terminal() && v1.value() == v2.value();
 #ifdef ADIAR_STATS
@@ -101,7 +104,7 @@ namespace adiar::internal
     }
 
   public:
-    static bool resolve_singletons(const node &v1, const node v2)
+    static bool resolve_singletons(const dd::node_t &v1, const dd::node_t v2)
     {
 #ifdef ADIAR_STATS
       stats_equality.slow_check.exit_on_root++;
@@ -112,7 +115,7 @@ namespace adiar::internal
 
   public:
     template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, ptr_uint64 r1, ptr_uint64 r2)
+    static bool resolve_request(pq_1_t &pq, dd::ptr_t r1, dd::ptr_t r2)
     {
       // Are they both a terminal (and the same terminal)?
       if (r1.is_terminal() || r2.is_terminal()) {
@@ -142,7 +145,7 @@ namespace adiar::internal
   public:
     // Since we guarantee to be on the same level, then we merely provide a noop
     // (similar to the bdd_policy) for the cofactor.
-    static inline void compute_cofactor([[maybe_unused]] bool on_curr_level, ptr_uint64 &, ptr_uint64 &)
+    static inline void compute_cofactor([[maybe_unused]] bool on_curr_level, dd::ptr_t &, dd::ptr_t &)
     { adiar_invariant(on_curr_level, "No request have mixed levels"); }
 
   public:
@@ -151,24 +154,27 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  // Fast 2N/B I/Os comparison by comparing the i'th nodes numerically. This
-  // requires, that the node_file is 'canonical' in the following sense:
-  //
-  // - For each level, the ids are decreasing from MAX_ID in increments of one.
-  // - There are no duplicate nodes.
-  // - Nodes within each level are sorted by the children (e.g. ordered first on
-  //   'high', secondly on 'low').
-  //
-  // See Section 3.3 in 'Efficient Binary Decision Diagram Manipulation in
-  // External Memory' on arXiv (v2 or newer) for an induction proof this is a
-  // valid comparison.
-
-  /////////////////////
-  // Precondition:
-  //  - The number of nodes are the same (to simplify the 'while' condition)
-  //  - The node_files are both 'canonical'.
-  //  - The negation flags given for both node_files agree (breaks canonicity)
-  bool fast_isomorphism_check(const node_file &f1, const node_file &f2)
+  /// Fast 2N/B I/Os comparison by comparing the i'th nodes numerically. This
+  /// requires, that the shared_levelized_file<node> is 'canonical' in the
+  /// following sense:
+  ///
+  /// - For each level, the ids are decreasing from MAX_ID in increments of one.
+  /// - There are no duplicate nodes.
+  /// - Nodes within each level are sorted by the children (e.g. ordered first on
+  ///   'high', secondly on 'low').
+  ///
+  /// \remark See Section 3.3 in 'Efficient Binary Decision Diagram Manipulation
+  ///         in External Memory' on arXiv (v2 or newer) for an induction proof
+  ///         this is a valid comparison.
+  ///
+  /// \pre The following are satisfied:
+  /// (1) The number of nodes are the same (to simplify the 'while' condition)
+  /// (2) Both shared_levelized_file<node>s are 'canonical'.
+  /// (3) The negation flags given to both shared_levelized_file<node>s agree
+  ///     (breaks canonicity)
+  //////////////////////////////////////////////////////////////////////////////
+  bool fast_isomorphism_check(const shared_levelized_file<node> &f1,
+                              const shared_levelized_file<node> &f2)
   {
     node_stream<> in_nodes_1(f1);
     node_stream<> in_nodes_2(f2);
@@ -186,7 +192,8 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bool is_isomorphic(const node_file &f1, const node_file &f2,
+  bool is_isomorphic(const shared_levelized_file<node> &f1,
+                     const shared_levelized_file<node> &f2,
                      bool negate1, bool negate2)
   {
     // Are they literally referring to the same underlying file?

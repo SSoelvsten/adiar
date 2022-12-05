@@ -28,23 +28,47 @@ using level_info_test_stream = level_info_stream<true>;
 class node_test_stream: public node_stream<true>
 {
 public:
-  node_test_stream(node_file &f): node_stream<true>(f) { }
-  node_test_stream(bdd &f): node_stream<true>(f) { }
-  node_test_stream(__bdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
-  node_test_stream(zdd &f): node_stream<true>(f) { }
-  node_test_stream(__zdd &f): node_stream<true>(f.get<node_file>(), f.negate) { }
+  node_test_stream(shared_levelized_file<dd::node_t> &f)
+    : node_stream<true>(f)
+  { }
+
+  node_test_stream(bdd &f)
+    : node_stream<true>(f)
+  { }
+
+  node_test_stream(__bdd &f)
+    : node_stream<true>(f.get<__bdd::shared_nodes_t>(), f.negate)
+  { }
+
+  node_test_stream(zdd &f)
+    : node_stream<true>(f)
+  { }
+
+  node_test_stream(__zdd &f)
+    : node_stream<true>(f.get<__zdd::shared_nodes_t>(), f.negate)
+  { }
 };
 
 class arc_test_stream: public arc_stream<true>
 {
 public:
-  arc_test_stream(arc_file &f): arc_stream<true>(f) { }
-  arc_test_stream(__bdd &bdd): arc_stream<true>(bdd.get<arc_file>()) { }
-  arc_test_stream(__zdd &zdd): arc_stream<true>(zdd.get<arc_file>()) { }
+  arc_test_stream(shared_levelized_file<arc> &f)
+    : arc_stream<true>(f)
+  { }
+
+  arc_test_stream(__bdd &bdd)
+    : arc_stream<true>(bdd.get<__bdd::shared_arcs_t>())
+  { }
+
+  arc_test_stream(__zdd &zdd)
+    : arc_stream<true>(zdd.get<__zdd::shared_arcs_t>())
+  { }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // To improve the error messages
+//
+// TODO: move into '<<'/'toString' methods in each respective data type.
 namespace snowhouse
 {
   std::string string_of_adiar_ptr(adiar::internal::ptr_uint64 p)
@@ -128,6 +152,20 @@ namespace snowhouse
       stream << "assignment: [x" << label_of(a) << "|->" << value_of(a) << "]";
       return stream.str();
     }
+  };
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// For unit testing levelized_file<int> (local stack and shared heap variants).
+namespace adiar::internal
+{
+  template <>
+  struct FILE_CONSTANTS<int>
+  {
+    static constexpr size_t files = 2u;
+
+    struct stats
+    { /* No extra 'int' specific variables */ };
   };
 }
 

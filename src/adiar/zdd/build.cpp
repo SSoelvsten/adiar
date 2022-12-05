@@ -25,17 +25,17 @@ namespace adiar
     return internal::build_ithvar(label);
   }
 
-  zdd zdd_vars(const internal::label_file &labels)
+  zdd zdd_vars(const shared_file<zdd::label_t> &labels)
   {
     return internal::build_chain<true, false, true>(labels);
   }
 
-  zdd zdd_singletons(const internal::label_file &labels)
+  zdd zdd_singletons(const shared_file<zdd::label_t> &labels)
   {
     return internal::build_chain<false, true, false>(labels);
   }
 
-  zdd zdd_powerset(const internal::label_file &labels)
+  zdd zdd_powerset(const shared_file<zdd::label_t> &labels)
   {
     return internal::build_chain<true, true, true, true>(labels);
   }

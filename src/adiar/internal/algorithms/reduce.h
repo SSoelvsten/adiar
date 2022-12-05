@@ -69,7 +69,9 @@ namespace adiar::internal
     size_t _terminals[2] = { 0u, 0u };
 
   public:
-    reduce_priority_queue(const arc_file (&files) [1u], size_t memory_given, size_t max_size)
+    reduce_priority_queue(const shared_levelized_file<arc> (&files) [1u],
+                          size_t memory_given,
+                          size_t max_size)
       : inner_lpq(files, memory_given, max_size, stats_reduce.lpq)
     { }
 
@@ -373,7 +375,7 @@ namespace adiar::internal
   }
 
   template<typename dd_policy, typename pq_t>
-  typename dd_policy::reduced_t __reduce(const arc_file &in_file,
+  typename dd_policy::reduced_t __reduce(const shared_levelized_file<arc> &in_file,
                                          const size_t lpq_memory,
                                          const size_t sorters_memory)
   {
@@ -386,7 +388,7 @@ namespace adiar::internal
     level_info_stream<> level_info(in_file);
 
     // Set up output
-    node_file out_file;
+    shared_levelized_file<typename dd_policy::node_t> out_file;
     out_file->canonical = true;
 
     out_file->max_1level_cut[cut_type::INTERNAL]       = 0u;
@@ -480,7 +482,7 @@ namespace adiar::internal
   /// \brief Reduce a given edge-based decision diagram.
   ///
   /// \param dd_policy Which includes the types and the reduction rule
-  /// \param arc_file The unreduced bdd in its arc-based representation
+  /// \param input     The (possibly unreduced) decision diagram.
   ///
   /// \return The reduced decision diagram in a node-based representation
   //////////////////////////////////////////////////////////////////////////////
@@ -490,12 +492,13 @@ namespace adiar::internal
     adiar_debug(!input.empty(), "Input for Reduce should always be non-empty");
 
     // Is it already reduced?
-    if (input.template has<node_file>()) {
-      return typename dd_policy::reduced_t(input.template get<node_file>(), input.negate);
+    if (input.template has<typename dd_policy::shared_nodes_t>()) {
+      return typename dd_policy::reduced_t(input.template get<typename dd_policy::shared_nodes_t>(),
+                                           input.negate);
     }
 
     // Get unreduced input
-    const arc_file in_file = input.template get<arc_file>();
+    const typename dd_policy::shared_arcs_t in_file = input.template get<typename dd_policy::shared_arcs_t>();
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -516,7 +519,7 @@ namespace adiar::internal
     const tpie::memory_size_type pq_memory_fits =
       reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_memory);
 
-    const bool internal_only = memory_mode== memory_mode_t::INTERNAL;
+    const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
     const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
 
     const size_t pq_bound = in_file->max_1level_cut;

@@ -77,6 +77,8 @@ namespace adiar::internal
     void attach(const levelized_file<elem_t> &f,
                 bool negate = false)
     {
+      if (!f.exists()) f.touch();
+
       for (size_t s_idx = 0; s_idx < streams; s_idx++)
         _streams[s_idx].attach(f._files[s_idx], nullptr, negate);
     }
@@ -89,6 +91,8 @@ namespace adiar::internal
     void attach(const shared_ptr<levelized_file<elem_t>> &f,
                 bool negate = false)
     {
+      if (!f->exists()) f->touch();
+
       for (size_t s_idx = 0; s_idx < streams; s_idx++)
         _streams[s_idx].attach(f->_files[s_idx], f, negate);
     }
@@ -229,14 +233,20 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     template<typename elem_t>
     void attach(const levelized_file<elem_t, false> &lf)
-    { parent_t::attach(lf._level_info_file, nullptr, false); }
+    {
+      if (!lf.exists()) lf.touch();
+      parent_t::attach(lf._level_info_file, nullptr, false);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a shared levelized file.
     ////////////////////////////////////////////////////////////////////////////
     template<typename elem_t>
     void attach(const adiar::shared_ptr<levelized_file<elem_t, false>> &lf)
-    { parent_t::attach(lf->_level_info_file, lf, false); }
+    {
+      if (!lf->exists()) lf->touch();
+      parent_t::attach(lf->_level_info_file, lf, false);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a (reduced) decision diagram.
@@ -251,13 +261,14 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void attach(const __dd &diagram)
     {
-      if (diagram.has<node_file>()) {
-        attach<node>(diagram.get<node_file>());
-      } else if (diagram.has<arc_file>()) {
-        attach<arc>(diagram.get<arc_file>());
+      // TODO: switch order to favour levelized arc files
+      if (diagram.has<__dd::shared_nodes_t>()) {
+        attach<node>(diagram.get<__dd::shared_nodes_t>());
+      } else if (diagram.has<__dd::shared_arcs_t>()) {
+        attach<arc>(diagram.get<__dd::shared_arcs_t>());
       } else {
         // We should never be in the case of hooking into a 'no_file'. That type
-        // should only be used internally within an algorithm an never escape
+        // should only be used internally within an algorithm and never escape
         // into its output.
         adiar_unreachable();
       }

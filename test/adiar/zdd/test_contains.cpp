@@ -2,8 +2,8 @@
 
 go_bandit([]() {
   describe("adiar/zdd/contains.cpp", [&]() {
-    node_file zdd_F;
-    node_file zdd_T;
+    shared_levelized_file<zdd::node_t> zdd_F;
+    shared_levelized_file<zdd::node_t> zdd_T;
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(zdd_F);
@@ -14,19 +14,19 @@ go_bandit([]() {
     }
 
     it("returns false for Ø on Ø", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       AssertThat(zdd_contains(zdd_F, labels), Is().False());
     });
 
     it("returns true for { Ø } on Ø", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       AssertThat(zdd_contains(zdd_T, labels), Is().True());
     });
 
     it("returns false for { Ø } on { 1, 42 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer lw(labels);
@@ -39,7 +39,7 @@ go_bandit([]() {
     const ptr_uint64 terminal_F = ptr_uint64(false);
     const ptr_uint64 terminal_T = ptr_uint64(true);
 
-    node_file zdd_x0;
+    shared_levelized_file<zdd::node_t> zdd_x0;
     // { { 0 } }
     /*
             1        ---- x0
@@ -53,7 +53,7 @@ go_bandit([]() {
 
     // TODO: tests...
 
-    node_file zdd_x1_null;
+    shared_levelized_file<zdd::node_t> zdd_x1_null;
     // { Ø, { 1 } }
     /*
             1         ---- x1
@@ -67,7 +67,7 @@ go_bandit([]() {
 
     // TODO: tests...
 
-    node_file zdd_1;
+    shared_levelized_file<zdd::node_t> zdd_1;
     // { Ø, { 0,2 }, { 0,3 } { 1,2 }, { 1,3 }, { 1,2,3 }, { 0,2,3 } }
     /*
                 1      ---- x0
@@ -92,13 +92,13 @@ go_bandit([]() {
     }
 
     it("returns visited root for [1] on Ø", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       AssertThat(zdd_contains(zdd_1, labels), Is().True());
     });
 
     it("returns visited terminal for [1] on { 0 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -109,7 +109,7 @@ go_bandit([]() {
     });
 
     it("returns visited terminal for [1] on { 1 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -120,7 +120,7 @@ go_bandit([]() {
     });
 
     it("returns visited terminal for [1] on { 0, 2 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -131,7 +131,7 @@ go_bandit([]() {
     });
 
     it("returns visited terminal for [1] on { 1, 3 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -142,7 +142,7 @@ go_bandit([]() {
     });
 
     it("returns visited terminal for [1] on { 0, 2, 3 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -153,7 +153,7 @@ go_bandit([]() {
     });
 
     it("fails on missed label for [1] on { 0, 1, 2 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -164,7 +164,7 @@ go_bandit([]() {
     });
 
     it("fails on terminal with unread labels for [1] on { 2 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -175,7 +175,7 @@ go_bandit([]() {
     });
 
     it("fails on terminal with unread labels for [1] on { 0, 2, 4 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -186,7 +186,7 @@ go_bandit([]() {
     });
 
     it("fails on terminal with unread labels for [1] on { 0, 2, 3, 4 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -196,7 +196,7 @@ go_bandit([]() {
       AssertThat(zdd_contains(zdd_1, labels), Is().False());
     });
 
-    node_file zdd_2;
+    shared_levelized_file<zdd::node_t> zdd_2;
     // { { 6 }, { 2,4 }, { 2,6 }, { 2,4,6 } }
     /*
                1       ---- x2
@@ -218,13 +218,13 @@ go_bandit([]() {
     }
 
     it("returns visited root for [2] on Ø", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       AssertThat(zdd_contains(zdd_2, labels), Is().False());
     });
 
     it("returns visited terminal for [2] on { 2 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -235,7 +235,7 @@ go_bandit([]() {
     });
 
     it("returns visited terminal for [2] on { 6 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -246,7 +246,7 @@ go_bandit([]() {
     });
 
     it("returns visited terminal for [2] on { 2, 4 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -257,7 +257,7 @@ go_bandit([]() {
     });
 
     it("returns visited terminal for [2] on { 2, 4, 6 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -268,7 +268,7 @@ go_bandit([]() {
     });
 
     it("fails on missed label for [2] on { 4, 6 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -279,7 +279,7 @@ go_bandit([]() {
     });
 
     it("fails on missed label for [2] on { 2, 3, 4 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -290,7 +290,7 @@ go_bandit([]() {
     });
 
     it("fails on missed label for [2] on { 2, 4, 6, 8 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -301,7 +301,7 @@ go_bandit([]() {
     });
 
     it("fails on label before root for [2] on { 0, 2, 4 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);
@@ -312,7 +312,7 @@ go_bandit([]() {
     });
 
     it("fails on labels before root for [2] on { 0, 1, 2, 4 }", [&]() {
-      label_file labels;
+      adiar::shared_file<zdd::label_t> labels;
 
       {
         label_writer w(labels);

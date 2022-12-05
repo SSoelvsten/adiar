@@ -24,7 +24,8 @@ namespace adiar
       return dd;
     }
 
-    static zdd on_terminal_input(const bool terminal_value, const zdd& /*dd*/, const internal::label_file &universe)
+    static zdd on_terminal_input(const bool terminal_value, const zdd& /*dd*/,
+                                 const shared_file<zdd::label_t> &universe)
     {
       return terminal_value
         // The entire universe minus Ø
@@ -69,14 +70,14 @@ namespace adiar
     // LCOV_EXCL_END
   };
 
-  __zdd zdd_complement(const zdd &dd, const internal::label_file &universe)
+  __zdd zdd_complement(const zdd &dd, const shared_file<zdd::label_t> &universe)
   {
     return internal::intercut<zdd_complement_policy>(dd, universe);
   }
 
   __zdd zdd_complement(const zdd &dd)
   {
-    const internal::label_file universe = adiar_get_domain();
+    const shared_file<zdd::label_t> universe = adiar_get_domain();
     return internal::intercut<zdd_complement_policy>(dd, universe);
   }
 }

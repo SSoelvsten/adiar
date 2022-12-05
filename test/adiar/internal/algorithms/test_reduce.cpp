@@ -8,7 +8,7 @@ go_bandit([]() {
     ptr_uint64 terminal_T = ptr_uint64(true);
     ptr_uint64 terminal_F = ptr_uint64(false);
 
-    node_file x0x1_node_file;
+    shared_levelized_file<node> x0x1_node_file;
 
     { // Garbage collect writer to free write-lock
       node_writer nw(x0x1_node_file);
@@ -66,7 +66,7 @@ go_bandit([]() {
         ptr_uint64 n3 = ptr_uint64(2,0);
         ptr_uint64 n4 = ptr_uint64(2,1);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -166,7 +166,7 @@ go_bandit([]() {
         ptr_uint64 n4 = ptr_uint64(3,0);
         ptr_uint64 n5 = ptr_uint64(3,1);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -270,7 +270,7 @@ go_bandit([]() {
         ptr_uint64 n5 = ptr_uint64(3,0);
         ptr_uint64 n6 = ptr_uint64(3,1);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -387,7 +387,7 @@ go_bandit([]() {
         ptr_uint64 n4 = ptr_uint64(2,1);
         ptr_uint64 n5 = ptr_uint64(3,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -505,7 +505,7 @@ go_bandit([]() {
         ptr_uint64 n6 = ptr_uint64(2,2);
         ptr_uint64 n7 = ptr_uint64(3,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -636,7 +636,7 @@ go_bandit([]() {
         ptr_uint64 n5 = ptr_uint64(2,1);
         ptr_uint64 n6 = ptr_uint64(2,2);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -744,7 +744,7 @@ go_bandit([]() {
         ptr_uint64 n5 = ptr_uint64(2,1);
         ptr_uint64 n6 = ptr_uint64(2,2);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -851,7 +851,7 @@ go_bandit([]() {
         ptr_uint64 n3 = ptr_uint64(2,0);
         ptr_uint64 n4 = ptr_uint64(2,1);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer early
           arc_writer aw(in);
@@ -952,7 +952,7 @@ go_bandit([]() {
         ptr_uint64 n4 = ptr_uint64(2,1);
         ptr_uint64 n5 = ptr_uint64(3,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -1063,7 +1063,7 @@ go_bandit([]() {
         ptr_uint64 n4 = ptr_uint64(2,0);
         ptr_uint64 n5 = ptr_uint64(2,1);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -1160,7 +1160,7 @@ go_bandit([]() {
         ptr_uint64 n3 = ptr_uint64(2,0);
         ptr_uint64 n4 = ptr_uint64(2,1);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -1256,7 +1256,7 @@ go_bandit([]() {
           ptr_uint64 n5 = ptr_uint64(2,1);
           ptr_uint64 n6 = ptr_uint64(3,0);
 
-          arc_file in;
+          shared_levelized_file<arc> in;
 
           { // Garbage collect writer to free write-lock
             arc_writer aw(in);
@@ -1377,7 +1377,7 @@ go_bandit([]() {
         ptr_uint64 n3 = ptr_uint64(2,0);
         ptr_uint64 n4 = ptr_uint64(2,1);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -1454,7 +1454,7 @@ go_bandit([]() {
         const ptr_uint64 n5 = ptr_uint64(3,1);
         const ptr_uint64 n6 = ptr_uint64(3,2);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -1569,7 +1569,7 @@ go_bandit([]() {
 
         ptr_uint64 n1 = ptr_uint64(0,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -1625,7 +1625,7 @@ go_bandit([]() {
         ptr_uint64 n1 = ptr_uint64(0,0);
         ptr_uint64 n2 = ptr_uint64(1,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -1680,7 +1680,7 @@ go_bandit([]() {
 
         ptr_uint64 n1 = ptr_uint64(0,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -1754,7 +1754,7 @@ go_bandit([]() {
         const ptr_uint64 n10 = ptr_uint64(5,0);
         const ptr_uint64 n11 = ptr_uint64(5,1);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -1915,7 +1915,7 @@ go_bandit([]() {
         const ptr_uint64 n13 = ptr_uint64(5,0);
         const ptr_uint64 n14 = ptr_uint64(5,1);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2085,7 +2085,7 @@ go_bandit([]() {
         const ptr_uint64 n3  = ptr_uint64(1,1);
         const ptr_uint64 n4  = ptr_uint64(2,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2156,7 +2156,7 @@ go_bandit([]() {
         ptr_uint64 n1 = ptr_uint64(0,0);
         ptr_uint64 n2 = ptr_uint64(1,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2226,7 +2226,7 @@ go_bandit([]() {
         ptr_uint64 n4 = ptr_uint64(2,1);
         ptr_uint64 n5 = ptr_uint64(3,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2340,7 +2340,7 @@ go_bandit([]() {
         ptr_uint64 n3 = ptr_uint64(1,1);
         ptr_uint64 n4 = ptr_uint64(2,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2427,7 +2427,7 @@ go_bandit([]() {
 
         ptr_uint64 n1 = ptr_uint64(0,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2483,7 +2483,7 @@ go_bandit([]() {
         ptr_uint64 n1 = ptr_uint64(0,0);
         ptr_uint64 n2 = ptr_uint64(1,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2547,7 +2547,7 @@ go_bandit([]() {
         ptr_uint64 n1 = ptr_uint64(0,0);
         ptr_uint64 n2 = ptr_uint64(1,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2602,7 +2602,7 @@ go_bandit([]() {
 
         ptr_uint64 n1 = ptr_uint64(42,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2656,7 +2656,7 @@ go_bandit([]() {
 
         ptr_uint64 n1 = ptr_uint64(12,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2731,7 +2731,7 @@ go_bandit([]() {
         const ptr_uint64 n10 = ptr_uint64(5,0);
         const ptr_uint64 n11 = ptr_uint64(5,1);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
@@ -2876,7 +2876,7 @@ go_bandit([]() {
         const ptr_uint64 n3  = ptr_uint64(1,1);
         const ptr_uint64 n4  = ptr_uint64(2,0);
 
-        arc_file in;
+        shared_levelized_file<arc> in;
 
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);

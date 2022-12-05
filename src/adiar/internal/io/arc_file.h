@@ -4,10 +4,14 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/shared_file.h>
+#include <adiar/internal/io/shared_file_ptr.h>
 
 namespace adiar::internal
 {
+  // TODO (ADD):
+  // TODO (QMDD):
+  //  Generalize the arc type and the arc_file based on a given node.
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief An unreduced Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
@@ -59,11 +63,6 @@ namespace adiar::internal
       // TODO: bool semi_transposed = true
 
       //////////////////////////////////////////////////////////////////////////
-      /// \brief Whether the out-of-order terminal arcs are sorted.
-      //////////////////////////////////////////////////////////////////////////
-      // TODO: bool sorted_out_of_order = true; // <-- true, until non-empty
-
-      //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum one-level cut of the DAG (not
       ///        counting any arcs to terminals).
       ///
@@ -77,21 +76,11 @@ namespace adiar::internal
       ///        number of true terminals.
       //////////////////////////////////////////////////////////////////////////
       size_t number_of_terminals[2] = { 0, 0 };
+
+      // TODO: if allowing to be a terminal (with NIL -> {0,1} arcs), then
+      //       create base_stats class to inherit here and in node_file from.
     };
   };
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Files of arcs to represent an unreduced decision diagram.
-  //////////////////////////////////////////////////////////////////////////////
-  typedef shared_file<levelized_file<arc>> arc_file;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Number of nodes in the DAG.
-  //////////////////////////////////////////////////////////////////////////////
-  inline uint64_t nodecount(const arc_file &arcs)
-  {
-    return arcs->size() / node::OUTDEGREE;
-  }
 }
 
 #endif // ADIAR_INTERNAL_IO_ARC_FILE_H

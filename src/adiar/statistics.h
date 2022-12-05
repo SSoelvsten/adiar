@@ -145,7 +145,8 @@ namespace adiar
       // Early termination cases
 
       //////////////////////////////////////////////////////////////////////////
-      /// \brief Early *O(1)* termination due to same \ref node_file.
+      /// \brief Early *O(1)* termination due to same
+      ///        \ref shared_levelized_file<...>.
       //////////////////////////////////////////////////////////////////////////
       uintwide_t exit_on_same_file = 0;
 

@@ -76,12 +76,12 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   size_t bdd_nodecount(const bdd &bdd)
   {
-    return nodecount(bdd.file);
+    return is_terminal(bdd) ? 0u : bdd->size();
   }
 
   bdd::label_t bdd_varcount(const bdd &bdd)
   {
-    return varcount(bdd.file);
+    return bdd->levels();
   }
 
   uint64_t bdd_pathcount(const bdd &bdd)

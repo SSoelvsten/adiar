@@ -5,7 +5,7 @@ go_bandit([]() {
     ptr_uint64 terminal_T = ptr_uint64(true);
     ptr_uint64 terminal_F = ptr_uint64(false);
 
-    node_file bdd_1;
+    shared_levelized_file<bdd::node_t> bdd_1;
     /*
               1      ---- x0
              / \
@@ -29,7 +29,7 @@ go_bandit([]() {
       nw << n5 << n4 << n3 << n2 << n1;
     }
 
-    node_file bdd_2;
+    shared_levelized_file<bdd::node_t> bdd_2;
     /*
                1       ---- x0
               / \
@@ -56,7 +56,7 @@ go_bandit([]() {
       nw << n6 << n5 << n4 << n3 << n2 << n1;
     }
 
-    node_file bdd_3;
+    shared_levelized_file<bdd::node_t> bdd_3;
     /*
 
                       1     ---- x1
@@ -80,34 +80,34 @@ go_bandit([]() {
 
     describe("bdd_satmin(f)", [&]() {
       it("should retrieve assignment from true terminal", [&]() {
-        node_file T;
+        shared_levelized_file<bdd::node_t> T;
         {
           node_writer nw(T);
           nw << node(true);
         }
 
-        assignment_file result = bdd_satmin(T);
+        adiar::shared_file<assignment_t> result = bdd_satmin(T);
 
-        assignment_stream<> out_assignment(result);
+         adiar::file_stream<assignment_t> out_assignment(result);
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve assignment from false terminal", [&]() {
-        node_file F;
+        shared_levelized_file<bdd::node_t> F;
         {
           node_writer nw(F);
           nw << node(false);
         }
 
-        assignment_file result = bdd_satmin(false);
+        adiar::shared_file<assignment_t> result = bdd_satmin(false);
 
-        assignment_stream<> out_assignment(result);
+         adiar::file_stream<assignment_t> out_assignment(result);
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve assignment [1]", [&]() {
-        assignment_file result = bdd_satmin(bdd_1);
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_1);
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
@@ -125,8 +125,8 @@ go_bandit([]() {
       });
 
       it("should retrieve assignment [1]", [&]() {
-        assignment_file result = bdd_satmin(bdd_1);
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_1);
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
@@ -144,8 +144,8 @@ go_bandit([]() {
       });
 
       it("should retrieve assignment [~1]", [&]() {
-        assignment_file result = bdd_satmin(bdd_not(bdd_1));
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_not(bdd_1));
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
@@ -163,8 +163,8 @@ go_bandit([]() {
       });
 
       it("should retrieve assignment [2]", [&]() {
-        assignment_file result = bdd_satmin(bdd_2);
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_2);
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
@@ -182,8 +182,8 @@ go_bandit([]() {
       });
 
       it("should retrieve assignment [3]", [&]() {
-        assignment_file result = bdd_satmin(bdd_3);
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_3);
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
@@ -198,8 +198,8 @@ go_bandit([]() {
       });
 
       it("should retrieve assignment [3]", [&]() {
-        assignment_file result = bdd_satmin(bdd_not(bdd_3));
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_not(bdd_3));
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
@@ -216,8 +216,8 @@ go_bandit([]() {
 
     describe("bdd_satmax", [&]() {
       it("should retrieve maximal assignment [1]", [&]() {
-        assignment_file result = bdd_satmax(bdd_1);
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_1);
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
@@ -235,8 +235,8 @@ go_bandit([]() {
       });
 
       it("should retrieve maximal assignment [~1]", [&]() {
-        assignment_file result = bdd_satmax(bdd_not(bdd_1));
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_not(bdd_1));
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
@@ -254,8 +254,8 @@ go_bandit([]() {
       });
 
       it("should retrieve maximal assignment [2]", [&]() {
-        assignment_file result = bdd_satmax(bdd_2);
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_2);
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
@@ -273,8 +273,8 @@ go_bandit([]() {
       });
 
       it("should retrieve maximal assignment [~2]", [&]() {
-        assignment_file result = bdd_satmax(bdd_not(bdd_2));
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_not(bdd_2));
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
@@ -292,8 +292,8 @@ go_bandit([]() {
       });
 
       it("should retrieve maximal assignment [3]", [&]() {
-        assignment_file result = bdd_satmax(bdd_3);
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_3);
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
@@ -308,8 +308,8 @@ go_bandit([]() {
       });
 
       it("should retrieve maximal assignment [3]", [&]() {
-        assignment_file result = bdd_satmax(bdd_not(bdd_3));
-        assignment_stream<> out_assignment(result);
+        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_not(bdd_3));
+         adiar::file_stream<assignment_t> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
         AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));

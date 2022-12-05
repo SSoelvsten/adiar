@@ -6,40 +6,40 @@ go_bandit([]() {
     ptr_uint64 terminal_F = ptr_uint64(false);
 
     // Ø
-    node_file zdd_empty_nf;
+    shared_levelized_file<zdd::node_t> zdd_empty_nf;
     { node_writer nw(zdd_empty_nf);
       nw << node(false);
     }
 
-    node_file zdd_empty_nf_copy;
+    shared_levelized_file<zdd::node_t> zdd_empty_nf_copy;
     { node_writer nw(zdd_empty_nf_copy);
       nw << node(false);
     }
 
     // { Ø }
-    node_file zdd_null_nf;
+    shared_levelized_file<zdd::node_t> zdd_null_nf;
     { node_writer nw(zdd_null_nf);
       nw << node(true);
     }
 
-    node_file zdd_null_nf_copy;
+    shared_levelized_file<zdd::node_t> zdd_null_nf_copy;
     { node_writer nw(zdd_null_nf_copy);
       nw << node(true);
     }
 
     // { {1} }
-    node_file zdd_A_nf;
+    shared_levelized_file<zdd::node_t> zdd_A_nf;
     { node_writer nw(zdd_A_nf);
       nw << node(1, node::MAX_ID, terminal_F, terminal_T);
     }
 
-    node_file zdd_A_nf_copy;
+    shared_levelized_file<zdd::node_t> zdd_A_nf_copy;
     { node_writer nw(zdd_A_nf_copy);
       nw << node(1, node::MAX_ID, terminal_F, terminal_T);
     }
 
     // { {1}, {1,2} }
-    node_file zdd_B_nf;
+    shared_levelized_file<zdd::node_t> zdd_B_nf;
     { node_writer nw(zdd_B_nf);
       nw << node(2, node::MAX_ID, terminal_T, terminal_T)
          << node(1, node::MAX_ID, terminal_F, ptr_uint64(2, ptr_uint64::MAX_ID))
@@ -47,14 +47,14 @@ go_bandit([]() {
     }
 
     // { Ø, {1}, {2}, {1,2} }
-    node_file zdd_C_nf;
+    shared_levelized_file<zdd::node_t> zdd_C_nf;
     { node_writer nw(zdd_C_nf);
       nw << node(2, node::MAX_ID, terminal_T,                    terminal_T)
          << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
         ;
     }
 
-    node_file zdd_C_nf_copy;
+    shared_levelized_file<zdd::node_t> zdd_C_nf_copy;
     { node_writer nw(zdd_C_nf_copy);
       nw << node(2, node::MAX_ID, terminal_T,                    terminal_T)
          << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID))
@@ -62,7 +62,7 @@ go_bandit([]() {
     }
 
     // { {1}, {1,2}, {0,1,3} }
-    node_file zdd_D_nf;
+    shared_levelized_file<zdd::node_t> zdd_D_nf;
     { node_writer nw(zdd_D_nf);
       nw << node(3, node::MAX_ID,   terminal_F,                      terminal_T)
          << node(2, node::MAX_ID,   terminal_T,                      terminal_T)
@@ -72,7 +72,7 @@ go_bandit([]() {
         ;
     }
 
-    node_file zdd_D_nf_copy;
+    shared_levelized_file<zdd::node_t> zdd_D_nf_copy;
     { node_writer nw(zdd_D_nf_copy);
       nw << node(3, node::MAX_ID,   terminal_F,                      terminal_T)
          << node(2, node::MAX_ID,   terminal_T,                      terminal_T)
@@ -83,14 +83,14 @@ go_bandit([]() {
     }
 
     // { Ø, {0,3} }
-    node_file zdd_E_nf;
+    shared_levelized_file<zdd::node_t> zdd_E_nf;
     { node_writer nw(zdd_E_nf);
       nw << node(3, node::MAX_ID, terminal_F, terminal_T)
          << node(0, node::MAX_ID, terminal_T, ptr_uint64(3, ptr_uint64::MAX_ID))
         ;
     }
 
-    node_file zdd_E_nf_copy;
+    shared_levelized_file<zdd::node_t> zdd_E_nf_copy;
     { node_writer nw(zdd_E_nf_copy);
       nw << node(3, node::MAX_ID, terminal_F, terminal_T)
          << node(0, node::MAX_ID, terminal_T, ptr_uint64(3, ptr_uint64::MAX_ID))
@@ -98,7 +98,7 @@ go_bandit([]() {
     }
 
     // { {2} }
-    node_file zdd_F_nf;
+    shared_levelized_file<zdd::node_t> zdd_F_nf;
     { node_writer nw(zdd_F_nf);
       nw << node(2, node::MAX_ID, terminal_F, terminal_T);
     }

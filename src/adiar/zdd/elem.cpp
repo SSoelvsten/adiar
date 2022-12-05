@@ -16,7 +16,7 @@ namespace adiar
 
     bool has_elem = false;
 
-    internal::label_file lf;
+    shared_file<zdd::label_t> lf;
     internal::label_writer lw;
 
   public:
@@ -39,7 +39,7 @@ namespace adiar
       has_elem = s;
     }
 
-    const std::optional<internal::label_file> get_result() const
+    const std::optional<shared_file<zdd::label_t>> get_result() const
     {
       if (has_elem) { return lf; } else { return std::nullopt; }
     }
@@ -51,7 +51,7 @@ namespace adiar
     static constexpr bool keep_dont_cares = false;
   };
 
-  std::optional<internal::label_file>
+  std::optional<shared_file<zdd::label_t>>
   zdd_minelem(const zdd &A)
   {
     zdd_sat_label_writer_visitor<zdd_satmin_visitor> v;
@@ -73,7 +73,7 @@ namespace adiar
     { }
   };
 
-  std::optional<internal::label_file>
+  std::optional<shared_file<zdd::label_t>>
   zdd_maxelem(const zdd &A)
   {
     zdd_sat_label_writer_visitor<zdd_satmax_visitor> v;

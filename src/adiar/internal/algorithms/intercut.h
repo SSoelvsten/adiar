@@ -165,9 +165,10 @@ namespace adiar::internal
   }
 
   template<typename intercut_policy>
-  label_file create_dd_labels(const typename intercut_policy::reduced_t &dd)
+  shared_file<typename intercut_policy::label_t>
+  create_dd_labels(const typename intercut_policy::reduced_t &dd)
   {
-    label_file labels;
+    shared_file<typename intercut_policy::label_t> labels;
     label_writer writer(labels);
 
     level_info_stream<> info_stream(dd);
@@ -181,7 +182,7 @@ namespace adiar::internal
 
   template<typename intercut_policy, typename pq_t>
   typename intercut_policy::unreduced_t __intercut (const typename intercut_policy::reduced_t &dd,
-                                                    const label_file &labels,
+                                                    const shared_file<typename intercut_policy::label_t> &labels,
                                                     const size_t pq_memory,
                                                     const size_t max_pq_size)
   {
@@ -192,13 +193,13 @@ namespace adiar::internal
       return intercut_policy::on_terminal_input(n.value(), dd, labels);
     }
 
-    label_stream<> ls(labels);
+    file_stream<typename intercut_policy::label_t> ls(labels);
     typename intercut_policy::label_t l = ls.pull();
 
-    arc_file out_arcs;
+    shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
-    label_file dd_labels = create_dd_labels<intercut_policy>(dd);
+    shared_file<typename intercut_policy::label_t> dd_labels = create_dd_labels<intercut_policy>(dd);
     pq_t intercut_pq({dd_labels, labels}, pq_memory, max_pq_size, stats_intercut.lpq);
 
     // Add request for root in the queue
@@ -312,7 +313,7 @@ namespace adiar::internal
 
   template<typename intercut_policy>
   typename intercut_policy::unreduced_t intercut(const typename intercut_policy::reduced_t &dd,
-                                                 const label_file &labels)
+                                                 const shared_file<typename intercut_policy::label_t> &labels)
   {
     if (labels->size() == 0) {
       return intercut_policy::on_empty_labels(dd);

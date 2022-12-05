@@ -2,7 +2,7 @@
 
 go_bandit([]() {
   describe("adiar/bdd/negate.cpp", []() {
-    node_file terminal_T_nf;
+    shared_levelized_file<bdd::node_t> terminal_T_nf;
 
     { // Garbage collect writer to free write-lock
       node_writer nw(terminal_T_nf);
@@ -11,7 +11,7 @@ go_bandit([]() {
 
     bdd terminal_T(terminal_T_nf);
 
-    node_file terminal_F_nf;
+    shared_levelized_file<bdd::node_t> terminal_F_nf;
 
     { // Garbage collect writer to free write-lock
       node_writer nw(terminal_F_nf);
@@ -20,7 +20,7 @@ go_bandit([]() {
 
     bdd terminal_F(terminal_F_nf);
 
-    node_file bdd_1_nf;
+    shared_levelized_file<bdd::node_t> bdd_1_nf;
     /*
           1      ---- x0
          / \
@@ -44,7 +44,7 @@ go_bandit([]() {
 
     bdd bdd_1(bdd_1_nf);
 
-    node_file bdd_2_nf;
+    shared_levelized_file<bdd::node_t> bdd_2_nf;
     /*
            1     ---- x0
           / \

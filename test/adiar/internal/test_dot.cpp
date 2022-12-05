@@ -14,7 +14,7 @@ go_bandit([]() {
     });
 
     it("can output .dot for a BDD with internal nodes", [&]() {
-      node_file reduced_bdd;
+      shared_levelized_file<bdd::node_t> reduced_bdd;
 
       { // Garbage collect writer early
         node_writer rw(reduced_bdd);
@@ -55,7 +55,7 @@ go_bandit([]() {
     });
 
     it("can output .dot for a ZDD with internal nodes", [&]() {
-      node_file reduced_zdd;
+      shared_levelized_file<zdd::node_t> reduced_zdd;
 
       { // Garbage collect writer early
         node_writer rw(reduced_zdd);
@@ -87,7 +87,7 @@ go_bandit([]() {
 
     ////////////////////////////////////////////////////////////////////////////
     it("can output an unreduced diagram [internal API]", [&]() {
-      arc_file unreduced_bdd;
+      shared_levelized_file<arc> unreduced_bdd;
 
       { // Garbage collect writer early
         arc_writer uw(unreduced_bdd);

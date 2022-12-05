@@ -12,6 +12,7 @@ set(HEADERS
   data.h
   deprecated.h
   domain.h
+  file.h
   memory_mode.h
   statistics.h
 
@@ -73,7 +74,7 @@ set(HEADERS
   internal/io/levelized_file_stream.h
   internal/io/levelized_file_writer.h
 
-  internal/io/shared_file.h
+  internal/io/shared_file_ptr.h
 
   internal/io/arc_file.h
   internal/io/arc_stream.h
@@ -82,8 +83,6 @@ set(HEADERS
   internal/io/node_file.h
   internal/io/node_stream.h
   internal/io/node_writer.h
-
-  internal/io/simple_file.h
 )
 
 set(SOURCES
@@ -131,9 +130,6 @@ set(SOURCES
 
   # adiar/internal/data_structures
   internal/data_structures/levelized_priority_queue.cpp
-
-  # adiar/internal/io
-  internal/io/file.cpp
 )
 
 # ============================================================================ #

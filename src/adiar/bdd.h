@@ -19,7 +19,8 @@
 
 #include <adiar/assignment.h>
 #include <adiar/bool_op.h>
-#include <adiar/internal/io/simple_file.h>
+#include <adiar/file.h>
+
 #include <adiar/bdd/bdd.h>
 #include <adiar/zdd/zdd.h>
 
@@ -97,7 +98,7 @@ namespace adiar
   ///
   /// \pre        Labels in `vars` are provided in ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_and(const internal::label_file &vars);
+  bdd bdd_and(const shared_file<bdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      The BDD representing the logical 'or' of all the given
@@ -113,7 +114,7 @@ namespace adiar
   ///
   /// \pre        Labels in `vars` are provided in ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  bdd bdd_or(const internal::label_file &vars);
+  bdd bdd_or(const shared_file<bdd::label_t> &vars);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief           The BDD representing the function that is true exactly if
@@ -329,7 +330,7 @@ namespace adiar
   ///
   /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const bdd &f, const internal::assignment_file &xs);
+  __bdd bdd_restrict(const bdd &f, const shared_file<assignment_t> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existentially quantify a single variable.
@@ -356,10 +357,10 @@ namespace adiar
   ///
   /// \returns    \f$ \exists x_{i_1}, \dots, x_{i_k} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_exists(const bdd &f, const internal::label_file &vars);
+  __bdd bdd_exists(const bdd &f, const shared_file<bdd::label_t> &vars);
 
   /// \cond
-  __bdd bdd_exists(bdd &&f, const internal::label_file &vars);
+  __bdd bdd_exists(bdd &&f, const shared_file<bdd::label_t> &vars);
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
@@ -387,10 +388,10 @@ namespace adiar
   ///
   /// \returns    \f$ \forall x_{i_1}, \dots, x_{i_k} : f \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_forall(const bdd &f, const internal::label_file &vars);
+  __bdd bdd_forall(const bdd &f, const shared_file<bdd::label_t> &vars);
 
   /// \cond
-  __bdd bdd_forall(bdd &&f, const internal::label_file &vars);
+  __bdd bdd_forall(bdd &&f, const shared_file<bdd::label_t> &vars);
   /// \endcond
 
   /// \}
@@ -489,10 +490,10 @@ namespace adiar
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \returns An <tt>assignment_file</tt> with an assignment to every variable
-  ///          mentioned by the given BDD.
+  /// \returns A <tt>shared_file<assignment_t></tt> with an assignment to every
+  ///          variable mentioned by the given BDD.
   //////////////////////////////////////////////////////////////////////////////
-  internal::assignment_file bdd_satmin(const bdd &f);
+  shared_file<assignment_t> bdd_satmin(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
@@ -501,10 +502,10 @@ namespace adiar
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \returns An <tt>assignment_file</tt> with an assignment to every variable
-  ///          mentioned by the given BDD.
+  /// \returns A <tt>shared_file<assignment_t></tt> with an assignment to every
+  ///          variable mentioned by the given BDD.
   //////////////////////////////////////////////////////////////////////////////
-  internal::assignment_file bdd_satmax(const bdd &f);
+  shared_file<assignment_t> bdd_satmax(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment
@@ -528,12 +529,12 @@ namespace adiar
   ///
   /// \pre      Assignment tuples in `xs` is in ascending order
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_eval(const bdd &f, const internal::assignment_file &xs);
+  bool bdd_eval(const bdd &f, const shared_file<assignment_t> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Get the labels of the levels of the BDD
   //////////////////////////////////////////////////////////////////////////////
-  internal::label_file bdd_varprofile(const bdd &f);
+  shared_file<bdd::label_t> bdd_varprofile(const bdd &f);
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
@@ -556,7 +557,7 @@ namespace adiar
   ///
   /// \pre       Labels in `dom` are provided in ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_from(const zdd &A, const internal::label_file &dom);
+  __bdd bdd_from(const zdd &A, const shared_file<bdd::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \copybrief bdd_from

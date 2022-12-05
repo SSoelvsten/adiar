@@ -17,7 +17,8 @@ namespace adiar
   class ignore_levels
   {
   public:
-    static size_t pq1_upper_bound(const internal::node_file &in_1, const internal::node_file &in_2)
+    static size_t pq1_upper_bound(const internal::shared_levelized_file<zdd::node_t> &in_1,
+                                  const internal::shared_levelized_file<zdd::node_t> &in_2)
     {
       const safe_size_t max_2level_cut_1 = in_1->max_2level_cut[ct_1];
       const safe_size_t max_2level_cut_2 = in_2->max_2level_cut[ct_2];
@@ -25,7 +26,8 @@ namespace adiar
       return to_size(max_2level_cut_1 * max_2level_cut_2);
     }
 
-    static size_t pq2_upper_bound(const internal::node_file &in_1, const internal::node_file &in_2)
+    static size_t pq2_upper_bound(const internal::shared_levelized_file<zdd::node_t> &in_1,
+                                  const internal::shared_levelized_file<zdd::node_t> &in_2)
     {
       const safe_size_t max_1level_cut_1 = in_1->max_1level_cut[ct_1];
       const safe_size_t max_1level_cut_2 = in_2->max_1level_cut[ct_2];
@@ -39,7 +41,8 @@ namespace adiar
     }
 
   public:
-    ignore_levels(const internal::node_file &/*f1*/, const internal::node_file &/*f2*/)
+    ignore_levels(const internal::shared_levelized_file<zdd::node_t> &/*f1*/,
+                  const internal::shared_levelized_file<zdd::node_t> &/*f2*/)
     { /* do nothing */ }
 
     void next_level(zdd::label_t /* level */)

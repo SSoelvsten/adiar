@@ -8,7 +8,7 @@ namespace adiar
 {
   class zdd_contains_visitor
   {
-    internal::label_stream<> ls;
+    internal::file_stream<zdd::label_t> ls;
 
     bool has_l = false;
     zdd::label_t l;
@@ -22,7 +22,7 @@ namespace adiar
     bool terminal_val = false;
 
   public:
-    zdd_contains_visitor(const internal::label_file &labels) : ls(labels)
+    zdd_contains_visitor(const shared_file<zdd::label_t> &labels) : ls(labels)
     {
       has_l = ls.can_pull();
       l = has_l ? ls.pull() : 0;
@@ -56,7 +56,7 @@ namespace adiar
     { return terminal_val && (!has_l || l <= visited_label) && !ls.can_pull(); }
   };
 
-  bool zdd_contains(const zdd &zdd, const internal::label_file &labels)
+  bool zdd_contains(const zdd &zdd, const shared_file<zdd::label_t> &labels)
   {
     zdd_contains_visitor v(labels);
     internal::traverse(zdd, v);

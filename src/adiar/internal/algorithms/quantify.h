@@ -132,8 +132,7 @@ namespace adiar::internal
       }
     }
 
-    // Set-up for arc_file output
-    arc_file out_arcs;
+    shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
     pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);

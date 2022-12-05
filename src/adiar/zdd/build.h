@@ -24,7 +24,7 @@ namespace adiar
   /// \param set_size The threshold size to compare to
   //////////////////////////////////////////////////////////////////////////////
   template <typename pred_t = std::equal_to<zdd::label_t>>
-  zdd zdd_sized_sets(const internal::label_file &labels,
+  zdd zdd_sized_sets(const shared_file<zdd::label_t> &labels,
                      zdd::label_t set_size,
                      pred_t pred = std::equal_to<zdd::label_t>())
   {
@@ -78,10 +78,10 @@ namespace adiar
       if (!eq_terminal_val && !gt_terminal_val) { return zdd_null(); }
     }
 
-    internal::node_file nf;
+    internal::shared_levelized_file<zdd::node_t> nf;
     internal::node_writer nw(nf);
 
-    internal::label_stream<true> ls(labels);
+    internal::file_stream<zdd::label_t, true> ls(labels);
 
     // We use the id to store the number of elements, that we have already seen.
     // This does (often) make it non-canonical, but it does not seem worth the

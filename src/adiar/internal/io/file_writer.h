@@ -10,7 +10,6 @@
 #include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/simple_file.h>
 
 namespace adiar::internal
 {

@@ -19,35 +19,48 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  // Constructors
-  __zdd::__zdd() : internal::__dd()
+  // '__zdd' Constructors
+  __zdd::__zdd()
+    : internal::__dd()
   { }
 
-  __zdd::__zdd(const internal::node_file &f) : internal::__dd(f)
+  __zdd::__zdd(const internal::__dd::shared_nodes_t &f)
+    : internal::__dd(f)
   { }
 
-  __zdd::__zdd(const internal::arc_file &f) : internal::__dd(f)
+  __zdd::__zdd(const internal::__dd::shared_arcs_t &f)
+    : internal::__dd(f)
   { }
 
-  __zdd::__zdd(const zdd &dd) : internal::__dd(dd)
+  __zdd::__zdd(const zdd &dd)
+    : internal::__dd(dd)
   { }
 
-  zdd::zdd(const internal::node_file &f, bool negate) : internal::dd(f, negate)
+  //////////////////////////////////////////////////////////////////////////////
+  // 'zdd' Constructors
+  zdd::zdd(const internal::dd::shared_nodes_t &f, bool negate)
+    : internal::dd(f, negate)
   { }
 
-  zdd::zdd() : zdd(zdd_empty())
+  zdd::zdd()
+    : zdd(zdd_empty())
   { }
 
-  zdd::zdd(bool v) : zdd(zdd_terminal(v))
+  zdd::zdd(bool v)
+    : zdd(zdd_terminal(v))
   { }
 
-  zdd::zdd(const zdd &o) : internal::dd(o)
+  zdd::zdd(const zdd &o)
+    : internal::dd(o)
   { }
 
-  zdd::zdd(zdd &&o) : internal::dd(o)
+  zdd::zdd(zdd &&o)
+    : internal::dd(o)
   { }
 
-  zdd::zdd(__zdd &&o) : internal::dd(internal::reduce<zdd_policy>(std::forward<__zdd>(o))) { }
+  zdd::zdd(__zdd &&o)
+    : internal::dd(internal::reduce<zdd_policy>(std::forward<__zdd>(o)))
+  { }
 
   //////////////////////////////////////////////////////////////////////////////
   // Operators
@@ -178,21 +191,21 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
-  internal::label_file zdd_varprofile(const zdd &A)
+  shared_file<zdd::label_t> zdd_varprofile(const zdd &A)
   {
     return varprofile(A);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __zdd zdd_from(const bdd &f, const internal::label_file &dom)
+  __zdd zdd_from(const bdd &f, const shared_file<zdd::label_t> &dom)
   {
     return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>(f, dom);
   }
 
   __zdd zdd_from(const bdd &f)
   {
-    const internal::label_file dom = adiar_get_domain();
+    const shared_file<zdd::label_t> dom = adiar_get_domain();
     return internal::intercut<internal::convert_dd_policy<zdd_policy, bdd_policy>>(f, dom);
   }
 

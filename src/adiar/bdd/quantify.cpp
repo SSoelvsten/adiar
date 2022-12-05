@@ -57,7 +57,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
 # define multi_quantify_macro(bdd_var, labels, op)                           \
   if (labels->size() == 0) { return bdd_var; }                                \
-  internal::label_stream<> ls(labels);                                       \
+  internal::file_stream<bdd::label_t> ls(labels);                                       \
   while(true) {                                                              \
     if (is_terminal(bdd_var)) { return bdd_var; }                            \
                                                                              \
@@ -75,13 +75,13 @@ namespace adiar
     return internal::quantify<bdd_quantify_policy>(in_bdd, label, or_op);
   }
 
-  __bdd bdd_exists(const bdd &in_bdd, const internal::label_file &labels)
+  __bdd bdd_exists(const bdd &in_bdd, const shared_file<bdd::label_t> &labels)
   {
     bdd out = in_bdd;
     multi_quantify_macro(out, labels, or_op);
   }
 
-  __bdd bdd_exists(bdd &&in_bdd, const internal::label_file &labels)
+  __bdd bdd_exists(bdd &&in_bdd, const shared_file<bdd::label_t> &labels)
   {
     multi_quantify_macro(in_bdd, labels, or_op);
   }
@@ -91,13 +91,13 @@ namespace adiar
     return internal::quantify<bdd_quantify_policy>(in_bdd, label, and_op);
   }
 
-  __bdd bdd_forall(const bdd &in_bdd, const internal::label_file &labels)
+  __bdd bdd_forall(const bdd &in_bdd, const shared_file<bdd::label_t> &labels)
   {
     bdd out = in_bdd;
     multi_quantify_macro(out, labels, and_op);
   }
 
-  __bdd bdd_forall(bdd &&in_bdd, const internal::label_file &labels)
+  __bdd bdd_forall(bdd &&in_bdd, const shared_file<bdd::label_t> &labels)
   {
     multi_quantify_macro(in_bdd, labels, and_op);
   }

@@ -17,6 +17,14 @@ namespace adiar
   [[deprecated("Use 'bdd::MAX_LABEL' or 'zdd::MAX_LABEL' instead")]]
   constexpr internal::ptr_uint64::label_t MAX_LABEL = internal::ptr_uint64::MAX_LABEL;
 
+  /* ============================= ASSIGNMENT =============================== */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief A file of labels.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Use 'shared_file<label_t>' in 'adiar/file.h' instead")]]
+  typedef shared_file<internal::ptr_uint64::label_t> label_file;
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Level identifier.
   //////////////////////////////////////////////////////////////////////////////
@@ -32,22 +40,22 @@ namespace adiar
   /* ======================== SORTING SIMPLE FILES ========================== */
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Sorts the content of a <tt>simple_file</tt> given some sorting
-  /// predicate.
+  /// \brief Sorts the content of a <tt>shared_file_ptr</tt> given some sorting
+  ///        predicate.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename T, typename pred_t = std::less<>>
+  template<typename elem_t, typename pred_t = std::less<>>
   [[deprecated("Use 'f->sort()' in 'adiar/file.h'.")]]
-  void sort(internal::simple_file<T> f, pred_t pred = pred_t())
+  void sort(internal::shared_file_ptr<internal::file<elem_t>> f, pred_t pred = pred_t())
   { f->sort(pred); }
 
   ////////////////////////////////////////////////////////////////////////////
-  /// \brief Provides sorting for <tt>simple_file</tt>.
+  /// \brief Provides sorting for <tt>shared_file_ptr</tt>.
   ////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, typename pred_t = std::less<elem_t>>
   class [[deprecated("Use 'f->sort()' in 'adiar/file.h'.")]] simple_file_sorter
   {
   public:
-    static void sort(internal::simple_file<elem_t> f, pred_t pred = pred_t())
+    static void sort(internal::shared_file_ptr<internal::file<elem_t>> f, pred_t pred = pred_t())
     { f->sort(pred); }
   };
 
@@ -268,6 +276,12 @@ namespace adiar
   inline internal::node create_node(internal::node::label_t label, internal::node::id_t id, internal::node low, internal::node high)
   { return internal::node(label, id, low.uid(), high.uid()); }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Files of arcs to represent an unreduced decision diagram.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Use the 'shared_nodes_t' carried by the 'dd' class in 'adiar/internal/dd.h'")]]
+  typedef internal::shared_levelized_file<internal::node> node_file;
+
   /* ================================= ARC ================================== */
 
   [[deprecated("Use the 'arc' class type in 'adiar/internal/data_types/arc.h' directly")]]
@@ -279,6 +293,20 @@ namespace adiar
   [[deprecated("Replaced by member function with same name in 'adiar/internal/data_types/arc.h'")]]
   inline internal::node is_high(const internal::arc &a)
   { return a.is_high(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Files of arcs to represent an unreduced decision diagram.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Use the 'shared_arcs_t' carried by the '__dd' class in 'adiar/internal/dd.h'")]]
+  typedef internal::shared_levelized_file<internal::arc> arc_file;
+
+  /* ============================= ASSIGNMENT =============================== */
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief A file of assignments (label, value)
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Use 'shared_file<assignment>' in 'adiar/file.h' instead")]]
+  typedef shared_file<assignment> assignment_file;
 
   /* =========================== DECISION DIAGRAM =========================== */
 

@@ -2,7 +2,7 @@
 
 go_bandit([]() {
   describe("src/adiar/bdd.h", []() {
-    node_file x0_nf;
+    shared_levelized_file<bdd::node_t> x0_nf;
 
     {
       node_writer nw_0(x0_nf);
@@ -13,7 +13,7 @@ go_bandit([]() {
 
     bdd x0(x0_nf);
 
-    node_file x1_nf;
+    shared_levelized_file<bdd::node_t> x1_nf;
 
     {
       node_writer nw_1(x1_nf);
@@ -24,7 +24,7 @@ go_bandit([]() {
 
     bdd x1(x1_nf);
 
-    node_file x0_and_x1_nf;
+    shared_levelized_file<bdd::node_t> x0_and_x1_nf;
 
     {
       node_writer nw_01(x0_and_x1_nf);
@@ -41,7 +41,7 @@ go_bandit([]() {
     bdd x0_and_x1(x0_and_x1_nf);
     bdd x0_nand_x1(x0_and_x1_nf, true);
 
-    node_file terminal_T_nf;
+    shared_levelized_file<bdd::node_t> terminal_T_nf;
 
     {
       node_writer nw_T(terminal_T_nf);
@@ -50,7 +50,7 @@ go_bandit([]() {
 
     bdd terminal_T(terminal_T_nf);
 
-    node_file terminal_F_nf;
+    shared_levelized_file<bdd::node_t> terminal_F_nf;
 
     {
       node_writer nw_F(terminal_F_nf);
@@ -62,34 +62,34 @@ go_bandit([]() {
     describe("__bdd", [&]() {
       it("should copy-construct values from bdd", [&]() {
         __bdd t1 = bdd(x0_and_x1);
-        AssertThat(t1.has<node_file>(), Is().True());
-        AssertThat(t1.get<node_file>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t1.has<shared_levelized_file<bdd::node_t>>(), Is().True());
+        AssertThat(t1.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
       it("should copy-construct values from negated bdd", [&]() {
         __bdd t2 = bdd(x0_nand_x1);
-        AssertThat(t2.has<node_file>(), Is().True());
-        AssertThat(t2.get<node_file>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t2.has<shared_levelized_file<bdd::node_t>>(), Is().True());
+        AssertThat(t2.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t2.negate, Is().True());
       });
 
       it("should copy-construct values from __bdd", [&]() {
         __bdd t1 = x0_and_x1;
         __bdd t2 = t1;
-        AssertThat(t2.has<node_file>(), Is().True());
-        AssertThat(t2.get<node_file>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t2.has<shared_levelized_file<bdd::node_t>>(), Is().True());
+        AssertThat(t2.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t2.negate, Is().False());
       });
 
-      it("should copy-construct values from node_file", [&]() {
+      it("should copy-construct values from shared_levelized_file<bdd::node_t>", [&]() {
         __bdd t1 = x0_and_x1;
-        AssertThat(t1.has<node_file>(), Is().True());
-        AssertThat(t1.get<node_file>(), Is().EqualTo(x0_and_x1_nf));
+        AssertThat(t1.has<shared_levelized_file<bdd::node_t>>(), Is().True());
+        AssertThat(t1.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(x0_and_x1_nf));
         AssertThat(t1.negate, Is().False());
       });
 
-      arc_file af;
+      shared_levelized_file<arc> af;
 
       {
         arc_writer aw(af);
@@ -105,14 +105,14 @@ go_bandit([]() {
 
       af->max_1level_cut = 1;
 
-      it("should copy-construct values from arc_file", [&]() {
+      it("should copy-construct values from shared_levelized_file<arc>", [&]() {
         __bdd t1 = af;
-        AssertThat(t1.has<arc_file>(), Is().True());
-        AssertThat(t1.get<arc_file>(), Is().EqualTo(af));
+        AssertThat(t1.has<shared_levelized_file<arc>>(), Is().True());
+        AssertThat(t1.get<shared_levelized_file<arc>>(), Is().EqualTo(af));
         AssertThat(t1.negate, Is().False());
       });
 
-      it("should reduce on copy construct to bdd with arc_file", [&]() {
+      it("should reduce on copy construct to bdd with shared_levelized_file<arc>", [&]() {
         bdd out = __bdd(af);
         AssertThat(out, Is().EqualTo(x0));
       });
@@ -128,7 +128,7 @@ go_bandit([]() {
       AssertThat(t2, Is().EqualTo(terminal_F));
     });
 
-    it("should copy-construct node_file and negation back to bdd", [&]() {
+    it("should copy-construct shared_levelized_file<bdd::node_t> and negation back to bdd", [&]() {
       bdd t2 = bdd(__bdd(x0_and_x1));
       AssertThat(t2.file_ptr(), Is().EqualTo(x0_and_x1_nf));
       AssertThat(t2.is_negated(), Is().False());
@@ -151,7 +151,7 @@ go_bandit([]() {
         AssertThat(x0_and_x1, Is().Not().EqualTo(x0_nand_x1));
       });
 
-      node_file x0_and_x1_nf2;
+      shared_levelized_file<bdd::node_t> x0_and_x1_nf2;
 
       {
         node_writer nw_01(x0_and_x1_nf2);

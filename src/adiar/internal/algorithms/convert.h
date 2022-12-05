@@ -48,19 +48,19 @@ namespace adiar::internal
 
     static typename to_policy::reduced_t
     on_terminal_input(const bool terminal_value,
-                  const typename from_policy::reduced_t& /*dd*/,
-                  const label_file &dom)
+                      const typename from_policy::reduced_t& /*dd*/,
+                      const shared_file<typename from_policy::label_t> &dom)
     {
       adiar_debug(dom->size() > 0, "Emptiness check is before terminal check");
 
       node::uid_t prior_node = node::uid_t(terminal_value);
 
-      node_file nf;
+      shared_levelized_file<bdd::node_t> nf;
 
       bool has_output = true;
       node_writer nw(nf);
 
-      label_stream<true> ls(dom);
+      file_stream<typename from_policy::label_t, true> ls(dom);
 
       while(ls.can_pull()) {
         const typename to_policy::label_t next_label = ls.pull();
@@ -71,7 +71,7 @@ namespace adiar::internal
 
         const tuple children = from_policy::reduction_rule_inv(prior_node);
         const node next_node = node(next_label, to_policy::MAX_ID, children[0], children[1]);
-        const node::ptr_t reduction_result = to_policy::reduction_rule(next_node);
+        const typename to_policy::ptr_t reduction_result = to_policy::reduction_rule(next_node);
 
         if (reduction_result == next_node.uid()) { // Output
           prior_node = next_node.uid();

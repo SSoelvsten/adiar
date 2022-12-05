@@ -89,7 +89,8 @@ namespace adiar::internal
     out.close();
   }
 
-  inline void output_dot(const arc_file& arcs, const std::string &filename)
+  inline void output_dot(const shared_levelized_file<arc>& arcs,
+                         const std::string &filename)
   {
     std::ofstream out;
     out.open(filename);

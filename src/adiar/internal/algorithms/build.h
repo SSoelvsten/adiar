@@ -7,13 +7,13 @@
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/node_writer.h>
-#include <adiar/internal/io/simple_file.h>
+#include <adiar/internal/io/shared_file_ptr.h>
 
 namespace adiar::internal
 {
-  inline node_file build_terminal(bool value)
+  inline shared_levelized_file<node> build_terminal(bool value)
   {
-    node_file nf;
+    shared_levelized_file<node> nf;
     node_writer nw(nf);
     nw.unsafe_push(node(value));
 
@@ -22,13 +22,13 @@ namespace adiar::internal
     return nf;
   }
 
-  inline node_file build_ithvar(ptr_uint64::label_t label)
+  inline shared_levelized_file<node> build_ithvar(ptr_uint64::label_t label)
   {
-    adiar_assert(label <= ptr_uint64::MAX_LABEL, "Cannot represent that large a label");
+    adiar_assert(label <= node::ptr_t::MAX_LABEL, "Cannot represent that large a label");
 
-    node_file nf;
+    shared_levelized_file<node> nf;
     node_writer nw(nf);
-    nw.unsafe_push(node(label, ptr_uint64::MAX_ID,
+    nw.unsafe_push(node(label, node::ptr_t::MAX_ID,
                                ptr_uint64(false),
                                ptr_uint64(true)));
 
@@ -40,7 +40,7 @@ namespace adiar::internal
   template<bool on_empty, bool link_low, bool link_high,
     bool low_terminal_value = false,
     bool high_terminal_value = true>
-  inline node_file build_chain(const label_file &labels)
+  inline shared_levelized_file<node> build_chain(const shared_file<node::label_t> &labels)
     {
       const size_t number_of_levels = labels->size();
       if (number_of_levels == 0) {
@@ -50,15 +50,15 @@ namespace adiar::internal
       ptr_uint64 low = ptr_uint64(low_terminal_value);
       ptr_uint64 high = ptr_uint64(high_terminal_value);
 
-      node_file nf;
+      shared_levelized_file<bdd::node_t> nf;
       node_writer nw(nf);
 
-      label_stream<true> ls(labels);
+      file_stream<node::label_t, true> ls(labels);
       while(ls.can_pull()) {
-        ptr_uint64::label_t next_label = ls.pull();
-        node next_node = node(next_label, ptr_uint64::MAX_ID, low, high);
+        node::ptr_t::label_t next_label = ls.pull();
+        node next_node = node(next_label, node::ptr_t::MAX_ID, low, high);
 
-        adiar_assert(next_label <= ptr_uint64::MAX_LABEL, "Cannot represent that large a label");
+        adiar_assert(next_label <= node::ptr_t::MAX_LABEL, "Cannot represent that large a label");
         adiar_assert(high.is_terminal() || next_label < high.label(),
                      "Labels not given in increasing order");
 

@@ -2,31 +2,31 @@
 
 go_bandit([]() {
   describe("adiar/internal/algorithms/convert.h", []() {
-    label_file dom_012;
+    adiar::shared_file<node::label_t> dom_012;
     {
       label_writer w(dom_012);
       w << 0 << 1 << 2;
     }
 
-    label_file dom_0123;
+    adiar::shared_file<node::label_t> dom_0123;
     {
       label_writer w(dom_0123);
       w << 0 << 1 << 2 << 3;
     }
 
-    label_file dom_024;
+    adiar::shared_file<node::label_t> dom_024;
     {
       label_writer w(dom_024);
       w << 0 << 2 << 4;
     }
 
-    node_file nf_F;
+    shared_levelized_file<dd::node_t> nf_F;
     {
       node_writer w(nf_F);
       w << node(false);
     }
 
-    node_file nf_T;
+    shared_levelized_file<dd::node_t> nf_T;
     {
       node_writer w(nf_T);
       w << node(true);
@@ -35,19 +35,19 @@ go_bandit([]() {
     const ptr_uint64 terminal_F = ptr_uint64(false);
     const ptr_uint64 terminal_T = ptr_uint64(true);
 
-    node_file nf_x0;
+    shared_levelized_file<dd::node_t> nf_x0;
     {
       node_writer nw(nf_x0);
       nw << node(0, node::MAX_ID, terminal_F, terminal_T);
     }
 
-    node_file nf_x1;
+    shared_levelized_file<dd::node_t> nf_x1;
     {
       node_writer nw(nf_x1);
       nw << node(1, node::MAX_ID, terminal_F, terminal_T);
     }
 
-    node_file nf_x2;
+    shared_levelized_file<dd::node_t> nf_x2;
     {
       node_writer nw(nf_x2);
       nw << node(2, node::MAX_ID, terminal_F, terminal_T);
@@ -60,21 +60,21 @@ go_bandit([]() {
     zdd zdd_x1(nf_x1);
     zdd zdd_x2(nf_x2);
 
-    node_file nf_x0_null;
+    shared_levelized_file<dd::node_t> nf_x0_null;
     {
       node_writer nw(nf_x0_null);
       nw << node(0, node::MAX_ID, terminal_T, terminal_T);
     }
     zdd zdd_x0_null(nf_x0_null);
 
-    node_file nf_x1_null;
+    shared_levelized_file<dd::node_t> nf_x1_null;
     {
       node_writer nw(nf_x1_null);
       nw << node(1, node::MAX_ID, terminal_T, terminal_T);
     }
     zdd zdd_x1_null(nf_x1_null);
 
-    node_file nf_x2_null;
+    shared_levelized_file<dd::node_t> nf_x2_null;
     {
       node_writer nw(nf_x2_null);
       nw << node(2, node::MAX_ID, terminal_T, terminal_T);
@@ -83,7 +83,7 @@ go_bandit([]() {
 
     // Fig. 5 from Minato: "Zero-suppressed BDDs and their applications". This
     // is the ZDD version of Fig. 3 in the same paper.
-    node_file nf_minato_fig5;
+    shared_levelized_file<dd::node_t> nf_minato_fig5;
     {
       const node n2 = node(1, node::MAX_ID, terminal_F, terminal_T);
       const node n1 = node(0, node::MAX_ID, n2.uid(), terminal_T);
@@ -101,7 +101,7 @@ go_bandit([]() {
 
     describe("bdd_from(const zdd&, const label_file&)", [&]() {
       it("returns F terminal on Ø with dom = Ø", [&]() {
-        label_file dom_empty;
+        adiar::shared_file<node::label_t> dom_empty;
         __bdd out = bdd_from(zdd_F, dom_empty);
 
         node_test_stream out_nodes(out);
@@ -116,7 +116,7 @@ go_bandit([]() {
       });
 
       it("returns T terminal on { Ø } with dom = Ø", [&]() {
-        label_file dom_empty;
+        adiar::shared_file<node::label_t> dom_empty;
         __bdd out = bdd_from(zdd_T, dom_empty);
 
         node_test_stream out_nodes(out);
@@ -263,7 +263,7 @@ go_bandit([]() {
       });
 
       it("kills root and returns T terminal on { Ø, { 0 } } with dom = { 0 }", [&]() {
-        label_file dom_0;
+        adiar::shared_file<node::label_t> dom_0;
         {
           label_writer lw(dom_0);
           lw << 0;
@@ -379,7 +379,7 @@ go_bandit([]() {
       });
 
       it("collapses to T terminal on pow(dom) with dom = { 0,1,2 }", [&]() {
-        node_file nf_pow_dom;
+        shared_levelized_file<bdd::node_t> nf_pow_dom;
         {
           const node n2 = node(2, node::MAX_ID, terminal_T, terminal_T);
           const node n1 = node(1, node::MAX_ID, n2.uid(), n2.uid());
@@ -404,7 +404,7 @@ go_bandit([]() {
       });
 
       it("collapses to T terminal on pow(dom) with dom = { 0,2,4 }", [&]() {
-        node_file nf_pow_dom;
+        shared_levelized_file<zdd::node_t> nf_pow_dom;
         {
           const node n2 = node(4, node::MAX_ID, terminal_T, terminal_T);
           const node n1 = node(2, node::MAX_ID, n2.uid(), n2.uid());
@@ -439,7 +439,7 @@ go_bandit([]() {
                   F T
         */
 
-        node_file nf;
+        shared_levelized_file<zdd::node_t> nf;
         {
           const node n4 = node(2, node::MAX_ID,   terminal_F, terminal_T);
           const node n3 = node(1, node::MAX_ID,   n4.uid(), n4.uid());
@@ -605,7 +605,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 11 (dom = { 0,1,2,3 })", [&]() {
-        node_file nf;
+        shared_levelized_file<zdd::node_t> nf;
         {
           const node n3 = node(3, node::MAX_ID, terminal_T, terminal_T);
           const node n2 = node(2, node::MAX_ID, n3.uid(), n3.uid());
@@ -665,7 +665,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 15 (dom = { 0,1,2 })", [&]() {
-        node_file nf;
+        shared_levelized_file<zdd::node_t> nf;
         {
           const node n3 = node(2, node::MAX_ID, terminal_F, terminal_T);
           const node n2 = node(1, node::MAX_ID, n3.uid(), terminal_T);
@@ -729,7 +729,7 @@ go_bandit([]() {
 
       // Other large cases
       it("converts { Ø, { 0,1 }, { 0,2 }, { 1,2 } } with dom = { 0,1,2 } only adding true-chain", [&]() {
-        node_file nf_in;
+        shared_levelized_file<zdd::node_t> nf_in;
         // In dom = { 0,1,2 }
         /*
               _1_      ---- x0
@@ -805,13 +805,13 @@ go_bandit([]() {
       });
 
       it("bridges over root and others, and creates pre and post chains", [&]() {
-        label_file dom;
+        adiar::shared_file<node::label_t> dom;
         {
           label_writer w(dom);
           w << 0 << 1 << 2 << 3 << 4 << 5 << 6;
         }
 
-        node_file in;
+        shared_levelized_file<zdd::node_t> in;
         /*
                               ---- x0
 
@@ -1015,7 +1015,7 @@ go_bandit([]() {
 
     describe("zdd_from(const bdd&, const label_file&)", [&]() {
       it("returns Ø on F terminal with dom = Ø", [&]() {
-        label_file dom_empty;
+        adiar::shared_file<node::label_t> dom_empty;
         __zdd out = zdd_from(bdd_F, dom_empty);
 
         node_test_stream out_nodes(out);
@@ -1030,7 +1030,7 @@ go_bandit([]() {
       });
 
       it("returns { Ø } on T terminal with dom = Ø", [&]() {
-        label_file dom_empty;
+        adiar::shared_file<node::label_t> dom_empty;
         __zdd out = zdd_from(bdd_T, dom_empty);
 
         node_test_stream out_nodes(out);
@@ -1177,7 +1177,7 @@ go_bandit([]() {
       });
 
       it("kills and bridges root on ~x1 with dom = { 0,1,2 }", [&]() {
-        node_file nf;
+        shared_levelized_file<bdd::node_t> nf;
         {
           node_writer nw(nf);
           nw << node(1, node::MAX_ID, terminal_T, terminal_F);
@@ -1216,13 +1216,13 @@ go_bandit([]() {
       });
 
       it("kills root into { Ø } on ~x0 into with dom = { 0 }", [&]() {
-        label_file dom;
+        adiar::shared_file<node::label_t> dom;
         {
           label_writer w(dom);
           w << 0;
         }
 
-        node_file nf;
+        shared_levelized_file<bdd::node_t> nf;
         {
           node_writer nw(nf);
           nw << node(0, node::MAX_ID, terminal_T, terminal_F);
@@ -1243,7 +1243,7 @@ go_bandit([]() {
       });
 
       it("collapses false-chain into { Ø } on with dom = { 0,2,4 }", [&]() {
-        node_file nf;
+        shared_levelized_file<bdd::node_t> nf;
         {
           const node n3 = node(4, node::MAX_ID, terminal_T, terminal_F);
           const node n2 = node(2, node::MAX_ID, n3.uid(), terminal_F);
@@ -1269,7 +1269,7 @@ go_bandit([]() {
 
       // Minato examples
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2 } ", [&]() {
-        node_file nf;
+        shared_levelized_file<bdd::node_t> nf;
         {
           const node n4 = node(2, node::MAX_ID,   terminal_T, terminal_F);
           const node n3 = node(1, node::MAX_ID,   n4.uid(), terminal_F);
@@ -1313,7 +1313,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2,3 } ", [&]() {
-        node_file nf;
+        shared_levelized_file<bdd::node_t> nf;
         {
           const node n5 = node(3, node::MAX_ID,   terminal_T, terminal_F);
           const node n4 = node(2, node::MAX_ID,   n5.uid(), terminal_F);
@@ -1358,7 +1358,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 11 with dom = { 0,1,2,3 } ", [&]() {
-        node_file nf;
+        shared_levelized_file<bdd::node_t> nf;
         {
           const node n4 = node(3, node::MAX_ID,   terminal_T, terminal_F);
           const node n3 = node(2, node::MAX_ID,   n4.uid(), terminal_F);
@@ -1411,7 +1411,7 @@ go_bandit([]() {
       });
 
       it("converts [Minato] Fig. 15 with dom = { 0,1,2 } ", [&]() {
-        node_file nf;
+        shared_levelized_file<bdd::node_t> nf;
         {
           const node n5 = node(2, node::MAX_ID,   terminal_F, terminal_T);
           const node n4 = node(2, node::MAX_ID-1, terminal_T, terminal_F);
@@ -1505,7 +1505,7 @@ go_bandit([]() {
       });
 
       it("collapses false-chain into { Ø } on with set dom = { 0,2,4 }", [&]() {
-        node_file nf;
+        shared_levelized_file<bdd::node_t> nf;
         {
           const node n3 = node(4, node::MAX_ID, terminal_T, terminal_F);
           const node n2 = node(2, node::MAX_ID, n3.uid(), terminal_F);

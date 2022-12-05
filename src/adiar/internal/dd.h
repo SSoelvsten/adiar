@@ -12,6 +12,12 @@
 
 namespace adiar::internal
 {
+  // TODO (MDD):
+  // TODO (QMDD):
+  // TODO (ADD (64-bit)):
+  //   template both 'dd' and '__dd' with the node type (and derive the
+  //   corresponding arc type).
+
   class dd;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -26,10 +32,10 @@ namespace adiar::internal
   /// will call the correct reduce algorithm.
   ///
   /// An algorithm may return a node-based decision diagram in a
-  /// \ref node_file or a yet to-be reduced decision diagram in an
-  /// \ref arc_file. So, we use a `std::variant` to hold the the
-  /// \ref node_file or \ref arc_file without having to pay for the
-  /// expensive constructors and use a lot of space. The implicit
+  /// \ref shared_levelized_file<node> or a yet to-be reduced decision diagram in
+  /// in an \ref shared_levelized_file<arc>. So, we use a `std::variant` to hold
+  /// the \ref shared_levelized_file<node> or \ref shared_levelized_file<arc>
+  /// without having to pay for the expensive constructors and use a lot of space.
   ///
   /// A third possiblity is for it to contain a `std::monostate`, i.e. \ref
   /// no_file, such that an algorithm can return 'null' in some specific places.
@@ -40,8 +46,30 @@ namespace adiar::internal
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
-    // Union of node_file and arc_file (with std::monostate for 'error')
-    const std::variant<no_file, node_file, arc_file> _union;
+    /// \brief Type of nodes of this diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef node node_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the file object node-based representation of a diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef shared_levelized_file<node_t> shared_nodes_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of nodes of this diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef arc arc_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the file object arc-based representation of a diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef shared_levelized_file<arc_t> shared_arcs_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Union of levelized node or arc files to reflect the possible return types
+    // of a function and a 'no_file' for 'error'.
+    const std::variant<no_file, /*const*/ shared_nodes_t, /*const*/ shared_arcs_t>
+    _union;
 
     ////////////////////////////////////////////////////////////////////////////
     // Propagating the negation flag below
@@ -52,26 +80,27 @@ namespace adiar::internal
     __dd()
     { }
 
-    __dd(const node_file &f) : _union(f)
+    __dd(const shared_nodes_t &f) : _union(f)
     { }
 
-    __dd(const arc_file &f) : _union(f)
+    __dd(const shared_arcs_t &f) : _union(f)
     { }
 
     __dd(const dd &dd);
 
     ////////////////////////////////////////////////////////////////////////////
     // Accessors
-    template<typename T>
+    // TODO: change from 'file_t' to 'elem_t'.
+    template<typename file_t>
     bool has() const
     {
-      return std::holds_alternative<T>(_union);
+      return std::holds_alternative<file_t>(_union);
     }
 
-    template<typename T>
-    const T& get() const
+    template<typename file_t>
+    const file_t& get() const
     {
-      return std::get<T>(_union);
+      return std::get<file_t>(_union);
     }
 
     bool empty() const
@@ -105,7 +134,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's variable label.
     ////////////////////////////////////////////////////////////////////////////
-    typedef typename node_t::label_t label_t;
+    typedef node_t::label_t label_t;
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief The maximal possible value for a unique identifier's label.
@@ -126,20 +155,29 @@ namespace adiar::internal
     // Internal state
   protected:
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief File type for the file object representing the diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef levelized_file<node_t> nodes_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief File type for the shared file object representing the diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef shared_file_ptr<nodes_t> shared_nodes_t;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief The file describing the actual DAG of the decision diagram.
     ////////////////////////////////////////////////////////////////////////////
-    node_file file;
+    shared_nodes_t file;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether to negate the leaves when reading nodes from the file.
     ////////////////////////////////////////////////////////////////////////////
-    bool negate = false;
+    bool negate = false; // TODO: move to 'bdd' or generalize to 'attribute'?
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \internal
-    ///
-    /// \brief Release claim on the underlying file and (possibly) garbage
-    ///        collect it.
+    /// \brief Release claim on the underlying file. If this class is the sole
+    ///        owner of that file object, then it is destructed, i.e. garbage
+    ///        collected.
     ////////////////////////////////////////////////////////////////////////////
     void free()
     {
@@ -149,7 +187,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
   public:
-    dd(const node_file &f, bool negate = false)
+    dd(const shared_nodes_t &f, bool negate = false)
       : file(f), negate(negate)
     { }
 
@@ -169,7 +207,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Read-only access to the raw files and meta information.
     ////////////////////////////////////////////////////////////////////////////
-    const shared_ptr<const levelized_file<node>> file_ptr() const
+    const shared_nodes_t file_ptr() const
     {
       return file;
     }
@@ -179,7 +217,7 @@ namespace adiar::internal
     ///        information, i.e. this is similar to writing
     ///        `.file_ptr()->`.
     ////////////////////////////////////////////////////////////////////////////
-    const levelized_file<node>* operator->() const
+    const nodes_t* operator->() const
     {
       return file_ptr().get();
     }
@@ -275,7 +313,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_terminal(const dd &dd)
   {
-    return is_terminal(dd.file);
+    return dd->is_terminal();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -283,7 +321,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline bool value_of(const dd &dd)
   {
-    return dd.negate ^ value_of(dd.file);
+    return dd.negate ^ dd->value();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -307,7 +345,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline dd::label_t min_label(const dd &dd)
   {
-    return min_label(dd.file);
+    return dd->first_level();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -315,7 +353,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline dd::label_t max_label(const dd &dd)
   {
-    return max_label(dd.file);
+    return dd->last_level();
   }
 
   template<typename dd_type, typename __dd_type>
@@ -371,18 +409,26 @@ namespace adiar::internal
     static constexpr id_t MAX_ID = dd_type::MAX_ID;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of shared nodes for this diagram type.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef typename __dd_type::shared_nodes_t shared_nodes_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of shared arcs for this diagram type.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef typename __dd_type::shared_arcs_t shared_arcs_t;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Function declaration
   public:
-    static inline ptr_uint64
-    reduction_rule(const typename dd_type::node_t &n);
+    static inline ptr_t
+    reduction_rule(const node_t &n);
 
-    static inline node::children_t
-    reduction_rule_inv(const typename dd_type::ptr_t &child);
+    static inline typename node_t::children_t
+    reduction_rule_inv(const ptr_t &child);
 
     static inline void
-    compute_cofactor(bool on_curr_level,
-                     typename dd_type::ptr_t &low,
-                     typename dd_type::ptr_t &high);
+    compute_cofactor(bool on_curr_level, ptr_t &low, ptr_t &high);
   };
 }
 

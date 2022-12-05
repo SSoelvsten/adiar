@@ -241,7 +241,7 @@ go_bandit([]() {
 
     describe("bdd_and", [&]() {
       it("can create {x1, x2, x5}", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -298,7 +298,7 @@ go_bandit([]() {
       });
 
       it("can create {} as trivially true", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         bdd res = bdd_and(labels);
         node_test_stream ns(res);
@@ -329,7 +329,7 @@ go_bandit([]() {
 
     describe("bdd_or", [&]() {
       it("can create {x1, x2, x5}", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -386,7 +386,7 @@ go_bandit([]() {
       });
 
       it("can create {} as trivially false", [&]() {
-        label_file labels;
+        adiar::shared_file<bdd::label_t> labels;
 
         bdd res = bdd_or(labels);
         node_test_stream ns(res);

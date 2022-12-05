@@ -3,18 +3,6 @@
 #include <array>
 #include <filesystem>
 
-namespace adiar::internal
-{
-  template <>
-  struct FILE_CONSTANTS<int>
-  {
-    static constexpr size_t files = 2u;
-
-    struct stats
-    { /* No extra 'int' specific variables */ };
-  };
-}
-
 go_bandit([]() {
   describe("adiar/internal/io/levelized_file.h , levelized_file_stream.h , levelized_file_writer.h", []() {
     // The default folder for temporary files is '/tmp/' on Ubuntu and '/var/tmp/'
