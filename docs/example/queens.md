@@ -261,7 +261,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       adiar::sort(forced, sort_by_column(N));
 
       // Copy the rest of the assignment into 'partial_assignment'
-      adiar::assignment_stream<> fas(forced);
+      adiar::internal::file_stream<adiar::assignment> fas(forced);
       while (fas.can_pull()) {
         adiar::assignment a = fas.pull();
         if (value_of(a)) {

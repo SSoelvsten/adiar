@@ -5,7 +5,7 @@ go_bandit([]() {
     ptr_uint64 terminal_T = ptr_uint64(true);
     ptr_uint64 terminal_F = ptr_uint64(false);
 
-    node_file bdd;
+    shared_levelized_file<bdd::node_t> bdd;
     /*
                1           ---- x0
               / \
@@ -29,7 +29,7 @@ go_bandit([]() {
       nw << n5 << n4 << n3 << n2 << n1;
     }
 
-    node_file skip_bdd;
+    shared_levelized_file<bdd::node_t> skip_bdd;
     /*
              1      ---- x0
             / \
@@ -54,7 +54,7 @@ go_bandit([]() {
       skip_nw << skip_n4 << skip_n3 << skip_n2 << skip_n1;
     }
 
-    node_file non_zero_bdd;
+    shared_levelized_file<bdd::node_t> non_zero_bdd;
     /*
                    ---- x0
 
@@ -68,24 +68,24 @@ go_bandit([]() {
       nw << node(1,0, terminal_F, terminal_T);
     }
 
-    node_file bdd_F;
+    shared_levelized_file<bdd::node_t> bdd_F;
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_F);
       nw << node(false);
     }
 
-    node_file bdd_T;
+    shared_levelized_file<bdd::node_t> bdd_T;
     { // Garbage collect writer to free write-lock
       node_writer nw(bdd_T);
       nw << node(true);
     }
 
-    describe("bdd_eval(bdd, assignment_file)", [&]() {
+    describe("bdd_eval(bdd, adiar::shared_file<assignment_t>)", [&]() {
       it("returns F on test BDD with assignment (F,F,F,T)", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, false)
              << create_assignment(1, false)
@@ -97,10 +97,10 @@ go_bandit([]() {
       });
 
       it("returns F on test BDD with assignment (F,_,F,T)", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, false)
              << create_assignment(2, false)
@@ -111,10 +111,10 @@ go_bandit([]() {
       });
 
       it("returns T on test BDD with assignment (F,T,T,T)", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, false)
              << create_assignment(1, true)
@@ -126,10 +126,10 @@ go_bandit([]() {
       });
 
       it("returns F on test BDD with assignment (T,F,F,T)", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, true)
              << create_assignment(1, false)
@@ -141,10 +141,10 @@ go_bandit([]() {
       });
 
       it("returns T on test BDD with assignment (T,F,T,F)", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, true)
              << create_assignment(1, false)
@@ -156,10 +156,10 @@ go_bandit([]() {
       });
 
       it("returns T on test BDD with assignment (T,T,F,T)", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, true)
              << create_assignment(1, true)
@@ -171,10 +171,10 @@ go_bandit([]() {
       });
 
       it("returns T on test BDD with assignment (T,T,T,F)", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, true)
              << create_assignment(1, true)
@@ -186,10 +186,10 @@ go_bandit([]() {
       });
 
       it("returns T on test BDD with assignment (T,T,T,T)", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, true)
              << create_assignment(1, true)
@@ -201,10 +201,10 @@ go_bandit([]() {
       });
 
       it("should be able to evaluate BDD that skips level [1]", [&skip_bdd]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, false)
              << create_assignment(1, true)
@@ -217,10 +217,10 @@ go_bandit([]() {
       });
 
       it("should be able to evaluate BDD that skips level [2]", [&skip_bdd]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, true)
              << create_assignment(1, false)
@@ -233,10 +233,10 @@ go_bandit([]() {
       });
 
       it("returns T on BDD with non-zero root with assignment (F,T)", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, false)
              << create_assignment(1, true);
@@ -246,10 +246,10 @@ go_bandit([]() {
       });
 
       it("returns F on F terminal-only BDD", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, true)
              << create_assignment(1, false)
@@ -261,16 +261,16 @@ go_bandit([]() {
       });
 
       it("returns F on F terminal-only BDD with empty assignment", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         AssertThat(bdd_eval(bdd_F, assignment), Is().False());
       });
 
       it("returns T on T terminal-only BDD", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         { // Garbage collect writer to free write-lock
-          assignment_writer aw(assignment);
+           adiar::file_writer<assignment_t> aw(assignment);
 
           aw << create_assignment(0, true)
              << create_assignment(1, true)
@@ -282,7 +282,7 @@ go_bandit([]() {
       });
 
       it("returns T on T terminal-only BDD with empty assignment", [&]() {
-        assignment_file assignment;
+        adiar::shared_file<assignment_t> assignment;
 
         AssertThat(bdd_eval(bdd_T, assignment), Is().True());
       });

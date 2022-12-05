@@ -38,13 +38,13 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   class bdd_eval_file_visitor
   {
-    internal::assignment_stream<> as;
+    internal::file_stream<assignment_t> as;
     assignment_t a;
 
     bool result = false;
 
   public:
-    bdd_eval_file_visitor(const internal::assignment_file& af) : as(af)
+    bdd_eval_file_visitor(const shared_file<assignment_t>& af) : as(af)
     { if (as.can_pull()) { a = as.pull(); } }
 
     inline bdd::ptr_t visit(const bdd::node_t &n)
@@ -66,7 +66,7 @@ namespace adiar
     { return result; }
   };
 
-  bool bdd_eval(const bdd &bdd, const internal::assignment_file &af)
+  bool bdd_eval(const bdd &bdd, const shared_file<assignment_t> &af)
   {
     bdd_eval_file_visitor v(af);
     internal::traverse(bdd, v);

@@ -10,7 +10,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Levelized file stream with additional logic for arc files.
   ///
-  /// \sa arc_file
+  /// \sa shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
   template<bool reverse = false>
   class arc_stream : public levelized_file_stream<arc, !reverse>
@@ -52,7 +52,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream unattached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const arc_file &file, bool negate = false)
+    arc_stream(const shared_levelized_file<arc> &file, bool negate = false)
       : parent_t(file, negate)
       , _unread_terminals{ file->number_of_terminals[false],
                            file->number_of_terminals[true] }

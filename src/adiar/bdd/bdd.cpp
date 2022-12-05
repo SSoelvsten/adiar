@@ -16,35 +16,47 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  // Constructors
-  __bdd::__bdd() : internal::__dd()
+  // '__bdd' Constructors
+  __bdd::__bdd()
+    : internal::__dd()
   { }
 
-  __bdd::__bdd(const internal::node_file &f) : internal::__dd(f)
+  __bdd::__bdd(const internal::__dd::shared_nodes_t &f)
+    : internal::__dd(f)
   { }
 
-  __bdd::__bdd(const internal::arc_file &f) : internal::__dd(f)
+  __bdd::__bdd(const internal::__dd::shared_arcs_t &f)
+    : internal::__dd(f)
   { }
 
-  __bdd::__bdd(const bdd &dd) : internal::__dd(dd)
+  __bdd::__bdd(const bdd &dd)
+    : internal::__dd(dd)
   { }
 
-  bdd::bdd(const internal::node_file &f, bool negate) : internal::dd(f, negate)
+  //////////////////////////////////////////////////////////////////////////////
+  // 'bdd' Constructors
+  bdd::bdd(const internal::dd::shared_nodes_t &f, bool negate)
+    : internal::dd(f, negate)
   { }
 
-  bdd::bdd(const bdd &o) : internal::dd(o)
+  bdd::bdd(const bdd &o)
+    : internal::dd(o)
   { }
 
-  bdd::bdd(bdd &&o) : internal::dd(o)
+  bdd::bdd(bdd &&o)
+    : internal::dd(o)
   { }
 
-  bdd::bdd(__bdd &&o) : internal::dd(internal::reduce<bdd_policy>(std::forward<__bdd>(o)))
+  bdd::bdd(__bdd &&o)
+    : internal::dd(internal::reduce<bdd_policy>(std::forward<__bdd>(o)))
   { }
 
-  bdd::bdd(bool v) : bdd(bdd_terminal(v))
+  bdd::bdd(bool v)
+    : bdd(bdd_terminal(v))
   { }
 
-  bdd::bdd() : bdd(false)
+  bdd::bdd()
+    : bdd(false)
   { }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -144,21 +156,21 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Input variables
-  internal::label_file bdd_varprofile(const bdd &f)
+  shared_file<bdd::label_t> bdd_varprofile(const bdd &f)
   {
     return varprofile(f);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // Conversion
-  __bdd bdd_from(const zdd &A, const internal::label_file &dom)
+  __bdd bdd_from(const zdd &A, const shared_file<bdd::label_t> &dom)
   {
     return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>(A, dom);
   }
 
   __bdd bdd_from(const zdd &A)
   {
-    const internal::label_file dom = adiar_get_domain();
+    const shared_file<bdd::label_t> dom = adiar_get_domain();
     return internal::intercut<internal::convert_dd_policy<bdd_policy, zdd_policy>>(A, dom);
   }
 

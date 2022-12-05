@@ -14,7 +14,7 @@ namespace adiar
   {
     visitor __visitor;
 
-    internal::assignment_file af;
+    shared_file<assignment_t> af;
     internal::assignment_writer aw;
 
     internal::level_info_stream<> ms;
@@ -47,20 +47,20 @@ namespace adiar
       }
     }
 
-    const internal::assignment_file get_result() const
+    const shared_file<assignment_t> get_result() const
     {
       return af;
     }
   };
 
-  internal::assignment_file bdd_satmin(const bdd &f)
+  shared_file<assignment_t> bdd_satmin(const bdd &f)
   {
     bdd_sat_assignment_writer_visitor<internal::traverse_satmin_visitor, false> v(f);
     internal::traverse(f,v);
     return v.get_result();
   }
 
-  internal::assignment_file bdd_satmax(const bdd &f)
+  shared_file<assignment_t> bdd_satmax(const bdd &f)
   {
     bdd_sat_assignment_writer_visitor<internal::traverse_satmax_visitor, true> v(f);
     internal::traverse(f,v);

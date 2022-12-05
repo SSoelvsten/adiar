@@ -49,13 +49,13 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  internal::label_file
-  extract_non_dom(const zdd &dd, const internal::label_file &dom)
+  shared_file<zdd::label_t>
+  extract_non_dom(const zdd &dd, const shared_file<zdd::label_t> &dom)
   {
-    internal::label_file dom_inv;
+    shared_file<zdd::label_t> dom_inv;
     internal::label_writer diw(dom_inv);
 
-    internal::label_stream<> ls(dom);
+    internal::file_stream<zdd::label_t> ls(dom);
     internal::level_info_stream<> dd_meta(dd);
 
     while (dd_meta.can_pull()) {
@@ -86,11 +86,11 @@ namespace adiar
                                                                             \
   if (dom->size() == 0) { return zdd_null(); }                               \
                                                                             \
-  internal::label_file dom_inv = extract_non_dom(zdd_var, dom);   \
+  shared_file<zdd::label_t> dom_inv = extract_non_dom(zdd_var, dom);   \
                                                                             \
   if (dom_inv->size() == zdd_varcount(zdd_var)) { return zdd_null(); }       \
                                                                             \
-  internal::label_stream<> ls(dom_inv);                                     \
+  internal::file_stream<zdd::label_t> ls(dom_inv);                                     \
   while (ls.can_pull()) {                                                   \
     if (is_terminal(zdd_var)) { return zdd_var; };                          \
                                                                             \
@@ -98,13 +98,13 @@ namespace adiar
   }                                                                         \
   return zdd_var;                                                           \
 
-  zdd zdd_project(const zdd &dd, const internal::label_file &dom)
+  zdd zdd_project(const zdd &dd, const shared_file<zdd::label_t> &dom)
   {
     zdd temp = dd;
     multi_project_macro(temp, dom);
   }
 
-  zdd zdd_project(zdd &&dd, const internal::label_file &dom)
+  zdd zdd_project(zdd &&dd, const shared_file<zdd::label_t> &dom)
   {
     multi_project_macro(dd, dom);
   }

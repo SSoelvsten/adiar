@@ -11,7 +11,7 @@ namespace adiar
   template<internal::substitute_act FIX_VALUE>
   class zdd_subset_label_act
   {
-    internal::label_stream<> ls;
+    internal::file_stream<zdd::label_t> ls;
 
     zdd::label_t l_incl;
     zdd::label_t l_excl;
@@ -22,7 +22,7 @@ namespace adiar
     zdd::label_t alg_level = 0;
 
   public:
-    typedef internal::label_file action_t;
+    typedef shared_file<zdd::label_t> action_t;
 
     zdd_subset_label_act(const action_t &lf) : ls(lf)
     {
@@ -101,11 +101,12 @@ namespace adiar
     { return zdd_terminal(terminal_val); }
   };
 
-  __zdd zdd_offset(const zdd &dd, const internal::label_file &l)
+  __zdd zdd_offset(const zdd &dd, const shared_file<zdd::label_t> &l)
   {
     if (l->size() == 0
         || is_terminal(dd)
-        || internal::disjoint_labels<internal::label_file, internal::label_stream<>>(l, dd)) {
+        || internal::disjoint_labels<shared_file<zdd::label_t>,
+                                     internal::file_stream<zdd::label_t>>(l, dd)) {
       return dd;
     }
 
@@ -159,10 +160,11 @@ namespace adiar
     }
   };
 
-  __zdd zdd_onset(const zdd &dd, const internal::label_file &l)
+  __zdd zdd_onset(const zdd &dd, const shared_file<zdd::label_t> &l)
   {
     if (l->size() == 0 || (is_false(dd))) { return dd; }
-    if ((is_true(dd)) || internal::disjoint_labels<internal::label_file, internal::label_stream<>>(l, dd)) {
+    if ((is_true(dd)) || internal::disjoint_labels<shared_file<zdd::label_t>,
+                                                   internal::file_stream<zdd::label_t>>(l, dd)) {
       return zdd_empty();
     }
 

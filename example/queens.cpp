@@ -248,7 +248,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
     partial_assignment.push_back(row_q);
 
     // Construct the assignment for this entire column
-    adiar::assignment_file column_assignment;
+    adiar::shared_file<assignment_t> column_assignment;
 
     { // The assignment_writer has to be detached, before we call any bdd
       // functions. It is automatically detached upon destruction, hence we have
@@ -267,7 +267,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
       // Obtain the lexicographically minimal true assignment. Well, only one
       // exists, so we get the only one left.
-      adiar::assignment_file forced_assignment = adiar::bdd_satmin(restricted_constraints);
+      adiar::shared_file<assignment_t> forced_assignment = adiar::bdd_satmin(restricted_constraints);
 
       // Sort the variables back in order of the columns, rather than rows.
       struct sort_by_column
@@ -287,7 +287,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       forced_assignment->sort(sort_by_column(N));
 
       // Copy the rest of the assignment into 'partial_assignment'
-      adiar::assignment_stream<> fas(forced_assignment);
+      adiar::internal::file_stream<adiar::assignment> fas(forced_assignment);
       while (fas.can_pull()) {
         adiar::assignment a = fas.pull();
         if (value_of(a)) {

@@ -18,7 +18,8 @@ namespace adiar::internal
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Available types of cuts. This should be used with the
-  ///        `max_ilevel_cut` variables in \ref node_file and \ref arc_file.
+  ///        `max_ilevel_cut` variables in \ref shared_levelized_file<node>
+  ///        in and \ref shared_levelized_file<arc>.
   ////////////////////////////////////////////////////////////////////////////
   enum cut_type {
     /** Internal arcs only */

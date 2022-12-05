@@ -18,21 +18,37 @@ namespace adiar::internal
   extern stats_t::equality_t stats_equality;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Given two node files, computes whether they are isomorphic; i.e.
-  /// whether they are equivalent.
+  /// \brief Compute whether two shared levelized node files (with associated
+  ///        negation flags) are isomorphic.
   ///
-  /// Checks whether the two files are isomorphic, i.e. whether there is a
-  /// structure-preserving mapping between f1 and f2. This assumes, that both
-  /// files are of a unique reduced form.
+  /// \details Checks whether the two files are isomorphic, i.e. whether there
+  ///          is a structure-preserving mapping between f1 and f2. This
+  ///          assumes, that both files are of a unique reduced form.
   ///
   /// \param fi      The two files of nodes to compare.
   /// \param negatei Whether the nodes of fi should be read in negated form
   ///
-  /// \return    Whether the two node_files represent equivalent graphs.
+  /// \return  Whether <tt>f1</tt> and <tt>f2</tt> have isomorphic DAGs when
+  ///          applying the given negation flags.
   //////////////////////////////////////////////////////////////////////////////
-  bool is_isomorphic(const node_file &f1, const node_file &f2,
-                     bool negate1 = false, bool negate2 = false);
+  bool is_isomorphic(const shared_levelized_file<node> &f1,
+                     const shared_levelized_file<node> &f2,
+                     bool negate1 = false,
+                     bool negate2 = false);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Computes whether two decision diagrams are isomorphic; i.e. whether
+  ///        they are equivalent (under the same deletion-rule).
+  ///
+  /// \details Checks whether the two files are isomorphic, i.e. whether there
+  ///          is a structure-preserving mapping between f1 and f2. This
+  ///          assumes, that both files are of a unique reduced form.
+  ///
+  /// \param a   The first decision diagram.
+  /// \param b   The second decision diagram.
+  ///
+  /// \return    Whether <tt>a</tt> and <tt>b</tt> have isomorphic DAGs.
+  //////////////////////////////////////////////////////////////////////////////
   bool is_isomorphic(const dd &a, const dd &b);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -54,8 +70,10 @@ namespace adiar::internal
     priority_queue<mem_mode, pred_request<1>, request_snd_lt<pred_request<1>>>;
 
   template<typename comp_policy, typename pq_1_t, typename pq_2_t>
-  bool __comparison_check(const node_file &f1, const node_file &f2,
-                          const bool negate1, const bool negate2,
+  bool __comparison_check(const shared_levelized_file<node> &f1,
+                          const shared_levelized_file<node> &f2,
+                          const bool negate1,
+                          const bool negate2,
                           const tpie::memory_size_type pq_1_memory,
                           const tpie::memory_size_type pq_2_memory,
                           const size_t max_pq_size)
@@ -197,8 +215,10 @@ namespace adiar::internal
   ///   the product construction.
   //////////////////////////////////////////////////////////////////////////////
   template<typename comp_policy>
-  bool comparison_check(const node_file &f1, const node_file &f2,
-                        const bool negate1, const bool negate2)
+  bool comparison_check(const shared_levelized_file<node> &f1,
+                        const shared_levelized_file<node> &f2,
+                        const bool negate1,
+                        const bool negate2)
   {
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.

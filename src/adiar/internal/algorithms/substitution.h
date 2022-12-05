@@ -42,11 +42,11 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   class substitute_assignment_act
   {
-    assignment_stream<> as;
+    file_stream<assignment_t> as;
     assignment_t a;
 
   public:
-    typedef assignment_file action_t;
+    typedef shared_file<assignment_t> action_t;
 
     substitute_assignment_act(const action_t &af) : as(af)
     {
@@ -106,7 +106,7 @@ namespace adiar::internal
     node_stream<> ns(dd);
     node n = ns.pull();
 
-    arc_file out_arcs;
+    shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
     pq_t substitute_pq({dd}, pq_memory, pq_max_size, stats_substitute.lpq);

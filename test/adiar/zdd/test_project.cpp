@@ -6,14 +6,14 @@ go_bandit([]() {
     // Sink cases
 
     // Ø
-    node_file zdd_empty;
+    shared_levelized_file<zdd::node_t> zdd_empty;
     {
       node_writer nw(zdd_empty);
       nw << node(false);
     }
 
     // { Ø }
-    node_file zdd_null;
+    shared_levelized_file<zdd::node_t> zdd_null;
     {
       node_writer nw(zdd_null);
       nw << node(true);
@@ -23,7 +23,7 @@ go_bandit([]() {
     // 'EqualTo'.
 
     it("computes Ø with dom = {2,4,6} [const &]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
       {
         label_writer lw(dom);
         lw << 2 << 4 << 6;
@@ -40,17 +40,17 @@ go_bandit([]() {
       level_info_test_stream ms(out);
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(0u));
     });
 
     it("computes { Ø } with dom = {1,3,5} [&&]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
       {
         label_writer lw(dom);
         lw << 1 << 3 << 5;
@@ -67,17 +67,17 @@ go_bandit([]() {
       level_info_test_stream ms(out);
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("computes with dom = Ø to be Ø for Ø as input [&&]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
 
       __zdd out = zdd_project(zdd(zdd_empty), dom);
 
@@ -90,17 +90,17 @@ go_bandit([]() {
       level_info_test_stream ms(out);
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(0u));
     });
 
     it("computes with dom = Ø to be { Ø } for { Ø } as input [const &]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
 
       __zdd out = zdd_project(zdd_null, dom);
 
@@ -113,13 +113,13 @@ go_bandit([]() {
       level_info_test_stream ms(out);
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     //////////////////////
@@ -141,7 +141,7 @@ go_bandit([]() {
                    / \
                    T T
     */
-    node_file zdd_1;
+    shared_levelized_file<zdd::node_t> zdd_1;
     {
       node_writer nw(zdd_1);
       nw << node(4, node::MAX_ID, terminal_T, terminal_T)
@@ -166,7 +166,7 @@ go_bandit([]() {
                    / \
                    T T
     */
-    node_file zdd_2;
+    shared_levelized_file<zdd::node_t> zdd_2;
     {
       node_writer nw(zdd_2);
       nw << node(4, node::MAX_ID, terminal_T, terminal_T)
@@ -186,7 +186,7 @@ go_bandit([]() {
                  / \/ \
                  F T  T
     */
-    node_file zdd_3;
+    shared_levelized_file<zdd::node_t> zdd_3;
     {
       node_writer nw(zdd_3);
       nw << node(2, node::MAX_ID,   terminal_T, terminal_T)
@@ -206,7 +206,7 @@ go_bandit([]() {
                     / \/ \
                     F  T T
     */
-    node_file zdd_4;
+    shared_levelized_file<zdd::node_t> zdd_4;
     {
       node_writer nw(zdd_4);
       nw << node(4, node::MAX_ID,   terminal_T, terminal_T)
@@ -218,7 +218,7 @@ go_bandit([]() {
     }
 
     it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1] [const &]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
 
       __zdd out = zdd_project(zdd_1, dom);
 
@@ -231,17 +231,17 @@ go_bandit([]() {
       level_info_test_stream ms(out);
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("computes with dom = Ø to be { Ø } for non-empty input [zdd_2] [&&]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
 
       __zdd out = zdd_project(zdd(zdd_2), dom);
 
@@ -254,17 +254,17 @@ go_bandit([]() {
       level_info_test_stream ms(out);
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("computes with dom = Ø to be { Ø } for non-empty input [zdd_3] [const &]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
 
       __zdd out = zdd_project(zdd_3, dom);
 
@@ -277,17 +277,17 @@ go_bandit([]() {
       level_info_test_stream ms(out);
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("computes with disjoint dom to be { Ø } [zdd_2] [const &]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
       { label_writer lw(dom);
         lw << 1;
       }
@@ -303,17 +303,17 @@ go_bandit([]() {
       level_info_test_stream ms(out);
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("computes with disjoint dom to be { Ø } [zdd_3] [&&]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
       { label_writer lw(dom);
         lw << 3 << 4 << 5;
       }
@@ -329,13 +329,13 @@ go_bandit([]() {
       level_info_test_stream ms(out);
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     // TODO: Shortcut on nothing to do
@@ -343,7 +343,7 @@ go_bandit([]() {
     //////////////////////
     // Non-terminal general case
     it("computes zdd_1 with dom = {2,3,4} [const &]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
       { label_writer lw(dom);
         lw << 2 << 3 << 4;
       }
@@ -394,17 +394,17 @@ go_bandit([]() {
 
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(4u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(4u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(4u));
     });
 
     it("computes zdd_2 with dom = {2,3,4} [&&]", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
       { label_writer lw(dom);
         lw << 2 << 3 << 4;
       }
@@ -456,17 +456,17 @@ go_bandit([]() {
 
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(4u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(4u));
     });
 
     it("computes zdd_3 with dom = {0,2,4}", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
       { label_writer lw(dom);
         lw << 0 << 2 << 4;
       }
@@ -508,17 +508,17 @@ go_bandit([]() {
 
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(2u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(2u));
     });
 
     it("computes zdd_4 with dom = {0,4}", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
       { label_writer lw(dom);
         lw << 0 << 4;
       }
@@ -565,17 +565,17 @@ go_bandit([]() {
 
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(3u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(3u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(3u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(3u));
     });
 
     it("computes zdd_4 with dom = {2,4}", [&](){
-      label_file dom;
+      adiar::shared_file<zdd::label_t> dom;
       { label_writer lw(dom);
         lw << 2 << 4;
       }
@@ -620,13 +620,13 @@ go_bandit([]() {
 
       AssertThat(ms.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(3u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<zdd::node_t>>()->number_of_terminals[1], Is().EqualTo(3u));
     });
   });
  });

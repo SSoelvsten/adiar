@@ -130,6 +130,7 @@ namespace adiar::internal
       _level_writer.detach();
       for (size_t s_idx = 0; s_idx < ELEM_WRITERS; s_idx++)
         _elem_writers[s_idx].detach();
+      _file_ptr.reset();
     }
 
     ////////////////////////////////////////////////////////////////////////////

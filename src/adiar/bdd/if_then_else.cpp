@@ -57,7 +57,7 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  internal::node_file
+  internal::shared_levelized_file<bdd::node_t>
   __ite_zip_bdds(const bdd &bdd_if, const bdd &bdd_then, const bdd &bdd_else)
   {
     // TODO: What is the performance of '<<' rather than 'unsafe_push'? If there
@@ -71,7 +71,7 @@ namespace adiar
     internal::node::ptr_t root_then = internal::node::ptr_t::NIL();
     internal::node::ptr_t root_else = internal::node::ptr_t::NIL();
 
-    internal::node_file out_nodes;
+    internal::shared_levelized_file<bdd::node_t> out_nodes;
     internal::node_writer nw(out_nodes);
 
     // zip 'then' and 'else' cases
@@ -113,11 +113,11 @@ namespace adiar
 
     for(size_t ct = 0u; ct < internal::CUT_TYPES; ct++) {
       out_nodes->max_1level_cut[ct] =
-        std::max(bdd_if.file_ptr()->max_1level_cut[internal::cut_type::ALL],
-                 bdd_then.file_ptr()->max_1level_cut[ct] + bdd_else.file_ptr()->max_1level_cut[ct]);
+        std::max(bdd_if->max_1level_cut[internal::cut_type::ALL],
+                 bdd_then->max_1level_cut[ct] + bdd_else->max_1level_cut[ct]);
       out_nodes->max_2level_cut[ct] =
-        std::max(bdd_if.file_ptr()->max_2level_cut[internal::cut_type::ALL],
-                 bdd_then.file_ptr()->max_2level_cut[ct] + bdd_else.file_ptr()->max_2level_cut[ct]);
+        std::max(bdd_if->max_2level_cut[internal::cut_type::ALL],
+                 bdd_then->max_2level_cut[ct] + bdd_else->max_2level_cut[ct]);
     }
 
     return out_nodes;
@@ -219,7 +219,7 @@ namespace adiar
     // From here on forward, we probably cannot circumvent actually having to do
     // the product construction.
 
-    internal::arc_file out_arcs;
+    internal::shared_levelized_file<internal::arc> out_arcs;
     internal::arc_writer aw(out_arcs);
 
     pq_1_t ite_pq_1({bdd_if, bdd_then, bdd_else}, pq_1_memory, max_pq_1_size, stats_prod3.lpq);

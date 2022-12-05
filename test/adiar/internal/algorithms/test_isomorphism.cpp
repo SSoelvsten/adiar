@@ -5,7 +5,8 @@ go_bandit([]() {
   describe("adiar/internal/algoritms/pred.h", []() {
     describe("is_isomorphic", []() {
       describe("Trivial cases", []() {
-        node_file terminal_F, x21, x42, x21_and_x22, x21_and_x22_and_x42, x21_and_x42, x21_xor_x42;
+        shared_levelized_file<dd::node_t>
+        terminal_F, x21, x42, x21_and_x22, x21_and_x22_and_x42, x21_and_x42, x21_xor_x42;
 
         { // Garbage collect writers to free write-lock
           node_writer w_F(terminal_F);
@@ -93,7 +94,7 @@ go_bandit([]() {
           // and x3 (i.e. the same number of nodes and levels). One with 3
           // nodes for x2 and one node for x3 and one with 2 nodes for x2 and x3.
 
-          node_file seven_a, seven_b;
+          shared_levelized_file<dd::node_t> seven_a, seven_b;
 
           { // Garbage collect writers to free write-lock
             node_writer w_seven_a(seven_a);
@@ -125,7 +126,7 @@ go_bandit([]() {
 
       //////////////////////
       // Sink-only cases
-      node_file F_a, F_b, T_a;
+      shared_levelized_file<dd::node_t> F_a, F_b, T_a;
 
       { // Garbage collect writers to free write-lock
         node_writer nw_F_a(F_a);
@@ -145,7 +146,7 @@ go_bandit([]() {
           / \
           F T
       */
-      node_file x42_a, x42_b, not_x42;
+      shared_levelized_file<dd::node_t> x42_a, x42_b, not_x42;
 
       { // Garbage collect writers to free write-lock
         node_writer wa(x42_a);
@@ -163,7 +164,7 @@ go_bandit([]() {
           / \       / \
           T T       F F
       */
-      node_file x69_T, x69_F;
+      shared_levelized_file<dd::node_t> x69_T, x69_F;
 
       { // Garbage collect writers to free write-lock
         node_writer wT(x69_T);
@@ -176,7 +177,7 @@ go_bandit([]() {
 
       //////////////////////
       // Traversal cases
-      node_file bdd_1;
+      shared_levelized_file<node> bdd_1;
       /*
             _1_     ---- x0
            /   \
@@ -193,7 +194,7 @@ go_bandit([]() {
           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
       }
 
-      node_file bdd_1n;
+      shared_levelized_file<node> bdd_1n;
       /* bdd_1 negated */
       { node_writer w(bdd_1n);
         w << node(2, node::MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
@@ -203,7 +204,7 @@ go_bandit([]() {
       }
 
       // bdd_1 with child of (2) and low child of (4) flipped in truth value
-      node_file bdd_1_low_leaf;
+      shared_levelized_file<node> bdd_1_low_leaf;
       { node_writer w(bdd_1_low_leaf);
         w << node(2, node::MAX_ID,   ptr_uint64(true),       ptr_uint64(true))
           << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(false))
@@ -212,7 +213,7 @@ go_bandit([]() {
       }
 
       // bdd_1 with child of (3) and high child of (4) flipped in truth value
-      node_file bdd_1_high_leaf;
+      shared_levelized_file<node> bdd_1_high_leaf;
       { node_writer w(bdd_1_high_leaf);
         w << node(2, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(false))
           << node(1, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID),   ptr_uint64(true))
@@ -220,7 +221,7 @@ go_bandit([]() {
           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
       }
 
-      node_file bdd_2;
+      shared_levelized_file<node> bdd_2;
       /*
              1      ---- x0
             / \
@@ -239,7 +240,7 @@ go_bandit([]() {
           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
       }
 
-      node_file bdd_2n;
+      shared_levelized_file<node> bdd_2n;
       /* bdd_2 negated */
       { node_writer w(bdd_2n);
         w << node(2, node::MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
@@ -249,7 +250,7 @@ go_bandit([]() {
           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
       }
 
-      node_file bdd_2_low_child;
+      shared_levelized_file<node> bdd_2_low_child;
       /*
              1       ---- x0
             / \
@@ -269,7 +270,7 @@ go_bandit([]() {
           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
       }
 
-      node_file bdd_2_high_child;
+      shared_levelized_file<node> bdd_2_high_child;
       /*
              1     ---- x0
             / \
@@ -289,7 +290,7 @@ go_bandit([]() {
           << node(0, node::MAX_ID,   ptr_uint64(1, ptr_uint64::MAX_ID),   ptr_uint64(1, ptr_uint64::MAX_ID-1));
       }
 
-      node_file bdd_3;
+      shared_levelized_file<node> bdd_3;
       /*
            1      ---- x0
           / \
@@ -308,7 +309,7 @@ go_bandit([]() {
           << node(0, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(1, ptr_uint64::MAX_ID));
       }
 
-      node_file bdd_4;
+      shared_levelized_file<node> bdd_4;
       /*
              1     ---- x0
             / \
@@ -329,7 +330,7 @@ go_bandit([]() {
           << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID));
       }
 
-      node_file bdd_5;
+      shared_levelized_file<node> bdd_5;
       /*
              1     ---- x0
             / \
@@ -350,7 +351,7 @@ go_bandit([]() {
           << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(2, ptr_uint64::MAX_ID));
       }
 
-      node_file bdd_6;
+      shared_levelized_file<node> bdd_6;
       /*
              1     ---- x0
             / \
@@ -431,7 +432,7 @@ go_bandit([]() {
         });
 
         it("rejects on low child mismatch (internal node labels) [3]", [&]() {
-          node_file bdd_3_b;
+          shared_levelized_file<node> bdd_3_b;
           /* Same as bdd_3 but with (2) directly going to (4) on the low */
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_3_b);
@@ -456,7 +457,7 @@ go_bandit([]() {
         });
 
         it("rejects on high child mismatch (internal node labels) [4]", [&]() {
-          node_file bdd_4_b;
+          shared_levelized_file<node> bdd_4_b;
           /* Same as bdd_4 but with (2) directly going to (4) on the high */
           { node_writer w(bdd_4_b);
             w << node(3, node::MAX_ID, ptr_uint64(true),     ptr_uint64(false))
@@ -523,7 +524,7 @@ go_bandit([]() {
 
         it("accepts with nodes swapped [1]", [&]() {
           // bdd_1 with nodes (2) and (3) swapped (and hence non-canonical)
-          node_file bdd_1b;
+          shared_levelized_file<node> bdd_1b;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_1b);
             w << node(2, node::MAX_ID,   ptr_uint64(false),    ptr_uint64(true))
@@ -540,7 +541,7 @@ go_bandit([]() {
 
         it("accepts with nodes swapped [2]", [&]() {
           // bdd_2 with nodes (4) and (5) swapped (and hence non-canonical)
-          node_file bdd_2b;
+          shared_levelized_file<node> bdd_2b;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_2b);
             w << node(2, node::MAX_ID,   ptr_uint64(true),       ptr_uint64(false))
@@ -567,7 +568,7 @@ go_bandit([]() {
         });
 
         it("rejects on low child mismatch (internal node labels) [3]", [&]() {
-          node_file bdd_3_b;
+          shared_levelized_file<node> bdd_3_b;
           /* Same as bdd_3 negated but with (2) directly going to (4) on the low */
           { node_writer w(bdd_3_b);
             w << node(3, node::MAX_ID, ptr_uint64(true),     ptr_uint64(false))
@@ -581,13 +582,13 @@ go_bandit([]() {
         });
 
         it("rejects on low child mismatch on root", [&]() {
-          node_file bdd_a;
+          shared_levelized_file<node> bdd_a;
           { node_writer w(bdd_a);
             w << node(1, node::MAX_ID, ptr_uint64(false), ptr_uint64(true))
               << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(false));
           }
 
-          node_file bdd_b;
+          shared_levelized_file<node> bdd_b;
           { node_writer w(bdd_b);
             w << node(1, node::MAX_ID, ptr_uint64(true), ptr_uint64(false))
               << node(0, node::MAX_ID, ptr_uint64(true), ptr_uint64(1, ptr_uint64::MAX_ID));
@@ -608,7 +609,7 @@ go_bandit([]() {
         });
 
         it("rejects on high child mismatch (internal node labels) [4]", [&]() {
-          node_file bdd_4_b;
+          shared_levelized_file<node> bdd_4_b;
           /* Same as bdd_4 negated but with (2) directly going to (4) on
              the high */
           { node_writer w(bdd_4_b);
@@ -623,14 +624,14 @@ go_bandit([]() {
         });
 
         it("rejects on high child mismatch on root", [&]() {
-          node_file bdd_a;
+          shared_levelized_file<node> bdd_a;
           { node_writer w(bdd_a);
             w << node(2, node::MAX_ID, ptr_uint64(false),    ptr_uint64(true))
               << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(false))
               << node(0, node::MAX_ID, ptr_uint64(1, ptr_uint64::MAX_ID), ptr_uint64(true));
           }
 
-          node_file bdd_b;
+          shared_levelized_file<node> bdd_b;
           { node_writer w(bdd_b);
             w << node(2, node::MAX_ID, ptr_uint64(true),     ptr_uint64(false))
               << node(1, node::MAX_ID, ptr_uint64(2, ptr_uint64::MAX_ID), ptr_uint64(false))
@@ -664,7 +665,7 @@ go_bandit([]() {
                    both (3) and (4) in the other one. Hence, they cannot be
                    isomorphic.
           */
-          node_file bdd_5_a;
+          shared_levelized_file<node> bdd_5_a;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_5_a);
             w << node(3, node::MAX_ID,   ptr_uint64(false), ptr_uint64(true))
@@ -675,7 +676,7 @@ go_bandit([]() {
               << node(0, node::MAX_ID,   ptr_uint64(2, ptr_uint64::MAX_ID-1), ptr_uint64(1, ptr_uint64::MAX_ID));
           }
 
-          node_file bdd_5_b;
+          shared_levelized_file<node> bdd_5_b;
           { // Garbage collect writers to free write-lock
             node_writer w(bdd_5_b);
             w << node(3, node::MAX_ID,   ptr_uint64(false),      ptr_uint64(true))

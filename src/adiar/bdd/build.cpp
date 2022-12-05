@@ -36,12 +36,12 @@ namespace adiar
     return bdd_not(internal::build_ithvar(label));
   }
 
-  bdd bdd_and(const internal::label_file &labels)
+  bdd bdd_and(const shared_file<bdd::label_t> &labels)
   {
     return internal::build_chain<true, false, true>(labels);
   }
 
-  bdd bdd_or(const internal::label_file &labels)
+  bdd bdd_or(const shared_file<bdd::label_t> &labels)
   {
     return internal::build_chain<false, true, false>(labels);
   }
@@ -75,7 +75,7 @@ namespace adiar
 
     // Construct parallelogram-shaped BDD where each node stores the number of
     // variables up to said point has been set to true.
-    internal::node_file nf;
+    internal::shared_levelized_file<bdd::node_t> nf;
     internal::node_writer nw(nf);
 
     bdd::label_t curr_label = max_label;

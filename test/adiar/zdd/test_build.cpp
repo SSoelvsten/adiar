@@ -179,7 +179,7 @@ go_bandit([]() {
 
     describe("zdd_vars", [&]() {
       it("can create { Ø } on empty list", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         zdd res = zdd_vars(labels);
         node_test_stream ns(res);
@@ -208,7 +208,7 @@ go_bandit([]() {
       });
 
       it("can create { {42} }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -245,7 +245,7 @@ go_bandit([]() {
       });
 
       it("can create { {1,2,5} }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -293,7 +293,7 @@ go_bandit([]() {
 
     describe("zdd_singletons", [&]() {
       it("can create Ø on empty list", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         zdd res = zdd_singletons(labels);
         node_test_stream ns(res);
@@ -322,7 +322,7 @@ go_bandit([]() {
       });
 
       it("can create { {42} }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -359,7 +359,7 @@ go_bandit([]() {
       });
 
       it("can create { {1}, {2}, {5} }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -407,7 +407,7 @@ go_bandit([]() {
 
     describe("zdd_powerset", [&]() {
       it("can create { Ø } on empty list", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         zdd res = zdd_powerset(labels);
         node_test_stream ns(res);
@@ -429,7 +429,7 @@ go_bandit([]() {
       });
 
       it("can create { Ø, {42} }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -466,7 +466,7 @@ go_bandit([]() {
       });
 
       it("can create { Ø, {1}, {2}, {5}, {1,2}, {1,5}, {2,5}, {1,2,5} }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -519,7 +519,7 @@ go_bandit([]() {
     describe("zdd_sized_sets", [&]() {
       // Edge cases
       it("can compute { s <= Ø | |s| <= 0 } to be { Ø }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
         zdd res = zdd_sized_sets(labels, 0, std::less_equal<zdd::label_t>());
         node_test_stream ns(res);
 
@@ -545,7 +545,7 @@ go_bandit([]() {
       });
 
       it("can compute { s <= Ø | |s| > 0 } to be Ø", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
         zdd res = zdd_sized_sets(labels, 0, std::greater<zdd::label_t>());
         node_test_stream ns(res);
 
@@ -571,7 +571,7 @@ go_bandit([]() {
       });
 
       it("can compute { s <= {1,2,3} | |s| < 0 } to be Ø", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -603,7 +603,7 @@ go_bandit([]() {
       });
 
       it("can compute { s <= {0,2,4,6} | |s| <= 0 } to be { Ø }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -635,7 +635,7 @@ go_bandit([]() {
       });
 
       it("can compute { s <= {0,2,4,6} | |s| < 42 } to be the powerset", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -692,7 +692,7 @@ go_bandit([]() {
       });
 
       it("can compute { s <= {0,2,4,6} | |s| > 42 } to be Ø", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -724,7 +724,7 @@ go_bandit([]() {
       });
 
       it("can compute { s <= {0,1,2} | |s| <= 3 } to be the powerset", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -774,7 +774,7 @@ go_bandit([]() {
       });
 
       it("can compute { s <= {0,1,2} | |s| == 3 } to be the { {0,1,2} }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -824,7 +824,7 @@ go_bandit([]() {
       });
 
       it("can compute { s <= {0,2,3} | |s| > 3 } to be Ø", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -851,7 +851,7 @@ go_bandit([]() {
       });
 
       it("can compute { s <= {0,1,2} | |s| < 1 } to be { Ø }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -891,7 +891,7 @@ go_bandit([]() {
 
       // General case
       it("can create { s <= {1,3,5} | |s| == 2 }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -949,7 +949,7 @@ go_bandit([]() {
       });
 
       it("can create { s <= {1,2,3,4,6} | |s| == 3 }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1033,7 +1033,7 @@ go_bandit([]() {
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| >= 2 }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1123,7 +1123,7 @@ go_bandit([]() {
       });
 
       it("can create { s <= {0,1,2,3,4,5} | |s| > 0 }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1216,7 +1216,7 @@ go_bandit([]() {
       });
 
       it("can create { s <= {0,1,2,3,5} | |s| > 1 }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1306,7 +1306,7 @@ go_bandit([]() {
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| < 2 }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1376,7 +1376,7 @@ go_bandit([]() {
       });
 
       it("can create { s <= {0,2,4,6} | |s| < 3 }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1447,7 +1447,7 @@ go_bandit([]() {
       });
 
       it("can create { s <= {1,2,3,4,5,6,7,8,9} | |s| < 5 }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1605,7 +1605,7 @@ go_bandit([]() {
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| <= 2 }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);
@@ -1685,7 +1685,7 @@ go_bandit([]() {
       });
 
       it("can create { s <= {0,1,...,9} | |s| != 4 }", [&]() {
-        label_file labels;
+        adiar::shared_file<zdd::label_t> labels;
 
         { // Garbage collect writer to free write-lock
           label_writer lw(labels);

@@ -23,7 +23,7 @@ go_bandit([]() {
     node n2 = node(1,0, n3.uid(), n4.uid());
     node n1 = node(0,0, n3.uid(), n2.uid());
 
-    node_file bdd;
+    shared_levelized_file<bdd::node_t> bdd;
 
     { // Garbage collect writer to free write-lock
       node_writer bdd_w(bdd);
@@ -43,10 +43,10 @@ go_bandit([]() {
                   F T
       */
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       { // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(2, true);
       }
 
@@ -87,10 +87,10 @@ go_bandit([]() {
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-      AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
     });
 
     it("should bridge levels [2]. Assignment: (_,F,_,_)", [&]() {
@@ -104,10 +104,10 @@ go_bandit([]() {
                 F T
       */
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       { // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(1, false);
       }
 
@@ -139,10 +139,10 @@ go_bandit([]() {
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("should bridge levels [3]. Assignment: (_,T,_,_)", [&]() {
@@ -158,10 +158,10 @@ go_bandit([]() {
                     F T
       */
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       { // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(1, true);
       }
 
@@ -208,10 +208,10 @@ go_bandit([]() {
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(2u));
-      AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
     });
 
     it("should remove root. Assignment: (T,_,_,F)", [&]() {
@@ -224,10 +224,10 @@ go_bandit([]() {
                F T T F
       */
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       { // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(0, true)
            << create_assignment(3, false);
       }
@@ -266,10 +266,10 @@ go_bandit([]() {
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(2u));
-      AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
     });
 
     it("should ignore skipped variables. Assignment: (F,T,_,F)", [&]() {
@@ -279,10 +279,10 @@ go_bandit([]() {
                 F T
       */
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       { // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(0, false)
            << create_assignment(1, true)
            << create_assignment(3, false);
@@ -307,17 +307,17 @@ go_bandit([]() {
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-      AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("should return F terminal. Assignment: (F,_,F,_)", [&]() {
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       { // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(0, false)
            << create_assignment(2, false);
       }
@@ -333,20 +333,20 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(0u));
     });
 
     it("should return T terminal. Assignment: (T,T,F,_)", [&]() {
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       {  // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(0, true)
            << create_assignment(1, true)
            << create_assignment(2, false);
@@ -363,27 +363,27 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("should return input unchanged when given a T terminal", [&]() {
-      node_file T_file;
+      shared_levelized_file<bdd::node_t> T_file;
 
       { // Garbage collect writer to free write-lock
         node_writer Tw(T_file);
         Tw << node(true);
       }
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       { // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(0, true)
            << create_assignment(2, true)
            << create_assignment(42, false);
@@ -391,22 +391,22 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(T_file, assignment);
 
-      AssertThat(out.get<node_file>(), Is().EqualTo(T_file));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(T_file));
       AssertThat(out.negate, Is().False());
     });
 
     it("should return input unchanged when given a F terminal", [&]() {
-      node_file F_file;
+      shared_levelized_file<bdd::node_t> F_file;
 
       { // Garbage collect writer to free write-lock
         node_writer Fw(F_file);
         Fw << node(false);
       }
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       { // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(2, true)
            << create_assignment(21, true)
            << create_assignment(28, false);
@@ -414,23 +414,23 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(F_file, assignment);
 
-      AssertThat(out.get<node_file>(), Is().EqualTo(F_file));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(F_file));
       AssertThat(out.negate, Is().False());
     });
 
     it("should return input unchanged when given an empty assignment", [&]() {
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      AssertThat(out.get<node_file>(), Is().EqualTo(bdd));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd));
       AssertThat(out.negate, Is().False());
     });
 
     it("should return input unchanged when assignment that is disjoint of its live variables", [&]() {
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
       { // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(5, false)
            << create_assignment(6, true)
            << create_assignment(7, true)
@@ -439,7 +439,7 @@ go_bandit([]() {
 
       __bdd out = bdd_restrict(bdd, assignment);
 
-      AssertThat(out.get<node_file>(), Is().EqualTo(bdd));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd));
       AssertThat(out.negate, Is().False());
     });
 
@@ -456,7 +456,7 @@ go_bandit([]() {
       ptr_uint64 terminal_T = ptr_uint64(true);
       ptr_uint64 terminal_F = ptr_uint64(false);
 
-      node_file node_input;
+      shared_levelized_file<bdd::node_t> node_input;
 
       node n4 = node(2,0, terminal_T, terminal_F);
       node n3 = node(1,1, terminal_T, terminal_F);
@@ -468,10 +468,10 @@ go_bandit([]() {
         inw << n4 << n3 << n2 << n1;
       }
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       {  // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(2, true);
       }
 
@@ -511,10 +511,10 @@ go_bandit([]() {
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(3u));
-      AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(3u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("should have terminal arcs restricted to a terminal sorted [2]", []() {
@@ -530,7 +530,7 @@ go_bandit([]() {
       ptr_uint64 terminal_T = ptr_uint64(true);
       ptr_uint64 terminal_F = ptr_uint64(false);
 
-      node_file node_input;
+      shared_levelized_file<bdd::node_t> node_input;
 
       node n5 = node(2,1, terminal_F, terminal_T);
       node n4 = node(2,0, terminal_T, terminal_F);
@@ -543,10 +543,10 @@ go_bandit([]() {
         inw << n5 << n4 << n3 << n2 << n1;
       }
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       {  // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(2, true);
       }
 
@@ -586,10 +586,10 @@ go_bandit([]() {
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(3u));
-      AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(3u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
     });
 
     it("should skip 'dead' nodes", [&]() {
@@ -607,7 +607,7 @@ go_bandit([]() {
                  Here, node 4 and 6 are going to be dead, when x1 -> T.
       */
 
-      node_file dead_bdd;
+      shared_levelized_file<bdd::node_t> dead_bdd;
 
       node n9 = node(3,1, terminal_T, terminal_F);
       node n8 = node(3,0, terminal_F, terminal_T);
@@ -624,10 +624,10 @@ go_bandit([]() {
         dead_w << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
       }
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       {  // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(1, true);
       }
 
@@ -682,14 +682,14 @@ go_bandit([]() {
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<arc_file>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-      AssertThat(out.get<arc_file>()->number_of_terminals[0], Is().EqualTo(3u));
-      AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(3u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(3u));
+      AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
     });
 
     it("should return terminal-child of restricted root [assignment = T]", [&]() {
-      node_file terminal_child_of_root_bdd;
+      shared_levelized_file<bdd::node_t> terminal_child_of_root_bdd;
 
       node n2 = node(2, node::MAX_ID, terminal_T, terminal_T);
       node n1 = node(1, node::MAX_ID, n2.uid(), terminal_F);
@@ -699,10 +699,10 @@ go_bandit([]() {
         dead_w << n2 << n1;
       }
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       {  // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(1, true);
       }
 
@@ -717,17 +717,17 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(0u));
     });
 
     it("should return terminal-child of restricted root [assignment = F]", [&]() {
-      node_file terminal_child_of_root_bdd;
+      shared_levelized_file<bdd::node_t> terminal_child_of_root_bdd;
 
       node n2 = node(2, node::MAX_ID, terminal_T, terminal_T);
       node n1 = node(0, node::MAX_ID, terminal_T, n2.uid());
@@ -737,10 +737,10 @@ go_bandit([]() {
         dead_w << n2 << n1;
       }
 
-      assignment_file assignment;
+      adiar::shared_file<assignment_t> assignment;
 
       {  // Garbage collect writer to free write-lock
-        assignment_writer aw(assignment);
+         adiar::file_writer<assignment_t> aw(assignment);
         aw << create_assignment(0, false);
       }
 
@@ -755,13 +755,13 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
       AssertThat(meta_arcs.can_pull(), Is().False());
 
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-      AssertThat(out.get<node_file>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-      AssertThat(out.get<node_file>()->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out.get<node_file>()->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
+      AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
     });
   });
  });

@@ -5,7 +5,7 @@ go_bandit([]() {
     ptr_uint64 terminal_T = ptr_uint64(true);
     ptr_uint64 terminal_F = ptr_uint64(false);
 
-    node_file bdd_1;
+    shared_levelized_file<bdd::node_t> bdd_1;
     /*
              1       ---- x0
             / \
@@ -28,7 +28,7 @@ go_bandit([]() {
       nw_1 << n4 << n3 << n2 << n1;
     }
 
-    node_file bdd_2;
+    shared_levelized_file<bdd::node_t> bdd_2;
     /*
                      ---- x0
 
@@ -47,7 +47,7 @@ go_bandit([]() {
       nw_2 << n2 << n1;
     }
 
-    node_file bdd_3;
+    shared_levelized_file<bdd::node_t> bdd_3;
     /*
                     ---- x0
 
@@ -67,7 +67,7 @@ go_bandit([]() {
       nw_3 << n3 << n2 << n1;
     }
 
-    node_file bdd_4;
+    shared_levelized_file<bdd::node_t> bdd_4;
     /*
                     __1__      ---- x0
                    /     \
@@ -93,7 +93,7 @@ go_bandit([]() {
       nw_4 << n6 << n5 << n4 << n3 << n2 << n1;
     }
 
-    node_file bdd_T;
+    shared_levelized_file<bdd::node_t> bdd_T;
     /*
               T
     */
@@ -103,7 +103,7 @@ go_bandit([]() {
       nw_T << node(true);
     }
 
-    node_file bdd_F;
+    shared_levelized_file<bdd::node_t> bdd_F;
     /*
               F
     */
@@ -113,7 +113,7 @@ go_bandit([]() {
       nw_F << node(false);
     }
 
-    node_file bdd_root_1;
+    shared_levelized_file<bdd::node_t> bdd_root_1;
     /*
                  1    ---- x1
                 / \
@@ -126,7 +126,7 @@ go_bandit([]() {
     }
 
     // Set domain to be empty
-    label_file empty_dom;
+    adiar::shared_file<bdd::label_t> empty_dom;
     adiar_set_domain(empty_dom);
 
     describe("bdd_nodecount", [&]() {
@@ -276,7 +276,7 @@ go_bandit([]() {
     });
 
     describe("bdd_satcount(f) [non-empty dom]", [&]() {
-      label_file dom;
+      adiar::shared_file<bdd::label_t> dom;
       {
         label_writer lw(dom);
         lw << 0 << 1 << 2 << 3 << 4 << 5 << 6;

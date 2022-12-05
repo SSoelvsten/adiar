@@ -13,7 +13,7 @@ namespace adiar::internal
   /// \brief Writer for nodes, hiding derivation of all meta information and
   /// applying sanity checks on the validity of the input.
   ///
-  /// \sa node_file
+  /// \sa shared_levelized_file<node>
   //////////////////////////////////////////////////////////////////////////////
   class node_writer: public levelized_file_writer<node>
   {
@@ -77,9 +77,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a shared levelized node file.
     ////////////////////////////////////////////////////////////////////////////
-    node_writer(node_file nf)
-      : levelized_file_writer<node>(nf),
-        _canonical(!levelized_file_writer::has_pushed()|| nf->canonical)
+    node_writer(shared_levelized_file<node> nf)
+      : levelized_file_writer<node>(nf)
+      , _canonical(!levelized_file_writer::has_pushed()|| nf->canonical)
     { }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -221,7 +221,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Attach to a file
     ////////////////////////////////////////////////////////////////////////////
-    void attach(node_file f) {
+    void attach(shared_levelized_file<node> f) {
       levelized_file_writer::attach(f);
 
       //Reset all meta-data

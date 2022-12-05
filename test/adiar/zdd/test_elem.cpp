@@ -2,8 +2,8 @@
 
 go_bandit([]() {
   describe("adiar/zdd/elem.cpp", [&]() {
-    node_file zdd_F;
-    node_file zdd_T;
+    shared_levelized_file<zdd::node_t> zdd_F;
+    shared_levelized_file<zdd::node_t> zdd_T;
 
     { // Garbage collect writers to free write-lock
       node_writer nw_F(zdd_F);
@@ -16,7 +16,7 @@ go_bandit([]() {
     const ptr_uint64 terminal_T = ptr_uint64(true);
     const ptr_uint64 terminal_F = ptr_uint64(false);
 
-    node_file zdd_1;
+    shared_levelized_file<zdd::node_t> zdd_1;
     // { { 0 }, { 1 }, { 0,2 }, { 1,2 } }
     /*
             1     ---- x0
@@ -37,7 +37,7 @@ go_bandit([]() {
       nw << n3 << n2 << n1;
     }
 
-    node_file zdd_2;
+    shared_levelized_file<zdd::node_t> zdd_2;
     // { Ø, { 1 }, { 2 }, { 2,3 } }
     /*
              1      ---- x1
@@ -59,7 +59,7 @@ go_bandit([]() {
       nw << n3 << n2 << n1;
     }
 
-    node_file zdd_3;
+    shared_levelized_file<zdd::node_t> zdd_3;
     // { { 2,4 }, { 0,2 }, { 0,4 } }
     /*
             _1_      ---- x0
@@ -80,7 +80,7 @@ go_bandit([]() {
       nw << n4 << n3 << n2 << n1;
     }
 
-    node_file zdd_4;
+    shared_levelized_file<zdd::node_t> zdd_4;
     // { {1}, {0,1} }
     /*
             1      ---- x0
@@ -100,23 +100,23 @@ go_bandit([]() {
 
     describe("zdd_minelem", [&]() {
       it("finds no element on Ø", [&]() {
-        std::optional<label_file> result = zdd_minelem(zdd_F);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_minelem(zdd_F);
         AssertThat(result.has_value(), Is().False());
       });
 
       it("finds empty set on { Ø }", [&]() {
-        std::optional<label_file> result = zdd_minelem(zdd_T);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_minelem(zdd_T);
         AssertThat(result.has_value(), Is().True());
 
-        label_stream<> ls(result.value());
+         adiar::file_stream<zdd::label_t> ls(result.value());
         AssertThat(ls.can_pull(), Is().False());
       });
 
       it("finds {1} on [1]", [&]() {
-        std::optional<label_file> result = zdd_minelem(zdd_1);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_minelem(zdd_1);
         AssertThat(result.has_value(), Is().True());
 
-        label_stream<> ls(result.value());
+         adiar::file_stream<zdd::label_t> ls(result.value());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(1u));
@@ -125,18 +125,18 @@ go_bandit([]() {
       });
 
       it("finds empty set on [2]", [&]() {
-        std::optional<label_file> result = zdd_minelem(zdd_2);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_minelem(zdd_2);
         AssertThat(result.has_value(), Is().True());
 
-        label_stream<> ls(result.value());
+         adiar::file_stream<zdd::label_t> ls(result.value());
         AssertThat(ls.can_pull(), Is().False());
       });
 
       it("finds {2,4} on [3]", [&]() {
-        std::optional<label_file> result = zdd_minelem(zdd_3);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_minelem(zdd_3);
         AssertThat(result.has_value(), Is().True());
 
-        label_stream<> ls(result.value());
+         adiar::file_stream<zdd::label_t> ls(result.value());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(2u));
@@ -148,10 +148,10 @@ go_bandit([]() {
       });
 
       it("finds {1} on [4]", [&]() {
-        std::optional<label_file> result = zdd_minelem(zdd_4);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_minelem(zdd_4);
         AssertThat(result.has_value(), Is().True());
 
-        label_stream<> ls(result.value());
+         adiar::file_stream<zdd::label_t> ls(result.value());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(1u));
@@ -162,23 +162,23 @@ go_bandit([]() {
 
     describe("zdd_maxelem", [&]() {
       it("finds no element on Ø", [&]() {
-        std::optional<label_file> result = zdd_maxelem(zdd_F);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_maxelem(zdd_F);
         AssertThat(result.has_value(), Is().False());
       });
 
       it("finds empty set on { Ø }", [&]() {
-        std::optional<label_file> result = zdd_maxelem(zdd_T);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_maxelem(zdd_T);
         AssertThat(result.has_value(), Is().True());
 
-        label_stream<> ls(result.value());
+         adiar::file_stream<zdd::label_t> ls(result.value());
         AssertThat(ls.can_pull(), Is().False());
       });
 
       it("finds {0,2} on [1]", [&]() {
-        std::optional<label_file> result = zdd_maxelem(zdd_1);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_maxelem(zdd_1);
         AssertThat(result.has_value(), Is().True());
 
-        label_stream<> ls(result.value());
+         adiar::file_stream<zdd::label_t> ls(result.value());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));
@@ -190,10 +190,10 @@ go_bandit([]() {
       });
 
       it("finds {1} on [2]", [&]() {
-        std::optional<label_file> result = zdd_maxelem(zdd_2);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_maxelem(zdd_2);
         AssertThat(result.has_value(), Is().True());
 
-        label_stream<> ls(result.value());
+         adiar::file_stream<zdd::label_t> ls(result.value());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(1u));
@@ -202,10 +202,10 @@ go_bandit([]() {
       });
 
       it("finds {0,1} on [4]", [&]() {
-        std::optional<label_file> result = zdd_maxelem(zdd_4);
+        std::optional<adiar::shared_file<zdd::label_t>> result = zdd_maxelem(zdd_4);
         AssertThat(result.has_value(), Is().True());
 
-        label_stream<> ls(result.value());
+         adiar::file_stream<zdd::label_t> ls(result.value());
 
         AssertThat(ls.can_pull(), Is().True());
         AssertThat(ls.pull(), Is().EqualTo(0u));

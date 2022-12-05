@@ -172,7 +172,7 @@ the *true* terminal is the attribution flag set on the *false* sink.
   always picks the left member of each equivalent pair.
 
 - **Zero-suppressed Decision Diagrams**:
- 
+
   A subtree for the set *A* is treated as also including the empty set Ø
   (i.e. null combination vector "00...0"). Figure 10 in
   [[Minato93](#references),[Minato01](#references)] shows how to flip the
@@ -193,19 +193,19 @@ itself.
 - When outputting nodes for a level: Identify what case applies and whether
   in-going arcs should be flipped. This boolean value is sent through the second
   sorter to the forwarding phase.
-  
+
 - During the forwarding phase: The *attribute* flag of the forwarded edge is set
   based on (a) whether it should be flipped and (b) what is its value in the
   internal arcs stream.
 
 - If the root should have its in-going arc flipped then place that value in the
-  *negate* flag  of the resulting *node_file*.
+  *negate* flag  of the resulting *shared_levelized_file<node>*.
 
 One also needs to look at whether this addition breaks the idea of the
-*canonical* flag on the *node_file*. That is, either find a counter-example or
-prove that the same linear-scan equality checking algorithm still works. In
-fact, if the linear-scan still works then this will asymptotically improve our
-equality checking to be O(N/B) in all cases!
+*canonical* flag on the *shared_levelized_file<node>*. That is, either find a
+counter-example or prove that the same linear-scan equality checking algorithm
+still works. In fact, if the linear-scan still works then this will asymptotically
+improve our equality checking to be O(N/B) in all cases!
 
 **Adding Attributed Edges to all other Algorithms**
 
@@ -252,7 +252,7 @@ Then the probability of two different BDDs share the same hash value is 1/*p*.
 Notice, we only care about the hash value at the root, so we do not need to
 store the hash value within each and every node. Instead, similar to
 *anonicity* in [#127](https://github.com/SSoelvsten/adiar/pull/127), we can
-store the hash of the root (and its negation) as two numbers in the `node_file`
+store the hash of the root (and its negation) as two numbers in the `shared_levelized_file<node>`
 and merely propagate the hash values in the priority queue of `reduce`.
 
 
@@ -599,7 +599,7 @@ to make it a *Multi-Terminal Binary Decision Diagrams* (MTBDD)
    issue [#412](https://github.com/SSoelvsten/adiar/issues/412) is solved then
    63 bits). We can template this class to change what type and what content the
    *value()* function returns.
-  
+
    Alternatively, we can add a new `ptr_templ` class where the *label* and the
    *id*/*value* are not encoded into a single 64-bit integer.
 
@@ -615,9 +615,9 @@ to make it a *Multi-Terminal Binary Decision Diagrams* (MTBDD)
 
 3. **Template `file`, `writer` and `stream`**
 
-   The templating of `node` should then be lifted to the `node_file` and
-   `arc_file` classes and their writers and readers.
-   
+   The templating of `node` should then be lifted to the `shared_levelized_file<node>`
+   and `shared_levelized_file<arc>` classes and their writers and readers.
+
    This meddles with some meta information that is only designed for binary
    terminals, e.g. cut sizes. This could take slightly longer, but they can
    probably quite nicely be resolved by generalising the idea of the different

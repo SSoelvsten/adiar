@@ -117,7 +117,8 @@ namespace adiar::internal
     }
   };
 
-  inline node_file __prod2_terminal(ptr_uint64 t1, ptr_uint64 t2, const bool_op &op)
+  inline shared_levelized_file<node>
+  __prod2_terminal(const node::ptr_t &t1, const node::ptr_t &t2, const bool_op &op)
   {
     // TODO: Abuse that op(t1,t2) already is a pointer.
     return build_terminal(op(t1,t2).value());
@@ -223,7 +224,7 @@ namespace adiar::internal
     }
 
     // Set-up for Product Construction Algorithm
-    arc_file out_arcs;
+    shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
     pq_1_t prod_pq_1({in_1, in_2}, pq_1_memory, max_pq_1_size, stats_prod2.lpq);

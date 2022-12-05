@@ -3,9 +3,11 @@
 
 #include <array>
 #include <sstream>
+#include <string>
 #include <stdexcept>
 
 #include <adiar/internal/io/file.h>
+#include <adiar/internal/io/file_stream.h>
 
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/arc.h>
@@ -276,6 +278,31 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     size_t levels() const
     { return _level_info_file.size(); }
+
+  public:
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief The first level to be encountered, i.e. the last level pushed.
+    ///
+    /// \pre `levels() > 0`
+    //////////////////////////////////////////////////////////////////////////////
+    size_t first_level() const
+    {
+      adiar_precondition(this->levels() > 0u);
+      file_stream<level_info, true> fs(this->_level_info_file);
+      return label_of(fs.pull());
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief The last level to be encountered, i.e. the first level pushed.
+    ///
+    /// \pre `levels() > 0`
+    //////////////////////////////////////////////////////////////////////////////
+    size_t last_level() const
+    {
+      adiar_precondition(this->levels() > 0u);
+      file_stream<level_info, false> fs(this->_level_info_file);
+      return label_of(fs.pull());
+    }
 
   public:
     ////////////////////////////////////////////////////////////////////////////

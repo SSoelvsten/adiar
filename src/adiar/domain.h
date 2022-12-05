@@ -11,7 +11,8 @@
 /// using it when needed.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <adiar/internal/io/simple_file.h>
+#include <adiar/file.h>
+#include <adiar/internal/data_types/node.h> // <-- remove after TODO below.
 
 namespace adiar
 {
@@ -20,13 +21,15 @@ namespace adiar
   ///
   /// \{
 
+  // TODO: make the labels of the domain a supertype of all labels (size_t?).
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Set the domain globally for all of Adiar.
   ///
-  /// \param dom A \ref label_file containing all labels of the problem domain
+  /// \param dom A \ref shared_file containing all labels of the problem domain
   ///            in ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_set_domain(const internal::label_file &dom);
+  void adiar_set_domain(const shared_file<internal::node::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether Adiar has a global domain.
@@ -39,7 +42,7 @@ namespace adiar
   /// \throws std::domain_error If no domain is yet set, i.e.
   ///         `adiar_has_domain() == false`.
   //////////////////////////////////////////////////////////////////////////////
-  internal::label_file adiar_get_domain();
+  shared_file<internal::node::label_t> adiar_get_domain();
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

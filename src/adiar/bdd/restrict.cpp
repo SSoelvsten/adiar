@@ -6,7 +6,7 @@
 #include <adiar/internal/algorithms/substitution.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/io/file_stream.h>
-#include <adiar/internal/io/simple_file.h>
+#include <adiar/internal/io/shared_file_ptr.h>
 
 namespace adiar
 {
@@ -28,11 +28,11 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const bdd &dd, const internal::assignment_file &a)
+  __bdd bdd_restrict(const bdd &dd, const shared_file<assignment_t> &a)
   {
     if (a->size() == 0
         || is_terminal(dd)
-        || internal::disjoint_labels<internal::assignment_file, internal::assignment_stream<>>(a, dd)) {
+        || internal::disjoint_labels<shared_file<assignment_t>, internal::file_stream<assignment_t>>(a, dd)) {
       return dd;
     }
 

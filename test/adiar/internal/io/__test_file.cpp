@@ -28,7 +28,7 @@ go_bandit([]() {
     node n1 = node(1,0, node::ptr_t(true),  node::ptr_t(false));
     node n0 = node(0,0, node::ptr_t(1,1),   node::ptr_t(1,0));
 
-    arc_file arcest_file;
+    shared_levelized_file<arc> arcest_file;
 
     arc node_arc_1 = { arc::ptr_t(0,0), arc::ptr_t(1,0) };
     arc terminal_arc_1 = { flag(arc::ptr_t(0,0)), arc::ptr_t(false) };
@@ -909,7 +909,7 @@ go_bandit([]() {
       });
     });
 
-    describe("shared_file", [&]() {
+    describe("shared_file_ptr", [&]() {
       describe("simple_file", [&]() {
         it("can return a written to simple_file, that then can be read", [&]() {
           auto t = []() {

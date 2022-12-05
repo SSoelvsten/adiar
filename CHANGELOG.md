@@ -52,14 +52,14 @@ This new release's primary focus is to drastically improve performance for small
 
 ## Domain
 
-One may now set a *label_file* as the global domain over which one works.
+One may now set a *file<label_t>* as the global domain over which one works.
 
-- `adiar_set_domain(label_file dom)`
+- `adiar_set_domain(file<label_t> dom)`
   sets the global domain variable.
 - `adiar_has_domain()`
   checks whether a global domain already is set.
 - `adiar_get_domain()`
-  provides the current *label_file* that acts as the global domain (assuming `adiar_has_domain()` evaluates to `true`).
+  provides the current *file<label_t>* that acts as the global domain (assuming `adiar_has_domain()` evaluates to `true`).
 
 ## Binary Decision Diagrams
 
@@ -74,7 +74,7 @@ One may now set a *label_file* as the global domain over which one works.
 - `bdd_unequal(bdd f, bdd g)`
   is an alternative to using the `!=` operator.
 - `bdd_varprofile(bdd f)`
-  obtains a *label_file* containing all of the variables present in a BDD.
+  obtains a *file<label_t>* containing all of the variables present in a BDD.
 
 ### Bug Fixes
 
@@ -93,7 +93,7 @@ One may now set a *label_file* as the global domain over which one works.
 - `zdd_from(bdd f)`
   Converts from a BDD to a ZDD using the global domain.
 - `zdd_varprofile(zdd A)`
-  Obtain a *label_file* containing all of the variables present in a ZDD.
+  Obtain a *file<label_t>* containing all of the variables present in a ZDD.
 
 ### Bug Fixes
 
@@ -153,17 +153,17 @@ Adds support for *zero-suppressed* decision diagrams with the `zdd` class. All o
 ### Constructors
 - `zdd zdd_sink(bool v)` (and `zdd_empty()` and `zdd_null()` as alternatives)
 - `zdd zdd_ithvar(label_t i)`
-- `zdd zdd_vars(label_file vars)`,  `zdd zdd_singletons(label_file vars)`, and `zdd zdd_powerset(label_file vars)` to respectively construct an *and*, *or*, and the *don't care* chain.
-- `zdd zdd_sized_set<pred_t>(label_file vars, k, pred)` to construct the sets of variables in *vars* whose size satisfies the given predicate in relation to *k*.
+- `zdd zdd_vars(file<label_t> vars)`,  `zdd zdd_singletons(file<label_t> vars)`, and `zdd zdd_powerset(file<label_t> vars)` to respectively construct an *and*, *or*, and the *don't care* chain.
+- `zdd zdd_sized_set<pred_t>(file<label_t> vars, k, pred)` to construct the sets of variables in *vars* whose size satisfies the given predicate in relation to *k*.
 
 ### Basic Manipulation
 - `zdd zdd_binop(zdd A, zdd B, bool_op op)` to apply a binary operator to two families of sets (also includes aliases for the _or_, _and_, and _diff_ operators).
-- `zdd zdd_change(zdd A, label_file vars)` to compute the symmetric difference.
-- `zdd zdd_complement(zdd A, label_file dom)` to construct the complement.
-- `zdd zdd_expand(zdd A, label_file vars)` to expand the domain with new variables.
-- `zdd zdd_offset(zdd A, label_file vars)` to compute the subset without the given variables.
-- `zdd zdd_onset(zdd A, label_file vars)`  to compute the subset with the given variables.
-- `zdd zdd_project(zdd A, label_file is)` to project onto a (smaller) domain.
+- `zdd zdd_change(zdd A, file<label_t> vars)` to compute the symmetric difference.
+- `zdd zdd_complement(zdd A, file<label_t> dom)` to construct the complement.
+- `zdd zdd_expand(zdd A, file<label_t> vars)` to expand the domain with new variables.
+- `zdd zdd_offset(zdd A, file<label_t> vars)` to compute the subset without the given variables.
+- `zdd zdd_onset(zdd A, file<label_t> vars)`  to compute the subset with the given variables.
+- `zdd zdd_project(zdd A, file<label_t> is)` to project onto a (smaller) domain.
 
 ### Counting Operations
 - `uint64_t zdd_nodecount(zdd A)` the number of (non-leaf) nodes.
@@ -178,13 +178,13 @@ Adds support for *zero-suppressed* decision diagrams with the `zdd` class. All o
 - `bool zdd_disjoint(zdd A, zdd B)` to check for the sets being disjoint.
 
 ### Set Elements
-- `bool zdd_contains(zdd A, label_file a)`
-- `std::optional<label_file> zdd_minelem(zdd A)`
-- `std::optional<label_file> zdd_maxelem(zdd A)`
+- `bool zdd_contains(zdd A, file<label_t> a)`
+- `std::optional<file<label_t>> zdd_minelem(zdd A)`
+- `std::optional<file<label_t>> zdd_maxelem(zdd A)`
 
 ### Other Functions
 - `output_dot(bdd f, std::string filename)` to output a visualizable _*.dot* file.
-- `zdd zdd_from(bdd f, label_file dom)` and `bdd bdd_from(zdd f, label_file dom)` to convert between *BDD*s and *ZDD*s interpreted in the given domain.
+- `zdd zdd_from(bdd f, file<label_t> dom)` and `bdd bdd_from(zdd f, file<label_t> dom)` to convert between *BDD*s and *ZDD*s interpreted in the given domain.
 
 ## Statistics
 
@@ -227,7 +227,7 @@ Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics abo
 ### Constructors
 - `bdd_sink(bool v)` (and `bdd_true()` and `bdd_false()` as alternatives)
 - `bdd_ithvar(label_t i)` and `bdd_nithvar(label_t i)`
-- `bdd_and(label_file ls)` and `bdd_or(label_file ls)` to construct an *and*/*or* chain.
+- `bdd_and(file<label_t> ls)` and `bdd_or(file<label_t> ls)` to construct an *and*/*or* chain.
 - `bdd_counter(label_t min_label, label_t max_label, label_t threshold)` to construct whether exactly *threshold* many variables in the given interval are true.
 
 Furthermore, the `node_writer` class is also provided as a means to construct a BDD manually bottom-up.
@@ -237,7 +237,7 @@ Furthermore, the `node_writer` class is also provided as a means to construct a 
 - `bdd_ite(bdd f, bdd g, bdd h)` to compute the if-then-else
 - `bdd_not(bdd f)` to negate a bdd
 - `bdd_restrict(bdd f, assignment_file as)` to fix the value of one or more variables
-- `bdd_exists(bdd f, label_t i)` and `bdd_forall(bdd f, label_t i)` to existentially or forall quantify a single variable (also includes versions with the second argument being multiple labels in a `label_file`).
+- `bdd_exists(bdd f, label_t i)` and `bdd_forall(bdd f, label_t i)` to existentially or forall quantify a single variable (also includes versions with the second argument being multiple labels in a `file<label_t>`).
 
 ### Counting Operations
 - `bdd_nodecount(bdd f)` the number of (non-leaf) nodes.

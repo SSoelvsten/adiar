@@ -11,7 +11,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Writer for a set of arcs.
   ///
-  /// \sa arc_file
+  /// \sa shared_levelized_file<arc>
   //////////////////////////////////////////////////////////////////////////////
   class arc_writer: public levelized_file_writer<arc>
   {
@@ -48,7 +48,7 @@ namespace adiar::internal
     ///
     /// \pre The file is empty.
     ////////////////////////////////////////////////////////////////////////////
-    arc_writer(arc_file af) : levelized_file_writer<arc>()
+    arc_writer(shared_levelized_file<arc> af) : levelized_file_writer<arc>()
     {
       // TODO: check precondition
       attach(af);
