@@ -52,7 +52,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a levelized file.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_stream(const levelized_file<elem_t> &lf,
+    levelized_file_stream(levelized_file<elem_t> &lf,
                           bool negate = false)
     { attach(lf, negate); }
 
@@ -74,7 +74,7 @@ namespace adiar::internal
     ///
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(const levelized_file<elem_t> &f,
+    void attach(levelized_file<elem_t> &f,
                 bool negate = false)
     {
       if (!f.exists()) f.touch();

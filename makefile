@@ -138,11 +138,17 @@ test/adiar/internal/data_types/tuple:
 test/adiar/internal/data_types/uid:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=uid
 
+test/adiar/internal/io/arc_file:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=arc_file
+
 test/adiar/internal/io/file:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=file
 
 test/adiar/internal/io/levelized_file:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=levelized_file
+
+test/adiar/internal/io/node_file:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=node_file
 
 test/adiar/internal/io/shared_file_ptr:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=shared_file_ptr

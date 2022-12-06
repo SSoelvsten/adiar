@@ -47,21 +47,47 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream unattached to an arc file.
     ////////////////////////////////////////////////////////////////////////////
-    // TODO
+    arc_stream(levelized_file<arc> &file, bool negate = false)
+    { attach(file, negate); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream unattached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////
     arc_stream(const shared_levelized_file<arc> &file, bool negate = false)
-      : parent_t(file, negate)
-      , _unread_terminals{ file->number_of_terminals[false],
-                           file->number_of_terminals[true] }
-    { }
+    { attach(file, negate); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////
     ~arc_stream() = default;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a levelized arc file.
+    ///
+    /// \pre No `levelized_file_writer` is currently attached to this file.
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(levelized_file<arc> &f,
+                bool negate = false)
+    {
+      parent_t::attach(f, negate);
+      _unread_terminals[false] = f.number_of_terminals[false];
+      _unread_terminals[true] = f.number_of_terminals[true];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a shared levelized arc file.
+    ///
+    /// \pre No `levelized_file_writer` is currently attached to this file.
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(const shared_ptr<levelized_file<arc>> &f,
+                bool negate = false)
+    {
+      parent_t::attach(f, negate);
+      _unread_terminals[false] = f->number_of_terminals[false];
+      _unread_terminals[true] = f->number_of_terminals[true];
+    }
+
 
   public:
     ////////////////////////////////////////////////////////////////////////////
