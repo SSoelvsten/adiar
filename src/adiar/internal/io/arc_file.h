@@ -60,7 +60,7 @@ namespace adiar::internal
       ///        internal arcs are sorted by their 'target' rather than their
       ///        'source'.
       //////////////////////////////////////////////////////////////////////////
-      // TODO: bool semi_transposed = true
+      //bool semi_transposed = true;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum one-level cut of the DAG (not
@@ -70,7 +70,7 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       cut_size_t max_1level_cut = MAX_CUT;
 
-      ///////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////
       /// \brief The number of false and true terminals in the file. Index 0
       ///        gives the number of false terminals and index 1 gives the
       ///        number of true terminals.

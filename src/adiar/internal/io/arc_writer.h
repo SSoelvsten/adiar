@@ -41,16 +41,20 @@ namespace adiar::internal
     ///
     /// \pre The file is empty.
     ////////////////////////////////////////////////////////////////////////////
-    // TODO
+    arc_writer(levelized_file<arc> &af)
+      : levelized_file_writer<arc>()
+    {
+      attach(af);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a shared levelized arc file.
     ///
     /// \pre The file is empty.
     ////////////////////////////////////////////////////////////////////////////
-    arc_writer(shared_levelized_file<arc> af) : levelized_file_writer<arc>()
+    arc_writer(shared_ptr<levelized_file<arc>> af)
+      : levelized_file_writer<arc>()
     {
-      // TODO: check precondition
       attach(af);
     }
 
@@ -64,7 +68,37 @@ namespace adiar::internal
     }
 
   public:
-    // TODO: add wrapper on 'attach' to set up __latest_terminal
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a levelized file of arcs.
+    ///
+    /// \warning Since ownership is \em not shared with this writer, you have to
+    ///          ensure, that the file in question is not destructed before
+    ///          `.detach()` is called.
+    ///
+    /// \pre The file is empty.
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(levelized_file<arc> &af) {
+      if (attached()) detach();
+      adiar_precondition(af.empty());
+
+      // TODO: remove precondition and set up __latest_terminal.
+
+      return levelized_file_writer::attach(af);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Attach to a shared levelized file of arcs.
+    ///
+    /// \pre The file is empty.
+    ////////////////////////////////////////////////////////////////////////////
+    void attach(shared_ptr<levelized_file<arc>> &af) {
+      if (attached()) detach();
+      adiar_precondition(af->empty());
+
+      // TODO: remove precondition and set up __latest_terminal.
+
+      return levelized_file_writer::attach(af);
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches after having sort the out-of-order terminals.

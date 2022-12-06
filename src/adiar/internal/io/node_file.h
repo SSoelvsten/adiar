@@ -104,7 +104,7 @@ namespace adiar::internal
       //////////////////////////////////////////////////////////////////////////
       inline bool is_false() const
       {
-        return this->is_terminal() && this->value();
+        return this->is_terminal() && !this->value();
       }
 
       //////////////////////////////////////////////////////////////////////////

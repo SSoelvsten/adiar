@@ -340,7 +340,7 @@ namespace adiar::internal
     red1_mapping.close();
 
     // Update with 1-level cut below current level
-    out_writer.inc_1level_cut(local_1level_cut);
+    out_writer.unsafe_inc_1level_cut(local_1level_cut);
 
     if (!reduce_pq.empty()) {
       adiar_debug(!arcs.can_pull_terminal() || arcs.peek_terminal().source().label() < label,
@@ -370,7 +370,7 @@ namespace adiar::internal
       const bool terminal_val = next_red1.new_uid.value();
 
       out_writer.unsafe_push(node(terminal_val));
-      out_writer.set_number_of_terminals(!terminal_val, terminal_val);
+      out_writer.unsafe_set_number_of_terminals(!terminal_val, terminal_val);
     }
   }
 
@@ -413,7 +413,7 @@ namespace adiar::internal
         const node out_node = node(terminal_val);
         out_writer.unsafe_push(out_node);
 
-        out_writer.set_number_of_terminals(!terminal_val, terminal_val);
+        out_writer.unsafe_set_number_of_terminals(!terminal_val, terminal_val);
         __reduce_cut_add(out_file->max_1level_cut, 0u, !terminal_val, terminal_val);
       } else {
         const typename dd_policy::label_t label = e_low.source().label();

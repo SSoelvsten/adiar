@@ -1,4 +1,5 @@
+add_test(adiar-internal-io-arc_file        test_arc_file.cpp)
 add_test(adiar-internal-io-file            test_file.cpp)
 add_test(adiar-internal-io-levelized_file  test_levelized_file.cpp)
+add_test(adiar-internal-io-node_file       test_node_file.cpp)
 add_test(adiar-internal-io-shared_file_ptr test_shared_file_ptr.cpp)
-add_test(adiar-internal-io-old            __test_file.cpp)
