@@ -60,7 +60,7 @@ namespace adiar::internal
       ///        internal arcs are sorted by their 'target' rather than their
       ///        'source'.
       //////////////////////////////////////////////////////////////////////////
-      //bool semi_transposed = true;
+      // bool semi_transposed = true;
 
       //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum one-level cut of the DAG (not
@@ -81,6 +81,18 @@ namespace adiar::internal
       //       create base_stats class to inherit here and in node_file from.
     };
   };
+
+  // TODO: Add 'untranspose' function to levelized_file<arc> (which is an alias
+  //       for .sort<0>()).
+  //
+  //       To this end:
+  //       - Rename 'levelized_file<elem_t>' to '__levelized_file<elem_t>'.
+  //
+  //       - Make 'levelized_file<elem_t>' be a class that publicly inherit the
+  //         base class '__levelized_file<elem_t>'.
+  //
+  //       - Add a specialization for 'levelized_file<arc>' that also adds the
+  //         'untranspose' function.
 }
 
 #endif // ADIAR_INTERNAL_IO_ARC_FILE_H
