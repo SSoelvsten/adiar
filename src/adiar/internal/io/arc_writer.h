@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_IO_ARC_WRITER
-#define ADIAR_INTERNAL_IO_ARC_WRITER
+#ifndef ADIAR_INTERNAL_IO_ARC_WRITER_H
+#define ADIAR_INTERNAL_IO_ARC_WRITER_H
 
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/level_info.h>
@@ -201,4 +201,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_ARC_WRITER
+#endif // ADIAR_INTERNAL_IO_ARC_WRITER_H

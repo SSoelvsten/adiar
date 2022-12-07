@@ -1,5 +1,5 @@
-#ifndef ADIAR_FILE_WRITER_H
-#define ADIAR_FILE_WRITER_H
+#ifndef ADIAR_INTERNAL_IO_FILE_WRITER_H
+#define ADIAR_INTERNAL_IO_FILE_WRITER_H
 
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
@@ -195,4 +195,4 @@ namespace adiar::internal
   typedef file_writer<ptr_uint64::label_t> label_writer;
 }
 
-#endif // ADIAR_FILE_WRITER_H
+#endif // ADIAR_INTERNAL_IO_FILE_WRITER_H
