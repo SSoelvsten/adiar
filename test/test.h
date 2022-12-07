@@ -160,7 +160,7 @@ namespace snowhouse
 namespace adiar::internal
 {
   template <>
-  struct FILE_CONSTANTS<int>
+  struct file_traits<int>
   {
     static constexpr size_t files = 2u;
 

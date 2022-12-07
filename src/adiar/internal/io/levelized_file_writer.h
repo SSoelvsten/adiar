@@ -21,7 +21,7 @@ namespace adiar::internal
   public:
     static size_t memory_usage()
     {
-      return FILE_CONSTANTS<elem_t>::files * file_writer<elem_t>::memory_usage()
+      return file_traits<elem_t>::files * file_writer<elem_t>::memory_usage()
            + 1u * file_writer<level_info>::memory_usage();
     }
 
@@ -36,7 +36,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     file_writer<level_info_t> _level_writer;
 
-    static constexpr size_t ELEM_WRITERS = FILE_CONSTANTS<elem_t>::files;
+    static constexpr size_t ELEM_WRITERS = file_traits<elem_t>::files;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Writers for each of the files with 'elem_t'.
@@ -89,7 +89,7 @@ namespace adiar::internal
       _file_ptr = std::shared_ptr<levelized_file<elem_t>>(&f, [](void *) {});
 
       _level_writer.attach(f._level_info_file, nullptr);
-      for (size_t s_idx = 0; s_idx < FILE_CONSTANTS<elem_t>::files; s_idx++)
+      for (size_t s_idx = 0; s_idx < file_traits<elem_t>::files; s_idx++)
         _elem_writers[s_idx].attach(f._files[s_idx], nullptr);
     }
 
@@ -103,7 +103,7 @@ namespace adiar::internal
       _file_ptr = f;
 
       _level_writer.attach(f->_level_info_file, f);
-      for (size_t s_idx = 0; s_idx < FILE_CONSTANTS<elem_t>::files; s_idx++)
+      for (size_t s_idx = 0; s_idx < file_traits<elem_t>::files; s_idx++)
         _elem_writers[s_idx].attach(f->_files[s_idx], f);
     }
 

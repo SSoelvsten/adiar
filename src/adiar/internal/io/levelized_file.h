@@ -40,7 +40,7 @@ namespace adiar::internal
   /// \param elem_type       Type of the file's content.
   ////////////////////////////////////////////////////////////////////////////
   template <typename elem_type>
-  class levelized_file<elem_type, false> : public FILE_CONSTANTS<elem_type>::stats
+  class levelized_file<elem_type, false> : public file_traits<elem_type>::stats
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of files to collectively represent a DAG.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr size_t FILES = FILE_CONSTANTS<elem_t>::files;
+    static constexpr size_t FILES = file_traits<elem_t>::files;
     static_assert(0 < FILES, "The number of files must be positive");
 
   private:
@@ -446,7 +446,7 @@ namespace adiar::internal
   /// \param elem_type       Type of the file's content.
   ////////////////////////////////////////////////////////////////////////////
   //template <typename elem_type>
-  //class levelized_file<elem_type, true> : public FILE_CONSTANTS<elem_type>::stats
+  //class levelized_file<elem_type, true> : public file_traits<elem_type>::stats
   //{
   //  TODO
   //}

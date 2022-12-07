@@ -22,13 +22,13 @@ namespace adiar::internal
   ///
   /// \details Files also contain various pieces of meta information. Instead of
   ///          creating a larger object-oriented hierarchy, we provide this
-  ///          `FILE_CONSTANTS` template to provide at compile-time the settings
+  ///          `file_traits` template to provide at compile-time the settings
   ///          and meta information to include.
   ///
   /// \param elem_type Element type in the file.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_type>
-  struct FILE_CONSTANTS;
+  struct file_traits;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   A file on disk.
@@ -40,7 +40,7 @@ namespace adiar::internal
   /// \param   elem_type Type of the file's content.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_type> // <-- header_t
-  class file // : public FILE_CONSTANTS<elem_type>::stats
+  class file // : public file_traits<elem_type>::stats
   {
   public:
     ////////////////////////////////////////////////////////////////////////////

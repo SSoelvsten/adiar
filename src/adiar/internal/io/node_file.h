@@ -12,7 +12,7 @@ namespace adiar::internal
   /// \brief A reduced Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
   template <>
-  struct FILE_CONSTANTS<node>
+  struct file_traits<node>
   {
     // TODO: reading direction?
 

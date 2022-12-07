@@ -12,7 +12,7 @@ stats_t::levelized_priority_queue_t stats_lpq_tests;
 namespace adiar::internal
 {
   template <>
-  struct FILE_CONSTANTS<pq_test_data>
+  struct file_traits<pq_test_data>
   {
     static constexpr size_t files = 1u;
 

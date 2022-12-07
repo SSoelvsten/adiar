@@ -16,7 +16,7 @@ namespace adiar::internal
   /// \brief An unreduced Decision Diagram.
   //////////////////////////////////////////////////////////////////////////////
   template <>
-  struct FILE_CONSTANTS<arc>
+  struct file_traits<arc>
   {
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of files to store an arc-based representation.

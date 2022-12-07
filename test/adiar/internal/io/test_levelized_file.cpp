@@ -17,7 +17,7 @@ go_bandit([]() {
     const std::string tmp_path = tpie::tempname::get_actual_path() + "/";
     const std::string curr_path = "./";
 
-    it("levelized_file::FILES exposes the FILE_CONSTANT", []() {
+    it("levelized_file::FILES exposes the file_traits", []() {
       AssertThat(levelized_file<int>::FILES, Is().EqualTo(2u));
     });
 

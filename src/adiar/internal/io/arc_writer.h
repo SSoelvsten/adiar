@@ -21,13 +21,13 @@ namespace adiar::internal
 
   private:
     static constexpr size_t IDX__INTERNAL =
-      FILE_CONSTANTS<arc>::IDX__INTERNAL;
+      file_traits<arc>::IDX__INTERNAL;
 
     static constexpr size_t IDX__TERMINALS__IN_ORDER =
-      FILE_CONSTANTS<arc>::IDX__TERMINALS__IN_ORDER;
+      file_traits<arc>::IDX__TERMINALS__IN_ORDER;
 
     static constexpr size_t IDX__TERMINALS__OUT_OF_ORDER =
-      FILE_CONSTANTS<arc>::IDX__TERMINALS__OUT_OF_ORDER;
+      file_traits<arc>::IDX__TERMINALS__OUT_OF_ORDER;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
