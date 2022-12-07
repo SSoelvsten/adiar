@@ -16,6 +16,8 @@ go_bandit([]() {
         AssertThat(af.size(), Is().EqualTo(0u));
         AssertThat(af.levels(), Is().EqualTo(2u));
 
+        // AssertThat(af.semi_transposed, Is().True());
+
         AssertThat(af.max_1level_cut, Is().EqualTo(MAX_CUT));
 
         AssertThat(af.number_of_terminals[false], Is().EqualTo(0u));
@@ -37,6 +39,8 @@ go_bandit([]() {
         AssertThat(af.size(2u), Is().EqualTo(0u));
 
         AssertThat(af.levels(), Is().EqualTo(0u));
+
+        // AssertThat(af.semi_transposed, Is().True());
 
         AssertThat(af.max_1level_cut, Is().EqualTo(MAX_CUT));
 
@@ -61,6 +65,8 @@ go_bandit([]() {
 
         AssertThat(af.number_of_terminals[false], Is().EqualTo(0u));
         AssertThat(af.number_of_terminals[true],  Is().EqualTo(2u));
+
+        // AssertThat(af.semi_transposed, Is().True());
 
         levelized_file_stream<arc> lfs(af);
         AssertThat(lfs.can_pull<0>(), Is().False());
@@ -258,6 +264,10 @@ go_bandit([]() {
         AssertThat(as.unread_terminals(false), Is().EqualTo(0u));
         AssertThat(as.unread_terminals(true),  Is().EqualTo(0u));
       });
+    });
+
+    describe("untranspose()", []() {
+      // TODO
     });
   });
  });
