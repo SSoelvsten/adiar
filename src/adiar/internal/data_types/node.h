@@ -263,21 +263,30 @@ namespace adiar::internal
 
     /* =============================== COMPARATORS ========================== */
   public:
-    inline bool operator< (const node &o) const
-    { return this->_uid < o._uid; }
+    inline bool operator<  (const node &o) const
+    {
+      return (this->_uid < o._uid)
+        || (this->_uid == o._uid && this->_children < o._children);
+    }
 
-    inline bool operator> (const node &o) const
+    inline bool operator>  (const node &o) const
     { return (o < *this); }
 
     inline bool operator== (const node &o) const
     {
       return this->_uid == o._uid
-        && this->_children[0] == o._children[0]
-        && this->_children[1] == o._children[1];
+        && this->_children[false] == o._children[false]
+        && this->_children[true]  == o._children[true];
     }
 
     inline bool operator!= (const node &o) const
     { return !(*this == o); }
+
+    inline bool operator<= (const node &o) const
+    { return (*this < o) || (*this == o); }
+
+    inline bool operator>= (const node &o) const
+    { return (*this > o) || (*this == o); }
 
     /* ================================ OPERATORS =========================== */
   public:
@@ -315,6 +324,54 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline node operator! (const node &n)
   { return ~n; }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering of node in comparison to a unique identifier.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool operator< (const node &n, const node::uid_t &u)
+  { return n.uid() < u; }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering of node in comparison to a unique identifier.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool operator< (const node::uid_t &u, const node &n)
+  { return u < n.uid(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering of node in comparison to a unique identifier.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool operator<= (const node &n, const node::uid_t &u)
+  { return n.uid() <= u; }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering of node in comparison to a unique identifier.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool operator<= (const node::uid_t &u, const node &n)
+  { return u <= n.uid(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering of node in comparison to a unique identifier.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool operator> (const node &n, const node::uid_t &u)
+  { return n.uid() > u; }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering of node in comparison to a unique identifier.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool operator> (const node::uid_t &u, const node &n)
+  { return u > n.uid(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering of node in comparison to a unique identifier.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool operator>= (const node &n, const node::uid_t &u)
+  { return n.uid() >= u; }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Ordering of node in comparison to a unique identifier.
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool operator>= (const node::uid_t &u, const node &n)
+  { return u >= n.uid(); }
 }
 
 #endif // ADIAR_INTERNAL_DATA_TYPES_NODE_H

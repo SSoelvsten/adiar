@@ -171,15 +171,38 @@ namespace adiar::internal
       }
     }
 
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    bool __can_read() const
+    {
+      if constexpr (REVERSE) {
+        return _stream.can_read_back();
+      } else {
+        return _stream.can_read();
+      }
+    }
+
+  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the stream contains more elements.
     ////////////////////////////////////////////////////////////////////////////
     bool can_pull() const
+    { return _has_peeked || __can_read(); }
+
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    const elem_t __read()
     {
-      return _has_peeked
-        || (REVERSE ? _stream.can_read_back() : _stream.can_read());
+      elem_t e;
+      if constexpr (REVERSE) {
+        e = _stream.read_back();
+      } else {
+        e = _stream.read();
+      }
+      return _negate ? !e : e; // TODO: replace with ~ operator
     }
 
+  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next element (and move the read head).
     ///
@@ -191,10 +214,10 @@ namespace adiar::internal
         _has_peeked = false;
         return _peeked;
       }
-      const elem_t t = REVERSE ? _stream.read_back() : _stream.read();
-      return _negate ? !t : t;
+      return __read();
     }
 
+  public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next element (but do not move the read head)
     ///
@@ -203,9 +226,31 @@ namespace adiar::internal
     const elem_t peek()
     {
       if (!_has_peeked) {
-        _peeked = pull();
+        _peeked = __read();
         _has_peeked = true;
       }
+      return _peeked;
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Obtain the next element that is greater than or equal to the
+    ///          given target value.
+    ///
+    /// \param s The value to seek for
+    ///
+    /// \pre     The content is in ascending order and `can_pull() == true`.
+    ////////////////////////////////////////////////////////////////////////////
+    template<typename seek_t = elem_t>
+    const elem_t seek(seek_t tgt)
+    {
+      // Notice, the peek() also changes the state of '_peeked' and
+      // '_has_peeked'. This initializes the invariant for 'seek' that '_peeked'
+      // is the "current position".
+      if (tgt < peek()) { return _peeked; }
+
+      // Only move to "next value", if there is more to pull.
+      while (_peeked < tgt && __can_read()) { _peeked = __read(); }
       return _peeked;
     }
   };

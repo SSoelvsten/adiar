@@ -32,7 +32,16 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Create attached to a node file.
     ////////////////////////////////////////////////////////////////////////////
-    node_stream(const shared_levelized_file<node> &file, bool negate = false)
+    node_stream(const levelized_file<node> &file,
+                bool negate = false)
+      : parent_t(file, negate)
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Create attached to a shared node file.
+    ////////////////////////////////////////////////////////////////////////////
+    node_stream(const shared_ptr<levelized_file<node>> &file,
+                bool negate = false)
       : parent_t(file, negate)
     { }
 
@@ -54,7 +63,7 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    node pull()
+    const node pull()
     { return parent_t::template pull<0>(); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -62,8 +71,18 @@ namespace adiar::internal
     ///
     /// \pre `can_pull() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    node peek()
+    const node peek()
     { return parent_t::template peek<0>(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief   Obtain the first node past the seeked value.
+    ///
+    /// \param u Unique Identifier to seek for.
+    ///
+    /// \pre     `can_pull() == true`.
+    ////////////////////////////////////////////////////////////////////////////
+    const node seek(const node::uid_t &u)
+    { return parent_t::_streams[0].seek(u); }
   };
 }
 

@@ -311,6 +311,18 @@ namespace adiar::internal
     bool empty() const
     { return size() == 0u; }
 
+  private:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Creates the file(s) on disk, if they do not yet already do.
+    ////////////////////////////////////////////////////////////////////////////
+    void __touch() const
+    {
+      if (exists()) return;
+
+      for (size_t idx = 0u; idx < FILES; idx++) { _files[idx].__touch(); }
+      _level_info_file.__touch();
+    }
+
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Creates the file(s) on disk, if they do not yet already do.
