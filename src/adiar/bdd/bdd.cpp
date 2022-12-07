@@ -91,7 +91,7 @@ namespace adiar
 
   bdd& bdd::operator= (__bdd &&other)
   {
-    free();
+    deref();
     return (*this = internal::reduce<bdd_policy>(std::forward<__bdd>(other)));
   }
 
@@ -103,7 +103,7 @@ namespace adiar
   bdd& bdd::operator&= (bdd &&other)
   {
     __bdd&& temp = bdd_and(*this, other);
-    other.free();
+    other.deref();
     return (*this = std::move(temp));
   }
 
@@ -115,7 +115,7 @@ namespace adiar
   bdd& bdd::operator|= (bdd &&other)
   {
     __bdd&& temp = bdd_or(*this, other);
-    other.free();
+    other.deref();
     return (*this = std::move(temp));
   }
 
@@ -127,7 +127,7 @@ namespace adiar
   bdd& bdd::operator^= (bdd &&other)
   {
     __bdd&& temp = bdd_xor(*this, other);
-    other.free();
+    other.deref();
     return (*this = std::move(temp));
   }
 

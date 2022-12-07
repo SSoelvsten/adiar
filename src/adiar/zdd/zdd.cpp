@@ -97,7 +97,7 @@ namespace adiar
 
   zdd& zdd::operator= (__zdd &&other)
   {
-    free();
+    deref();
     return (*this = internal::reduce<zdd_policy>(std::forward<__zdd>(other)));
   }
 
@@ -124,7 +124,7 @@ namespace adiar
   zdd& zdd::operator&= (zdd &&other)
   {
     __zdd&& temp = zdd_intsec(*this, other);
-    other.free();
+    other.deref();
     return (*this = std::move(temp));
   }
 
@@ -141,7 +141,7 @@ namespace adiar
   zdd& zdd::operator|= (zdd &&other)
   {
     __zdd&& temp = zdd_union(*this, other);
-    other.free();
+    other.deref();
     return (*this = std::move(temp));
   }
 
@@ -158,7 +158,7 @@ namespace adiar
   zdd& zdd::operator-= (zdd &&other)
   {
     __zdd&& temp = zdd_diff(*this, other);
-    other.free();
+    other.deref();
     return (*this = std::move(temp));
   }
 
