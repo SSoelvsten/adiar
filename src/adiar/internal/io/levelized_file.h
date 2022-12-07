@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_IO_META_FILE_H
-#define ADIAR_INTERNAL_IO_META_FILE_H
+#ifndef ADIAR_INTERNAL_IO_LEVELIZED_FILE_H
+#define ADIAR_INTERNAL_IO_LEVELIZED_FILE_H
 
 #include <array>
 #include <sstream>
@@ -464,4 +464,4 @@ namespace adiar::internal
   //}
 }
 
-#endif // ADIAR_INTERNAL_IO_META_FILE_H
+#endif // ADIAR_INTERNAL_IO_LEVELIZED_FILE_H

@@ -1,5 +1,5 @@
-#ifndef ADIAR_FILE_STREAM_H
-#define ADIAR_FILE_STREAM_H
+#ifndef ADIAR_INTERNAL_IO_FILE_STREAM_H
+#define ADIAR_INTERNAL_IO_FILE_STREAM_H
 
 #include <tpie/tpie.h>
 #include <tpie/sort.h>
@@ -256,4 +256,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_FILE_STREAM_H
+#endif // ADIAR_INTERNAL_IO_FILE_STREAM_H

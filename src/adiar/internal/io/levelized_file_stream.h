@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_IO_LEVELIZED_FILE_STREAM
-#define ADIAR_INTERNAL_IO_LEVELIZED_FILE_STREAM
+#ifndef ADIAR_INTERNAL_IO_LEVELIZED_FILE_STREAM_H
+#define ADIAR_INTERNAL_IO_LEVELIZED_FILE_STREAM_H
 
 #include <adiar/internal/assert.h>
 #include <adiar/internal/dd.h>
@@ -276,4 +276,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_LEVELIZED_FILE_STREAM
+#endif // ADIAR_INTERNAL_IO_LEVELIZED_FILE_STREAM_H

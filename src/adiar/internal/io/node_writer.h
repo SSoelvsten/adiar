@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_IO_NODE_WRITER
-#define ADIAR_INTERNAL_IO_NODE_WRITER
+#ifndef ADIAR_INTERNAL_IO_NODE_WRITER_H
+#define ADIAR_INTERNAL_IO_NODE_WRITER_H
 
 #include <adiar/internal/cut.h>
 #include <adiar/internal/data_types/node.h>
@@ -404,4 +404,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_NODE_WRITER
+#endif // ADIAR_INTERNAL_IO_NODE_WRITER_H

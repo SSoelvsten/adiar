@@ -1,5 +1,5 @@
-#ifndef ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER
-#define ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER
+#ifndef ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER_H
+#define ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER_H
 
 #include <adiar/internal/memory.h>
 #include <adiar/internal/io/file.h>
@@ -222,4 +222,4 @@ namespace adiar::internal
   };
 }
 
-#endif // ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER
+#endif // ADIAR_INTERNAL_IO_LEVELIZED_FILE_WRITER_H
