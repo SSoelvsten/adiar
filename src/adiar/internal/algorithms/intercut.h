@@ -25,7 +25,7 @@ namespace adiar::internal
   // Priority queue
 
   class intercut_req : public arc
-  {
+  { // TODO: replace with request class
   private:
     ptr_uint64::label_t _level = ptr_uint64::MAX_LABEL + 1u;
 
@@ -43,14 +43,6 @@ namespace adiar::internal
     { return _level; }
   };
 
-  struct intercut_req_label
-  {
-    static ptr_uint64::label_t label_of(const intercut_req &r)
-    {
-      return r.level();
-    }
-  };
-
   struct intercut_req_lt
   {
     bool operator()(const intercut_req &a, const intercut_req &b)
@@ -66,7 +58,7 @@ namespace adiar::internal
 
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using intercut_priority_queue_t =
-    levelized_label_priority_queue<intercut_req, intercut_req_label, intercut_req_lt,
+    levelized_label_priority_queue<intercut_req, intercut_req_lt,
                                    LOOK_AHEAD,
                                    mem_mode,
                                    2u,
@@ -97,7 +89,7 @@ namespace adiar::internal
     return curr_level < cut_level
       && cut_level <= intercut_policy::MAX_LABEL
       && (!terminal_value || intercut_policy::cut_true_terminal)
-      && (terminal_value || intercut_policy::cut_false_terminal);
+      && ( terminal_value || intercut_policy::cut_false_terminal);
   }
 
   template<typename intercut_policy>

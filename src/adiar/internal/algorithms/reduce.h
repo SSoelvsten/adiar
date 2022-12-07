@@ -31,6 +31,22 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // For priority queue
+  struct reduce_arc : public arc
+  {
+    reduce_arc() = default;
+
+    reduce_arc(const reduce_arc &) = default;
+
+    reduce_arc(const arc &a) : arc(a)
+    { }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The level at which this nodes source belongs to.
+    ////////////////////////////////////////////////////////////////////////////
+    arc::label_t level() const
+    { return source().label(); }
+  };
+
   struct reduce_queue_lt
   {
     bool operator()(const arc &a, const arc &b)
@@ -41,26 +57,18 @@ namespace adiar::internal
     }
   };
 
-  struct reduce_queue_label
-  {
-    static arc::ptr_t::label_t label_of(const arc &a)
-    {
-      return a.source().label();
-    }
-  };
-
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Decorator on the levelized priority queue to also keep track of
   ///        the number of arcs to each terminal.
   ////////////////////////////////////////////////////////////////////////////
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
-  class reduce_priority_queue : public levelized_arc_priority_queue<arc, reduce_queue_label,
-                                                                    reduce_queue_lt, LOOK_AHEAD,
+  class reduce_priority_queue : public levelized_arc_priority_queue<reduce_arc, reduce_queue_lt,
+                                                                    LOOK_AHEAD,
                                                                     mem_mode>
   {
   private:
-    using inner_lpq = levelized_arc_priority_queue<arc, reduce_queue_label,
-                                                   reduce_queue_lt, LOOK_AHEAD,
+    using inner_lpq = levelized_arc_priority_queue<reduce_arc, reduce_queue_lt,
+                                                   LOOK_AHEAD,
                                                    mem_mode>;
 
     ////////////////////////////////////////////////////////////////////////////
