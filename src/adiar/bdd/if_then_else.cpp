@@ -39,21 +39,20 @@ namespace adiar
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using ite_priority_queue_1_t =
   internal::levelized_node_priority_queue<ite_request<0>,
-                                          internal::request_label<ite_request<0>>,
                                           internal::request_data_fst_lt<ite_request<0>>,
                                           LOOK_AHEAD, mem_mode, 3>;
 
   template<memory_mode_t mem_mode>
   using ite_priority_queue_2_t =
-  internal::priority_queue<mem_mode,
-                            ite_request<1>,
-                            internal::request_data_snd_lt<ite_request<1>>>;
+    internal::priority_queue<mem_mode,
+                             ite_request<1>,
+                             internal::request_data_snd_lt<ite_request<1>>>;
 
   template<memory_mode_t mem_mode>
   using ite_priority_queue_3_t =
-  internal::priority_queue<mem_mode,
-                            ite_request<2>,
-                            internal::request_data_trd_lt<ite_request<2>>>;
+    internal::priority_queue<mem_mode,
+                             ite_request<2>,
+                             internal::request_data_trd_lt<ite_request<2>>>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions

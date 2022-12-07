@@ -18,23 +18,18 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
   struct path_sum
-  {
+  { // TODO: replace with request class
     node::uid_t target;
     uint64_t sum;
+
+    node::label_t level() const
+    { return target.label(); }
   };
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
   template<typename T>
   struct count_queue_lt;
-
-  struct count_queue_label
-  {
-    inline static ptr_uint64::label_t label_of(const path_sum &s)
-    {
-      return s.target.label();
-    }
-  };
 
   template<>
   struct count_queue_lt<path_sum>
@@ -47,8 +42,8 @@ namespace adiar::internal
 
   template <typename elem_t, size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using count_priority_queue_t =
-    levelized_node_priority_queue<elem_t, count_queue_label,
-                                  count_queue_lt<elem_t>, LOOK_AHEAD,
+    levelized_node_priority_queue<elem_t, count_queue_lt<elem_t>,
+                                  LOOK_AHEAD,
                                   mem_mode>;
 
   //////////////////////////////////////////////////////////////////////////////

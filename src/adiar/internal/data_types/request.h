@@ -79,6 +79,12 @@ namespace adiar::internal
 
     /* ======================== DERIVATED INFORMATION ======================= */
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The level at which this request should be resolved.
+    ////////////////////////////////////////////////////////////////////////////
+    ptr_t::label_t level() const
+    { return target.fst().label(); }
+
     // TODO: how much data is 'actually' carried? within the priority queues
     // this of course ought to be exactly `nodes_carried`, but within the
     // algorithms, we want to reuse this same class with `NIL` as placeholders.
@@ -86,15 +92,6 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
-  template<class request_t>
-  struct request_label
-  {
-    static inline typename request_t::label_t
-    label_of(const request_t &r)
-    {
-      return r.target.fst().label();
-    }
-  };
 
   // TODO: turn it into only having the cardinality
   template<class request_t>

@@ -58,10 +58,10 @@ namespace adiar::internal
 
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using comparison_priority_queue_1_t =
-    levelized_node_priority_queue<pred_request<0>,
-                                  request_label<pred_request<0>>,
-                                  request_fst_lt<pred_request<0>>,
-                                  LOOK_AHEAD, mem_mode, 2>;
+    levelized_node_priority_queue<pred_request<0>, request_fst_lt<pred_request<0>>,
+                                  LOOK_AHEAD,
+                                  mem_mode,
+                                  2u>;
 
   typedef request<2, false, 1> pred_request_2;
 

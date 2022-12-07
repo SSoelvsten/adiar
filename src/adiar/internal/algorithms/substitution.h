@@ -26,10 +26,23 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
+  struct substitute_arc : public arc
+  { // TODO: replace with request class
+    substitute_arc() = default;
+
+    substitute_arc(const substitute_arc &) = default;
+
+    substitute_arc(const arc &a) : arc(a)
+    { }
+
+    arc::label_t level() const
+    { return target().label(); }
+  };
+
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using substitute_priority_queue_t =
-    levelized_node_priority_queue<arc, arc_target_label,
-                                  arc_target_lt, LOOK_AHEAD,
+    levelized_node_priority_queue<substitute_arc, arc_target_lt,
+                                  LOOK_AHEAD,
                                   mem_mode>;
 
   struct substitute_rec_output { node out; };
@@ -86,8 +99,8 @@ namespace adiar::internal
 
   template<typename pq_t>
   inline void __substitute_resolve_request(const arc &request,
-                                         pq_t &pq,
-                                         arc_writer &aw)
+                                           pq_t &pq,
+                                           arc_writer &aw)
   {
     if(request.target().is_terminal()) {
       aw.push_terminal(request);

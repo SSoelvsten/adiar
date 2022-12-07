@@ -31,9 +31,7 @@ namespace adiar::internal
 
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using prod_priority_queue_1_t =
-    levelized_node_priority_queue<prod2_request<0>,
-                                  request_label<prod2_request<0>>,
-                                  request_data_fst_lt<prod2_request<0>>,
+    levelized_node_priority_queue<prod2_request<0>, request_data_fst_lt<prod2_request<0>>,
                                   LOOK_AHEAD,
                                   mem_mode,
                                   2>;
