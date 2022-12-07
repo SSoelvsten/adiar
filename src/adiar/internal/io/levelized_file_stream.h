@@ -31,7 +31,7 @@ namespace adiar::internal
   class levelized_file_stream
   {
   public:
-    static constexpr size_t streams = FILE_CONSTANTS<elem_t>::files;
+    static constexpr size_t streams = file_traits<elem_t>::files;
     static_assert(0 < streams, "There must be at least a single file to attach to.");
 
     static size_t memory_usage()
