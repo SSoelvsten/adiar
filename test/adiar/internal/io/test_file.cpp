@@ -461,6 +461,114 @@ go_bandit([]() {
         fs.detach();
       });
 
+      it("can seek existing elements [forward]", []() {
+        file<int> f;
+
+        adiar::file_writer<int> fw(f);
+        fw << 1 << 2 << 3 << 4 << 5 << 6;
+        fw.detach();
+        AssertThat(fw.attached(), Is().False());
+
+        adiar::internal::file_stream<int> fs(f);
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(2), Is().EqualTo(2));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(2), Is().EqualTo(2));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(3), Is().EqualTo(3));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(6), Is().EqualTo(6));
+        AssertThat(fs.can_pull(), Is().True());
+      });
+
+      it("can seek existing elements [reverse]", []() {
+        file<int> f;
+
+        adiar::file_writer<int> fw(f);
+        fw << 6 << 5 << 4 << 3 << 2 << 1;
+        fw.detach();
+        AssertThat(fw.attached(), Is().False());
+
+        adiar::internal::file_stream<int, true> fs(f);
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(2), Is().EqualTo(2));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(2), Is().EqualTo(2));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(3), Is().EqualTo(3));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(6), Is().EqualTo(6));
+        AssertThat(fs.can_pull(), Is().True());
+      });
+
+      it("can seek non-existing element [forward]", []() {
+        file<int> f;
+
+        adiar::file_writer<int> fw(f);
+        fw << 1 << 2 << 3 << 5 << 6;
+        fw.detach();
+        AssertThat(fw.attached(), Is().False());
+
+        adiar::internal::file_stream<int> fs(f);
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(2), Is().EqualTo(2));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(4), Is().EqualTo(5));
+        AssertThat(fs.can_pull(), Is().True());
+      });
+
+      it("can seek non-existing element [reverse]", []() {
+        file<int> f;
+
+        adiar::file_writer<int> fw(f);
+        fw << 6 << 5 << 3 << 2 << 1;
+        fw.detach();
+        AssertThat(fw.attached(), Is().False());
+
+        adiar::internal::file_stream<int, true> fs(f);
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(2), Is().EqualTo(2));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(4), Is().EqualTo(5));
+        AssertThat(fs.can_pull(), Is().True());
+      });
+
+      it("can seek past end [forward]", []() {
+        file<int> f;
+
+        adiar::file_writer<int> fw(f);
+        fw << 1 << 2 << 3 << 5 << 6;
+        fw.detach();
+        AssertThat(fw.attached(), Is().False());
+
+        adiar::internal::file_stream<int> fs(f);
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(3), Is().EqualTo(3));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(8), Is().EqualTo(6));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(7), Is().EqualTo(6));
+        AssertThat(fs.can_pull(), Is().True());
+      });
+
+      it("can seek past end [reverse]", []() {
+        file<int> f;
+
+        adiar::file_writer<int> fw(f);
+        fw << 6 << 5 << 3 << 2 << 1;
+        fw.detach();
+        AssertThat(fw.attached(), Is().False());
+
+        adiar::internal::file_stream<int, true> fs(f);
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(3), Is().EqualTo(3));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(8), Is().EqualTo(6));
+        AssertThat(fs.can_pull(), Is().True());
+        AssertThat(fs.seek(7), Is().EqualTo(6));
+        AssertThat(fs.can_pull(), Is().True());
+      });
+
       it("can sort written content", []() {
         file<int> f;
 

@@ -642,9 +642,111 @@ go_bandit([]() {
       });
     });
 
-    describe("node_stream", []() {
+    describe("node_writer + node_stream", []() {
       // TODO: stream: reads backwards by default
       // TODO: stream: reads forwards if desired
+
+      describe(".seek(const node::uid_t &u)", []() {
+        it("can seek in False sink", [&]() {
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(false);
+          }
+
+          node_stream<> ns(nf);
+
+          AssertThat(ns.seek(node::uid_t(0,0)), Is().EqualTo(node(false)));
+          AssertThat(ns.seek(node::uid_t(1,0)), Is().EqualTo(node(false)));
+          AssertThat(ns.seek(node::uid_t(1,1)), Is().EqualTo(node(false)));
+          AssertThat(ns.seek(node::uid_t(node::MAX_LABEL, node::MAX_ID)), Is().EqualTo(node(false)));
+        });
+
+        it("can seek in True sink", [&]() {
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(true);
+          }
+
+          node_stream<> ns(nf);
+
+          AssertThat(ns.seek(node::uid_t(0,0)), Is().EqualTo(node(true)));
+          AssertThat(ns.seek(node::uid_t(1,0)), Is().EqualTo(node(true)));
+          AssertThat(ns.seek(node::uid_t(1,1)), Is().EqualTo(node(true)));
+          AssertThat(ns.seek(node::uid_t(node::MAX_LABEL, node::MAX_ID)), Is().EqualTo(node(true)));
+        });
+
+        it("can seek existing elements", [&]() {
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(1,1, node::ptr_t(false), node::ptr_t(true))
+               << node(1,0, node::ptr_t(true), node::ptr_t(false))
+               << node(0,0, node::uid_t(1,0), node::uid_t(1,1))
+              ;
+          }
+
+          node_stream<> ns(nf);
+
+          AssertThat(ns.seek(node::uid_t(0,0)), Is().EqualTo(node(0,0, node::uid_t(1,0),  node::uid_t(1,1))));
+          AssertThat(ns.seek(node::uid_t(1,1)), Is().EqualTo(node(1,1, node::ptr_t(false), node::ptr_t(true))));
+        });
+
+        it("can seek non-existing element in the middle ", [&]() {
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(2,1, node::ptr_t(false), node::ptr_t(true))
+               << node(2,0, node::ptr_t(true),  node::ptr_t(false))
+               << node(0,0, node::ptr_t(1,0),   node::ptr_t(1,1))
+              ;
+          }
+
+          node_stream<> ns(nf);
+
+          AssertThat(ns.seek(node::uid_t(0,0)), Is().EqualTo(node(0,0, node::ptr_t(1,0),   node::ptr_t(1,1))));
+          AssertThat(ns.seek(node::uid_t(1,1)), Is().EqualTo(node(2,0, node::ptr_t(true),  node::ptr_t(false))));
+          AssertThat(ns.seek(node::uid_t(1,2)), Is().EqualTo(node(2,0, node::ptr_t(true),  node::ptr_t(false))));
+          AssertThat(ns.seek(node::uid_t(2,0)), Is().EqualTo(node(2,0, node::ptr_t(true),  node::ptr_t(false))));
+          AssertThat(ns.seek(node::uid_t(2,1)), Is().EqualTo(node(2,1, node::ptr_t(false), node::ptr_t(true))));
+        });
+
+        it("can seek past end [1]", [&]() {
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(1,1, node::ptr_t(false), node::ptr_t(true))
+               << node(1,0, node::ptr_t(true),  node::ptr_t(false))
+               << node(0,0, node::ptr_t(1,0),   node::ptr_t(1,1))
+              ;
+          }
+
+          node_stream<> ns(nf);
+
+          AssertThat(ns.seek(node::uid_t(node::MAX_LABEL, node::MAX_ID)),
+                     Is().EqualTo(node(1,1, node::ptr_t(false), node::ptr_t(true))));
+        });
+
+        it("can seek past end [2]", [&]() {
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(1,1, node::ptr_t(false), node::ptr_t(true))
+               << node(1,0, node::ptr_t(true),  node::ptr_t(false))
+               << node(0,0, node::ptr_t(1,0),   node::ptr_t(1,1))
+              ;
+          }
+
+          node_stream<> ns(nf);
+
+          AssertThat(ns.seek(node::uid_t(0,0)), Is().EqualTo(node(0,0, node::ptr_t(1,0),   node::ptr_t(1,1))));
+          AssertThat(ns.seek(node::uid_t(1,1)), Is().EqualTo(node(1,1, node::ptr_t(false), node::ptr_t(true))));
+          AssertThat(ns.seek(node::uid_t(2,0)), Is().EqualTo(node(1,1, node::ptr_t(false), node::ptr_t(true))));
+        });
+
+        // TODO: reversed
+      });
     });
   });
  });

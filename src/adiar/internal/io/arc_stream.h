@@ -45,15 +45,15 @@ namespace adiar::internal
     arc_stream() = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Construct a stream unattached to an arc file.
+    /// \brief Construct a stream attached to an arc file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(levelized_file<arc> &file, bool negate = false)
+    arc_stream(const levelized_file<arc> &file, bool negate = false)
     { attach(file, negate); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct a stream unattached to a shared arc file.
     ////////////////////////////////////////////////////////////////////////////
-    arc_stream(const shared_levelized_file<arc> &file, bool negate = false)
+    arc_stream(const shared_ptr<levelized_file<arc>> &file, bool negate = false)
     { attach(file, negate); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -67,8 +67,8 @@ namespace adiar::internal
     ///
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
-    void attach(levelized_file<arc> &f,
-                bool negate = false)
+    void attach(const levelized_file<arc> &f,
+                const bool negate = false)
     {
       parent_t::attach(f, negate);
       _unread_terminals[false] = f.number_of_terminals[false];
@@ -81,7 +81,7 @@ namespace adiar::internal
     /// \pre No `levelized_file_writer` is currently attached to this file.
     ////////////////////////////////////////////////////////////////////////////
     void attach(const shared_ptr<levelized_file<arc>> &f,
-                bool negate = false)
+                const bool negate = false)
     {
       parent_t::attach(f, negate);
       _unread_terminals[false] = f->number_of_terminals[false];
@@ -99,13 +99,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next internal arc (and move the read head).
     ////////////////////////////////////////////////////////////////////////////
-    arc pull_internal()
+    const arc pull_internal()
     { return parent_t::template pull<IDX__INTERNAL>(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next internal arc (but do not move the read head).
     ////////////////////////////////////////////////////////////////////////////
-    arc peek_internal()
+    const arc peek_internal()
     { return parent_t::template peek<IDX__INTERNAL>(); }
 
   private:
@@ -164,7 +164,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next arc (and move the read head).
     ////////////////////////////////////////////////////////////////////////////
-    arc pull_terminal()
+    const arc pull_terminal()
     {
       const arc a = take_in_order_terminal()
         ? parent_t::template pull<IDX__TERMINALS__IN_ORDER>()
@@ -176,7 +176,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the next arc (but do not move the read head).
     ////////////////////////////////////////////////////////////////////////////
-    arc peek_terminal()
+    const arc peek_terminal()
     {
       return take_in_order_terminal()
         ? parent_t::template peek<IDX__TERMINALS__IN_ORDER>()

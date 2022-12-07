@@ -231,36 +231,42 @@ go_bandit([]() {
       it("Provides number of unread terminals", [&af]() {
         arc_stream<> as(af);
 
+        AssertThat(as.unread_terminals(),      Is().EqualTo(5u));
         AssertThat(as.unread_terminals(false), Is().EqualTo(1u));
         AssertThat(as.unread_terminals(true),  Is().EqualTo(4u));
 
         AssertThat(as.can_pull_terminal(), Is().True());
         as.pull_terminal(); // 3 ---> T
 
+        AssertThat(as.unread_terminals(),      Is().EqualTo(4u));
         AssertThat(as.unread_terminals(false), Is().EqualTo(1u));
         AssertThat(as.unread_terminals(true),  Is().EqualTo(3u));
 
         AssertThat(as.can_pull_terminal(), Is().True());
         as.pull_terminal(); // 3 - -> F
 
+        AssertThat(as.unread_terminals(),      Is().EqualTo(3u));
         AssertThat(as.unread_terminals(false), Is().EqualTo(0u));
         AssertThat(as.unread_terminals(true),  Is().EqualTo(3u));
 
         AssertThat(as.can_pull_terminal(), Is().True());
         as.pull_terminal(); // 2 ---> T
 
+        AssertThat(as.unread_terminals(),      Is().EqualTo(2u));
         AssertThat(as.unread_terminals(false), Is().EqualTo(0u));
         AssertThat(as.unread_terminals(true),  Is().EqualTo(2u));
 
         AssertThat(as.can_pull_terminal(), Is().True());
         as.pull_terminal(); // 2 - -> T
 
+        AssertThat(as.unread_terminals(),      Is().EqualTo(1u));
         AssertThat(as.unread_terminals(false), Is().EqualTo(0u));
         AssertThat(as.unread_terminals(true),  Is().EqualTo(1u));
 
         AssertThat(as.can_pull_terminal(), Is().True());
         as.pull_terminal(); // 1 - -> T
 
+        AssertThat(as.unread_terminals(),      Is().EqualTo(0u));
         AssertThat(as.unread_terminals(false), Is().EqualTo(0u));
         AssertThat(as.unread_terminals(true),  Is().EqualTo(0u));
       });
