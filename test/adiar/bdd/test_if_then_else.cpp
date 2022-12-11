@@ -333,15 +333,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -376,15 +376,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -413,15 +413,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -450,15 +450,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -487,15 +487,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -524,15 +524,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -561,15 +561,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -598,15 +598,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -635,15 +635,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -672,15 +672,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
@@ -726,15 +726,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat((std::get<__bdd::shared_arcs_t>(out._union))->max_1level_cut, Is().EqualTo(2u));
 
@@ -778,15 +778,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -830,15 +830,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -904,18 +904,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -1042,21 +1042,21 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,4u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,4u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,3u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,3u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(6u));
 
@@ -1140,21 +1140,21 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,3u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,3u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,3u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,3u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(3u));
 
@@ -1215,18 +1215,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -1288,18 +1288,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
@@ -1399,21 +1399,21 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,4u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,4u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -1511,21 +1511,21 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,4u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,4u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -1620,21 +1620,21 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,3u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,3u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,3u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,3u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(3u));
 
@@ -1714,21 +1714,21 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -1806,21 +1806,21 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_terminal(), Is().True());
         AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_T }));
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,4u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,4u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
 
@@ -1873,21 +1873,21 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(3u));
@@ -2011,33 +2011,33 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(8,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(8,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(6,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(6,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(5,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(5,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(4,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(4,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_FALSE], Is().GreaterThanOrEqualTo(4u));
@@ -2194,18 +2194,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
@@ -2246,18 +2246,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 

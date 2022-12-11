@@ -172,9 +172,9 @@ namespace adiar::internal
   /// \brief Stream to access per-level meta information.
   //////////////////////////////////////////////////////////////////////////////
   template <bool REVERSE = false>
-  class level_info_stream : public file_stream<level_info_t, !REVERSE>
+  class level_info_stream : public file_stream<level_info, !REVERSE>
   {
-    using parent_t = file_stream<level_info_t, !REVERSE>;
+    using parent_t = file_stream<level_info, !REVERSE>;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -185,13 +185,13 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a file<level_info>.
     ////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const file<level_info_t> &f)
+    level_info_stream(const file<level_info> &f)
     { parent_t::attach(f); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct attached to a file<level_info>.
     ////////////////////////////////////////////////////////////////////////////
-    level_info_stream(const adiar::shared_ptr<file<level_info_t>> &f)
+    level_info_stream(const adiar::shared_ptr<file<level_info>> &f)
     { parent_t::attach(f); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -225,7 +225,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Detaches and cleans up when destructed.
     ////////////////////////////////////////////////////////////////////////////
-    ~level_info_stream() = default; // <-- detach in '~file<level_info_t>()'
+    ~level_info_stream() = default; // <-- detach in '~file<level_info>()'
 
   public:
     ////////////////////////////////////////////////////////////////////////////

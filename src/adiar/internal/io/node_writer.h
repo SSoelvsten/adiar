@@ -135,8 +135,8 @@ namespace adiar::internal
       if (_latest_node != dummy()) {
         // Output level information of the final level
         if (!_latest_node.is_terminal()) {
-          levelized_file_writer::push(create_level_info(_latest_node.label(),
-                                                        _level_size));
+          levelized_file_writer::push(level_info(_latest_node.label(),
+                                                 _level_size));
         }
 
         _level_size = 0u; // TODO: move to attach...?
@@ -212,8 +212,8 @@ namespace adiar::internal
         // Check if this is the first node of a new level
         if (n.label() != _latest_node.label()) {
           // Update level information with the level just finished
-          levelized_file_writer::push(create_level_info(_latest_node.label(),
-                                                        _level_size));
+          levelized_file_writer::push(level_info(_latest_node.label(),
+                                                 _level_size));
           _level_size = 0u;
 
           // Update 1-level cut information
@@ -263,7 +263,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to level information file without any checks.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_push(const level_info_t &m)
+    void unsafe_push(const level_info &m)
     { levelized_file_writer::push(m); }
 
     ////////////////////////////////////////////////////////////////////////////

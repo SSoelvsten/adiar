@@ -157,7 +157,7 @@ namespace adiar::internal
     while(!substitute_pq.empty()) {
       if (substitute_pq.empty_level()) {
         if (level_size > 0) {
-          aw.push(create_level_info(level, level_size));
+          aw.push(level_info(level, level_size));
         }
         substitute_pq.setup_next_level();
 
@@ -213,7 +213,7 @@ namespace adiar::internal
 
     // Push the level of the very last iteration
     if (level_size > 0) {
-      aw.push(create_level_info(level, level_size));
+      aw.push(level_info(level, level_size));
     }
 
     out_arcs->max_1level_cut = max_1level_cut;

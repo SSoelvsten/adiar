@@ -133,12 +133,16 @@ namespace snowhouse
   };
 
   template<>
-  struct Stringizer<level_info_t>
+  struct Stringizer<level_info>
   {
-    static std::string ToString(const adiar::internal::level_info_t& m)
+    static std::string ToString(const adiar::internal::level_info& m)
     {
       std::stringstream stream;
-      stream << "level_info: (x" << label_of(m) << ", #nodes = " << width_of(m) << ")";
+      stream << "level_info: ("
+             << "x" << m.label()
+             << " (" << m.level() << ")"
+             << ", #nodes = " << m.width()
+             << ")";
       return stream.str();
     }
   };

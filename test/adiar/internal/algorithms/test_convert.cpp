@@ -169,13 +169,13 @@ go_bandit([]() {
         level_info_test_stream ms(out);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(ms.can_pull(), Is().False());
       });
@@ -207,18 +207,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("adds post-nodes false-chain on { { 0 } } with dom = { 0,1,2 }", [&]() {
@@ -248,18 +248,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("kills root and returns T terminal on { Ø, { 0 } } with dom = { 0 }", [&]() {
@@ -303,15 +303,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("kills root and bridges over it on { Ø, { 1 } } with dom = { 0,1,2 }", [&]() {
@@ -335,15 +335,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("kills root and bridges over it on { Ø, { 2 } } with dom = { 0,2,4 }", [&]() {
@@ -367,15 +367,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(4,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(4,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("collapses to T terminal on pow(dom) with dom = { 0,1,2 }", [&]() {
@@ -486,18 +486,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       // Minato examples
@@ -534,18 +534,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("converts [Minato] Fig. 5 into Fig. 3 with dom = { 0,1,2,3 }", [&]() {
@@ -587,21 +587,21 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("converts [Minato] Fig. 11 (dom = { 0,1,2,3 })", [&]() {
@@ -647,21 +647,21 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("converts [Minato] Fig. 15 (dom = { 0,1,2 })", [&]() {
@@ -713,18 +713,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       // Other large cases
@@ -790,18 +790,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,2u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("bridges over root and others, and creates pre and post chains", [&]() {
@@ -915,27 +915,27 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(4,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(4,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(5,2u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(5,2u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(6,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(6,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
     });
 
@@ -967,13 +967,13 @@ go_bandit([]() {
         level_info_test_stream ms(out);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(ms.can_pull(), Is().False());
       });
@@ -1001,15 +1001,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(4,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(4,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
     });
 
@@ -1083,13 +1083,13 @@ go_bandit([]() {
         level_info_test_stream ms(out);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(ms.can_pull(), Is().False());
       });
@@ -1121,18 +1121,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("adds don't care chain after root on x0 terminal with dom = { 0,1,2 }", [&]() {
@@ -1162,18 +1162,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("kills and bridges root on ~x1 with dom = { 0,1,2 }", [&]() {
@@ -1204,15 +1204,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("kills root into { Ø } on ~x0 into with dom = { 0 }", [&]() {
@@ -1301,15 +1301,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("converts [Minato] Fig. 3 into Fig. 5 with dom = { 0,1,2,3 } ", [&]() {
@@ -1346,15 +1346,15 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("converts [Minato] Fig. 11 with dom = { 0,1,2,3 } ", [&]() {
@@ -1396,18 +1396,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(3,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
 
       it("converts [Minato] Fig. 15 with dom = { 0,1,2 } ", [&]() {
@@ -1450,18 +1450,18 @@ go_bandit([]() {
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
-        level_info_test_stream level_info(out);
+        level_info_test_stream levels(out);
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(0,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(1,1u)));
 
-        AssertThat(level_info.can_pull(), Is().True());
-        AssertThat(level_info.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(levels.can_pull(), Is().True());
+        AssertThat(levels.pull(), Is().EqualTo(level_info(2,1u)));
 
-        AssertThat(level_info.can_pull(), Is().False());
+        AssertThat(levels.can_pull(), Is().False());
       });
     });
 
@@ -1493,13 +1493,13 @@ go_bandit([]() {
         level_info_test_stream ms(out);
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(ms.can_pull(), Is().False());
       });

@@ -86,8 +86,8 @@ go_bandit([]() {
         aw.push_terminal(arc {ptr_uint64(1,0), ptr_uint64(false)});
         aw.push_terminal(arc {flag(ptr_uint64(1,0)), ptr_uint64(true)});
 
-        aw.push(create_level_info(0,1u));
-        aw.push(create_level_info(1,1u));
+        aw.push(level_info(0,1u));
+        aw.push(level_info(1,1u));
       }
 
       af->max_1level_cut = 1;

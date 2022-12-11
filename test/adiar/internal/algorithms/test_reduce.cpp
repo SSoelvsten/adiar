@@ -81,9 +81,9 @@ go_bandit([]() {
           aw.push_terminal({ n4,terminal_F });
           aw.push_terminal({ flag(n4),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
-          aw.push(create_level_info(2,2u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,2u));
         }
 
         in->max_1level_cut = 2;
@@ -119,13 +119,13 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -183,9 +183,9 @@ go_bandit([]() {
           aw.push_terminal({ n5, terminal_F });
           aw.push_terminal({ flag(n5), terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(2,2u));
-          aw.push(create_level_info(3,2u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(2,2u));
+          aw.push(level_info(3,2u));
         }
 
         in->max_1level_cut = 2;
@@ -222,13 +222,13 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -289,10 +289,10 @@ go_bandit([]() {
           aw.push_terminal({ n6,terminal_T });
           aw.push_terminal({ flag(n6),terminal_F });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
-          aw.push(create_level_info(2,2u));
-          aw.push(create_level_info(3,2u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,2u));
+          aw.push(level_info(3,2u));
         }
 
         in->max_1level_cut = 4;
@@ -337,16 +337,16 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -404,10 +404,10 @@ go_bandit([]() {
           aw.push_terminal({ n5,terminal_F });
           aw.push_terminal({ flag(n5),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
-          aw.push(create_level_info(2,2u));
-          aw.push(create_level_info(3,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,2u));
+          aw.push(level_info(3,1u));
         }
 
         in->max_1level_cut = 4;
@@ -447,16 +447,16 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -526,10 +526,10 @@ go_bandit([]() {
           aw.push_terminal({ n7,terminal_F });
           aw.push_terminal({ flag(n7),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,2u));
-          aw.push(create_level_info(2,3u));
-          aw.push(create_level_info(3,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,3u));
+          aw.push(level_info(3,1u));
         }
 
         in->max_1level_cut = 4;
@@ -583,16 +583,16 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -655,9 +655,9 @@ go_bandit([]() {
           aw.push_terminal({ n6,terminal_T });
           aw.push_terminal({ flag(n6),terminal_F });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,2u));
-          aw.push(create_level_info(2,3u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,3u));
         }
 
         in->max_1level_cut = 4;
@@ -695,13 +695,13 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -763,9 +763,9 @@ go_bandit([]() {
           aw.push_terminal({ n6,terminal_F });
           aw.push_terminal({ flag(n6),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,2u));
-          aw.push(create_level_info(2,3u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,3u));
         }
 
         in->max_1level_cut = 4;
@@ -803,13 +803,13 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -866,9 +866,9 @@ go_bandit([]() {
           aw.push_terminal({ n4,terminal_T });
           aw.push_terminal({ flag(n4),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
-          aw.push(create_level_info(2,2u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,2u));
         }
 
         in->max_1level_cut = 3;
@@ -905,13 +905,13 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -969,10 +969,10 @@ go_bandit([]() {
           aw.push_terminal({ n5,terminal_F });
           aw.push_terminal({ flag(n5),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
-          aw.push(create_level_info(2,2u));
-          aw.push(create_level_info(3,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,2u));
+          aw.push(level_info(3,1u));
         }
 
         in->max_1level_cut = 3;
@@ -1011,16 +1011,16 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1080,9 +1080,9 @@ go_bandit([]() {
           aw.push_terminal({ n5,terminal_T });
           aw.push_terminal({ flag(n5),terminal_F });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,2u));
-          aw.push(create_level_info(2,2u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,2u));
         }
 
         in->max_1level_cut = 4;
@@ -1115,10 +1115,10 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1175,9 +1175,9 @@ go_bandit([]() {
           aw.push_terminal({ n4,terminal_F });
           aw.push_terminal({ flag(n4),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
-          aw.push(create_level_info(2,2u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,2u));
         }
 
         in->max_1level_cut = 2;
@@ -1207,10 +1207,10 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1275,10 +1275,10 @@ go_bandit([]() {
             aw.push_terminal({ n6, terminal_F });
             aw.push_terminal({ flag(n6), terminal_T });
 
-            aw.push(create_level_info(0,1u));
-            aw.push(create_level_info(1,2u));
-            aw.push(create_level_info(2,2u));
-            aw.push(create_level_info(3,1u));
+            aw.push(level_info(0,1u));
+            aw.push(level_info(1,2u));
+            aw.push(level_info(2,2u));
+            aw.push(level_info(3,1u));
           }
 
           in->max_1level_cut = 4;
@@ -1319,16 +1319,16 @@ go_bandit([]() {
           level_info_test_stream out_meta(out);
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
           AssertThat(out_meta.can_pull(), Is().True());
-          AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
           AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1392,9 +1392,9 @@ go_bandit([]() {
           aw.push_terminal({ n4,terminal_F });
           aw.push_terminal({ flag(n4),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
-          aw.push(create_level_info(2,2u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,2u));
         }
 
         in->max_1level_cut = 3;
@@ -1416,7 +1416,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1473,10 +1473,10 @@ go_bandit([]() {
           aw.push_terminal({ n6,terminal_T });
           aw.push_terminal({ flag(n6),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
-          aw.push(create_level_info(2,1u));
-          aw.push(create_level_info(3,3u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,1u));
+          aw.push(level_info(3,3u));
         }
 
         in->max_1level_cut = 4;
@@ -1522,16 +1522,16 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1577,7 +1577,7 @@ go_bandit([]() {
           aw.push_terminal({ n1,terminal_F });
           aw.push_terminal({ flag(n1),terminal_F });
 
-          aw.push(create_level_info(0,1u));
+          aw.push(level_info(0,1u));
         }
 
         in->max_1level_cut = 0;
@@ -1636,8 +1636,8 @@ go_bandit([]() {
           aw.push_terminal({ n2,terminal_T });
           aw.push_terminal({ flag(n2),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
         }
 
         in->max_1level_cut = 1;
@@ -1688,7 +1688,7 @@ go_bandit([]() {
           aw.push_terminal({ n1,terminal_F });
           aw.push_terminal({ flag(n1),terminal_T });
 
-          aw.push(create_level_info(0u,1u));
+          aw.push(level_info(0u,1u));
         }
 
         in->max_1level_cut = 0;
@@ -1708,7 +1708,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
@@ -1783,12 +1783,12 @@ go_bandit([]() {
           aw.push_terminal({ n11,terminal_F });
           aw.push_terminal({ flag(n11),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,2u));
-          aw.push(create_level_info(2,2u));
-          aw.push(create_level_info(3,2u));
-          aw.push(create_level_info(4,2u));
-          aw.push(create_level_info(5,2u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,2u));
+          aw.push(level_info(3,2u));
+          aw.push(level_info(4,2u));
+          aw.push(level_info(5,2u));
         }
 
         in->max_1level_cut = 4;
@@ -1842,22 +1842,22 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(5,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(4,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -1950,12 +1950,12 @@ go_bandit([]() {
           aw.push_terminal({ n14,terminal_F });
           aw.push_terminal({ flag(n14),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,2u));
-          aw.push(create_level_info(2,3u));
-          aw.push(create_level_info(3,3u));
-          aw.push(create_level_info(4,3u));
-          aw.push(create_level_info(5,2u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,3u));
+          aw.push(level_info(3,3u));
+          aw.push(level_info(4,3u));
+          aw.push(level_info(5,2u));
         }
 
         in->max_1level_cut = 8;
@@ -2028,22 +2028,22 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(5,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(4,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2100,9 +2100,9 @@ go_bandit([]() {
           aw.push_terminal({ n4,terminal_T });
           aw.push_terminal({ flag(n4),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,2u));
-          aw.push(create_level_info(2,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,1u));
         }
 
         in->max_1level_cut = 2;
@@ -2123,7 +2123,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2167,8 +2167,8 @@ go_bandit([]() {
           aw.push_terminal({ n2,terminal_T });
           aw.push_terminal({ flag(n2),terminal_F });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
         }
 
         in->max_1level_cut = 1;
@@ -2189,7 +2189,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2243,10 +2243,10 @@ go_bandit([]() {
           aw.push_terminal({ n5,terminal_F });
           aw.push_terminal({ flag(n5),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
-          aw.push(create_level_info(2,2u));
-          aw.push(create_level_info(3,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
+          aw.push(level_info(2,2u));
+          aw.push(level_info(3,1u));
         }
 
         in->max_1level_cut = 3;
@@ -2285,16 +2285,16 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2355,9 +2355,9 @@ go_bandit([]() {
           aw.push_terminal({ n4,terminal_T });
           aw.push_terminal({ flag(n4),terminal_F });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,2u));
-          aw.push(create_level_info(2,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,1u));
         }
 
         in->max_1level_cut = 2;
@@ -2387,10 +2387,10 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2435,7 +2435,7 @@ go_bandit([]() {
           aw.push_terminal({ n1,terminal_T });
           aw.push_terminal({ flag(n1),terminal_F });
 
-          aw.push(create_level_info(0,1u));
+          aw.push(level_info(0,1u));
         }
 
         in->max_1level_cut = 0;
@@ -2494,8 +2494,8 @@ go_bandit([]() {
           aw.push_terminal({ n2,terminal_F });
           aw.push_terminal({ flag(n2),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
         }
 
         in->max_1level_cut = 1;
@@ -2517,7 +2517,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2558,8 +2558,8 @@ go_bandit([]() {
           aw.push_terminal({ n2,terminal_F });
           aw.push_terminal({ flag(n2),terminal_F });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,1u));
         }
 
         in->max_1level_cut = 1;
@@ -2610,7 +2610,7 @@ go_bandit([]() {
           aw.push_terminal({ n1,terminal_F });
           aw.push_terminal({ flag(n1),terminal_T });
 
-          aw.push(create_level_info(42,1u));
+          aw.push(level_info(42,1u));
         }
 
         in->max_1level_cut = 0;
@@ -2630,7 +2630,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(42u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(42u,1u)));
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
@@ -2664,7 +2664,7 @@ go_bandit([]() {
           aw.push_terminal({ n1,terminal_T });
           aw.push_terminal({ flag(n1),terminal_T });
 
-          aw.push(create_level_info(12,1u));
+          aw.push(level_info(12,1u));
         }
 
         in->max_1level_cut = 0;
@@ -2684,7 +2684,7 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(12u,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(12u,1u)));
         AssertThat(out_meta.can_pull(), Is().False());
 
         AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
@@ -2760,12 +2760,12 @@ go_bandit([]() {
           aw.push_terminal({ n11,terminal_T });
           aw.push_terminal({ flag(n11),terminal_T });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,2u));
-          aw.push(create_level_info(2,2u));
-          aw.push(create_level_info(3,2u));
-          aw.push(create_level_info(4,2u));
-          aw.push(create_level_info(5,2u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,2u));
+          aw.push(level_info(3,2u));
+          aw.push(level_info(4,2u));
+          aw.push(level_info(5,2u));
         }
 
         in->max_1level_cut = 4;
@@ -2819,22 +2819,22 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(5,2u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,2u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(4,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(3,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(2,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 
@@ -2891,9 +2891,9 @@ go_bandit([]() {
           aw.push_terminal({ n4,terminal_T });
           aw.push_terminal({ flag(n4),terminal_F });
 
-          aw.push(create_level_info(0,1u));
-          aw.push(create_level_info(1,2u));
-          aw.push(create_level_info(2,1u));
+          aw.push(level_info(0,1u));
+          aw.push(level_info(1,2u));
+          aw.push(level_info(2,1u));
         }
 
         in->max_1level_cut = 2;
@@ -2917,10 +2917,10 @@ go_bandit([]() {
         level_info_test_stream out_meta(out);
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(1,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
 
         AssertThat(out_meta.can_pull(), Is().True());
-        AssertThat(out_meta.pull(), Is().EqualTo(create_level_info(0,1u)));
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
 
         AssertThat(out_meta.can_pull(), Is().False());
 

@@ -266,7 +266,7 @@ namespace adiar::internal
       if (prod_pq_1.empty_level() && prod_pq_2.empty()) {
         if (prod_policy::no_skip || out_id > 0) {
           // Only output level_info information on prior level, if output
-          aw.push(create_level_info(out_label, out_id));
+          aw.push(level_info(out_label, out_id));
         }
 
         prod_pq_1.setup_next_level();
@@ -362,7 +362,7 @@ namespace adiar::internal
 
     if (prod_policy::no_skip || out_id > 0) {
       // Push the level of the very last iteration
-      aw.push(create_level_info(out_label, out_id));
+      aw.push(level_info(out_label, out_id));
     }
 
     out_arcs->max_1level_cut = max_1level_cut;

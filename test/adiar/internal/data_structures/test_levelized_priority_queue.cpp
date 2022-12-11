@@ -62,10 +62,10 @@ go_bandit([]() {
         { // Garbage collect the writer
           pq_test_writer fw(f);
 
-          fw.push(create_level_info(4,1u));
-          fw.push(create_level_info(3,2u));
-          fw.push(create_level_info(2,2u));
-          fw.push(create_level_info(1,1u));
+          fw.push(level_info(4,1u));
+          fw.push(level_info(3,2u));
+          fw.push(level_info(2,2u));
+          fw.push(level_info(1,1u));
         }
 
         label_merger<pq_test_file, std::less<>, 1u> merger;
@@ -93,10 +93,10 @@ go_bandit([]() {
         { // Garbage collect the writer
           pq_test_writer fw(f);
 
-          fw.push(create_level_info(4,1u));
-          fw.push(create_level_info(3,2u));
-          fw.push(create_level_info(2,1u));
-          fw.push(create_level_info(1,1u));
+          fw.push(level_info(4,1u));
+          fw.push(level_info(3,2u));
+          fw.push(level_info(2,1u));
+          fw.push(level_info(1,1u));
         }
 
         label_merger<pq_test_file, std::less<>, 1> merger;
@@ -121,7 +121,7 @@ go_bandit([]() {
         { // Garbage collect the writer
           pq_test_writer fw1(f1);
 
-          fw1.push(create_level_info(1,1u));
+          fw1.push(level_info(1,1u));
         }
 
         label_merger<pq_test_file, std::less<>, 2> merger;
@@ -142,8 +142,8 @@ go_bandit([]() {
         { // Garbage collect the writer
           pq_test_writer fw1(f1);
 
-          fw1.push(create_level_info(1,1u));
-          fw1.push(create_level_info(2,1u));
+          fw1.push(level_info(1,1u));
+          fw1.push(level_info(2,1u));
         }
 
         label_merger<pq_test_file, std::greater<>, 2> merger;
@@ -166,14 +166,14 @@ go_bandit([]() {
         { // Garbage collect the writers
           pq_test_writer fw1(f1);
 
-          fw1.push(create_level_info(4,1u));
-          fw1.push(create_level_info(2,2u));
-          fw1.push(create_level_info(1,1u));
+          fw1.push(level_info(4,1u));
+          fw1.push(level_info(2,2u));
+          fw1.push(level_info(1,1u));
 
           pq_test_writer fw2(f2);
 
-          fw2.push(create_level_info(4,1u));
-          fw2.push(create_level_info(3,1u));
+          fw2.push(level_info(4,1u));
+          fw2.push(level_info(3,1u));
         }
 
         label_merger<pq_test_file, std::less<>, 2> merger;
@@ -202,11 +202,11 @@ go_bandit([]() {
         { // Garbage collect the writers
           pq_test_writer fw1(f1);
 
-          fw1.push(create_level_info(2,1u));
+          fw1.push(level_info(2,1u));
 
           pq_test_writer fw2(f2);
 
-          fw2.push(create_level_info(1,1u));
+          fw2.push(level_info(1,1u));
         }
 
         label_merger<pq_test_file, std::less<>, 2> merger;
@@ -229,11 +229,11 @@ go_bandit([]() {
         { // Garbage collect the writers
           pq_test_writer fw1(f1);
 
-          fw1.push(create_level_info(2,1u));
+          fw1.push(level_info(2,1u));
 
           pq_test_writer fw2(f2);
 
-          fw2.push(create_level_info(1,1u));
+          fw2.push(level_info(1,1u));
         }
 
         label_merger<pq_test_file, std::greater<>, 2> merger;
@@ -256,14 +256,14 @@ go_bandit([]() {
         { // Garbage collect the writers
           pq_test_writer fw1(f1);
 
-          fw1.push(create_level_info(4,2u));
-          fw1.push(create_level_info(2,1u));
+          fw1.push(level_info(4,2u));
+          fw1.push(level_info(2,1u));
 
           pq_test_writer fw2(f2);
 
-          fw2.push(create_level_info(4,3u));
-          fw2.push(create_level_info(3,2u));
-          fw2.push(create_level_info(1,1u));
+          fw2.push(level_info(4,3u));
+          fw2.push(level_info(3,2u));
+          fw2.push(level_info(1,1u));
         }
 
         label_merger<pq_test_file, std::less<>, 2> merger;
@@ -287,14 +287,14 @@ go_bandit([]() {
         { // Garbage collect the writers
           pq_test_writer fw1(*f1);
 
-          fw1.push(create_level_info(4,2u));
-          fw1.push(create_level_info(2,1u));
+          fw1.push(level_info(4,2u));
+          fw1.push(level_info(2,1u));
 
           pq_test_writer fw2(*f2);
 
-          fw2.push(create_level_info(4,1u));
-          fw2.push(create_level_info(3,2u));
-          fw2.push(create_level_info(1,1u));
+          fw2.push(level_info(4,1u));
+          fw2.push(level_info(3,2u));
+          fw2.push(level_info(1,1u));
         }
 
         label_merger<pq_test_file, std::less<>, 2> merger;
@@ -1119,8 +1119,8 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -1145,10 +1145,10 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(4,2u)); // overflow
-            fw.push(create_level_info(3,3u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(4,2u)); // overflow
+            fw.push(level_info(3,3u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -1196,10 +1196,10 @@ go_bandit([]() {
             { // Garbage collect the writer early
               pq_test_writer fw(f);
 
-              fw.push(create_level_info(4,1u)); // overflow
-              fw.push(create_level_info(3,3u)); // bucket
-              fw.push(create_level_info(2,2u)); // bucket
-              fw.push(create_level_info(1,1u)); // skipped
+              fw.push(level_info(4,1u)); // overflow
+              fw.push(level_info(3,3u)); // bucket
+              fw.push(level_info(2,2u)); // bucket
+              fw.push(level_info(1,1u)); // skipped
             }
 
             test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -1220,10 +1220,10 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(4,2u)); // overflow
-            fw.push(create_level_info(3,3u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(4,2u)); // overflow
+            fw.push(level_info(3,3u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -1252,11 +1252,11 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(5,1u)); // .
-            fw.push(create_level_info(4,2u)); // overflow
-            fw.push(create_level_info(3,3u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(5,1u)); // .
+            fw.push(level_info(4,2u)); // overflow
+            fw.push(level_info(3,3u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -1289,11 +1289,11 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(5,2u)); // .
-            fw.push(create_level_info(4,2u)); // overflow
-            fw.push(create_level_info(3,3u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(5,2u)); // .
+            fw.push(level_info(4,2u)); // overflow
+            fw.push(level_info(3,3u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -1328,10 +1328,10 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(4,2u));
-            fw.push(create_level_info(3,4u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1));
+            fw.push(level_info(4,2u));
+            fw.push(level_info(3,4u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1));
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -1358,11 +1358,11 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(5,2u));
-            fw.push(create_level_info(4,4u));
-            fw.push(create_level_info(3,4u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u));
+            fw.push(level_info(5,2u));
+            fw.push(level_info(4,4u));
+            fw.push(level_info(3,4u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u));
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -2121,12 +2121,12 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(6,2u)); // .
-            fw.push(create_level_info(5,4u)); // .
-            fw.push(create_level_info(4,5u)); // overflow
-            fw.push(create_level_info(3,4u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(6,2u)); // .
+            fw.push(level_info(5,4u)); // .
+            fw.push(level_info(4,5u)); // overflow
+            fw.push(level_info(3,4u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -2155,12 +2155,12 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(6,2u)); // .
-            fw.push(create_level_info(5,2u)); // .
-            fw.push(create_level_info(4,3u)); // overflow
-            fw.push(create_level_info(3,2u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(6,2u)); // .
+            fw.push(level_info(5,2u)); // .
+            fw.push(level_info(4,3u)); // overflow
+            fw.push(level_info(3,2u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -2187,12 +2187,12 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(6,2u)); // .
-            fw.push(create_level_info(5,2u)); // .
-            fw.push(create_level_info(4,3u)); // overflow
-            fw.push(create_level_info(3,2u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(6,2u)); // .
+            fw.push(level_info(5,2u)); // .
+            fw.push(level_info(4,3u)); // overflow
+            fw.push(level_info(3,2u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -2220,12 +2220,12 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(6,2u)); // .
-            fw.push(create_level_info(5,2u)); // .
-            fw.push(create_level_info(4,3u)); // overflow
-            fw.push(create_level_info(3,2u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(6,2u)); // .
+            fw.push(level_info(5,2u)); // .
+            fw.push(level_info(4,3u)); // overflow
+            fw.push(level_info(3,2u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 1> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -2969,8 +2969,8 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -2995,10 +2995,10 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(4,2u));
-            fw.push(create_level_info(3,3u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(4,2u));
+            fw.push(level_info(3,3u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -3046,10 +3046,10 @@ go_bandit([]() {
             { // Garbage collect the writer early
               pq_test_writer fw(f);
 
-              fw.push(create_level_info(4,1u));
-              fw.push(create_level_info(3,3u));
-              fw.push(create_level_info(2,2u));
-              fw.push(create_level_info(1,1u)); // skipped
+              fw.push(level_info(4,1u));
+              fw.push(level_info(3,3u));
+              fw.push(level_info(2,2u));
+              fw.push(level_info(1,1u)); // skipped
             }
 
             test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -3070,10 +3070,10 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(4,2u));
-            fw.push(create_level_info(3,3u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(4,2u));
+            fw.push(level_info(3,3u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -3102,11 +3102,11 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(5,1u));
-            fw.push(create_level_info(4,2u));
-            fw.push(create_level_info(3,3u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(5,1u));
+            fw.push(level_info(4,2u));
+            fw.push(level_info(3,3u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -3139,11 +3139,11 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(5,2u));
-            fw.push(create_level_info(4,2u));
-            fw.push(create_level_info(3,3u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(5,2u));
+            fw.push(level_info(4,2u));
+            fw.push(level_info(3,3u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -3178,10 +3178,10 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(4,2u));
-            fw.push(create_level_info(3,4u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1));
+            fw.push(level_info(4,2u));
+            fw.push(level_info(3,4u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1));
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -3208,11 +3208,11 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(5,2u));
-            fw.push(create_level_info(4,4u));
-            fw.push(create_level_info(3,4u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u));
+            fw.push(level_info(5,2u));
+            fw.push(level_info(4,4u));
+            fw.push(level_info(3,4u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u));
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -3951,12 +3951,12 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(6,2u));
-            fw.push(create_level_info(5,4u));
-            fw.push(create_level_info(4,5u));
-            fw.push(create_level_info(3,4u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(6,2u));
+            fw.push(level_info(5,4u));
+            fw.push(level_info(4,5u));
+            fw.push(level_info(3,4u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -3985,12 +3985,12 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(6,2u));
-            fw.push(create_level_info(5,2u));
-            fw.push(create_level_info(4,3u));
-            fw.push(create_level_info(3,2u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(6,2u));
+            fw.push(level_info(5,2u));
+            fw.push(level_info(4,3u));
+            fw.push(level_info(3,2u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4017,12 +4017,12 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(6,2u));
-            fw.push(create_level_info(5,2u));
-            fw.push(create_level_info(4,3u));
-            fw.push(create_level_info(3,2u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(6,2u));
+            fw.push(level_info(5,2u));
+            fw.push(level_info(4,3u));
+            fw.push(level_info(3,2u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4050,12 +4050,12 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(6,2u));
-            fw.push(create_level_info(5,2u));
-            fw.push(create_level_info(4,3u));
-            fw.push(create_level_info(3,2u));
-            fw.push(create_level_info(2,2u));
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(6,2u));
+            fw.push(level_info(5,2u));
+            fw.push(level_info(4,3u));
+            fw.push(level_info(3,2u));
+            fw.push(level_info(2,2u));
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 0> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4572,7 +4572,7 @@ go_bandit([]() {
         { // Garbage collect the writer early
           pq_test_writer fw(f);
 
-          fw.push(create_level_info(1,1u)); // bucket
+          fw.push(level_info(1,1u)); // bucket
         }
 
         levelized_priority_queue<pq_test_data, pq_test_lt, 1u,
@@ -4608,10 +4608,10 @@ go_bandit([]() {
         { // Garbage collect the writer early
           pq_test_writer fw(f);
 
-          fw.push(create_level_info(4,2u)); // .
-          fw.push(create_level_info(3,3u)); // overflow
-          fw.push(create_level_info(2,2u)); // bucket
-          fw.push(create_level_info(1,1u)); // bucket
+          fw.push(level_info(4,2u)); // .
+          fw.push(level_info(3,3u)); // overflow
+          fw.push(level_info(2,2u)); // bucket
+          fw.push(level_info(1,1u)); // bucket
         }
 
         levelized_priority_queue<pq_test_data, pq_test_lt, 1u,
@@ -4664,7 +4664,7 @@ go_bandit([]() {
         { // Garbage collect the writer early
           pq_test_writer fw(f);
 
-          fw.push(create_level_info(1,1u));
+          fw.push(level_info(1,1u));
         }
 
         levelized_priority_queue<pq_test_data, pq_test_lt, 0u,
@@ -4700,10 +4700,10 @@ go_bandit([]() {
         { // Garbage collect the writer early
           pq_test_writer fw(f);
 
-          fw.push(create_level_info(4,2u));
-          fw.push(create_level_info(3,3u));
-          fw.push(create_level_info(2,2u));
-          fw.push(create_level_info(1,1u));
+          fw.push(level_info(4,2u));
+          fw.push(level_info(3,3u));
+          fw.push(level_info(2,2u));
+          fw.push(level_info(1,1u));
         }
 
         levelized_priority_queue<pq_test_data, pq_test_lt, 0u,
@@ -4740,14 +4740,14 @@ go_bandit([]() {
         { // Garbage collect the writer early
           pq_test_writer fw1(f1);
 
-          fw1.push(create_level_info(4,2u));
-          fw1.push(create_level_info(3,3u));
-          fw1.push(create_level_info(1,1u));
+          fw1.push(level_info(4,2u));
+          fw1.push(level_info(3,3u));
+          fw1.push(level_info(1,1u));
 
           pq_test_writer fw2(f2);
 
-          fw2.push(create_level_info(2,1u));
-          fw2.push(create_level_info(1,2u));
+          fw2.push(level_info(2,1u));
+          fw2.push(level_info(1,2u));
         }
 
         levelized_priority_queue<pq_test_data, pq_test_lt, 1u,
@@ -4810,14 +4810,14 @@ go_bandit([]() {
         { // Garbage collect the writer early
           pq_test_writer fw1(f1);
 
-          fw1.push(create_level_info(4,2u));
-          fw1.push(create_level_info(3,3u));
-          fw1.push(create_level_info(1,1u));
+          fw1.push(level_info(4,2u));
+          fw1.push(level_info(3,3u));
+          fw1.push(level_info(1,1u));
 
           pq_test_writer fw2(f2);
 
-          fw2.push(create_level_info(2,1u));
-          fw2.push(create_level_info(1,2u));
+          fw2.push(level_info(2,1u));
+          fw2.push(level_info(1,2u));
         }
 
         levelized_priority_queue<pq_test_data, pq_test_lt, 0u,
@@ -4893,7 +4893,7 @@ go_bandit([]() {
         { // Garbage collect the writer early
           pq_test_writer fw(f);
 
-          fw.push(create_level_info(1,1u)); // skipped
+          fw.push(level_info(1,1u)); // skipped
         }
 
         test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4910,9 +4910,9 @@ go_bandit([]() {
         { // Garbage collect the writer early
           pq_test_writer fw(f);
 
-          fw.push(create_level_info(4,1u)); // bucket
-          fw.push(create_level_info(3,2u)); // bucket
-          fw.push(create_level_info(1,1u)); // skipped
+          fw.push(level_info(4,1u)); // bucket
+          fw.push(level_info(3,2u)); // bucket
+          fw.push(level_info(1,1u)); // skipped
         }
 
         test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4930,14 +4930,14 @@ go_bandit([]() {
         { // Garbage collect the writer early
           pq_test_writer fw(f);
 
-          fw.push(create_level_info(8,1u)); // .
-          fw.push(create_level_info(7,3u)); // .
-          fw.push(create_level_info(6,4u)); // .
-          fw.push(create_level_info(5,6u)); // .
-          fw.push(create_level_info(4,5u)); // overflow
-          fw.push(create_level_info(3,4u)); // bucket
-          fw.push(create_level_info(2,2u)); // bucket
-          fw.push(create_level_info(1,1u)); // skipped
+          fw.push(level_info(8,1u)); // .
+          fw.push(level_info(7,3u)); // .
+          fw.push(level_info(6,4u)); // .
+          fw.push(level_info(5,6u)); // .
+          fw.push(level_info(4,5u)); // overflow
+          fw.push(level_info(3,4u)); // bucket
+          fw.push(level_info(2,2u)); // bucket
+          fw.push(level_info(1,1u)); // skipped
         }
 
         test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -4956,13 +4956,13 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(7,2u)); // .
-            fw.push(create_level_info(6,3u)); // overflow
-            fw.push(create_level_info(5,6u)); // bucket
-            fw.push(create_level_info(4,8u)); // bucket
-            fw.push(create_level_info(3,4u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(7,2u)); // .
+            fw.push(level_info(6,3u)); // overflow
+            fw.push(level_info(5,6u)); // bucket
+            fw.push(level_info(4,8u)); // bucket
+            fw.push(level_info(3,4u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -5130,14 +5130,14 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(8,1u));  // .
-            fw.push(create_level_info(7,4u));  // .
-            fw.push(create_level_info(6,7u));  // overflow
-            fw.push(create_level_info(5,10u)); // bucket
-            fw.push(create_level_info(4,8u));  // bucket
-            fw.push(create_level_info(3,4u));  // bucket
-            fw.push(create_level_info(2,2u));  // bucket
-            fw.push(create_level_info(1,1u));  // skipped
+            fw.push(level_info(8,1u));  // .
+            fw.push(level_info(7,4u));  // .
+            fw.push(level_info(6,7u));  // overflow
+            fw.push(level_info(5,10u)); // bucket
+            fw.push(level_info(4,8u));  // bucket
+            fw.push(level_info(3,4u));  // bucket
+            fw.push(level_info(2,2u));  // bucket
+            fw.push(level_info(1,1u));  // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -5171,14 +5171,14 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(8,2u)); // .
-            fw.push(create_level_info(7,3u)); // .
-            fw.push(create_level_info(6,4u)); // overflow
-            fw.push(create_level_info(5,5u)); // bucket
-            fw.push(create_level_info(4,3u)); // bucket
-            fw.push(create_level_info(3,2u)); // bucket
-            fw.push(create_level_info(2,1u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(8,2u)); // .
+            fw.push(level_info(7,3u)); // .
+            fw.push(level_info(6,4u)); // overflow
+            fw.push(level_info(5,5u)); // bucket
+            fw.push(level_info(4,3u)); // bucket
+            fw.push(level_info(3,2u)); // bucket
+            fw.push(level_info(2,1u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -5203,18 +5203,18 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(12,2u)); // .
-            fw.push(create_level_info(11,4u)); // .
-            fw.push(create_level_info(10,8u)); // .
-            fw.push(create_level_info(9,16u)); // .
-            fw.push(create_level_info(8,32u)); // .
-            fw.push(create_level_info(7,64u)); // .
-            fw.push(create_level_info(6,32u)); // overflow
-            fw.push(create_level_info(5,16u)); // bucket
-            fw.push(create_level_info(4,8u));  // bucket
-            fw.push(create_level_info(3,4u));  // bucket
-            fw.push(create_level_info(2,2u));  // bucket
-            fw.push(create_level_info(1,1u));  // skipped
+            fw.push(level_info(12,2u)); // .
+            fw.push(level_info(11,4u)); // .
+            fw.push(level_info(10,8u)); // .
+            fw.push(level_info(9,16u)); // .
+            fw.push(level_info(8,32u)); // .
+            fw.push(level_info(7,64u)); // .
+            fw.push(level_info(6,32u)); // overflow
+            fw.push(level_info(5,16u)); // bucket
+            fw.push(level_info(4,8u));  // bucket
+            fw.push(level_info(3,4u));  // bucket
+            fw.push(level_info(2,2u));  // bucket
+            fw.push(level_info(1,1u));  // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -5253,14 +5253,14 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(8,2u)); // .
-            fw.push(create_level_info(7,2u)); // .
-            fw.push(create_level_info(6,4u)); // overflow
-            fw.push(create_level_info(5,3u)); // bucket
-            fw.push(create_level_info(4,5u)); // bucket
-            fw.push(create_level_info(3,4u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(8,2u)); // .
+            fw.push(level_info(7,2u)); // .
+            fw.push(level_info(6,4u)); // overflow
+            fw.push(level_info(5,3u)); // bucket
+            fw.push(level_info(4,5u)); // bucket
+            fw.push(level_info(3,4u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -5459,11 +5459,11 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(4,2u)); // bucket
-            fw.push(create_level_info(3,3u)); // bucket
-            fw.push(create_level_info(2,4u)); // bucket
-            fw.push(create_level_info(1,2u)); // bucket
-            fw.push(create_level_info(0,1u)); // skipped
+            fw.push(level_info(4,2u)); // bucket
+            fw.push(level_info(3,3u)); // bucket
+            fw.push(level_info(2,4u)); // bucket
+            fw.push(level_info(1,2u)); // bucket
+            fw.push(level_info(0,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -5527,9 +5527,9 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,2u)); // bucket
-            fw.push(create_level_info(0,1u)); // skipped
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,2u)); // bucket
+            fw.push(level_info(0,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -5653,14 +5653,14 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(8,1u)); // .
-            fw.push(create_level_info(7,1u)); // .
-            fw.push(create_level_info(6,2u)); // overflow
-            fw.push(create_level_info(5,3u)); // bucket
-            fw.push(create_level_info(4,4u)); // bucket
-            fw.push(create_level_info(3,3u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(8,1u)); // .
+            fw.push(level_info(7,1u)); // .
+            fw.push(level_info(6,2u)); // overflow
+            fw.push(level_info(5,3u)); // bucket
+            fw.push(level_info(4,4u)); // bucket
+            fw.push(level_info(3,3u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -5696,14 +5696,14 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(8,2u)); // .
-            fw.push(create_level_info(7,4u)); // .
-            fw.push(create_level_info(6,2u)); // overflow
-            fw.push(create_level_info(5,6u)); // bucket
-            fw.push(create_level_info(4,8u)); // bucket
-            fw.push(create_level_info(3,4u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(0,1u)); // skipped
+            fw.push(level_info(8,2u)); // .
+            fw.push(level_info(7,4u)); // .
+            fw.push(level_info(6,2u)); // overflow
+            fw.push(level_info(5,6u)); // bucket
+            fw.push(level_info(4,8u)); // bucket
+            fw.push(level_info(3,4u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(0,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -5746,12 +5746,12 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(6,1u)); // overflow
-            fw.push(create_level_info(5,2u)); // bucket
-            fw.push(create_level_info(4,4u)); // bucket
-            fw.push(create_level_info(3,4u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(6,1u)); // overflow
+            fw.push(level_info(5,2u)); // bucket
+            fw.push(level_info(4,4u)); // bucket
+            fw.push(level_info(3,4u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);
@@ -5778,14 +5778,14 @@ go_bandit([]() {
           { // Garbage collect the writer early
             pq_test_writer fw(f);
 
-            fw.push(create_level_info(8,1u)); // .
-            fw.push(create_level_info(7,2u)); // .
-            fw.push(create_level_info(6,4u)); // overflow
-            fw.push(create_level_info(5,8u)); // bucket
-            fw.push(create_level_info(4,4u)); // bucket
-            fw.push(create_level_info(3,2u)); // bucket
-            fw.push(create_level_info(2,2u)); // bucket
-            fw.push(create_level_info(1,1u)); // skipped
+            fw.push(level_info(8,1u)); // .
+            fw.push(level_info(7,2u)); // .
+            fw.push(level_info(6,4u)); // overflow
+            fw.push(level_info(5,8u)); // bucket
+            fw.push(level_info(4,4u)); // bucket
+            fw.push(level_info(3,2u)); // bucket
+            fw.push(level_info(2,2u)); // bucket
+            fw.push(level_info(1,1u)); // skipped
           }
 
           test_priority_queue<pq_test_file, 3> pq({f}, memory_available(), 32, stats_lpq_tests);

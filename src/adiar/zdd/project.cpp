@@ -59,7 +59,7 @@ namespace adiar
     internal::level_info_stream<> dd_meta(dd);
 
     while (dd_meta.can_pull()) {
-      zdd::label_t dd_label = label_of(dd_meta.pull());
+      zdd::label_t dd_label = dd_meta.pull().label();
       bool found_dd_label = false;
 
       while (ls.can_pull()) {

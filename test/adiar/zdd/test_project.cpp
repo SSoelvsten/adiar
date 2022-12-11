@@ -383,14 +383,14 @@ go_bandit([]() {
       level_info_test_stream ms(out);
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
 
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
 
       AssertThat(ms.can_pull(), Is().False());
 
@@ -445,14 +445,14 @@ go_bandit([]() {
       level_info_test_stream ms(out);
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
 
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(3,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
 
       AssertThat(ms.can_pull(), Is().False());
 
@@ -501,10 +501,10 @@ go_bandit([]() {
       level_info_test_stream ms(out);
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
 
       AssertThat(ms.can_pull(), Is().False());
 
@@ -558,10 +558,10 @@ go_bandit([]() {
       level_info_test_stream ms(out);
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,2u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(4,2u)));
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(0,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
 
       AssertThat(ms.can_pull(), Is().False());
 
@@ -613,10 +613,10 @@ go_bandit([]() {
       level_info_test_stream ms(out);
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(4,2u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(4,2u)));
 
       AssertThat(ms.can_pull(), Is().True());
-      AssertThat(ms.pull(), Is().EqualTo(create_level_info(2,1u)));
+      AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
 
       AssertThat(ms.can_pull(), Is().False());
 

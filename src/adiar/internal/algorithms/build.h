@@ -32,7 +32,7 @@ namespace adiar::internal
                                ptr_uint64(false),
                                ptr_uint64(true)));
 
-    nw.unsafe_push(create_level_info(label,1u));
+    nw.unsafe_push(level_info(label,1u));
 
     return nf;
   }
@@ -70,7 +70,7 @@ namespace adiar::internal
         }
 
         nw.unsafe_push(next_node);
-        nw.unsafe_push(create_level_info(next_label,1u));
+        nw.unsafe_push(level_info(next_label,1u));
       }
 
       // Compute 1-level cut sizes better than 'nw.detach()' will do on return.
