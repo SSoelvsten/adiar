@@ -7,6 +7,7 @@
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
 #include <adiar/internal/data_structures/sorter.h>
 #include <adiar/internal/data_types/arc.h>
+#include <adiar/internal/data_types/level_info.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/convert.h>
 #include <adiar/internal/io/arc_file.h>
@@ -288,7 +289,7 @@ namespace adiar::internal
 
     // Add number of nodes to level information, if any nodes were pushed to the output.
     if (!out_node.low().is_nil() /* && !out_node.high().is_nil() */) {
-      out_writer.unsafe_push(create_level_info(label, dd_policy::MAX_ID - out_id));
+      out_writer.unsafe_push(level_info(label, dd_policy::MAX_ID - out_id));
     }
 
     // Sort mappings for Reduction rule 2 back in order of arcs.internal
@@ -393,7 +394,7 @@ namespace adiar::internal
 #endif
 
     arc_stream<> arcs(in_file);
-    level_info_stream<> level_info(in_file);
+    level_info_stream<> levels(in_file);
 
     // Set up output
     shared_levelized_file<typename dd_policy::node_t> out_file;
@@ -428,7 +429,7 @@ namespace adiar::internal
 
         out_writer.unsafe_push(node(label, dd_policy::MAX_ID, e_low.target(), e_high.target()));
 
-        out_writer.unsafe_push(create_level_info(label,1u));
+        out_writer.unsafe_push(level_info(label,1u));
 
         out_file->max_1level_cut[cut_type::INTERNAL]       = 1u;
 
@@ -461,20 +462,20 @@ namespace adiar::internal
 
     // Process bottom-up each level
     while (arcs.can_pull_terminal() || !reduce_pq.empty()) {
-      const level_info_t current_level_info = level_info.pull();
-      const typename dd_policy::label_t label = label_of(current_level_info);
+      const level_info current_level_info = levels.pull();
+      const typename dd_policy::label_t level = current_level_info.level();
 
-      adiar_invariant(!reduce_pq.has_current_level() || label == reduce_pq.current_level(),
-                      "label and priority queue should be in sync");
+      adiar_invariant(!reduce_pq.has_current_level() || level == reduce_pq.current_level(),
+                      "level and priority queue should be in sync");
 
-      const size_t level_width = width_of(current_level_info);
+      const size_t level_width = current_level_info.width();
 
       if(level_width <= internal_sorter_can_fit) {
         __reduce_level<dd_policy, pq_t, internal_sorter>
-          (arcs, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
+          (arcs, level, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
       } else {
         __reduce_level<dd_policy, pq_t, external_sorter>
-          (arcs, label, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
+          (arcs, level, reduce_pq, out_writer, global_1level_cut, sorters_memory, level_width);
       }
     }
 

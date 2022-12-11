@@ -168,7 +168,7 @@ namespace adiar
       } while (curr_id-- > min_id);
 
       adiar_debug(level_size > 0, "Should have output a node");
-      nw.unsafe_push(internal::create_level_info(curr_label, level_size));
+      nw.unsafe_push(internal::level_info(curr_label, level_size));
 
       prior_label = curr_label;
       prior_min_id = curr_id + 1;

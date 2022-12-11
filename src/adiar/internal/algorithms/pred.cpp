@@ -50,13 +50,13 @@ namespace adiar::internal
     input_bound_levels(const shared_levelized_file<node> &f1,
                        const shared_levelized_file<node> &/*f2*/)
       : in_meta_1(f1),
-        curr_level_size(width_of(in_meta_1.pull())),
+        curr_level_size(in_meta_1.pull().width()),
         curr_level_processed(1)
     { }
 
     void next_level(ptr_uint64::label_t /* level */)
     { // Ignore input, since only used with the isomorphism_policy below.
-      curr_level_size = width_of(in_meta_1.pull());
+      curr_level_size = in_meta_1.pull().width();
       curr_level_processed = 0;
     }
 

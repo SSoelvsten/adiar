@@ -9,11 +9,15 @@
 namespace adiar::internal
 {
   template<typename T>
-  inline ptr_uint64::label_t __label_of(const T& t)
+  inline ptr_uint64::label_t __level_of(const T& t)
   { return label_of(t); }
 
   template<>
-  inline ptr_uint64::label_t __label_of(const ptr_uint64::label_t& l)
+  inline ptr_uint64::label_t __level_of(const level_info& l)
+  { return l.level(); }
+
+  template<>
+  inline ptr_uint64::label_t __level_of(const ptr_uint64::label_t& l)
   { return l; }
 
   template<typename in1_t = dd, typename stream1_t = level_info_stream<>,
@@ -24,9 +28,9 @@ namespace adiar::internal
     stream2_t s2(in2);
 
     while(s1.can_pull() && s2.can_pull()) {
-      if (__label_of<>(s1.peek()) == __label_of<>(s2.peek())) {
+      if (__level_of<>(s1.peek()) == __level_of<>(s2.peek())) {
         return false;
-      } else if (__label_of<>(s1.peek()) < __label_of<>(s2.peek())) {
+      } else if (__level_of<>(s1.peek()) < __level_of<>(s2.peek())) {
         s1.pull();
       } else {
         s2.pull();
@@ -47,7 +51,7 @@ namespace adiar::internal
     label_writer writer(vars);
 
     while(info_stream.can_pull()) {
-      writer << label_of(info_stream.pull());
+      writer << info_stream.pull().label();
     }
     return vars;
   }

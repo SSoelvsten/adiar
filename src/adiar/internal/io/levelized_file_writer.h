@@ -34,7 +34,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Writers for the file with level information.
     ////////////////////////////////////////////////////////////////////////////
-    file_writer<level_info_t> _level_writer;
+    file_writer<level_info> _level_writer;
 
     static constexpr size_t ELEM_WRITERS = file_traits<elem_t>::files;
 
@@ -140,7 +140,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    void push(const level_info_t &li)
+    void push(const level_info &li)
     {
       _level_writer.push(li);
     }
@@ -152,7 +152,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    levelized_file_writer<elem_t>& operator<< (const level_info_t& li)
+    levelized_file_writer<elem_t>& operator<< (const level_info& li)
     {
       this->push(li);
       return *this;

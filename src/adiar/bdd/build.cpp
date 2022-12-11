@@ -112,7 +112,7 @@ namespace adiar
         nw.unsafe_push(bdd::node_t(curr_label, curr_id, low, high));
 
       } while (curr_id-- > min_id);
-      nw.unsafe_push(internal::create_level_info(curr_label, (max_id - min_id) + 1));
+      nw.unsafe_push(internal::level_info(curr_label, (max_id - min_id) + 1));
 
     } while (curr_label-- > min_label);
 

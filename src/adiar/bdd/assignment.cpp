@@ -17,10 +17,12 @@ namespace adiar
     shared_file<assignment_t> af;
     internal::assignment_writer aw;
 
-    internal::level_info_stream<> ms;
+    internal::level_info_stream<> lvls;
 
   public:
-    bdd_sat_assignment_writer_visitor(const bdd& f) : aw(af), ms(f) { }
+    bdd_sat_assignment_writer_visitor(const bdd& f)
+      : aw(af), lvls(f)
+    { }
 
     bdd::ptr_t visit(const bdd::node_t &n)
     {
@@ -28,13 +30,13 @@ namespace adiar
       const bdd::label_t label = n.label();
 
       // set default to all skipped levels
-      while (label_of(ms.peek()) < label) {
-        aw << create_assignment(label_of(ms.pull()), skipped_value);
+      while (lvls.peek().label() < label) {
+        aw << create_assignment(lvls.pull().label(), skipped_value);
       }
-      adiar_debug(label_of(ms.peek()) == label,
+      adiar_debug(lvls.peek().label() == label,
                   "level given should exist in BDD");
 
-      aw << create_assignment(label_of(ms.pull()), next_ptr == n.high());
+      aw << create_assignment(lvls.pull().label(), next_ptr == n.high());
       return next_ptr;
     }
 
@@ -42,8 +44,8 @@ namespace adiar
     {
       __visitor.visit(s);
 
-      while (ms.can_pull()) {
-        aw << create_assignment(label_of(ms.pull()), skipped_value);
+      while (lvls.can_pull()) {
+        aw << create_assignment(lvls.pull().label(), skipped_value);
       }
     }
 

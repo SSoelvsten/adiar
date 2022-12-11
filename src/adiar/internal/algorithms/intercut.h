@@ -158,15 +158,15 @@ namespace adiar::internal
 
   template<typename intercut_policy>
   shared_file<typename intercut_policy::label_t>
-  create_dd_labels(const typename intercut_policy::reduced_t &dd)
-  {
+  create_dd_levels(const typename intercut_policy::reduced_t &dd)
+  { // TODO: replace with using 'varprofile'
     shared_file<typename intercut_policy::label_t> labels;
     label_writer writer(labels);
 
     level_info_stream<> info_stream(dd);
 
     while(info_stream.can_pull()) {
-      writer << label_of(info_stream.pull());
+      writer << info_stream.pull().level();
     }
 
     return labels;
@@ -191,8 +191,8 @@ namespace adiar::internal
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
-    shared_file<typename intercut_policy::label_t> dd_labels = create_dd_labels<intercut_policy>(dd);
-    pq_t intercut_pq({dd_labels, labels}, pq_memory, max_pq_size, stats_intercut.lpq);
+    shared_file<typename intercut_policy::label_t> dd_levels = create_dd_levels<intercut_policy>(dd);
+    pq_t intercut_pq({dd_levels, labels}, pq_memory, max_pq_size, stats_intercut.lpq);
 
     // Add request for root in the queue
     typename intercut_policy::label_t out_label = std::min(l, n.label());
@@ -203,7 +203,7 @@ namespace adiar::internal
 
     // Process nodes of the decision diagram in topological order
     while (!intercut_pq.empty()) {
-      if (out_id > 0) { aw.push(create_level_info(out_label, out_id)); }
+      if (out_id > 0) { aw.push(level_info(out_label, out_id)); }
 
       intercut_pq.setup_next_level();
       out_label = intercut_pq.current_level();
@@ -286,7 +286,7 @@ namespace adiar::internal
 
     // Push the level of the very last iteration
     if (out_id > 0) {
-      aw.push(create_level_info(out_label, out_id));
+      aw.push(level_info(out_label, out_id));
     }
 
     out_arcs->max_1level_cut = max_1level_cut;

@@ -117,7 +117,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     //////////////////////////////////////////////////////////////////////////////
-    void push(const level_info_t &li)
+    void push(const level_info &li)
     { levelized_file_writer::push(li); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ namespace adiar::internal
     ///
     /// \pre `attached() == true`.
     ////////////////////////////////////////////////////////////////////////////
-    arc_writer& operator<< (const level_info_t& li)
+    arc_writer& operator<< (const level_info& li)
     {
       this->push(li);
       return *this;

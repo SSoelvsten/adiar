@@ -289,7 +289,7 @@ namespace adiar::internal
     {
       adiar_precondition(this->levels() > 0u);
       file_stream<level_info, true> fs(this->_level_info_file);
-      return label_of(fs.pull());
+      return fs.pull().level();
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -301,7 +301,7 @@ namespace adiar::internal
     {
       adiar_precondition(this->levels() > 0u);
       file_stream<level_info, false> fs(this->_level_info_file);
-      return label_of(fs.pull());
+      return fs.pull().level();
     }
 
   public:
@@ -446,7 +446,7 @@ namespace adiar::internal
 
       for (size_t idx = 0; idx < FILES; idx++)
         lf_copy._files[idx] = file<elem_t>::copy(lf._files[idx]);
-      lf_copy._level_info_file = file<level_info_t>::copy(lf._level_info_file);
+      lf_copy._level_info_file = file<level_info>::copy(lf._level_info_file);
 
       return lf_copy;
     }

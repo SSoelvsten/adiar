@@ -77,7 +77,7 @@ namespace adiar::internal
           prior_node = next_node.uid();
 
           nw.unsafe_push(next_node);
-          nw.unsafe_push(create_level_info(next_label,1u));
+          nw.unsafe_push(level_info(next_label,1u));
         } else {
           // If we kill the resulting node once, then we will also do it for all
           // the other labels we still are missing.

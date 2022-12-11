@@ -145,17 +145,6 @@ namespace adiar::internal
         ;
     }
   };
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Extracts the label from the target of an arc
-  //////////////////////////////////////////////////////////////////////////////
-  struct arc_target_label
-  {
-    static inline typename arc::ptr_t::label_t label_of(const arc& a)
-    {
-      return a.target().label();
-    }
-  };
 }
 
 #endif // ADIAR_INTERNAL_DATA_TYPES_ARC_H

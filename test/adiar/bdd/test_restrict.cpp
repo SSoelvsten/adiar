@@ -77,13 +77,13 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
@@ -132,10 +132,10 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
@@ -198,13 +198,13 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,2u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
@@ -259,10 +259,10 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,2u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
@@ -303,7 +303,7 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
@@ -504,10 +504,10 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,2u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,2u)));
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
@@ -579,10 +579,10 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(1,2u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(1,2u)));
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 
@@ -672,13 +672,13 @@ go_bandit([]() {
       level_info_test_stream meta_arcs(out);
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(0,1u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(0,1u)));
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(2,2u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(2,2u)));
 
       AssertThat(meta_arcs.can_pull(), Is().True());
-      AssertThat(meta_arcs.pull(), Is().EqualTo(create_level_info(3,2u)));
+      AssertThat(meta_arcs.pull(), Is().EqualTo(level_info(3,2u)));
 
       AssertThat(meta_arcs.can_pull(), Is().False());
 

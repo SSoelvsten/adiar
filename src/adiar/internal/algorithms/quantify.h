@@ -101,13 +101,13 @@ namespace adiar::internal
   {
     level_info_stream<> in_meta(in);
     while(in_meta.can_pull()) {
-      level_info_t m = in_meta.pull();
+      level_info m = in_meta.pull();
 
       // Are we already past where it should be?
-      if (label < label_of(m)) { return false; }
+      if (label < m.label()) { return false; }
 
       // Did we find it?
-      if (label_of(m) == label) { return true; }
+      if (m.label() == label) { return true; }
     }
     return false;
   }
@@ -163,7 +163,7 @@ namespace adiar::internal
     while(!quantify_pq_1.empty() || !quantify_pq_2.empty()) {
       if (quantify_pq_1.empty_level() && quantify_pq_2.empty()) {
         if (out_label != label) {
-          aw.push(create_level_info(out_label, out_id));
+          aw.push(level_info(out_label, out_id));
         }
 
         quantify_pq_1.setup_next_level();
@@ -259,7 +259,7 @@ namespace adiar::internal
 
     // Push the level of the very last iteration
     if (out_label != label) {
-      aw.push(create_level_info(out_label, out_id));
+      aw.push(level_info(out_label, out_id));
     }
 
     out_arcs->max_1level_cut = max_1level_cut;

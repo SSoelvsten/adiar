@@ -26,19 +26,19 @@ namespace adiar::internal
   ///        reading the levels from some file(s).
   //////////////////////////////////////////////////////////////////////////////
   template <typename file_t>
-  struct label_stream_t
+  struct level_stream_t
   {
     typedef level_info_stream<> stream_t;
   };
 
   template <>
-  struct label_stream_t<file<ptr_uint64::label_t>>
+  struct level_stream_t<file<ptr_uint64::label_t>>
   {
     typedef file_stream<ptr_uint64::label_t> stream_t;
   };
 
   template <>
-  struct label_stream_t<shared_file<ptr_uint64::label_t>>
+  struct level_stream_t<shared_file<ptr_uint64::label_t>>
   {
     typedef file_stream<ptr_uint64::label_t> stream_t;
   };
@@ -87,7 +87,7 @@ namespace adiar::internal
   {
     static_assert(0 < FILES, "At least one file should be merged");
 
-    typedef typename label_stream_t<file_t>::stream_t stream_t;
+    typedef typename level_stream_t<file_t>::stream_t stream_t;
 
   public:
     static size_t memory_usage()
@@ -134,9 +134,9 @@ namespace adiar::internal
       ptr_uint64::label_t min_label = 0u;
       for (size_t idx = 0u; idx < FILES; idx++) {
         if (_label_streams[idx] -> can_pull()
-            && (!has_min_label || _comparator(__label_of<>(_label_streams[idx] -> peek()), min_label))) {
+            && (!has_min_label || _comparator(__level_of<>(_label_streams[idx] -> peek()), min_label))) {
           has_min_label = true;
-          min_label = __label_of<>(_label_streams[idx] -> peek());
+          min_label = __level_of<>(_label_streams[idx] -> peek());
         }
       }
 
@@ -152,7 +152,7 @@ namespace adiar::internal
 
       // pull from all with min_label
       for (const unique_ptr<stream_t> &level_info_stream : _label_streams) {
-        if (level_info_stream -> can_pull() && __label_of<>(level_info_stream -> peek()) == min_label) {
+        if (level_info_stream -> can_pull() && __level_of<>(level_info_stream -> peek()) == min_label) {
           level_info_stream -> pull();
         }
       }
