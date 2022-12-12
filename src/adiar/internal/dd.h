@@ -272,7 +272,7 @@ namespace adiar::internal
     friend class node_stream;
 
     template <typename file_t, typename comp_t, size_t FILES>
-    friend class label_merger;
+    friend class level_merger;
 
     friend bool is_isomorphic(const dd&, const dd&);
 

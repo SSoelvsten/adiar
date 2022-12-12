@@ -51,6 +51,7 @@ set(HEADERS
   internal/algorithms/traverse.h
 
   # adiar/internal/data_structures
+  internal/data_structures/level_merger.h
   internal/data_structures/levelized_priority_queue.h
   internal/data_structures/priority_queue.h
   internal/data_structures/sorter.h

@@ -3,46 +3,18 @@
 
 #include <limits>
 
-#include <tpie/tpie.h>
-
-#include <tpie/file.h>
-#include <tpie/file_stream.h>
-#include <tpie/sort.h>
-
 #include <adiar/memory_mode.h>
 #include <adiar/internal/dd.h>
 #include <adiar/internal/memory.h>
-#include <adiar/internal/util.h>
+#include <adiar/internal/data_structures/level_merger.h>
 #include <adiar/internal/data_structures/priority_queue.h>
 #include <adiar/internal/data_structures/sorter.h>
 #include <adiar/internal/io/file.h>
-#include <adiar/internal/io/levelized_file_stream.h>
+#include <adiar/internal/io/shared_file_ptr.h>
 #include <adiar/statistics.h>
 
 namespace adiar::internal
 {
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Defines at compile time the type of the file stream to use for
-  ///        reading the levels from some file(s).
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename file_t>
-  struct level_stream_t
-  {
-    typedef level_info_stream<> stream_t;
-  };
-
-  template <>
-  struct level_stream_t<file<ptr_uint64::label_t>>
-  {
-    typedef file_stream<ptr_uint64::label_t> stream_t;
-  };
-
-  template <>
-  struct level_stream_t<shared_file<ptr_uint64::label_t>>
-  {
-    typedef file_stream<ptr_uint64::label_t> stream_t;
-  };
-
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Number of items for which the unbucketed queue can be used
   ////////////////////////////////////////////////////////////////////////////
@@ -72,94 +44,6 @@ namespace adiar::internal
   {
     return level_comp(l1, l2) || l1 == l2;
   }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Merges the labels from one or more files.
-  ///
-  /// \param file_t Type of the files to read from
-  ///
-  /// \param comp_t Comparator with which to merge the labels
-  ///
-  /// \param FILES  Number of files to read from
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename file_t, typename comp_t, size_t FILES>
-  class label_merger
-  {
-    static_assert(0 < FILES, "At least one file should be merged");
-
-    typedef typename level_stream_t<file_t>::stream_t stream_t;
-
-  public:
-    static size_t memory_usage()
-    {
-      return FILES * stream_t::memory_usage();
-    }
-
-  private:
-    comp_t _comparator = comp_t();
-
-    unique_ptr<stream_t> _label_streams [FILES];
-
-  public:
-    void hook(const file_t (&fs) [FILES])
-    {
-      for (size_t idx = 0u; idx < FILES; idx++) {
-        _label_streams[idx] = adiar::make_unique<stream_t>(fs[idx]);
-      }
-    }
-
-    void hook(const dd (&dds) [FILES])
-    {
-      for (size_t idx = 0u; idx < FILES; idx++) {
-        _label_streams[idx] = adiar::make_unique<stream_t>(dds[idx].file);
-      }
-    }
-
-    bool can_pull()
-    {
-      for (size_t idx = 0u; idx < FILES; idx++) {
-        if (_label_streams[idx] -> can_pull()) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    ptr_uint64::label_t peek()
-    {
-      adiar_debug(can_pull(),
-                  "Cannot peek past end of all streams");
-
-      bool has_min_label = false;
-      ptr_uint64::label_t min_label = 0u;
-      for (size_t idx = 0u; idx < FILES; idx++) {
-        if (_label_streams[idx] -> can_pull()
-            && (!has_min_label || _comparator(__level_of<>(_label_streams[idx] -> peek()), min_label))) {
-          has_min_label = true;
-          min_label = __level_of<>(_label_streams[idx] -> peek());
-        }
-      }
-
-      return min_label;
-    }
-
-    ptr_uint64::label_t pull()
-    {
-      adiar_debug(can_pull(),
-                  "Cannot pull past end of all streams");
-
-      ptr_uint64::label_t min_label = peek();
-
-      // pull from all with min_label
-      for (const unique_ptr<stream_t> &level_info_stream : _label_streams) {
-        if (level_info_stream -> can_pull() && __level_of<>(level_info_stream -> peek()) == min_label) {
-          level_info_stream -> pull();
-        }
-      }
-
-      return min_label;
-    }
-  };
 
   //////////////////////////////////////////////////////////////////////////////
   /// The preprocessor variable ADIAR_PQ_LOOKAHEAD can be used to change the
@@ -266,7 +150,7 @@ namespace adiar::internal
   private:
     static tpie::memory_size_type const_memory_usage()
     {
-      return label_merger<file_t, level_comp_t, FILES>::memory_usage();
+      return level_merger<file_t, level_comp_t, FILES>::memory_usage();
     }
 
   public:
@@ -346,7 +230,7 @@ namespace adiar::internal
     /// \brief Memory used by the label merger.
     ////////////////////////////////////////////////////////////////////////////
     const tpie::memory_size_type _memory_occupied_by_merger =
-      label_merger<file_t, level_comp_t, FILES>::memory_usage();
+      level_merger<file_t, level_comp_t, FILES>::memory_usage();
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Memory to be used for the buckets.
@@ -361,7 +245,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Provides the levels to distribute all elements across.
     ////////////////////////////////////////////////////////////////////////////
-    label_merger<file_t, level_comp_t, FILES> _level_merger;
+    level_merger<file_t, level_comp_t, FILES> _level_merger;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Level of each bucket.
