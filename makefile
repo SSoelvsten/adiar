@@ -117,6 +117,9 @@ test/adiar/internal/algorithms/isomorphism:
 test/adiar/internal/algorithms/reduce:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/algorithms TEST_NAME=reduce
 
+test/adiar/internal/data_structures/level_merger:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=level_merger
+
 test/adiar/internal/data_structures/levelized_priority_queue:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_structures TEST_NAME=levelized_priority_queue
 

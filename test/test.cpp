@@ -21,6 +21,7 @@
 #include "adiar/internal/io/test_levelized_file.cpp"
 #include "adiar/internal/io/test_shared_file_ptr.cpp"
 
+#include "adiar/internal/data_structures/test_level_merger.cpp"
 #include "adiar/internal/data_structures/test_levelized_priority_queue.cpp"
 
 #include "adiar/internal/test_dot.cpp"
