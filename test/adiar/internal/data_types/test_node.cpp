@@ -77,16 +77,26 @@ go_bandit([]() {
       });
 
       describe("terminal nodes", [&]() {
-        const node terminal_node = node(true);
+        const node terminal_node_T = node(true);
         const node terminal_node_F = node(false);
 
+        it("has NIL() children [F]", [&]() {
+          AssertThat(terminal_node_F.low(), Is().EqualTo(node::ptr_t::NIL()));
+          AssertThat(terminal_node_F.high(), Is().EqualTo(node::ptr_t::NIL()));
+        });
+
+        it("has NIL() children [T]", [&]() {
+          AssertThat(terminal_node_T.low(), Is().EqualTo(node::ptr_t::NIL()));
+          AssertThat(terminal_node_T.high(), Is().EqualTo(node::ptr_t::NIL()));
+        });
+
         describe("is_terminal", [&]() {
-          it("accepts true terminal", [&]() {
-            AssertThat(terminal_node.is_terminal(), Is().True());
+          it("accepts terminal [F]", [&]() {
+            AssertThat(terminal_node_F.is_terminal(), Is().True());
           });
 
-          it("accepts false terminal", [&]() {
-            AssertThat(terminal_node_F.is_terminal(), Is().True());
+          it("accepts terminal [T]", [&]() {
+            AssertThat(terminal_node_T.is_terminal(), Is().True());
           });
 
           it("rejects non-terminal nodes [1]", [&]() {
@@ -99,29 +109,29 @@ go_bandit([]() {
             AssertThat(almost_F_terminal.is_terminal(), Is().False());
           });
 
-          it("rejects non-terminal nodes [2]", [&]() {
+          it("rejects non-terminal nodes [3]", [&]() {
             const node almost_T_terminal = node(0u,1u, terminal_T, ptr_uint64(42,2));
             AssertThat(almost_T_terminal.is_terminal(), Is().False());
           });
         });
 
         describe("value_of", [&]() {
-          it("retrieves value of a true terminal node", [&]() {
-            AssertThat(terminal_node.value(), Is().True());
+          it("retrieves value of terminal node [T]", [&]() {
+            AssertThat(terminal_node_T.value(), Is().True());
           });
 
-          it("retrieves value of a false terminal node", [&]() {
+          it("retrieves value of a terminal node [F]", [&]() {
             AssertThat(terminal_node_F.value(), Is().False());
           });
         });
 
         describe("is_false", [&]() {
-          it("rejects true terminal", [&]() {
-            AssertThat(terminal_node.is_false(), Is().False());
+          it("accepts terminal [F]", [&]() {
+            AssertThat(terminal_node_F.is_false(), Is().True());
           });
 
-          it("accepts false terminal", [&]() {
-            AssertThat(terminal_node_F.is_false(), Is().True());
+          it("rejects terminal [T]", [&]() {
+            AssertThat(terminal_node_T.is_false(), Is().False());
           });
 
           it("rejects non-terminal nodes", [&]() {
@@ -131,12 +141,12 @@ go_bandit([]() {
         });
 
         describe("is_true", [&]() {
-          it("accepts true terminal", [&]() {
-            AssertThat(terminal_node.is_true(), Is().True());
+          it("rejects terminal [F]", [&]() {
+            AssertThat(terminal_node_F.is_true(), Is().False());
           });
 
-          it("rejects false terminal", [&]() {
-            AssertThat(terminal_node_F.is_true(), Is().False());
+          it("accepts terminal [T]", [&]() {
+            AssertThat(terminal_node_T.is_true(), Is().True());
           });
 
           it("rejects non-terminal nodes", [&]() {
