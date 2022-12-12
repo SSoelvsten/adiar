@@ -104,7 +104,7 @@ namespace adiar::internal
     /// \brief Construct *terminal* node `(value, NIL, NIL)`.
     ////////////////////////////////////////////////////////////////////////////
     node(const value_t value)
-      : _uid(ptr_t(value)), _children(ptr_uint64::NIL(), ptr_uint64::NIL())
+      : _uid(ptr_t(value)), _children(ptr_uint64::NIL())
     { }
 
     ////////////////////////////////////////////////////////////////////////////
