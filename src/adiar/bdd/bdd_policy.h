@@ -32,12 +32,18 @@ namespace adiar
     return { child, child };
   }
 
+  /// TODO: stop using this one in favour of the other one below
   template<>
   inline void
   bdd_policy::compute_cofactor(bool,
                                /*const*/ bdd::ptr_t &,
                                /*const*/ bdd::ptr_t &)
   { /* do nothing */ }
+
+  template<>
+  inline bdd::node_t::children_t
+  bdd_policy::compute_cofactor(bool, const bdd::node_t::children_t &children)
+  { return children; }
 }
 
 #endif // ADIAR_BDD_BDD_POLICY_H

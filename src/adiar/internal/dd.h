@@ -428,8 +428,12 @@ namespace adiar::internal
     static inline typename node_t::children_t
     reduction_rule_inv(const ptr_t &child);
 
+    /// TODO: stop using this one in favour of the other one below
     static inline void
     compute_cofactor(bool on_curr_level, ptr_t &low, ptr_t &high);
+
+    static inline typename node_t::children_t
+    compute_cofactor(bool on_curr_level, const typename node_t::children_t &children);
   };
 }
 

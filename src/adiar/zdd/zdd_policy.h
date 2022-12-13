@@ -29,6 +29,7 @@ namespace adiar
     return { child, zdd::ptr_t(false) };
   }
 
+  /// TODO: stop using this one in favour of the other one below
   template<>
   inline void
   zdd_policy::compute_cofactor(bool on_curr_level,
@@ -36,6 +37,16 @@ namespace adiar
                                zdd::ptr_t &high)
   {
     if (!on_curr_level) { high = zdd::ptr_t(false); }
+  }
+
+  template<>
+  inline zdd::node_t::children_t
+  zdd_policy::compute_cofactor(bool on_curr_level,
+                               const zdd::node_t::children_t &children)
+  {
+    return on_curr_level
+      ? children :
+      zdd::node_t::children_t(children[0], zdd::ptr_t(false));
   }
 }
 

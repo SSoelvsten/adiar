@@ -12,7 +12,8 @@ namespace adiar
   class zdd_project_policy : public zdd_policy
   {
   public:
-    static inline __zdd resolve_terminal_root(const zdd::node_t v, const bool_op &/* op */)
+    static inline __zdd
+    resolve_terminal_root(const zdd::node_t v, const bool_op &/* op */)
     {
       if (v.low().is_terminal() && v.high().is_terminal()) {
         // Only or_op and at least one of the terminals should be true
@@ -23,26 +24,27 @@ namespace adiar
     }
 
   public:
-    static inline internal::tuple<zdd::ptr_t, 2, true>
-    resolve_request(const bool_op &/* op */, const zdd::ptr_t &r1, const zdd::ptr_t &r2)
+    static inline internal::quantify_request<0>::target_t
+    resolve_request(const bool_op &/* op */,
+                    const internal::quantify_request<0>::target_t &target)
     {
-      adiar_debug(!r1.is_nil() && !r2.is_nil(),
+      adiar_debug(!target[0].is_nil() && !target[1].is_nil(),
                   "Resolve request is only used for tuple cases");
 
-      const zdd::ptr_t r_fst = fst(r1,r2);
-      zdd::ptr_t r_snd = snd(r1,r2);
+      const zdd::ptr_t tgt_fst = target.fst();
+      const zdd::ptr_t tgt_snd = target.snd();
 
       // Has the second option fallen out, while the first is still within? Then
       // we can collapse back into the original ZDD.
-      if (r_fst.is_node() && r_snd.is_false()) {
-        r_snd = zdd::ptr_t::NIL();
+      if (tgt_fst.is_node() && tgt_snd.is_false()) {
+        return { tgt_fst, zdd::ptr_t::NIL() };
       }
-
-      return { r_fst, r_snd };
+      return target;
     }
 
   public:
-    static internal::cut_type cut_with_terminals(const bool_op &/*op*/)
+    static inline internal::cut_type
+    cut_with_terminals(const bool_op &/*op*/)
     {
       return internal::cut_type::ALL;
     }

@@ -30,7 +30,7 @@ namespace adiar::internal
   { return std::max({t1, t2, t3}); }
 
   // TODO (QMDD):
-  //   Add 4-ary tuples (and possibly a generic implementation?)
+  //   Add 4-ary tuples
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Tuple holding two elements and providing an ordered access.
@@ -44,7 +44,7 @@ namespace adiar::internal
   /// \tparam is_sorted   Whether elements are given in sorted order
   ///                     (default: `false`).
   //////////////////////////////////////////////////////////////////////////////
-  template<typename elem_type, uint8_t cardinality = 2, bool is_sorted = false>
+  template<typename elem_type, uint8_t CARDINALITY = 2, bool IS_SORTED = false>
   class tuple
   {
     /* ============================== CONSTANTS ============================= */
@@ -57,7 +57,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Number of elements stored in the tuple.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t CARDINALITY = cardinality;
+    static constexpr uint8_t cardinality = CARDINALITY;
 
     static_assert(CARDINALITY > 0, "A tuple cannot be 'unit' type.");
     static_assert(CARDINALITY <= 3, "No support (yet) for tuples of that cardinality.");
@@ -65,11 +65,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether elements are supposed to be in sorted order.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr bool IS_SORTED = cardinality == 1 || is_sorted;
+    static constexpr bool is_sorted = cardinality == 1 || IS_SORTED;
 
     /* ============================== ELEMENTS ============================== */
   private:
-    elem_t _elems [CARDINALITY];
+    elem_t _elems [cardinality];
 
     /* ============================ DIRECT ACCESS =========================== */
   public:
@@ -78,7 +78,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline elem_t operator [] (const size_t idx) const
     {
-      adiar_debug(idx < CARDINALITY, "Tuple index must be within its cardinality.");
+      adiar_debug(idx < cardinality, "Tuple index must be within its cardinality.");
       return _elems[idx];
     }
 
@@ -89,11 +89,11 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline elem_t fst() const
     {
-      if constexpr (IS_SORTED) {
+      if constexpr (is_sorted) {
         return _elems[0];
-      } else if constexpr (CARDINALITY == 2) {
+      } else if constexpr (cardinality == 2) {
         return adiar::internal::fst(_elems[0], _elems[1]);
-      } else if constexpr (CARDINALITY == 3) {
+      } else if constexpr (cardinality == 3) {
         return adiar::internal::fst(_elems[0], _elems[1], _elems[2]);
       }
     }
@@ -103,14 +103,14 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline elem_t snd() const
     {
-      adiar_debug(2 <= CARDINALITY,
+      adiar_debug(2 <= cardinality,
                   "Need at least a 2-ary tuple to retrieve the second element.");
 
-      if constexpr (IS_SORTED) {
+      if constexpr (is_sorted) {
         return _elems[1];
-      } else if constexpr (CARDINALITY == 2) {
+      } else if constexpr (cardinality == 2) {
         return adiar::internal::snd(_elems[0], _elems[1]);
-      } else if constexpr (CARDINALITY == 3) {
+      } else if constexpr (cardinality == 3) {
         return adiar::internal::snd(_elems[0], _elems[1], _elems[2]);
       }
     }
@@ -120,12 +120,12 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     inline elem_t trd() const
     {
-      adiar_debug(3 <= CARDINALITY,
+      adiar_debug(3 <= cardinality,
                   "Need at least a 3-ary tuple to retrieve the third element.");
 
-      if constexpr (IS_SORTED) {
+      if constexpr (is_sorted) {
         return _elems[2];
-      } else if constexpr (CARDINALITY == 3) {
+      } else if constexpr (cardinality == 3) {
         return adiar::internal::trd(_elems[0], _elems[1], _elems[2]);
       }
     }
@@ -171,10 +171,10 @@ namespace adiar::internal
     tuple(const elem_t &elem1, const elem_t &elem2, const elem_t &elem3)
       : _elems{elem1,elem2,elem3}
     {
-      adiar_debug(CARDINALITY == 3,
+      adiar_debug(cardinality == 3,
                   "Constructor is only designed for 3-ary tuples.");
 
-      if constexpr (IS_SORTED) {
+      if constexpr (is_sorted) {
           adiar_debug(elem1 <= elem2,
                       "A sorted tuple should be given its elements in sorted order");
           adiar_debug(elem2 <= elem3,
@@ -191,11 +191,11 @@ namespace adiar::internal
     {
       // TODO: turn into a loop and trust the compiler?
       const bool lt_1 = this->_elems[0] < o._elems[0];
-      if constexpr (CARDINALITY == 1) return lt_1;
+      if constexpr (cardinality == 1) return lt_1;
 
       const bool lt_2 = lt_1 || (this->_elems[0] == o._elems[0]
                                  && this->_elems[1] < o._elems[1]);
-      if constexpr (CARDINALITY == 2) return lt_2;
+      if constexpr (cardinality == 2) return lt_2;
 
       const bool lt_3 = lt_2 || (this->_elems[0] == o._elems[0]
                                  && this->_elems[1] == o._elems[1]
@@ -214,10 +214,10 @@ namespace adiar::internal
     {
       // TODO: turn into a loop and trust the compiler?
       const bool eq_1 = this->_elems[0] == o._elems[0];
-      if constexpr (CARDINALITY == 1) return eq_1;
+      if constexpr (cardinality == 1) return eq_1;
 
       const bool eq_2 = eq_1 && this->_elems[1] == o._elems[1];
-      if constexpr (CARDINALITY == 2) return eq_2;
+      if constexpr (cardinality == 2) return eq_2;
 
       const bool eq_3 = eq_2 && this->_elems[2] == o._elems[2];
       return eq_3;
@@ -249,7 +249,7 @@ namespace adiar::internal
     {
       // Sort primarily by the element to be encountered first.
       // If non-singleton, sort secondly lexicographically.
-      if constexpr (tuple_t::CARDINALITY == 1) {
+      if constexpr (tuple_t::cardinality == 1) {
         return a.fst() < b.fst();
       } else {
         return a.fst() < b.fst() || (a.fst() == b.fst() && a < b);
