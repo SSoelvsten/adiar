@@ -135,6 +135,9 @@ test/adiar/internal/data_types/node:
 test/adiar/internal/data_types/ptr:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=ptr
 
+test/adiar/internal/data_types/request:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=request
+
 test/adiar/internal/data_types/tuple:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=tuple
 

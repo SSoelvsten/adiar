@@ -34,7 +34,7 @@ namespace adiar
   // then-BDD has been forwarded.
 
   template<uint8_t nodes_carried>
-  using ite_request = internal::request_data<3, false, nodes_carried, internal::with_parent>;
+  using ite_request = internal::request_data<3, internal::with_parent, nodes_carried>;
 
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using ite_priority_queue_1_t =

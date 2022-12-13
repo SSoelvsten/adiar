@@ -1,15 +1,17 @@
 #include "../../../test.h"
 
+#include <adiar/internal/data_types/tuple.h>
+
 go_bandit([]() {
     describe("adiar/internal/data_types/tuple.h", []() {
         describe("tuple<int, 1>", []() {
             it("statically provides its cardinality of 1.", []() {
-                const auto cardinality = tuple<int,1>::CARDINALITY;
+                const auto cardinality = tuple<int,1>::cardinality;
                 AssertThat(cardinality, Is().EqualTo(1u));
               });
 
             it("is trivially sorted even though not specified.", []() {
-                const auto is_sorted = tuple<int,1>::IS_SORTED;
+                const auto is_sorted = tuple<int,1>::is_sorted;
                 AssertThat(is_sorted, Is().EqualTo(true));
               });
 
@@ -209,12 +211,12 @@ go_bandit([]() {
 
         describe("tuple<int, 2>", []() {
             it("statically provides its cardinality of 2.", []() {
-                const auto cardinality = tuple<int,2>::CARDINALITY;
+                const auto cardinality = tuple<int,2>::cardinality;
                 AssertThat(cardinality, Is().EqualTo(2u));
               });
 
             it("is not trivially sorted.", []() {
-                const auto is_sorted = tuple<int,2>::IS_SORTED;
+                const auto is_sorted = tuple<int,2>::is_sorted;
                 AssertThat(is_sorted, Is().EqualTo(false));
               });
 
@@ -571,12 +573,12 @@ go_bandit([]() {
 
         describe("tuple<int, 3>", []() {
             it("statically provides its cardinality of 3.", []() {
-                const auto cardinality = tuple<int,3>::CARDINALITY;
+                const auto cardinality = tuple<int,3>::cardinality;
                 AssertThat(cardinality, Is().EqualTo(3u));
               });
 
             it("is not trivially sorted.", []() {
-                const auto is_sorted = tuple<int,3>::IS_SORTED;
+                const auto is_sorted = tuple<int,3>::is_sorted;
                 AssertThat(is_sorted, Is().EqualTo(false));
               });
 

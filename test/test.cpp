@@ -12,9 +12,10 @@
 // ADIAR Internal unit tests
 #include "adiar/internal/data_types/test_ptr.cpp"
 #include "adiar/internal/data_types/test_uid.cpp"
-#include "adiar/internal/data_types/test_node.cpp"
 #include "adiar/internal/data_types/test_arc.cpp"
+#include "adiar/internal/data_types/test_node.cpp"
 #include "adiar/internal/data_types/test_tuple.cpp"
+#include "adiar/internal/data_types/test_request.cpp"
 #include "adiar/internal/data_types/test_convert.cpp"
 
 #include "adiar/internal/io/test_file.cpp"

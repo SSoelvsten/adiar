@@ -27,7 +27,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
   template<uint8_t nodes_carried>
-  using prod2_request = request_data<2, false, nodes_carried, with_parent>;
+  using prod2_request = request_data<2, with_parent, nodes_carried>;
 
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using prod_priority_queue_1_t =

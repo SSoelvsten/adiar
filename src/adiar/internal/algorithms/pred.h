@@ -54,7 +54,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
   template<uint8_t nodes_carried>
-  using pred_request = request<2, false, nodes_carried>;
+  using pred_request = request<2, nodes_carried>;
 
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using comparison_priority_queue_1_t =
@@ -63,7 +63,7 @@ namespace adiar::internal
                                   mem_mode,
                                   2u>;
 
-  typedef request<2, false, 1> pred_request_2;
+  typedef request<2, 1> pred_request_2;
 
   template<memory_mode_t mem_mode>
   using comparison_priority_queue_2_t =

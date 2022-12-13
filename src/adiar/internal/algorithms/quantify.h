@@ -25,7 +25,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
   template<uint8_t nodes_carried>
-  using quantify_request = request_data<2, true, nodes_carried, with_parent>;
+  using quantify_request = request_data<2, with_parent, nodes_carried, 1>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
@@ -54,24 +54,29 @@ namespace adiar::internal
   inline void __quantify_resolve_request(pq_1_t &quantify_pq_1,
                                          arc_writer &aw,
                                          const bool_op &op,
-                                         const ptr_uint64 source, ptr_uint64 r1, ptr_uint64 r2)
+                                         const typename quantify_policy::ptr_t source,
+                                         const tuple<typename quantify_policy::ptr_t, 2> &target)
   {
-    adiar_debug(!r1.is_nil(), "ptr_uint64::NIL() should only ever end up being placed in r2");
+    adiar_debug(!target[0].is_nil(),
+                "ptr_t::NIL() should only ever end up being placed in target[1]");
 
     // Collapse requests to the same node back into one
-    if (r2.is_node() && r1 == r2) { r2 = ptr_uint64::NIL(); }
+    if (target.snd().is_node() && target.fst() == target.snd()) {
+      return __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
+                                                         source,
+                                                         { target.fst(), node::ptr_t::NIL() });
+    }
 
-    if (r2.is_nil()) {
-      if (r1.is_terminal()) {
-        aw.push_terminal({ source, r1 });
-      } else {
-        quantify_pq_1.push({ {r1, r2}, {}, {source} });
+    if (target[1].is_nil()) {
+      if (target[0].is_terminal()) {
+        aw.push_terminal({ source, target[0] });
+      } else { // target[0].is_node()
+        quantify_pq_1.push({ {target[0], target[1]}, {}, {source} });
       }
     } else {
-      // sort the tuple of requests
-      quantify_request<0>::target_t rec = quantify_policy::resolve_request(op, r1, r2);
+      quantify_request<0>::target_t rec = quantify_policy::resolve_request(op, {target.fst(), target.snd()});
 
-      if (rec[0].is_terminal() /* && rec[1].is_terminal() */) {
+      if (rec[0].is_terminal() /* sorted ==> rec[1].is_terminal() */) {
         arc out_arc = { source, op(rec[0], rec[1]) };
         aw.push_terminal(out_arc);
       } else {
@@ -84,11 +89,15 @@ namespace adiar::internal
   inline bool __quantify_update_source_or_break(pq_1_t &quantify_pq_1,
                                                 pq_2_t &quantify_pq_2,
                                                 ptr_uint64 &source,
-                                                const ptr_uint64 t1, const ptr_uint64 t2)
+                                                const quantify_request<0>::target_t &target)
   {
-    if (quantify_pq_1.can_pull() && quantify_pq_1.top().target[0] == t1 && quantify_pq_1.top().target[1] == t2) {
+    if (quantify_pq_1.can_pull()
+        && quantify_pq_1.top().target[0] == target[0]
+        && quantify_pq_1.top().target[1] == target[1]) {
       source = quantify_pq_1.pull().data.source;
-    } else if (!quantify_pq_2.empty() && quantify_pq_2.top().target[0] == t1 && quantify_pq_2.top().target[1] == t2) {
+    } else if (!quantify_pq_2.empty()
+               && quantify_pq_2.top().target[0] == target[0]
+               && quantify_pq_2.top().target[1] == target[1]) {
       source = quantify_pq_2.top().data.source;
       quantify_pq_2.pop();
     } else {
@@ -174,33 +183,30 @@ namespace adiar::internal
       }
 
       quantify_request<1> req;
-      bool with_data = false;
 
       // Merge requests from quantify_pq_1 and quantify_pq_2 (pretty much just as for Apply)
       if (quantify_pq_1.can_pull()
           && (quantify_pq_2.empty() || quantify_pq_1.top().target.fst() < quantify_pq_2.top().target.snd())) {
-        with_data = false;
-
         req = { quantify_pq_1.top().target,
                 {{ node::ptr_t::NIL(), node::ptr_t::NIL() }},
                 quantify_pq_1.top().data };
         quantify_pq_1.pop();
       } else {
-        with_data = true;
-
         req = quantify_pq_2.top();
         quantify_pq_2.pop();
       }
 
+      const bool empty_carry = req.empty_carry();
+
       // Seek element from request in stream
-      ptr_uint64 t_seek = with_data ? req.target.snd() : req.target.fst();
+      ptr_uint64 t_seek = empty_carry ? req.target.fst() : req.target.snd();
 
       while (v.uid() < t_seek) {
         v = in_nodes.pull();
       }
 
       // Forward information of node t1 across the level if needed
-      if (!with_data
+      if (empty_carry
           && !req.target.snd().is_nil()
           && req.target.snd().is_node()
           && req.target.fst().label() == req.target.snd().label()) {
@@ -223,28 +229,35 @@ namespace adiar::internal
         do {
           __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
                                                       req.data.source,
-                                                      v.low(), v.high());
+                                                      v.children());
         } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                     req.data.source,
-                                                    req.target[0], req.target[1]));
+                                                    req.target));
       } else {
         // The variable should stay: proceed as in the Product Construction by
         // simulating both possibilities in parallel.
 
         // Resolve current node and recurse.
-        ptr_uint64 low1  = with_data ? req.node_carry[0][false]  : v.low();
-        ptr_uint64 high1 = with_data ? req.node_carry[0][true]   : v.high();
-        ptr_uint64 low2  = with_data ? v.low()     : req.target.snd();
-        ptr_uint64 high2 = with_data ? v.high()    : req.target.snd();
+        const node::children_t children1 =
+          quantify_policy::compute_cofactor(true,
+                                            { empty_carry ? v.low()  : req.node_carry[0][false],
+                                              empty_carry ? v.high() : req.node_carry[0][true] });
 
-        quantify_policy::compute_cofactor(true, low1, high1);
-        quantify_policy::compute_cofactor(req.target.snd().on_level(out_label), low2, high2);
+        const node::children_t children2 =
+          quantify_policy::compute_cofactor(req.target.snd().on_level(out_label),
+                                            { empty_carry ? req.target.snd() : v.low(),
+                                              empty_carry ? req.target.snd() : v.high() });
 
         adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
         const node::uid_t out_uid(out_label, out_id++);
 
-        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, out_uid, low1, low2);
-        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op, flag(out_uid), high1, high2);
+        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
+                                                    out_uid,
+                                                    { children1[false], children2[false] });
+
+        __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
+                                                    flag(out_uid),
+                                                    { children1[true], children2[true] });
 
         if (!req.data.source.is_nil()) {
           do {
@@ -252,7 +265,7 @@ namespace adiar::internal
             aw.push_internal(out_arc);
           } while (!__quantify_update_source_or_break(quantify_pq_1, quantify_pq_2,
                                                       req.data.source,
-                                                      req.target[0], req.target[1]));
+                                                      req.target));
         }
       }
     }
