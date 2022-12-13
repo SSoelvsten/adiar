@@ -2073,16 +2073,16 @@ go_bandit([]() {
         }
 
         bdd out_1 = bdd_ite(bdd_if, bdd_a, bdd_b);
-        AssertThat(is_canonical(out_1), Is().True());
+        AssertThat(adiar::is_canonical(out_1), Is().True());
 
         bdd out_1n = bdd_ite(bdd_not(bdd_if), bdd_a, bdd_b);
-        AssertThat(is_canonical(out_1n), Is().True());
+        AssertThat(adiar::is_canonical(out_1n), Is().True());
 
         bdd out_2 = bdd_ite(bdd_if, bdd_b, bdd_a);
-        AssertThat(is_canonical(out_2), Is().True());
+        AssertThat(adiar::is_canonical(out_2), Is().True());
 
         bdd out_2n = bdd_ite(bdd_not(bdd_if), bdd_b, bdd_a);
-        AssertThat(is_canonical(out_2n), Is().True());
+        AssertThat(adiar::is_canonical(out_2n), Is().True());
       });
 
 
@@ -2092,14 +2092,14 @@ go_bandit([]() {
           node_writer nw_if(bdd_if);
           nw_if << node(0, node::MAX_ID,terminal_T,terminal_F);
         }
-        AssertThat(is_canonical(bdd_if), Is().True());
+        AssertThat(adiar::is_canonical(bdd(bdd_if)), Is().True());
 
         shared_levelized_file<bdd::node_t> bdd_a;
         {
           node_writer nw_a(bdd_a);
           nw_a << node(2, node::MAX_ID,terminal_F,terminal_T);
         }
-        AssertThat(is_canonical(bdd_a), Is().True());
+        AssertThat(adiar::is_canonical(bdd(bdd_a)), Is().True());
 
         shared_levelized_file<bdd::node_t> bdd_b;
         {
@@ -2108,26 +2108,26 @@ go_bandit([]() {
               << node(3, node::MAX_ID-1, terminal_T, terminal_F)
               << node(1, node::MAX_ID,   ptr_uint64(3, ptr_uint64::MAX_ID), ptr_uint64(3, ptr_uint64::MAX_ID));
         }
-        AssertThat(is_canonical(bdd_b), Is().True());
+        AssertThat(adiar::is_canonical(bdd(bdd_b)), Is().True());
 
         shared_levelized_file<bdd::node_t> bdd_c;
         {
           node_writer nw_c(bdd_c);
           nw_c << node(1, node::MAX_ID, terminal_T, terminal_F);
         }
-        AssertThat(is_canonical(bdd_c), Is().True());
+        AssertThat(adiar::is_canonical(bdd(bdd_c)), Is().True());
 
         bdd out_1 = bdd_ite(bdd_if, bdd_not(bdd_a), bdd_b);
-        AssertThat(is_canonical(out_1), Is().True());
+        AssertThat(adiar::is_canonical(out_1), Is().True());
 
         bdd out_2 = bdd_ite(bdd_if, bdd_a, bdd_not(bdd_b));
-        AssertThat(is_canonical(out_2), Is().False());
+        AssertThat(adiar::is_canonical(out_2), Is().False());
 
         bdd out_3 = bdd_ite(bdd_if, bdd_a, bdd_not(bdd_c));
-        AssertThat(is_canonical(out_3), Is().True());
+        AssertThat(adiar::is_canonical(out_3), Is().True());
 
         bdd out_4 = bdd_ite(bdd_if, bdd_not(bdd_b), bdd_not(bdd_a));
-        AssertThat(is_canonical(out_4), Is().False());
+        AssertThat(adiar::is_canonical(out_4), Is().False());
       });
 
       it("can derive canonicity when zipping 'if' with multiple nodes on a level", [&]() {
@@ -2152,13 +2152,13 @@ go_bandit([]() {
         }
 
         bdd out_1 = bdd_ite(bdd_if, bdd_a, bdd_b);
-        AssertThat(is_canonical(out_1), Is().True());
+        AssertThat(adiar::is_canonical(out_1), Is().True());
 
         bdd out_2 = bdd_ite(bdd_not(bdd_if), bdd_a, bdd_b);
-        AssertThat(is_canonical(out_2), Is().False());
+        AssertThat(adiar::is_canonical(out_2), Is().False());
 
         bdd out_3 = bdd_ite(bdd_not(bdd_if), bdd_b, bdd_a);
-        AssertThat(is_canonical(out_3), Is().True());
+        AssertThat(adiar::is_canonical(out_3), Is().True());
       });
 
       it("should not zip if bdd_then is not beyond max_label of bdd_if", [&]() {
