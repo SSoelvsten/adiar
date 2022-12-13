@@ -1,18 +1,12 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.21)
+cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0063 NEW)
 
 # Parts of this CMakeLists.txt is derived from the files of the tpie, lace and
 # sylvan projects.
 
-# Check if this is used as part of a solo project.
-if(DEFINED PROJECT_NAME)
-  set(MAIN_PROJECT OFF)
-else()
-  set(MAIN_PROJECT ON)
-endif()
-
 project (adiar
-  VERSION 1.2.2
+  VERSION 2.0.0
   DESCRIPTION "Adiar, an external memory decision diagram library"
   HOMEPAGE_URL "https://ssoelvsten.github.io/adiar/"
   LANGUAGES CXX
@@ -44,19 +38,18 @@ option(ADIAR_SHARED "Build adiar as a shared library" OFF)
 message(STATUS "  | Shared:                  ${ADIAR_SHARED}")
 
 option(ADIAR_STATS "Collect statistics" OFF)
-
 message(STATUS "  | Statistics:              ${ADIAR_STATS}")
 
 message(STATUS "  Optional targets:")
 
 option(ADIAR_DOCS "Build Documentation for Adiar" ON)
-message(STATUS "  | Documentation (Doxygen): ${MAIN_PROJECT}")
+message(STATUS "  | Documentation (Doxygen): ${ADIAR_DOCS}")
 
-option(ADIAR_TEST "Build unit tests for adiar" ${MAIN_PROJECT})
-message(STATUS "  | Unit Tests:              ${MAIN_PROJECT}")
+option(ADIAR_TEST "Build unit tests for adiar" ${PROJECT_IS_TOP_LEVEL})
+message(STATUS "  | Unit Tests:              ${ADIAR_TEST}")
 
-option(ADIAR_EXAMPLES "Build examples for usage of adiar" ${MAIN_PROJECT})
-message(STATUS "  | Examples:                ${MAIN_PROJECT}")
+option(ADIAR_EXAMPLES "Build examples for usage of adiar" ${PROJECT_IS_TOP_LEVEL})
+message(STATUS "  | Examples:                ${ADIAR_EXAMPLES}")
 
 message(STATUS "")
 

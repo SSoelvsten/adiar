@@ -62,7 +62,7 @@ set(HEADERS
   internal/data_types/level_info.h
   internal/data_types/node.h
   internal/data_types/ptr.h
-  internal/data_types/request
+  internal/data_types/request.h
   internal/data_types/tuple.h
   internal/data_types/uid.h
 
@@ -79,7 +79,7 @@ set(HEADERS
 
   internal/io/arc_file.h
   internal/io/arc_stream.h
-  internal/io/arc_writer
+  internal/io/arc_writer.h
 
   internal/io/node_file.h
   internal/io/node_stream.h
