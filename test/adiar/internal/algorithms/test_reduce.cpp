@@ -91,7 +91,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -193,7 +193,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -300,7 +300,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -415,7 +415,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -537,7 +537,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -665,7 +665,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -773,7 +773,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -876,7 +876,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -980,7 +980,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1090,7 +1090,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1185,7 +1185,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1286,7 +1286,7 @@ go_bandit([]() {
           // Reduce it
           bdd out(in);
 
-          AssertThat(is_canonical(out), Is().True());
+          AssertThat(adiar::is_canonical(out), Is().True());
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -1402,7 +1402,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1484,7 +1484,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
           // Check it looks all right
           node_test_stream out_nodes(out);
@@ -1585,7 +1585,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1645,7 +1645,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1696,7 +1696,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1796,7 +1796,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -1963,7 +1963,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2110,7 +2110,7 @@ go_bandit([]() {
         // Reduce it
         bdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2176,7 +2176,7 @@ go_bandit([]() {
         // Reduce it
         zdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2254,7 +2254,7 @@ go_bandit([]() {
         // Reduce it
         zdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2365,7 +2365,7 @@ go_bandit([]() {
         // Reduce it
         zdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2443,7 +2443,7 @@ go_bandit([]() {
         // Reduce it
         zdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2503,7 +2503,7 @@ go_bandit([]() {
         // Reduce it
         zdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2618,7 +2618,7 @@ go_bandit([]() {
         // Reduce it
         zdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2672,7 +2672,7 @@ go_bandit([]() {
         // Reduce it
         zdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2773,7 +2773,7 @@ go_bandit([]() {
         // Reduce it
         zdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
@@ -2901,7 +2901,7 @@ go_bandit([]() {
         // Reduce it
         zdd out(in);
 
-        AssertThat(is_canonical(out), Is().True());
+        AssertThat(adiar::is_canonical(out), Is().True());
 
         // Check it looks all right
         node_test_stream out_nodes(out);
