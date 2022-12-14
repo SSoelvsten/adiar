@@ -1,7 +1,46 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Common testing logic
-// Adiar Initialization unit tests
+#define ADIAR_TEST_NO_INIT
+
 #include "test.h"
+
+////////////////////////////////////////////////////////////////////////////////
+// Adiar Initialization unit tests
+go_bandit([]() {
+  describe("adiar/adiar.h", []() {
+    it("is at first not initialized", [&]() {
+      AssertThat(adiar_initialized(), Is().False());
+    });
+
+    it("throws exception when given '0' memory", [&]() {
+      AssertThrows(std::invalid_argument, adiar_init(0));
+    });
+
+    it("throws exception when given 'MINIMUM_MEMORY - 1' memory", [&]() {
+      AssertThrows(std::invalid_argument, adiar_init(MINIMUM_MEMORY - 1));
+    });
+
+    it("can run 'adiar_init()'", [&]() {
+      adiar_init(1024 * 1024 * 1024);
+    });
+
+    it("is then initialized", [&]() {
+      AssertThat(adiar_initialized(), Is().True());
+    });
+
+    it("can rerun 'adiar_init()' without any new effect", [&]() {
+      AssertThat(adiar_initialized(), Is().True());
+      adiar_init(1024 * 1024 * 1024);
+    });
+
+    // TODO: more tests when 'https://github.com/thomasmoelhave/tpie/issues/265'
+    //       is resolved.
+  });
+
+  // Kill program immediately instead of trying to run crashing unit tests.
+  if (!adiar_initialized()) exit(-1);
+ });
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Adiar Core unit tests
@@ -67,9 +106,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // Adiar Deinitialization unit tests
-//
-// TODO: move into 'test.h' when 'github.com/thomasmoelhave/tpie/issues/265'
-//       is fixed.
 go_bandit([]() {
   describe("adiar/adiar.h", []() {
     it("can be deinitialized", [&]() {

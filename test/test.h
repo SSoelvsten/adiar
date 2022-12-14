@@ -174,52 +174,16 @@ namespace adiar::internal
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Sample unit test for 'Adiar being initialized'
-// (and just kill the program if not)
-
-go_bandit([]() {
-  describe("adiar/adiar.h", []() {
-    it("is at first not initialized", [&]() {
-      AssertThat(adiar_initialized(), Is().False());
-    });
-
-    it("throws exception when given '0' memory", [&]() {
-      AssertThrows(std::invalid_argument, adiar_init(0));
-    });
-
-    it("throws exception when given 'MINIMUM_MEMORY - 1' memory", [&]() {
-      AssertThrows(std::invalid_argument, adiar_init(MINIMUM_MEMORY - 1));
-    });
-
-    it("can run 'adiar_init()'", [&]() {
-      adiar_init(1024 * 1024 * 1024);
-    });
-
-    it("is then initialized", [&]() {
-      AssertThat(adiar_initialized(), Is().True());
-    });
-
-    it("can rerun 'adiar_init()' without any new effect", [&]() {
-      AssertThat(adiar_initialized(), Is().True());
-      adiar_init(1024 * 1024 * 1024);
-    });
-
-    // TODO: more tests when 'https://github.com/thomasmoelhave/tpie/issues/265'
-    //       is resolved.
-  });
-
-  // Kill program immediately instead of trying to run crashing unit tests.
-  if (!adiar_initialized()) exit(-1);
- });
-
-////////////////////////////////////////////////////////////////////////////////
 // Main
 int main(int argc, char* argv[]) {
 #ifdef NDEBUG
   std::cerr << "Warning: Internal assertions are not enabled!\n\n";
 #endif
 
-  // Adiar (and TPIE) are initialized with the unit tests above
+#ifndef ADIAR_TEST_NO_INIT
+  // Initialize Adiar (and TPIE)
+  adiar_init(1024 * 1024 * 1024 /* 1 GiB */);
+#endif
 
   // Run tests
   auto bandit_ret = bandit::run(argc, argv);
@@ -229,9 +193,10 @@ int main(int argc, char* argv[]) {
   adiar::adiar_printstat();
 #endif
 
+#ifndef ADIAR_TEST_NO_INIT
   // Close all of Adiar (and TPIE) down again
-  if (adiar_initialized())
-    adiar_deinit();
+  adiar_deinit();
+#endif
 
   if (bandit_ret != 0) exit(bandit_ret);
   exit(0);
