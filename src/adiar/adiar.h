@@ -71,8 +71,10 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Closes and cleans up everything by Adiar
   ///
-  /// \warning This will invalidate any temporary files of Adiar, e.g. any
-  ///          \ref bdd or \ref zdd objects you may be using.
+  /// \warning All of Adiar's file objects must be destructed **before** this
+  ///          functions i called. That is, any \ref bdd \ref bdd_builder, \ref
+  ///          zdd \ref zdd_builder or any \ref shared_file objects you may be
+  ///          using.
   //////////////////////////////////////////////////////////////////////////////
   void adiar_deinit();
 

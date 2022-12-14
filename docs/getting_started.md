@@ -60,11 +60,17 @@ int main()
 {
   adiar::adiar_init(128 * 1024 * 1024);
 
-  // do your stuff here...
+  {
+    // do your stuff here...
+  }
 
   adiar::adiar_deinit();
 }
 ```
 
-In between, you can create and manipulate the \ref module__bdd and
-\ref module__zdd decision diagrams.
+In between, you can create and manipulate the \ref module__bdd and \ref
+module__zdd decision diagrams.
+
+\warning Before calling `adiar::adiar_deinit()` you have destruct all of Adiar's
+objects that you own, e.g. by letting them go out of scope with the `{` and `}`
+braces shown above.
