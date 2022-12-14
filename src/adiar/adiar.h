@@ -66,8 +66,8 @@ namespace adiar
   /// \throws std::invalid_argument If `memory_limit_bytes` is set to a value
   ///                               less than the MINIMUM_BYTES required.
   ///
-  /// \throws std::runtime_error    If `adiar_init()` has been called after
-  ///                               `adiar_deinit()`.
+  /// \throws std::runtime_error    If `adiar_init()` and then `adiar_deinit()`
+  ///                               have been called previously.
   //////////////////////////////////////////////////////////////////////////////
   void adiar_init(size_t memory_limit_bytes, std::string temp_dir = "");
 
