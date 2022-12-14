@@ -1,7 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////
+// Common testing logic
+// Adiar Initialization unit tests
 #include "test.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// ADIAR Core unit tests
+// Adiar Core unit tests
 #include "adiar/test_assignment.cpp"
 #include "adiar/test_bool_op.cpp"
 
@@ -9,7 +12,7 @@
 #include "adiar/test_builder.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
-// ADIAR Internal unit tests
+// Adiar Internal unit tests
 #include "adiar/internal/data_types/test_ptr.cpp"
 #include "adiar/internal/data_types/test_uid.cpp"
 #include "adiar/internal/data_types/test_arc.cpp"
@@ -33,7 +36,7 @@
 #include "adiar/internal/algorithms/test_reduce.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
-// ADIAR BDD unit tests
+// Adiar BDD unit tests
 #include "adiar/bdd/test_bdd.cpp"
 
 #include "adiar/bdd/test_apply.cpp"
@@ -47,7 +50,7 @@
 #include "adiar/bdd/test_restrict.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
-// ADIAR ZDD unit tests
+// Adiar ZDD unit tests
 #include "adiar/zdd/test_zdd.cpp"
 
 #include "adiar/zdd/test_binop.cpp"
@@ -61,3 +64,29 @@
 #include "adiar/zdd/test_pred.cpp"
 #include "adiar/zdd/test_project.cpp"
 #include "adiar/zdd/test_subset.cpp"
+
+////////////////////////////////////////////////////////////////////////////////
+// Adiar Deinitialization unit tests
+//
+// TODO: move into 'test.h' when 'github.com/thomasmoelhave/tpie/issues/265'
+//       is fixed.
+go_bandit([]() {
+  describe("adiar/adiar.h", []() {
+    it("can be deinitialized", [&]() {
+      AssertThat(adiar_initialized(), Is().True());
+
+      // TODO: enforce being true independent of above unit tests
+      AssertThat(adiar_has_domain(), Is().True());
+
+      adiar_deinit();
+
+      AssertThat(adiar_initialized(), Is().False());
+      AssertThat(adiar_initialized(), Is().False());
+    });
+
+    it("throws exception when reinitialized", [&]() {
+      // TODO: remove when  'github.com/thomasmoelhave/tpie/issues/265' is fixed.
+      AssertThrows(std::runtime_error, adiar_init(MINIMUM_MEMORY));
+    });
+  });
+ });

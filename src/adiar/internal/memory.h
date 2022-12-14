@@ -11,30 +11,6 @@
 namespace adiar::internal
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Minimum value of 128 MiB for the memory limit.
-  ///
-  /// \ingroup module__adiar
-  //////////////////////////////////////////////////////////////////////////////
-  constexpr size_t MINIMUM_MEMORY = 128 * 1024 * 1024;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Sets the memory limit for TPIE.
-  ///
-  /// \throws std::invalid_argument if the amount of memory given is smaller
-  ///         than \ref MINIMUM_BYTES
-  //////////////////////////////////////////////////////////////////////////////
-  inline void memory_set_limit(size_t memory_limit_bytes = MINIMUM_MEMORY)
-  {
-    if (memory_limit_bytes < MINIMUM_MEMORY) {
-      throw std::invalid_argument("Adiar requires at least "
-                                  + std::to_string(MINIMUM_MEMORY / 1024 / 1024)
-                                  + " MiB of memory");
-    }
-
-    tpie::get_memory_manager().set_limit(memory_limit_bytes);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain from TPIE the amount of available memory.
   //////////////////////////////////////////////////////////////////////////////
   inline size_t memory_available()

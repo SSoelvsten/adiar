@@ -71,6 +71,10 @@ int main()
 In between, you can create and manipulate the \ref module__bdd and \ref
 module__zdd decision diagrams.
 
-\warning Before calling `adiar::adiar_deinit()` you have destruct all of Adiar's
+\warning Before calling `adiar::adiar_deinit` you have destruct all of Adiar's
 objects that you own, e.g. by letting them go out of scope with the `{` and `}`
 braces shown above.
+
+\warning One cannot reinitialize Adiar. That is, one cannot call
+`adiar::adiar_init`, `adiar::adiar_deinit` and then `adiar::adiar_init` again
+without getting undefined behaviour when running the algorithms.

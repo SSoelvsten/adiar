@@ -48,6 +48,11 @@ namespace adiar
   /// \{
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Minimum value of 128 MiB for the memory limit.
+  //////////////////////////////////////////////////////////////////////////////
+  constexpr size_t MINIMUM_MEMORY = 128 * 1024 * 1024;
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Initiates Adiar with the given amount of memory (given in bytes)
   ///
   /// \param memory_limit_bytes
@@ -60,6 +65,9 @@ namespace adiar
   ///
   /// \throws std::invalid_argument If `memory_limit_bytes` is set to a value
   ///                               less than the MINIMUM_BYTES required.
+  ///
+  /// \throws std::runtime_error    If `adiar_init()` has been called after
+  ///                               `adiar_deinit()`.
   //////////////////////////////////////////////////////////////////////////////
   void adiar_init(size_t memory_limit_bytes, std::string temp_dir = "");
 
@@ -75,6 +83,9 @@ namespace adiar
   ///          functions i called. That is, any \ref bdd \ref bdd_builder, \ref
   ///          zdd \ref zdd_builder or any \ref shared_file objects you may be
   ///          using.
+  ///
+  /// \throws std::runtime_error If compiled with *debug flag* and one of
+  ///                            Adiar's objects have *not* been destructed.
   //////////////////////////////////////////////////////////////////////////////
   void adiar_deinit();
 

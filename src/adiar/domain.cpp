@@ -15,6 +15,10 @@ namespace adiar
     domain_ptr = dom;
   }
 
+  void adiar_unset_domain() {
+    domain_ptr.reset();
+  }
+
   bool adiar_has_domain() {
     return domain_ptr ? true : false;
   }

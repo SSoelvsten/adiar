@@ -7,7 +7,7 @@
 #include <limits> // TODO <-- remove?
 
 #include <tpie/tpie.h>
-#include <tpie/file.h>
+#include <tpie/tempname.h>
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
 
