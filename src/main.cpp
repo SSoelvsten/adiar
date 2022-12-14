@@ -19,14 +19,16 @@ int main(int argc, char* argv[]) {
 
   adiar::adiar_init(M * 1024 * 1024);
 
-  // ===== Your code starts here =====
+  {
+    // ===== Your code starts here =====
 
 
 
 
 
 
-  // =====  Your code ends here  =====
+    // =====  Your code ends here  =====
+  }
 
   adiar::adiar_printstat();
 

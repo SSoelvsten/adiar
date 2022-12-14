@@ -110,9 +110,9 @@ namespace adiar
   template<typename dd_policy>
   class builder
   {
-    // TODO: code duplication with .reset().
-
   private:
+    // See 'attach_if_needed()' for default values of most values below.
+
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Type of nodes created within the file.
     /////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ namespace adiar
     /////////////////////////////////////////////////////////////////////////////
     /// \brief File containing all prior pushed nodes.
     /////////////////////////////////////////////////////////////////////////////
-    internal::shared_levelized_file<node_t> nf;
+    shared_ptr<internal::levelized_file<node_t>> nf;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Node writer to push new nodes into 'nf'.
@@ -131,35 +131,44 @@ namespace adiar
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Whether a terminal value has been returned in 'add_node'.
     /////////////////////////////////////////////////////////////////////////////
-    bool created_terminal = false;
+    bool created_terminal;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief The value of the latest terminal value returned in 'add_node'.
     /////////////////////////////////////////////////////////////////////////////
-    bool terminal_val = false;
+    bool terminal_val;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Label of the current level.
     /////////////////////////////////////////////////////////////////////////////
-    typename dd_policy::label_t current_label = dd_policy::MAX_LABEL;
+    typename dd_policy::label_t current_label;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Next available level identifier for the current level.
     /////////////////////////////////////////////////////////////////////////////
-    typename dd_policy::id_t current_id = dd_policy::MAX_ID;
-
-    /////////////////////////////////////////////////////////////////////////////
-    /// \brief Unique struct for this builder's current phase.
-    /////////////////////////////////////////////////////////////////////////////
-    shared_ptr<builder_shared> builder_ref = make_shared<builder_shared>();
+    typename dd_policy::id_t current_id;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Number of yet unreferenced nodes.
     /////////////////////////////////////////////////////////////////////////////
-    size_t unref_nodes = 0u;
+    size_t unref_nodes;
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Unique struct for this builder's current phase.
+    /////////////////////////////////////////////////////////////////////////////
+    shared_ptr<builder_shared> builder_ref;
 
   public:
-    builder() : nw(nf)
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Constructor.
+    /////////////////////////////////////////////////////////////////////////////
+    builder() noexcept
+    { }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Destructor.
+    /////////////////////////////////////////////////////////////////////////////
+    ~builder() noexcept
     { }
 
   public:
@@ -191,6 +200,8 @@ namespace adiar
                                     const builder_ptr<dd_policy> &low,
                                     const builder_ptr<dd_policy> &high)
     {
+      attach_if_needed();
+
       // Check validity of input
       if(low.builder_ref != builder_ref || high.builder_ref != builder_ref) {
         throw std::invalid_argument("Cannot use pointers from a different builder");
@@ -270,6 +281,8 @@ namespace adiar
                                     const bool low,
                                     const builder_ptr<dd_policy> &high)
     {
+      attach_if_needed();
+
       builder_ptr<dd_policy> low_ptr = make_ptr(typename node_t::ptr_t(low));
       return add_node(label, low_ptr, high);
     }
@@ -295,6 +308,8 @@ namespace adiar
                                     const builder_ptr<dd_policy> &low,
                                     const bool high)
     {
+      attach_if_needed();
+
       builder_ptr<dd_policy> high_ptr = make_ptr(typename node_t::ptr_t(high));
       return add_node(label, low, high_ptr);
     }
@@ -319,6 +334,8 @@ namespace adiar
                                     const bool low,
                                     const bool high)
     {
+      attach_if_needed();
+
       builder_ptr<dd_policy> low_ptr = make_ptr(typename node_t::ptr_t(low));
       builder_ptr<dd_policy> high_ptr = make_ptr(typename node_t::ptr_t(high));
       return add_node(label, low_ptr, high_ptr);
@@ -335,6 +352,8 @@ namespace adiar
     /////////////////////////////////////////////////////////////////////////////
     builder_ptr<dd_policy> add_node(bool terminal_value)
     {
+      attach_if_needed();
+
       created_terminal = true;
       terminal_val = terminal_value;
 
@@ -359,6 +378,8 @@ namespace adiar
     /////////////////////////////////////////////////////////////////////////////
     typename dd_policy::reduced_t build()
     {
+      attach_if_needed();
+
       if(!nw.has_pushed()) {
         if(created_terminal) {
           nw.push(node_t(terminal_val));
@@ -373,7 +394,7 @@ namespace adiar
       }
 
       const typename dd_policy::reduced_t res(nf);
-      reset();
+      detach();
       return res;
     }
 
@@ -385,26 +406,41 @@ namespace adiar
     ///          will not be able to use them after this.
     /////////////////////////////////////////////////////////////////////////////
     void clear() noexcept
-    {
-      reset();
-    }
+    { detach(); }
 
   private:
     /////////////////////////////////////////////////////////////////////////////
-    /// \brief Reset all internal values to their initial.
+    /// \brief Initializes all values and the node file, if necessary.
     /////////////////////////////////////////////////////////////////////////////
-    void reset() noexcept
+    inline void attach_if_needed() noexcept
+    {
+      if (!nf) {
+        adiar_debug(!nw.attached(),
+                    "`nw`'s attachment should be consistent with existence of `nf`");
+
+        // Initialise file
+        nf = internal::make_shared_levelized_file<node_t>();
+        nw.attach(nf);
+
+        // Initialise state variables
+        current_label    = dd_policy::MAX_LABEL;
+        current_id       = dd_policy::MAX_ID;
+        created_terminal = false;
+        terminal_val     = false;
+        unref_nodes      = 0;
+
+        // Initialise shared builder reference.
+        builder_ref      = make_shared<builder_shared>();
+      }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Detaches the node writer and releases the pointer to the file.
+    /////////////////////////////////////////////////////////////////////////////
+    inline void detach() noexcept
     {
       nw.detach();
-      nf = internal::make_shared_levelized_file<node_t>();
-      nw.attach(nf);
-
-      current_label = dd_policy::MAX_LABEL;
-      current_id = dd_policy::MAX_ID;
-      created_terminal = false;
-      terminal_val = false;
-      builder_ref = make_shared<builder_shared>();
-      unref_nodes = 0;
+      nf.reset();
     }
 
     /////////////////////////////////////////////////////////////////////////////
