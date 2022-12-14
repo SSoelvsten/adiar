@@ -53,7 +53,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Negate the value of an assignment [label -> value].
   //////////////////////////////////////////////////////////////////////////////
-  inline assignment operator! (const assignment &a)
+  inline assignment operator~ (const assignment &a)
   {
     return { a.label, !a.value };
   }

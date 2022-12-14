@@ -118,9 +118,6 @@ namespace adiar::internal
   inline arc negate(const arc &a)
   { return ~a; }
 
-  inline arc operator! (const arc &a)
-  { return negate(a); }
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Sorting predicate: First on unique identifier of the source, and
   ///        secondly on whether it is the high arc.

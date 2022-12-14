@@ -52,9 +52,9 @@ go_bandit([]() {
       });
 
       it("can be negated on its value", [&]() {
-        AssertThat(!a1, Is().EqualTo(create_assignment(2, true)));
-        AssertThat(!a2, Is().EqualTo(create_assignment(2, false)));
-        AssertThat(!a3, Is().EqualTo(create_assignment(3, true)));
+        AssertThat(~a1, Is().EqualTo(create_assignment(2, true)));
+        AssertThat(~a2, Is().EqualTo(create_assignment(2, false)));
+        AssertThat(~a3, Is().EqualTo(create_assignment(3, true)));
       });
     });
   });
