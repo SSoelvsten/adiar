@@ -2,11 +2,20 @@
 
 go_bandit([]() {
   describe("adiar/domain.h", []() {
-    describe("adiar_has_domain(), adiar_set_domain(...)", []() {
+    describe("adiar_has_domain()", []() {
       it("initially as no domain", [&]() {
         AssertThat(adiar_has_domain(), Is().False());
       });
+    });
 
+    describe("adiar_has_domain(), adiar_get_domain()", []() {
+      it("has domain after 'adiar_set_domain(...)'", [&]() {
+        AssertThat(adiar_has_domain(), Is().False());
+        AssertThrows(std::domain_error, adiar_get_domain());
+      });
+    });
+
+    describe("adiar_has_domain(), adiar_set_domain(...)", []() {
       it("has domain after 'adiar_set_domain(...)'", [&]() {
         adiar::shared_file<node::label_t> dom;
 
@@ -35,7 +44,7 @@ go_bandit([]() {
       });
     });
 
-    describe("adiar_get_domain(), adiar_set_domain()", []() {
+    describe("adiar_has_domain(), adiar_get_domain(), adiar_set_domain()", []() {
       it("gives back the set domain [1]", [&]() {
         adiar_unset_domain();
 
