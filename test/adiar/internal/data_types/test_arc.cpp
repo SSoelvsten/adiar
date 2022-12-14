@@ -59,17 +59,17 @@ go_bandit([]() {
 
             it("should leave node_ptr target unchanged", [&]() {
                 const arc a = { ptr_uint64(1,0), ptr_uint64(2,0) };
-                AssertThat(!a, Is().EqualTo(a));
+                AssertThat(~a, Is().EqualTo(a));
               });
 
             it("should negate unflagged terminal_ptr target", [&]() {
                 const arc a = { ptr_uint64(1,0), terminal_T };
-                AssertThat(!a, Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
+                AssertThat(~a, Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
               });
 
             it("should negate flagged terminal_ptr target", [&]() {
                 const arc a = { ptr_uint64(1,0), flag(terminal_F) };
-                AssertThat(!a, Is().EqualTo(arc { ptr_uint64(1,0), flag(terminal_T) }));
+                AssertThat(~a, Is().EqualTo(arc { ptr_uint64(1,0), flag(terminal_T) }));
               });
 
             it("should be a POD", [&]() {

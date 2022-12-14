@@ -69,13 +69,6 @@ namespace adiar::internal
     level_info operator~ () const
     { return *this; }
   };
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \internal This is only due to \ref file_stream requires the existence of
-  ///           the ! operator.
-  //////////////////////////////////////////////////////////////////////////////
-  inline level_info operator! (const level_info &m)
-  { return ~m; }
 }
 
 #endif // ADIAR_INTERNAL_DATA_TYPES_LEVEL_INFO_H

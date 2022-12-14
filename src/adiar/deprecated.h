@@ -277,6 +277,13 @@ namespace adiar
   { return internal::node(label, id, low.uid(), high.uid()); }
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \copydoc adiar::internal::node::operator~
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by '~' operator in 'adiar/internal/data_types/node.h'")]]
+  inline internal::node operator! (const internal::node &n)
+  { return ~n; }
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Files of arcs to represent an unreduced decision diagram.
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Use the 'shared_nodes_t' carried by the 'dd' class in 'adiar/internal/dd.h'")]]
@@ -290,9 +297,16 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   typedef internal::arc arc_t;
 
-  [[deprecated("Replaced by member function with same name in 'adiar/internal/data_types/arc.h'")]]
+  [[deprecated("Replaced by member function in 'adiar/internal/data_types/arc.h'")]]
   inline internal::node is_high(const internal::arc &a)
   { return a.is_high(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \copydoc adiar::internal::arc::operator~
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced with '~' operator in 'adiar/internal/data_types/arc.h'")]]
+  inline internal::arc operator! (const internal::arc &a)
+  { return negate(a); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Files of arcs to represent an unreduced decision diagram.
@@ -307,6 +321,13 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Use 'shared_file<assignment>' in 'adiar/file.h' instead")]]
   typedef shared_file<assignment> assignment_file;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Negate the value of an assignment [label -> value].
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced with '~' operator in 'adiar/assignment.h'")]]
+  inline assignment operator! (const assignment &a)
+  { return ~a; }
 
   /* =========================== DECISION DIAGRAM =========================== */
 

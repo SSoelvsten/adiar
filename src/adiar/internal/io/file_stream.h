@@ -199,7 +199,7 @@ namespace adiar::internal
       } else {
         e = _stream.read();
       }
-      return _negate ? !e : e; // TODO: replace with ~ operator
+      return _negate ? ~e : e;
     }
 
   public:
