@@ -480,12 +480,12 @@ go_bandit([]() {
         AssertThat(ns.pull(), Is().EqualTo(node(5, node::MAX_ID, terminal_T, terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
-                                                       ptr_uint64(5, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(5, ptr_uint64::MAX_ID))));
+                                                ptr_uint64(5, ptr_uint64::MAX_ID),
+                                                ptr_uint64(5, ptr_uint64::MAX_ID))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
+                                                ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                ptr_uint64(2, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -650,18 +650,18 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, node::MAX_ID,
-                                                       ptr_uint64(6, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(6, ptr_uint64::MAX_ID))));
+                                                ptr_uint64(6, ptr_uint64::MAX_ID),
+                                                ptr_uint64(6, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
-                                                       ptr_uint64(4, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(4, ptr_uint64::MAX_ID))));
+                                                ptr_uint64(4, ptr_uint64::MAX_ID),
+                                                ptr_uint64(4, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
+                                                ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                ptr_uint64(2, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -739,13 +739,13 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
+                                                ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                ptr_uint64(2, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       ptr_uint64(1, ptr_uint64::MAX_ID),
-                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
+                                                ptr_uint64(1, ptr_uint64::MAX_ID),
+                                                ptr_uint64(1, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -789,13 +789,13 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
-                                                       terminal_F,
-                                                       ptr_uint64(2, ptr_uint64::MAX_ID))));
+                                                terminal_F,
+                                                ptr_uint64(2, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
-                                                       terminal_F,
-                                                       ptr_uint64(1, ptr_uint64::MAX_ID))));
+                                                terminal_F,
+                                                ptr_uint64(1, ptr_uint64::MAX_ID))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -906,17 +906,17 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
-                                                       ptr_uint64(5,1),
-                                                       terminal_T)));
+                                                ptr_uint64(5,1),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
-                                                       terminal_F,
-                                                       ptr_uint64(5,1))));
+                                                terminal_F,
+                                                ptr_uint64(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
-                                                       ptr_uint64(3,0),
-                                                       ptr_uint64(3,1))));
+                                                ptr_uint64(3,0),
+                                                ptr_uint64(3,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -964,39 +964,39 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 2,
-                                                       ptr_uint64(6,2),
-                                                       terminal_T)));
+                                                ptr_uint64(6,2),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
-                                                       terminal_F,
-                                                       ptr_uint64(6,2))));
+                                                terminal_F,
+                                                ptr_uint64(6,2))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 2,
-                                                       ptr_uint64(4,2),
-                                                       terminal_T)));
+                                                ptr_uint64(4,2),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
-                                                       ptr_uint64(4,1),
-                                                       ptr_uint64(4,2))));
+                                                ptr_uint64(4,1),
+                                                ptr_uint64(4,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
-                                                       terminal_F,
-                                                       ptr_uint64(4,1))));
+                                                terminal_F,
+                                                ptr_uint64(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
-                                                       ptr_uint64(3,1),
-                                                       ptr_uint64(3,2))));
+                                                ptr_uint64(3,1),
+                                                ptr_uint64(3,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
-                                                       ptr_uint64(3,0),
-                                                       ptr_uint64(3,1))));
+                                                ptr_uint64(3,0),
+                                                ptr_uint64(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
-                                                       ptr_uint64(2,0),
-                                                       ptr_uint64(2,1))));
+                                                ptr_uint64(2,0),
+                                                ptr_uint64(2,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1050,43 +1050,43 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 2,
-                                                       ptr_uint64(8,2),
-                                                       ptr_uint64(8,2))));
+                                                ptr_uint64(8,2),
+                                                ptr_uint64(8,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
-                                                       ptr_uint64(8,1),
-                                                       ptr_uint64(8,2))));
+                                                ptr_uint64(8,1),
+                                                ptr_uint64(8,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 0,
-                                                       terminal_F,
-                                                       ptr_uint64(8,1))));
+                                                terminal_F,
+                                                ptr_uint64(8,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 2,
-                                                       ptr_uint64(6,2),
-                                                       ptr_uint64(6,2))));
+                                                ptr_uint64(6,2),
+                                                ptr_uint64(6,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
-                                                       ptr_uint64(6,1),
-                                                       ptr_uint64(6,2))));
+                                                ptr_uint64(6,1),
+                                                ptr_uint64(6,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
-                                                       ptr_uint64(6,0),
-                                                       ptr_uint64(6,1))));
+                                                ptr_uint64(6,0),
+                                                ptr_uint64(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
-                                                       ptr_uint64(4,1),
-                                                       ptr_uint64(4,2))));
+                                                ptr_uint64(4,1),
+                                                ptr_uint64(4,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
-                                                       ptr_uint64(4,0),
-                                                       ptr_uint64(4,1))));
+                                                ptr_uint64(4,0),
+                                                ptr_uint64(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
-                                                       ptr_uint64(2,0),
-                                                       ptr_uint64(2,1))));
+                                                ptr_uint64(2,0),
+                                                ptr_uint64(2,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1140,44 +1140,44 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
-                                                       ptr_uint64(5,1),
-                                                       ptr_uint64(5,1))));
+                                                ptr_uint64(5,1),
+                                                ptr_uint64(5,1))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
-                                                       ptr_uint64(5,0),
-                                                       ptr_uint64(5,1))));
+                                                ptr_uint64(5,0),
+                                                ptr_uint64(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
-                                                       ptr_uint64(4,1),
-                                                       ptr_uint64(4,1))));
+                                                ptr_uint64(4,1),
+                                                ptr_uint64(4,1))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
-                                                       ptr_uint64(4,0),
-                                                       ptr_uint64(4,1))));
+                                                ptr_uint64(4,0),
+                                                ptr_uint64(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
-                                                       ptr_uint64(3,1),
-                                                       ptr_uint64(3,1))));
+                                                ptr_uint64(3,1),
+                                                ptr_uint64(3,1))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
-                                                       ptr_uint64(3,0),
-                                                       ptr_uint64(3,1))));
+                                                ptr_uint64(3,0),
+                                                ptr_uint64(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, 1,
-                                                       ptr_uint64(2,1),
-                                                       ptr_uint64(2,1))));
+                                                ptr_uint64(2,1),
+                                                ptr_uint64(2,1))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
-                                                       ptr_uint64(2,0),
-                                                       ptr_uint64(2,1))));
+                                                ptr_uint64(2,0),
+                                                ptr_uint64(2,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
-                                                       ptr_uint64(1,0),
-                                                       ptr_uint64(1,1))));
+                                                ptr_uint64(1,0),
+                                                ptr_uint64(1,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1233,43 +1233,43 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 2,
-                                                       ptr_uint64(5,2),
-                                                       ptr_uint64(5,2))));
+                                                ptr_uint64(5,2),
+                                                ptr_uint64(5,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
-                                                       ptr_uint64(5,1),
-                                                       ptr_uint64(5,2))));
+                                                ptr_uint64(5,1),
+                                                ptr_uint64(5,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
-                                                       terminal_F,
-                                                       ptr_uint64(5,1))));
+                                                terminal_F,
+                                                ptr_uint64(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 2,
-                                                       ptr_uint64(3,2),
-                                                       ptr_uint64(3,2))));
+                                                ptr_uint64(3,2),
+                                                ptr_uint64(3,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
-                                                       ptr_uint64(3,1),
-                                                       ptr_uint64(3,2))));
+                                                ptr_uint64(3,1),
+                                                ptr_uint64(3,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
-                                                       ptr_uint64(3,0),
-                                                       ptr_uint64(3,1))));
+                                                ptr_uint64(3,0),
+                                                ptr_uint64(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, 1,
-                                                       ptr_uint64(2,1),
-                                                       ptr_uint64(2,2))));
+                                                ptr_uint64(2,1),
+                                                ptr_uint64(2,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
-                                                       ptr_uint64(2,0),
-                                                       ptr_uint64(2,1))));
+                                                ptr_uint64(2,0),
+                                                ptr_uint64(2,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
-                                                       ptr_uint64(1,0),
-                                                       ptr_uint64(1,1))));
+                                                ptr_uint64(1,0),
+                                                ptr_uint64(1,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1318,28 +1318,28 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 0,
-                                                       terminal_T,
-                                                       terminal_T)));
+                                                terminal_T,
+                                                terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 0,
-                                                       ptr_uint64(8,0),
-                                                       terminal_T)));
+                                                ptr_uint64(8,0),
+                                                terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
-                                                       ptr_uint64(6,0),
-                                                       terminal_T)));
+                                                ptr_uint64(6,0),
+                                                terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
-                                                       ptr_uint64(4,0),
-                                                       terminal_T)));
+                                                ptr_uint64(4,0),
+                                                terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
-                                                       ptr_uint64(2,0),
-                                                       terminal_T)));
+                                                ptr_uint64(2,0),
+                                                terminal_T)));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1388,31 +1388,31 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
-                                                       terminal_T,
-                                                       terminal_T)));
+                                                terminal_T,
+                                                terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
-                                                       ptr_uint64(6,1),
-                                                       terminal_T)));
+                                                ptr_uint64(6,1),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
-                                                       ptr_uint64(6,1),
-                                                       ptr_uint64(6,1))));
+                                                ptr_uint64(6,1),
+                                                ptr_uint64(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
-                                                       ptr_uint64(4,1),
-                                                       terminal_T)));
+                                                ptr_uint64(4,1),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
-                                                       ptr_uint64(4,0),
-                                                       ptr_uint64(4,1))));
+                                                ptr_uint64(4,0),
+                                                ptr_uint64(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
-                                                       ptr_uint64(2,0),
-                                                       ptr_uint64(2,1))));
+                                                ptr_uint64(2,0),
+                                                ptr_uint64(2,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1459,108 +1459,108 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(9, 3,
-                                                       terminal_T,
-                                                       terminal_T)));
+                                                terminal_T,
+                                                terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 3,
-                                                       ptr_uint64(9,3),
-                                                       terminal_T)));
+                                                ptr_uint64(9,3),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 2,
-                                                       ptr_uint64(9,3),
-                                                       ptr_uint64(9,3))));
+                                                ptr_uint64(9,3),
+                                                ptr_uint64(9,3))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(7, 3,
-                                                       ptr_uint64(8,3),
-                                                       terminal_T)));
+                                                ptr_uint64(8,3),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(7, 2,
-                                                       ptr_uint64(8,2),
-                                                       ptr_uint64(8,3))));
+                                                ptr_uint64(8,2),
+                                                ptr_uint64(8,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(7, 1,
-                                                       ptr_uint64(8,2),
-                                                       ptr_uint64(8,2))));
+                                                ptr_uint64(8,2),
+                                                ptr_uint64(8,2))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 3,
-                                                       ptr_uint64(7,3),
-                                                       terminal_T)));
+                                                ptr_uint64(7,3),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 2,
-                                                       ptr_uint64(7,2),
-                                                       ptr_uint64(7,3))));
+                                                ptr_uint64(7,2),
+                                                ptr_uint64(7,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
-                                                       ptr_uint64(7,1),
-                                                       ptr_uint64(7,2))));
+                                                ptr_uint64(7,1),
+                                                ptr_uint64(7,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 0,
-                                                       ptr_uint64(7,1),
-                                                       ptr_uint64(7,1))));
+                                                ptr_uint64(7,1),
+                                                ptr_uint64(7,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 3,
-                                                       ptr_uint64(6,3),
-                                                       terminal_T)));
+                                                ptr_uint64(6,3),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 2,
-                                                       ptr_uint64(6,2),
-                                                       ptr_uint64(6,3))));
+                                                ptr_uint64(6,2),
+                                                ptr_uint64(6,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 1,
-                                                       ptr_uint64(6,1),
-                                                       ptr_uint64(6,2))));
+                                                ptr_uint64(6,1),
+                                                ptr_uint64(6,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 0,
-                                                       ptr_uint64(6,0),
-                                                       ptr_uint64(6,1))));
+                                                ptr_uint64(6,0),
+                                                ptr_uint64(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 3,
-                                                       ptr_uint64(5,3),
-                                                       terminal_T)));
+                                                ptr_uint64(5,3),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 2,
-                                                       ptr_uint64(5,2),
-                                                       ptr_uint64(5,3))));
+                                                ptr_uint64(5,2),
+                                                ptr_uint64(5,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
-                                                       ptr_uint64(5,1),
-                                                       ptr_uint64(5,2))));
+                                                ptr_uint64(5,1),
+                                                ptr_uint64(5,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
-                                                       ptr_uint64(5,0),
-                                                       ptr_uint64(5,1))));
+                                                ptr_uint64(5,0),
+                                                ptr_uint64(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 2,
-                                                       ptr_uint64(4,2),
-                                                       ptr_uint64(4,3))));
+                                                ptr_uint64(4,2),
+                                                ptr_uint64(4,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
-                                                       ptr_uint64(4,1),
-                                                       ptr_uint64(4,2))));
+                                                ptr_uint64(4,1),
+                                                ptr_uint64(4,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
-                                                       ptr_uint64(4,0),
-                                                       ptr_uint64(4,1))));
+                                                ptr_uint64(4,0),
+                                                ptr_uint64(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
-                                                       ptr_uint64(3,1),
-                                                       ptr_uint64(3,2))));
+                                                ptr_uint64(3,1),
+                                                ptr_uint64(3,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
-                                                       ptr_uint64(3,0),
-                                                       ptr_uint64(3,1))));
+                                                ptr_uint64(3,0),
+                                                ptr_uint64(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
-                                                       ptr_uint64(2,0),
-                                                       ptr_uint64(2,1))));
+                                                ptr_uint64(2,0),
+                                                ptr_uint64(2,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1620,35 +1620,35 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
-                                                       ptr_uint64(8,1),
-                                                       terminal_T)));
+                                                ptr_uint64(8,1),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 0,
-                                                       ptr_uint64(8,1),
-                                                       ptr_uint64(8,1))));
+                                                ptr_uint64(8,1),
+                                                ptr_uint64(8,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
-                                                       ptr_uint64(6,1),
-                                                       terminal_T)));
+                                                ptr_uint64(6,1),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
-                                                       ptr_uint64(6,0),
-                                                       ptr_uint64(6,1))));
+                                                ptr_uint64(6,0),
+                                                ptr_uint64(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
-                                                       ptr_uint64(4,1),
-                                                       terminal_T)));
+                                                ptr_uint64(4,1),
+                                                terminal_T)));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
-                                                       ptr_uint64(4,0),
-                                                       ptr_uint64(4,1))));
+                                                ptr_uint64(4,0),
+                                                ptr_uint64(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
-                                                       ptr_uint64(2,0),
-                                                       ptr_uint64(2,1))));
+                                                ptr_uint64(2,0),
+                                                ptr_uint64(2,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1702,156 +1702,156 @@ go_bandit([]() {
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 5,
-                                                       ptr_uint64(9,5),
-                                                       ptr_uint64(9,5))));
+                                                ptr_uint64(9,5),
+                                                ptr_uint64(9,5))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 4,
-                                                       ptr_uint64(9,4),
-                                                       ptr_uint64(9,5))));
+                                                ptr_uint64(9,4),
+                                                ptr_uint64(9,5))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 3,
-                                                       terminal_T,
-                                                       ptr_uint64(9,4))));
+                                                terminal_T,
+                                                ptr_uint64(9,4))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(8, 2,
-                                                       ptr_uint64(9,5),
-                                                       terminal_T)));
+                                                ptr_uint64(9,5),
+                                                terminal_T)));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(7, 5,
-                                                       ptr_uint64(8,5),
-                                                       ptr_uint64(8,5))));
+                                                ptr_uint64(8,5),
+                                                ptr_uint64(8,5))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(7, 4,
-                                                       ptr_uint64(8,4),
-                                                       ptr_uint64(8,5))));
+                                                ptr_uint64(8,4),
+                                                ptr_uint64(8,5))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(7, 3,
-                                                       ptr_uint64(8,3),
-                                                       ptr_uint64(8,4))));
+                                                ptr_uint64(8,3),
+                                                ptr_uint64(8,4))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(7, 2,
-                                                       ptr_uint64(8,2),
-                                                       ptr_uint64(8,3))));
+                                                ptr_uint64(8,2),
+                                                ptr_uint64(8,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(7, 1,
-                                                       ptr_uint64(8,5),
-                                                       ptr_uint64(8,2))));
+                                                ptr_uint64(8,5),
+                                                ptr_uint64(8,2))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 5,
-                                                       ptr_uint64(7,5),
-                                                       ptr_uint64(7,5))));
+                                                ptr_uint64(7,5),
+                                                ptr_uint64(7,5))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 4,
-                                                       ptr_uint64(7,4),
-                                                       ptr_uint64(7,5))));
+                                                ptr_uint64(7,4),
+                                                ptr_uint64(7,5))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 3,
-                                                       ptr_uint64(7,3),
-                                                       ptr_uint64(7,4))));
+                                                ptr_uint64(7,3),
+                                                ptr_uint64(7,4))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 2,
-                                                       ptr_uint64(7,2),
-                                                       ptr_uint64(7,3))));
+                                                ptr_uint64(7,2),
+                                                ptr_uint64(7,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 1,
-                                                       ptr_uint64(7,1),
-                                                       ptr_uint64(7,2))));
+                                                ptr_uint64(7,1),
+                                                ptr_uint64(7,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(6, 0,
-                                                       ptr_uint64(7,5),
-                                                       ptr_uint64(7,1))));
+                                                ptr_uint64(7,5),
+                                                ptr_uint64(7,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 5,
-                                                       ptr_uint64(6,5),
-                                                       ptr_uint64(6,5))));
+                                                ptr_uint64(6,5),
+                                                ptr_uint64(6,5))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 4,
-                                                       ptr_uint64(6,4),
-                                                       ptr_uint64(6,5))));
+                                                ptr_uint64(6,4),
+                                                ptr_uint64(6,5))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 3,
-                                                       ptr_uint64(6,3),
-                                                       ptr_uint64(6,4))));
+                                                ptr_uint64(6,3),
+                                                ptr_uint64(6,4))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 2,
-                                                       ptr_uint64(6,2),
-                                                       ptr_uint64(6,3))));
+                                                ptr_uint64(6,2),
+                                                ptr_uint64(6,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 1,
-                                                       ptr_uint64(6,1),
-                                                       ptr_uint64(6,2))));
+                                                ptr_uint64(6,1),
+                                                ptr_uint64(6,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(5, 0,
-                                                       ptr_uint64(6,0),
-                                                       ptr_uint64(6,1))));
+                                                ptr_uint64(6,0),
+                                                ptr_uint64(6,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 4,
-                                                       ptr_uint64(5,4),
-                                                       ptr_uint64(5,5))));
+                                                ptr_uint64(5,4),
+                                                ptr_uint64(5,5))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 3,
-                                                       ptr_uint64(5,3),
-                                                       ptr_uint64(5,4))));
+                                                ptr_uint64(5,3),
+                                                ptr_uint64(5,4))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 2,
-                                                       ptr_uint64(5,2),
-                                                       ptr_uint64(5,3))));
+                                                ptr_uint64(5,2),
+                                                ptr_uint64(5,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 1,
-                                                       ptr_uint64(5,1),
-                                                       ptr_uint64(5,2))));
+                                                ptr_uint64(5,1),
+                                                ptr_uint64(5,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(4, 0,
-                                                       ptr_uint64(5,0),
-                                                       ptr_uint64(5,1))));
+                                                ptr_uint64(5,0),
+                                                ptr_uint64(5,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 3,
-                                                       ptr_uint64(4,3),
-                                                       ptr_uint64(4,4))));
+                                                ptr_uint64(4,3),
+                                                ptr_uint64(4,4))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 2,
-                                                       ptr_uint64(4,2),
-                                                       ptr_uint64(4,3))));
+                                                ptr_uint64(4,2),
+                                                ptr_uint64(4,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 1,
-                                                       ptr_uint64(4,1),
-                                                       ptr_uint64(4,2))));
+                                                ptr_uint64(4,1),
+                                                ptr_uint64(4,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(3, 0,
-                                                       ptr_uint64(4,0),
-                                                       ptr_uint64(4,1))));
+                                                ptr_uint64(4,0),
+                                                ptr_uint64(4,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 2,
-                                                       ptr_uint64(3,2),
-                                                       ptr_uint64(3,3))));
+                                                ptr_uint64(3,2),
+                                                ptr_uint64(3,3))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 1,
-                                                       ptr_uint64(3,1),
-                                                       ptr_uint64(3,2))));
+                                                ptr_uint64(3,1),
+                                                ptr_uint64(3,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(2, 0,
-                                                       ptr_uint64(3,0),
-                                                       ptr_uint64(3,1))));
+                                                ptr_uint64(3,0),
+                                                ptr_uint64(3,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, 1,
-                                                       ptr_uint64(2,1),
-                                                       ptr_uint64(2,2))));
+                                                ptr_uint64(2,1),
+                                                ptr_uint64(2,2))));
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(1, 0,
-                                                       ptr_uint64(2,0),
-                                                       ptr_uint64(2,1))));
+                                                ptr_uint64(2,0),
+                                                ptr_uint64(2,1))));
 
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(0, 0,
-                                                       ptr_uint64(1,0),
-                                                       ptr_uint64(1,1))));
+                                                ptr_uint64(1,0),
+                                                ptr_uint64(1,1))));
 
         AssertThat(ns.can_pull(), Is().False());
 
@@ -1895,6 +1895,88 @@ go_bandit([]() {
 
         AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[1], Is().EqualTo(5u));
+      });
+
+      it("can create { s <= {0,1,2,3,4} | T } = Pow({ 0,1,2,3,4 })", [&]() {
+        adiar::shared_file<zdd::label_t> labels;
+
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 0 << 1 << 2 << 3 << 4;
+        }
+
+        zdd res = zdd_sized_sets(labels, 2, [](const zdd::label_t&, const zdd::label_t&){ return true; });
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(4, node::MAX_ID, terminal_T, terminal_T)));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                ptr_uint64(4, node::MAX_ID),
+                                                ptr_uint64(4, node::MAX_ID))));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                ptr_uint64(3, node::MAX_ID),
+                                                ptr_uint64(3, node::MAX_ID))));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                ptr_uint64(2, node::MAX_ID),
+                                                ptr_uint64(2, node::MAX_ID))));
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                ptr_uint64(1, node::MAX_ID),
+                                                ptr_uint64(1, node::MAX_ID))));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(4,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        // TODO
+
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+      });
+
+      it("can create { s <= {0,1,2,3,4} | F } = Ø", [&]() {
+        adiar::shared_file<zdd::label_t> labels;
+
+        { // Garbage collect writer to free write-lock
+          label_writer lw(labels);
+          lw << 0 << 1 << 2 << 3 << 4;
+        }
+
+        zdd res = zdd_sized_sets(labels, 2, [](const zdd::label_t&, const zdd::label_t&){ return false; });
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        // TODO
+
+        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
       });
     });
   });
