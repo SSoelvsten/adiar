@@ -101,7 +101,7 @@ namespace adiar
     id_t prior_min_id = MAX_ID; // <-- dummy value to squelch the compiler
 
     size_t processed_levels = 0u;
-    label_t prior_label = MAX_LABEL; // <-- dummy value to squelch the compiler
+    label_t prior_label = max_var; // <-- dummy value to squelch the compiler
 
     do {
       label_t curr_label = ls.pull();

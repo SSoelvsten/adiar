@@ -2205,7 +2205,7 @@ go_bandit([]() {
         AssertThat(is_canonical(out_3), Is().True());
       });
 
-      it("should not zip if bdd_then is not beyond max_label of bdd_if", [&]() {
+      it("should not zip if bdd_then is not beyond max_var of bdd_if", [&]() {
         __bdd out = bdd_ite(bdd_x1, bdd_x0, bdd_x2);
 
         node_arc_test_stream node_arcs(out);
@@ -2259,7 +2259,7 @@ go_bandit([]() {
         AssertThat(out.get<arc_file>()->number_of_terminals[1], Is().EqualTo(2u));
       });
 
-      it("should not zip if bdd_else is not beyond max_label of bdd_if", [&]() {
+      it("should not zip if bdd_else is not beyond max_var of bdd_if", [&]() {
         __bdd out = bdd_ite(bdd_x1, bdd_x2, bdd_x0);
 
         node_arc_test_stream node_arcs(out);

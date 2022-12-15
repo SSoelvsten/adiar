@@ -62,7 +62,7 @@ namespace adiar
   ///
   /// \details   Creates a ZDD of a single node with label <tt>var</tt> and the
   ///            children false and true. The given label must be smaller than
-  ///            <tt>MAX_LABEL</tt>.
+  ///            <tt>max_var</tt>.
   ///
   /// \param var The label of the desired variable to include
   //////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ namespace adiar
   ///
   /// \details   Creates a ZDD with a chain of nodes on the 'high' arc to the
   ///            true child, and false otherwise. The given labels must be
-  ///            smaller than or equal to <tt>MAX_LABEL</tt>.
+  ///            smaller than or equal to <tt>max_var</tt>.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   //////////////////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ namespace adiar
   ///
   /// \details   Creates a ZDD with a chain of nodes on the 'low' arc to the
   ///            true child, and false otherwise. The given labels must be
-  ///            smaller than or equal to <tt>MAX_LABEL</tt>.
+  ///            smaller than or equal to <tt>max_var</tt>.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   //////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ namespace adiar
   ///
   /// \details   Creates a ZDD with a don't care chain of nodes to the true
   ///            child. The given labels must be smaller than or equal to
-  ///            <tt>MAX_LABEL</tt>.
+  ///            <tt>max_var</tt>.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   //////////////////////////////////////////////////////////////////////////////

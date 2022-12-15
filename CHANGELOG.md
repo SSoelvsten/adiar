@@ -228,7 +228,7 @@ Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics abo
 - `bdd_sink(bool v)` (and `bdd_true()` and `bdd_false()` as alternatives)
 - `bdd_ithvar(label_t i)` and `bdd_nithvar(label_t i)`
 - `bdd_and(label_file ls)` and `bdd_or(label_file ls)` to construct an *and*/*or* chain.
-- `bdd_counter(label_t min_label, label_t max_label, label_t threshold)` to construct whether exactly *threshold* many variables in the given interval are true.
+- `bdd_counter(label_t min_var, label_t max_var, label_t threshold)` to construct whether exactly *threshold* many variables in the given interval are true.
 
 Furthermore, the `node_writer` class is also provided as a means to construct a BDD manually bottom-up.
 

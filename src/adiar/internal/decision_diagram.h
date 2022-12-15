@@ -107,8 +107,8 @@ namespace adiar
 
     friend bool is_terminal(const decision_diagram &dd);
     friend bool value_of(const decision_diagram &dd);
-    friend label_t min_label(const decision_diagram &dd);
-    friend label_t max_label(const decision_diagram &dd);
+    friend label_t min_var(const decision_diagram &dd);
+    friend label_t max_var(const decision_diagram &dd);
 
     template<typename to_policy, typename from_policy>
     friend class convert_decision_diagram_policy;
@@ -266,17 +266,17 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the minimal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
-  inline label_t min_label(const decision_diagram &dd)
+  inline label_t min_var(const decision_diagram &dd)
   {
-    return min_label(dd.file);
+    return min_var(dd.file);
   }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Get the maximal occurring label in the decision diagram
   //////////////////////////////////////////////////////////////////////////////
-  inline label_t max_label(const decision_diagram &dd)
+  inline label_t max_var(const decision_diagram &dd)
   {
-    return max_label(dd.file);
+    return max_var(dd.file);
   }
 }
 
