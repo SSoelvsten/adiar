@@ -2161,7 +2161,7 @@ go_bandit([]() {
         AssertThat(adiar::is_canonical(out_3), Is().True());
       });
 
-      it("should not zip if bdd_then is not beyond max_label of bdd_if", [&]() {
+      it("should not zip if bdd_then is not beyond max_var of bdd_if", [&]() {
         __bdd out = bdd_ite(bdd_x1, bdd_x0, bdd_x2);
 
         arc_test_stream arcs(out);
@@ -2213,7 +2213,7 @@ go_bandit([]() {
         AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
-      it("should not zip if bdd_else is not beyond max_label of bdd_if", [&]() {
+      it("should not zip if bdd_else is not beyond max_var of bdd_if", [&]() {
         __bdd out = bdd_ite(bdd_x1, bdd_x2, bdd_x0);
 
         arc_test_stream arcs(out);
