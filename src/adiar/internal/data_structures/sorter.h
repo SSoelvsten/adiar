@@ -116,6 +116,16 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Type alias for sorter for partial type application of the
+  ///        'internal' memory type.
+  //////////////////////////////////////////////////////////////////////////////
+  template <typename elem_t, typename comp_t = std::less<elem_t>>
+  using internal_sorter = sorter<memory_mode_t::INTERNAL, elem_t, comp_t>;
+
+  // LCOV_EXCL_START
+  // TODO: Unit test external memory variants?
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief Wrapper for TPIE's external memory sorter, tpie::merge_sorter.
   ///
   /// A wrapper for the tpie::merge_sorter that takes care of all the memory
@@ -262,17 +272,12 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Type alias for sorter for partial type application of the
-  ///        'internal' memory type.
-  //////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t, typename comp_t = std::less<elem_t>>
-  using internal_sorter = sorter<memory_mode_t::INTERNAL, elem_t, comp_t>;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Type alias for sorter for partial type application of the
   ///        'external' memory type.
   //////////////////////////////////////////////////////////////////////////////
   template <typename elem_t, typename comp_t = std::less<elem_t>>
   using external_sorter = sorter<memory_mode_t::EXTERNAL, elem_t, comp_t>;
+
+  // LCOV_EXCL_END
 }
 
 #endif // ADIAR_INTERNAL_DATA_STRUCTURES_SORTER_H
