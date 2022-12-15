@@ -32,9 +32,7 @@ namespace adiar
 
     // LCOV_EXCL_START
     static zdd terminal(const bool /*terminal_value*/)
-    {
-      adiar_unreachable();
-    }
+    { adiar_unreachable(); }
     // LCOV_EXCL_END
 
     static inline internal::intercut_rec hit_existing(const zdd::node_t &/*n*/)
