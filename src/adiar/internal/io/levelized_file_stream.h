@@ -270,7 +270,7 @@ namespace adiar::internal
         // We should never be in the case of hooking into a 'no_file'. That type
         // should only be used internally within an algorithm and never escape
         // into its output.
-        adiar_unreachable();
+        adiar_unreachable(); // LCOV_EXCL_LINE
       }
     }
   };
