@@ -85,8 +85,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-      AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
+      AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
     });
 
     it("can create a true terminal-only BDD", [&]() {
@@ -118,8 +118,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-      AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
-      AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+      AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
     });
 
     it("creates the last pushed terminal if no nodes are pushed", [&]() {
@@ -153,8 +153,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-      AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
+      AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
     });
 
     it("throws an exception when create is called on an empty file", [&]() {
@@ -210,8 +210,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-      AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
     });
 
     it("throws an exception if pointers are used from a different builder [1]", [&]() {
@@ -365,8 +365,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-      AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+      AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
     });
 
     it("can create several nodes on the same level", [&]() {
@@ -449,8 +449,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
 
-      AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-      AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
+      AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+      AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
     });
 
     it("can reset and create new nodes", [&]() {
@@ -495,8 +495,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-      AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-      AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+      AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
     });
 
     it("is empty after reset", [&]() {
@@ -547,8 +547,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       }
 
       { // SECOND
@@ -587,8 +587,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       }
     });
 
@@ -695,8 +695,8 @@ go_bandit([]() {
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
       AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
 
-      AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-      AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
+      AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+      AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
     });
 
     describe("bdd_builder", [&]() {
@@ -740,8 +740,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can collapse BDD reduction rule to a false terminal", [&]() {
@@ -774,8 +774,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can collapse BDD reduction rule to a true terminal [1]", [&]() {
@@ -808,8 +808,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can collapse BDD reduction rule to a true terminal [2]", [&]() {
@@ -842,8 +842,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("does not decrement 'id' when applying the BDD reduction rule", [&]() {
@@ -915,8 +915,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(4u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("uses the BDD reduction rule with copies of nodes", [&]() {
@@ -960,8 +960,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("does not allow multiple roots when using BDD reduction rule", [&]() {
@@ -1018,8 +1018,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can collapse ZDD reduction rule to a false terminal", [&]() {
@@ -1052,8 +1052,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can collapse ZDD reduction rule to a true terminal", [&]() {
@@ -1086,8 +1086,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("does not decrement 'id' when applying the ZDD reduction rule", [&]() {
@@ -1159,8 +1159,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(4u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("does not allow multiple roots when using ZDD reduction rule", [&]() {

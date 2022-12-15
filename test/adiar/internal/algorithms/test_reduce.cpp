@@ -143,8 +143,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(4u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("applies to terminal arcs [2]", [&]() {
@@ -246,8 +246,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -364,8 +364,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(6u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("applies to both node and terminal arcs", [&]() {
@@ -479,8 +479,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("applies to 'disjoint' branches", [&]() {
@@ -614,8 +614,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(7u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("does forward the correct children [1]", [&]() {
@@ -722,8 +722,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("does forward the correct children [2]", [&]() {
@@ -829,8 +829,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(5u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(5u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
     });
 
@@ -929,8 +929,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(4u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -1041,8 +1041,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("works with two reductions on the same level", [&]() {
@@ -1140,8 +1140,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2 [1]", [&]() {
@@ -1232,8 +1232,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().LessThanOrEqualTo(3u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2 [2]", [&]() {
@@ -1357,8 +1357,8 @@ go_bandit([]() {
           AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(3u));
           AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-          AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-          AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
         });
 
       it("can reduce the root", [&]() {
@@ -1430,8 +1430,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("accounts for multiple ingoing arcs to reduction rule 1 node", [&]() {
@@ -1556,8 +1556,8 @@ go_bandit([]() {
 
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(6u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(4u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(4u));
       });
 
       it("can apply reduction rule 1 to a single node", [&]() {
@@ -1609,8 +1609,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can propagate reduction rule 1 up to a terminal", [&]() {
@@ -1667,8 +1667,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can return non-reducible single-node variable with MAX_ID", [&]() {
@@ -1721,8 +1721,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can account for a chain of don't cares contributing to the maximum cut [1]", [&]() {
@@ -1879,8 +1879,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can account for a chain of don't cares contributing to the maximum cut [2]", [&]() {
@@ -2065,8 +2065,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(10u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(15u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("Merges nodes, despite of reduction rule 1 flag on child", [&]() {
@@ -2138,8 +2138,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
     });
 
@@ -2203,8 +2203,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("applies to node arcs", [&]() {
@@ -2320,8 +2320,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(5u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can be applied together with reduction rule 2", [&]() {
@@ -2414,8 +2414,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("applies to a single node", [&]() {
@@ -2467,8 +2467,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can reduce the root", [&]() {
@@ -2531,8 +2531,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can propagate reduction rule 1 up to a terminal", [&]() {
@@ -2589,8 +2589,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can return non-reducible single-node variable with MAX_ID [1]", [&]() {
@@ -2643,8 +2643,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can return non-reducible single-node variable with MAX_ID [2]", [&]() {
@@ -2697,8 +2697,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
 
@@ -2856,8 +2856,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(8u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("Merges nodes, despite of reduction rule 1 flag on child", [&]() {
@@ -2943,8 +2943,8 @@ go_bandit([]() {
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out->max_2level_cut[cut_type::ALL], Is().LessThanOrEqualTo(3u));
 
-        AssertThat(out->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
       });
     });
   });
