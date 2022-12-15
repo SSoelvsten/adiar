@@ -179,7 +179,10 @@ namespace adiar::internal
       const size_t priority_queue_fits = priority_queue<memory_mode_t::INTERNAL, elem_t, elem_comp_t>
         ::memory_fits(memory_per_data_structure);
 
-      return std::min(sorter_fits, priority_queue_fits);
+      const size_t res = std::min(sorter_fits, priority_queue_fits);
+      adiar_debug(memory_usage(res) <= memory_bytes,
+                  "memory_fits and memory_usage should agree.");
+      return res;
     }
 
   private:
