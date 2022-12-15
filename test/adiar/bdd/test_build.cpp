@@ -29,8 +29,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create true terminal [bdd_true]", [&]() {
@@ -56,8 +56,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create false terminal [bdd_terminal]", [&]() {
@@ -83,8 +83,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can create false terminal [bdd_false]", [&]() {
@@ -110,8 +110,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
     });
 
@@ -142,8 +142,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create x42", [&]() {
@@ -172,8 +172,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
     });
 
@@ -204,8 +204,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create !x3", [&]() {
@@ -234,8 +234,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
     });
 
@@ -293,8 +293,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create {} as trivially true", [&]() {
@@ -322,8 +322,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
     });
 
@@ -381,8 +381,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("can create {} as trivially false", [&]() {
@@ -405,8 +405,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
     });
 
@@ -433,8 +433,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("collapses impossible counting to 2 in [10,10] to F", [&]() {
@@ -459,8 +459,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("collapses counting to 1 in [42,42] to x42", [&]() {
@@ -489,8 +489,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("collapses counting to 0 in [10, 10] to ~x10", [&]() {
@@ -519,8 +519,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("creates counting to 0 in [1,5]", [&]() {
@@ -583,8 +583,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(6u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(5u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(5u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("creates counting to 5 in [1,5]", [&]() {
@@ -647,8 +647,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(6u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(5u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(5u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("creates counting to 2 in [2,5]", [&]() {
@@ -720,8 +720,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(5u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(6u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(4u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(4u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("creates counting to 3 in [0,8]", [&]() {
@@ -906,8 +906,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(8u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(11u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(9u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(9u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("creates counting to 4 in [0,4]", [&]() {
@@ -987,8 +987,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(4u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(7u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(5u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(5u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("creates counting to 1 in [0,1]", [&]() {
@@ -1029,8 +1029,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
     });
   });

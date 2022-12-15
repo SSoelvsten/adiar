@@ -29,8 +29,8 @@ go_bandit([]() {
 
         AssertThat(res->canonical, Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create { Ø } [zdd_null]", [&]() {
@@ -56,8 +56,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create Ø [zdd_terminal]", [&]() {
@@ -83,8 +83,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can create Ø [zdd_empty]", [&]() {
@@ -110,8 +110,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
     });
 
@@ -142,8 +142,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create { {42} }", [&]() {
@@ -172,8 +172,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
     });
 
@@ -203,8 +203,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create { {42} }", [&]() {
@@ -240,8 +240,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create { {1,2,5} }", [&]() {
@@ -286,8 +286,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
     });
 
@@ -317,8 +317,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can create { {42} }", [&]() {
@@ -354,8 +354,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create { {1}, {2}, {5} }", [&]() {
@@ -400,8 +400,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
       });
     });
 
@@ -424,8 +424,8 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can create { Ø, {42} }", [&]() {
@@ -461,8 +461,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can create { Ø, {1}, {2}, {5}, {1,2}, {1,5}, {2,5}, {1,2,5} }", [&]() {
@@ -511,8 +511,8 @@ go_bandit([]() {
 
         AssertThat(adiar::is_canonical(res), Is().True());
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
     });
 
@@ -540,8 +540,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can compute { s <= Ø | |s| > 0 } to be Ø", [&]() {
@@ -566,8 +566,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can compute { s <= {1,2,3} | |s| < 0 } to be Ø", [&]() {
@@ -598,8 +598,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can compute { s <= {0,2,4,6} | |s| <= 0 } to be { Ø }", [&]() {
@@ -630,8 +630,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can compute { s <= {0,2,4,6} | |s| < 42 } to be the powerset", [&]() {
@@ -687,8 +687,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can compute { s <= {0,2,4,6} | |s| > 42 } to be Ø", [&]() {
@@ -719,8 +719,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can compute { s <= {0,1,2} | |s| <= 3 } to be the powerset", [&]() {
@@ -769,8 +769,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can compute { s <= {0,1,2} | |s| == 3 } to be the { {0,1,2} }", [&]() {
@@ -819,8 +819,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can compute { s <= {0,2,3} | |s| > 3 } to be Ø", [&]() {
@@ -846,8 +846,8 @@ go_bandit([]() {
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("can compute { s <= {0,1,2} | |s| < 1 } to be { Ø }", [&]() {
@@ -878,8 +878,8 @@ go_bandit([]() {
         AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       // TODO: More edge cases
@@ -944,8 +944,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can create { s <= {1,2,3,4,6} | |s| == 3 }", [&]() {
@@ -1028,8 +1028,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| >= 2 }", [&]() {
@@ -1118,8 +1118,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("can create { s <= {0,1,2,3,4,5} | |s| > 0 }", [&]() {
@@ -1211,8 +1211,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("can create { s <= {0,1,2,3,5} | |s| > 1 }", [&]() {
@@ -1301,8 +1301,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| < 2 }", [&]() {
@@ -1371,8 +1371,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(6u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(6u));
       });
 
       it("can create { s <= {0,2,4,6} | |s| < 3 }", [&]() {
@@ -1442,8 +1442,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(4u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(4u));
       });
 
       it("can create { s <= {1,2,3,4,5,6,7,8,9} | |s| < 5 }", [&]() {
@@ -1600,8 +1600,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(7u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(7u));
       });
 
       it("can create { s <= {0,2,4,6,8} | |s| <= 2 }", [&]() {
@@ -1680,8 +1680,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(5u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(5u));
       });
 
       it("can create { s <= {0,1,...,9} | |s| != 4 }", [&]() {
@@ -1893,8 +1893,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(5u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(5u));
       });
 
       it("can create { s <= {0,1,2,3,4} | T } = Pow({ 0,1,2,3,4 })", [&]() {
@@ -1949,8 +1949,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can create { s <= {0,1,2,3,4} | F } = Ø", [&]() {
@@ -1975,8 +1975,8 @@ go_bandit([]() {
 
         // TODO
 
-        AssertThat(res->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
       });
     });
   });

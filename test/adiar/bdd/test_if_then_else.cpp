@@ -345,8 +345,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should create XNOR of x0 and ~x1 (x0 ? ~x1 : x1) due to same file", [&]() {
@@ -388,8 +388,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should create OR of x0 and x1 (x0 ? x0 : x1) due to same file", [&]() {
@@ -425,8 +425,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should create AND of x0 (negated) and x1 (x0 ? ~x0 : x1) due to same file", [&]() {
@@ -462,8 +462,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("should create AND of x0 and x1 (x0 ? x1 : x0) due to same file", [&]() {
@@ -499,8 +499,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("should create IMPLIES of x0 and x1 (x0 ? x1 : ~x0) due to same file", [&]() {
@@ -536,8 +536,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should create OR of x0 and x1 (x0 ? T : x1)", [&]() {
@@ -573,8 +573,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should create AND of x0 (negated) and x1 (x0 ? F : x1)", [&]() {
@@ -610,8 +610,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("should create IMPLIES of x0 and x1 (x0 ? x1 : T)", [&]() {
@@ -647,8 +647,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should create AND of x0 and x1 (x0 ? x1 : F)", [&]() {
@@ -684,8 +684,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
     });
 
@@ -738,8 +738,8 @@ go_bandit([]() {
 
         AssertThat((std::get<__bdd::shared_arcs_t>(out._union))->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should compute x1 ? ~x0 : x0", [&]() {
@@ -790,8 +790,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should compute x1 ? x0 : ~x0", [&]() {
@@ -842,8 +842,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should compute ~x2 ? (x0^x1) : ~(x0^x1)", [&]() {
@@ -919,8 +919,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should compute x3 ? (x1 & x2) : bdd_1", [&]() {
@@ -1060,8 +1060,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(6u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(5u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("should compute bdd_3 ? bdd_4 : bdd_5", [&]() {
@@ -1158,8 +1158,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(3u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(5u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(4u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(4u));
       });
 
       it("should compute bdd_6 ? x0^x2 : bdd_not_6", [&]() {
@@ -1230,8 +1230,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(4u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(4u));
       });
 
 
@@ -1303,8 +1303,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(4u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(4u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("should compute ~(x0^x2) ? ~x2 : bdd_1", [&]() {
@@ -1417,8 +1417,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(5u));
       });
 
       it("should compute (x1^x2) ? bdd_1 : bdd_2", [&]() {
@@ -1529,8 +1529,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(6u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(6u));
       });
 
       it("should compute (~x0 & ~x1 & x2) ? bdd_2 : bdd_4", [&]() {
@@ -1638,8 +1638,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(3u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(5u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(4u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(4u));
       });
 
       it("should compute (x0 | (x1 & x2)) ? bdd_8 : bdd_7", [&]() {
@@ -1732,8 +1732,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should compute bdd_6 ? bdd_4 : bdd_2", [&]() {
@@ -1824,8 +1824,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().EqualTo(4u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(5u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(5u));
       });
     });
 
@@ -1899,8 +1899,8 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(2u));
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(5u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should merely zip disjunct levels if possible [2]", [&]() {
@@ -2049,8 +2049,8 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_2level_cut[cut_type::INTERNAL_TRUE], Is().GreaterThanOrEqualTo(7u));
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_2level_cut[cut_type::ALL], Is().GreaterThanOrEqualTo(11u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(4u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(7u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[false], Is().EqualTo(4u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(7u));
       });
 
       it("can derive canonicity when zipping with one-node 'if'", [&]() {
@@ -2209,8 +2209,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should not zip if bdd_else is not beyond max_label of bdd_if", [&]() {
@@ -2261,8 +2261,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
     });
   });

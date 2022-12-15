@@ -264,8 +264,8 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("should shortcut quantification of root into T terminal [x2]", [&]() {
@@ -284,8 +284,8 @@ go_bandit([]() {
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("should shortcut quantification on non-existent label in input [BDD 1]", [&]() {
@@ -320,8 +320,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should quantify root without terminal arcs [BDD 2]", [&]() {
@@ -369,8 +369,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("should quantify nodes with terminal or nodes as children [BDD 2]", [&]() {
@@ -418,8 +418,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("should output terminal arcs in order, despite the order of resolvement [BDD 2]", [&]() {
@@ -467,8 +467,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("should keep nodes as is when skipping quantified level [BDD 3]", [&]() {
@@ -518,8 +518,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("should output terminal arcs in order, despite the order of resolvement [BDD 3]", [&]() {
@@ -561,8 +561,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("should resolve terminal-terminal requests in [BDD 5]", [&]() {
@@ -604,8 +604,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can shortcut/prune irrelevant subtrees [OR-chain]", [&]() {
@@ -656,8 +656,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -721,8 +721,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(5u));
       });
 
       it("can forward multiple arcs to the same node across a level [BDD 7]", [&]() {
@@ -760,8 +760,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(0u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(0u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -811,8 +811,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8b]", [&]() {
@@ -862,8 +862,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
 
       it("can quantify list [x1, x2] in terminal-only BDD [&&bdd]", [&]() {
@@ -1215,8 +1215,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("should quantify root of [BDD 3]", [&]() {
@@ -1264,8 +1264,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("should prune shortcuttable requests [BDD 4]", [&]() {
@@ -1316,8 +1316,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(3u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("can forward information across a level [BDD 6]", [&]() {
@@ -1381,8 +1381,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(5u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(5u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("should collapse tuple requests of the same node back into request on a single node [BDD 8a]", [&]() {
@@ -1432,8 +1432,8 @@ go_bandit([]() {
 
         AssertThat(out.get<__bdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
 
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[0], Is().EqualTo(2u));
-        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[1], Is().EqualTo(1u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
+        AssertThat(out.get<__bdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
       it("should quantify list [x0, x2, x1] [BDD 4 : &&bdd]", [&]() {
@@ -1455,8 +1455,8 @@ go_bandit([]() {
         level_info_test_stream ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("should quantify list [x0, x2, x1] [BDD 4 : const &bdd]", [&]() {
@@ -1479,8 +1479,8 @@ go_bandit([]() {
         level_info_test_stream ms(out);
         AssertThat(ms.can_pull(), Is().False());
 
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[0], Is().EqualTo(1u));
-        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[1], Is().EqualTo(0u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(out.get<shared_levelized_file<bdd::node_t>>()->number_of_terminals[true],  Is().EqualTo(0u));
       });
 
       it("should quantify list [x1] [BDD 4 : &&bdd]", [&]() {
