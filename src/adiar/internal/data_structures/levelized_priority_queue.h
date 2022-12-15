@@ -322,10 +322,13 @@ namespace adiar::internal
         // EXTERNAL MEMORY MODE:
         //   Use 1/(4Buckets + 1)th of the memory and at least 8 MiB.
 
+        // LCOV_EXCL_START
+        // TODO: Unit test external memory variants?
         const tpie::memory_size_type eight_MiB = 8 * 1024;
         const tpie::memory_size_type weighted_share = memory_given / (4 * BUCKETS + 1);
 
         return std::max(eight_MiB, weighted_share);
+        // LCOV_EXCL_END
       } else {
         // ---------------------------------------------------------------------
         static_assert(mem_mode == memory_mode_t::INTERNAL && mem_mode == memory_mode_t::EXTERNAL,
