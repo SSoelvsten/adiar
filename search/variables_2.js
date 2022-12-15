@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['canonical_527',['canonical',['../structadiar_1_1FILE__CONSTANTS_3_01node__t_01_4_1_1stats.html#a2185a10e4d12fc907f03b328d485ef71',1,'adiar::FILE_CONSTANTS&lt; node_t &gt;::stats']]],
-  ['count_528',['count',['../structadiar_1_1stats__t.html#a9b328d7bcba90a84cdc1831417b90ac6',1,'adiar::stats_t']]]
+  ['diff_5fop_403',['diff_op',['../namespaceadiar.html#a09c9c0628547101eb024b41d38c8a0b1',1,'adiar']]]
 ];

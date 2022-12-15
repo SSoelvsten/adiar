@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['reduce_5ft_355',['reduce_t',['../structadiar_1_1stats__t_1_1reduce__t.html',1,'adiar::stats_t']]]
+  ['zdd_271',['zdd',['../classadiar_1_1zdd.html',1,'adiar']]]
 ];

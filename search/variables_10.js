@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['unbucketed_584',['unbucketed',['../structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html#a49e7effb0f98190e516c4eb2290c5912',1,'adiar::stats_t::__alg_base::__lpq']]]
+  ['xnor_5fop_453',['xnor_op',['../namespaceadiar.html#ae956ef704feace706586a391d3cc0d91',1,'adiar']]],
+  ['xor_5fop_454',['xor_op',['../namespaceadiar.html#af4f487e39dded71f30fc122939acdbdd',1,'adiar']]]
 ];

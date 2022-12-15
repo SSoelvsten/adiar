@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['file_5fptr_432',['file_ptr',['../classadiar_1_1decision__diagram.html#a799c0b7b686582e5f0c141191b4ec8f0',1,'adiar::decision_diagram']]],
-  ['file_5fsize_433',['file_size',['../classadiar_1_1file.html#a0db065da8eb012f2098dde796bee2ce3',1,'adiar::file::file_size()'],['../classadiar_1_1____meta__file.html#ab373536f82591edfee87037460f281d6',1,'adiar::__meta_file::file_size()'],['../classadiar_1_1____shared__file.html#a41a16e2e8d1aa5a7a60e971f57923998',1,'adiar::__shared_file::file_size()']]],
-  ['flag_434',['flag',['../namespaceadiar.html#ada5b917e55daf95c2cf6c9beef271a85',1,'adiar']]]
+  ['label_5fof_352',['label_of',['../namespaceadiar.html#a8511d6fcc8548e47298b9533ba6750df',1,'adiar::label_of(const assignment_t &amp;a)'],['../namespaceadiar.html#a4fdb28ffc2e132f8fcd137421857c25d',1,'adiar::label_of(internal::ptr_uint64 p)'],['../namespaceadiar.html#a3ae0970003714a422d4700704bd1e8b5',1,'adiar::label_of(const internal::node &amp;n)']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['uid_5ft_608',['uid_t',['../namespaceadiar.html#a047f914177d6d37ca2e366bb0053c1ab',1,'adiar']]]
+  ['unreduced_5ft_476',['unreduced_t',['../classadiar_1_1internal_1_1dd__policy.html#a5a364e88d81ec479ef85e32acf660895',1,'adiar::internal::dd_policy']]]
 ];

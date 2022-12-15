@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['is_5fterminal_616',['is_terminal',['../classadiar_1_1decision__diagram.html#a78281b1744ab5466c6436d7de0165206',1,'adiar::decision_diagram']]]
+  ['is_5fterminal_484',['is_terminal',['../classadiar_1_1internal_1_1dd.html#a811197a3fa59b8a1b63de06f2101a0a7',1,'adiar::internal::dd']]]
 ];

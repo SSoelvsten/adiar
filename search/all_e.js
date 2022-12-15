@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['on_5flevel_216',['on_level',['../namespaceadiar.html#aee0ebed79da12abb1c6c475ea289133e',1,'adiar::on_level(ptr_t p, label_t level)'],['../namespaceadiar.html#ad74f449220d4d97448ea017c951939b0',1,'adiar::on_level(const node_t &amp;n, label_t level)']]],
-  ['operator_21_217',['operator!',['../namespaceadiar.html#a7baddebc3fe4d110d8b8f819a012a66c',1,'adiar']]],
-  ['operator_2d_3e_218',['operator-&gt;',['../classadiar_1_1decision__diagram.html#a0971aead7fc1ea964e31a7a431ed67d1',1,'adiar::decision_diagram::operator-&gt;()'],['../classadiar_1_1____shared__file.html#a2942fa8123f85aa286c958d174a13bce',1,'adiar::__shared_file::operator-&gt;()']]],
-  ['operator_3c_3c_219',['operator&lt;&lt;',['../namespaceadiar.html#a4d00d54b25e02e74e30be1b1b061ea3c',1,'adiar']]],
-  ['or_5fop_220',['or_op',['../namespaceadiar.html#aeaa9d1d4a583e160d9db913598b1c827',1,'adiar']]],
-  ['output_5fdot_221',['output_dot',['../namespaceadiar.html#a8f9be3cba03c126cc7fa3467d0341a19',1,'adiar::output_dot(const bdd &amp;f, const std::string &amp;file_name)'],['../namespaceadiar.html#ae4a0f37cd21d3b70a9e5667b1b7775f2',1,'adiar::output_dot(const zdd &amp;A, const std::string &amp;file_name)']]]
+  ['prod2_168',['prod2',['../structadiar_1_1stats__t.html#a2e9f74327060f75270343e3409732b9b',1,'adiar::stats_t']]],
+  ['prod2_5ft_169',['prod2_t',['../structadiar_1_1stats__t_1_1prod2__t.html',1,'adiar::stats_t']]],
+  ['prod3_170',['prod3',['../structadiar_1_1stats__t.html#a686c0cffb0d2ef94ffc9fdcf3d14204f',1,'adiar::stats_t']]],
+  ['prod3_5ft_171',['prod3_t',['../structadiar_1_1stats__t_1_1prod3__t.html',1,'adiar::stats_t']]],
+  ['ptr_5ft_172',['ptr_t',['../classadiar_1_1internal_1_1dd.html#ae4d44529333e57952dbf518e9fe8608b',1,'adiar::internal::dd::ptr_t()'],['../classadiar_1_1internal_1_1dd__policy.html#ac617a9f1d0b8f4160d141b2e0eccd2fd',1,'adiar::internal::dd_policy::ptr_t()']]],
+  ['push_5fbucket_173',['push_bucket',['../structadiar_1_1stats__t_1_1levelized__priority__queue__t.html#a5452ff59b688189e021ea098006de069',1,'adiar::stats_t::levelized_priority_queue_t']]],
+  ['push_5foverflow_174',['push_overflow',['../structadiar_1_1stats__t_1_1levelized__priority__queue__t.html#ab79b16c0e3d270719d6dc54e45bea6ab',1,'adiar::stats_t::levelized_priority_queue_t']]]
 ];

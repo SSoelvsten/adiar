@@ -1,12 +1,13 @@
 var group__module____builder =
 [
     [ "builder", "classadiar_1_1builder.html", [
-      [ "builder", "classadiar_1_1builder.html#ab5f1db85330f7f8f54efd40746e7f52b", null ],
+      [ "builder", "classadiar_1_1builder.html#abafea5d10a5f3d10d6b892d28d36e21c", null ],
+      [ "~builder", "classadiar_1_1builder.html#a5e20e420b59171dd6410687b714582b6", null ],
       [ "add_node", "classadiar_1_1builder.html#a0cead7ac838b5461dd611b76603bfd5d", null ],
-      [ "add_node", "classadiar_1_1builder.html#a67a38ba8a2338bbb081349d11c450564", null ],
-      [ "add_node", "classadiar_1_1builder.html#aff8271f1f4f75975cea27f80b3fe33dd", null ],
-      [ "add_node", "classadiar_1_1builder.html#a863d1d08c0ffb0d64c9f50f4788d7332", null ],
-      [ "add_node", "classadiar_1_1builder.html#aa9b7ca1fab0caa804759bd8e3b36c866", null ],
+      [ "add_node", "classadiar_1_1builder.html#af0f95a97030c0d97e004e8471db15f6c", null ],
+      [ "add_node", "classadiar_1_1builder.html#a24c25db7a9953da4c18eab35fb3751a4", null ],
+      [ "add_node", "classadiar_1_1builder.html#a4fe5511a6c274f4294f13a8aac52c48e", null ],
+      [ "add_node", "classadiar_1_1builder.html#ab6a82eebf191476fa81afd686c2888cd", null ],
       [ "build", "classadiar_1_1builder.html#ab01d6031368c51291ce565b03c049775", null ],
       [ "clear", "classadiar_1_1builder.html#a0f9f6d71a0d5b40d6bf4200d8fb4fa4a", null ]
     ] ],

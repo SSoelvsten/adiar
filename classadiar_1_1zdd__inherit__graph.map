@@ -1,4 +1,5 @@
 <map id="adiar::zdd" name="adiar::zdd">
-<area shape="rect" id="node1" title="Reduced Ordered Zero&#45;suppressed Decision Diagram." alt="" coords="51,80,138,107"/>
-<area shape="rect" id="node2" href="$classadiar_1_1decision__diagram.html" title=" " alt="" coords="5,5,184,32"/>
+<area shape="rect" id="node1" title="Reduced Ordered Zero&#45;suppressed Decision Diagram." alt="" coords="37,80,124,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,44,32"/>
+<area shape="rect" id="node3" href="$classadiar_1_1internal_1_1dd.html" title="Container for the files that represent a Decision Diagram." alt="" coords="68,5,205,32"/>
 </map>
