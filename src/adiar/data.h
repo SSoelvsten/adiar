@@ -64,7 +64,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The maximal possible value for a unique identifier's label.
   //////////////////////////////////////////////////////////////////////////////
-  constexpr uint64_t MAX_LABEL  = (1ull << LABEL_BITS) - 1;
+  constexpr uint64_t max_var  = (1ull << LABEL_BITS) - 1;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief The number of bits for a unique identifier's id.
@@ -195,7 +195,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline uid_t create_node_uid(label_t label, id_t id)
   {
-    adiar_debug(label <= MAX_LABEL, "Cannot represent given label");
+    adiar_debug(label <= max_var, "Cannot represent given label");
     adiar_debug(id <= MAX_ID, "Cannot represent given id");
 
     return ((uint64_t) label << (ID_BITS + 1)) + (id << 1);
@@ -793,7 +793,7 @@ namespace adiar {
   //////////////////////////////////////////////////////////////////////////////
   inline assignment_t create_assignment(label_t label, bool value)
   {
-    adiar_debug(label <= MAX_LABEL, "Cannot represent that large a label");
+    adiar_debug(label <= max_var, "Cannot represent that large a label");
 
     return { label, value };
   }

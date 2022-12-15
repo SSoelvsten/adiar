@@ -44,31 +44,31 @@ namespace adiar
     return build_chain<false, true, false>(labels);
   }
 
-  inline id_t bdd_counter_min_id(label_t label, label_t max_label, uint64_t threshold)
+  inline id_t bdd_counter_min_id(label_t label, label_t max_var, uint64_t threshold)
   {
-    return label > max_label - threshold
-      ? threshold - (max_label - label + 1)
+    return label > max_var - threshold
+      ? threshold - (max_var - label + 1)
       : 0;
   }
 
-  bdd bdd_counter(label_t min_label, label_t max_label, label_t threshold)
+  bdd bdd_counter(label_t min_var, label_t max_var, label_t threshold)
   {
-    adiar_assert(min_label <= max_label,
-                 "The given min_label should be smaller than the given max_label");
+    adiar_assert(min_var <= max_var,
+                 "The given min_var should be smaller than the given max_var");
 
     const ptr_t gt_terminal = create_terminal_ptr(false);
     const ptr_t eq_terminal = create_terminal_ptr(true);
     const ptr_t lt_terminal = create_terminal_ptr(false);
 
-    const size_t vars = max_label - min_label + 1u;
+    const size_t vars = max_var - min_var + 1u;
     if (vars < threshold) {
       return bdd_terminal(false);
     }
 
     if (vars == 1) {
-      adiar_debug(min_label == max_label,
-                  "If 'vars == 1' then we ought to have 'max_label - min_label == 0'");
-      return threshold == 1 ? bdd_ithvar(min_label) : bdd_nithvar(min_label);
+      adiar_debug(min_var == max_var,
+                  "If 'vars == 1' then we ought to have 'max_var - min_var == 0'");
+      return threshold == 1 ? bdd_ithvar(min_var) : bdd_nithvar(min_var);
     }
 
     // Construct parallelogram-shaped BDD where each node stores the number of
@@ -76,30 +76,30 @@ namespace adiar
     node_file nf;
     node_writer nw(nf);
 
-    label_t curr_label = max_label;
+    label_t curr_label = max_var;
 
     do {
       // Start with the maximal number the accumulated value can be at
       // up to this label.
-      id_t max_id = std::min(curr_label - min_label, threshold);
+      id_t max_id = std::min(curr_label - min_var, threshold);
       id_t curr_id = max_id;
 
       // How small has the accumulated sum up to this point to be, such
-      // that it is still possible to reach threshold before max_label?
-      id_t min_id = bdd_counter_min_id(curr_label, max_label, threshold);
+      // that it is still possible to reach threshold before max_var?
+      id_t min_id = bdd_counter_min_id(curr_label, max_var, threshold);
 
       do {
         ptr_t low;
-        if (curr_label == max_label) {
+        if (curr_label == max_var) {
           low = curr_id == threshold ? eq_terminal : lt_terminal;
-        } else if (curr_id < bdd_counter_min_id(curr_label+1, max_label, threshold)) {
+        } else if (curr_id < bdd_counter_min_id(curr_label+1, max_var, threshold)) {
           low = lt_terminal;
         } else {
           low = adiar::create_node_ptr(curr_label + 1, curr_id);
         }
 
         ptr_t high;
-        if (curr_label == max_label) {
+        if (curr_label == max_var) {
           high = curr_id + 1 == threshold ? eq_terminal : gt_terminal;
         } else if (curr_id == threshold) {
           high = gt_terminal;
@@ -112,7 +112,7 @@ namespace adiar
       } while (curr_id-- > min_id);
       nw.unsafe_push(create_level_info(curr_label, (max_id - min_id) + 1));
 
-    } while (curr_label-- > min_label);
+    } while (curr_label-- > min_var);
 
     // Maximum 1-level cut
     const label_t first_lvl_with_lt = vars - threshold; // 0-indexed

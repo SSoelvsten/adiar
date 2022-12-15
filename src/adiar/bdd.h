@@ -62,7 +62,7 @@ namespace adiar
   ///
   /// \details   Creates a BDD of a single node with label <tt>var</tt> and the
   ///            children false and true. The given label must be smaller than
-  ///            \ref MAX_LABEL.
+  ///            \ref max_var.
   ///
   /// \param var The label of the desired variable
   ///
@@ -75,7 +75,7 @@ namespace adiar
   ///
   /// \details   Creates a BDD of a single node with label <tt>var</tt> and the
   ///            children true and false. The given label must be smaller than
-  ///            or equal to \ref MAX_LABEL.
+  ///            or equal to \ref max_var.
   ///
   /// \param var Label of the desired variable
   ///
@@ -89,7 +89,7 @@ namespace adiar
   ///
   /// \details    Creates a BDD with a chain of nodes on the 'high' arc to the
   ///             true child, and false otherwise. The given labels must be
-  ///             smaller than or equal to \ref MAX_LABEL.
+  ///             smaller than or equal to \ref max_var.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   ///
@@ -105,7 +105,7 @@ namespace adiar
   ///
   /// \details    Creates a BDD with a chain of nodes on the 'low' arc to the
   ///             true child, and false otherwise. The given labels must be
-  ///             smaller than or equal to \ref MAX_LABEL.
+  ///             smaller than or equal to \ref max_var.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   ///

@@ -132,7 +132,7 @@ namespace adiar {
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Label of the current level.
     /////////////////////////////////////////////////////////////////////////////
-    label_t current_label = MAX_LABEL;
+    label_t current_label = max_var;
 
     /////////////////////////////////////////////////////////////////////////////
     /// \brief Next available level identifier for the current level.
@@ -186,7 +186,7 @@ namespace adiar {
       if(low.builder_ref != builder_ref || high.builder_ref != builder_ref) {
         throw std::invalid_argument("Cannot use pointers from a different builder");
       }
-      if(label > MAX_LABEL) {
+      if(label > max_var) {
         throw std::invalid_argument("Nodes must have a valid label");
       }
       if(label > current_label) {
@@ -390,7 +390,7 @@ namespace adiar {
       nf = node_file();
       nw.attach(nf);
 
-      current_label = MAX_LABEL;
+      current_label = max_var;
       current_id = MAX_ID;
       created_terminal = false;
       terminal_val = false;

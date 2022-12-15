@@ -248,10 +248,10 @@ go_bandit([]() {
       AssertThrows(std::invalid_argument, b.add_node(0,p,false));
     });
 
-    it("throws an exception when label > MAX_LABEL", [&]() {
+    it("throws an exception when label > max_var", [&]() {
       bdd_builder b;
 
-      AssertThrows(std::invalid_argument, b.add_node(MAX_LABEL + 1,false,true));
+      AssertThrows(std::invalid_argument, b.add_node(max_var + 1,false,true));
     });
 
     it("throws an exception when label > last label", [&]() {

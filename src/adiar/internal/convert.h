@@ -55,7 +55,7 @@ namespace adiar
       while(ls.can_pull()) {
         const label_t next_label = ls.pull();
 
-        adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
+        adiar_assert(next_label <= max_var, "Cannot represent that large a label");
         adiar_assert(is_terminal(prior_node) || next_label < label_of(prior_node),
                      "Labels not given in increasing order");
 

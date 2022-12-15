@@ -242,8 +242,8 @@ namespace adiar
     // If the levels of 'then' and 'else' are disjoint and the 'if' BDD is above
     // the two others, then we can merely zip the 'then' and 'else' BDDs. This
     // is only O((N1+N2+N3)/B) I/Os!
-    if (max_label(bdd_if) < label_of(v_then) &&
-        max_label(bdd_if) < label_of(v_else) &&
+    if (max_var(bdd_if) < label_of(v_then) &&
+        max_var(bdd_if) < label_of(v_else) &&
         disjoint_labels(bdd_then, bdd_else)) {
       return __ite_zip_bdds(bdd_if,bdd_then,bdd_else);
     }

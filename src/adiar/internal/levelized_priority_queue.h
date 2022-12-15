@@ -121,17 +121,17 @@ namespace adiar {
       adiar_debug(can_pull(),
                   "Cannot peek past end of all streams");
 
-      bool has_min_label = false;
-      label_t min_label = 0u;
+      bool has_min_var = false;
+      label_t min_var = 0u;
       for (size_t idx = 0u; idx < FILES; idx++) {
         if (_label_streams[idx] -> can_pull()
-            && (!has_min_label || _comparator(__label_of<>(_label_streams[idx] -> peek()), min_label))) {
-          has_min_label = true;
-          min_label = __label_of<>(_label_streams[idx] -> peek());
+            && (!has_min_var || _comparator(__label_of<>(_label_streams[idx] -> peek()), min_var))) {
+          has_min_var = true;
+          min_var = __label_of<>(_label_streams[idx] -> peek());
         }
       }
 
-      return min_label;
+      return min_var;
     }
 
     label_t pull()
@@ -139,16 +139,16 @@ namespace adiar {
       adiar_debug(can_pull(),
                   "Cannot pull past end of all streams");
 
-      label_t min_label = peek();
+      label_t min_var = peek();
 
-      // pull from all with min_label
+      // pull from all with min_var
       for (const std::unique_ptr<stream_t> &level_info_stream : _label_streams) {
-        if (level_info_stream -> can_pull() && __label_of<>(level_info_stream -> peek()) == min_label) {
+        if (level_info_stream -> can_pull() && __label_of<>(level_info_stream -> peek()) == min_var) {
           level_info_stream -> pull();
         }
       }
 
-      return min_label;
+      return min_var;
     }
   };
 
@@ -221,7 +221,7 @@ namespace adiar {
     static_assert(0 < LOOK_AHEAD,
                   "LOOK_AHEAD must at least be of one level");
 
-    // TODO: LOOK_AHEAD must be strictly smaller than MAX_LABEL (but we need to
+    // TODO: LOOK_AHEAD must be strictly smaller than max_var (but we need to
     //       close #164 first to do this check at compile time)
 
     static constexpr label_t OUT_OF_BUCKETS_IDX = static_cast<label_t>(-1);
@@ -232,7 +232,7 @@ namespace adiar {
     static_assert(OUT_OF_BUCKETS_IDX + 1 == 0,
                   "Overflow to '0' is necessary for internal logic to work");
 
-    static constexpr label_t NO_LABEL = MAX_LABEL+1;
+    static constexpr label_t NO_LABEL = max_var+1;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -606,7 +606,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     void setup_next_level(label_t stop_level = NO_LABEL)
     {
-      adiar_debug(stop_level <= MAX_LABEL || stop_level == NO_LABEL,
+      adiar_debug(stop_level <= max_var || stop_level == NO_LABEL,
                   "The stop level should be a legal value (or not given)");
 
       adiar_debug(!has_current_level() || empty_level(),
@@ -993,7 +993,7 @@ namespace adiar {
                                  file_t, FILES, level_comp_t, INIT_LEVEL>
   {
   private:
-    static constexpr label_t NO_LABEL = MAX_LABEL+1;
+    static constexpr label_t NO_LABEL = max_var+1;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -1189,7 +1189,7 @@ namespace adiar {
     ////////////////////////////////////////////////////////////////////////////
     void setup_next_level(label_t stop_level = NO_LABEL)
     {
-      adiar_debug(stop_level <= MAX_LABEL || stop_level == NO_LABEL,
+      adiar_debug(stop_level <= max_var || stop_level == NO_LABEL,
                   "The stop level should be a legal value (or not given)");
 
       adiar_debug(!has_current_level() || empty_level(),

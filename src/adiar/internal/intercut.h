@@ -23,7 +23,7 @@ namespace adiar
 
   struct intercut_req : arc
   {
-    label_t level = MAX_LABEL + 1u;
+    label_t level = max_var + 1u;
   };
 
   struct intercut_req_label
@@ -78,7 +78,7 @@ namespace adiar
   bool cut_terminal(const label_t curr_level, const label_t cut_level, const bool terminal_value)
   {
     return curr_level < cut_level
-      && cut_level <= MAX_LABEL
+      && cut_level <= max_var
       && (!terminal_value || intercut_policy::cut_true_terminal)
       && (terminal_value || intercut_policy::cut_false_terminal);
   }
@@ -95,7 +95,7 @@ namespace adiar
                                const ptr_t source, const ptr_t target,
                                const label_t curr_level, const label_t next_cut)
     {
-      const label_t target_level = is_node(target) ? label_of(target) : MAX_LABEL+1;
+      const label_t target_level = is_node(target) ? label_of(target) : max_var+1;
       if (is_terminal(target) && !cut_terminal<intercut_policy>(curr_level, next_cut, value_of(target))) {
         aw.unsafe_push_terminal({ source, target });
         return;
@@ -203,7 +203,7 @@ namespace adiar
       }
 
       if(!ls.can_pull() && l <= out_label) {
-        l = MAX_LABEL + 1;
+        l = max_var + 1;
       }
 
       // Resolve requests that end at the cut for this level

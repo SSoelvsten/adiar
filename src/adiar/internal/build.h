@@ -23,7 +23,7 @@ namespace adiar
 
   inline node_file build_ithvar(label_t label)
   {
-    adiar_assert(label <= MAX_LABEL, "Cannot represent that large a label");
+    adiar_assert(label <= max_var, "Cannot represent that large a label");
 
     node_file nf;
     node_writer nw(nf);
@@ -57,7 +57,7 @@ namespace adiar
         label_t next_label = ls.pull();
         node_t next_node = create_node(next_label, MAX_ID, low, high);
 
-        adiar_assert(next_label <= MAX_LABEL, "Cannot represent that large a label");
+        adiar_assert(next_label <= max_var, "Cannot represent that large a label");
         adiar_assert(is_terminal(high) || next_label < label_of(high),
                      "Labels not given in increasing order");
 

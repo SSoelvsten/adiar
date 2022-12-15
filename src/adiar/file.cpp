@@ -19,12 +19,12 @@ namespace adiar
     return label_of(n);
   }
 
-  label_t min_label(const node_file &file)
+  label_t min_var(const node_file &file)
   {
     return extract_label<false>(file);
   }
 
-  label_t max_label(const node_file &file)
+  label_t max_var(const node_file &file)
   {
     return extract_label<true>(file);
   }

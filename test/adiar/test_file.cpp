@@ -1212,20 +1212,20 @@ go_bandit([]() {
             });
           });
 
-          describe("min_label and max_label", [&]() {
+          describe("min_var and max_var", [&]() {
             it("should extract labels from x0", [&]() {
-              AssertThat(min_label(x0), Is().EqualTo(0u));
-              AssertThat(max_label(x0), Is().EqualTo(0u));
+              AssertThat(min_var(x0), Is().EqualTo(0u));
+              AssertThat(max_var(x0), Is().EqualTo(0u));
             });
 
             it("should extract labels from x0_and_x1", [&]() {
-              AssertThat(min_label(x0_and_x1), Is().EqualTo(0u));
-              AssertThat(max_label(x0_and_x1), Is().EqualTo(1u));
+              AssertThat(min_var(x0_and_x1), Is().EqualTo(0u));
+              AssertThat(max_var(x0_and_x1), Is().EqualTo(1u));
             });
 
             it("should extract labels from node_test_file", [&]() {
-              AssertThat(min_label(node_test_file), Is().EqualTo(0u));
-              AssertThat(max_label(node_test_file), Is().EqualTo(1u));
+              AssertThat(min_var(node_test_file), Is().EqualTo(0u));
+              AssertThat(max_var(node_test_file), Is().EqualTo(1u));
             });
           });
         });
