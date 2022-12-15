@@ -379,6 +379,34 @@ namespace adiar
   inline void output_dot(const zdd &A, const std::string &file_name)
   { return zdd_printdot(A, file_name); }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Get the minimal occurring variable in this BDD.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by min_var in 'adiar/bdd.h'")]]
+  inline bdd::label_t min_label(const bdd &f)
+  { return min_var(f); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Get the maximal occurring variable in this BDD.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by max_var in 'adiar/bdd.h'")]]
+  inline bdd::label_t max_label(const bdd &f)
+  { return max_var(f); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Get the minimal occurring variable in this BDD.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by min_var in 'adiar/zdd.h'")]]
+  inline zdd::label_t min_label(const zdd &A)
+  { return min_var(A); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Get the maximal occurring variable in this BDD.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by max_var in 'adiar/zdd.h'")]]
+  inline zdd::label_t max_label(const zdd &A)
+  { return max_var(A); }
+
   // LCOV_EXCL_STOP
 }
 
