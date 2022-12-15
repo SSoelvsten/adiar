@@ -7,9 +7,9 @@
 &nbsp;
 [![codecov](https://img.shields.io/codecov/c/github/ssoelvsten/adiar?logo=codecov&logoColor=white&token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
 &nbsp;
-[![test](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/unit%20test/main?label=test&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/unit_test.yml)
+[![test](http://img.shields.io/github/actions/workflow/status/ssoelvsten/adiar/unit_test.yml?branch=main&label=test&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/unit_test.yml)
 &nbsp;
-[![examples](https://img.shields.io/github/workflow/status/ssoelvsten/adiar/examples/main?label=examples&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/examples.yml)
+[![examples](http://img.shields.io/github/actions/workflow/status/ssoelvsten/adiar/examples.yml?branch=main&label=examples&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/examples.yml)
 
 Based on the work of Lars Arge [[Arge96](#references)], Adiar<sup>[1](#footnotes)</sup>
 is a BDD package [[Bryant86](#references)] that makes use of time-forward processing
