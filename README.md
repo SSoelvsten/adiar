@@ -156,10 +156,14 @@ The value **T** can either be _all_ or _closed_.
 
 ## Contributions
 
-Adiar is not yet feature complete, and there are still many interesting things
-left for _you_ to do. We already list lots of suggestions for possible projects
-as [future work](/FUTURE_WORK.md) and other possible things to contribute with
-as [issues](https://github.com/SSoelvsten/adiar/issues).
+Adiar is not yet feature complete. If you feel anything is missing, please open
+an [issue](https://github.com/SSoelvsten/adiar/issues/new/choose).
+
+Your contribution to the project is also very welcome! Our
+[issues](https://github.com/SSoelvsten/adiar/issues) list of larger student
+projects but also many smaller things for *you* to help us with. Please read our
+[Contribution Guidelines](/CONTRIBUTING.md) before you start working on
+something.
 
 
 ## License
