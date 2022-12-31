@@ -58,12 +58,14 @@ jobs:
 
     - name: Generate code coverage report
       working-directory: ${{runner.workspace}}
+      if: always()
       run: |
         lcov -c -d build/ -o ./coverage.info
         lcov --remove coverage.info --output-file coverage.info "/usr/*" "*/external/*" "./test/*"
 
     - name: Upload report to Codecov.io
       working-directory: ${{runner.workspace}}
+      if: always()
       run: bash <(curl -s https://codecov.io/bash) -f coverage.info -t ${{ secrets.CODECOV_TOKEN }} || echo "Codecov did not collect coverage reports"
 
   test_dummy:

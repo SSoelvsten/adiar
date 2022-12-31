@@ -214,7 +214,7 @@ coverage:
 	@lcov --directory build/src/adiar/ --zerocounters
 	$(MAKE) clean/files
 
-	@./build/test/test-adiar
+	@./build/test/test-adiar || echo ""
 	$(MAKE) clean/files
 
   # create report
