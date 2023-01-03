@@ -331,7 +331,7 @@ namespace adiar::internal
         const tpie::memory_size_type weighted_share = memory_given / (4 * BUCKETS + 1);
 
         return std::max(eight_MiB, weighted_share);
-        // LCOV_EXCL_END
+        // LCOV_EXCL_STOP
       } else {
         // ---------------------------------------------------------------------
         static_assert(mem_mode == memory_mode_t::INTERNAL && mem_mode == memory_mode_t::EXTERNAL,

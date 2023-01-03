@@ -277,7 +277,7 @@ namespace adiar::internal
   template <typename elem_t, typename comp_t = std::less<elem_t>>
   using external_sorter = sorter<memory_mode_t::EXTERNAL, elem_t, comp_t>;
 
-  // LCOV_EXCL_END
+  // LCOV_EXCL_STOP
 }
 
 #endif // ADIAR_INTERNAL_DATA_STRUCTURES_SORTER_H
