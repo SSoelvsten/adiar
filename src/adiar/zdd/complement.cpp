@@ -37,7 +37,7 @@ namespace adiar
     // LCOV_EXCL_START
     static zdd terminal(const bool /*terminal_value*/)
     { adiar_unreachable(); }
-    // LCOV_EXCL_END
+    // LCOV_EXCL_STOP
 
     // We can improve this by knowing whether we are at the very last label. If
     // that is the case, and the high edge becomes F, then it can be skipped.
@@ -67,7 +67,7 @@ namespace adiar
     // LCOV_EXCL_START
     static internal::intercut_rec_output miss_existing(const zdd::node_t &/*n*/)
     { adiar_unreachable(); }
-    // LCOV_EXCL_END
+    // LCOV_EXCL_STOP
   };
 
   __zdd zdd_complement(const zdd &dd, const shared_file<zdd::label_t> &universe)

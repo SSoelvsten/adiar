@@ -122,7 +122,7 @@ namespace adiar::internal
     // LCOV_EXCL_START
     static intercut_rec miss_existing(const node &/*n*/)
     { adiar_unreachable(); }
-    // LCOV_EXCL_END
+    // LCOV_EXCL_STOP
   };
 }
 
