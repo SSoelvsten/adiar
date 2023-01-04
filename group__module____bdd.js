@@ -98,6 +98,6 @@ var group__module____bdd =
     [ "is_false", "group__module____bdd.html#gaa770b1d0ae408db9345b064a4dd8390d", null ],
     [ "is_terminal", "group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1", null ],
     [ "is_true", "group__module____bdd.html#ga669be328589daa02ac9e609610ce64a1", null ],
-    [ "max_label", "group__module____bdd.html#gaffbe978b913731c64c2123f0f590d581", null ],
-    [ "min_label", "group__module____bdd.html#ga6c9c610f38c76848968e7b0b8a2a022d", null ]
+    [ "max_var", "group__module____bdd.html#gaf48a24c478608bfdf3e9f6a1997df104", null ],
+    [ "min_var", "group__module____bdd.html#gaac8586a925cf7a95ceca026ad29259fb", null ]
 ];

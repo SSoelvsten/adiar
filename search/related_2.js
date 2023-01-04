@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['max_5flabel_485',['max_label',['../classadiar_1_1internal_1_1dd.html#abe829e920dae55b5330734d2336393bb',1,'adiar::internal::dd']]],
-  ['min_5flabel_486',['min_label',['../classadiar_1_1internal_1_1dd.html#a147a5ac84f1f4f866e5a21b37fd97da0',1,'adiar::internal::dd']]]
+  ['max_5fvar_488',['max_var',['../classadiar_1_1internal_1_1dd.html#a6c7bf3aae335351ed1ee703f0209a902',1,'adiar::internal::dd']]],
+  ['min_5fvar_489',['min_var',['../classadiar_1_1internal_1_1dd.html#a715f7e955c75080b60af0a3a2f59f50e',1,'adiar::internal::dd']]]
 ];

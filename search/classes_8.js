@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['levelized_5fpriority_5fqueue_5ft_262',['levelized_priority_queue_t',['../structadiar_1_1stats__t_1_1levelized__priority__queue__t.html',1,'adiar::stats_t']]]
+  ['levelized_5fpriority_5fqueue_5ft_263',['levelized_priority_queue_t',['../structadiar_1_1stats__t_1_1levelized__priority__queue__t.html',1,'adiar::stats_t']]]
 ];
