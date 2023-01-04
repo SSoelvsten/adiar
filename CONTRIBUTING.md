@@ -1,8 +1,8 @@
 # Adiar Contribution Guidelines
 
 Thank you for spending your valuable time contributing to this research project!
-Below you find information relevant to help you get started on contributing to
-Adiar.
+Below you find information relevant for helping you to get started with
+contributing to Adiar.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
@@ -46,7 +46,7 @@ build *Adiar* and run its unit tests.
 
 ### Visual Studio Code
 
-If you use Visual Studio Code as your editor, please have the following two
+If you use Visual Studio Code as your editor, please have the following three
 *extensions* installed.
 
 | Name                         | ID                        |
@@ -66,16 +66,16 @@ The following two are also recommended:
 
 ### Commits and Messages
 
-- Commit Messages are written in imperative, the first word is capitalized and
-  using a syntax that is pretty in ASCII (not only Markdown), i.e. example,
-  "*Turn 'tuple' into a class*".
-- One change per commit, i.e. a commit message that includes the word "and"
-  should be avoided as much as is possible.
+- Commit Messages are written in imperative, their first word is capitalized,
+  and they are written in a way that is pretty in ASCII (not only Markdown),
+  e.g. "*Turn 'tuple' into a class*".
+- Only **one** change per commit, i.e. a commit message that includes the word
+  "and" should be avoided as much as is possible.
 - Unit tests for a feature are included in the commit that adds said feature.
   They do not need to be mentioned as part of the commit message.
-- Each commit should be possible build and run *test/* and *src/main.cpp*. If
-  you forgot to stage a change or introduced a bug, please *rebase* your branch
-  and add the *fixup*.
+- Each commit should be possible to build and run *test/* and *src/main.cpp*.
+  If you forgot to stage a change or introduced a bug, please *rebase* your
+  branch and add the *fixup*.
 
 ### Linear History
 
@@ -84,7 +84,7 @@ always *rebased* on-top of main.
 
 ### Branch Names
 
-If are a collaborator on the main repository (*github.com/SSoelvsten/adiar/*),
+If you are a collaborator on the main repository (*github.com/SSoelvsten/adiar/*),
 your branches should try to use the following prefixes in their name.
 
 - **bug/\***:
@@ -110,8 +110,8 @@ The most basic parts of these formatting rules are also reflected in the
 
 ### §1 Functional-First
 
-The algorithms of Adiar lend themselves very well to a functional style, e.g. if
-the priority queues are abstracted to ordered sets then the algorithm can be
+The algorithms of Adiar lend themselves very well to a functional style: if the
+priority queues are abstracted to ordered sets then the algorithm can be
 rephrased as very simple tail-recursive operations on lists. This has the vital
 benefit of decreasing the complexity of the code base and with it the number of
 errors.
@@ -137,9 +137,9 @@ values and should if possible be marked as `const`.
 
 #### §1.3 Imperative Exceptions
 
-For the sake of performance, the only exception to this rule is the interaction
-with (1) files, (2) data structures, e.g. the priority queues and the input
-streams, and (3) the call stack.
+For the sake of performance, the only exception to this principle is the
+interaction with (1) files, (2) data structures, e.g. the priority queues and the
+input streams, and (3) the call stack.
 
 ### §2 Run-time over Compilation-time
 
