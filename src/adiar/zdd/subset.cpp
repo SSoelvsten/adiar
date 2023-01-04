@@ -90,10 +90,10 @@ namespace adiar
     static internal::substitute_rec fix_false(const zdd::node_t &n, zdd_subset_act &/*amgr*/)
     { return internal::substitute_rec_skipto { n.low() }; }
 
+    // LCOV_EXCL_START
     static internal::substitute_rec fix_true(const zdd::node_t &/*n*/, zdd_subset_act &/*amgr*/)
-    {
-      adiar_unreachable(); // LCOV_EXCL_LINE
-    }
+    { adiar_unreachable(); }
+    // LCOV_EXCL_STOP
 
   public:
     static inline zdd terminal(bool terminal_val,
@@ -137,10 +137,10 @@ namespace adiar
       return internal::substitute_rec_output { n };
     }
 
+    // LCOV_EXCL_START
     static internal::substitute_rec fix_false(const zdd::node_t &/*n*/, zdd_subset_act &/*amgr*/)
-    {
-      adiar_unreachable(); // LCOV_EXCL_LINE
-    }
+    { adiar_unreachable(); }
+    // LCOV_EXCL_STOP
 
     static internal::substitute_rec fix_true(const zdd::node_t &n, zdd_subset_act &amgr)
     {
