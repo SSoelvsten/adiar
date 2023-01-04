@@ -35,11 +35,13 @@ namespace adiar
     { adiar_unreachable(); }
     // LCOV_EXCL_STOP
 
+    // LCOV_EXCL_START
     static inline internal::intercut_rec hit_existing(const zdd::node_t &/*n*/)
     {
       // The user should NOT have supplied a label that hits any existing nodes.
-      adiar_unreachable(); // LCOV_EXCL_LINE
+      adiar_unreachable();
     }
+    // LCOV_EXCL_STOP
 
     static inline internal::intercut_rec_output hit_cut(const zdd::ptr_t &target)
     {
