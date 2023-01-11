@@ -18,7 +18,11 @@ namespace adiar
 
     inline bdd::ptr_t visit(const bdd::node_t &n)
     {
-      return af(n.label()) ? n.high() : n.low();
+      assignment::value_t a = af(n.label());
+      adiar_assert(a != assignment::NONE,
+                   "Missing assignment for node visited in BDD");
+
+      return a ? n.high() : n.low();
     }
 
     inline void visit(const bool s)
@@ -51,10 +55,14 @@ namespace adiar
     {
       const bdd::label_t level = n.label();
       while (a.level() < level) {
-        adiar_assert(as.can_pull(), "Given assignment file is insufficient to traverse BDD");
+        adiar_assert(as.can_pull(),
+                     "Assignment file is insufficient to traverse BDD");
         a = as.pull();
       }
-      adiar_assert(a.level() == level, "Missing assignment for node visited in BDD");
+      adiar_assert(a.level() == level,
+                   "Missing assignment for node visited in BDD");
+      adiar_assert(a.value() != assignment::NONE,
+                   "Missing assignment for node visited in BDD");
 
       return a.value() ? n.high() : n.low();
     }

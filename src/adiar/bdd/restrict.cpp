@@ -10,20 +10,42 @@
 
 namespace adiar
 {
+  class substitute_assignment_file_mgr
+  {
+    file_stream<assignment> as;
+    assignment a;
+
+  public:
+    substitute_assignment_file_mgr(const shared_file<assignment> &af) : as(af)
+    {
+      a = as.pull();
+    }
+
+    assignment::value_t assignment_for_level(assignment::label_t level) {
+      while (a.level() < level && as.can_pull()) {
+        a = as.pull();
+      }
+
+      return a.level() == level ? a.value() : assignment::NONE;
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: template on manager?
   class bdd_restrict_policy : public bdd_policy
   {
   public:
-    static internal::substitute_rec keep_node(const bdd::node_t &n, internal::substitute_assignment_act &/*amgr*/)
+    static internal::substitute_rec keep_node(const bdd::node_t &n, substitute_assignment_file_mgr &/*amgr*/)
     { return internal::substitute_rec_output { n }; }
 
-    static internal::substitute_rec fix_false(const bdd::node_t &n, internal::substitute_assignment_act &/*amgr*/)
+    static internal::substitute_rec fix_false(const bdd::node_t &n, substitute_assignment_file_mgr &/*amgr*/)
     { return internal::substitute_rec_skipto { n.low() }; }
 
-    static internal::substitute_rec fix_true(const bdd::node_t &n, internal::substitute_assignment_act &/*amgr*/)
+    static internal::substitute_rec fix_true(const bdd::node_t &n, substitute_assignment_file_mgr &/*amgr*/)
     { return internal::substitute_rec_skipto { n.high() }; }
 
   public:
-    static inline bdd terminal(bool terminal_val, internal::substitute_assignment_act &/*amgr*/)
+    static inline bdd terminal(bool terminal_val, substitute_assignment_file_mgr &/*amgr*/)
     { return bdd_terminal(terminal_val); }
   };
 
@@ -36,7 +58,7 @@ namespace adiar
       return dd;
     }
 
-    internal::substitute_assignment_act amgr(a);
+    substitute_assignment_file_mgr amgr(a);
     return internal::substitute<bdd_restrict_policy>(dd, amgr);
   }
 }

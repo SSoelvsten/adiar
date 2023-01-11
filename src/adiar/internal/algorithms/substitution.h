@@ -50,50 +50,20 @@ namespace adiar::internal
 
   typedef std::variant<substitute_rec_output, substitute_rec_skipto> substitute_rec;
 
-  enum substitute_act { KEEP, FIX_FALSE, FIX_TRUE };
-
-  //////////////////////////////////////////////////////////////////////////////
-  class substitute_assignment_act
-  {
-    file_stream<assignment> as;
-    assignment a;
-
-  public:
-    typedef shared_file<assignment> action_t;
-
-    substitute_assignment_act(const action_t &af) : as(af)
-    {
-      a = as.pull();
-    }
-
-    substitute_act action_for_level(assignment::label_t level) {
-      while (a.level() < level && as.can_pull()) {
-        a = as.pull();
-      }
-
-      if (a.level() == level) {
-        // TODO: Take into account that "DON'T CARE" also is a return value?
-        return a.value() ? substitute_act::FIX_TRUE : substitute_act::FIX_FALSE;
-      } else {
-        return substitute_act::KEEP;
-      }
-    }
-  };
-
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
-  template<typename substitute_policy, typename substitute_act_mgr>
-  inline substitute_rec substitute_apply_act(const substitute_act &act,
-                                             const node &n,
-                                             substitute_act_mgr &amgr)
+  template<typename substitute_policy, typename substitute_assignment_mgr>
+  inline substitute_rec substitute_apply_assignment(const assignment::value_t &a,
+                                                    const node &n,
+                                                    substitute_assignment_mgr &amgr)
   {
-    switch (act) {
-    case substitute_act::FIX_FALSE:
+    switch (a) {
+    case assignment::FALSE:
       return substitute_policy::fix_false(n, amgr);
-    case substitute_act::FIX_TRUE:
+    case assignment::TRUE:
       return substitute_policy::fix_true(n, amgr);
     default:
-    case substitute_act::KEEP:
+    case assignment::NONE:
       return substitute_policy::keep_node(n, amgr);
     }
   }
@@ -110,9 +80,10 @@ namespace adiar::internal
     }
   }
 
-  template<typename substitute_policy, typename substitute_act_mgr, typename pq_t>
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename substitute_policy, typename substitute_assignment_mgr, typename pq_t>
   typename substitute_policy::unreduced_t __substitute(const typename substitute_policy::reduced_t &dd,
-                                                       substitute_act_mgr &amgr,
+                                                       substitute_assignment_mgr &amgr,
                                                        const size_t pq_memory,
                                                        const size_t pq_max_size)
   {
@@ -128,11 +99,11 @@ namespace adiar::internal
     typename substitute_policy::label_t level = n.label();
     size_t level_size = 0;
 
-    substitute_act action = amgr.action_for_level(level);
+    assignment::value_t a = amgr.assignment_for_level(level);
 
     // process the root and create initial recursion requests
     {
-      const substitute_rec rec_res = substitute_apply_act<substitute_policy>(action, n, amgr);
+      const substitute_rec rec_res = substitute_apply_assignment<substitute_policy>(a, n, amgr);
 
       if (std::holds_alternative<substitute_rec_output>(rec_res)) {
         const node n_res = std::get<substitute_rec_output>(rec_res).out;
@@ -165,7 +136,7 @@ namespace adiar::internal
         level_size = 0;
         level = substitute_pq.current_level();
 
-        action = amgr.action_for_level(level);
+        a = amgr.assignment_for_level(level);
 
         max_1level_cut = std::max(max_1level_cut, substitute_pq.size());
       }
@@ -176,7 +147,7 @@ namespace adiar::internal
       }
 
       // process node and forward information
-      const substitute_rec rec_res = substitute_apply_act<substitute_policy>(action, n, amgr);
+      const substitute_rec rec_res = substitute_apply_assignment<substitute_policy>(a, n, amgr);
 
       if(std::holds_alternative<substitute_rec_output>(rec_res)) {
         const node n_res = std::get<substitute_rec_output>(rec_res).out;
@@ -228,9 +199,9 @@ namespace adiar::internal
     return to_size(max_2level_cut + 2u);
   }
 
-  template<typename substitute_policy, typename substitute_act_mgr>
+  template<typename substitute_policy, typename substitute_assignment_mgr>
   typename substitute_policy::unreduced_t substitute(const typename substitute_policy::reduced_t &dd,
-                                                     substitute_act_mgr &amgr)
+                                                     substitute_assignment_mgr &amgr)
   {
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -255,21 +226,21 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_substitute.lpq.unbucketed++;
 #endif
-      return __substitute<substitute_policy, substitute_act_mgr,
+      return __substitute<substitute_policy, substitute_assignment_mgr,
                           substitute_priority_queue_t<0, memory_mode_t::INTERNAL>>
         (dd, amgr, aux_available_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
       stats_substitute.lpq.internal++;
 #endif
-      return __substitute<substitute_policy, substitute_act_mgr,
+      return __substitute<substitute_policy, substitute_assignment_mgr,
                           substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
         (dd, amgr, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
       stats_substitute.lpq.external++;
 #endif
-      return __substitute<substitute_policy, substitute_act_mgr,
+      return __substitute<substitute_policy, substitute_assignment_mgr,
                           substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
         (dd, amgr, aux_available_memory, max_pq_size);
     }
