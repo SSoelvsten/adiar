@@ -10,11 +10,7 @@ namespace adiar::internal
 {
   template<typename T>
   inline ptr_uint64::label_t __level_of(const T& t)
-  { return label_of(t); }
-
-  template<>
-  inline ptr_uint64::label_t __level_of(const level_info& l)
-  { return l.level(); }
+  { return t.level(); }
 
   template<>
   inline ptr_uint64::label_t __level_of(const ptr_uint64::label_t& l)
@@ -42,7 +38,7 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain the level_info stream projected onto the labels.
   ////////////////////////////////////////////////////////////////////////////
-  // TODO: move to <adiar/internal/dd.h>
+  // TODO: move to <adiar/internal/dd.h> as 'dd_varprofile'
   inline shared_file<dd::label_t> varprofile(const dd &dd)
   {
     level_info_stream<> info_stream(dd);

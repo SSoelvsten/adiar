@@ -9,80 +9,98 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief An assignment [label -> value] to a variable with the given label to
-  ///        which is assigned the given value.
+  /// \brief A <tt>(x,v)</tt> tuple representing the single assignment
+  ///        \f$ x \mapsto v \f$.
   //////////////////////////////////////////////////////////////////////////////
-  struct assignment {
-    typedef internal::ptr_uint64::label_t label_t;
+  class assignment
+  {
+    /* ================================= TYPES ============================== */
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the variable label.
+    ///
+    /// \todo Turn into <tt>size_t</tt>?
+    ////////////////////////////////////////////////////////////////////////////
+    using label_t = internal::ptr_uint64::label_t;
 
-    label_t label;
-    bool value;
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the values.
+    ///
+    /// \todo Replace with enum for { FALSE (0), TRUE (1), DONT_CARE (2) }.
+    //////////////////////////////////////////////////////////////////////////////
+    typedef bool value_t;
+
+    /* ================================ VARIABLESS ============================= */
+  private:
+    label_t _var;
+    value_t _val;
+
+    /* ============================== CONSTRUCTORS ========================== */
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    assignment() = default;
+    assignment(const assignment &a) = default;
+    ~assignment() = default;
+
+    //////////////////////////////////////////////////////////////////////////////
+    /// \brief Constructs assignment pair (variable, value).
+    ////////////////////////////////////////////////////////////////////////////
+    assignment(const label_t &var, const value_t &val)
+      : _var(var), _val(val)
+    {
+      adiar_debug(var <= internal::ptr_uint64::MAX_LABEL,
+                  "Cannot represent that large a variable label");
+    }
+
+    /* =============================== ACCESSORS ============================ */
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Get the variable of this assignment.
+    ////////////////////////////////////////////////////////////////////////////
+    inline label_t var() const
+    { return _var; }
+
+    ////////////////////////////////////////////////////////////////////////////
+    inline label_t level() const
+    { return var(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Get the value of this assignment pair.
+    ////////////////////////////////////////////////////////////////////////////
+    inline value_t value() const
+    { return _val; }
+
+    /* ============================== COMPARATORS =========================== */
+  public:
+    inline bool operator<  (const assignment &o) const
+    { return this->_var < o._var; }
+
+    inline bool operator>  (const assignment &o) const
+    { return this->_var > o._var; }
+
+    inline bool operator== (const assignment &o) const
+    { return this->_var == o._var && this->_val == o._val; }
+
+    inline bool operator!= (const assignment &o) const
+    { return !(*this == o); }
+
+    /* =============================== OPERATORS ============================ */
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain the negated value assigned to the same variable.
+    ////////////////////////////////////////////////////////////////////////////
+    assignment operator~ () const
+    {
+      return { this->_var, !this->_val };
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \copydoc assignment
+  /// \brief Assignment function which provides for each variable label its
+  ///        assigned value.
   //////////////////////////////////////////////////////////////////////////////
-  typedef assignment assignment_t;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Create an assignment [label -> value].
-  //////////////////////////////////////////////////////////////////////////////
-  inline assignment_t create_assignment(assignment::label_t label, bool value)
-  {
-    adiar_debug(label <= internal::ptr_uint64::MAX_LABEL, "Cannot represent that large a label");
-
-    return { label, value };
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Extract the label from an assignment [label -> value].
-  //////////////////////////////////////////////////////////////////////////////
-  inline assignment::label_t label_of(const assignment_t &a)
-  {
-    return a.label;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Extract the value from an assignment [label -> value].
-  //////////////////////////////////////////////////////////////////////////////
-  inline bool value_of(const assignment_t &a)
-  {
-    return a.value;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Negate the value of an assignment [label -> value].
-  //////////////////////////////////////////////////////////////////////////////
-  inline assignment operator~ (const assignment &a)
-  {
-    return { a.label, !a.value };
-  }
-
-  inline bool operator< (const assignment &a, const assignment &b)
-  {
-    return a.label < b.label;
-  }
-
-  inline bool operator> (const assignment &a, const assignment &b)
-  {
-    return a.label > b.label;
-  }
-
-  inline bool operator== (const assignment &a, const assignment &b)
-  {
-    return a.label == b.label && a.value == b.value;
-  }
-
-  inline bool operator!= (const assignment &a, const assignment &b)
-  {
-    return !(a==b);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief   Function that computs Boolean assignment to variables with given
-  ///          label.
-  //////////////////////////////////////////////////////////////////////////////
-  typedef std::function<bool(assignment::label_t)> assignment_func;
+  using assignment_func = std::function<assignment::value_t(assignment::label_t)>;
 }
 
 #endif // ADIAR_ASSIGNMENT_H

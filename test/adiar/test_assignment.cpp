@@ -2,10 +2,10 @@
 
 go_bandit([]() {
   describe("adiar/assignment.h", []() {
-    describe("assignment_t", [&]() {
-      const assignment_t a1 = create_assignment(2, false);
-      const assignment_t a2 = create_assignment(2, true);
-      const assignment_t a3 = create_assignment(3, false);
+    describe("assignment", [&]() {
+      const assignment a1(2, false);
+      const assignment a2(2, true);
+      const assignment a3(3, false);
 
       it("is sorted first by label", [&]() {
         // Less than
@@ -29,9 +29,9 @@ go_bandit([]() {
         AssertThat(a2 > a1, Is().False());
       });
 
-      const assignment_t b1 = create_assignment(2, false);
-      const assignment_t b2 = create_assignment(2, true);
-      const assignment_t b3 = create_assignment(3, false);
+      const assignment b1(2, false);
+      const assignment b2(2, true);
+      const assignment b3(3, false);
 
       it("should be equal by content", [&]() {
         AssertThat(a1 == b1, Is().True());
@@ -52,9 +52,9 @@ go_bandit([]() {
       });
 
       it("can be negated on its value", [&]() {
-        AssertThat(~a1, Is().EqualTo(create_assignment(2, true)));
-        AssertThat(~a2, Is().EqualTo(create_assignment(2, false)));
-        AssertThat(~a3, Is().EqualTo(create_assignment(3, true)));
+        AssertThat(~a1, Is().EqualTo(assignment(2, true)));
+        AssertThat(~a2, Is().EqualTo(assignment(2, false)));
+        AssertThat(~a3, Is().EqualTo(assignment(3, true)));
       });
     });
   });

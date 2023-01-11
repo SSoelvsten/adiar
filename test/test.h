@@ -148,12 +148,12 @@ namespace snowhouse
   };
 
   template<>
-  struct Stringizer<assignment_t>
+  struct Stringizer<assignment>
   {
-    static std::string ToString(const adiar::assignment_t& a)
+    static std::string ToString(const adiar::assignment& a)
     {
       std::stringstream stream;
-      stream << "assignment: [x" << label_of(a) << "|->" << value_of(a) << "]";
+      stream << "assignment: [x" << a.var() << "|->" << a.value() << "]";
       return stream.str();
     }
   };

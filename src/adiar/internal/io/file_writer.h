@@ -191,7 +191,7 @@ namespace adiar::internal
   };
 
   // TODO: remove...
-  typedef file_writer<assignment_t> assignment_writer;
+  typedef file_writer<assignment> assignment_writer;
   typedef file_writer<ptr_uint64::label_t> label_writer;
 }
 

@@ -80,211 +80,211 @@ go_bandit([]() {
       nw << node(true);
     }
 
-    describe("bdd_eval(bdd, adiar::shared_file<assignment_t>)", [&]() {
+    describe("bdd_eval(bdd, adiar::shared_file<assignment>)", [&]() {
       it("returns F on test BDD with assignment (F,F,F,T)", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, false)
-             << create_assignment(1, false)
-             << create_assignment(2, false)
-             << create_assignment(3, true);
+          aw << assignment(0, false)
+             << assignment(1, false)
+             << assignment(2, false)
+             << assignment(3, true);
         }
 
-        AssertThat(bdd_eval(bdd, assignment), Is().False());
+        AssertThat(bdd_eval(bdd, ass), Is().False());
       });
 
       it("returns F on test BDD with assignment (F,_,F,T)", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, false)
-             << create_assignment(2, false)
-             << create_assignment(3, true);
+          aw << assignment(0, false)
+             << assignment(2, false)
+             << assignment(3, true);
         }
 
-        AssertThat(bdd_eval(bdd, assignment), Is().False());
+        AssertThat(bdd_eval(bdd, ass), Is().False());
       });
 
       it("returns T on test BDD with assignment (F,T,T,T)", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, false)
-             << create_assignment(1, true)
-             << create_assignment(2, true)
-             << create_assignment(3, true);
+          aw << assignment(0, false)
+             << assignment(1, true)
+             << assignment(2, true)
+             << assignment(3, true);
         }
 
-        AssertThat(bdd_eval(bdd, assignment), Is().True());
+        AssertThat(bdd_eval(bdd, ass), Is().True());
       });
 
       it("returns F on test BDD with assignment (T,F,F,T)", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, true)
-             << create_assignment(1, false)
-             << create_assignment(2, false)
-             << create_assignment(3, true);
+          aw << assignment(0, true)
+             << assignment(1, false)
+             << assignment(2, false)
+             << assignment(3, true);
         }
 
-        AssertThat(bdd_eval(bdd, assignment), Is().False());
+        AssertThat(bdd_eval(bdd, ass), Is().False());
       });
 
       it("returns T on test BDD with assignment (T,F,T,F)", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, true)
-             << create_assignment(1, false)
-             << create_assignment(2, true)
-             << create_assignment(3, false);
+          aw << assignment(0, true)
+             << assignment(1, false)
+             << assignment(2, true)
+             << assignment(3, false);
         }
 
-        AssertThat(bdd_eval(bdd, assignment), Is().True());
+        AssertThat(bdd_eval(bdd, ass), Is().True());
       });
 
       it("returns T on test BDD with assignment (T,T,F,T)", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, true)
-             << create_assignment(1, true)
-             << create_assignment(2, false)
-             << create_assignment(3, true);
+          aw << assignment(0, true)
+             << assignment(1, true)
+             << assignment(2, false)
+             << assignment(3, true);
         }
 
-        AssertThat(bdd_eval(bdd, assignment), Is().True());
+        AssertThat(bdd_eval(bdd, ass), Is().True());
       });
 
       it("returns T on test BDD with assignment (T,T,T,F)", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, true)
-             << create_assignment(1, true)
-             << create_assignment(2, true)
-             << create_assignment(3, false);
+          aw << assignment(0, true)
+             << assignment(1, true)
+             << assignment(2, true)
+             << assignment(3, false);
         }
 
-        AssertThat(bdd_eval(bdd, assignment), Is().False());
+        AssertThat(bdd_eval(bdd, ass), Is().False());
       });
 
       it("returns T on test BDD with assignment (T,T,T,T)", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, true)
-             << create_assignment(1, true)
-             << create_assignment(2, true)
-             << create_assignment(3, true);
+          aw << assignment(0, true)
+             << assignment(1, true)
+             << assignment(2, true)
+             << assignment(3, true);
         }
 
-        AssertThat(bdd_eval(bdd, assignment), Is().True());
+        AssertThat(bdd_eval(bdd, ass), Is().True());
       });
 
       it("should be able to evaluate BDD that skips level [1]", [&skip_bdd]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, false)
-             << create_assignment(1, true)
-             << create_assignment(2, false)
-             << create_assignment(3, true)
-             << create_assignment(4, true);
+          aw << assignment(0, false)
+             << assignment(1, true)
+             << assignment(2, false)
+             << assignment(3, true)
+             << assignment(4, true);
         }
 
-        AssertThat(bdd_eval(skip_bdd, assignment), Is().False());
+        AssertThat(bdd_eval(skip_bdd, ass), Is().False());
       });
 
       it("should be able to evaluate BDD that skips level [2]", [&skip_bdd]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, true)
-             << create_assignment(1, false)
-             << create_assignment(2, true)
-             << create_assignment(3, true)
-             << create_assignment(4, false);
+          aw << assignment(0, true)
+             << assignment(1, false)
+             << assignment(2, true)
+             << assignment(3, true)
+             << assignment(4, false);
         }
 
-        AssertThat(bdd_eval(skip_bdd, assignment), Is().False());
+        AssertThat(bdd_eval(skip_bdd, ass), Is().False());
       });
 
       it("returns T on BDD with non-zero root with assignment (F,T)", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, false)
-             << create_assignment(1, true);
+          aw << assignment(0, false)
+             << assignment(1, true);
         }
 
-        AssertThat(bdd_eval(non_zero_bdd, assignment), Is().True());
+        AssertThat(bdd_eval(non_zero_bdd, ass), Is().True());
       });
 
       it("returns F on F terminal-only BDD", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, true)
-             << create_assignment(1, false)
-             << create_assignment(2, false)
-             << create_assignment(3, true);
+          aw << assignment(0, true)
+             << assignment(1, false)
+             << assignment(2, false)
+             << assignment(3, true);
         }
 
-        AssertThat(bdd_eval(bdd_F, assignment), Is().False());
+        AssertThat(bdd_eval(bdd_F, ass), Is().False());
       });
 
       it("returns F on F terminal-only BDD with empty assignment", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
-        AssertThat(bdd_eval(bdd_F, assignment), Is().False());
+        AssertThat(bdd_eval(bdd_F, ass), Is().False());
       });
 
       it("returns T on T terminal-only BDD", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
         { // Garbage collect writer to free write-lock
-           adiar::file_writer<assignment_t> aw(assignment);
+           adiar::file_writer<assignment> aw(ass);
 
-          aw << create_assignment(0, true)
-             << create_assignment(1, true)
-             << create_assignment(2, false)
-             << create_assignment(3, true);
+          aw << assignment(0, true)
+             << assignment(1, true)
+             << assignment(2, false)
+             << assignment(3, true);
         }
 
-        AssertThat(bdd_eval(bdd_T, assignment), Is().True());
+        AssertThat(bdd_eval(bdd_T, ass), Is().True());
       });
 
       it("returns T on T terminal-only BDD with empty assignment", [&]() {
-        adiar::shared_file<assignment_t> assignment;
+        adiar::shared_file<assignment> ass;
 
-        AssertThat(bdd_eval(bdd_T, assignment), Is().True());
+        AssertThat(bdd_eval(bdd_T, ass), Is().True());
       });
     });
 

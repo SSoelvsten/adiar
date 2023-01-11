@@ -86,9 +86,9 @@ go_bandit([]() {
           nw << node(true);
         }
 
-        adiar::shared_file<assignment_t> result = bdd_satmin(T);
+        adiar::shared_file<assignment> result = bdd_satmin(T);
 
-         adiar::file_stream<assignment_t> out_assignment(result);
+         adiar::file_stream<assignment> out_assignment(result);
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
@@ -99,116 +99,116 @@ go_bandit([]() {
           nw << node(false);
         }
 
-        adiar::shared_file<assignment_t> result = bdd_satmin(false);
+        adiar::shared_file<assignment> result = bdd_satmin(false);
 
-         adiar::file_stream<assignment_t> out_assignment(result);
+         adiar::file_stream<assignment> out_assignment(result);
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve assignment [1]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_1);
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmin(bdd_1);
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(0, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(2, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, true)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve assignment [1]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_1);
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmin(bdd_1);
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(0, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(2, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, true)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve assignment [~1]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_not(bdd_1));
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmin(bdd_not(bdd_1));
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(0, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(2, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, false)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve assignment [2]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_2);
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmin(bdd_2);
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(0, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(2, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, false)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve assignment [3]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_3);
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmin(bdd_3);
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(5, false)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve assignment [3]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmin(bdd_not(bdd_3));
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmin(bdd_not(bdd_3));
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(5, true)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
@@ -216,109 +216,109 @@ go_bandit([]() {
 
     describe("bdd_satmax", [&]() {
       it("should retrieve maximal assignment [1]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_1);
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmax(bdd_1);
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(0, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(2, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, true)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve maximal assignment [~1]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_not(bdd_1));
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmax(bdd_not(bdd_1));
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(0, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(2, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, true)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve maximal assignment [2]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_2);
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmax(bdd_2);
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(0, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(2, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, true)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve maximal assignment [~2]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_not(bdd_2));
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmax(bdd_not(bdd_2));
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(0, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(0, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(2, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(2, false)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, true)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve maximal assignment [3]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_3);
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmax(bdd_3);
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(5, true)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
 
       it("should retrieve maximal assignment [3]", [&]() {
-        adiar::shared_file<assignment_t> result = bdd_satmax(bdd_not(bdd_3));
-         adiar::file_stream<assignment_t> out_assignment(result);
+        adiar::shared_file<assignment> result = bdd_satmax(bdd_not(bdd_3));
+         adiar::file_stream<assignment> out_assignment(result);
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(1, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(1, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(3, true)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(3, true)));
 
         AssertThat(out_assignment.can_pull(), Is().True());
-        AssertThat(out_assignment.pull(), Is().EqualTo(create_assignment(5, false)));
+        AssertThat(out_assignment.pull(), Is().EqualTo(assignment(5, false)));
 
         AssertThat(out_assignment.can_pull(), Is().False());
       });
