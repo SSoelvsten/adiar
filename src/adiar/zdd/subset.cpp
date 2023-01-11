@@ -8,8 +8,8 @@
 
 namespace adiar
 {
-  template<internal::substitute_act FIX_VALUE>
-  class zdd_subset_label_act
+  template<assignment::value_t FIX_VALUE>
+  class zdd_subset_label_assignment
   {
     internal::file_stream<zdd::label_t> ls;
 
@@ -22,9 +22,8 @@ namespace adiar
     zdd::label_t alg_level = 0;
 
   public:
-    typedef shared_file<zdd::label_t> action_t;
-
-    zdd_subset_label_act(const action_t &lf) : ls(lf)
+    zdd_subset_label_assignment(const shared_file<zdd::label_t> &lf)
+      : ls(lf)
     {
       l_incl = ls.pull();
     }
@@ -47,9 +46,9 @@ namespace adiar
     }
 
   public:
-    internal::substitute_act action_for_level(const zdd::label_t new_level) {
+    assignment::value_t assignment_for_level(const zdd::label_t new_level) {
       forward_to_level(new_level);
-      return l_incl == new_level ? FIX_VALUE : internal::substitute_act::KEEP;
+      return l_incl == new_level ? FIX_VALUE : assignment::NONE;
     }
 
   public:
@@ -80,24 +79,23 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename zdd_subset_act>
+  template<typename assignment_mgr>
   class zdd_offset_policy : public zdd_policy
   {
   public:
-    static internal::substitute_rec keep_node(const zdd::node_t &n, zdd_subset_act &/*amgr*/)
+    static internal::substitute_rec keep_node(const zdd::node_t &n, assignment_mgr &/*amgr*/)
     { return internal::substitute_rec_output { n }; }
 
-    static internal::substitute_rec fix_false(const zdd::node_t &n, zdd_subset_act &/*amgr*/)
+    static internal::substitute_rec fix_false(const zdd::node_t &n, assignment_mgr &/*amgr*/)
     { return internal::substitute_rec_skipto { n.low() }; }
 
     // LCOV_EXCL_START
-    static internal::substitute_rec fix_true(const zdd::node_t &/*n*/, zdd_subset_act &/*amgr*/)
+    static internal::substitute_rec fix_true(const zdd::node_t &/*n*/, assignment_mgr &/*amgr*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_STOP
 
   public:
-    static inline zdd terminal(bool terminal_val,
-                               zdd_subset_label_act<internal::substitute_act::FIX_FALSE>& /*amgr*/)
+    static inline zdd terminal(bool terminal_val, assignment_mgr& /*amgr*/)
     { return zdd_terminal(terminal_val); }
   };
 
@@ -110,16 +108,16 @@ namespace adiar
       return dd;
     }
 
-    zdd_subset_label_act<internal::substitute_act::FIX_FALSE> amgr(l);
-    return internal::substitute<zdd_offset_policy<zdd_subset_label_act<internal::substitute_act::FIX_FALSE>>>(dd, amgr);
+    zdd_subset_label_assignment<assignment::FALSE> amgr(l);
+    return internal::substitute<zdd_offset_policy<zdd_subset_label_assignment<assignment::FALSE>>>(dd, amgr);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename zdd_subset_act>
+  template<typename assignment_mgr>
   class zdd_onset_policy : public zdd_policy
   {
   public:
-    static internal::substitute_rec keep_node(const zdd::node_t &n, zdd_subset_act &amgr)
+    static internal::substitute_rec keep_node(const zdd::node_t &n, assignment_mgr &amgr)
     {
       if (amgr.has_level_incl()) {
         // If recursion goes past the intended level, then it is replaced with
@@ -138,11 +136,11 @@ namespace adiar
     }
 
     // LCOV_EXCL_START
-    static internal::substitute_rec fix_false(const zdd::node_t &/*n*/, zdd_subset_act &/*amgr*/)
+    static internal::substitute_rec fix_false(const zdd::node_t &/*n*/, assignment_mgr &/*amgr*/)
     { adiar_unreachable(); }
     // LCOV_EXCL_STOP
 
-    static internal::substitute_rec fix_true(const zdd::node_t &n, zdd_subset_act &amgr)
+    static internal::substitute_rec fix_true(const zdd::node_t &n, assignment_mgr &amgr)
     {
       if (amgr.has_level_excl()) {
         if (n.high().is_terminal() || n.high().label() > amgr.level_excl()) {
@@ -153,8 +151,7 @@ namespace adiar
     }
 
   public:
-    static inline zdd terminal(bool terminal_val,
-                               zdd_subset_label_act<internal::substitute_act::FIX_TRUE>& amgr)
+    static inline zdd terminal(bool terminal_val, assignment_mgr &amgr)
     {
       return zdd_terminal(!amgr.has_level_excl() && terminal_val);
     }
@@ -168,7 +165,7 @@ namespace adiar
       return zdd_empty();
     }
 
-    zdd_subset_label_act<internal::substitute_act::FIX_TRUE> amgr(l);
-    return internal::substitute<zdd_onset_policy<zdd_subset_label_act<internal::substitute_act::FIX_TRUE>>>(dd, amgr);
+    zdd_subset_label_assignment<assignment::TRUE> amgr(l);
+    return internal::substitute<zdd_onset_policy<zdd_subset_label_assignment<assignment::TRUE>>>(dd, amgr);
   }
 }
