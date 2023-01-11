@@ -330,7 +330,7 @@ namespace adiar
   ///
   /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const bdd &f, const shared_file<assignment_t> &xs);
+  __bdd bdd_restrict(const bdd &f, const shared_file<assignment> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existentially quantify a single variable.
@@ -526,10 +526,10 @@ namespace adiar
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \returns A <tt>shared_file<assignment_t></tt> with an assignment to every
+  /// \returns A <tt>shared_file<assignment></tt> with an assignment to every
   ///          variable mentioned by the given BDD.
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<assignment_t> bdd_satmin(const bdd &f);
+  shared_file<assignment> bdd_satmin(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
@@ -538,10 +538,10 @@ namespace adiar
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \returns A <tt>shared_file<assignment_t></tt> with an assignment to every
+  /// \returns A <tt>shared_file<assignment></tt> with an assignment to every
   ///          variable mentioned by the given BDD.
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<assignment_t> bdd_satmax(const bdd &f);
+  shared_file<assignment> bdd_satmax(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment
@@ -565,7 +565,7 @@ namespace adiar
   ///
   /// \pre      Assignment tuples in `xs` is in ascending order
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_eval(const bdd &f, const shared_file<assignment_t> &xs);
+  bool bdd_eval(const bdd &f, const shared_file<assignment> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Get the labels of the levels of the BDD

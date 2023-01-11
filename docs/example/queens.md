@@ -226,7 +226,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       adiar::assignment_writer aw(column_assignment);
 
       for (uint64_t row = 0; row < N; row++) {
-        aw << create_assignment(label_of_position(N, row, column),
+        aw << assignment(label_of_position(N, row, column),
                                 row == row_q);
       }
     }
@@ -254,7 +254,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
         bool operator()(const adiar::assignment &a,
                         const adiar::assignment &b)
         {
-          return j_of_label(N, label_of(a)) < j_of_label(N, label_of(b));
+          return j_of_label(N, a.var()) < j_of_label(N, b.var());
         }
       };
 
@@ -264,8 +264,8 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       adiar::internal::file_stream<adiar::assignment> fas(forced);
       while (fas.can_pull()) {
         adiar::assignment a = fas.pull();
-        if (value_of(a)) {
-          partial_assignment.push_back(i_of_label(N, label_of(a)));
+        if (a.value()) {
+          partial_assignment.push_back(i_of_label(N, a.var()));
         }
       }
 

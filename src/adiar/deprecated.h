@@ -329,6 +329,28 @@ namespace adiar
   inline assignment operator! (const assignment &a)
   { return ~a; }
 
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the label from an assignment [label -> value].
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by member function in 'adiar/assignment.h'")]]
+  inline assignment::label_t label_of(const assignment &a)
+  { return a.var(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Extract the value from an assignment [label -> value].
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Replaced by member function in 'adiar/assignment.h'")]]
+  inline bool value_of(const assignment &a)
+  { return a.value(); }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief A <tt>(x,v)</tt> tuple representing the single assignment
+  ///        \f$ x \mapsto v \f$.
+  //////////////////////////////////////////////////////////////////////////////
+  [[deprecated("Use the 'assignment' class-name directly")]]
+  typedef assignment assignment_t;
+
   /* =========================== DECISION DIAGRAM =========================== */
 
   //////////////////////////////////////////////////////////////////////////////

@@ -38,25 +38,25 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   class bdd_eval_file_visitor
   {
-    internal::file_stream<assignment_t> as;
-    assignment_t a;
+    internal::file_stream<assignment> as;
+    assignment a;
 
     bool result = false;
 
   public:
-    bdd_eval_file_visitor(const shared_file<assignment_t>& af) : as(af)
+    bdd_eval_file_visitor(const shared_file<assignment>& af) : as(af)
     { if (as.can_pull()) { a = as.pull(); } }
 
     inline bdd::ptr_t visit(const bdd::node_t &n)
     {
-      const bdd::label_t label = n.label();
-      while (label_of(a) < label) {
+      const bdd::label_t level = n.label();
+      while (a.level() < level) {
         adiar_assert(as.can_pull(), "Given assignment file is insufficient to traverse BDD");
         a = as.pull();
       }
-      adiar_assert(label_of(a) == label, "Missing assignment for node visited in BDD");
+      adiar_assert(a.level() == level, "Missing assignment for node visited in BDD");
 
-      return value_of(a) ? n.high() : n.low();
+      return a.value() ? n.high() : n.low();
     }
 
     inline void visit(const bool s)
@@ -66,7 +66,7 @@ namespace adiar
     { return result; }
   };
 
-  bool bdd_eval(const bdd &bdd, const shared_file<assignment_t> &af)
+  bool bdd_eval(const bdd &bdd, const shared_file<assignment> &af)
   {
     bdd_eval_file_visitor v(af);
     internal::traverse(bdd, v);

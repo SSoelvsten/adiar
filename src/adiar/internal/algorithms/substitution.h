@@ -55,24 +55,25 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   class substitute_assignment_act
   {
-    file_stream<assignment_t> as;
-    assignment_t a;
+    file_stream<assignment> as;
+    assignment a;
 
   public:
-    typedef shared_file<assignment_t> action_t;
+    typedef shared_file<assignment> action_t;
 
     substitute_assignment_act(const action_t &af) : as(af)
     {
       a = as.pull();
     }
 
-    substitute_act action_for_level(assignment_t::label_t level) {
-      while (label_of(a) < level && as.can_pull()) {
+    substitute_act action_for_level(assignment::label_t level) {
+      while (a.level() < level && as.can_pull()) {
         a = as.pull();
       }
 
-      if (label_of(a) == level) {
-        return value_of(a) ? substitute_act::FIX_TRUE : substitute_act::FIX_FALSE;
+      if (a.level() == level) {
+        // TODO: Take into account that "DON'T CARE" also is a return value?
+        return a.value() ? substitute_act::FIX_TRUE : substitute_act::FIX_FALSE;
       } else {
         return substitute_act::KEEP;
       }

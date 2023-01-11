@@ -43,14 +43,14 @@ go_bandit([]() {
                   F T
       */
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(2, true);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(2, true);
       }
 
-      __bdd out = bdd_restrict(bdd, assignment);
+      __bdd out = bdd_restrict(bdd, ass);
 
       arc_test_stream arcs(out);
 
@@ -104,14 +104,14 @@ go_bandit([]() {
                 F T
       */
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(1, false);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(1, false);
       }
 
-      __bdd out = bdd_restrict(bdd, assignment);
+      __bdd out = bdd_restrict(bdd, ass);
 
       arc_test_stream arcs(out);
 
@@ -158,14 +158,14 @@ go_bandit([]() {
                     F T
       */
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(1, true);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(1, true);
       }
 
-      __bdd out = bdd_restrict(bdd, assignment);
+      __bdd out = bdd_restrict(bdd, ass);
 
       arc_test_stream arcs(out);
 
@@ -224,15 +224,15 @@ go_bandit([]() {
                F T T F
       */
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(0, true)
-           << create_assignment(3, false);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(0, true)
+           << assignment(3, false);
       }
 
-      __bdd out = bdd_restrict(bdd, assignment);
+      __bdd out = bdd_restrict(bdd, ass);
 
       arc_test_stream arcs(out);
 
@@ -279,16 +279,16 @@ go_bandit([]() {
                 F T
       */
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(0, false)
-           << create_assignment(1, true)
-           << create_assignment(3, false);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(0, false)
+           << assignment(1, true)
+           << assignment(3, false);
       }
 
-      __bdd out = bdd_restrict(bdd, assignment);
+      __bdd out = bdd_restrict(bdd, ass);
 
       arc_test_stream arcs(out);
 
@@ -314,15 +314,15 @@ go_bandit([]() {
     });
 
     it("should return F terminal. Assignment: (F,_,F,_)", [&]() {
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(0, false)
-           << create_assignment(2, false);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(0, false)
+           << assignment(2, false);
       }
 
-      __bdd out = bdd_restrict(bdd, assignment);
+      __bdd out = bdd_restrict(bdd, ass);
 
       node_test_stream out_nodes(out);
 
@@ -343,16 +343,16 @@ go_bandit([]() {
     });
 
     it("should return T terminal. Assignment: (T,T,F,_)", [&]() {
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(0, true)
-           << create_assignment(1, true)
-           << create_assignment(2, false);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(0, true)
+           << assignment(1, true)
+           << assignment(2, false);
       }
 
-      __bdd out = bdd_restrict(bdd, assignment);
+      __bdd out = bdd_restrict(bdd, ass);
 
       node_test_stream out_nodes(out);
 
@@ -380,16 +380,16 @@ go_bandit([]() {
         Tw << node(true);
       }
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(0, true)
-           << create_assignment(2, true)
-           << create_assignment(42, false);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(0, true)
+           << assignment(2, true)
+           << assignment(42, false);
       }
 
-      __bdd out = bdd_restrict(T_file, assignment);
+      __bdd out = bdd_restrict(T_file, ass);
 
       AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(T_file));
       AssertThat(out.negate, Is().False());
@@ -403,41 +403,41 @@ go_bandit([]() {
         Fw << node(false);
       }
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(2, true)
-           << create_assignment(21, true)
-           << create_assignment(28, false);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(2, true)
+           << assignment(21, true)
+           << assignment(28, false);
       }
 
-      __bdd out = bdd_restrict(F_file, assignment);
+      __bdd out = bdd_restrict(F_file, ass);
 
       AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(F_file));
       AssertThat(out.negate, Is().False());
     });
 
     it("should return input unchanged when given an empty assignment", [&]() {
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
-      __bdd out = bdd_restrict(bdd, assignment);
+      __bdd out = bdd_restrict(bdd, ass);
 
       AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd));
       AssertThat(out.negate, Is().False());
     });
 
     it("should return input unchanged when assignment that is disjoint of its live variables", [&]() {
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(5, false)
-           << create_assignment(6, true)
-           << create_assignment(7, true)
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(5, false)
+           << assignment(6, true)
+           << assignment(7, true)
           ;
       }
 
-      __bdd out = bdd_restrict(bdd, assignment);
+      __bdd out = bdd_restrict(bdd, ass);
 
       AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd));
       AssertThat(out.negate, Is().False());
@@ -468,14 +468,14 @@ go_bandit([]() {
         inw << n4 << n3 << n2 << n1;
       }
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(2, true);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(2, true);
       }
 
-      __bdd out = bdd_restrict(node_input, assignment);
+      __bdd out = bdd_restrict(node_input, ass);
 
       arc_test_stream arcs(out);
 
@@ -543,14 +543,14 @@ go_bandit([]() {
         inw << n5 << n4 << n3 << n2 << n1;
       }
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(2, true);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(2, true);
       }
 
-      __bdd out = bdd_restrict(node_input, assignment);
+      __bdd out = bdd_restrict(node_input, ass);
 
       arc_test_stream arcs(out);
 
@@ -624,14 +624,14 @@ go_bandit([]() {
         dead_w << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
       }
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(1, true);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(1, true);
       }
 
-      __bdd out = bdd_restrict(dead_bdd, assignment);
+      __bdd out = bdd_restrict(dead_bdd, ass);
 
       arc_test_stream arcs(out);
 
@@ -699,14 +699,14 @@ go_bandit([]() {
         dead_w << n2 << n1;
       }
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(1, true);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(1, true);
       }
 
-      __bdd out = bdd_restrict(terminal_child_of_root_bdd, assignment);
+      __bdd out = bdd_restrict(terminal_child_of_root_bdd, ass);
 
       node_test_stream out_nodes(out);
 
@@ -737,14 +737,14 @@ go_bandit([]() {
         dead_w << n2 << n1;
       }
 
-      adiar::shared_file<assignment_t> assignment;
+      adiar::shared_file<assignment> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment_t> aw(assignment);
-        aw << create_assignment(0, false);
+         adiar::file_writer<assignment> aw(ass);
+        aw << assignment(0, false);
       }
 
-      __bdd out = bdd_restrict(terminal_child_of_root_bdd, assignment);
+      __bdd out = bdd_restrict(terminal_child_of_root_bdd, ass);
 
       node_test_stream out_nodes(out);
 

@@ -28,11 +28,11 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const bdd &dd, const shared_file<assignment_t> &a)
+  __bdd bdd_restrict(const bdd &dd, const shared_file<assignment> &a)
   {
     if (a->size() == 0
         || is_terminal(dd)
-        || internal::disjoint_labels<shared_file<assignment_t>, internal::file_stream<assignment_t>>(a, dd)) {
+        || internal::disjoint_labels<shared_file<assignment>, internal::file_stream<assignment>>(a, dd)) {
       return dd;
     }
 
