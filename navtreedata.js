@@ -48,6 +48,7 @@ var NAVTREE =
         [ "v1.2", "page__cite.html#autotoc_md23", null ]
       ] ]
     ] ],
+    [ "Todo List", "todo.html", null ],
     [ "Modules", "modules.html", "modules" ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -68,6 +69,7 @@ var NAVTREE =
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ],
         [ "Typedefs", "functions_type.html", null ],
+        [ "Enumerations", "functions_enum.html", null ],
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
@@ -79,9 +81,9 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"",
-"group__module____bdd.html#ga65d9fd1b95db525159c59d921418850a",
-"namespaceadiar.html#a11d19bb247a798774b440932a745fefc"
+"adiar_8h_source.html",
+"group__module____bdd.html#ga2bf2d6300652daee73000c379e0b182e",
+"index.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

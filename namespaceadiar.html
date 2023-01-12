@@ -118,8 +118,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1zdd.html">zdd</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reduced Ordered Zero-suppressed Decision Diagram.  <a href="classadiar_1_1zdd.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structadiar_1_1assignment.html">assignment</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An assignment [label -&gt; value] to a variable with the given label to which is assigned the given value.  <a href="structadiar_1_1assignment.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1assignment.html">assignment</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <code>(x,v)</code> tuple representing the single assignment \( x \mapsto v \).  <a href="classadiar_1_1assignment.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1builder.html">builder</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A builder for decision diagrams.  <a href="classadiar_1_1builder.html#details">More...</a><br /></td></tr>
@@ -136,13 +136,10 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:af497f529ff9a396f463604bdb91253de"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structadiar_1_1assignment.html">assignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">assignment_t</a></td></tr>
-<tr class="memdesc:af497f529ff9a396f463604bdb91253de"><td class="mdescLeft">&#160;</td><td class="mdescRight">An assignment [label -&gt; value] to a variable with the given label to which is assigned the given value.  <a href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">More...</a><br /></td></tr>
-<tr class="separator:af497f529ff9a396f463604bdb91253de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5c824692c2b1eac6c2f3cd2ed387d44"><td class="memItemLeft" align="right" valign="top"><a id="ae5c824692c2b1eac6c2f3cd2ed387d44"></a>
-typedef std::function&lt; bool(assignment::label_t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#ae5c824692c2b1eac6c2f3cd2ed387d44">assignment_func</a></td></tr>
-<tr class="memdesc:ae5c824692c2b1eac6c2f3cd2ed387d44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that computs Boolean assignment to variables with given label. <br /></td></tr>
-<tr class="separator:ae5c824692c2b1eac6c2f3cd2ed387d44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4f0ffa6585e415926ebff0cb3ee2693"><td class="memItemLeft" align="right" valign="top"><a id="ad4f0ffa6585e415926ebff0cb3ee2693"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#ad4f0ffa6585e415926ebff0cb3ee2693">assignment_func</a> = std::function&lt; <a class="el" href="classadiar_1_1assignment.html#acbe134a0bf57b46b4b0a9664a2453cbb">assignment::value_t</a>(<a class="el" href="classadiar_1_1assignment.html#a8169d2b61d7afa5377347da10b71e35d">assignment::label_t</a>)&gt;</td></tr>
+<tr class="memdesc:ad4f0ffa6585e415926ebff0cb3ee2693"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment function which provides for each variable label its assigned value. <br /></td></tr>
+<tr class="separator:ad4f0ffa6585e415926ebff0cb3ee2693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab27a30e6ed61621ab1e47b8512abd1d2"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; internal::uid_uint64(const internal::ptr_uint64 &amp;, const internal::ptr_uint64 &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">bool_op</a></td></tr>
 <tr class="memdesc:ab27a30e6ed61621ab1e47b8512abd1d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the unique identifier of the resulting terminal based on the pointers to two terminals.  <a href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">More...</a><br /></td></tr>
 <tr class="separator:ab27a30e6ed61621ab1e47b8512abd1d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -189,9 +186,13 @@ typedef internal::shared_levelized_file&lt; internal::arc &gt;&#160;</td><td cla
 <tr class="memdesc:a034aae5adafc35be561bd492f2e6ed24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Files of arcs to represent an unreduced decision diagram. <br /></td></tr>
 <tr class="separator:a034aae5adafc35be561bd492f2e6ed24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a665806a5e27b6722b50ca9f98cecdbb6"><td class="memItemLeft" align="right" valign="top"><a id="a665806a5e27b6722b50ca9f98cecdbb6"></a>
-typedef <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="structadiar_1_1assignment.html">assignment</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a665806a5e27b6722b50ca9f98cecdbb6">assignment_file</a></td></tr>
+typedef <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1assignment.html">assignment</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a665806a5e27b6722b50ca9f98cecdbb6">assignment_file</a></td></tr>
 <tr class="memdesc:a665806a5e27b6722b50ca9f98cecdbb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">A file of assignments (label, value) <br /></td></tr>
 <tr class="separator:a665806a5e27b6722b50ca9f98cecdbb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af497f529ff9a396f463604bdb91253de"><td class="memItemLeft" align="right" valign="top"><a id="af497f529ff9a396f463604bdb91253de"></a>
+typedef <a class="el" href="classadiar_1_1assignment.html">assignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">assignment_t</a></td></tr>
+<tr class="memdesc:af497f529ff9a396f463604bdb91253de"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <code>(x,v)</code> tuple representing the single assignment \( x \mapsto v \). <br /></td></tr>
+<tr class="separator:af497f529ff9a396f463604bdb91253de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ce4d836629be7be429ae555a9af09af"><td class="memTemplParams" colspan="2">template&lt;typename elem_t , bool REVERSE = false&gt; </td></tr>
 <tr class="memitem:a2ce4d836629be7be429ae555a9af09af"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a2ce4d836629be7be429ae555a9af09af">file_stream</a> = internal::file_stream&lt; elem_t, REVERSE &gt;</td></tr>
 <tr class="separator:a2ce4d836629be7be429ae555a9af09af"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,34 +205,6 @@ typedef <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a60ed325653443edd301cda64500e783a"><td class="memItemLeft" align="right" valign="top"><a id="a60ed325653443edd301cda64500e783a"></a>
-<a class="el" href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">assignment_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a60ed325653443edd301cda64500e783a">create_assignment</a> (assignment::label_t label, bool value)</td></tr>
-<tr class="memdesc:a60ed325653443edd301cda64500e783a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an assignment [label -&gt; value]. <br /></td></tr>
-<tr class="separator:a60ed325653443edd301cda64500e783a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8511d6fcc8548e47298b9533ba6750df"><td class="memItemLeft" align="right" valign="top"><a id="a8511d6fcc8548e47298b9533ba6750df"></a>
-assignment::label_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a8511d6fcc8548e47298b9533ba6750df">label_of</a> (const <a class="el" href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">assignment_t</a> &amp;a)</td></tr>
-<tr class="memdesc:a8511d6fcc8548e47298b9533ba6750df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the label from an assignment [label -&gt; value]. <br /></td></tr>
-<tr class="separator:a8511d6fcc8548e47298b9533ba6750df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa11596a56598c8d6f32dc98b94c1d7e9"><td class="memItemLeft" align="right" valign="top"><a id="aa11596a56598c8d6f32dc98b94c1d7e9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#aa11596a56598c8d6f32dc98b94c1d7e9">value_of</a> (const <a class="el" href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">assignment_t</a> &amp;a)</td></tr>
-<tr class="memdesc:aa11596a56598c8d6f32dc98b94c1d7e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the value from an assignment [label -&gt; value]. <br /></td></tr>
-<tr class="separator:aa11596a56598c8d6f32dc98b94c1d7e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a141141379bffc427ad3bd173d9725bda"><td class="memItemLeft" align="right" valign="top"><a id="a141141379bffc427ad3bd173d9725bda"></a>
-<a class="el" href="structadiar_1_1assignment.html">assignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a141141379bffc427ad3bd173d9725bda">operator~</a> (const <a class="el" href="structadiar_1_1assignment.html">assignment</a> &amp;a)</td></tr>
-<tr class="memdesc:a141141379bffc427ad3bd173d9725bda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Negate the value of an assignment [label -&gt; value]. <br /></td></tr>
-<tr class="separator:a141141379bffc427ad3bd173d9725bda"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5dceae227dda358764cff95448431a8e"><td class="memItemLeft" align="right" valign="top"><a id="a5dceae227dda358764cff95448431a8e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;</b> (const <a class="el" href="structadiar_1_1assignment.html">assignment</a> &amp;a, const <a class="el" href="structadiar_1_1assignment.html">assignment</a> &amp;b)</td></tr>
-<tr class="separator:a5dceae227dda358764cff95448431a8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33ebd7ac70169947131d57c8340495fe"><td class="memItemLeft" align="right" valign="top"><a id="a33ebd7ac70169947131d57c8340495fe"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;</b> (const <a class="el" href="structadiar_1_1assignment.html">assignment</a> &amp;a, const <a class="el" href="structadiar_1_1assignment.html">assignment</a> &amp;b)</td></tr>
-<tr class="separator:a33ebd7ac70169947131d57c8340495fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad596d074c53537afef381dd20a275cab"><td class="memItemLeft" align="right" valign="top"><a id="ad596d074c53537afef381dd20a275cab"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="structadiar_1_1assignment.html">assignment</a> &amp;a, const <a class="el" href="structadiar_1_1assignment.html">assignment</a> &amp;b)</td></tr>
-<tr class="separator:ad596d074c53537afef381dd20a275cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e153b33a27cf50dd0544f40870d8ffe"><td class="memItemLeft" align="right" valign="top"><a id="a2e153b33a27cf50dd0544f40870d8ffe"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="structadiar_1_1assignment.html">assignment</a> &amp;a, const <a class="el" href="structadiar_1_1assignment.html">assignment</a> &amp;b)</td></tr>
-<tr class="separator:a2e153b33a27cf50dd0544f40870d8ffe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fd157e82fc01aec26ca0ffbf27557d2"><td class="memItemLeft" align="right" valign="top"><a id="a2fd157e82fc01aec26ca0ffbf27557d2"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a2fd157e82fc01aec26ca0ffbf27557d2">can_right_shortcut</a> (const <a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">bool_op</a> &amp;op, const internal::ptr_uint64 &amp;terminal)</td></tr>
 <tr class="memdesc:a2fd157e82fc01aec26ca0ffbf27557d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the terminal shortcuts the operator from the right, i.e. op(T,terminal) = op(F,terminal). <br /></td></tr>
@@ -386,9 +359,17 @@ internal::node&#160;</td><td class="memItemRight" valign="bottom"><b>is_high</b>
 <tr class="memitem:a2fc0694ece43763b7e6a4d4150a8353c"><td class="memItemLeft" align="right" valign="top">internal::arc&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a2fc0694ece43763b7e6a4d4150a8353c">operator!</a> (const internal::arc &amp;a)</td></tr>
 <tr class="separator:a2fc0694ece43763b7e6a4d4150a8353c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7baddebc3fe4d110d8b8f819a012a66c"><td class="memItemLeft" align="right" valign="top"><a id="a7baddebc3fe4d110d8b8f819a012a66c"></a>
-<a class="el" href="structadiar_1_1assignment.html">assignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a7baddebc3fe4d110d8b8f819a012a66c">operator!</a> (const <a class="el" href="structadiar_1_1assignment.html">assignment</a> &amp;a)</td></tr>
+<a class="el" href="classadiar_1_1assignment.html">assignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a7baddebc3fe4d110d8b8f819a012a66c">operator!</a> (const <a class="el" href="classadiar_1_1assignment.html">assignment</a> &amp;a)</td></tr>
 <tr class="memdesc:a7baddebc3fe4d110d8b8f819a012a66c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Negate the value of an assignment [label -&gt; value]. <br /></td></tr>
 <tr class="separator:a7baddebc3fe4d110d8b8f819a012a66c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ac0a3929c85d375f725c1ae9699f31f"><td class="memItemLeft" align="right" valign="top"><a id="a2ac0a3929c85d375f725c1ae9699f31f"></a>
+<a class="el" href="classadiar_1_1assignment.html#a8169d2b61d7afa5377347da10b71e35d">assignment::label_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a2ac0a3929c85d375f725c1ae9699f31f">label_of</a> (const <a class="el" href="classadiar_1_1assignment.html">assignment</a> &amp;a)</td></tr>
+<tr class="memdesc:a2ac0a3929c85d375f725c1ae9699f31f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the label from an assignment [label -&gt; value]. <br /></td></tr>
+<tr class="separator:a2ac0a3929c85d375f725c1ae9699f31f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cf6973ba6cff73029f11b0f33a520d7"><td class="memItemLeft" align="right" valign="top"><a id="a7cf6973ba6cff73029f11b0f33a520d7"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a7cf6973ba6cff73029f11b0f33a520d7">value_of</a> (const <a class="el" href="classadiar_1_1assignment.html">assignment</a> &amp;a)</td></tr>
+<tr class="memdesc:a7cf6973ba6cff73029f11b0f33a520d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the value from an assignment [label -&gt; value]. <br /></td></tr>
+<tr class="separator:a7cf6973ba6cff73029f11b0f33a520d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c062415a42d5a294a3b4e1cfa026695"><td class="memItemLeft" align="right" valign="top"><a id="a6c062415a42d5a294a3b4e1cfa026695"></a>
 <a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a6c062415a42d5a294a3b4e1cfa026695">is_sink</a> (const <a class="el" href="classadiar_1_1internal_1_1dd.html">internal::dd</a> &amp;dd)</td></tr>
 <tr class="memdesc:a6c062415a42d5a294a3b4e1cfa026695"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a given decision diagram represents a constant value. <br /></td></tr>
@@ -605,9 +586,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_substitut
 <tr class="memitem:ga760162c0c2e938a17e8cf88abab785e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga760162c0c2e938a17e8cf88abab785e3">bdd_ite</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;h)</td></tr>
 <tr class="memdesc:ga760162c0c2e938a17e8cf88abab785e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">If-Then-Else operator.  <a href="group__module____bdd.html#ga760162c0c2e938a17e8cf88abab785e3">More...</a><br /></td></tr>
 <tr class="separator:ga760162c0c2e938a17e8cf88abab785e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadead39c277ee7e6aa82a7b5b0ba72bd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gadead39c277ee7e6aa82a7b5b0ba72bd0">bdd_restrict</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">assignment_t</a> &gt; &amp;xs)</td></tr>
-<tr class="memdesc:gadead39c277ee7e6aa82a7b5b0ba72bd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restrict a subset of variables to constant values.  <a href="group__module____bdd.html#gadead39c277ee7e6aa82a7b5b0ba72bd0">More...</a><br /></td></tr>
-<tr class="separator:gadead39c277ee7e6aa82a7b5b0ba72bd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga694805753acbca7043d38df64651b1f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga694805753acbca7043d38df64651b1f7">bdd_restrict</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1assignment.html">assignment</a> &gt; &amp;xs)</td></tr>
+<tr class="memdesc:ga694805753acbca7043d38df64651b1f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restrict a subset of variables to constant values.  <a href="group__module____bdd.html#ga694805753acbca7043d38df64651b1f7">More...</a><br /></td></tr>
+<tr class="separator:ga694805753acbca7043d38df64651b1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaab407501178dcbf7b90c7d6ad1b70b71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaab407501178dcbf7b90c7d6ad1b70b71">bdd_exists</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, <a class="el" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">bdd::label_t</a> var)</td></tr>
 <tr class="memdesc:gaab407501178dcbf7b90c7d6ad1b70b71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Existentially quantify a single variable.  <a href="group__module____bdd.html#gaab407501178dcbf7b90c7d6ad1b70b71">More...</a><br /></td></tr>
 <tr class="separator:gaab407501178dcbf7b90c7d6ad1b70b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -694,18 +675,18 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gr
 <a class="el" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">bdd::label_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaf48a24c478608bfdf3e9f6a1997df104">max_var</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
 <tr class="memdesc:gaf48a24c478608bfdf3e9f6a1997df104"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the maximal occurring variable in this BDD. <br /></td></tr>
 <tr class="separator:gaf48a24c478608bfdf3e9f6a1997df104"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab5be4cc00a35dfe78cce39389baf1555"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">assignment_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gab5be4cc00a35dfe78cce39389baf1555">bdd_satmin</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
-<tr class="memdesc:gab5be4cc00a35dfe78cce39389baf1555"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically smallest x such that f(x) is true.  <a href="group__module____bdd.html#gab5be4cc00a35dfe78cce39389baf1555">More...</a><br /></td></tr>
-<tr class="separator:gab5be4cc00a35dfe78cce39389baf1555"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacb49eb5d610f64d9d04c65b3e0796546"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">assignment_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gacb49eb5d610f64d9d04c65b3e0796546">bdd_satmax</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
-<tr class="memdesc:gacb49eb5d610f64d9d04c65b3e0796546"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically largest x such that f(x) is true.  <a href="group__module____bdd.html#gacb49eb5d610f64d9d04c65b3e0796546">More...</a><br /></td></tr>
-<tr class="separator:gacb49eb5d610f64d9d04c65b3e0796546"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9ac8a8ad7ee734edd46a30bce839c629"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga9ac8a8ad7ee734edd46a30bce839c629">bdd_eval</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#ae5c824692c2b1eac6c2f3cd2ed387d44">assignment_func</a> &amp;xs)</td></tr>
+<tr class="memitem:ga434765b34a89836282dcf1043a21d5b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1assignment.html">assignment</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga434765b34a89836282dcf1043a21d5b3">bdd_satmin</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:ga434765b34a89836282dcf1043a21d5b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically smallest x such that f(x) is true.  <a href="group__module____bdd.html#ga434765b34a89836282dcf1043a21d5b3">More...</a><br /></td></tr>
+<tr class="separator:ga434765b34a89836282dcf1043a21d5b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad6ec05d0e08a30527adf16cbb0dc4565"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1assignment.html">assignment</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gad6ec05d0e08a30527adf16cbb0dc4565">bdd_satmax</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:gad6ec05d0e08a30527adf16cbb0dc4565"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically largest x such that f(x) is true.  <a href="group__module____bdd.html#gad6ec05d0e08a30527adf16cbb0dc4565">More...</a><br /></td></tr>
+<tr class="separator:gad6ec05d0e08a30527adf16cbb0dc4565"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9ac8a8ad7ee734edd46a30bce839c629"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga9ac8a8ad7ee734edd46a30bce839c629">bdd_eval</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#ad4f0ffa6585e415926ebff0cb3ee2693">assignment_func</a> &amp;xs)</td></tr>
 <tr class="memdesc:ga9ac8a8ad7ee734edd46a30bce839c629"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a BDD according to an assignment.  <a href="group__module____bdd.html#ga9ac8a8ad7ee734edd46a30bce839c629">More...</a><br /></td></tr>
 <tr class="separator:ga9ac8a8ad7ee734edd46a30bce839c629"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8093da1dee26244ac32439e1c73b599a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga8093da1dee26244ac32439e1c73b599a">bdd_eval</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">assignment_t</a> &gt; &amp;xs)</td></tr>
-<tr class="memdesc:ga8093da1dee26244ac32439e1c73b599a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a BDD according to an assignment.  <a href="group__module____bdd.html#ga8093da1dee26244ac32439e1c73b599a">More...</a><br /></td></tr>
-<tr class="separator:ga8093da1dee26244ac32439e1c73b599a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad840be4c0df1e292810b7b25856d44fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gad840be4c0df1e292810b7b25856d44fd">bdd_eval</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1assignment.html">assignment</a> &gt; &amp;xs)</td></tr>
+<tr class="memdesc:gad840be4c0df1e292810b7b25856d44fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a BDD according to an assignment.  <a href="group__module____bdd.html#gad840be4c0df1e292810b7b25856d44fd">More...</a><br /></td></tr>
+<tr class="separator:gad840be4c0df1e292810b7b25856d44fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8176fccdbc3a8bac846c659272bd92ea"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">bdd::label_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga8176fccdbc3a8bac846c659272bd92ea">bdd_varprofile</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
 <tr class="memdesc:ga8176fccdbc3a8bac846c659272bd92ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the labels of the levels of the BDD. <br /></td></tr>
@@ -1109,22 +1090,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 </div><div class="memdoc">
 
 <p></p>
-
-</div>
-</div>
-<a id="af497f529ff9a396f463604bdb91253de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af497f529ff9a396f463604bdb91253de">&#9670;&nbsp;</a></span>assignment_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef <a class="el" href="structadiar_1_1assignment.html">assignment</a> <a class="el" href="namespaceadiar.html#af497f529ff9a396f463604bdb91253de">adiar::assignment_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>An assignment [label -&gt; value] to a variable with the given label to which is assigned the given value. </p>
 
 </div>
 </div>

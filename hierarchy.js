@@ -14,7 +14,7 @@ var hierarchy =
       [ "adiar::__bdd", "classadiar_1_1____bdd.html", null ],
       [ "adiar::__zdd", "classadiar_1_1____zdd.html", null ]
     ] ],
-    [ "adiar::assignment", "structadiar_1_1assignment.html", null ],
+    [ "adiar::assignment", "classadiar_1_1assignment.html", null ],
     [ "adiar::builder< dd_policy >", "classadiar_1_1builder.html", null ],
     [ "adiar::builder_ptr< dd_policy >", "classadiar_1_1builder__ptr.html", null ],
     [ "adiar::internal::dd", "classadiar_1_1internal_1_1dd.html", [

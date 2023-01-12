@@ -257,12 +257,12 @@ Printing each Solution</h1>
 <div class="line">      adiar::assignment_writer aw(column_assignment);</div>
 <div class="line"> </div>
 <div class="line">      <span class="keywordflow">for</span> (uint64_t row = 0; row &lt; N; row++) {</div>
-<div class="line">        aw &lt;&lt; <a class="code" href="namespaceadiar.html#a60ed325653443edd301cda64500e783a">create_assignment</a>(label_of_position(N, row, column),</div>
+<div class="line">        aw &lt;&lt; assignment(label_of_position(N, row, column),</div>
 <div class="line">                                row == row_q);</div>
 <div class="line">      }</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    <a class="code" href="classadiar_1_1bdd.html">adiar::bdd</a> restricted_constraints = <a class="code" href="group__module____bdd.html#gadead39c277ee7e6aa82a7b5b0ba72bd0">adiar::bdd_restrict</a>(constraints,</div>
+<div class="line">    <a class="code" href="classadiar_1_1bdd.html">adiar::bdd</a> restricted_constraints = <a class="code" href="group__module____bdd.html#ga694805753acbca7043d38df64651b1f7">adiar::bdd_restrict</a>(constraints,</div>
 <div class="line">                                                            column_assignment);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group__module____bdd.html#gadd0becff66aaae9313c29248bc33750e">adiar::bdd_pathcount</a>(restricted_constraints) == 1) {</div>
@@ -270,7 +270,7 @@ Printing each Solution</h1>
 <div class="line"> </div>
 <div class="line">      <span class="comment">// Obtain the lexicographically minimal true assignment. Well,</span></div>
 <div class="line">      <span class="comment">// only one exists, so we get the only one left.</span></div>
-<div class="line">      <a class="code" href="namespaceadiar.html#a665806a5e27b6722b50ca9f98cecdbb6">adiar::assignment_file</a> forced = <a class="code" href="group__module____bdd.html#gab5be4cc00a35dfe78cce39389baf1555">adiar::bdd_satmin</a>(restricted_constraints);</div>
+<div class="line">      <a class="code" href="namespaceadiar.html#a665806a5e27b6722b50ca9f98cecdbb6">adiar::assignment_file</a> forced = <a class="code" href="group__module____bdd.html#ga434765b34a89836282dcf1043a21d5b3">adiar::bdd_satmin</a>(restricted_constraints);</div>
 <div class="line"> </div>
 <div class="line">      <span class="comment">// Sort the variables back in order of the columns,</span></div>
 <div class="line">      <span class="comment">// rather than rows.</span></div>
@@ -282,10 +282,10 @@ Printing each Solution</h1>
 <div class="line">      <span class="keyword">public</span>:</div>
 <div class="line">        <span class="keyword">explicit</span> sort_by_column(<span class="keyword">const</span> uint64_t N) : N(N) { }</div>
 <div class="line"> </div>
-<div class="line">        <span class="keywordtype">bool</span> operator()(<span class="keyword">const</span> <a class="code" href="structadiar_1_1assignment.html">adiar::assignment</a> &amp;a,</div>
-<div class="line">                        <span class="keyword">const</span> <a class="code" href="structadiar_1_1assignment.html">adiar::assignment</a> &amp;b)</div>
+<div class="line">        <span class="keywordtype">bool</span> operator()(<span class="keyword">const</span> <a class="code" href="classadiar_1_1assignment.html">adiar::assignment</a> &amp;a,</div>
+<div class="line">                        <span class="keyword">const</span> <a class="code" href="classadiar_1_1assignment.html">adiar::assignment</a> &amp;b)</div>
 <div class="line">        {</div>
-<div class="line">          <span class="keywordflow">return</span> j_of_label(N, <a class="code" href="namespaceadiar.html#a8511d6fcc8548e47298b9533ba6750df">label_of</a>(a)) &lt; j_of_label(N, <a class="code" href="namespaceadiar.html#a8511d6fcc8548e47298b9533ba6750df">label_of</a>(b));</div>
+<div class="line">          <span class="keywordflow">return</span> j_of_label(N, a.<a class="code" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">var</a>()) &lt; j_of_label(N, b.<a class="code" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">var</a>());</div>
 <div class="line">        }</div>
 <div class="line">      };</div>
 <div class="line"> </div>
@@ -294,9 +294,9 @@ Printing each Solution</h1>
 <div class="line">      <span class="comment">// Copy the rest of the assignment into &#39;partial_assignment&#39;</span></div>
 <div class="line">      adiar::internal::file_stream&lt;adiar::assignment&gt; fas(forced);</div>
 <div class="line">      <span class="keywordflow">while</span> (fas.can_pull()) {</div>
-<div class="line">        <a class="code" href="structadiar_1_1assignment.html">adiar::assignment</a> a = fas.pull();</div>
-<div class="line">        <span class="keywordflow">if</span> (value_of(a)) {</div>
-<div class="line">          partial_assignment.push_back(i_of_label(N, <a class="code" href="namespaceadiar.html#a8511d6fcc8548e47298b9533ba6750df">label_of</a>(a)));</div>
+<div class="line">        <a class="code" href="classadiar_1_1assignment.html">adiar::assignment</a> a = fas.pull();</div>
+<div class="line">        <span class="keywordflow">if</span> (a.<a class="code" href="classadiar_1_1assignment.html#a118079f1a6eaf4b7093a4473a746ac01">value</a>()) {</div>
+<div class="line">          partial_assignment.push_back(i_of_label(N, a.<a class="code" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">var</a>()));</div>
 <div class="line">        }</div>
 <div class="line">      }</div>
 <div class="line"> </div>
@@ -338,17 +338,17 @@ Printing each Solution</h1>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> n_queens_list(N, 0, partial_assignment, board);</div>
 <div class="line">}</div>
+<div class="ttc" id="aclassadiar_1_1assignment_html"><div class="ttname"><a href="classadiar_1_1assignment.html">adiar::assignment</a></div><div class="ttdoc">A (x,v) tuple representing the single assignment .</div><div class="ttdef"><b>Definition:</b> assignment.h:16</div></div>
+<div class="ttc" id="aclassadiar_1_1assignment_html_a118079f1a6eaf4b7093a4473a746ac01"><div class="ttname"><a href="classadiar_1_1assignment.html#a118079f1a6eaf4b7093a4473a746ac01">adiar::assignment::value</a></div><div class="ttdeci">value_t value() const</div><div class="ttdoc">Get the value of this assignment pair.</div><div class="ttdef"><b>Definition:</b> assignment.h:89</div></div>
+<div class="ttc" id="aclassadiar_1_1assignment_html_a39444eb0df924f83c15168240c216fea"><div class="ttname"><a href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">adiar::assignment::var</a></div><div class="ttdeci">label_t var() const</div><div class="ttdoc">Get the variable of this assignment.</div><div class="ttdef"><b>Definition:</b> assignment.h:79</div></div>
 <div class="ttc" id="agroup__module____bdd_html_ga0e5de81efc49b8e0aaa137013e2422c1"><div class="ttname"><a href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">adiar::is_terminal</a></div><div class="ttdeci">bool is_terminal(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents a terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:414</div></div>
+<div class="ttc" id="agroup__module____bdd_html_ga434765b34a89836282dcf1043a21d5b3"><div class="ttname"><a href="group__module____bdd.html#ga434765b34a89836282dcf1043a21d5b3">adiar::bdd_satmin</a></div><div class="ttdeci">shared_file&lt; assignment &gt; bdd_satmin(const bdd &amp;f)</div><div class="ttdoc">The lexicographically smallest x such that f(x) is true.</div></div>
 <div class="ttc" id="agroup__module____bdd_html_ga669be328589daa02ac9e609610ce64a1"><div class="ttname"><a href="group__module____bdd.html#ga669be328589daa02ac9e609610ce64a1">adiar::is_true</a></div><div class="ttdeci">bool is_true(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents true terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:426</div></div>
+<div class="ttc" id="agroup__module____bdd_html_ga694805753acbca7043d38df64651b1f7"><div class="ttname"><a href="group__module____bdd.html#ga694805753acbca7043d38df64651b1f7">adiar::bdd_restrict</a></div><div class="ttdeci">__bdd bdd_restrict(const bdd &amp;f, const shared_file&lt; assignment &gt; &amp;xs)</div><div class="ttdoc">Restrict a subset of variables to constant values.</div></div>
 <div class="ttc" id="agroup__module____bdd_html_gaa770b1d0ae408db9345b064a4dd8390d"><div class="ttname"><a href="group__module____bdd.html#gaa770b1d0ae408db9345b064a4dd8390d">adiar::is_false</a></div><div class="ttdeci">bool is_false(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents false terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:420</div></div>
-<div class="ttc" id="agroup__module____bdd_html_gab5be4cc00a35dfe78cce39389baf1555"><div class="ttname"><a href="group__module____bdd.html#gab5be4cc00a35dfe78cce39389baf1555">adiar::bdd_satmin</a></div><div class="ttdeci">shared_file&lt; assignment_t &gt; bdd_satmin(const bdd &amp;f)</div><div class="ttdoc">The lexicographically smallest x such that f(x) is true.</div></div>
 <div class="ttc" id="agroup__module____bdd_html_gadd0becff66aaae9313c29248bc33750e"><div class="ttname"><a href="group__module____bdd.html#gadd0becff66aaae9313c29248bc33750e">adiar::bdd_pathcount</a></div><div class="ttdeci">uint64_t bdd_pathcount(const bdd &amp;f)</div><div class="ttdoc">Count all unique (but not necessarily disjoint) paths to the true terminal.</div></div>
-<div class="ttc" id="agroup__module____bdd_html_gadead39c277ee7e6aa82a7b5b0ba72bd0"><div class="ttname"><a href="group__module____bdd.html#gadead39c277ee7e6aa82a7b5b0ba72bd0">adiar::bdd_restrict</a></div><div class="ttdeci">__bdd bdd_restrict(const bdd &amp;f, const shared_file&lt; assignment_t &gt; &amp;xs)</div><div class="ttdoc">Restrict a subset of variables to constant values.</div></div>
 <div class="ttc" id="anamespaceadiar_html_a55c7f5360b6cf9aaddb7601d0aab6d2c"><div class="ttname"><a href="namespaceadiar.html#a55c7f5360b6cf9aaddb7601d0aab6d2c">adiar::sort</a></div><div class="ttdeci">void sort(internal::shared_file_ptr&lt; internal::file&lt; elem_t &gt;&gt; f, pred_t pred=pred_t())</div><div class="ttdoc">Sorts the content of a shared_file_ptr given some sorting predicate.</div><div class="ttdef"><b>Definition:</b> deprecated.h:48</div></div>
-<div class="ttc" id="anamespaceadiar_html_a60ed325653443edd301cda64500e783a"><div class="ttname"><a href="namespaceadiar.html#a60ed325653443edd301cda64500e783a">adiar::create_assignment</a></div><div class="ttdeci">assignment_t create_assignment(assignment::label_t label, bool value)</div><div class="ttdoc">Create an assignment [label -&gt; value].</div><div class="ttdef"><b>Definition:</b> assignment.h:30</div></div>
 <div class="ttc" id="anamespaceadiar_html_a665806a5e27b6722b50ca9f98cecdbb6"><div class="ttname"><a href="namespaceadiar.html#a665806a5e27b6722b50ca9f98cecdbb6">adiar::assignment_file</a></div><div class="ttdeci">shared_file&lt; assignment &gt; assignment_file</div><div class="ttdoc">A file of assignments (label, value)</div><div class="ttdef"><b>Definition:</b> deprecated.h:323</div></div>
-<div class="ttc" id="anamespaceadiar_html_a8511d6fcc8548e47298b9533ba6750df"><div class="ttname"><a href="namespaceadiar.html#a8511d6fcc8548e47298b9533ba6750df">adiar::label_of</a></div><div class="ttdeci">assignment::label_t label_of(const assignment_t &amp;a)</div><div class="ttdoc">Extract the label from an assignment [label -&gt; value].</div><div class="ttdef"><b>Definition:</b> assignment.h:40</div></div>
-<div class="ttc" id="astructadiar_1_1assignment_html"><div class="ttname"><a href="structadiar_1_1assignment.html">adiar::assignment</a></div><div class="ttdoc">An assignment [label -&gt; value] to a variable with the given label to which is assigned the given valu...</div><div class="ttdef"><b>Definition:</b> assignment.h:15</div></div>
 </div><!-- fragment --><p>where <code>n_queens_print_solutions</code> is a function that prints out the assignment file.</p>
 <div class="fragment"><div class="line"><span class="keywordtype">void</span> n_queens_print_solution(std::vector&lt;uint64_t&gt;&amp; assignment)</div>
 <div class="line">{</div>

@@ -10,7 +10,7 @@ var annotated_dup =
       [ "bdd", "classadiar_1_1bdd.html", "classadiar_1_1bdd" ],
       [ "__zdd", "classadiar_1_1____zdd.html", "classadiar_1_1____zdd" ],
       [ "zdd", "classadiar_1_1zdd.html", "classadiar_1_1zdd" ],
-      [ "assignment", "structadiar_1_1assignment.html", "structadiar_1_1assignment" ],
+      [ "assignment", "classadiar_1_1assignment.html", "classadiar_1_1assignment" ],
       [ "builder", "classadiar_1_1builder.html", "classadiar_1_1builder" ],
       [ "builder_ptr", "classadiar_1_1builder__ptr.html", "classadiar_1_1builder__ptr" ],
       [ "simple_file_sorter", "classadiar_1_1simple__file__sorter.html", null ],

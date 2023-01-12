@@ -16,8 +16,8 @@ var searchData=
   ['and_5fop_18',['and_op',['../namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5',1,'adiar']]],
   ['arc_5ffile_19',['arc_file',['../namespaceadiar.html#a034aae5adafc35be561bd492f2e6ed24',1,'adiar']]],
   ['arc_5ft_20',['arc_t',['../classadiar_1_1internal_1_1____dd.html#aff0e393c5d858856baec55c19c24fd22',1,'adiar::internal::__dd::arc_t()'],['../namespaceadiar.html#aed8ac399c4e67aa7d1760992c0a02554',1,'adiar::arc_t()']]],
-  ['assignment_21',['assignment',['../structadiar_1_1assignment.html',1,'adiar']]],
+  ['assignment_21',['assignment',['../classadiar_1_1assignment.html',1,'adiar::assignment'],['../classadiar_1_1assignment.html#a58ff022141dc0537ce6443aca99cc86b',1,'adiar::assignment::assignment(const label_t &amp;var, const bool &amp;val)'],['../classadiar_1_1assignment.html#a7e624d4e4049a65ef7195f12b9829af7',1,'adiar::assignment::assignment(const label_t &amp;var, const value_t &amp;val)']]],
   ['assignment_5ffile_22',['assignment_file',['../namespaceadiar.html#a665806a5e27b6722b50ca9f98cecdbb6',1,'adiar']]],
-  ['assignment_5ffunc_23',['assignment_func',['../namespaceadiar.html#ae5c824692c2b1eac6c2f3cd2ed387d44',1,'adiar']]],
+  ['assignment_5ffunc_23',['assignment_func',['../namespaceadiar.html#ad4f0ffa6585e415926ebff0cb3ee2693',1,'adiar']]],
   ['assignment_5ft_24',['assignment_t',['../namespaceadiar.html#af497f529ff9a396f463604bdb91253de',1,'adiar']]]
 ];
