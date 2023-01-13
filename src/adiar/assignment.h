@@ -1,7 +1,8 @@
 #ifndef ADIAR_ASSIGNMENT_H
 #define ADIAR_ASSIGNMENT_H
 
-#include <adiar/internal/data_types/var_map.h>
+#include <adiar/map.h>
+#include <adiar/internal/dd.h>
 
 namespace adiar
 {
@@ -15,13 +16,13 @@ namespace adiar
   /// \brief A <tt>(x,v)</tt> tuple representing the single assignment
   ///        \f$ x \mapsto v \f$.
   //////////////////////////////////////////////////////////////////////////////
-  using assignment = internal::var_mapping<assignment_value>;
+  using assignment = map_pair<internal::dd::label_t, assignment_value>;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Assignment function which provides for each variable label its
   ///        assigned value.
   //////////////////////////////////////////////////////////////////////////////
-  using assignment_func = internal::var_func_map<assignment_value>;
+  using assignment_func = func_map<internal::dd::label_t, assignment_value>;
 }
 
 #endif // ADIAR_ASSIGNMENT_H

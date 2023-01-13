@@ -280,7 +280,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
         bool operator()(const adiar::assignment &a, const adiar::assignment &b)
         {
-          return j_of_label(N, a.var()) < j_of_label(N, b.var());
+          return j_of_label(N, a.key()) < j_of_label(N, b.key());
         }
       };
 
@@ -291,7 +291,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       while (fas.can_pull()) {
         adiar::assignment a = fas.pull();
         if (a.value()) {
-          partial_assignment.push_back(i_of_label(N, a.var()));
+          partial_assignment.push_back(i_of_label(N, a.key()));
         }
       }
 
