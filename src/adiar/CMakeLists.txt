@@ -96,7 +96,6 @@ set(SOURCES
 
   # adiar/bdd/
   bdd/apply.cpp
-  bdd/assignment.cpp
   bdd/bdd.cpp
   bdd/build.cpp
   bdd/count.cpp

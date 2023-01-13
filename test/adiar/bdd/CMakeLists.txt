@@ -1,5 +1,4 @@
 add_test(adiar-bdd-apply        test_apply.cpp)
-add_test(adiar-bdd-assignment   test_assignment.cpp)
 add_test(adiar-bdd-bdd          test_bdd.cpp)
 add_test(adiar-bdd-build        test_build.cpp)
 add_test(adiar-bdd-count        test_count.cpp)
