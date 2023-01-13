@@ -116,11 +116,11 @@ go_bandit([]() {
       adiar_deinit();
 
       AssertThat(adiar_initialized(), Is().False());
-      AssertThat(adiar_initialized(), Is().False());
+      AssertThat(adiar_has_domain(), Is().False());
     });
 
     it("throws exception when reinitialized", [&]() {
-      // TODO: remove when  'github.com/thomasmoelhave/tpie/issues/265' is fixed.
+      // TODO: remove when 'github.com/thomasmoelhave/tpie/issues/265' is fixed.
       AssertThrows(std::runtime_error, adiar_init(MINIMUM_MEMORY));
     });
   });
