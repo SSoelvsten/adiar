@@ -13,6 +13,7 @@ set(HEADERS
   deprecated.h
   domain.h
   file.h
+  map.h
   memory_mode.h
   statistics.h
 
@@ -65,7 +66,6 @@ set(HEADERS
   internal/data_types/request.h
   internal/data_types/tuple.h
   internal/data_types/uid.h
-  internal/data_types/var_map.h
 
   # adiar/internal/io
   internal/io/file.h

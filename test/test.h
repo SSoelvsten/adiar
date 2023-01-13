@@ -153,7 +153,7 @@ namespace snowhouse
     static std::string ToString(const adiar::assignment& a)
     {
       std::stringstream stream;
-      stream << "assignment: [x" << a.var() << "|->" << static_cast<size_t>(a.value()) << "]";
+      stream << "assignment: [x" << a.key() << "|->" << static_cast<size_t>(a.value()) << "]";
       return stream.str();
     }
   };

@@ -333,8 +333,8 @@ namespace adiar
   /// \brief Extract the label from an assignment [label -> value].
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by member function in 'adiar/assignment.h'")]]
-  inline assignment::label_t label_of(const assignment &a)
-  { return a.var(); }
+  inline assignment::key_t label_of(const assignment &a)
+  { return a.key(); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Extract the value from an assignment [label -> value].

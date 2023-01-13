@@ -1,35 +1,35 @@
-#ifndef ADIAR_INTERNAL_DATA_TYPES_VAR_MAP_H
-#define ADIAR_INTERNAL_DATA_TYPES_VAR_MAP_H
+#ifndef ADIAR_MAP_H
+#define ADIAR_MAP_H
 
 #include <functional>
 #include <type_traits>
 
-#include <adiar/internal/assert.h>
-#include <adiar/internal/data_types/ptr.h>
-
-namespace adiar::internal
+namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
   /// \brief A <tt>(x,v)</tt> tuple representing the single association
-  ///        \f$ x \mapsto v \f$.
+  ///        \f$ x \mapsto v \f$ where \f$v\f$ is a value of enum type.
   ///
-  /// \details The given enum type should have two values: 'FALSE' with the
-  ///          integral value '0' and 'TRUE' with the integral value '1'.
+  /// \tparam key_type   The (integral) type for the map's key.
+  ///
+  /// \tparam value_enum An enum type that has the two values 'FALSE' with the
+  ///                    integral value '0' and 'TRUE' with the integral value
+  ///                    '1'.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename value_enum>
-  class var_mapping
+  template<typename key_type, typename value_enum>
+  class map_pair
   {
     /* ================================= TYPES ============================== */
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of the variable label.
+    /// \brief Type of the key.
     ///
     /// \todo Turn into <tt>size_t</tt>?
     ////////////////////////////////////////////////////////////////////////////
-    using label_t = ptr_uint64::label_t;
+    using key_t = key_type;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type (enum) with the values one can assign to a variable.
+    /// \brief Type (enum) with the values one can assign to a key.
     ////////////////////////////////////////////////////////////////////////////
     using value_t = value_enum;
 
@@ -40,54 +40,54 @@ namespace adiar::internal
 
   private:
     /* ================================= CHECKS ============================= */
+    static_assert(std::is_integral<key_t>::value);
+    static_assert(std::is_enum<value_t>::value);
     static_assert(std::is_integral<raw_t>::value);
     static_assert(static_cast<raw_t>(value_t::FALSE) == static_cast<raw_t>(0u));
     static_assert(static_cast<raw_t>(value_t::TRUE)  == static_cast<raw_t>(1u));
 
     /* =============================== VARIABLES ============================ */
   private:
-    label_t _var;
+    key_t _key;
     value_t _val;
 
     /* ============================== CONSTRUCTORS ========================== */
   public:
     ////////////////////////////////////////////////////////////////////////////
     // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
-    var_mapping<value_enum>() = default;
-    var_mapping<value_enum>(const var_mapping<value_enum> &a) = default;
-    ~var_mapping<value_enum>() = default;
+    map_pair<key_type, value_enum>() = default;
+    map_pair<key_type, value_enum>(const map_pair<key_type, value_enum> &a) = default;
+    ~map_pair<key_type, value_enum>() = default;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Constructs var_mapping pair (variable, value).
+    /// \brief Constructs map_pair pair (key, value).
     ////////////////////////////////////////////////////////////////////////////
-    var_mapping<value_enum>(const label_t &var, const value_t &val)
-      : _var(var), _val(val)
+    map_pair<key_type, value_enum>(const key_t &key, const value_t &val)
+      : _key(key), _val(val)
     {
-      adiar_debug(var <= ptr_uint64::MAX_LABEL,
-                  "Cannot represent that large a variable label");
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Constructs var_mapping pair (variable, value) from a boolean
+    /// \brief Constructs map_pair pair (key, value) from a boolean
     ///        value.
     ////////////////////////////////////////////////////////////////////////////
-    var_mapping<value_enum>(const label_t &var, const bool &val)
-      : var_mapping(var, static_cast<value_t>(val))
+    map_pair<key_type, value_enum>(const key_t &key, const bool &val)
+      : map_pair(key, static_cast<value_t>(val))
     { }
 
     /* =============================== ACCESSORS ============================ */
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain the variable of this pair.
+    /// \brief Obtain the key of this pair.
     ////////////////////////////////////////////////////////////////////////////
-    inline label_t var() const
-    { return _var; }
+    inline key_t key() const
+    { return _key; }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \copydoc var()
+    /// \copydoc key()
     ////////////////////////////////////////////////////////////////////////////
-    inline label_t level() const
-    { return var(); }
+    inline key_t level() const
+    { return key(); }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Get the value of this pair.
@@ -98,7 +98,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Get the *raw* value of this pair.
     ////////////////////////////////////////////////////////////////////////////
-    inline raw_t raw() const
+    inline raw_t raw_value() const
     { return static_cast<raw_t>(_val); }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -115,33 +115,29 @@ namespace adiar::internal
 
     /* ============================== COMPARATORS =========================== */
   public:
-    inline bool operator<  (const var_mapping<value_enum> &o) const
-    {
-      adiar_debug(this->_var != o._var,
-                  "Currently, '<' is only designed for distinct '_var' values");
-      return this->_var < o._var;
-    }
+    inline bool operator<  (const map_pair<key_type, value_enum> &o) const
+    { return this->_key < o._key; }
 
-    inline bool operator>  (const var_mapping<value_enum> &o) const
+    inline bool operator>  (const map_pair<key_type, value_enum> &o) const
     { return o < *this; }
 
-    inline bool operator== (const var_mapping<value_enum> &o) const
-    { return this->_var == o._var && this->_val == o._val; }
+    inline bool operator== (const map_pair<key_type, value_enum> &o) const
+    { return this->_key == o._key && this->_val == o._val; }
 
-    inline bool operator!= (const var_mapping<value_enum> &o) const
+    inline bool operator!= (const map_pair<key_type, value_enum> &o) const
     { return !(*this == o); }
 
     /* =============================== OPERATORS ============================ */
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain the negated value assigned to the same variable.
+    /// \brief Obtain the negated value assigned to the same key.
     ////////////////////////////////////////////////////////////////////////////
-    var_mapping<value_enum> operator~ () const
+    map_pair<key_type, value_enum> operator~ () const
     {
       const raw_t value_raw = static_cast<raw_t>(this->_val);
 
       return {
-        this->_var,
+        this->_key,
         (value_raw & 1) == (value_raw)
           ? static_cast<value_t>(value_raw ^ 1u)
           : this->_val
@@ -152,8 +148,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief A function that provides a mapping \f$ x \mapsto v \f$.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename value_enum>
-  using var_func_map = std::function<value_enum(ptr_uint64::label_t)>;
+  template<typename key_type, typename value_enum>
+  using func_map = std::function<value_enum(key_type)>;
 }
 
-#endif // ADIAR_INTERNAL_DATA_TYPES_VAR_MAP_H
+#endif // ADIAR_MAP_H
