@@ -19,6 +19,7 @@
 
 #include <adiar/assignment.h>
 #include <adiar/bool_op.h>
+#include <adiar/evaluation.h>
 #include <adiar/file.h>
 
 #include <adiar/bdd/bdd.h>
@@ -526,10 +527,13 @@ namespace adiar
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \returns A <tt>shared_file<assignment></tt> with an assignment to every
-  ///          variable mentioned by the given BDD.
+  /// \returns A <tt>shared_file<evaluation></tt> with an <tt>evaluation</tt> for
+  ///          every variable mentioned by the given BDD.
+  ///
+  /// \remark  The returned list of <tt>evaluation</tt>s are never set to
+  ///          <em>DON'T CARE</em>.
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<assignment> bdd_satmin(const bdd &f);
+  shared_file<evaluation> bdd_satmin(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
@@ -538,10 +542,13 @@ namespace adiar
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \returns A <tt>shared_file<assignment></tt> with an assignment to every
-  ///          variable mentioned by the given BDD.
+  /// \returns A <tt>shared_file<evaluation></tt> with an <tt>evaluation</tt> for
+  ///          every variable mentioned by the given BDD.
+  ///
+  /// \remark  The returned list of <tt>evaluation</tt>s are never set to
+  ///          <em>DON'T CARE</em>.
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<assignment> bdd_satmax(const bdd &f);
+  shared_file<evaluation> bdd_satmax(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment

@@ -79,7 +79,6 @@ go_bandit([]() {
 #include "adiar/bdd/test_bdd.cpp"
 
 #include "adiar/bdd/test_apply.cpp"
-#include "adiar/bdd/test_assignment.cpp"
 #include "adiar/bdd/test_build.cpp"
 #include "adiar/bdd/test_count.cpp"
 #include "adiar/bdd/test_evaluate.cpp"
