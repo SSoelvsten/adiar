@@ -44,7 +44,6 @@ go_bandit([]() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Adiar Core unit tests
-#include "adiar/test_assignment.cpp"
 #include "adiar/test_bool_op.cpp"
 
 #include "adiar/test_domain.cpp"
@@ -59,6 +58,7 @@ go_bandit([]() {
 #include "adiar/internal/data_types/test_tuple.cpp"
 #include "adiar/internal/data_types/test_request.cpp"
 #include "adiar/internal/data_types/test_convert.cpp"
+#include "adiar/internal/data_types/test_var_map.cpp"
 
 #include "adiar/internal/io/test_file.cpp"
 #include "adiar/internal/io/test_levelized_file.cpp"

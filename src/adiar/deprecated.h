@@ -329,7 +329,6 @@ namespace adiar
   inline assignment operator! (const assignment &a)
   { return ~a; }
 
-
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Extract the label from an assignment [label -> value].
   //////////////////////////////////////////////////////////////////////////////
@@ -342,7 +341,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by member function in 'adiar/assignment.h'")]]
   inline bool value_of(const assignment &a)
-  { return a.value(); }
+  { return static_cast<bool>(a.value()); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief A <tt>(x,v)</tt> tuple representing the single assignment

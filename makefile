@@ -60,9 +60,6 @@ test/all:
 test/adiar:
 	make $(MAKE_FLAGS) test
 
-test/adiar/assignment:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=assignment
-
 test/adiar/bool_op:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=bool_op
 
@@ -74,9 +71,6 @@ test/adiar/domain:
 
 test/adiar/bdd/apply:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=apply
-
-test/adiar/bdd/assignment:
-	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=assignment
 
 test/adiar/bdd/bdd:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/bdd TEST_NAME=bdd
@@ -143,6 +137,9 @@ test/adiar/internal/data_types/tuple:
 
 test/adiar/internal/data_types/uid:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=uid
+
+test/adiar/internal/data_types/var_map:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/data_types TEST_NAME=var_map
 
 test/adiar/internal/io/arc_file:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar/internal/io TEST_NAME=arc_file
