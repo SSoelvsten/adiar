@@ -4,7 +4,6 @@
 #include <tpie/file_stream.h>
 #include <tpie/sort.h>
 
-#include <adiar/assignment.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/memory.h>
 #include <adiar/internal/data_types/level_info.h>
@@ -191,7 +190,6 @@ namespace adiar::internal
   };
 
   // TODO: remove...
-  typedef file_writer<assignment> assignment_writer;
   typedef file_writer<ptr_uint64::label_t> label_writer;
 }
 

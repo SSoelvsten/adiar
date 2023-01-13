@@ -1,5 +1,7 @@
 #include <adiar/bdd.h>
 
+#include <functional>
+
 #include <adiar/assignment.h>
 #include <adiar/evaluation.h>
 #include <adiar/internal/assert.h>
@@ -13,20 +15,18 @@ namespace adiar
 {
   class bdd_eval_func_visitor
   {
-    const assignment_func &af;
-    bool result = false;;
+    const std::function<bool(bdd::label_t)> &af;
+    bool result = false;
 
   public:
-    bdd_eval_func_visitor(const assignment_func& f) : af(f)
+    bdd_eval_func_visitor(const std::function<bool(bdd::label_t)>& f)
+      : af(f)
     { }
 
     inline bdd::ptr_t visit(const bdd::node_t &n)
     {
-      const assignment_value a = af(n.label());
-      adiar_assert(a != assignment_value::NONE,
-                   "Missing assignment for node visited in BDD");
-
-      return a == assignment_value::TRUE ? n.high() : n.low();
+      const bool a = af(n.label());
+      return a ? n.high() : n.low();
     }
 
     inline void visit(const bool s)
@@ -36,38 +36,38 @@ namespace adiar
     { return result; }
   };
 
-  bool bdd_eval(const bdd &bdd, const assignment_func &af)
+  bool bdd_eval(const bdd &bdd, const std::function<bool(bdd::label_t)> &af)
   {
     bdd_eval_func_visitor v(af);
     traverse(bdd, v);
     return v.get_result();
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   class bdd_eval_file_visitor
   {
-    internal::file_stream<assignment> as;
-    assignment a;
+    internal::file_stream<map_pair<bdd::label_t, boolean>> mps;
+    map_pair<bdd::label_t, boolean> mp;
 
     bool result = false;
 
   public:
-    bdd_eval_file_visitor(const shared_file<assignment>& af) : as(af)
-    { if (as.can_pull()) { a = as.pull(); } }
+    bdd_eval_file_visitor(const shared_file<map_pair<bdd::label_t, boolean>>& msf)
+      : mps(msf)
+    { if (mps.can_pull()) { mp = mps.pull(); } }
 
     inline bdd::ptr_t visit(const bdd::node_t &n)
     {
       const bdd::label_t level = n.label();
-      while (a.level() < level) {
-        adiar_assert(as.can_pull(),
+      while (mp.level() < level) {
+        adiar_assert(mps.can_pull(),
                      "Assignment file is insufficient to traverse BDD");
-        a = as.pull();
+        mp = mps.pull();
       }
-      adiar_assert(a.level() == level,
-                   "Missing assignment for node visited in BDD");
-      adiar_assert(a.value() != assignment_value::NONE,
+      adiar_assert(mp.level() == level,
                    "Missing assignment for node visited in BDD");
 
-      return a.is_true() ? n.high() : n.low();
+      return mp.value() ? n.high() : n.low();
     }
 
     inline void visit(const bool s)
@@ -77,21 +77,22 @@ namespace adiar
     { return result; }
   };
 
-  bool bdd_eval(const bdd &bdd, const shared_file<assignment> &af)
+  bool bdd_eval(const bdd &bdd,
+                const shared_file<map_pair<bdd::label_t, boolean>> &mpf)
   {
-    bdd_eval_file_visitor v(af);
+    bdd_eval_file_visitor v(mpf);
     internal::traverse(bdd, v);
     return v.get_result();
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  template<typename visitor, evaluation_value skipped_value>
+  template<typename visitor, bool skipped_value>
   class bdd_sat_evaluation_writer_visitor
   {
     visitor __visitor;
 
-    shared_file<evaluation> ef;
-    internal::file_writer<evaluation> ew;
+    shared_file<map_pair<bdd::label_t, boolean>> ef;
+    internal::file_writer<map_pair<bdd::label_t, boolean>> ew;
 
     internal::level_info_stream<> lvls;
 
@@ -107,12 +108,12 @@ namespace adiar
 
       // set default to all skipped levels
       while (lvls.peek().label() < label) {
-        ew << evaluation(lvls.pull().label(), skipped_value);
+        ew << map_pair<bdd::label_t, boolean>(lvls.pull().label(), skipped_value);
       }
       adiar_debug(lvls.peek().label() == label,
                   "level given should exist in BDD");
 
-      ew << evaluation(lvls.pull().label(), next_ptr == n.high());
+      ew << map_pair<bdd::label_t, boolean>(lvls.pull().label(), next_ptr == n.high());
       return next_ptr;
     }
 
@@ -121,26 +122,24 @@ namespace adiar
       __visitor.visit(s);
 
       while (lvls.can_pull()) {
-        ew << evaluation(lvls.pull().label(), skipped_value);
+        ew << map_pair<bdd::label_t, boolean>(lvls.pull().label(), skipped_value);
       }
     }
 
-    const shared_file<evaluation> get_result() const
-    {
-      return ef;
-    }
+    const shared_file<map_pair<bdd::label_t, boolean>> get_result() const
+    { return ef; }
   };
 
-  shared_file<evaluation> bdd_satmin(const bdd &f)
+  shared_file<map_pair<bdd::label_t, boolean>> bdd_satmin(const bdd &f)
   {
-    bdd_sat_evaluation_writer_visitor<internal::traverse_satmin_visitor, evaluation_value::FALSE> v(f);
+    bdd_sat_evaluation_writer_visitor<internal::traverse_satmin_visitor, false> v(f);
     internal::traverse(f,v);
     return v.get_result();
   }
 
-  shared_file<evaluation> bdd_satmax(const bdd &f)
+  shared_file<map_pair<bdd::label_t, boolean>> bdd_satmax(const bdd &f)
   {
-    bdd_sat_evaluation_writer_visitor<internal::traverse_satmax_visitor, evaluation_value::TRUE> v(f);
+    bdd_sat_evaluation_writer_visitor<internal::traverse_satmax_visitor, true> v(f);
     internal::traverse(f,v);
     return v.get_result();
   }

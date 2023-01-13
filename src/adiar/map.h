@@ -7,6 +7,17 @@
 namespace adiar
 {
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Minimal enum for `map_pair`.
+  ///
+  /// \sa map_pair
+  //////////////////////////////////////////////////////////////////////////////
+  enum boolean : bool
+  {
+    FALSE = false,
+    TRUE  = true
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief A <tt>(x,v)</tt> tuple representing the single association
   ///        \f$ x \mapsto v \f$ where \f$v\f$ is a value of enum type.
   ///
@@ -14,9 +25,9 @@ namespace adiar
   ///
   /// \tparam value_enum An enum type that has the two values 'FALSE' with the
   ///                    integral value '0' and 'TRUE' with the integral value
-  ///                    '1'.
+  ///                    '1', e.g. `bool_enum`.
   //////////////////////////////////////////////////////////////////////////////
-  template<typename key_type, typename value_enum>
+  template<typename key_type, typename value_enum = boolean>
   class map_pair
   {
     /* ================================= TYPES ============================== */
@@ -32,6 +43,7 @@ namespace adiar
     /// \brief Type (enum) with the values one can assign to a key.
     ////////////////////////////////////////////////////////////////////////////
     using value_t = value_enum;
+    static_assert(std::is_enum<value_t>::value);
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The raw integral type used for the value enum.
@@ -41,7 +53,6 @@ namespace adiar
   private:
     /* ================================= CHECKS ============================= */
     static_assert(std::is_integral<key_t>::value);
-    static_assert(std::is_enum<value_t>::value);
     static_assert(std::is_integral<raw_t>::value);
     static_assert(static_cast<raw_t>(value_t::FALSE) == static_cast<raw_t>(0u));
     static_assert(static_cast<raw_t>(value_t::TRUE)  == static_cast<raw_t>(1u));
@@ -62,7 +73,7 @@ namespace adiar
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Constructs map_pair pair (key, value).
     ////////////////////////////////////////////////////////////////////////////
-    map_pair<key_type, value_enum>(const key_t &key, const value_t &val)
+    map_pair<key_type, value_enum>(const key_t key, const value_t val)
       : _key(key), _val(val)
     {
     }
@@ -71,7 +82,7 @@ namespace adiar
     /// \brief Constructs map_pair pair (key, value) from a boolean
     ///        value.
     ////////////////////////////////////////////////////////////////////////////
-    map_pair<key_type, value_enum>(const key_t &key, const bool &val)
+    map_pair<key_type, value_enum>(const key_t key, const bool val)
       : map_pair(key, static_cast<value_t>(val))
     { }
 
@@ -111,7 +122,9 @@ namespace adiar
     /// \brief Obtain whether the value is 'TRUE'.
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_true() const
-    { return value() == value_t::TRUE; }
+    {
+      return value() == value_t::TRUE;
+    }
 
     /* ============================== COMPARATORS =========================== */
   public:
@@ -144,12 +157,6 @@ namespace adiar
       };
     }
   };
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief A function that provides a mapping \f$ x \mapsto v \f$.
-  //////////////////////////////////////////////////////////////////////////////
-  template<typename key_type, typename value_enum>
-  using func_map = std::function<value_enum(key_type)>;
 }
 
 #endif // ADIAR_MAP_H

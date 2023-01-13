@@ -109,14 +109,14 @@ go_bandit([]() {
       describe("test_map_pair(label_t, bool)", []() {
         it("converts correctly from boolean value [0]", []() {
           test_map_pair a(42, false);
-          AssertThat(a.key(), Is().EqualTo(42u));
+          AssertThat(a.key(), Is().EqualTo(42));
           AssertThat(a.value(), Is().EqualTo(test_map_value::FALSE));
           AssertThat(a.raw_value(), Is().EqualTo(0));
         });
 
         it("converts correctly from boolean value [1]", []() {
           test_map_pair a(42, true);
-          AssertThat(a.key(), Is().EqualTo(42u));
+          AssertThat(a.key(), Is().EqualTo(42));
           AssertThat(a.value(), Is().EqualTo(test_map_value::TRUE));
           AssertThat(a.raw_value(), Is().EqualTo(1));
         });

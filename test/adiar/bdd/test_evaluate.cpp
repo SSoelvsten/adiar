@@ -81,302 +81,302 @@ go_bandit([]() {
         nw << node(true);
       }
 
-      describe("bdd_eval(bdd, adiar::shared_file<assignment>)", [&]() {
+      describe("bdd_eval(bdd, adiar::shared_file<...>)", [&]() {
         it("returns F on test BDD with assignment (F,F,F,T)", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, false)
-               << assignment(1, false)
-               << assignment(2, false)
-               << assignment(3, true);
+            aw << map_pair<bdd::label_t, boolean>(0, false)
+               << map_pair<bdd::label_t, boolean>(1, false)
+               << map_pair<bdd::label_t, boolean>(2, false)
+               << map_pair<bdd::label_t, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().False());
         });
 
         it("returns F on test BDD with assignment (F,_,F,T)", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, false)
-               << assignment(2, false)
-               << assignment(3, true);
+            aw << map_pair<bdd::label_t, boolean>(0, false)
+               << map_pair<bdd::label_t, boolean>(2, false)
+               << map_pair<bdd::label_t, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().False());
         });
 
         it("returns T on test BDD with assignment (F,T,T,T)", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, false)
-               << assignment(1, true)
-               << assignment(2, true)
-               << assignment(3, true);
+            aw << map_pair<bdd::label_t, boolean>(0, false)
+               << map_pair<bdd::label_t, boolean>(1, true)
+               << map_pair<bdd::label_t, boolean>(2, true)
+               << map_pair<bdd::label_t, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().True());
         });
 
         it("returns F on test BDD with assignment (T,F,F,T)", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, true)
-               << assignment(1, false)
-               << assignment(2, false)
-               << assignment(3, true);
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(1, false)
+               << map_pair<bdd::label_t, boolean>(2, false)
+               << map_pair<bdd::label_t, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().False());
         });
 
         it("returns T on test BDD with assignment (T,F,T,F)", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, true)
-               << assignment(1, false)
-               << assignment(2, true)
-               << assignment(3, false);
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(1, false)
+               << map_pair<bdd::label_t, boolean>(2, true)
+               << map_pair<bdd::label_t, boolean>(3, false);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().True());
         });
 
         it("returns T on test BDD with assignment (T,T,F,T)", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, true)
-               << assignment(1, true)
-               << assignment(2, false)
-               << assignment(3, true);
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(1, true)
+               << map_pair<bdd::label_t, boolean>(2, false)
+               << map_pair<bdd::label_t, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().True());
         });
 
         it("returns T on test BDD with assignment (T,T,T,F)", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, true)
-               << assignment(1, true)
-               << assignment(2, true)
-               << assignment(3, false);
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(1, true)
+               << map_pair<bdd::label_t, boolean>(2, true)
+               << map_pair<bdd::label_t, boolean>(3, false);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().False());
         });
 
         it("returns T on test BDD with assignment (T,T,T,T)", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, true)
-               << assignment(1, true)
-               << assignment(2, true)
-               << assignment(3, true);
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(1, true)
+               << map_pair<bdd::label_t, boolean>(2, true)
+               << map_pair<bdd::label_t, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd, ass), Is().True());
         });
 
         it("should be able to evaluate BDD that skips level [1]", [&skip_bdd]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, false)
-               << assignment(1, true)
-               << assignment(2, false)
-               << assignment(3, true)
-               << assignment(4, true);
+            aw << map_pair<bdd::label_t, boolean>(0, false)
+               << map_pair<bdd::label_t, boolean>(1, true)
+               << map_pair<bdd::label_t, boolean>(2, false)
+               << map_pair<bdd::label_t, boolean>(3, true)
+               << map_pair<bdd::label_t, boolean>(4, true);
           }
 
           AssertThat(bdd_eval(skip_bdd, ass), Is().False());
         });
 
         it("should be able to evaluate BDD that skips level [2]", [&skip_bdd]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, true)
-               << assignment(1, false)
-               << assignment(2, true)
-               << assignment(3, true)
-               << assignment(4, false);
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(1, false)
+               << map_pair<bdd::label_t, boolean>(2, true)
+               << map_pair<bdd::label_t, boolean>(3, true)
+               << map_pair<bdd::label_t, boolean>(4, false);
           }
 
           AssertThat(bdd_eval(skip_bdd, ass), Is().False());
         });
 
         it("returns T on BDD with non-zero root with assignment (F,T)", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, false)
-               << assignment(1, true);
+            aw << map_pair<bdd::label_t, boolean>(0, false)
+               << map_pair<bdd::label_t, boolean>(1, true);
           }
 
           AssertThat(bdd_eval(non_zero_bdd, ass), Is().True());
         });
 
         it("returns F on F terminal-only BDD", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, true)
-               << assignment(1, false)
-               << assignment(2, false)
-               << assignment(3, true);
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(1, false)
+               << map_pair<bdd::label_t, boolean>(2, false)
+               << map_pair<bdd::label_t, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd_F, ass), Is().False());
         });
 
         it("returns F on F terminal-only BDD with empty assignment", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           AssertThat(bdd_eval(bdd_F, ass), Is().False());
         });
 
         it("returns T on T terminal-only BDD", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           { // Garbage collect writer to free write-lock
-            adiar::file_writer<assignment> aw(ass);
+            adiar::file_writer<map_pair<bdd::label_t, boolean>> aw(ass);
 
-            aw << assignment(0, true)
-               << assignment(1, true)
-               << assignment(2, false)
-               << assignment(3, true);
+            aw << map_pair<bdd::label_t, boolean>(0, true)
+               << map_pair<bdd::label_t, boolean>(1, true)
+               << map_pair<bdd::label_t, boolean>(2, false)
+               << map_pair<bdd::label_t, boolean>(3, true);
           }
 
           AssertThat(bdd_eval(bdd_T, ass), Is().True());
         });
 
         it("returns T on T terminal-only BDD with empty assignment", [&]() {
-          adiar::shared_file<assignment> ass;
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> ass;
 
           AssertThat(bdd_eval(bdd_T, ass), Is().True());
         });
       });
 
-      describe("bdd_eval(bdd, assignment_func)", [&]() {
+      describe("bdd_eval(bdd, std::function<...>)", [&]() {
         it("returns F on test BDD with assignment 'l -> l = 3'", [&]() {
-          assignment_func af = [](const bdd::label_t l) {
-            return static_cast<assignment_value>(l == 3);
+          auto af = [](const bdd::label_t l) {
+            return l == 3;
           };
           AssertThat(bdd_eval(bdd, af), Is().False());
         });
 
         it("returns T on test BDD with assignment 'l -> l % 2 == 0'", [&]() {
-          assignment_func af = [](const bdd::label_t l) {
-            return static_cast<assignment_value>((l & 1u) == 0);
+          auto af = [](const bdd::label_t l) {
+            return (l & 1u) == 0;
           };
           AssertThat(bdd_eval(bdd, af), Is().True());
         });
 
         it("returns T on test BDD with assignment 'l -> l > 0'", [&]() {
-          assignment_func af = [](const bdd::label_t l) {
-            return static_cast<assignment_value>(l > 0);
+          auto af = [](const bdd::label_t l) {
+            return l > 0;
           };
           AssertThat(bdd_eval(bdd, af), Is().True());
         });
 
         it("returns F on test BDD with assignment 'l -> l == 0 || l == 3'", [&]() {
-          assignment_func af = [](const bdd::label_t l) {
-            return static_cast<assignment_value>(l == 0 || l == 3);
+          auto af = [](const bdd::label_t l) {
+            return l == 0 || l == 3;
           };
           AssertThat(bdd_eval(bdd, af), Is().False());
         });
 
         it("returns F on test BDD with assignment 'l -> l % 2 == 1'", [&]() {
-          assignment_func af = [](const bdd::label_t l) {
-            return static_cast<assignment_value>((l & 1) == 1);
+          auto af = [](const bdd::label_t l) {
+            return (l & 1) == 1;
           };
           AssertThat(bdd_eval(bdd, af), Is().False());
         });
 
         it("returns T on test BDD with assignment 'l -> l != 2'", [&]() {
-          assignment_func af = [](const bdd::label_t l) {
-            return static_cast<assignment_value>(l != 2);
+          auto af = [](const bdd::label_t l) {
+            return l != 2;
           };
           AssertThat(bdd_eval(bdd, af), Is().True());
         });
 
         it("returns F on test BDD with assignment 'l -> l < 3'", [&]() {
-          assignment_func af = [](const bdd::label_t l) {
-            return static_cast<assignment_value>(l < 3);
+          auto af = [](const bdd::label_t l) {
+            return l < 3;
           };
           AssertThat(bdd_eval(bdd, af), Is().False());
         });
 
         it("returns T on test BDD with assignment '_ -> true'", [&]() {
-          assignment_func af = [](const bdd::label_t) {
-            return static_cast<assignment_value>(true);
+          auto af = [](const bdd::label_t) {
+            return true;
           };
           AssertThat(bdd_eval(bdd, af), Is().True());
         });
 
         it("returns F on BDD that skips with assignment 'l -> l == 1 || l > 2'", [&]() {
-          assignment_func af = [](const bdd::label_t l) {
-            return static_cast<assignment_value>(l == 1 || l > 2);
+          auto af = [](const bdd::label_t l) {
+            return l == 1 || l > 2;
           };
           AssertThat(bdd_eval(skip_bdd, af), Is().False());
         });
 
         it("returns F on BDD that skips with assignment 'l -> l != 1 && l < 4'", [&]() {
-          assignment_func af = [](const bdd::label_t l) {
-            return static_cast<assignment_value>(l != 1 && l < 4);
+          auto af = [](const bdd::label_t l) {
+            return l != 1 && l < 4;
           };
           AssertThat(bdd_eval(skip_bdd, af), Is().False());
         });
 
         it("returns T on BDD with non-zero root with assignment 'l -> l == 1'", [&]() {
-          assignment_func af = [](const bdd::label_t l) {
-            return static_cast<assignment_value>(l == 1);
+          auto af = [](const bdd::label_t l) {
+            return l == 1;
           };
           AssertThat(bdd_eval(non_zero_bdd, af), Is().True());
         });
 
         it("returns F on F terminal-only BDD with assignment '_ -> true'", [&]() {
-          assignment_func af = [](const bdd::label_t) {
-            return static_cast<assignment_value>(true);
+          auto af = [](const bdd::label_t) {
+            return true;
           };
           AssertThat(bdd_eval(bdd_F, af), Is().False());
         });
 
         it("returns T on T terminal-only BDD with assignment '_ -> false'", [&]() {
-          assignment_func af = [](const bdd::label_t) {
-            return static_cast<assignment_value>(false);
+          auto af = [](const bdd::label_t) {
+            return false;
           };
           AssertThat(bdd_eval(bdd_T, af), Is().True());
         });
@@ -467,9 +467,9 @@ go_bandit([]() {
             nw << node(true);
           }
 
-          adiar::shared_file<evaluation> result = bdd_satmin(T);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(T);
 
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
@@ -480,116 +480,116 @@ go_bandit([]() {
             nw << node(false);
           }
 
-          adiar::shared_file<evaluation> result = bdd_satmin(false);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(false);
 
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve evaluation [1]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmin(bdd_1);
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_1);
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(0, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(2, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve evaluation [1]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmin(bdd_1);
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_1);
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(0, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(2, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve evaluation [~1]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmin(bdd_not(bdd_1));
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_not(bdd_1));
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(0, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(2, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve evaluation [2]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmin(bdd_2);
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_2);
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(0, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(2, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve evaluation [3]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmin(bdd_3);
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_3);
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(5, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(5, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve evaluation [3]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmin(bdd_not(bdd_3));
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmin(bdd_not(bdd_3));
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(5, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(5, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
@@ -597,109 +597,109 @@ go_bandit([]() {
 
       describe("bdd_satmax(f)", [&]() {
         it("should retrieve maximal evaluation [1]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmax(bdd_1);
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_1);
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(0, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(2, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve maximal evaluation [~1]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmax(bdd_not(bdd_1));
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_not(bdd_1));
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(0, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(2, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve maximal evaluation [2]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmax(bdd_2);
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_2);
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(0, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(2, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve maximal evaluation [~2]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmax(bdd_not(bdd_2));
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_not(bdd_2));
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(0, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(0, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(2, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(2, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve maximal evaluation [3]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmax(bdd_3);
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_3);
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(5, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(5, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });
 
         it("should retrieve maximal evaluation [3]", [&]() {
-          adiar::shared_file<evaluation> result = bdd_satmax(bdd_not(bdd_3));
-          adiar::file_stream<evaluation> out_evaluation(result);
+          adiar::shared_file<map_pair<bdd::label_t, boolean>> result = bdd_satmax(bdd_not(bdd_3));
+          adiar::file_stream<map_pair<bdd::label_t, boolean>> out_evaluation(result);
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(1, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(1, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(3, true)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(3, true)));
 
           AssertThat(out_evaluation.can_pull(), Is().True());
-          AssertThat(out_evaluation.pull(), Is().EqualTo(evaluation(5, false)));
+          AssertThat(out_evaluation.pull(), Is().EqualTo(map_pair<bdd::label_t, boolean>(5, false)));
 
           AssertThat(out_evaluation.can_pull(), Is().False());
         });

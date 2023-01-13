@@ -14,6 +14,7 @@
 /// possible and/or minimise the number of lvalues of said type.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <functional>
 #include <string>
 #include <iostream>
 
@@ -331,7 +332,8 @@ namespace adiar
   ///
   /// \returns  \f$ f|_{(i,v) \in xs : x_i = v} \f$
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const bdd &f, const shared_file<assignment> &xs);
+  __bdd bdd_restrict(const bdd &f,
+                     const shared_file<map_pair<bdd::label_t, assignment>> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Existentially quantify a single variable.
@@ -533,7 +535,7 @@ namespace adiar
   /// \remark  The returned list of <tt>evaluation</tt>s are never set to
   ///          <em>DON'T CARE</em>.
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<evaluation> bdd_satmin(const bdd &f);
+  shared_file<map_pair<bdd::label_t, boolean>> bdd_satmin(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
@@ -548,10 +550,10 @@ namespace adiar
   /// \remark  The returned list of <tt>evaluation</tt>s are never set to
   ///          <em>DON'T CARE</em>.
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<evaluation> bdd_satmax(const bdd &f);
+  shared_file<map_pair<bdd::label_t, boolean>> bdd_satmax(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief    Evaluate a BDD according to an assignment
+  /// \brief    Evaluate a BDD according to an assignment to its variables.
   ///
   /// \details  The given assignment function may assume/abuse that it is only
   ///           called with the labels in a strictly increasing order.
@@ -561,18 +563,20 @@ namespace adiar
   /// \param xs An assignment function of the type \f$ \texttt{label\_t}
   ///           \rightarrow \texttt{bool} \f$.
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_eval(const bdd &f, const assignment_func &xs);
+  bool bdd_eval(const bdd &f,
+                const std::function<bool(bdd::label_t)> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief    Evaluate a BDD according to an assignment
+  /// \brief    Evaluate a BDD according to an assignment to its variables.
   ///
   /// \param f  The BDD to evaluate
   ///
-  /// \param xs A list of tuples `(i,v)` in ascending order
+  /// \param xs A list of tuples `(i,v)` in ascending order of `i`.
   ///
   /// \pre      Assignment tuples in `xs` is in ascending order
   //////////////////////////////////////////////////////////////////////////////
-  bool bdd_eval(const bdd &f, const shared_file<assignment> &xs);
+  bool bdd_eval(const bdd &f,
+                const shared_file<map_pair<bdd::label_t, boolean>> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Get the labels of the levels of the BDD
