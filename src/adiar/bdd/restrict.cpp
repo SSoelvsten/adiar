@@ -21,12 +21,12 @@ namespace adiar
       a = as.pull();
     }
 
-    assignment::value_t assignment_for_level(assignment::label_t level) {
+    assignment_value assignment_for_level(bdd::label_t level) {
       while (a.level() < level && as.can_pull()) {
         a = as.pull();
       }
 
-      return a.level() == level ? a.value() : assignment::NONE;
+      return a.level() == level ? a.value() : assignment_value::NONE;
     }
   };
 
