@@ -12,21 +12,22 @@ namespace adiar
 {
   class substitute_assignment_file_mgr
   {
-    file_stream<assignment> as;
-    assignment a;
+    file_stream<map_pair<bdd::label_t, assignment>> mps;
+    map_pair<bdd::label_t, assignment> mp;
 
   public:
-    substitute_assignment_file_mgr(const shared_file<assignment> &af) : as(af)
+    substitute_assignment_file_mgr(const shared_file<map_pair<bdd::label_t, assignment>> &mpf)
+      : mps(mpf)
     {
-      a = as.pull();
+      mp = mps.pull();
     }
 
-    assignment_value assignment_for_level(bdd::label_t level) {
-      while (a.level() < level && as.can_pull()) {
-        a = as.pull();
+    assignment assignment_for_level(bdd::label_t level) {
+      while (mp.level() < level && mps.can_pull()) {
+        mp = mps.pull();
       }
 
-      return a.level() == level ? a.value() : assignment_value::NONE;
+      return mp.level() == level ? mp.value() : assignment::NONE;
     }
   };
 
@@ -50,11 +51,13 @@ namespace adiar
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  __bdd bdd_restrict(const bdd &dd, const shared_file<assignment> &a)
+  __bdd bdd_restrict(const bdd &dd,
+                     const shared_file<map_pair<bdd::label_t, assignment>> &a)
   {
     if (a->size() == 0
         || is_terminal(dd)
-        || internal::disjoint_labels<shared_file<assignment>, internal::file_stream<assignment>>(a, dd)) {
+        || internal::disjoint_labels<shared_file<map_pair<bdd::label_t, assignment>>,
+                                     internal::file_stream<map_pair<bdd::label_t, assignment>>>(a, dd)) {
       return dd;
     }
 

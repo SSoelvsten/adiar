@@ -320,35 +320,29 @@ namespace adiar
   /// \brief A file of assignments (label, value)
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Use 'shared_file<assignment>' in 'adiar/file.h' instead")]]
-  typedef shared_file<assignment> assignment_file;
+  typedef shared_file<map_pair<bdd::label_t, boolean>> assignment_file;
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Negate the value of an assignment [label -> value].
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced with '~' operator in 'adiar/assignment.h'")]]
-  inline assignment operator! (const assignment &a)
+  inline map_pair<bdd::label_t, boolean>
+  operator! (const map_pair<bdd::label_t, boolean> &a)
   { return ~a; }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Extract the label from an assignment [label -> value].
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by member function in 'adiar/assignment.h'")]]
-  inline assignment::key_t label_of(const assignment &a)
+  inline bdd::label_t label_of(const map_pair<bdd::label_t, boolean> &a)
   { return a.key(); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Extract the value from an assignment [label -> value].
   //////////////////////////////////////////////////////////////////////////////
   [[deprecated("Replaced by member function in 'adiar/assignment.h'")]]
-  inline bool value_of(const assignment &a)
-  { return static_cast<bool>(a.value()); }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief A <tt>(x,v)</tt> tuple representing the single assignment
-  ///        \f$ x \mapsto v \f$.
-  //////////////////////////////////////////////////////////////////////////////
-  [[deprecated("Use the 'assignment' class-name directly")]]
-  typedef assignment assignment_t;
+  inline bool value_of(const map_pair<bdd::label_t, boolean> &a)
+  { return a.is_true(); }
 
   /* =========================== DECISION DIAGRAM =========================== */
 

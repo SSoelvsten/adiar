@@ -53,17 +53,17 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
   template<typename substitute_policy, typename substitute_assignment_mgr>
-  inline substitute_rec substitute_apply_assignment(const assignment_value &a,
+  inline substitute_rec substitute_apply_assignment(const assignment &a,
                                                     const node &n,
                                                     substitute_assignment_mgr &amgr)
   {
     switch (a) {
-    case assignment_value::FALSE:
+    case assignment::FALSE:
       return substitute_policy::fix_false(n, amgr);
-    case assignment_value::TRUE:
+    case assignment::TRUE:
       return substitute_policy::fix_true(n, amgr);
     default:
-    case assignment_value::NONE:
+    case assignment::NONE:
       return substitute_policy::keep_node(n, amgr);
     }
   }
@@ -99,7 +99,7 @@ namespace adiar::internal
     typename substitute_policy::label_t level = n.label();
     size_t level_size = 0;
 
-    assignment_value a = amgr.assignment_for_level(level);
+    assignment a = amgr.assignment_for_level(level);
 
     // process the root and create initial recursion requests
     {

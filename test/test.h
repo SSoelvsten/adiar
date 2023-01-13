@@ -148,9 +148,9 @@ namespace snowhouse
   };
 
   template<>
-  struct Stringizer<assignment>
+  struct Stringizer<adiar::map_pair<adiar::bdd::label_t, adiar::assignment>>
   {
-    static std::string ToString(const adiar::assignment& a)
+    static std::string ToString(const adiar::map_pair<adiar::bdd::label_t, adiar::assignment>& a)
     {
       std::stringstream stream;
       stream << "assignment: [x" << a.key() << "|->" << static_cast<size_t>(a.value()) << "]";

@@ -3,15 +3,15 @@
 go_bandit([]() {
   describe("adiar/bdd/restrict.cpp", []() {
     /*
-             1         ---- x0
-            / \
-            | 2        ---- x1
-            |/ \
-            3   4      ---- x2
-           / \ / \
-           F T T 5     ---- x3
-                / \
-                F T
+    //             1         ---- x0
+    //            / \
+    //            | 2        ---- x1
+    //            |/ \
+    //            3   4      ---- x2
+    //           / \ / \
+    //           F T T 5     ---- x3
+    //                / \
+    //                F T
     */
 
     ptr_uint64 terminal_T = ptr_uint64(true);
@@ -32,22 +32,22 @@ go_bandit([]() {
 
     it("should bridge level [1] Assignment: (_,_,T,_)", [&]() {
       /*
-                 1      ---- x0
-                / \
-                T 2     ---- x1
-                 / \
-                 T |
-                   |
-                   5    ---- x3
-                  / \
-                  F T
+      //                 1      ---- x0
+      //                / \
+      //                T 2     ---- x1
+      //                 / \
+      //                 T |
+      //                   |
+      //                   5    ---- x3
+      //                  / \
+      //                  F T
       */
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(2, true);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(2, true);
       }
 
       __bdd out = bdd_restrict(bdd, ass);
@@ -95,20 +95,20 @@ go_bandit([]() {
 
     it("should bridge levels [2]. Assignment: (_,F,_,_)", [&]() {
       /*
-                 1      ---- x0
-                / \
-                | |
-                \ /
-                 3      ---- x2
-                / \
-                F T
+      //                 1      ---- x0
+      //                / \
+      //                | |
+      //                \ /
+      //                 3      ---- x2
+      //                / \
+      //                F T
       */
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(1, false);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(1, false);
       }
 
       __bdd out = bdd_restrict(bdd, ass);
@@ -147,22 +147,22 @@ go_bandit([]() {
 
     it("should bridge levels [3]. Assignment: (_,T,_,_)", [&]() {
       /*
-                  1         ---- x0
-                 / \
-                /   \
-                |   |
-                3   4       ---- x2
-               / \ / \
-               F T T 5      ---- x3
-                    / \
-                    F T
+      //                  1         ---- x0
+      //                 / \
+      //                /   \
+      //                |   |
+      //                3   4       ---- x2
+      //               / \ / \
+      //               F T T 5      ---- x3
+      //                    / \
+      //                    F T
       */
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(1, true);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(1, true);
       }
 
       __bdd out = bdd_restrict(bdd, ass);
@@ -216,20 +216,20 @@ go_bandit([]() {
 
     it("should remove root. Assignment: (T,_,_,F)", [&]() {
       /*
-                  2     ---- x1
-                 / \
-                /   \
-                3   4   ---- x2
-               / \ / \
-               F T T F
+      //                  2     ---- x1
+      //                 / \
+      //                /   \
+      //                3   4   ---- x2
+      //               / \ / \
+      //               F T T F
       */
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(0, true)
-           << assignment(3, false);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(0, true)
+           << map_pair<bdd::label_t, assignment>(3, false);
       }
 
       __bdd out = bdd_restrict(bdd, ass);
@@ -274,18 +274,18 @@ go_bandit([]() {
 
     it("should ignore skipped variables. Assignment: (F,T,_,F)", [&]() {
       /*
-                 3      ---- x2
-                / \
-                F T
+      //                 3      ---- x2
+      //                / \
+      //                F T
       */
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(0, false)
-           << assignment(1, true)
-           << assignment(3, false);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(0, false)
+           << map_pair<bdd::label_t, assignment>(1, true)
+           << map_pair<bdd::label_t, assignment>(3, false);
       }
 
       __bdd out = bdd_restrict(bdd, ass);
@@ -314,12 +314,12 @@ go_bandit([]() {
     });
 
     it("should return F terminal. Assignment: (F,_,F,_)", [&]() {
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(0, false)
-           << assignment(2, false);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(0, false)
+           << map_pair<bdd::label_t, assignment>(2, false);
       }
 
       __bdd out = bdd_restrict(bdd, ass);
@@ -343,13 +343,13 @@ go_bandit([]() {
     });
 
     it("should return T terminal. Assignment: (T,T,F,_)", [&]() {
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(0, true)
-           << assignment(1, true)
-           << assignment(2, false);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(0, true)
+           << map_pair<bdd::label_t, assignment>(1, true)
+           << map_pair<bdd::label_t, assignment>(2, false);
       }
 
       __bdd out = bdd_restrict(bdd, ass);
@@ -380,13 +380,13 @@ go_bandit([]() {
         Tw << node(true);
       }
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(0, true)
-           << assignment(2, true)
-           << assignment(42, false);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(0, true)
+           << map_pair<bdd::label_t, assignment>(2, true)
+           << map_pair<bdd::label_t, assignment>(42, false);
       }
 
       __bdd out = bdd_restrict(T_file, ass);
@@ -403,13 +403,13 @@ go_bandit([]() {
         Fw << node(false);
       }
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(2, true)
-           << assignment(21, true)
-           << assignment(28, false);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(2, true)
+           << map_pair<bdd::label_t, assignment>(21, true)
+           << map_pair<bdd::label_t, assignment>(28, false);
       }
 
       __bdd out = bdd_restrict(F_file, ass);
@@ -419,7 +419,7 @@ go_bandit([]() {
     });
 
     it("should return input unchanged when given an empty assignment", [&]() {
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       __bdd out = bdd_restrict(bdd, ass);
 
@@ -428,12 +428,12 @@ go_bandit([]() {
     });
 
     it("should return input unchanged when assignment that is disjoint of its live variables", [&]() {
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
       { // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(5, false)
-           << assignment(6, true)
-           << assignment(7, true)
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(5, false)
+           << map_pair<bdd::label_t, assignment>(6, true)
+           << map_pair<bdd::label_t, assignment>(7, true)
           ;
       }
 
@@ -445,13 +445,13 @@ go_bandit([]() {
 
     it("should have terminal arcs restricted to a terminal sorted [1]", []() {
       /*
-                    1                 1         ---- x0
-                   / \              /   \
-                  2   3     =>     2     3      ---- x1
-                 / \ / \         /   \  / \
-                 4 F T F         F*  F  T F     ---- x2
-                / \
-                T F              * This arc will be resolved as the last one
+      //                    1                 1         ---- x0
+      //                   / \              /   \
+      //                  2   3     =>     2     3      ---- x1
+      //                 / \ / \         /   \  / \
+      //                 4 F T F         F*  F  T F     ---- x2
+      //                / \
+      //                T F              * This arc will be resolved as the last one
       */
       ptr_uint64 terminal_T = ptr_uint64(true);
       ptr_uint64 terminal_F = ptr_uint64(false);
@@ -468,11 +468,11 @@ go_bandit([]() {
         inw << n4 << n3 << n2 << n1;
       }
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(2, true);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(2, true);
       }
 
       __bdd out = bdd_restrict(node_input, ass);
@@ -519,13 +519,13 @@ go_bandit([]() {
 
     it("should have terminal arcs restricted to a terminal sorted [2]", []() {
       /*
-                    1                _ 1 _
-                   / \              /     \
-                  2   3     =>     2       3
-                 / \ / \         /   \   /   \
-                 4 F 5 F         F*  F   T*  F
-                / \ / \
-                T F F T          * Both these will be resolved out-of-order!
+      //                    1                _ 1 _
+      //                   / \              /     \
+      //                  2   3     =>     2       3
+      //                 / \ / \         /   \   /   \
+      //                 4 F 5 F         F*  F   T*  F
+      //                / \ / \
+      //                T F F T          * Both these will be resolved out-of-order!
       */
       ptr_uint64 terminal_T = ptr_uint64(true);
       ptr_uint64 terminal_F = ptr_uint64(false);
@@ -543,11 +543,11 @@ go_bandit([]() {
         inw << n5 << n4 << n3 << n2 << n1;
       }
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(2, true);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(2, true);
       }
 
       __bdd out = bdd_restrict(node_input, ass);
@@ -594,17 +594,17 @@ go_bandit([]() {
 
     it("should skip 'dead' nodes", [&]() {
       /*
-                        1           ---- x0
-                      /   \
-                     2     3        ---- x1
-                    / \   / \
-                   4  5   6  7      ---- x2
-                  / \/ \ / \/ \
-                  T F  8 F  9 T     ---- x3
-                      / \  / \
-                      F T  T F
-
-                 Here, node 4 and 6 are going to be dead, when x1 -> T.
+      //                        1           ---- x0
+      //                      /   \
+      //                     2     3        ---- x1
+      //                    / \   / \
+      //                   4  5   6  7      ---- x2
+      //                  / \/ \ / \/ \
+      //                  T F  8 F  9 T     ---- x3
+      //                      / \  / \
+      //                      F T  T F
+      //
+      //                 Here, node 4 and 6 are going to be dead, when x1 -> T.
       */
 
       shared_levelized_file<bdd::node_t> dead_bdd;
@@ -624,11 +624,11 @@ go_bandit([]() {
         dead_w << n9 << n8 << n7 << n6 << n5 << n4 << n3 << n2 << n1;
       }
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(1, true);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(1, true);
       }
 
       __bdd out = bdd_restrict(dead_bdd, ass);
@@ -699,11 +699,11 @@ go_bandit([]() {
         dead_w << n2 << n1;
       }
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(1, true);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(1, true);
       }
 
       __bdd out = bdd_restrict(terminal_child_of_root_bdd, ass);
@@ -737,11 +737,11 @@ go_bandit([]() {
         dead_w << n2 << n1;
       }
 
-      adiar::shared_file<assignment> ass;
+      adiar::shared_file<map_pair<bdd::label_t, assignment>> ass;
 
       {  // Garbage collect writer to free write-lock
-         adiar::file_writer<assignment> aw(ass);
-        aw << assignment(0, false);
+        adiar::file_writer<map_pair<bdd::label_t, assignment>> aw(ass);
+        aw << map_pair<bdd::label_t, assignment>(0, false);
       }
 
       __bdd out = bdd_restrict(terminal_child_of_root_bdd, ass);

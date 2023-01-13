@@ -248,15 +248,15 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
     partial_assignment.push_back(row_q);
 
     // Construct the assignment for this entire column
-    adiar::shared_file<adiar::assignment> column_assignment;
+    adiar::shared_file<adiar::map_pair<adiar::bdd::label_t, adiar::assignment>> column_assignment;
 
     { // The assignment_writer has to be detached, before we call any bdd
       // functions. It is automatically detached upon destruction, hence we have
       // it in this little scope.
-      adiar::file_writer<adiar::assignment> aw(column_assignment);
+      adiar::file_writer<adiar::map_pair<adiar::bdd::label_t, adiar::assignment>> aw(column_assignment);
 
       for (uint64_t row = 0; row < N; row++) {
-        aw << adiar::assignment(label_of_position(N, row, column), row == row_q);
+        aw << adiar::map_pair<adiar::bdd::label_t, adiar::assignment>(label_of_position(N, row, column), row == row_q);
       }
     }
 
@@ -267,7 +267,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
 
       // Obtain the lexicographically minimal true assignment. Well, only one
       // exists, so we get the only one left.
-      adiar::shared_file<adiar::assignment> forced_assignment = adiar::bdd_satmin(restricted_constraints);
+      auto forced_assignment = adiar::bdd_satmin(restricted_constraints);
 
       // Sort the variables back in order of the columns, rather than rows.
       struct sort_by_column
@@ -278,7 +278,8 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       public:
         explicit sort_by_column(const uint64_t N) : N(N) { }
 
-        bool operator()(const adiar::assignment &a, const adiar::assignment &b)
+        bool operator()(const adiar::map_pair<adiar::bdd::label_t, adiar::boolean> &a,
+                        const adiar::map_pair<adiar::bdd::label_t, adiar::boolean> &b)
         {
           return j_of_label(N, a.key()) < j_of_label(N, b.key());
         }
@@ -287,9 +288,9 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
       forced_assignment->sort(sort_by_column(N));
 
       // Copy the rest of the assignment into 'partial_assignment'
-      adiar::file_stream<adiar::assignment> fas(forced_assignment);
+      adiar::file_stream<adiar::map_pair<adiar::bdd::label_t, adiar::boolean>> fas(forced_assignment);
       while (fas.can_pull()) {
-        adiar::assignment a = fas.pull();
+        auto a = fas.pull();
         if (a.value()) {
           partial_assignment.push_back(i_of_label(N, a.key()));
         }

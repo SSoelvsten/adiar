@@ -8,7 +8,7 @@
 
 namespace adiar
 {
-  template<assignment_value FIX_VALUE>
+  template<assignment FIX_VALUE>
   class zdd_subset_label_assignment
   {
     internal::file_stream<zdd::label_t> ls;
@@ -46,9 +46,9 @@ namespace adiar
     }
 
   public:
-    assignment_value assignment_for_level(const zdd::label_t new_level) {
+    assignment assignment_for_level(const zdd::label_t new_level) {
       forward_to_level(new_level);
-      return l_incl == new_level ? FIX_VALUE : assignment_value::NONE;
+      return l_incl == new_level ? FIX_VALUE : assignment::NONE;
     }
 
   public:
@@ -108,8 +108,8 @@ namespace adiar
       return dd;
     }
 
-    zdd_subset_label_assignment<assignment_value::FALSE> amgr(l);
-    return internal::substitute<zdd_offset_policy<zdd_subset_label_assignment<assignment_value::FALSE>>>(dd, amgr);
+    zdd_subset_label_assignment<assignment::FALSE> amgr(l);
+    return internal::substitute<zdd_offset_policy<zdd_subset_label_assignment<assignment::FALSE>>>(dd, amgr);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ namespace adiar
       return zdd_empty();
     }
 
-    zdd_subset_label_assignment<assignment_value::TRUE> amgr(l);
-    return internal::substitute<zdd_onset_policy<zdd_subset_label_assignment<assignment_value::TRUE>>>(dd, amgr);
+    zdd_subset_label_assignment<assignment::TRUE> amgr(l);
+    return internal::substitute<zdd_onset_policy<zdd_subset_label_assignment<assignment::TRUE>>>(dd, amgr);
   }
 }

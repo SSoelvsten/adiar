@@ -223,7 +223,7 @@ uint64_t n_queens_list(uint64_t N, uint64_t column,
     { // The assignment_writer has to be detached, before we call any
       // bdd functions. It is automatically detached upon destruction,
       //  hence we have it in this little scope.
-      adiar::assignment_writer aw(column_assignment);
+      adiar::file_writer<map_pair<bdd::label_t, bool>> aw(column_assignment);
 
       for (uint64_t row = 0; row < N; row++) {
         aw << assignment(label_of_position(N, row, column),

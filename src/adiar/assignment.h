@@ -6,23 +6,12 @@
 
 namespace adiar
 {
-  enum class assignment_value : char {
-    FALSE     = 0, // false
-    TRUE      = 1, // true
-    NONE      = -1
+  enum class assignment : char
+  {
+    FALSE = 0, // false
+    TRUE  = 1, // true
+    NONE  = -1
   };
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief A <tt>(x,v)</tt> tuple representing the single assignment
-  ///        \f$ x \mapsto v \f$.
-  //////////////////////////////////////////////////////////////////////////////
-  using assignment = map_pair<internal::dd::label_t, assignment_value>;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// \brief Assignment function which provides for each variable label its
-  ///        assigned value.
-  //////////////////////////////////////////////////////////////////////////////
-  using assignment_func = func_map<internal::dd::label_t, assignment_value>;
 }
 
 #endif // ADIAR_ASSIGNMENT_H
