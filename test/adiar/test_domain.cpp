@@ -1,15 +1,11 @@
 #include "../test.h"
 
 go_bandit([]() {
-  describe("adiar/domain.h", []() {
-    describe("adiar_has_domain()", []() {
-      it("initially as no domain", [&]() {
-        AssertThat(adiar_has_domain(), Is().False());
-      });
-    });
+  adiar_unset_domain();
 
+  describe("adiar/domain.h", []() {
     describe("adiar_has_domain(), adiar_get_domain()", []() {
-      it("has domain after 'adiar_set_domain(...)'", [&]() {
+      it("throws exception when getting missing domain", [&]() {
         AssertThat(adiar_has_domain(), Is().False());
         AssertThrows(std::domain_error, adiar_get_domain());
       });

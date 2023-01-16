@@ -66,6 +66,9 @@ test/adiar/bool_op:
 test/adiar/builder:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=builder
 
+test/adiar/cube:
+	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=cube
+
 test/adiar/domain:
 	make $(MAKE_FLAGS) test TEST_FOLDER=test/adiar TEST_NAME=domain
 
