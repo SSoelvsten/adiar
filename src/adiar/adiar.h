@@ -13,6 +13,7 @@
 /// Core
 #include <adiar/assignment.h>
 #include <adiar/builder.h>
+#include <adiar/cube.h>
 #include <adiar/domain.h>
 #include <adiar/file.h>
 #include <adiar/memory_mode.h>

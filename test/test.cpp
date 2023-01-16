@@ -41,14 +41,13 @@ go_bandit([]() {
   if (!adiar_initialized()) exit(-1);
  });
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Adiar Core unit tests
-#include "adiar/test_bool_op.cpp"
-#include "adiar/test_map.cpp"
-
-#include "adiar/test_domain.cpp"
-#include "adiar/test_builder.cpp"
+go_bandit([]() {
+  describe("adiar/domain.h", []() {
+    it("initially as no domain", [&]() {
+      AssertThat(adiar_has_domain(), Is().False());
+    });
+  });
+ });
 
 ////////////////////////////////////////////////////////////////////////////////
 // Adiar Internal unit tests
@@ -73,6 +72,15 @@ go_bandit([]() {
 #include "adiar/internal/algorithms/test_convert.cpp"
 #include "adiar/internal/algorithms/test_isomorphism.cpp"
 #include "adiar/internal/algorithms/test_reduce.cpp"
+
+////////////////////////////////////////////////////////////////////////////////
+// Adiar Core unit tests
+#include "adiar/test_bool_op.cpp"
+#include "adiar/test_map.cpp"
+
+#include "adiar/test_cube.cpp"
+#include "adiar/test_domain.cpp"
+#include "adiar/test_builder.cpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Adiar BDD unit tests

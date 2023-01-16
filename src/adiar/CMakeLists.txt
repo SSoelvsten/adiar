@@ -9,6 +9,7 @@ set(HEADERS
   assignment.h
   bool_op.h
   builder.h
+  cube.h
   data.h
   deprecated.h
   domain.h
@@ -90,6 +91,7 @@ set(HEADERS
 set(SOURCES
   # adiar/
   adiar.cpp
+  cube.cpp
   domain.cpp
   statistics.cpp
   memory_mode.cpp
