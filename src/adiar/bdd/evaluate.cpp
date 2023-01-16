@@ -3,7 +3,6 @@
 #include <functional>
 
 #include <adiar/assignment.h>
-#include <adiar/evaluation.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/traverse.h>
 #include <adiar/internal/io/file_stream.h>
