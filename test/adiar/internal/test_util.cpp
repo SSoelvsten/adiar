@@ -68,7 +68,7 @@ go_bandit([]() {
         AssertThat(out_labels.pull(), Is().EqualTo(42u));
         AssertThat(out_labels.can_pull(), Is().False());
       });
-      
+
       it("returns [1,3,4] for a BDD with multiple nodes", [&]() {
         adiar::shared_file<bdd::label_t> label_file_out = bdd_varprofile(bdd_file);
 

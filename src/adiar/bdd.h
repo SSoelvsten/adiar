@@ -335,7 +335,7 @@ namespace adiar
                      const shared_file<map_pair<bdd::label_t, assignment>> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Existentially quantify a single variable.
+  /// \brief     Existential quantification of a single variable.
   ///
   /// \details   Computes the BDD for \f$ \exists x_{i} : f \f$ faster than
   ///            computing \f$ f|_{x_i = \bot} \lor f|_{x_i = \top} \f$ using
@@ -345,16 +345,28 @@ namespace adiar
   /// \param var Variable to quantify in f
   ///
   /// \returns   \f$ \exists x_{var} : f \f$
+  ///
+  /// \remark    There is possibly an ambiguity in overloading, if you use the
+  ///            value *0* directly for the `var` argument, since this can also
+  ///            be interpreted as the `nullptr` value for a `std::function`. To
+  ///            resolve this overloading, use *0u* or
+  ///            `static_cast<bdd::label_t>(0))` instead.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_exists(const bdd &f, bdd::label_t var);
 
+  /// \cond
+  inline __bdd bdd_exists(bdd &&f, bdd::label_t var)
+  { return bdd_exists(f, var); }
+  /// \endcond
+
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Existentially quantify multiple variables.
+  /// \brief      Existential quantification of multiple variables.
   ///
   /// \details    Repeatedly calls <tt>bdd_exists</tt> for the given variables
   ///             while optimising garbage collecting intermediate results.
   ///
-  /// \param f    BDD to be quantified
+  /// \param f    BDD to be quantified.
+  ///
   /// \param vars Variables to quantify in f (in order of their quantification)
   ///
   /// \returns    \f$ \exists x_{i_1}, \dots, x_{i_k} : f \f$
@@ -366,26 +378,59 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Existential quantification of multiple variables.
+  ///
+  /// \details    Repeatedly calls <tt>bdd_exists</tt> for the given variables
+  ///             while optimising garbage collecting intermediate results.
+  ///
+  /// \param f    BDD to be quantified.
+  ///
+  /// \param vars Predicate to identify the variables to quantify in f. You may
+  ///             abuse the fact, that this predicate will only be invoked in
+  ///             ascending/descending order of the levels in `f`.
+  ///
+  /// \returns    \f$ \exists x_i \in \texttt{vars} : f \f$
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_exists(const bdd &f, const std::function<bool(bdd::label_t)> &vars);
+
+  /// \cond
+  __bdd bdd_exists(bdd &&f, const std::function<bool(bdd::label_t)> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Forall quantify a single variable.
   ///
   /// \details   Computes the BDD for \f$ \forall x_{i} : f \f$ faster than
   ///            computing \f$ f|_{x_i = \bot} \land f|_{x_i = \top} \f$ using
   ///            <tt>bdd_apply</tt> and <tt>bdd_restrict</tt>.
   ///
-  /// \param f   BDD to be quantified
+  /// \param f   BDD to be quantified.
+  ///
   /// \param var Variable to quantify in f
   ///
   /// \returns   \f$ \forall x_{var} : f \f$
+  ///
+  /// \remark    There is (possibly) an ambiguity in overloading, if you use the
+  ///            value *0* directly for the `var` argument, since this can also
+  ///            be interpreted as the `nullptr` value for a `std::function`. To
+  ///            resolve this overloading, use *0u* or
+  ///            `static_cast<bdd::label_t>(0))` instead.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_forall(const bdd &f, bdd::label_t var);
 
+  /// \cond
+  inline __bdd bdd_forall(bdd &&f, bdd::label_t var)
+  { return bdd_forall(f, var); }
+  /// \endcond
+
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief      Forall quantify multiple variables.
+  /// \brief      Forall quantification of multiple variables.
   ///
-  /// \details    Repeatedly calls <tt>bdd_exists</tt> for the given variables
+  /// \details    Repeatedly calls <tt>bdd_forall</tt> for the given variables
   ///             while optimising garbage collecting intermediate results.
   ///
-  /// \param f    BDD to be quantified
+  /// \param f    BDD to be quantified.
+  ///
   /// \param vars Variables to quantify in f (in order of their quantification)
   ///
   /// \returns    \f$ \forall x_{i_1}, \dots, x_{i_k} : f \f$
@@ -394,6 +439,26 @@ namespace adiar
 
   /// \cond
   __bdd bdd_forall(bdd &&f, const shared_file<bdd::label_t> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief      Forall quantification of multiple variables.
+  ///
+  /// \details    Repeatedly calls <tt>bdd_forall</tt> for the given variables
+  ///             while optimising garbage collecting intermediate results.
+  ///
+  /// \param f    BDD to be quantified.
+  ///
+  /// \param vars Predicate to identify the variables to quantify in f. You may
+  ///             abuse the fact, that this predicate will only be invoked in
+  ///             ascending/descending order of the levels in `f`.
+  ///
+  /// \returns    \f$ \exists x_i \in \texttt{vars} : f \f$
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_forall(const bdd &f, const std::function<bool(bdd::label_t)> &vars);
+
+  /// \cond
+  __bdd bdd_forall(bdd &&f, const std::function<bool(bdd::label_t)> &vars);
   /// \endcond
 
   /// \}

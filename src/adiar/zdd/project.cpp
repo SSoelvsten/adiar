@@ -52,6 +52,9 @@ namespace adiar
     {
       return internal::cut_type::ALL;
     }
+
+  public:
+    static constexpr bool pred_value = true;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -83,7 +86,6 @@ namespace adiar
     return dom_inv;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   // TODO: Empty domain. Check whether Ø is in dd, i.e. the all-false path is
   // set to true.
   inline __zdd zdd_project_multi(zdd &&A, const shared_file<zdd::label_t> &dom)
@@ -97,6 +99,7 @@ namespace adiar
     return internal::quantify<zdd_project_policy>(std::forward<zdd>(A), dom_inv, or_op);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_project(const zdd &A, const shared_file<zdd::label_t> &dom)
   {
     return zdd_project_multi(zdd(A), dom);

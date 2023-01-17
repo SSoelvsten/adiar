@@ -108,6 +108,7 @@ namespace adiar::internal
     return false;
   }
 
+  // TODO: move to 'internal/util.h'
   inline bool quantify_has_label(const dd::label_t label, const dd &in)
   {
     level_info_stream<> in_meta(in);
@@ -396,28 +397,68 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  // Multi-variable (file)
   template<typename quantify_policy>
-  typename quantify_policy::unreduced_t quantify(typename quantify_policy::reduced_t &&dd,
-                                                 const shared_file<typename quantify_policy::label_t> labels,
-                                                 const bool_op &op)
+  typename quantify_policy::unreduced_t
+  quantify(typename quantify_policy::reduced_t dd,
+           const shared_file<typename quantify_policy::label_t> labels,
+           const bool_op &op)
   {
     const size_t labels_size = labels->size();
     if (labels_size == 0) { return dd; }
 
-    internal::file_stream<typename quantify_policy::label_t> label_stream(labels);
+    file_stream<typename quantify_policy::label_t> label_stream(labels);
 
     for (size_t label_idx = 0u; label_idx < labels_size - 1; label_idx++) {
       if (is_terminal(dd)) { return dd; }
 
       adiar_debug(label_stream.can_pull(), "Should not exceed 'labels' size");
-      dd = internal::quantify<quantify_policy>(dd, label_stream.pull(), op);
+      dd = quantify<quantify_policy>(dd, label_stream.pull(), op);
     }
 
     adiar_debug(label_stream.can_pull(), "Should not exceed 'labels' size");
     const typename quantify_policy::label_t label = label_stream.pull();
     adiar_debug(!label_stream.can_pull(), "Should pull final label");
-    return internal::quantify<quantify_policy>(dd, label, op);
+    return quantify<quantify_policy>(dd, label, op);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Multi-variable (predicate)
+  template<typename quantify_policy>
+  inline typename quantify_policy::label_t
+  quantify__get_label(const typename quantify_policy::reduced_t &dd,
+                      const std::function<bool(typename quantify_policy::label_t)> &pred)
+  {
+    level_info_stream<> lis(dd);
+
+    while (lis.can_pull()) {
+      const typename quantify_policy::label_t l = lis.pull().label();
+      if (pred(l) == quantify_policy::pred_value) { return l; }
+    }
+    return quantify_policy::MAX_LABEL+1;
+  }
+
+  template<typename quantify_policy>
+  typename quantify_policy::unreduced_t
+  quantify(typename quantify_policy::reduced_t dd,
+           const std::function<bool(typename quantify_policy::label_t)> &pred,
+           const bool_op &op)
+  {
+    typename quantify_policy::label_t label = quantify__get_label<quantify_policy>(dd, pred);
+
+    while (label <= quantify_policy::MAX_LABEL) {
+      dd = quantify<quantify_policy>(dd, label, op);
+      if (is_terminal(dd)) { return dd; }
+
+      label = quantify__get_label<quantify_policy>(dd, pred);
+    }
+    return dd;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Multi-variable (generator)
+
+  // TODO
 }
 
 #endif // ADIAR_INTERNAL_ALGORITHMS_QUANTIFY_H
