@@ -262,10 +262,10 @@ namespace adiar
   /// \returns
   /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_project(const zdd &A, const shared_file<zdd::label_t> &dom);
+  __zdd zdd_project(const zdd &A, const shared_file<zdd::label_t> &dom);
 
   /// \cond
-  zdd zdd_project(zdd &&A, const shared_file<zdd::label_t> &dom);
+  __zdd zdd_project(zdd &&A, const shared_file<zdd::label_t> &dom);
   /// \endcond
 
   /// \}
