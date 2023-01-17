@@ -1,6 +1,8 @@
 #include <adiar/zdd.h>
 #include <adiar/zdd/zdd_policy.h>
 
+#include <utility>
+
 #include <adiar/internal/cut.h>
 #include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/data_types/level_info.h>
@@ -84,32 +86,24 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   // TODO: Empty domain. Check whether Ø is in dd, i.e. the all-false path is
   // set to true.
-
-# define multi_project_macro(zdd_var, dom)                                  \
-  if (is_terminal(zdd_var)) { return zdd_var; }                             \
-                                                                            \
-  if (dom->size() == 0) { return zdd_null(); }                               \
-                                                                            \
-  shared_file<zdd::label_t> dom_inv = extract_non_dom(zdd_var, dom);   \
-                                                                            \
-  if (dom_inv->size() == zdd_varcount(zdd_var)) { return zdd_null(); }       \
-                                                                            \
-  internal::file_stream<zdd::label_t> ls(dom_inv);                                     \
-  while (ls.can_pull()) {                                                   \
-    if (is_terminal(zdd_var)) { return zdd_var; };                          \
-                                                                            \
-    zdd_var = internal::quantify<zdd_project_policy>(dd, ls.pull(), or_op); \
-  }                                                                         \
-  return zdd_var;                                                           \
-
-  zdd zdd_project(const zdd &dd, const shared_file<zdd::label_t> &dom)
+  inline __zdd zdd_project_multi(zdd &&A, const shared_file<zdd::label_t> &dom)
   {
-    zdd temp = dd;
-    multi_project_macro(temp, dom);
+    if (is_terminal(A))   { return A; }
+    if (dom->size() == 0) { return zdd_null(); }
+
+    const shared_file<zdd::label_t> dom_inv = extract_non_dom(A, dom);
+    if (dom_inv->size() == zdd_varcount(A)) { return zdd_null(); }
+
+    return internal::quantify<zdd_project_policy>(std::forward<zdd>(A), dom_inv, or_op);
   }
 
-  zdd zdd_project(zdd &&dd, const shared_file<zdd::label_t> &dom)
+  __zdd zdd_project(const zdd &A, const shared_file<zdd::label_t> &dom)
   {
-    multi_project_macro(dd, dom);
+    return zdd_project_multi(zdd(A), dom);
+  }
+
+  __zdd zdd_project(zdd &&A, const shared_file<zdd::label_t> &dom)
+  {
+    return zdd_project_multi(std::forward<zdd>(A), dom);
   }
 }

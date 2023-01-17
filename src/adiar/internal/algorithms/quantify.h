@@ -2,6 +2,7 @@
 #define ADIAR_INTERNAL_ALGORITHMS_QUANTIFY_H
 
 #include <variant>
+#include <functional>
 
 #include <adiar/bool_op.h>
 #include <adiar/internal/cut.h>
@@ -14,6 +15,7 @@
 #include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
+#include <adiar/internal/io/shared_file_ptr.h>
 #include <adiar/internal/io/node_stream.h>
 
 namespace adiar::internal
@@ -391,6 +393,30 @@ namespace adiar::internal
                         quantify_priority_queue_2_t<memory_mode_t::EXTERNAL>>
         (in, label, op, pq_1_memory, max_pq_1_size, pq_2_memory, max_pq_2_size);
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename quantify_policy>
+  typename quantify_policy::unreduced_t quantify(typename quantify_policy::reduced_t &&dd,
+                                                 const shared_file<typename quantify_policy::label_t> labels,
+                                                 const bool_op &op)
+  {
+    const size_t labels_size = labels->size();
+    if (labels_size == 0) { return dd; }
+
+    internal::file_stream<typename quantify_policy::label_t> label_stream(labels);
+
+    for (size_t label_idx = 0u; label_idx < labels_size - 1; label_idx++) {
+      if (is_terminal(dd)) { return dd; }
+
+      adiar_debug(label_stream.can_pull(), "Should not exceed 'labels' size");
+      dd = internal::quantify<quantify_policy>(dd, label_stream.pull(), op);
+    }
+
+    adiar_debug(label_stream.can_pull(), "Should not exceed 'labels' size");
+    const typename quantify_policy::label_t label = label_stream.pull();
+    adiar_debug(!label_stream.can_pull(), "Should pull final label");
+    return internal::quantify<quantify_policy>(dd, label, op);
   }
 }
 
