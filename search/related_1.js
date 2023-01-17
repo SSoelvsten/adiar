@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['is_5fterminal_493',['is_terminal',['../classadiar_1_1internal_1_1dd.html#a811197a3fa59b8a1b63de06f2101a0a7',1,'adiar::internal::dd']]]
+  ['flag_592',['flag',['../classadiar_1_1internal_1_1ptr__uint64.html#a7c3eaace72a833c379094d3f8d98a2b8',1,'adiar::internal::ptr_uint64']]]
 ];

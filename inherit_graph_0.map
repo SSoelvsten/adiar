@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classadiar_1_1assignment.html" title="A (x,v) tuple representing the single assignment ." alt="" coords="5,5,144,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,31,116,57"/>
+<area shape="rect" id="node2" href="$classadiar_1_1____bdd.html" title="A (possibly) unreduced Binary Decision Diagram." alt="" coords="164,5,265,32"/>
+<area shape="rect" id="node3" href="$classadiar_1_1____zdd.html" title="A (possibly unreduced) Zero&#45;suppressed Decision Diagram." alt="" coords="165,56,265,83"/>
 </map>

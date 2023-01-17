@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['file_5fstream_471',['file_stream',['../namespaceadiar.html#a2ce4d836629be7be429ae555a9af09af',1,'adiar']]],
-  ['file_5fwriter_472',['file_writer',['../namespaceadiar.html#ac0c8a98240760bd6186b1f3f590abca8',1,'adiar']]]
+  ['data_5ft_566',['data_t',['../classadiar_1_1internal_1_1request__data.html#ac691886972a73be1f1fe4de2f854b1ed',1,'adiar::internal::request_data']]]
 ];

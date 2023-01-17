@@ -1,10 +1,12 @@
 var searchData=
 [
-  ['on_5flevel_161',['on_level',['../namespaceadiar.html#aac432b612a565124ab115d4bd66b64d1',1,'adiar::on_level(internal::ptr_uint64 p, internal::ptr_uint64::label_t level)'],['../namespaceadiar.html#a4dc0431ae37d318795a209536f573684',1,'adiar::on_level(const internal::node &amp;n, internal::node::label_t lvl)']]],
-  ['operator_21_162',['operator!',['../namespaceadiar.html#a48182a71706bea516d33f919c7543478',1,'adiar::operator!(const internal::node &amp;n)'],['../namespaceadiar.html#a2fc0694ece43763b7e6a4d4150a8353c',1,'adiar::operator!(const internal::arc &amp;a)'],['../namespaceadiar.html#a7baddebc3fe4d110d8b8f819a012a66c',1,'adiar::operator!(const assignment &amp;a)']]],
-  ['operator_2d_3e_163',['operator-&gt;',['../classadiar_1_1internal_1_1dd.html#a9f6d48741e8cfbf2514618c82b477282',1,'adiar::internal::dd']]],
-  ['operator_3c_3c_164',['operator&lt;&lt;',['../namespaceadiar.html#a4d00d54b25e02e74e30be1b1b061ea3c',1,'adiar']]],
-  ['operator_7e_165',['operator~',['../classadiar_1_1assignment.html#ac6b851fcc1b915de326196919f18afc4',1,'adiar::assignment']]],
-  ['or_5fop_166',['or_op',['../namespaceadiar.html#aeaa9d1d4a583e160d9db913598b1c827',1,'adiar']]],
-  ['output_5fdot_167',['output_dot',['../namespaceadiar.html#a8f9be3cba03c126cc7fa3467d0341a19',1,'adiar::output_dot(const bdd &amp;f, const std::string &amp;file_name)'],['../namespaceadiar.html#ae4a0f37cd21d3b70a9e5667b1b7775f2',1,'adiar::output_dot(const zdd &amp;A, const std::string &amp;file_name)']]]
+  ['nand_5fop_165',['nand_op',['../namespaceadiar.html#ab8229eb0cb1d012e1f6ce0ad3f8ef6db',1,'adiar']]],
+  ['negate_166',['negate',['../classadiar_1_1internal_1_1ptr__uint64.html#aeabd021bee17e9b07cc3ae1cee25ea8f',1,'adiar::internal::ptr_uint64']]],
+  ['nil_167',['NIL',['../classadiar_1_1internal_1_1ptr__uint64.html#aa671ad5091402e94af8be192098ca275',1,'adiar::internal::ptr_uint64']]],
+  ['no_5fchildren_168',['NO_CHILDREN',['../classadiar_1_1internal_1_1request.html#a888b085ff55f183f07fbc1bd8732c6a9',1,'adiar::internal::request']]],
+  ['node_169',['node',['../classadiar_1_1internal_1_1node.html',1,'adiar::internal::node'],['../classadiar_1_1internal_1_1node.html#a1faa19e466f31bf50f43b55bc33224cb',1,'adiar::internal::node::node(const value_t value)'],['../classadiar_1_1internal_1_1node.html#a07b814e49f13c4f2da3064506d271a6e',1,'adiar::internal::node::node(const uid_t &amp;u, const ptr_t &amp;l, const ptr_t &amp;h)'],['../classadiar_1_1internal_1_1node.html#a4d57e48840a066e50f30ba233c9d3762',1,'adiar::internal::node::node(const label_t label, const id_t id, const ptr_t &amp;l, const ptr_t &amp;h)'],['../classadiar_1_1internal_1_1node.html#a0a31e6e720e35c2e6fb858bc87b33043',1,'adiar::internal::node::node(const label_t label, const id_t id, const node &amp;l, const ptr_t &amp;h)'],['../classadiar_1_1internal_1_1node.html#a91e79ab028c2f1e09af36a63bd6cf18b',1,'adiar::internal::node::node(const label_t label, const id_t id, const ptr_t &amp;l, const node &amp;h)'],['../classadiar_1_1internal_1_1node.html#a6dbbb0accf53b4c4923aa4dba3de66e1',1,'adiar::internal::node::node(const label_t label, const id_t id, const node &amp;l, const node &amp;h)']]],
+  ['node_5fcarry_170',['node_carry',['../classadiar_1_1internal_1_1request.html#a497f6b94197bf6b9f83295b0b151383e',1,'adiar::internal::request']]],
+  ['node_5fcarry_5fsize_171',['node_carry_size',['../classadiar_1_1internal_1_1request.html#a12144d30626a36d150e55e05a143d07e',1,'adiar::internal::request']]],
+  ['nodes_5fcarried_172',['nodes_carried',['../classadiar_1_1internal_1_1request.html#abd20eed797d6668dd2885dc35c23006d',1,'adiar::internal::request']]],
+  ['nor_5fop_173',['nor_op',['../namespaceadiar.html#ae9b3689b3adcb95bc273404fca58b21f',1,'adiar']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['count_410',['count',['../structadiar_1_1stats__t.html#a9b328d7bcba90a84cdc1831417b90ac6',1,'adiar::stats_t']]]
+  ['and_5fop_499',['and_op',['../namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5',1,'adiar']]]
 ];

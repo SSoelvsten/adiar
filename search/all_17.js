@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['_7ebuilder_250',['~builder',['../classadiar_1_1builder.html#a5e20e420b59171dd6410687b714582b6',1,'adiar::builder']]]
+  ['xnor_5fop_259',['xnor_op',['../namespaceadiar.html#ae956ef704feace706586a391d3cc0d91',1,'adiar']]],
+  ['xor_5fop_260',['xor_op',['../namespaceadiar.html#af4f487e39dded71f30fc122939acdbdd',1,'adiar']]]
 ];

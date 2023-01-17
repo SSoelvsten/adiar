@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['value_5fof_496',['value_of',['../classadiar_1_1internal_1_1dd.html#a9e01a1d764d7ec048ce8e80607c7a496',1,'adiar::internal::dd']]]
+  ['unflag_594',['unflag',['../classadiar_1_1internal_1_1ptr__uint64.html#ae7f8d4267d296ee137408ed6681693ad',1,'adiar::internal::ptr_uint64']]]
 ];

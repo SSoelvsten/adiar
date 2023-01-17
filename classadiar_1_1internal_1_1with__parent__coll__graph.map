@@ -1,0 +1,4 @@
+<map id="adiar::internal::with_parent" name="adiar::internal::with_parent">
+<area shape="rect" id="node1" title="Class to carry the parent of a recursion within request_data." alt="" coords="5,109,155,151"/>
+<area shape="rect" id="node2" href="$classadiar_1_1internal_1_1ptr__uint64.html" title="A (possibly flagged) unique identifier of a terminal, an internal node, or nothing (NIL)." alt="" coords="11,5,149,47"/>
+</map>

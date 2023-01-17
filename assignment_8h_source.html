@@ -98,108 +98,21 @@ $(document).ready(function(){initNavTree('assignment_8h_source.html',''); initRe
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef ADIAR_ASSIGNMENT_H</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define ADIAR_ASSIGNMENT_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;adiar/internal/assert.h&gt;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;adiar/internal/data_types/ptr.h&gt;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceadiar.html">adiar</a></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;{</div>
-<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classadiar_1_1assignment.html">   15</a></span>&#160;  <span class="keyword">class </span><a class="code" href="classadiar_1_1assignment.html">assignment</a></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="comment">/* ================================= TYPES ============================== */</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classadiar_1_1assignment.html#a8169d2b61d7afa5377347da10b71e35d">   24</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="classadiar_1_1assignment.html#a8169d2b61d7afa5377347da10b71e35d">label_t</a> = internal::ptr_uint64::label_t;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="comment">// TODO(MTBDD): Replace &#39;FALSE&#39; and &#39;TRUE&#39; with a value of type T. In this</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="comment">//              case, the `value_t` would turn into a std::variant of &#39;T&#39;,</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="comment">//              &#39;DONT_CARE&#39;, and &#39;NONE&#39;.</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classadiar_1_1assignment.html#acbe134a0bf57b46b4b0a9664a2453cbb">   37</a></span>&#160;    <span class="keyword">enum</span> <a class="code" href="classadiar_1_1assignment.html#acbe134a0bf57b46b4b0a9664a2453cbb">value_t</a> {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      FALSE     = 0, <span class="comment">// false</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      TRUE      = 1, <span class="comment">// true</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      NONE      = -1 <span class="comment">// &lt;-- TODO: test</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    };</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="comment">/* =============================== VARIABLES ============================ */</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <a class="code" href="namespaceadiar.html#a42eb9e1bc4e7b09acd3d15a74c0f93f8">label_t</a> _var;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="classadiar_1_1assignment.html#acbe134a0bf57b46b4b0a9664a2453cbb">value_t</a> _val;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="comment">/* ============================== CONSTRUCTORS ========================== */</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="comment">// Provide &#39;default&#39; constructors to ensure it being a &#39;POD&#39; inside of TPIE.</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="classadiar_1_1assignment.html">assignment</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <a class="code" href="classadiar_1_1assignment.html">assignment</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1assignment.html">assignment</a> &amp;a) = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    ~<a class="code" href="classadiar_1_1assignment.html">assignment</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="classadiar_1_1assignment.html#a7e624d4e4049a65ef7195f12b9829af7">   59</a></span>&#160;    <a class="code" href="classadiar_1_1assignment.html#a7e624d4e4049a65ef7195f12b9829af7">assignment</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1assignment.html#a8169d2b61d7afa5377347da10b71e35d">label_t</a> &amp;<a class="code" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">var</a>, <span class="keyword">const</span> <a class="code" href="classadiar_1_1assignment.html#acbe134a0bf57b46b4b0a9664a2453cbb">value_t</a> &amp;val)</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      : _var(<a class="code" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">var</a>), _val(val)</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      adiar_debug(<a class="code" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">var</a> &lt;= internal::ptr_uint64::MAX_LABEL,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                  <span class="stringliteral">&quot;Cannot represent that large a variable label&quot;</span>);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    }</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classadiar_1_1assignment.html#a58ff022141dc0537ce6443aca99cc86b">   70</a></span>&#160;    <a class="code" href="classadiar_1_1assignment.html#a58ff022141dc0537ce6443aca99cc86b">assignment</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1assignment.html#a8169d2b61d7afa5377347da10b71e35d">label_t</a> &amp;<a class="code" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">var</a>, <span class="keyword">const</span> <span class="keywordtype">bool</span> &amp;val)</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      : <a class="code" href="classadiar_1_1assignment.html">assignment</a>(<a class="code" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">var</a>, (<a class="code" href="classadiar_1_1assignment.html#acbe134a0bf57b46b4b0a9664a2453cbb">value_t</a>) val)</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    { }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="comment">/* =============================== ACCESSORS ============================ */</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">   79</a></span>&#160;    <span class="keyword">inline</span> <a class="code" href="classadiar_1_1assignment.html#a8169d2b61d7afa5377347da10b71e35d">label_t</a> <a class="code" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">var</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="keyword">    </span>{ <span class="keywordflow">return</span> _var; }</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keyword">inline</span> <a class="code" href="namespaceadiar.html#a42eb9e1bc4e7b09acd3d15a74c0f93f8">label_t</a> level()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">    </span>{ <span class="keywordflow">return</span> <a class="code" href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">var</a>(); }</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="classadiar_1_1assignment.html#a118079f1a6eaf4b7093a4473a746ac01">   89</a></span>&#160;    <span class="keyword">inline</span> <a class="code" href="classadiar_1_1assignment.html#acbe134a0bf57b46b4b0a9664a2453cbb">value_t</a> <a class="code" href="classadiar_1_1assignment.html#a118079f1a6eaf4b7093a4473a746ac01">value</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword">    </span>{ <span class="keywordflow">return</span> _val; }</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="comment">/* ============================== COMPARATORS =========================== */</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator&lt;  (<span class="keyword">const</span> <a class="code" href="classadiar_1_1assignment.html">assignment</a> &amp;o)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;      adiar_debug(this-&gt;_var != o._var,</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                  <span class="stringliteral">&quot;Currently, &#39;&lt;&#39; is only designed for distinct &#39;_var&#39; values&quot;</span>);</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;      <span class="keywordflow">return</span> this-&gt;_var &lt; o._var;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    }</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator&gt;  (<span class="keyword">const</span> assignment &amp;o)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keyword">    </span>{ <span class="keywordflow">return</span> o &lt; *<span class="keyword">this</span>; }</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator== (<span class="keyword">const</span> assignment &amp;o)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keyword">    </span>{ <span class="keywordflow">return</span> this-&gt;_var == o._var &amp;&amp; this-&gt;_val == o._val; }</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> operator!= (<span class="keyword">const</span> assignment &amp;o)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="keyword">    </span>{ <span class="keywordflow">return</span> !(*<span class="keyword">this</span> == o); }</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="comment">/* =============================== OPERATORS ============================ */</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="classadiar_1_1assignment.html#ac6b851fcc1b915de326196919f18afc4">  115</a></span>&#160;    <a class="code" href="classadiar_1_1assignment.html">assignment</a> <a class="code" href="classadiar_1_1assignment.html#ac6b851fcc1b915de326196919f18afc4">operator~ </a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      <span class="keywordflow">return</span> {</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        this-&gt;_var,</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        (this-&gt;_val &amp; 1) == (this-&gt;_val)</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;          ? <span class="keyword">static_cast&lt;</span><a class="code" href="classadiar_1_1assignment.html#acbe134a0bf57b46b4b0a9664a2453cbb">value_t</a><span class="keyword">&gt;</span>(this-&gt;_val ^ 1)</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;          : this-&gt;_val</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      };</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    }</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  };</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
-<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="namespaceadiar.html#ad4f0ffa6585e415926ebff0cb3ee2693">  130</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="namespaceadiar.html#ad4f0ffa6585e415926ebff0cb3ee2693">assignment_func</a> = std::function&lt;<a class="code" href="classadiar_1_1assignment.html#acbe134a0bf57b46b4b0a9664a2453cbb">assignment::value_t</a>(<a class="code" href="classadiar_1_1assignment.html#a8169d2b61d7afa5377347da10b71e35d">assignment::label_t</a>)&gt;;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;}</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160; </div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_ASSIGNMENT_H</span></div>
-<div class="ttc" id="aclassadiar_1_1assignment_html"><div class="ttname"><a href="classadiar_1_1assignment.html">adiar::assignment</a></div><div class="ttdoc">A (x,v) tuple representing the single assignment .</div><div class="ttdef"><b>Definition:</b> assignment.h:16</div></div>
-<div class="ttc" id="aclassadiar_1_1assignment_html_a118079f1a6eaf4b7093a4473a746ac01"><div class="ttname"><a href="classadiar_1_1assignment.html#a118079f1a6eaf4b7093a4473a746ac01">adiar::assignment::value</a></div><div class="ttdeci">value_t value() const</div><div class="ttdoc">Get the value of this assignment pair.</div><div class="ttdef"><b>Definition:</b> assignment.h:89</div></div>
-<div class="ttc" id="aclassadiar_1_1assignment_html_a39444eb0df924f83c15168240c216fea"><div class="ttname"><a href="classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea">adiar::assignment::var</a></div><div class="ttdeci">label_t var() const</div><div class="ttdoc">Get the variable of this assignment.</div><div class="ttdef"><b>Definition:</b> assignment.h:79</div></div>
-<div class="ttc" id="aclassadiar_1_1assignment_html_a58ff022141dc0537ce6443aca99cc86b"><div class="ttname"><a href="classadiar_1_1assignment.html#a58ff022141dc0537ce6443aca99cc86b">adiar::assignment::assignment</a></div><div class="ttdeci">assignment(const label_t &amp;var, const bool &amp;val)</div><div class="ttdoc">Constructs assignment pair (variable, value) from a boolean value.</div><div class="ttdef"><b>Definition:</b> assignment.h:70</div></div>
-<div class="ttc" id="aclassadiar_1_1assignment_html_a7e624d4e4049a65ef7195f12b9829af7"><div class="ttname"><a href="classadiar_1_1assignment.html#a7e624d4e4049a65ef7195f12b9829af7">adiar::assignment::assignment</a></div><div class="ttdeci">assignment(const label_t &amp;var, const value_t &amp;val)</div><div class="ttdoc">Constructs assignment pair (variable, value).</div><div class="ttdef"><b>Definition:</b> assignment.h:59</div></div>
-<div class="ttc" id="aclassadiar_1_1assignment_html_a8169d2b61d7afa5377347da10b71e35d"><div class="ttname"><a href="classadiar_1_1assignment.html#a8169d2b61d7afa5377347da10b71e35d">adiar::assignment::label_t</a></div><div class="ttdeci">internal::ptr_uint64::label_t label_t</div><div class="ttdoc">Type of the variable label.</div><div class="ttdef"><b>Definition:</b> assignment.h:24</div></div>
-<div class="ttc" id="aclassadiar_1_1assignment_html_ac6b851fcc1b915de326196919f18afc4"><div class="ttname"><a href="classadiar_1_1assignment.html#ac6b851fcc1b915de326196919f18afc4">adiar::assignment::operator~</a></div><div class="ttdeci">assignment operator~() const</div><div class="ttdoc">Obtain the negated value assigned to the same variable.</div><div class="ttdef"><b>Definition:</b> assignment.h:115</div></div>
-<div class="ttc" id="aclassadiar_1_1assignment_html_acbe134a0bf57b46b4b0a9664a2453cbb"><div class="ttname"><a href="classadiar_1_1assignment.html#acbe134a0bf57b46b4b0a9664a2453cbb">adiar::assignment::value_t</a></div><div class="ttdeci">value_t</div><div class="ttdoc">Enum with the values one can assign to a variable.</div><div class="ttdef"><b>Definition:</b> assignment.h:37</div></div>
-<div class="ttc" id="anamespaceadiar_html"><div class="ttname"><a href="namespaceadiar.html">adiar</a></div><div class="ttdoc">Core.</div><div class="ttdef"><b>Definition:</b> adiar.h:34</div></div>
-<div class="ttc" id="anamespaceadiar_html_a42eb9e1bc4e7b09acd3d15a74c0f93f8"><div class="ttname"><a href="namespaceadiar.html#a42eb9e1bc4e7b09acd3d15a74c0f93f8">adiar::label_t</a></div><div class="ttdeci">internal::ptr_uint64::label_t label_t</div><div class="ttdoc">Variable label.</div><div class="ttdef"><b>Definition:</b> deprecated.h:12</div></div>
-<div class="ttc" id="anamespaceadiar_html_ad4f0ffa6585e415926ebff0cb3ee2693"><div class="ttname"><a href="namespaceadiar.html#ad4f0ffa6585e415926ebff0cb3ee2693">adiar::assignment_func</a></div><div class="ttdeci">std::function&lt; assignment::value_t(assignment::label_t)&gt; assignment_func</div><div class="ttdoc">Assignment function which provides for each variable label its assigned value.</div><div class="ttdef"><b>Definition:</b> assignment.h:130</div></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;adiar/map.h&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;adiar/internal/dd.h&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceadiar.html">adiar</a></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;{</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  <span class="keyword">enum class</span> assignment : char</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  {</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    FALSE = 0, <span class="comment">// false</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    TRUE  = 1, <span class="comment">// true</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    NONE  = -1</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  };</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;}</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_ASSIGNMENT_H</span></div>
+<div class="ttc" id="anamespaceadiar_html"><div class="ttname"><a href="namespaceadiar.html">adiar</a></div><div class="ttdoc">Core.</div><div class="ttdef"><b>Definition:</b> adiar.h:35</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

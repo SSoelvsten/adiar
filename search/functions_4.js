@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['file_5fptr_341',['file_ptr',['../classadiar_1_1internal_1_1dd.html#aa7378b0a0b663a0fe2ff98e0dba37769',1,'adiar::internal::dd']]]
+  ['dimensionality_404',['dimensionality',['../classadiar_1_1cube.html#aec30ecadc777d31c84babfe71d4fbc88',1,'adiar::cube']]]
 ];

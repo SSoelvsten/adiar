@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['dd_261',['dd',['../classadiar_1_1internal_1_1dd.html',1,'adiar::internal']]],
-  ['dd_5fpolicy_262',['dd_policy',['../classadiar_1_1internal_1_1dd__policy.html',1,'adiar::internal']]]
+  ['equality_5ft_314',['equality_t',['../structadiar_1_1stats__t_1_1equality__t.html',1,'adiar::stats_t']]]
 ];

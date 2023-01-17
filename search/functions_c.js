@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['value_373',['value',['../classadiar_1_1assignment.html#a118079f1a6eaf4b7093a4473a746ac01',1,'adiar::assignment']]],
-  ['value_5fof_374',['value_of',['../namespaceadiar.html#adbdc93ae7bc5b9606cfa85cac44cda15',1,'adiar::value_of(internal::ptr_uint64 p)'],['../namespaceadiar.html#aa72cdbd243964f882a5452338216d8df',1,'adiar::value_of(const internal::node &amp;n)'],['../namespaceadiar.html#a7cf6973ba6cff73029f11b0f33a520d7',1,'adiar::value_of(const assignment &amp;a)']]],
-  ['var_375',['var',['../classadiar_1_1assignment.html#a39444eb0df924f83c15168240c216fea',1,'adiar::assignment']]]
+  ['nil_437',['NIL',['../classadiar_1_1internal_1_1ptr__uint64.html#aa671ad5091402e94af8be192098ca275',1,'adiar::internal::ptr_uint64']]],
+  ['no_5fchildren_438',['NO_CHILDREN',['../classadiar_1_1internal_1_1request.html#a888b085ff55f183f07fbc1bd8732c6a9',1,'adiar::internal::request']]],
+  ['node_439',['node',['../classadiar_1_1internal_1_1node.html#a1faa19e466f31bf50f43b55bc33224cb',1,'adiar::internal::node::node(const value_t value)'],['../classadiar_1_1internal_1_1node.html#a07b814e49f13c4f2da3064506d271a6e',1,'adiar::internal::node::node(const uid_t &amp;u, const ptr_t &amp;l, const ptr_t &amp;h)'],['../classadiar_1_1internal_1_1node.html#a4d57e48840a066e50f30ba233c9d3762',1,'adiar::internal::node::node(const label_t label, const id_t id, const ptr_t &amp;l, const ptr_t &amp;h)'],['../classadiar_1_1internal_1_1node.html#a0a31e6e720e35c2e6fb858bc87b33043',1,'adiar::internal::node::node(const label_t label, const id_t id, const node &amp;l, const ptr_t &amp;h)'],['../classadiar_1_1internal_1_1node.html#a91e79ab028c2f1e09af36a63bd6cf18b',1,'adiar::internal::node::node(const label_t label, const id_t id, const ptr_t &amp;l, const node &amp;h)'],['../classadiar_1_1internal_1_1node.html#a6dbbb0accf53b4c4923aa4dba3de66e1',1,'adiar::internal::node::node(const label_t label, const id_t id, const node &amp;l, const node &amp;h)']]],
+  ['nodes_5fcarried_440',['nodes_carried',['../classadiar_1_1internal_1_1request.html#abd20eed797d6668dd2885dc35c23006d',1,'adiar::internal::request']]]
 ];

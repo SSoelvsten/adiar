@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['reduction_5frule_370',['reduction_rule',['../classadiar_1_1internal_1_1dd__policy.html#a32cc3fecc3ffc3d8def4724456ad5631',1,'adiar::internal::dd_policy']]]
+  ['key_424',['key',['../classadiar_1_1map__pair.html#a055746a7d27c973d6be1a6fa7d3a1979',1,'adiar::map_pair']]]
 ];

@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['zdd_275',['zdd',['../classadiar_1_1zdd.html',1,'adiar']]]
+  ['slow_5ft_335',['slow_t',['../structadiar_1_1stats__t_1_1equality__t_1_1slow__t.html',1,'adiar::stats_t::equality_t']]],
+  ['stats_5ft_336',['stats_t',['../structadiar_1_1stats__t.html',1,'adiar']]],
+  ['substitute_5ft_337',['substitute_t',['../structadiar_1_1stats__t_1_1substitute__t.html',1,'adiar::stats_t']]]
 ];

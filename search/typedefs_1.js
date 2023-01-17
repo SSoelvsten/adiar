@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['bdd_5fbuilder_468',['bdd_builder',['../group__module____builder.html#gacad7fc21ff3b724b2c485f4d9da5dc2f',1,'adiar']]],
-  ['bdd_5fptr_469',['bdd_ptr',['../group__module____builder.html#ga667558bbb8a9b959dd2b788eadf18678',1,'adiar']]],
-  ['bool_5fop_470',['bool_op',['../namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2',1,'adiar']]]
+  ['children_5ft_565',['children_t',['../classadiar_1_1internal_1_1node.html#ac4221aa0936684cdb6790a1b43c5f300',1,'adiar::internal::node::children_t()'],['../classadiar_1_1internal_1_1request.html#a4a3d98adf56f255244586bcd8b1238a1',1,'adiar::internal::request::children_t()']]]
 ];

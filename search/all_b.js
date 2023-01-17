@@ -1,18 +1,12 @@
 var searchData=
 [
-  ['main_20page_140',['Main Page',['../index.html',1,'']]],
-  ['make_5fshared_5ffile_141',['make_shared_file',['../namespaceadiar.html#a15dd836fb1e682ddc5cd81036b0abb58',1,'adiar::make_shared_file(const std::string &amp;p)'],['../namespaceadiar.html#a73d6d0d37467f819bee85cf08e7c976a',1,'adiar::make_shared_file()']]],
-  ['manual_20construction_142',['Manual Construction',['../page__builder.html',1,'']]],
-  ['max_5f1level_5fcut_143',['max_1level_cut',['../classadiar_1_1internal_1_1dd.html#aa7956ba576d3e5c71372399acfac00f0',1,'adiar::internal::dd::max_1level_cut()'],['../classadiar_1_1zdd.html#aed63e7ee421078352534f350d0917ed7',1,'adiar::zdd::max_1level_cut(const internal::cut_type ct) const']]],
-  ['max_5f2level_5fcut_144',['max_2level_cut',['../classadiar_1_1zdd.html#a8cfaa8552f2fb0bbff105ab3a49fbbf1',1,'adiar::zdd::max_2level_cut()'],['../classadiar_1_1internal_1_1dd.html#ae2907e04387134c3cd19c37b47c28492',1,'adiar::internal::dd::max_2level_cut()']]],
-  ['max_5fid_145',['MAX_ID',['../classadiar_1_1internal_1_1dd__policy.html#a3ad5767634736f2430ed53e3414cc7d6',1,'adiar::internal::dd_policy::MAX_ID()'],['../classadiar_1_1internal_1_1dd.html#a84debd8766eb4dcda85255bb09bfbbd7',1,'adiar::internal::dd::MAX_ID()'],['../namespaceadiar.html#a0a06c020ef5927d3da9e9587b4290894',1,'adiar::MAX_ID()']]],
-  ['max_5flabel_146',['MAX_LABEL',['../classadiar_1_1internal_1_1dd.html#acb4e83a4cde71daa06100451f77e74ae',1,'adiar::internal::dd::MAX_LABEL()'],['../namespaceadiar.html#a4e45591fc6f83e8244355be4cf27e9e8',1,'adiar::MAX_LABEL()']]],
-  ['max_5flabel_147',['max_label',['../namespaceadiar.html#ab4d3844ad7a1de4f38d316d640d1d700',1,'adiar::max_label(const zdd &amp;A)'],['../namespaceadiar.html#affbe978b913731c64c2123f0f590d581',1,'adiar::max_label(const bdd &amp;f)']]],
-  ['max_5flabel_148',['MAX_LABEL',['../classadiar_1_1internal_1_1dd__policy.html#a519cafd8ede92fb515d9724afbf48309',1,'adiar::internal::dd_policy']]],
-  ['max_5fvar_149',['max_var',['../group__module____bdd.html#gaf48a24c478608bfdf3e9f6a1997df104',1,'adiar::max_var(const bdd &amp;f)'],['../group__module____zdd.html#ga47aa812d03dfbe16d59252a43e10f2eb',1,'adiar::max_var(const zdd &amp;A)'],['../classadiar_1_1internal_1_1dd.html#a6c7bf3aae335351ed1ee703f0209a902',1,'adiar::internal::dd::max_var()']]],
-  ['memory_5fmode_150',['memory_mode',['../group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89',1,'adiar']]],
-  ['memory_5fmode_5ft_151',['memory_mode_t',['../group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c',1,'adiar']]],
-  ['min_5flabel_152',['min_label',['../namespaceadiar.html#a6c9c610f38c76848968e7b0b8a2a022d',1,'adiar::min_label(const bdd &amp;f)'],['../namespaceadiar.html#a2164921f7faa5ad7e648946fc15ab9c0',1,'adiar::min_label(const zdd &amp;A)']]],
-  ['min_5fvar_153',['min_var',['../classadiar_1_1internal_1_1dd.html#a715f7e955c75080b60af0a3a2f59f50e',1,'adiar::internal::dd::min_var()'],['../group__module____bdd.html#gaac8586a925cf7a95ceca026ad29259fb',1,'adiar::min_var(const bdd &amp;f)'],['../group__module____zdd.html#ga93c6633693204f2b2a8a4586ec9b2f26',1,'adiar::min_var(const zdd &amp;A)']]],
-  ['minimum_5fmemory_154',['MINIMUM_MEMORY',['../group__module____adiar.html#gac42aa5de8f685a5231903c443eb7c480',1,'adiar']]]
+  ['label_141',['label',['../classadiar_1_1internal_1_1level__info.html#a04fbb8106bb3f78620df76197b1cc916',1,'adiar::internal::level_info::label()'],['../classadiar_1_1internal_1_1node.html#ae9caacdcd496bc1722f8aec8f0713ee3',1,'adiar::internal::node::label()'],['../classadiar_1_1internal_1_1ptr__uint64.html#a40a6c123b0e0ebd7fd9c05f4b9ab1d4c',1,'adiar::internal::ptr_uint64::label()']]],
+  ['label_5ft_142',['label_t',['../classadiar_1_1internal_1_1arc.html#ab20883474478e7ddb3158fa246797ddd',1,'adiar::internal::arc::label_t()'],['../classadiar_1_1internal_1_1node.html#a37197ed662719976542ac0975871c619',1,'adiar::internal::node::label_t()'],['../classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801',1,'adiar::internal::ptr_uint64::label_t()']]],
+  ['less_5fop_143',['less_op',['../namespaceadiar.html#a6082d7745ba85e50a8d41dc6afd7afb5',1,'adiar']]],
+  ['level_144',['level',['../classadiar_1_1map__pair.html#a205ab241adf7a5d9725df21cb2202781',1,'adiar::map_pair::level()'],['../classadiar_1_1internal_1_1level__info.html#a014151f314572b9344d42d35c78f6f33',1,'adiar::internal::level_info::level()'],['../classadiar_1_1internal_1_1request.html#a135b24676602f66555b0fbb49395461f',1,'adiar::internal::request::level()']]],
+  ['level_5finfo_145',['level_info',['../classadiar_1_1internal_1_1level__info.html',1,'adiar::internal::level_info'],['../classadiar_1_1internal_1_1level__info.html#a42ac400e209c683ffeaa1b108cd4cf49',1,'adiar::internal::level_info::level_info()']]],
+  ['levelized_5fpriority_5fqueue_146',['levelized_priority_queue',['../structadiar_1_1stats__t.html#a7cc43b74af7d99fb2ebe3d5f983f7e12',1,'adiar::stats_t']]],
+  ['levelized_5fpriority_5fqueue_5ft_147',['levelized_priority_queue_t',['../structadiar_1_1stats__t_1_1levelized__priority__queue__t.html',1,'adiar::stats_t']]],
+  ['low_148',['low',['../classadiar_1_1internal_1_1node.html#ae0659b593f48bec7fb78bec35bcab835',1,'adiar::internal::node']]],
+  ['lpq_149',['lpq',['../structadiar_1_1stats__t_1_1____alg__base.html#a50829118ad63e1a074b9441e89fa54a4',1,'adiar::stats_t::__alg_base']]]
 ];
