@@ -57,6 +57,9 @@ namespace adiar
 
       return internal::cut_type_with(incl_false, incl_true);
     }
+
+  public:
+    static constexpr bool pred_value = true;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -67,10 +70,20 @@ namespace adiar
 
   __bdd bdd_exists(const bdd &f, const shared_file<bdd::label_t> &vars)
   {
-    return internal::quantify<bdd_quantify_policy>(bdd(f), vars, or_op);
+    return internal::quantify<bdd_quantify_policy>(f, vars, or_op);
   }
 
   __bdd bdd_exists(bdd &&f, const shared_file<bdd::label_t> &vars)
+  {
+    return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, or_op);
+  }
+
+  __bdd bdd_exists(const bdd &f, const std::function<bool(bdd::label_t)> &vars)
+  {
+    return internal::quantify<bdd_quantify_policy>(f, vars, or_op);
+  }
+
+  __bdd bdd_exists(bdd &&f, const std::function<bool(bdd::label_t)> &vars)
   {
     return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, or_op);
   }
@@ -82,10 +95,20 @@ namespace adiar
 
   __bdd bdd_forall(const bdd &f, const shared_file<bdd::label_t> &vars)
   {
-    return internal::quantify<bdd_quantify_policy>(bdd(f), vars, and_op);
+    return internal::quantify<bdd_quantify_policy>(f, vars, and_op);
   }
 
   __bdd bdd_forall(bdd &&f, const shared_file<bdd::label_t> &vars)
+  {
+    return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, and_op);
+  }
+
+  __bdd bdd_forall(const bdd &f, const std::function<bool(bdd::label_t)> &vars)
+  {
+    return internal::quantify<bdd_quantify_policy>(f, vars, and_op);
+  }
+
+  __bdd bdd_forall(bdd &&f, const std::function<bool(bdd::label_t)> &vars)
   {
     return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, and_op);
   }

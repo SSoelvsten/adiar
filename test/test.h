@@ -28,23 +28,23 @@ using level_info_test_stream = level_info_stream<true>;
 class node_test_stream: public node_stream<true>
 {
 public:
-  node_test_stream(shared_levelized_file<dd::node_t> &f)
+  node_test_stream(const shared_levelized_file<dd::node_t> &f)
     : node_stream<true>(f)
   { }
 
-  node_test_stream(bdd &f)
+  node_test_stream(const bdd &f)
     : node_stream<true>(f)
   { }
 
-  node_test_stream(__bdd &f)
+  node_test_stream(const __bdd &f)
     : node_stream<true>(f.get<__bdd::shared_nodes_t>(), f.negate)
   { }
 
-  node_test_stream(zdd &f)
+  node_test_stream(const zdd &f)
     : node_stream<true>(f)
   { }
 
-  node_test_stream(__zdd &f)
+  node_test_stream(const __zdd &f)
     : node_stream<true>(f.get<__zdd::shared_nodes_t>(), f.negate)
   { }
 };
@@ -52,15 +52,15 @@ public:
 class arc_test_stream: public arc_stream<true>
 {
 public:
-  arc_test_stream(shared_levelized_file<arc> &f)
+  arc_test_stream(const shared_levelized_file<arc> &f)
     : arc_stream<true>(f)
   { }
 
-  arc_test_stream(__bdd &bdd)
+  arc_test_stream(const __bdd &bdd)
     : arc_stream<true>(bdd.get<__bdd::shared_arcs_t>())
   { }
 
-  arc_test_stream(__zdd &zdd)
+  arc_test_stream(const __zdd &zdd)
     : arc_stream<true>(zdd.get<__zdd::shared_arcs_t>())
   { }
 };
