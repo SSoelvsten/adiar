@@ -60,9 +60,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { {i} } .
   ///
-  /// \details   Creates a ZDD of a single node with label <tt>var</tt> and the
+  /// \details   Creates a ZDD of a single node with label `var` and the
   ///            children false and true. The given label must be smaller than
-  ///            <tt>MAX_LABEL</tt>.
+  ///            `zdd::MAX_LABEL`.
   ///
   /// \param var The label of the desired variable to include
   //////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ namespace adiar
   ///
   /// \details   Creates a ZDD with a chain of nodes on the 'high' arc to the
   ///            true child, and false otherwise. The given labels must be
-  ///            smaller than or equal to <tt>MAX_LABEL</tt>.
+  ///            smaller than or equal to `zdd::MAX_LABEL`.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   //////////////////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ namespace adiar
   ///
   /// \details   Creates a ZDD with a chain of nodes on the 'low' arc to the
   ///            true child, and false otherwise. The given labels must be
-  ///            smaller than or equal to <tt>MAX_LABEL</tt>.
+  ///            smaller than or equal to `zdd::MAX_LABEL`.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   //////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ namespace adiar
   ///
   /// \details   Creates a ZDD with a don't care chain of nodes to the true
   ///            child. The given labels must be smaller than or equal to
-  ///            <tt>MAX_LABEL</tt>.
+  ///            `zdd::MAX_LABEL`.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   //////////////////////////////////////////////////////////////////////////////
@@ -133,10 +133,16 @@ namespace adiar
   inline __zdd zdd_union(const zdd &A, const zdd &B)
   { return zdd_binop(A, B, or_op); };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \sa zdd_union
+  //////////////////////////////////////////////////////////////////////////////
   __zdd operator| (const zdd &lhs, const zdd &rhs);
+
+  /// \cond
   __zdd operator| (__zdd &&, __zdd &&);
   __zdd operator| (const zdd &, __zdd &&);
   __zdd operator| (__zdd &&, const zdd &);
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The intersection of two families of sets.
@@ -147,10 +153,16 @@ namespace adiar
   inline __zdd zdd_intsec(const zdd &A, const zdd &B)
   { return zdd_binop(A, B, and_op); };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \sa zdd_intsec
+  //////////////////////////////////////////////////////////////////////////////
   __zdd operator& (const zdd &lhs, const zdd &rhs);
+
+  /// \cond
   __zdd operator& (__zdd &&, __zdd &&);
   __zdd operator& (const zdd &, __zdd &&);
   __zdd operator& (__zdd &&, const __zdd &);
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The set difference of two families of sets.
@@ -161,10 +173,16 @@ namespace adiar
   inline __zdd zdd_diff(const zdd &A, const zdd &B)
   { return zdd_binop(A, B, diff_op); };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \sa zdd_diff
+  //////////////////////////////////////////////////////////////////////////////
   __zdd operator- (const zdd &lhs, const zdd &rhs);
+
+  /// \cond
   __zdd operator- (__zdd &&, __zdd &&);
   __zdd operator- (const zdd &, __zdd &&);
   __zdd operator- (__zdd &&, const zdd &);
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The symmetric difference between each set in the family and the
@@ -204,6 +222,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_complement(const zdd &A);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \sa zdd_complement
+  //////////////////////////////////////////////////////////////////////////////
   __zdd operator~ (const zdd& A);
 
   /// \cond
@@ -214,9 +235,8 @@ namespace adiar
   /// \brief      Expands the domain of the given ZDD to also include the given
   ///             set of labels.
   ///
-  /// \details    Adds don't care nodes on each levels in <tt>vars</tt>. The
-  ///             variables in <tt>vars</tt> may \em not be present in
-  ///             <tt>A</tt>.
+  /// \details    Adds don't care nodes on each levels in `vars`. The variables
+  ///             in `vars` may \em not be present in `A`.
   ///
   /// \param A    Family of set to expand
   ///
@@ -335,10 +355,16 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   bool zdd_equal(const zdd &A, const zdd &B);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \sa zdd_equal
+  //////////////////////////////////////////////////////////////////////////////
   bool operator== (const zdd& lhs, const zdd& rhs);
+
+  /// \cond
   bool operator== (__zdd &&, __zdd &&);
   bool operator== (const zdd &, __zdd &&);
   bool operator== (__zdd &&, const zdd &);
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether they represent two different families.
@@ -346,25 +372,43 @@ namespace adiar
   inline bool zdd_unequal(const zdd &A, const zdd &B)
   { return !zdd_equal(A,B); };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \sa zdd_unequal
+  //////////////////////////////////////////////////////////////////////////////
   bool operator!= (const zdd& lhs, const zdd& rhs);
+
+  /// \cond
   bool operator!= (__zdd &&, __zdd &&);
   bool operator!= (const zdd &, __zdd &&);
   bool operator!= (__zdd &&, const zdd &);
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether one family is a subset or equal to the other.
   //////////////////////////////////////////////////////////////////////////////
   bool zdd_subseteq(const zdd &A, const zdd &B);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \sa zdd_subseteq
+  //////////////////////////////////////////////////////////////////////////////
   bool operator<= (const zdd& lhs, const zdd& rhs);
+
+  /// \cond
   bool operator<= (__zdd &&, __zdd &&);
   bool operator<= (const zdd &, __zdd &&);
   bool operator<= (__zdd &&, const zdd &);
+  /// \endcond
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \sa zdd_subseteq
+  //////////////////////////////////////////////////////////////////////////////
   bool operator>= (const zdd& lhs, const zdd& rhs);
+
+  /// \cond
   bool operator>= (__zdd &&, __zdd &&);
   bool operator>= (const zdd &, __zdd &&);
   bool operator>= (__zdd &&, const zdd &);
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether one family is a strict subset of the other.
@@ -372,15 +416,27 @@ namespace adiar
   inline bool zdd_subset(const zdd &A, const zdd &B)
   { return zdd_subseteq(A,B) && zdd_unequal(A,B); };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \sa zdd_subset
+  //////////////////////////////////////////////////////////////////////////////
   bool operator< (const zdd& lhs, const zdd& rhs);
+
+  /// \cond
   bool operator< (__zdd &&, __zdd &&);
   bool operator< (const zdd &, __zdd &&);
   bool operator< (__zdd &&, const zdd &);
+  /// \endcond
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \sa zdd_subset
+  //////////////////////////////////////////////////////////////////////////////
   bool operator> (const zdd& lhs, const zdd& rhs);
+
+  /// \cond
   bool operator> (__zdd &&, __zdd &&);
   bool operator> (const zdd &, __zdd &&);
   bool operator> (__zdd &&, const zdd &);
+  /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Whether the two families are disjoint.
