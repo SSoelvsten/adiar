@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['flag_592',['flag',['../classadiar_1_1internal_1_1ptr__uint64.html#a7c3eaace72a833c379094d3f8d98a2b8',1,'adiar::internal::ptr_uint64']]]
+  ['negate_525',['negate',['../classadiar_1_1internal_1_1ptr__uint64.html#aeabd021bee17e9b07cc3ae1cee25ea8f',1,'adiar::internal::ptr_uint64']]]
 ];
