@@ -200,10 +200,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the label of a node.
     ///
-    /// \todo Rename to `level()` when introducing variable ordering
-    ///
     /// \pre `is_terminal()` evaluates to `false`.
     ////////////////////////////////////////////////////////////////////////////
+    // TODO: Rename to `level()` when introducing variable ordering
     inline label_t label() const
     {
       adiar_precondition(!is_terminal());

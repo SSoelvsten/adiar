@@ -131,10 +131,9 @@ namespace adiar::internal
   /// A wrapper for the tpie::merge_sorter that takes care of all the memory
   /// computations involved in deriving how much memory should be used and how
   /// it should be.
-  ///
-  /// TODO:
-  /// - Peek function
   //////////////////////////////////////////////////////////////////////////////
+  // TODO:
+  // - Peek function
   template <typename T, typename pred_t>
   class sorter<memory_mode_t::EXTERNAL, T, pred_t>
   {

@@ -70,9 +70,8 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Convert a wide integer to a string and push to an output stream.
-  ///
-  /// TODO: move into 'adiar/internal/cnl.h'
   //////////////////////////////////////////////////////////////////////////////
+  // TODO: move into 'adiar/internal/cnl.h'
   inline std::ostream& operator<< (std::ostream& os, const uintwide_t &s)
   {
     return os << to_string(s);

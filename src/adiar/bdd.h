@@ -66,7 +66,7 @@ namespace adiar
   ///
   /// \details   Creates a BDD of a single node with label `var` and the
   ///            children false and true. The given label must be smaller than
-  ///            \ref MAX_LABEL.
+  ///            `bdd::MAX_LABEL`.
   ///
   /// \param var The label of the desired variable
   ///
@@ -79,7 +79,7 @@ namespace adiar
   ///
   /// \details   Creates a BDD of a single node with label `var` and the
   ///            children true and false. The given label must be smaller than
-  ///            or equal to \ref MAX_LABEL.
+  ///            or equal to `bdd::MAX_LABEL`.
   ///
   /// \param var Label of the desired variable
   ///
@@ -93,7 +93,7 @@ namespace adiar
   ///
   /// \details    Creates a BDD with a chain of nodes on the 'high' arc to the
   ///             true child, and false otherwise. The given labels must be
-  ///             smaller than or equal to \ref MAX_LABEL.
+  ///             smaller than or equal to `bdd::MAX_LABEL`.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   ///
@@ -109,7 +109,7 @@ namespace adiar
   ///
   /// \details    Creates a BDD with a chain of nodes on the 'low' arc to the
   ///             true child, and false otherwise. The given labels must be
-  ///             smaller than or equal to \ref MAX_LABEL.
+  ///             smaller than or equal to `bdd::MAX_LABEL`.
   ///
   /// \param vars Labels of the desired variables (in ascending order)
   ///
@@ -142,9 +142,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Negation of a BDD.
   ///
-  /// \details Flips the negation flag such that reading nodes with a \ref
-  ///          node_stream within Adiar's algorithms will on-the-fly change the
-  ///          `false` terminals into the `true` terminals and vica versa.
+  /// \details Flips the negation flag such that reading nodes with a
+  ///          `node_stream` within Adiar's algorithms will on-the-fly change
+  ///          the `false` terminals into the `true` terminals and vica versa.
   ///
   /// \returns \f$ \neg f \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -155,7 +155,7 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \sa bdd_not
+  /// \see bdd_not
   //////////////////////////////////////////////////////////////////////////////
   bdd operator~ (const bdd& f);
 
@@ -173,7 +173,7 @@ namespace adiar
   ///
   /// \returns  The product construction of \f$ f \mathbin{\mathit{op}} g\f$
   ///
-  /// \sa bool_op
+  /// \see bool_op
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_apply(const bdd &f, const bdd &g, const bool_op &op);
 
@@ -188,7 +188,7 @@ namespace adiar
   { return bdd_apply(f, g, and_op); }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \sa bdd_and
+  /// \see bdd_and
   //////////////////////////////////////////////////////////////////////////////
   __bdd operator& (const bdd &lhs, const bdd &rhs);
 
@@ -219,7 +219,7 @@ namespace adiar
   { return bdd_apply(f, g, or_op); };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \sa bdd_or
+  /// \see bdd_or
   //////////////////////////////////////////////////////////////////////////////
   __bdd operator| (const bdd &lhs, const bdd &rhs);
 
@@ -250,7 +250,7 @@ namespace adiar
   { return bdd_apply(f, g, xor_op); };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \sa bdd_xor
+  /// \see bdd_xor
   //////////////////////////////////////////////////////////////////////////////
   __bdd operator^ (const bdd &lhs, const bdd &rhs);
 
@@ -339,7 +339,7 @@ namespace adiar
   ///         constructing a BDD bottom-up. But, in Adiar you should use the
   ///         \ref bdd_builder class (see \ref builder) instead
   ///
-  /// \se     bdd_apply builder bdd_builder
+  /// \see    bdd_apply builder bdd_builder
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_ite(const bdd &f, const bdd &g, const bdd &h);
 
@@ -371,12 +371,6 @@ namespace adiar
   /// \param var Variable to quantify in f
   ///
   /// \returns   \f$ \exists x_{var} : f \f$
-  ///
-  /// \remark    There is possibly an ambiguity in overloading, if you use the
-  ///            value *0* directly for the `var` argument, since this can also
-  ///            be interpreted as the `nullptr` value for a `std::function`. To
-  ///            resolve this overloading, use *0u* or
-  ///            `static_cast<bdd::label_t>(0))` instead.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_exists(const bdd &f, bdd::label_t var);
 
@@ -453,8 +447,9 @@ namespace adiar
   /// \param f     BDD to be quantified.
   ///
   /// \param begin Iterator that provides variables to be quantified in
-  ///              *descending* order. When none are left to-be quantified, it
-  ///              returns a value larger than `bdd::MAX_LABEL`.
+  ///              *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
   ///
   /// \returns     \f$ \exists x_i \in \texttt{begin} ... \texttt{end} : f \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -486,12 +481,6 @@ namespace adiar
   /// \param var Variable to quantify in f
   ///
   /// \returns   \f$ \forall x_{var} : f \f$
-  ///
-  /// \remark    There is (possibly) an ambiguity in overloading, if you use the
-  ///            value *0* directly for the `var` argument, since this can also
-  ///            be interpreted as the `nullptr` value for a `std::function`. To
-  ///            resolve this overloading, use *0u* or
-  ///            `static_cast<bdd::label_t>(0))` instead.
   //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_forall(const bdd &f, bdd::label_t var);
 
@@ -568,8 +557,9 @@ namespace adiar
   /// \param f     BDD to be quantified.
   ///
   /// \param begin Iterator that provides variables to be quantified in
-  ///              *descending* order. When none are left to-be quantified, it
-  ///              returns a value larger than `bdd::MAX_LABEL`.
+  ///              *descending* order.
+  ///
+  /// \param end   Iterator that marks the end for `begin`.
   ///
   /// \returns     \f$ \forall x_i \in \texttt{begin} ... \texttt{end} : f \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -597,7 +587,7 @@ namespace adiar
   /// \{
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \copydoc internal::is_canonical
+  /// \copydoc adiar::internal::is_canonical
   //////////////////////////////////////////////////////////////////////////////
   inline bool is_canonical(const bdd& f)
   { return internal::is_canonical(f); }
@@ -626,7 +616,7 @@ namespace adiar
   bool bdd_equal(const bdd& f, const bdd& g);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \sa bdd_equal
+  /// \see bdd_equal
   //////////////////////////////////////////////////////////////////////////////
   bool operator== (const bdd& f, const bdd& g);
 
@@ -643,7 +633,7 @@ namespace adiar
   { return !bdd_equal(f, g); }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \sa bdd_unequal
+  /// \see bdd_unequal
   //////////////////////////////////////////////////////////////////////////////
   bool operator!= (const bdd& f, const bdd& g);
 
@@ -700,7 +690,7 @@ namespace adiar
   ///          the size of the global domain or the number of variables within
   ///          the given BDD.
   ///
-  /// \sa adiar_set_domain bdd_varcount
+  /// \see adiar_set_domain bdd_varcount
   //////////////////////////////////////////////////////////////////////////////
   uint64_t bdd_satcount(const bdd &f);
 

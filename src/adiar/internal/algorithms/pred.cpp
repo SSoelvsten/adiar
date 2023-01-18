@@ -74,13 +74,13 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \pre Precondition:
+  /// \pre To use this operation, the following should be satisfied.
   ///  - The number of nodes are the same
   ///  - The number of levels are the same
   ///  - The label and size of each level are the same
-  ///
-  /// TODO (Decision Diagrams with other kinds of pointers):
-  ///   template<class dd_policy>
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO (Decision Diagrams with other kinds of pointers):
+  // template<class dd_policy>
   class isomorphism_policy : public prod2_same_level_merger,
                              public dd_policy<dd, __dd>
   {

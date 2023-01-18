@@ -425,7 +425,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // Multi-variable (predicate)
   //
-  // TODO: optimsiations
+  // TODO: optimisations
   //       - initial cheap check on is_terminal.
   //       - initial 'quantify__get_label' should not terminate early but
   //         determine whether any variable may "survive".

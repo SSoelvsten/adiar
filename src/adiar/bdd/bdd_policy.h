@@ -32,7 +32,7 @@ namespace adiar
     return { child, child };
   }
 
-  /// TODO: stop using this one in favour of the other one below
+  // TODO: stop using this one in favour of the other one below
   template<>
   inline void
   bdd_policy::compute_cofactor(bool,

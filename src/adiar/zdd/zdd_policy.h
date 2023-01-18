@@ -29,7 +29,7 @@ namespace adiar
     return { child, zdd::ptr_t(false) };
   }
 
-  /// TODO: stop using this one in favour of the other one below
+  // TODO: stop using this one in favour of the other one below
   template<>
   inline void
   zdd_policy::compute_cofactor(bool on_curr_level,

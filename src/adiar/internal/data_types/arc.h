@@ -68,9 +68,8 @@ namespace adiar::internal
   public:
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain 'source' value (including flag).
-    ///
-    /// \TODO Always returned the unflagged value?
     ////////////////////////////////////////////////////////////////////////////
+    // TODO Always returned the unflagged value?
     ptr_t source() const
     { return _source; }
 

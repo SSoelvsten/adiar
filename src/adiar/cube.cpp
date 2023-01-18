@@ -36,6 +36,9 @@ namespace adiar
   cube& cube::operator&= (const cube &o)
   { return *this = (*this & o); }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Policy-based merge operation of two cubes.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename merge_policy>
   cube cube_merge(const cube &A, const cube &B)
   {
@@ -80,6 +83,7 @@ namespace adiar
     return rf;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   class cube_union_policy
   {
   public:
@@ -105,7 +109,7 @@ namespace adiar
     return cube_merge<cube_union_policy>(A, B);
   }
 
-
+  //////////////////////////////////////////////////////////////////////////////
   class cube_intsec_policy
   {
   public:

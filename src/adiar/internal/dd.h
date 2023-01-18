@@ -293,13 +293,13 @@ namespace adiar::internal
   { }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Check whether a given decision diagram is canonical, i.e. has the
+  /// Check whether a given decision diagram is canonical, i.e. has the
   /// following stronger guarantees than the total ordering of nodes.
   ///
-  /// - Nodes within a level are effectively sorted based on their children:
-  ///   high first, then low.
+  /// 1. Nodes within a level are effectively sorted based on their children:
+  ///    high first, then low.
   ///
-  /// - Identifiers are from \ref MAX_ID and down (when read bottom-up)
+  /// 2. Identifiers are from \ref MAX_ID and down (when read bottom-up)
   ///
   /// If this is true, then equality checking can be done in a single cheap
   /// linear scan rather than with an *O(N log N)* time-forwarding algorithm.
@@ -357,6 +357,7 @@ namespace adiar::internal
     return dd->last_level();
   }
 
+  /// \cond
   template<typename dd_type, typename __dd_type>
   class dd_policy
   {
@@ -428,13 +429,14 @@ namespace adiar::internal
     static inline typename node_t::children_t
     reduction_rule_inv(const ptr_t &child);
 
-    /// TODO: stop using this one in favour of the other one below
+    // TODO: stop using this one in favour of the other one below
     static inline void
     compute_cofactor(bool on_curr_level, ptr_t &low, ptr_t &high);
 
     static inline typename node_t::children_t
     compute_cofactor(bool on_curr_level, const typename node_t::children_t &children);
   };
+  /// \endcond
 }
 
 #endif // ADIAR_INTERNAL_DD_H
