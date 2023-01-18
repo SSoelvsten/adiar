@@ -20,8 +20,6 @@ var hierarchy =
     [ "adiar::builder< dd_policy >", "classadiar_1_1builder.html", null ],
     [ "adiar::builder_ptr< dd_policy >", "classadiar_1_1builder__ptr.html", null ],
     [ "adiar::cube", "classadiar_1_1cube.html", null ],
-    [ "adiar::cube_intsec_policy", "classadiar_1_1cube__intsec__policy.html", null ],
-    [ "adiar::cube_union_policy", "classadiar_1_1cube__union__policy.html", null ],
     [ "dd", null, [
       [ "adiar::bdd", "classadiar_1_1bdd.html", null ],
       [ "adiar::zdd", "classadiar_1_1zdd.html", null ]

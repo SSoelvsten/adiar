@@ -8,9 +8,9 @@
  viewBox="0.00 0.00 181.00 66.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 62)">
 <title>Graphical Class Hierarchy</title>
-<!-- Node21 -->
+<!-- Node19 -->
 <g id="node1" class="node">
-<title>Node21</title>
+<title>Node19</title>
 <g id="a_node1"><a xlink:title=" ">
 <polygon fill="none" stroke="#bfbfbf" points="21.5,-38.5 21.5,-57.5 50.5,-57.5 50.5,-38.5 21.5,-38.5"/>
 <text text-anchor="middle" x="36" y="-45.5" font-family="Helvetica,sans-Serif" font-size="10.00">dd</text>
@@ -26,45 +26,45 @@
 </a>
 </g>
 </g>
-<!-- Node21&#45;&gt;Node0 -->
+<!-- Node19&#45;&gt;Node0 -->
 <g id="edge1" class="edge">
-<title>Node21&#45;&gt;Node0</title>
+<title>Node19&#45;&gt;Node0</title>
 <path fill="none" stroke="midnightblue" d="M61.08,-48C75.03,-48 92.75,-48 107.82,-48"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="60.82,-44.5 50.82,-48 60.82,-51.5 60.82,-44.5"/>
 </g>
-<!-- Node23 -->
+<!-- Node21 -->
 <g id="node3" class="node">
-<title>Node23</title>
+<title>Node21</title>
 <g id="a_node3"><a xlink:href="classadiar_1_1zdd.html" target="_top" xlink:title="Reduced Ordered Zero&#45;suppressed Decision Diagram.">
 <polygon fill="none" stroke="black" points="108,-0.5 108,-19.5 173,-19.5 173,-0.5 108,-0.5"/>
 <text text-anchor="middle" x="140.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">adiar::zdd</text>
 </a>
 </g>
 </g>
-<!-- Node21&#45;&gt;Node23 -->
+<!-- Node19&#45;&gt;Node21 -->
 <g id="edge2" class="edge">
-<title>Node21&#45;&gt;Node23</title>
+<title>Node19&#45;&gt;Node21</title>
 <path fill="none" stroke="midnightblue" d="M60.43,-39.32C76.32,-33.42 97.33,-25.63 113.7,-19.57"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="58.98,-36.12 50.82,-42.88 61.42,-42.68 58.98,-36.12"/>
 </g>
-<!-- Node24 -->
+<!-- Node22 -->
 <g id="node4" class="node">
-<title>Node24</title>
+<title>Node22</title>
 <g id="a_node4"><a xlink:title=" ">
 <polygon fill="none" stroke="#bfbfbf" points="0,-0.5 0,-19.5 72,-19.5 72,-0.5 0,-0.5"/>
 <text text-anchor="middle" x="36" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">internal::dd</text>
 </a>
 </g>
 </g>
-<!-- Node24&#45;&gt;Node0 -->
+<!-- Node22&#45;&gt;Node0 -->
 <g id="edge3" class="edge">
-<title>Node24&#45;&gt;Node0</title>
+<title>Node22&#45;&gt;Node0</title>
 <path fill="none" stroke="midnightblue" d="M72.38,-23.12C85.94,-28.14 101.14,-33.78 113.64,-38.41"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="73.46,-19.78 62.87,-19.59 71.02,-26.35 73.46,-19.78"/>
 </g>
-<!-- Node24&#45;&gt;Node23 -->
+<!-- Node22&#45;&gt;Node21 -->
 <g id="edge4" class="edge">
-<title>Node24&#45;&gt;Node23</title>
+<title>Node22&#45;&gt;Node21</title>
 <path fill="none" stroke="midnightblue" d="M82.56,-10C91.13,-10 99.91,-10 107.94,-10"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="82.27,-6.5 72.27,-10 82.27,-13.5 82.27,-6.5"/>
 </g>

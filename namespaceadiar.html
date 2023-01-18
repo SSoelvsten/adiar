@@ -125,10 +125,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1builder__ptr.html">builder_ptr</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The pointer type that builders use to identify the nodes they have constructed in a decision diagram.  <a href="classadiar_1_1builder__ptr.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1cube__union__policy.html">cube_union_policy</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1cube__intsec__policy.html">cube_intsec_policy</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1cube.html">cube</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Possible values for a set of variables; some are fixed to \(\bot\) (0), some to \(\top\) (1), and a few others to <em>both</em> values (2). This describes a hyperdimensional unit cube.  <a href="classadiar_1_1cube.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -180,10 +176,11 @@ template&lt;typename T &gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a723cfcc9239dfdc3cf4cdc74df0265c2"><td class="memItemLeft" align="right" valign="top"><a id="a723cfcc9239dfdc3cf4cdc74df0265c2"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>assignment</b> : char { <b>FALSE</b> = 0
+<tr class="memitem:a723cfcc9239dfdc3cf4cdc74df0265c2"><td class="memItemLeft" align="right" valign="top"><a id="a723cfcc9239dfdc3cf4cdc74df0265c2"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">assignment</a> : char { <b>FALSE</b> = 0
 , <b>TRUE</b> = 1
 , <b>NONE</b> = -1
  }</td></tr>
+<tr class="memdesc:a723cfcc9239dfdc3cf4cdc74df0265c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Possible values to assign a variable. <br /></td></tr>
 <tr class="separator:a723cfcc9239dfdc3cf4cdc74df0265c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a256717aa32b45d75ea8d93d69d0e156b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156b">boolean</a> : bool { <b>FALSE</b> = false
 , <b>FALSE</b> = 0
@@ -223,10 +220,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#ae4c073a63facbc16062cae3653e8f01c">is_commutative</a> (const <a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">bool_op</a> &amp;op)</td></tr>
 <tr class="memdesc:ae4c073a63facbc16062cae3653e8f01c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether an operator is commutative, op(X, Y) = op(Y, X). <br /></td></tr>
 <tr class="separator:ae4c073a63facbc16062cae3653e8f01c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae10657878aa1177d5aebe70d5b9132b8"><td class="memTemplParams" colspan="2"><a id="ae10657878aa1177d5aebe70d5b9132b8"></a>
-template&lt;typename merge_policy &gt; </td></tr>
-<tr class="memitem:ae10657878aa1177d5aebe70d5b9132b8"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1cube.html">cube</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>cube_merge</b> (const <a class="el" href="classadiar_1_1cube.html">cube</a> &amp;A, const <a class="el" href="classadiar_1_1cube.html">cube</a> &amp;B)</td></tr>
-<tr class="separator:ae10657878aa1177d5aebe70d5b9132b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44d88c01d2a9c89f1b2aeac80c61a595"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1cube.html">cube</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a44d88c01d2a9c89f1b2aeac80c61a595">cube_union</a> (const <a class="el" href="classadiar_1_1cube.html">cube</a> &amp;A, const <a class="el" href="classadiar_1_1cube.html">cube</a> &amp;B)</td></tr>
 <tr class="memdesc:a44d88c01d2a9c89f1b2aeac80c61a595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the union of two cubes.  <a href="namespaceadiar.html#a44d88c01d2a9c89f1b2aeac80c61a595">More...</a><br /></td></tr>
 <tr class="separator:a44d88c01d2a9c89f1b2aeac80c61a595"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -243,9 +236,9 @@ template&lt;typename merge_policy &gt; </td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga7ff4243ba9fbb1225508f62bbf712a78">adiar_has_domain</a> ()</td></tr>
 <tr class="memdesc:ga7ff4243ba9fbb1225508f62bbf712a78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar has a global domain. <br /></td></tr>
 <tr class="separator:ga7ff4243ba9fbb1225508f62bbf712a78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga35407e4da638627bfd618ff12231bd1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1internal_1_1node.html#a37197ed662719976542ac0975871c619">internal::node::label_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga35407e4da638627bfd618ff12231bd1e">adiar_get_domain</a> ()</td></tr>
-<tr class="memdesc:ga35407e4da638627bfd618ff12231bd1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the global domain if <code><a class="el" href="group__module____domain.html#ga7ff4243ba9fbb1225508f62bbf712a78" title="Whether Adiar has a global domain.">adiar_has_domain()</a> == true</code>.  <a href="group__module____domain.html#ga35407e4da638627bfd618ff12231bd1e">More...</a><br /></td></tr>
-<tr class="separator:ga35407e4da638627bfd618ff12231bd1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga321e4d4e052194242d8c63cbb80a8dd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1internal_1_1node.html#a37197ed662719976542ac0975871c619">internal::node::label_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga321e4d4e052194242d8c63cbb80a8dd9">adiar_get_domain</a> ()</td></tr>
+<tr class="memdesc:ga321e4d4e052194242d8c63cbb80a8dd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the global domain if <code><a class="el" href="group__module____domain.html#ga7ff4243ba9fbb1225508f62bbf712a78" title="Whether Adiar has a global domain.">adiar_has_domain()</a> == true</code>.  <a href="group__module____domain.html#ga321e4d4e052194242d8c63cbb80a8dd9">More...</a><br /></td></tr>
+<tr class="separator:ga321e4d4e052194242d8c63cbb80a8dd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73d6d0d37467f819bee85cf08e7c976a"><td class="memTemplParams" colspan="2">template&lt;typename elem_t &gt; </td></tr>
 <tr class="memitem:a73d6d0d37467f819bee85cf08e7c976a"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; elem_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a73d6d0d37467f819bee85cf08e7c976a">make_shared_file</a> ()</td></tr>
 <tr class="separator:a73d6d0d37467f819bee85cf08e7c976a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -255,57 +248,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <tr class="memitem:gab51f33e97457bb2f78b4c3d001ba880b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structadiar_1_1stats__t.html">stats_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____statistics.html#gab51f33e97457bb2f78b4c3d001ba880b">adiar_stats</a> ()</td></tr>
 <tr class="memdesc:gab51f33e97457bb2f78b4c3d001ba880b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtain a copy of all statistics gathered.  <a href="group__module____statistics.html#gab51f33e97457bb2f78b4c3d001ba880b">More...</a><br /></td></tr>
 <tr class="separator:gab51f33e97457bb2f78b4c3d001ba880b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9696190b20814a8f958716e78b7d2e64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____statistics.html#ga9696190b20814a8f958716e78b7d2e64">adiar_statsreset</a> ()</td></tr>
-<tr class="memdesc:ga9696190b20814a8f958716e78b7d2e64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets all statistics to default value.  <a href="group__module____statistics.html#ga9696190b20814a8f958716e78b7d2e64">More...</a><br /></td></tr>
-<tr class="separator:ga9696190b20814a8f958716e78b7d2e64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf47920e65a00fd086632301b20bcfcb"><td class="memItemLeft" align="right" valign="top"><a id="acf47920e65a00fd086632301b20bcfcb"></a>
-std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>indent</b> (std::ostream &amp;os)</td></tr>
-<tr class="separator:acf47920e65a00fd086632301b20bcfcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf57a030ba7589c7b9fa4dc3120ecc88"><td class="memItemLeft" align="right" valign="top"><a id="adf57a030ba7589c7b9fa4dc3120ecc88"></a>
-std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>label</b> (std::ostream &amp;os)</td></tr>
-<tr class="separator:adf57a030ba7589c7b9fa4dc3120ecc88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c7bee995987b0e19ba919b9001dacf1"><td class="memItemLeft" align="right" valign="top"><a id="a2c7bee995987b0e19ba919b9001dacf1"></a>
-std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>endl</b> (std::ostream &amp;os)</td></tr>
-<tr class="separator:a2c7bee995987b0e19ba919b9001dacf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d00d54b25e02e74e30be1b1b061ea3c"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a4d00d54b25e02e74e30be1b1b061ea3c">operator&lt;&lt;</a> (std::ostream &amp;os, const uintwide_t &amp;s)</td></tr>
-<tr class="memdesc:a4d00d54b25e02e74e30be1b1b061ea3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a wide integer to a string and push to an output stream.  <a href="namespaceadiar.html#a4d00d54b25e02e74e30be1b1b061ea3c">More...</a><br /></td></tr>
-<tr class="separator:a4d00d54b25e02e74e30be1b1b061ea3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a595f1aac73a9eb0921a12b934fab1b31"><td class="memItemLeft" align="right" valign="top"><a id="a595f1aac73a9eb0921a12b934fab1b31"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_lpq</b> (std::ostream &amp;o, const <a class="el" href="structadiar_1_1stats__t_1_1levelized__priority__queue__t.html">stats_t::levelized_priority_queue_t</a> &amp;stats)</td></tr>
-<tr class="separator:a595f1aac73a9eb0921a12b934fab1b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42b540e4c2a802a2d6c5fa21bc3db3bd"><td class="memItemLeft" align="right" valign="top"><a id="a42b540e4c2a802a2d6c5fa21bc3db3bd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_alg_base</b> (std::ostream &amp;o, const <a class="el" href="structadiar_1_1stats__t_1_1____alg__base.html">stats_t::__alg_base</a> &amp;stats)</td></tr>
-<tr class="separator:a42b540e4c2a802a2d6c5fa21bc3db3bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3370479c286ecff150bd8be2f6980a06"><td class="memItemLeft" align="right" valign="top"><a id="a3370479c286ecff150bd8be2f6980a06"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_count</b> (std::ostream &amp;o)</td></tr>
-<tr class="separator:a3370479c286ecff150bd8be2f6980a06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4622103d600334fcb1d3121f14733d02"><td class="memItemLeft" align="right" valign="top"><a id="a4622103d600334fcb1d3121f14733d02"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_comparison_check</b> (std::ostream &amp;o)</td></tr>
-<tr class="separator:a4622103d600334fcb1d3121f14733d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab31127a3d8a1e12a40ab8ba9611b462"><td class="memItemLeft" align="right" valign="top"><a id="aab31127a3d8a1e12a40ab8ba9611b462"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_intercut</b> (std::ostream &amp;o)</td></tr>
-<tr class="separator:aab31127a3d8a1e12a40ab8ba9611b462"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31311f953120ec06807d27f9aaa36da1"><td class="memItemLeft" align="right" valign="top"><a id="a31311f953120ec06807d27f9aaa36da1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_isomorphism</b> (std::ostream &amp;o)</td></tr>
-<tr class="separator:a31311f953120ec06807d27f9aaa36da1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa99c2f2ef2bef8ac74603f8f00c65b13"><td class="memItemLeft" align="right" valign="top"><a id="aa99c2f2ef2bef8ac74603f8f00c65b13"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_prod2</b> (std::ostream &amp;o)</td></tr>
-<tr class="separator:aa99c2f2ef2bef8ac74603f8f00c65b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7830cb4403a0aae87e58300d0b02057f"><td class="memItemLeft" align="right" valign="top"><a id="a7830cb4403a0aae87e58300d0b02057f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_prod3</b> (std::ostream &amp;o)</td></tr>
-<tr class="separator:a7830cb4403a0aae87e58300d0b02057f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1645b2a0c4da3283588594a5cba95d0f"><td class="memItemLeft" align="right" valign="top"><a id="a1645b2a0c4da3283588594a5cba95d0f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_reduce</b> (std::ostream &amp;o)</td></tr>
-<tr class="separator:a1645b2a0c4da3283588594a5cba95d0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c78c75098b036aad0a1e26cccdbca3e"><td class="memItemLeft" align="right" valign="top"><a id="a1c78c75098b036aad0a1e26cccdbca3e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_quantify</b> (std::ostream &amp;o)</td></tr>
-<tr class="separator:a1c78c75098b036aad0a1e26cccdbca3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a281a392dc62e9a60bfaf4af52178721d"><td class="memItemLeft" align="right" valign="top"><a id="a281a392dc62e9a60bfaf4af52178721d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>__printstat_substitute</b> (std::ostream &amp;o)</td></tr>
-<tr class="separator:a281a392dc62e9a60bfaf4af52178721d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab59c0948a168ed8e1742fc1134e376a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____statistics.html#gab59c0948a168ed8e1742fc1134e376a3">adiar_printstat</a> (std::ostream &amp;o=std::cout)</td></tr>
 <tr class="memdesc:gab59c0948a168ed8e1742fc1134e376a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print statistics to an output stream (default <code>std::cout</code>).  <a href="group__module____statistics.html#gab59c0948a168ed8e1742fc1134e376a3">More...</a><br /></td></tr>
 <tr class="separator:gab59c0948a168ed8e1742fc1134e376a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9696190b20814a8f958716e78b7d2e64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____statistics.html#ga9696190b20814a8f958716e78b7d2e64">adiar_statsreset</a> ()</td></tr>
+<tr class="memdesc:ga9696190b20814a8f958716e78b7d2e64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets all statistics to default value.  <a href="group__module____statistics.html#ga9696190b20814a8f958716e78b7d2e64">More...</a><br /></td></tr>
+<tr class="separator:ga9696190b20814a8f958716e78b7d2e64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fcf0e1da0d4d2f38aa2c66b7e2564bc"><td class="memTemplParams" colspan="2"><a id="a6fcf0e1da0d4d2f38aa2c66b7e2564bc"></a>
 template&lt;typename T , typename ... TT&gt; </td></tr>
 <tr class="memitem:a6fcf0e1da0d4d2f38aa2c66b7e2564bc"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#af1d82216ca9a1da7562b64def09c6ad5">shared_ptr</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a6fcf0e1da0d4d2f38aa2c66b7e2564bc">make_shared</a> (TT &amp;&amp;... tt)</td></tr>
@@ -396,7 +344,7 @@ template&lt;typename T , typename ... TT&gt; </td></tr>
 <tr class="memitem:ga760162c0c2e938a17e8cf88abab785e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga760162c0c2e938a17e8cf88abab785e3">bdd_ite</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;h)</td></tr>
 <tr class="memdesc:ga760162c0c2e938a17e8cf88abab785e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">If-Then-Else operator.  <a href="group__module____bdd.html#ga760162c0c2e938a17e8cf88abab785e3">More...</a><br /></td></tr>
 <tr class="separator:ga760162c0c2e938a17e8cf88abab785e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadb286670a1afdfac65d51777e9f4346e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gadb286670a1afdfac65d51777e9f4346e">bdd_restrict</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, assignment &gt;&gt; &amp;xs)</td></tr>
+<tr class="memitem:gadb286670a1afdfac65d51777e9f4346e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gadb286670a1afdfac65d51777e9f4346e">bdd_restrict</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, <a class="el" href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">assignment</a> &gt;&gt; &amp;xs)</td></tr>
 <tr class="memdesc:gadb286670a1afdfac65d51777e9f4346e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restrict a subset of variables to constant values.  <a href="group__module____bdd.html#gadb286670a1afdfac65d51777e9f4346e">More...</a><br /></td></tr>
 <tr class="separator:gadb286670a1afdfac65d51777e9f4346e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaab407501178dcbf7b90c7d6ad1b70b71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaab407501178dcbf7b90c7d6ad1b70b71">bdd_exists</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, bdd::label_t var)</td></tr>
@@ -697,12 +645,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a8910c073b858d44942973ac5e28b0055"><td class="memItemLeft" align="right" valign="top"><a id="a8910c073b858d44942973ac5e28b0055"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>_adiar_initialized</b> = false</td></tr>
-<tr class="separator:a8910c073b858d44942973ac5e28b0055"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c5b3a1ae1eebf542dbcaad72b071806"><td class="memItemLeft" align="right" valign="top"><a id="a2c5b3a1ae1eebf542dbcaad72b071806"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>_tpie_initialized</b> = false</td></tr>
-<tr class="separator:a2c5b3a1ae1eebf542dbcaad72b071806"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12fffe1fcfe8d8beb664f37ff3d65fa5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">bool_op</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5">and_op</a></td></tr>
 <tr class="memdesc:a12fffe1fcfe8d8beb664f37ff3d65fa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'and' operator, i.e. the truth table: [1,0,0,0].  <a href="namespaceadiar.html#a12fffe1fcfe8d8beb664f37ff3d65fa5">More...</a><br /></td></tr>
 <tr class="separator:a12fffe1fcfe8d8beb664f37ff3d65fa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -737,24 +679,6 @@ const <a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2"
 <tr class="memitem:a6082d7745ba85e50a8d41dc6afd7afb5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">bool_op</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a6082d7745ba85e50a8d41dc6afd7afb5">less_op</a></td></tr>
 <tr class="memdesc:a6082d7745ba85e50a8d41dc6afd7afb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'less' operator, i.e. the truth table [0,0,1,0].  <a href="namespaceadiar.html#a6082d7745ba85e50a8d41dc6afd7afb5">More...</a><br /></td></tr>
 <tr class="separator:a6082d7745ba85e50a8d41dc6afd7afb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b70bbbc08bbe7814f3426f3000eaf13"><td class="memItemLeft" align="right" valign="top"><a id="a8b70bbbc08bbe7814f3426f3000eaf13"></a>
-<a class="el" href="namespaceadiar.html#af1d82216ca9a1da7562b64def09c6ad5">shared_ptr</a>&lt; internal::file&lt; <a class="el" href="classadiar_1_1internal_1_1node.html#a37197ed662719976542ac0975871c619">internal::node::label_t</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>domain_ptr</b></td></tr>
-<tr class="separator:a8b70bbbc08bbe7814f3426f3000eaf13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af389b2f5d3e9f5ff9c885a0506c6ef6e"><td class="memItemLeft" align="right" valign="top"><a id="af389b2f5d3e9f5ff9c885a0506c6ef6e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>indent_level</b> = 0</td></tr>
-<tr class="separator:af389b2f5d3e9f5ff9c885a0506c6ef6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a578ff23406a1ce1c6c9dafe13d0bf7f4"><td class="memItemLeft" align="right" valign="top"><a id="a578ff23406a1ce1c6c9dafe13d0bf7f4"></a>
-constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>FLOAT_PRECISION</b> = 2</td></tr>
-<tr class="separator:a578ff23406a1ce1c6c9dafe13d0bf7f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31acbfefa08244564e2d6342a2de6bb7"><td class="memItemLeft" align="right" valign="top"><a id="a31acbfefa08244564e2d6342a2de6bb7"></a>
-const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>bold_on</b> = &quot;\e[1m&quot;</td></tr>
-<tr class="separator:a31acbfefa08244564e2d6342a2de6bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a742c193a902368b81f98e41c0e47d6bf"><td class="memItemLeft" align="right" valign="top"><a id="a742c193a902368b81f98e41c0e47d6bf"></a>
-const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>bold_off</b> = &quot;\e[0m&quot;</td></tr>
-<tr class="separator:a742c193a902368b81f98e41c0e47d6bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97e0de1660f9b7ca7b2a44c8979cf094"><td class="memItemLeft" align="right" valign="top"><a id="a97e0de1660f9b7ca7b2a44c8979cf094"></a>
-const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>percent</b> = &quot;%&quot;</td></tr>
-<tr class="separator:a97e0de1660f9b7ca7b2a44c8979cf094"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Memory Mode</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp3c1c296fde4719d90775fefc9c935bd2"></a>Adiar’s Algorithms delay recursion through use of auxiliary data structures. These auxiliary data structures can be optimised for internal memory, and so have a high performance on very small instances, or they can be designed for external memory such that they can handle decision diagrams much larger than the available memory. </p>
@@ -765,7 +689,7 @@ const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>percent<
  }</td></tr>
 <tr class="memdesc:gaa457265c627a4561a55df8b29ed1375c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar should exclusively use internal or external memory or automatically pick either type based on size of input.  <a href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">More...</a><br /></td></tr>
 <tr class="separator:gaa457265c627a4561a55df8b29ed1375c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">memory_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">memory_mode</a> = memory_mode_t::AUTO</td></tr>
+<tr class="memitem:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">memory_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">memory_mode</a></td></tr>
 <tr class="memdesc:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current memory mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">More...</a><br /></td></tr>
 <tr class="separator:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -998,45 +922,6 @@ template&lt;typename elem_t &gt; </div>
 </div><div class="memdoc">
 
 <p></p>
-
-</div>
-</div>
-<a id="a4d00d54b25e02e74e30be1b1b061ea3c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d00d54b25e02e74e30be1b1b061ea3c">&#9670;&nbsp;</a></span>operator&lt;&lt;()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::ostream&amp; adiar::operator&lt;&lt; </td>
-          <td>(</td>
-          <td class="paramtype">std::ostream &amp;&#160;</td>
-          <td class="paramname"><em>os</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const uintwide_t &amp;&#160;</td>
-          <td class="paramname"><em>s</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Convert a wide integer to a string and push to an output stream. </p>
-<p>TODO: move into 'adiar/internal/cnl.h' </p>
 
 </div>
 </div>

@@ -108,7 +108,7 @@ $(document).ready(function(){initNavTree('group__module____adiar.html',''); init
  }</td></tr>
 <tr class="memdesc:gaa457265c627a4561a55df8b29ed1375c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar should exclusively use internal or external memory or automatically pick either type based on size of input.  <a href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">More...</a><br /></td></tr>
 <tr class="separator:gaa457265c627a4561a55df8b29ed1375c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">memory_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a> = memory_mode_t::AUTO</td></tr>
+<tr class="memitem:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">memory_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a></td></tr>
 <tr class="memdesc:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current memory mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">More...</a><br /></td></tr>
 <tr class="separator:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -244,16 +244,24 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">memory_mode_t</a> adiar::memory_mode = memory_mode_t::AUTO</td>
+          <td class="memname"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">memory_mode_t</a> adiar::memory_mode</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>The current memory mode (default: <code>AUTO</code>). </p>
 <p>If you want to force <em>Adiar</em> to a specific memory mode then you should set the global variable <code><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89" title="The current memory mode (default: AUTO).">adiar::memory_mode</a></code> to one of the above three values. For example, one can force <em>Adiar</em> always use internal memory with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a> = adiar::memory_mode_t::INTERNAL</div>
-<div class="ttc" id="agroup__module____adiar_html_gaa7f0e02f27b1884ce06f69040fb8ff89"><div class="ttname"><a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a></div><div class="ttdeci">memory_mode_t memory_mode</div><div class="ttdoc">The current memory mode (default: AUTO).</div><div class="ttdef"><b>Definition:</b> memory_mode.cpp:5</div></div>
+<div class="ttc" id="agroup__module____adiar_html_gaa7f0e02f27b1884ce06f69040fb8ff89"><div class="ttname"><a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">adiar::memory_mode</a></div><div class="ttdeci">memory_mode_t memory_mode</div><div class="ttdoc">The current memory mode (default: AUTO).</div></div>
 </div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Using <code>INTERNAL</code> may lead to crashes if an input or output is too large! </dd></dl>
 
 </div>

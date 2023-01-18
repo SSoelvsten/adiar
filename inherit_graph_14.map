@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classadiar_1_1internal_1_1node.html" title="A Decision Diagram node triple (uid, low, high)." alt="" coords="5,5,159,32"/>
+<area shape="rect" id="node1" href="$classadiar_1_1internal_1_1request.html" title=" " alt="" coords="5,13,228,54"/>
+<area shape="rect" id="node2" href="$classadiar_1_1internal_1_1request__data.html" title="Extension of the request struct to carry extra data. That data can also impact the ordering." alt="" coords="276,5,511,61"/>
 </map>

@@ -191,7 +191,7 @@ Classes</h2></td></tr>
 <tr class="memitem:ga760162c0c2e938a17e8cf88abab785e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga760162c0c2e938a17e8cf88abab785e3">adiar::bdd_ite</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;h)</td></tr>
 <tr class="memdesc:ga760162c0c2e938a17e8cf88abab785e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">If-Then-Else operator.  <a href="group__module____bdd.html#ga760162c0c2e938a17e8cf88abab785e3">More...</a><br /></td></tr>
 <tr class="separator:ga760162c0c2e938a17e8cf88abab785e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadb286670a1afdfac65d51777e9f4346e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gadb286670a1afdfac65d51777e9f4346e">adiar::bdd_restrict</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, assignment &gt;&gt; &amp;xs)</td></tr>
+<tr class="memitem:gadb286670a1afdfac65d51777e9f4346e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gadb286670a1afdfac65d51777e9f4346e">adiar::bdd_restrict</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, <a class="el" href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">assignment</a> &gt;&gt; &amp;xs)</td></tr>
 <tr class="memdesc:gadb286670a1afdfac65d51777e9f4346e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restrict a subset of variables to constant values.  <a href="group__module____bdd.html#gadb286670a1afdfac65d51777e9f4346e">More...</a><br /></td></tr>
 <tr class="separator:gadb286670a1afdfac65d51777e9f4346e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaab407501178dcbf7b90c7d6ad1b70b71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaab407501178dcbf7b90c7d6ad1b70b71">adiar::bdd_exists</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, bdd::label_t var)</td></tr>
@@ -379,7 +379,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 </div><div class="memdoc">
 
 <p>The BDD representing the logical 'and' of all the given variables. </p>
-<p>Creates a BDD with a chain of nodes on the 'high' arc to the true child, and false otherwise. The given labels must be smaller than or equal to MAX_LABEL.</p>
+<p>Creates a BDD with a chain of nodes on the 'high' arc to the true child, and false otherwise. The given labels must be smaller than or equal to <code>bdd::MAX_LABEL</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">vars</td><td>Labels of the desired variables (in ascending order)</td></tr>
@@ -833,7 +833,8 @@ template&lt;typename IT &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
-    <tr><td class="paramname">begin</td><td>Iterator that provides variables to be quantified in <em>descending</em> order. When none are left to-be quantified, it returns a value larger than <code>bdd::MAX_LABEL</code>.</td></tr>
+    <tr><td class="paramname">begin</td><td>Iterator that provides variables to be quantified in <em>descending</em> order.</td></tr>
+    <tr><td class="paramname">end</td><td>End Iterator.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1037,7 +1038,8 @@ template&lt;typename IT &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
-    <tr><td class="paramname">begin</td><td>Iterator that provides variables to be quantified in <em>descending</em> order. When none are left to-be quantified, it returns a value larger than <code>bdd::MAX_LABEL</code>.</td></tr>
+    <tr><td class="paramname">begin</td><td>Iterator that provides variables to be quantified in <em>descending</em> order.</td></tr>
+    <tr><td class="paramname">end</td><td>End Iterator.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1237,7 +1239,7 @@ template&lt;typename IT &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>\( f ? g : h \)</dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>In other BDD packages this function is good for manually constructing a BDD bottom-up. But, in Adiar you should use the <a class="el" href="group__module____builder.html#gacad7fc21ff3b724b2c485f4d9da5dc2f">bdd_builder</a> class (see <a class="el" href="classadiar_1_1builder.html">builder</a>) instead</dd></dl>
-<p>\se bdd_apply builder bdd_builder </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> <a class="el" href="classadiar_1_1builder.html" title="A builder for decision diagrams.">builder</a> <a class="el" href="group__module____builder.html#gacad7fc21ff3b724b2c485f4d9da5dc2f" title="Builder for BDDs.">bdd_builder</a> </dd></dl>
 
 </div>
 </div>
@@ -1258,7 +1260,7 @@ template&lt;typename IT &gt; </div>
 </div><div class="memdoc">
 
 <p>The BDD representing the i'th variable. </p>
-<p>Creates a BDD of a single node with label <code>var</code> and the children false and true. The given label must be smaller than MAX_LABEL.</p>
+<p>Creates a BDD of a single node with label <code>var</code> and the children false and true. The given label must be smaller than <code>bdd::MAX_LABEL</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">var</td><td>The label of the desired variable</td></tr>
@@ -1366,7 +1368,7 @@ template&lt;typename IT &gt; </div>
 </div><div class="memdoc">
 
 <p>The BDD representing the negation of the i'th variable. </p>
-<p>Creates a BDD of a single node with label <code>var</code> and the children true and false. The given label must be smaller than or equal to MAX_LABEL.</p>
+<p>Creates a BDD of a single node with label <code>var</code> and the children true and false. The given label must be smaller than or equal to <code>bdd::MAX_LABEL</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">var</td><td>Label of the desired variable</td></tr>
@@ -1434,7 +1436,7 @@ template&lt;typename IT &gt; </div>
 </div><div class="memdoc">
 
 <p>Negation of a BDD. </p>
-<p>Flips the negation flag such that reading nodes with a node_stream within Adiar's algorithms will on-the-fly change the <code>false</code> terminals into the <code>true</code> terminals and vica versa.</p>
+<p>Flips the negation flag such that reading nodes with a <code>node_stream</code> within Adiar's algorithms will on-the-fly change the <code>false</code> terminals into the <code>true</code> terminals and vica versa.</p>
 <dl class="section return"><dt>Returns</dt><dd>\( \neg f \) </dd></dl>
 
 </div>
@@ -1496,7 +1498,7 @@ template&lt;typename IT &gt; </div>
 </div><div class="memdoc">
 
 <p>The BDD representing the logical 'or' of all the given variables. </p>
-<p>Creates a BDD with a chain of nodes on the 'low' arc to the true child, and false otherwise. The given labels must be smaller than or equal to MAX_LABEL.</p>
+<p>Creates a BDD with a chain of nodes on the 'low' arc to the true child, and false otherwise. The given labels must be smaller than or equal to <code>bdd::MAX_LABEL</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">vars</td><td>Labels of the desired variables (in ascending order)</td></tr>
@@ -1544,7 +1546,7 @@ template&lt;typename IT &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, assignment &gt;&gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, <a class="el" href="namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2">assignment</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>xs</em>&#160;</td>
         </tr>
         <tr>

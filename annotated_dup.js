@@ -29,8 +29,6 @@ var annotated_dup =
       [ "zdd", "classadiar_1_1zdd.html", "classadiar_1_1zdd" ],
       [ "builder", "classadiar_1_1builder.html", "classadiar_1_1builder" ],
       [ "builder_ptr", "classadiar_1_1builder__ptr.html", "classadiar_1_1builder__ptr" ],
-      [ "cube_union_policy", "classadiar_1_1cube__union__policy.html", null ],
-      [ "cube_intsec_policy", "classadiar_1_1cube__intsec__policy.html", null ],
       [ "cube", "classadiar_1_1cube.html", "classadiar_1_1cube" ],
       [ "cube_stream", "classadiar_1_1cube__stream.html", "classadiar_1_1cube__stream" ],
       [ "map_pair", "classadiar_1_1map__pair.html", "classadiar_1_1map__pair" ],

@@ -82,9 +82,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "",
-"classadiar_1_1map__pair.html#a6a09290256a757a5588f16f0d0c4856f",
-"group__module____zdd.html#ga514c85603336bd7600fcef19c0dc1785",
-"structadiar_1_1stats__t_1_1equality__t.html#a52786721545f3aae060e46d3f0c5eeb7"
+"classadiar_1_1map__pair.html#acfd03f480388abe8269f5024400ff0f1",
+"group__module____zdd.html#ga594cdb4099a9eed337dd44a74ffe15bd",
+"structadiar_1_1stats__t_1_1reduce__t.html#a5b5e4a1e3dc0db9c609a12fd44c0e78b"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
