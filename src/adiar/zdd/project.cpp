@@ -86,8 +86,6 @@ namespace adiar
     return dom_inv;
   }
 
-  // TODO: Empty/Disjoint domain. Check whether Ø is in dd, i.e. the all-false
-  // path is set to true.
   inline __zdd zdd_project_multi(zdd &&A, const shared_file<zdd::label_t> &dom)
   {
     if (is_terminal(A))   { return A; }
