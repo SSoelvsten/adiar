@@ -88,6 +88,16 @@ namespace adiar
     return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, or_op);
   }
 
+  __bdd bdd_exists(const bdd &f, const std::function<bdd::label_t()> &gen)
+  {
+    return internal::quantify<bdd_quantify_policy>(f, gen, or_op);
+  }
+
+  __bdd bdd_exists(bdd &&f, const std::function<bdd::label_t()> &gen)
+  {
+    return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), gen, or_op);
+  }
+
   __bdd bdd_forall(const bdd &f, bdd::label_t var)
   {
     return internal::quantify<bdd_quantify_policy>(f, var, and_op);
@@ -111,5 +121,15 @@ namespace adiar
   __bdd bdd_forall(bdd &&f, const std::function<bool(bdd::label_t)> &vars)
   {
     return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), vars, and_op);
+  }
+
+  __bdd bdd_forall(const bdd &f, const std::function<bdd::label_t()> &gen)
+  {
+    return internal::quantify<bdd_quantify_policy>(f, gen, and_op);
+  }
+
+  __bdd bdd_forall(bdd &&f, const std::function<bdd::label_t()> &gen)
+  {
+    return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), gen, and_op);
   }
 }

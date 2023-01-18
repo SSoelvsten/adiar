@@ -62,7 +62,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The BDD representing the i'th variable.
   ///
-  /// \details   Creates a BDD of a single node with label <tt>var</tt> and the
+  /// \details   Creates a BDD of a single node with label `var` and the
   ///            children false and true. The given label must be smaller than
   ///            \ref MAX_LABEL.
   ///
@@ -75,7 +75,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The BDD representing the negation of the i'th variable.
   ///
-  /// \details   Creates a BDD of a single node with label <tt>var</tt> and the
+  /// \details   Creates a BDD of a single node with label `var` and the
   ///            children true and false. The given label must be smaller than
   ///            or equal to \ref MAX_LABEL.
   ///
@@ -299,7 +299,7 @@ namespace adiar
   ///
   /// \details Computes the BDD expressing \f$ f ? g : h \f$ more efficient than
   ///          computing \f$ (f \land g) \lor (\neg f \land h) \f$ with
-  ///          <tt>bdd_apply</tt>.
+  ///          `bdd_apply`.
   ///
   /// \param f BDD for the if conditional
   ///
@@ -320,10 +320,10 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Restrict a subset of variables to constant values.
   ///
-  /// \details  For each tuple (i,v) in the assignment <tt>xs</tt> the variable
+  /// \details  For each tuple (i,v) in the assignment `xs` the variable
   ///           with label i is set to the constant value v. This binds the
-  ///           scope of the variables in <tt>xs</tt>, i.e. any later mention of
-  ///           a variable i is not the same as variable i in <tt>xs</tt>.
+  ///           scope of the variables in `xs`, i.e. any later mention of
+  ///           a variable i is not the same as variable i in `xs`.
   ///
   /// \param f  BDD to restrict
   ///
@@ -339,7 +339,7 @@ namespace adiar
   ///
   /// \details   Computes the BDD for \f$ \exists x_{i} : f \f$ faster than
   ///            computing \f$ f|_{x_i = \bot} \lor f|_{x_i = \top} \f$ using
-  ///            <tt>bdd_apply</tt> and <tt>bdd_restrict</tt>.
+  ///            `bdd_apply` and `bdd_restrict`.
   ///
   /// \param f   BDD to be quantified
   /// \param var Variable to quantify in f
@@ -362,7 +362,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Existential quantification of multiple variables.
   ///
-  /// \details    Repeatedly calls <tt>bdd_exists</tt> for the given variables
+  /// \details    Repeatedly calls `bdd_exists` for the given variables
   ///             while optimising garbage collecting intermediate results.
   ///
   /// \param f    BDD to be quantified.
@@ -380,14 +380,15 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Existential quantification of multiple variables.
   ///
-  /// \details    Repeatedly calls <tt>bdd_exists</tt> for the given variables
+  /// \details    Repeatedly calls `bdd_exists` for the given variables
   ///             while optimising garbage collecting intermediate results.
   ///
   /// \param f    BDD to be quantified.
   ///
   /// \param vars Predicate to identify the variables to quantify in f. You may
   ///             abuse the fact, that this predicate will only be invoked in
-  ///             ascending/descending order of the levels in `f`.
+  ///             ascending/descending order of the levels in `f` (but, with
+  ///             retraversals).
   ///
   /// \returns    \f$ \exists x_i \in \texttt{vars} : f \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -398,11 +399,31 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     Forall quantify a single variable.
+  /// \brief     Existential quantification of multiple variables.
+  ///
+  /// \details   Repeatedly calls `bdd_exists` for the given variables
+  ///            while optimising garbage collecting intermediate results.
+  ///
+  /// \param f   BDD to be quantified.
+  ///
+  /// \param gen Generator function, that produces variables to be quantified in
+  ///            *descending* order. When none are left to-be quantified, it
+  ///            returns a value larger than `bdd::MAX_LABEL`.
+  ///
+  /// \returns   \f$ \exists x_i \in \texttt{gen()} : f \f$
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_exists(const bdd &f, const std::function<bdd::label_t()> &gen);
+
+  /// \cond
+  __bdd bdd_exists(bdd &&f, const std::function<bdd::label_t()> &gen);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Forall quantification of a single variable.
   ///
   /// \details   Computes the BDD for \f$ \forall x_{i} : f \f$ faster than
   ///            computing \f$ f|_{x_i = \bot} \land f|_{x_i = \top} \f$ using
-  ///            <tt>bdd_apply</tt> and <tt>bdd_restrict</tt>.
+  ///            `bdd_apply` and `bdd_restrict`.
   ///
   /// \param f   BDD to be quantified.
   ///
@@ -426,7 +447,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Forall quantification of multiple variables.
   ///
-  /// \details    Repeatedly calls <tt>bdd_forall</tt> for the given variables
+  /// \details    Repeatedly calls `bdd_forall` for the given variables
   ///             while optimising garbage collecting intermediate results.
   ///
   /// \param f    BDD to be quantified.
@@ -444,14 +465,15 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief      Forall quantification of multiple variables.
   ///
-  /// \details    Repeatedly calls <tt>bdd_forall</tt> for the given variables
+  /// \details    Repeatedly calls `bdd_forall` for the given variables
   ///             while optimising garbage collecting intermediate results.
   ///
   /// \param f    BDD to be quantified.
   ///
   /// \param vars Predicate to identify the variables to quantify in f. You may
   ///             abuse the fact, that this predicate will only be invoked in
-  ///             ascending/descending order of the levels in `f`.
+  ///             ascending/descending order of the levels in `f` (but,
+  ///             with retraversals).
   ///
   /// \returns    \f$ \exists x_i \in \texttt{vars} : f \f$
   //////////////////////////////////////////////////////////////////////////////
@@ -459,6 +481,26 @@ namespace adiar
 
   /// \cond
   __bdd bdd_forall(bdd &&f, const std::function<bool(bdd::label_t)> &vars);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Forall quantification of multiple variables.
+  ///
+  /// \details   Repeatedly calls `bdd_forall` for the given variables
+  ///            while optimising garbage collecting intermediate results.
+  ///
+  /// \param f   BDD to be quantified.
+  ///
+  /// \param gen Generator function, that produces variables to be quantified in
+  ///            *descending* order. When none are left to-be quantified, it
+  ///            returns a value larger than `bdd::MAX_LABEL`, e.g. -1.
+  ///
+  /// \returns   \f$ \forall x_i \in \texttt{gen()} : f \f$
+  //////////////////////////////////////////////////////////////////////////////
+  __bdd bdd_forall(const bdd &f, const std::function<bdd::label_t()> &gen);
+
+  /// \cond
+  __bdd bdd_forall(bdd &&f, const std::function<bdd::label_t()> &gen);
   /// \endcond
 
   /// \}
@@ -557,9 +599,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Count the number of assignments x that make f(x) true.
   ///
-  /// \details Same as <tt>bdd_satcount(bdd, varcount)</tt>, with varcount set
-  ///          to be the size of the global domain or the number of variables
-  ///          within the given BDD.
+  /// \details Same as `bdd_satcount(bdd, varcount)`, with varcount set to be
+  ///          the size of the global domain or the number of variables within
+  ///          the given BDD.
   ///
   /// \sa adiar_set_domain bdd_varcount
   //////////////////////////////////////////////////////////////////////////////
@@ -593,8 +635,8 @@ namespace adiar
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \returns A <tt>shared_file<...></tt> of pairs <tt>(bdd::label_t,
-  ///          boolean)</tt> for every variable mentioned by the given BDD.
+  /// \returns A `shared_file<...>` of pairs `(bdd::label_t,
+  ///          boolean)` for every variable mentioned by the given BDD.
   //////////////////////////////////////////////////////////////////////////////
   shared_file<map_pair<bdd::label_t, boolean>> bdd_satmin(const bdd &f);
 
@@ -605,8 +647,8 @@ namespace adiar
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \returns A <tt>shared_file<...></tt> of pairs <tt>(bdd::label_t,
-  ///          boolean)</tt> for every variable mentioned by the given BDD.
+  /// \returns A `shared_file<...>` of pairs `(bdd::label_t, boolean)` for every
+  ///          variable mentioned by the given BDD.
   //////////////////////////////////////////////////////////////////////////////
   shared_file<map_pair<bdd::label_t, boolean>> bdd_satmax(const bdd &f);
 
