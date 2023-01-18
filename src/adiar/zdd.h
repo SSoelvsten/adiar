@@ -13,9 +13,10 @@
 /// possible and/or minimise the number of lvalues of said type.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <functional>
+#include <iostream>
 #include <optional>
 #include <string>
-#include <iostream>
 
 #include <adiar/bool_op.h>
 #include <adiar/file.h>
@@ -266,6 +267,23 @@ namespace adiar
 
   /// \cond
   __zdd zdd_project(zdd &&A, const shared_file<zdd::label_t> &dom);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     Project family of sets onto a domain, i.e. remove from every
+  ///            set all variables not within the domain.
+  ///
+  /// \param A   Family of sets to project
+  ///
+  /// \param dom Predicate function that defines the domain.
+  ///
+  /// \returns
+  /// \f$ \prod_{\mathit{dom}}(A) = \{ a \setminus \mathit{dom}^c \mid a \in A \} \f$
+  //////////////////////////////////////////////////////////////////////////////
+  __zdd zdd_project(const zdd &A, const std::function<bool(zdd::label_t)> &dom);
+
+  /// \cond
+  __zdd zdd_project(zdd &&A, const std::function<bool(zdd::label_t)> &dom);
   /// \endcond
 
   /// \}

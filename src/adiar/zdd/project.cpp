@@ -54,7 +54,7 @@ namespace adiar
     }
 
   public:
-    static constexpr bool pred_value = true;
+    static constexpr bool pred_value = false;
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -86,8 +86,8 @@ namespace adiar
     return dom_inv;
   }
 
-  // TODO: Empty domain. Check whether Ø is in dd, i.e. the all-false path is
-  // set to true.
+  // TODO: Empty/Disjoint domain. Check whether Ø is in dd, i.e. the all-false
+  // path is set to true.
   inline __zdd zdd_project_multi(zdd &&A, const shared_file<zdd::label_t> &dom)
   {
     if (is_terminal(A))   { return A; }
@@ -99,6 +99,11 @@ namespace adiar
     return internal::quantify<zdd_project_policy>(std::forward<zdd>(A), dom_inv, or_op);
   }
 
+  inline __zdd zdd_project_multi(zdd &&A, const std::function<bool(zdd::label_t)> &dom)
+  {
+    return internal::quantify<zdd_project_policy>(std::forward<zdd>(A), dom, or_op);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_project(const zdd &A, const shared_file<zdd::label_t> &dom)
   {
@@ -106,6 +111,16 @@ namespace adiar
   }
 
   __zdd zdd_project(zdd &&A, const shared_file<zdd::label_t> &dom)
+  {
+    return zdd_project_multi(std::forward<zdd>(A), dom);
+  }
+
+  __zdd zdd_project(const zdd &A, const std::function<bool(zdd::label_t)> &dom)
+  {
+    return zdd_project_multi(zdd(A), dom);
+  }
+
+  __zdd zdd_project(zdd &&A, const std::function<bool(zdd::label_t)> &dom)
   {
     return zdd_project_multi(std::forward<zdd>(A), dom);
   }
