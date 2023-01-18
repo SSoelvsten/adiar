@@ -22,6 +22,8 @@
 #include <adiar/bool_op.h>
 #include <adiar/file.h>
 
+#include <adiar/internal/util.h>
+
 #include <adiar/bdd/bdd.h>
 #include <adiar/zdd/zdd.h>
 
@@ -419,6 +421,36 @@ namespace adiar
   /// \endcond
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Existential quantification of multiple variables.
+  ///
+  /// \details     Repeatedly calls `bdd_exists` for the given variables
+  ///              while optimising garbage collecting intermediate results.
+  ///
+  /// \param f     BDD to be quantified.
+  ///
+  /// \param begin Iterator that provides variables to be quantified in
+  ///              *descending* order. When none are left to-be quantified, it
+  ///              returns a value larger than `bdd::MAX_LABEL`.
+  ///
+  /// \returns     \f$ \exists x_i \in \texttt{begin} ... \texttt{end} : f \f$
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  __bdd bdd_exists(const bdd &f, IT begin, IT end)
+  {
+    return bdd_exists(f,
+                      internal::iterator_gen<bdd::label_t>(begin, end));
+  }
+
+  /// \cond
+  template<typename IT>
+  __bdd bdd_exists(bdd &&f, IT begin, IT end)
+  {
+    return bdd_exists(std::forward<bdd>(f),
+                      internal::iterator_gen<bdd::label_t>(begin, end));
+  }
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Forall quantification of a single variable.
   ///
   /// \details   Computes the BDD for \f$ \forall x_{i} : f \f$ faster than
@@ -501,6 +533,35 @@ namespace adiar
 
   /// \cond
   __bdd bdd_forall(bdd &&f, const std::function<bdd::label_t()> &gen);
+  /// \endcond
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief       Forall quantification of multiple variables.
+  ///
+  /// \details     Repeatedly calls `bdd_forall` for the given variables
+  ///              while optimising garbage collecting intermediate results.
+  ///
+  /// \param f     BDD to be quantified.
+  ///
+  /// \param begin Iterator that provides variables to be quantified in
+  ///              *descending* order. When none are left to-be quantified, it
+  ///              returns a value larger than `bdd::MAX_LABEL`.
+  ///
+  /// \returns     \f$ \forall x_i \in \texttt{begin} ... \texttt{end} : f \f$
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename IT>
+  __bdd bdd_forall(const bdd &f, IT begin, IT end)
+  {
+    return bdd_forall(f, internal::iterator_gen<bdd::label_t>(begin, end));
+  }
+
+  /// \cond
+  template<typename IT>
+  __bdd bdd_forall(bdd &&f, IT begin, IT end)
+  {
+    return bdd_forall(std::forward<bdd>(f),
+                      internal::iterator_gen<bdd::label_t>(begin, end));
+  }
   /// \endcond
 
   /// \}

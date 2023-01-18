@@ -1,5 +1,7 @@
 #include "../../test.h"
 
+#include <vector>
+
 go_bandit([]() {
   describe("adiar/bdd/quantify.cpp", []() {
     ////////////////////////////////////////////////////////////////////////
@@ -1315,7 +1317,7 @@ go_bandit([]() {
 
         bdd::label_t var = 2;
 
-        bdd out = bdd_exists(bdd_4, [&var]() {
+        bdd out = bdd_exists(in, [&var]() {
           const bdd::label_t ret = var;
           var -= 2;
           return ret;
@@ -1390,6 +1392,69 @@ go_bandit([]() {
       it("returns input on -1 generator BDD 1 [&&]", [&]() {
         __bdd out = bdd_exists(bdd_1, []() { return -1; });
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
+      });
+    });
+
+    describe("bdd_exists(const bdd&, IT begin, IT end)", [&]() {
+      it("quantifies [1, 3].rbegin() in BDD 4 [&&]", [&]() {
+        std::vector<bdd::label_t> vars = { 1 , 3 };
+
+        bdd out = bdd_exists(bdd_4, vars.rbegin(), vars.rend());
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // (3)
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                       ptr_uint64(false),
+                                                       ptr_uint64(true))));
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // (1)
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                       ptr_uint64(2, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(true))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(2u,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+      });
+
+      it("quantifies [2, 0].begin() in BDD 4 [const &]", [&]() {
+        const bdd in = bdd_4;
+        const std::vector<bdd::label_t> vars = { 2, 0 };
+
+        bdd out = bdd_exists(in, vars.begin(), vars.end());
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // (5)
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                       ptr_uint64(false),
+                                                       ptr_uint64(true))));
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // (2')
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       ptr_uint64(3, ptr_uint64::MAX_ID),
+                                                       ptr_uint64(true))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(3u,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
       });
     });
 
@@ -1954,6 +2019,52 @@ go_bandit([]() {
       it("returns input on -1 geneator in BDD 1 [&&]", [&]() {
         __bdd out = bdd_forall(bdd_1, []() { return -1; });
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_1));
+      });
+    });
+
+    describe("bdd_forall(const bdd&, IT begin, IT end)", [&]() {
+      it("quantifies [0].rbegin() in BDD 1 [const &]", [&]() {
+        const bdd in = bdd_1;
+        const std::vector<bdd::label_t> vars = { 0 };
+
+        const bdd out = bdd_forall(in, vars.rbegin(), vars.rend());
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                       ptr_uint64(false),
+                                                       ptr_uint64(true))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(1u,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
+      });
+
+      it("quantifies [1].begin() in BDD 1 [&&]", [&]() {
+        const std::vector<bdd::label_t> vars = { 1 };
+        const bdd out = bdd_forall(bdd_1, vars.begin(), vars.end());
+
+        node_test_stream out_nodes(out);
+
+        AssertThat(out_nodes.can_pull(), Is().True()); // (1')
+        AssertThat(out_nodes.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                       ptr_uint64(true),
+                                                       ptr_uint64(false))));
+
+        AssertThat(out_nodes.can_pull(), Is().False());
+
+        level_info_test_stream out_meta(out);
+
+        AssertThat(out_meta.can_pull(), Is().True());
+        AssertThat(out_meta.pull(), Is().EqualTo(level_info(0u,1u)));
+
+        AssertThat(out_meta.can_pull(), Is().False());
       });
     });
   });
