@@ -83,7 +83,8 @@ var NAVTREEINDEX =
 [
 "",
 "classadiar_1_1map__pair.html#a6a09290256a757a5588f16f0d0c4856f",
-"namespaceadiar.html#a595f1aac73a9eb0921a12b934fab1b31"
+"group__module____zdd.html#ga514c85603336bd7600fcef19c0dc1785",
+"structadiar_1_1stats__t_1_1equality__t.html#a52786721545f3aae060e46d3f0c5eeb7"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

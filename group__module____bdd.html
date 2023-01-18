@@ -109,10 +109,1869 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1bdd.html">adiar::bdd</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A reduced Binary Decision Diagram.  <a href="classadiar_1_1bdd.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">Basic BDD Constructors</h2></td></tr>
+<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp08c7879fdaaee85a27145a4a67739170"></a>To construct a more complex but well-structured <a class="el" href="classadiar_1_1bdd.html">bdd</a> by hand, please use the <a class="el" href="group__module____builder.html#gacad7fc21ff3b724b2c485f4d9da5dc2f">bdd_builder</a> (see <a class="el" href="classadiar_1_1builder.html">builder</a>) instead. </p>
+</td></tr>
+<tr class="memitem:ga17447560cf6131804fa976e987150b24"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga17447560cf6131804fa976e987150b24">adiar::bdd_terminal</a> (bool value)</td></tr>
+<tr class="memdesc:ga17447560cf6131804fa976e987150b24"><td class="mdescLeft">&#160;</td><td class="mdescRight">The BDD representing a constant value.  <a href="group__module____bdd.html#ga17447560cf6131804fa976e987150b24">More...</a><br /></td></tr>
+<tr class="separator:ga17447560cf6131804fa976e987150b24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf5937f4f082e75b9b51597cb0f86639a"><td class="memItemLeft" align="right" valign="top"><a id="gaf5937f4f082e75b9b51597cb0f86639a"></a>
+<a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaf5937f4f082e75b9b51597cb0f86639a">adiar::bdd_false</a> ()</td></tr>
+<tr class="memdesc:gaf5937f4f082e75b9b51597cb0f86639a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The BDD representing the constant <code>false</code> BDD. <br /></td></tr>
+<tr class="separator:gaf5937f4f082e75b9b51597cb0f86639a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4c2bac8aa277d53d7a0eb0fe2ee2b070"><td class="memItemLeft" align="right" valign="top"><a id="ga4c2bac8aa277d53d7a0eb0fe2ee2b070"></a>
+<a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga4c2bac8aa277d53d7a0eb0fe2ee2b070">adiar::bdd_true</a> ()</td></tr>
+<tr class="memdesc:ga4c2bac8aa277d53d7a0eb0fe2ee2b070"><td class="mdescLeft">&#160;</td><td class="mdescRight">The BDD representing the constant <code>true</code> BDD. <br /></td></tr>
+<tr class="separator:ga4c2bac8aa277d53d7a0eb0fe2ee2b070"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9464f59d5be7a285ac275ea84f00c4e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga9464f59d5be7a285ac275ea84f00c4e0">adiar::bdd_ithvar</a> (bdd::label_t var)</td></tr>
+<tr class="memdesc:ga9464f59d5be7a285ac275ea84f00c4e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The BDD representing the i'th variable.  <a href="group__module____bdd.html#ga9464f59d5be7a285ac275ea84f00c4e0">More...</a><br /></td></tr>
+<tr class="separator:ga9464f59d5be7a285ac275ea84f00c4e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8d14933ff317b8f236bd4c386bdfb461"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga8d14933ff317b8f236bd4c386bdfb461">adiar::bdd_nithvar</a> (bdd::label_t var)</td></tr>
+<tr class="memdesc:ga8d14933ff317b8f236bd4c386bdfb461"><td class="mdescLeft">&#160;</td><td class="mdescRight">The BDD representing the negation of the i'th variable.  <a href="group__module____bdd.html#ga8d14933ff317b8f236bd4c386bdfb461">More...</a><br /></td></tr>
+<tr class="separator:ga8d14933ff317b8f236bd4c386bdfb461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaafca27e14dbae9b7d7b9962baa2d1976"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaafca27e14dbae9b7d7b9962baa2d1976">adiar::bdd_and</a> (const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt; &amp;vars)</td></tr>
+<tr class="memdesc:gaafca27e14dbae9b7d7b9962baa2d1976"><td class="mdescLeft">&#160;</td><td class="mdescRight">The BDD representing the logical 'and' of all the given variables.  <a href="group__module____bdd.html#gaafca27e14dbae9b7d7b9962baa2d1976">More...</a><br /></td></tr>
+<tr class="separator:gaafca27e14dbae9b7d7b9962baa2d1976"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8dd755228f8bf2521f9d0d892e2771c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga8dd755228f8bf2521f9d0d892e2771c8">adiar::bdd_or</a> (const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt; &amp;vars)</td></tr>
+<tr class="memdesc:ga8dd755228f8bf2521f9d0d892e2771c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The BDD representing the logical 'or' of all the given variables.  <a href="group__module____bdd.html#ga8dd755228f8bf2521f9d0d892e2771c8">More...</a><br /></td></tr>
+<tr class="separator:ga8dd755228f8bf2521f9d0d892e2771c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3a4d57fd97fa2279c1145787a2f376bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga3a4d57fd97fa2279c1145787a2f376bb">adiar::bdd_counter</a> (bdd::label_t <a class="el" href="group__module____bdd.html#gaac8586a925cf7a95ceca026ad29259fb">min_var</a>, bdd::label_t <a class="el" href="group__module____bdd.html#gaf48a24c478608bfdf3e9f6a1997df104">max_var</a>, bdd::label_t threshold)</td></tr>
+<tr class="memdesc:ga3a4d57fd97fa2279c1145787a2f376bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">The BDD representing the function that is true exactly if a certain number of variables in an interval are true.  <a href="group__module____bdd.html#ga3a4d57fd97fa2279c1145787a2f376bb">More...</a><br /></td></tr>
+<tr class="separator:ga3a4d57fd97fa2279c1145787a2f376bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">Basic BDD Manipulation</h2></td></tr>
+<tr class="memitem:ga7fae475d2fde0a55f486cefabd001ac3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga7fae475d2fde0a55f486cefabd001ac3">adiar::bdd_not</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:ga7fae475d2fde0a55f486cefabd001ac3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Negation of a BDD.  <a href="group__module____bdd.html#ga7fae475d2fde0a55f486cefabd001ac3">More...</a><br /></td></tr>
+<tr class="separator:ga7fae475d2fde0a55f486cefabd001ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab78a2e3bd5b1a5187e274376df0d10df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1bdd.html">bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gab78a2e3bd5b1a5187e274376df0d10df">adiar::operator~</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="separator:gab78a2e3bd5b1a5187e274376df0d10df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa76a2cada411953213108a945d9fabfb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb">adiar::bdd_apply</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g, const <a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">bool_op</a> &amp;op)</td></tr>
+<tr class="memdesc:gaa76a2cada411953213108a945d9fabfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a binary operator between two BDDs.  <a href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb">More...</a><br /></td></tr>
+<tr class="separator:gaa76a2cada411953213108a945d9fabfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4939a4318a163955b52eb004cf9ea1c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga4939a4318a163955b52eb004cf9ea1c1">adiar::bdd_and</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:ga4939a4318a163955b52eb004cf9ea1c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'and' operator.  <a href="group__module____bdd.html#ga4939a4318a163955b52eb004cf9ea1c1">More...</a><br /></td></tr>
+<tr class="separator:ga4939a4318a163955b52eb004cf9ea1c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga395101a1d5c8caa1c34523309a244ab5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga395101a1d5c8caa1c34523309a244ab5">adiar::operator&amp;</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;lhs, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;rhs)</td></tr>
+<tr class="separator:ga395101a1d5c8caa1c34523309a244ab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae3c685977ad4ae03e36f821ae0376f42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gae3c685977ad4ae03e36f821ae0376f42">adiar::bdd_nand</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:gae3c685977ad4ae03e36f821ae0376f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'nand' operator.  <a href="group__module____bdd.html#gae3c685977ad4ae03e36f821ae0376f42">More...</a><br /></td></tr>
+<tr class="separator:gae3c685977ad4ae03e36f821ae0376f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2365280db0d941e3e5c8fb0ce0ace5a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga2365280db0d941e3e5c8fb0ce0ace5a8">adiar::bdd_or</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:ga2365280db0d941e3e5c8fb0ce0ace5a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'or' operator.  <a href="group__module____bdd.html#ga2365280db0d941e3e5c8fb0ce0ace5a8">More...</a><br /></td></tr>
+<tr class="separator:ga2365280db0d941e3e5c8fb0ce0ace5a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga01b300a92341883e07bd5609ba9f719b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga01b300a92341883e07bd5609ba9f719b">adiar::operator|</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;lhs, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;rhs)</td></tr>
+<tr class="separator:ga01b300a92341883e07bd5609ba9f719b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga13561a6ae0b5f0acf74f923ae1d78a52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga13561a6ae0b5f0acf74f923ae1d78a52">adiar::bdd_nor</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:ga13561a6ae0b5f0acf74f923ae1d78a52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'nor' operator.  <a href="group__module____bdd.html#ga13561a6ae0b5f0acf74f923ae1d78a52">More...</a><br /></td></tr>
+<tr class="separator:ga13561a6ae0b5f0acf74f923ae1d78a52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga65d9fd1b95db525159c59d921418850a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga65d9fd1b95db525159c59d921418850a">adiar::bdd_xor</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:ga65d9fd1b95db525159c59d921418850a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'xor' operator.  <a href="group__module____bdd.html#ga65d9fd1b95db525159c59d921418850a">More...</a><br /></td></tr>
+<tr class="separator:ga65d9fd1b95db525159c59d921418850a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad23f070b6cb8ff481c3e8f29195feaef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gad23f070b6cb8ff481c3e8f29195feaef">adiar::operator^</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;lhs, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;rhs)</td></tr>
+<tr class="separator:gad23f070b6cb8ff481c3e8f29195feaef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa0fd42b5dee7d8fc285f9ccd8ba0c4a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaa0fd42b5dee7d8fc285f9ccd8ba0c4a0">adiar::bdd_xnor</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:gaa0fd42b5dee7d8fc285f9ccd8ba0c4a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'xnor' operator.  <a href="group__module____bdd.html#gaa0fd42b5dee7d8fc285f9ccd8ba0c4a0">More...</a><br /></td></tr>
+<tr class="separator:gaa0fd42b5dee7d8fc285f9ccd8ba0c4a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga82658b50a588937c75860217d1bb192b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga82658b50a588937c75860217d1bb192b">adiar::bdd_imp</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:ga82658b50a588937c75860217d1bb192b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'implication' operator.  <a href="group__module____bdd.html#ga82658b50a588937c75860217d1bb192b">More...</a><br /></td></tr>
+<tr class="separator:ga82658b50a588937c75860217d1bb192b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3c80987bd08f6f47090ac8627b6dc8b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga3c80987bd08f6f47090ac8627b6dc8b3">adiar::bdd_invimp</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:ga3c80987bd08f6f47090ac8627b6dc8b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'inverse implication' operator.  <a href="group__module____bdd.html#ga3c80987bd08f6f47090ac8627b6dc8b3">More...</a><br /></td></tr>
+<tr class="separator:ga3c80987bd08f6f47090ac8627b6dc8b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaddc82e279f412570731750be0cffd7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaaddc82e279f412570731750be0cffd7d">adiar::bdd_equiv</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:gaaddc82e279f412570731750be0cffd7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'equivalence' operator.  <a href="group__module____bdd.html#gaaddc82e279f412570731750be0cffd7d">More...</a><br /></td></tr>
+<tr class="separator:gaaddc82e279f412570731750be0cffd7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0b790ed5a3dd4c7367b73b3fe8dbd998"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga0b790ed5a3dd4c7367b73b3fe8dbd998">adiar::bdd_diff</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:ga0b790ed5a3dd4c7367b73b3fe8dbd998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'difference' operator.  <a href="group__module____bdd.html#ga0b790ed5a3dd4c7367b73b3fe8dbd998">More...</a><br /></td></tr>
+<tr class="separator:ga0b790ed5a3dd4c7367b73b3fe8dbd998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadb90a6dd96f81df33505f67c303b0e66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gadb90a6dd96f81df33505f67c303b0e66">adiar::bdd_less</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:gadb90a6dd96f81df33505f67c303b0e66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical 'less than' operator.  <a href="group__module____bdd.html#gadb90a6dd96f81df33505f67c303b0e66">More...</a><br /></td></tr>
+<tr class="separator:gadb90a6dd96f81df33505f67c303b0e66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga760162c0c2e938a17e8cf88abab785e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga760162c0c2e938a17e8cf88abab785e3">adiar::bdd_ite</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;h)</td></tr>
+<tr class="memdesc:ga760162c0c2e938a17e8cf88abab785e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">If-Then-Else operator.  <a href="group__module____bdd.html#ga760162c0c2e938a17e8cf88abab785e3">More...</a><br /></td></tr>
+<tr class="separator:ga760162c0c2e938a17e8cf88abab785e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadb286670a1afdfac65d51777e9f4346e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gadb286670a1afdfac65d51777e9f4346e">adiar::bdd_restrict</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, assignment &gt;&gt; &amp;xs)</td></tr>
+<tr class="memdesc:gadb286670a1afdfac65d51777e9f4346e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restrict a subset of variables to constant values.  <a href="group__module____bdd.html#gadb286670a1afdfac65d51777e9f4346e">More...</a><br /></td></tr>
+<tr class="separator:gadb286670a1afdfac65d51777e9f4346e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaab407501178dcbf7b90c7d6ad1b70b71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaab407501178dcbf7b90c7d6ad1b70b71">adiar::bdd_exists</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, bdd::label_t var)</td></tr>
+<tr class="memdesc:gaab407501178dcbf7b90c7d6ad1b70b71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Existential quantification of a single variable.  <a href="group__module____bdd.html#gaab407501178dcbf7b90c7d6ad1b70b71">More...</a><br /></td></tr>
+<tr class="separator:gaab407501178dcbf7b90c7d6ad1b70b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3d7e933222fa2464f0f50775fbd17341"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga3d7e933222fa2464f0f50775fbd17341">adiar::bdd_exists</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt; &amp;vars)</td></tr>
+<tr class="memdesc:ga3d7e933222fa2464f0f50775fbd17341"><td class="mdescLeft">&#160;</td><td class="mdescRight">Existential quantification of multiple variables.  <a href="group__module____bdd.html#ga3d7e933222fa2464f0f50775fbd17341">More...</a><br /></td></tr>
+<tr class="separator:ga3d7e933222fa2464f0f50775fbd17341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga013e2600102f741d7cfbce30bde335b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga013e2600102f741d7cfbce30bde335b1">adiar::bdd_exists</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const std::function&lt; bool(bdd::label_t)&gt; &amp;vars)</td></tr>
+<tr class="memdesc:ga013e2600102f741d7cfbce30bde335b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Existential quantification of multiple variables.  <a href="group__module____bdd.html#ga013e2600102f741d7cfbce30bde335b1">More...</a><br /></td></tr>
+<tr class="separator:ga013e2600102f741d7cfbce30bde335b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga75e624a47b5278715d29c589267b159f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga75e624a47b5278715d29c589267b159f">adiar::bdd_exists</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const std::function&lt; bdd::label_t()&gt; &amp;gen)</td></tr>
+<tr class="memdesc:ga75e624a47b5278715d29c589267b159f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Existential quantification of multiple variables.  <a href="group__module____bdd.html#ga75e624a47b5278715d29c589267b159f">More...</a><br /></td></tr>
+<tr class="separator:ga75e624a47b5278715d29c589267b159f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga832aef9b6fa5ee60d9a239ac94e76ad9"><td class="memTemplParams" colspan="2">template&lt;typename IT &gt; </td></tr>
+<tr class="memitem:ga832aef9b6fa5ee60d9a239ac94e76ad9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga832aef9b6fa5ee60d9a239ac94e76ad9">adiar::bdd_exists</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, IT begin, IT end)</td></tr>
+<tr class="memdesc:ga832aef9b6fa5ee60d9a239ac94e76ad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Existential quantification of multiple variables.  <a href="group__module____bdd.html#ga832aef9b6fa5ee60d9a239ac94e76ad9">More...</a><br /></td></tr>
+<tr class="separator:ga832aef9b6fa5ee60d9a239ac94e76ad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8be534f77f587385b7255db613204528"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga8be534f77f587385b7255db613204528">adiar::bdd_forall</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, bdd::label_t var)</td></tr>
+<tr class="memdesc:ga8be534f77f587385b7255db613204528"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forall quantification of a single variable.  <a href="group__module____bdd.html#ga8be534f77f587385b7255db613204528">More...</a><br /></td></tr>
+<tr class="separator:ga8be534f77f587385b7255db613204528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafc72368447308301739093fe85b463a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gafc72368447308301739093fe85b463a6">adiar::bdd_forall</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt; &amp;vars)</td></tr>
+<tr class="memdesc:gafc72368447308301739093fe85b463a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forall quantification of multiple variables.  <a href="group__module____bdd.html#gafc72368447308301739093fe85b463a6">More...</a><br /></td></tr>
+<tr class="separator:gafc72368447308301739093fe85b463a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga903d1d641a3f4058011a3c45df1092c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga903d1d641a3f4058011a3c45df1092c3">adiar::bdd_forall</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const std::function&lt; bool(bdd::label_t)&gt; &amp;vars)</td></tr>
+<tr class="memdesc:ga903d1d641a3f4058011a3c45df1092c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forall quantification of multiple variables.  <a href="group__module____bdd.html#ga903d1d641a3f4058011a3c45df1092c3">More...</a><br /></td></tr>
+<tr class="separator:ga903d1d641a3f4058011a3c45df1092c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9933758ba2018fd1550ce2432c6a6bd6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga9933758ba2018fd1550ce2432c6a6bd6">adiar::bdd_forall</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const std::function&lt; bdd::label_t()&gt; &amp;gen)</td></tr>
+<tr class="memdesc:ga9933758ba2018fd1550ce2432c6a6bd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forall quantification of multiple variables.  <a href="group__module____bdd.html#ga9933758ba2018fd1550ce2432c6a6bd6">More...</a><br /></td></tr>
+<tr class="separator:ga9933758ba2018fd1550ce2432c6a6bd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga244d97202ea1cacaa3a472d0cd2623bd"><td class="memTemplParams" colspan="2">template&lt;typename IT &gt; </td></tr>
+<tr class="memitem:ga244d97202ea1cacaa3a472d0cd2623bd"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga244d97202ea1cacaa3a472d0cd2623bd">adiar::bdd_forall</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, IT begin, IT end)</td></tr>
+<tr class="memdesc:ga244d97202ea1cacaa3a472d0cd2623bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forall quantification of multiple variables.  <a href="group__module____bdd.html#ga244d97202ea1cacaa3a472d0cd2623bd">More...</a><br /></td></tr>
+<tr class="separator:ga244d97202ea1cacaa3a472d0cd2623bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">BDD Predicates</h2></td></tr>
+<tr class="memitem:ga7e9e73ba8dd7750fc6e72ee7707e0718"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga7e9e73ba8dd7750fc6e72ee7707e0718">adiar::is_canonical</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="separator:ga7e9e73ba8dd7750fc6e72ee7707e0718"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0e5de81efc49b8e0aaa137013e2422c1"><td class="memItemLeft" align="right" valign="top"><a id="ga0e5de81efc49b8e0aaa137013e2422c1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">adiar::is_terminal</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:ga0e5de81efc49b8e0aaa137013e2422c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this BDD represents a terminal. <br /></td></tr>
+<tr class="separator:ga0e5de81efc49b8e0aaa137013e2422c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa770b1d0ae408db9345b064a4dd8390d"><td class="memItemLeft" align="right" valign="top"><a id="gaa770b1d0ae408db9345b064a4dd8390d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaa770b1d0ae408db9345b064a4dd8390d">adiar::is_false</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:gaa770b1d0ae408db9345b064a4dd8390d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this BDD represents false terminal. <br /></td></tr>
+<tr class="separator:gaa770b1d0ae408db9345b064a4dd8390d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga669be328589daa02ac9e609610ce64a1"><td class="memItemLeft" align="right" valign="top"><a id="ga669be328589daa02ac9e609610ce64a1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga669be328589daa02ac9e609610ce64a1">adiar::is_true</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:ga669be328589daa02ac9e609610ce64a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this BDD represents true terminal. <br /></td></tr>
+<tr class="separator:ga669be328589daa02ac9e609610ce64a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad95adbcf4ac35cd0ac917233843f935f"><td class="memItemLeft" align="right" valign="top"><a id="gad95adbcf4ac35cd0ac917233843f935f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gad95adbcf4ac35cd0ac917233843f935f">adiar::bdd_equal</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:gad95adbcf4ac35cd0ac917233843f935f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether f and g represent the same function. <br /></td></tr>
+<tr class="separator:gad95adbcf4ac35cd0ac917233843f935f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad082421dfdd27070d380342502d306fa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gad082421dfdd27070d380342502d306fa">adiar::operator==</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="separator:gad082421dfdd27070d380342502d306fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga40b4b347f3ffb11b585653d1605d27d0"><td class="memItemLeft" align="right" valign="top"><a id="ga40b4b347f3ffb11b585653d1605d27d0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga40b4b347f3ffb11b585653d1605d27d0">adiar::bdd_unequal</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="memdesc:ga40b4b347f3ffb11b585653d1605d27d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether f and g represent different functions. <br /></td></tr>
+<tr class="separator:ga40b4b347f3ffb11b585653d1605d27d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa9b3e19419780c15c4b2534582431894"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaa9b3e19419780c15c4b2534582431894">adiar::operator!=</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;g)</td></tr>
+<tr class="separator:gaa9b3e19419780c15c4b2534582431894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">BDD Counting Operations</h2></td></tr>
+<tr class="memitem:ga1117a062b67bed809d230f6fac83f60a"><td class="memItemLeft" align="right" valign="top"><a id="ga1117a062b67bed809d230f6fac83f60a"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga1117a062b67bed809d230f6fac83f60a">adiar::bdd_nodecount</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:ga1117a062b67bed809d230f6fac83f60a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of (internal) nodes used to represent the function. <br /></td></tr>
+<tr class="separator:ga1117a062b67bed809d230f6fac83f60a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac317019e5963a4349b55dde7d994fd16"><td class="memItemLeft" align="right" valign="top"><a id="gac317019e5963a4349b55dde7d994fd16"></a>
+bdd::label_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gac317019e5963a4349b55dde7d994fd16">adiar::bdd_varcount</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:gac317019e5963a4349b55dde7d994fd16"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of variables that influence the outcome of f, i.e. the number of levels in the BDD. <br /></td></tr>
+<tr class="separator:gac317019e5963a4349b55dde7d994fd16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadd0becff66aaae9313c29248bc33750e"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gadd0becff66aaae9313c29248bc33750e">adiar::bdd_pathcount</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:gadd0becff66aaae9313c29248bc33750e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count all unique (but not necessarily disjoint) paths to the true terminal.  <a href="group__module____bdd.html#gadd0becff66aaae9313c29248bc33750e">More...</a><br /></td></tr>
+<tr class="separator:gadd0becff66aaae9313c29248bc33750e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2bf2d6300652daee73000c379e0b182e"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga2bf2d6300652daee73000c379e0b182e">adiar::bdd_satcount</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, bdd::label_t varcount)</td></tr>
+<tr class="memdesc:ga2bf2d6300652daee73000c379e0b182e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of assignments x that make f(x) true.  <a href="group__module____bdd.html#ga2bf2d6300652daee73000c379e0b182e">More...</a><br /></td></tr>
+<tr class="separator:ga2bf2d6300652daee73000c379e0b182e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadbcca4521c9ab9cf4e5b8a31cb99f346"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gadbcca4521c9ab9cf4e5b8a31cb99f346">adiar::bdd_satcount</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:gadbcca4521c9ab9cf4e5b8a31cb99f346"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of assignments x that make f(x) true.  <a href="group__module____bdd.html#gadbcca4521c9ab9cf4e5b8a31cb99f346">More...</a><br /></td></tr>
+<tr class="separator:gadbcca4521c9ab9cf4e5b8a31cb99f346"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">Input Variables</h2></td></tr>
+<tr class="memitem:gaac8586a925cf7a95ceca026ad29259fb"><td class="memItemLeft" align="right" valign="top"><a id="gaac8586a925cf7a95ceca026ad29259fb"></a>
+bdd::label_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaac8586a925cf7a95ceca026ad29259fb">adiar::min_var</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:gaac8586a925cf7a95ceca026ad29259fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the minimal occurring variable in this BDD. <br /></td></tr>
+<tr class="separator:gaac8586a925cf7a95ceca026ad29259fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf48a24c478608bfdf3e9f6a1997df104"><td class="memItemLeft" align="right" valign="top"><a id="gaf48a24c478608bfdf3e9f6a1997df104"></a>
+bdd::label_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaf48a24c478608bfdf3e9f6a1997df104">adiar::max_var</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:gaf48a24c478608bfdf3e9f6a1997df104"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the maximal occurring variable in this BDD. <br /></td></tr>
+<tr class="separator:gaf48a24c478608bfdf3e9f6a1997df104"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga148b9daa892b01e14a13f1ae1decad9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, <a class="el" href="namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156b">boolean</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga148b9daa892b01e14a13f1ae1decad9f">adiar::bdd_satmin</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:ga148b9daa892b01e14a13f1ae1decad9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically smallest x such that f(x) is true.  <a href="group__module____bdd.html#ga148b9daa892b01e14a13f1ae1decad9f">More...</a><br /></td></tr>
+<tr class="separator:ga148b9daa892b01e14a13f1ae1decad9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3d4e5d3a83b4463909d88d516631f685"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, <a class="el" href="namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156b">boolean</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga3d4e5d3a83b4463909d88d516631f685">adiar::bdd_satmax</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:ga3d4e5d3a83b4463909d88d516631f685"><td class="mdescLeft">&#160;</td><td class="mdescRight">The lexicographically largest x such that f(x) is true.  <a href="group__module____bdd.html#ga3d4e5d3a83b4463909d88d516631f685">More...</a><br /></td></tr>
+<tr class="separator:ga3d4e5d3a83b4463909d88d516631f685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad9d847a2deb28b152e0a21a8d4e59ff7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gad9d847a2deb28b152e0a21a8d4e59ff7">adiar::bdd_eval</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const std::function&lt; bool(bdd::label_t)&gt; &amp;xs)</td></tr>
+<tr class="memdesc:gad9d847a2deb28b152e0a21a8d4e59ff7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a BDD according to an assignment to its variables.  <a href="group__module____bdd.html#gad9d847a2deb28b152e0a21a8d4e59ff7">More...</a><br /></td></tr>
+<tr class="separator:gad9d847a2deb28b152e0a21a8d4e59ff7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6693ee586a88c07c6682fe099e9817ab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga6693ee586a88c07c6682fe099e9817ab">adiar::bdd_eval</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, <a class="el" href="namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156b">boolean</a> &gt;&gt; &amp;xs)</td></tr>
+<tr class="memdesc:ga6693ee586a88c07c6682fe099e9817ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a BDD according to an assignment to its variables.  <a href="group__module____bdd.html#ga6693ee586a88c07c6682fe099e9817ab">More...</a><br /></td></tr>
+<tr class="separator:ga6693ee586a88c07c6682fe099e9817ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8176fccdbc3a8bac846c659272bd92ea"><td class="memItemLeft" align="right" valign="top"><a id="ga8176fccdbc3a8bac846c659272bd92ea"></a>
+<a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga8176fccdbc3a8bac846c659272bd92ea">adiar::bdd_varprofile</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f)</td></tr>
+<tr class="memdesc:ga8176fccdbc3a8bac846c659272bd92ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the labels of the levels of the BDD. <br /></td></tr>
+<tr class="separator:ga8176fccdbc3a8bac846c659272bd92ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">Conversion to BDDs</h2></td></tr>
+<tr class="memitem:ga955887c1e1e94d691123718244628a48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga955887c1e1e94d691123718244628a48">adiar::bdd_from</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A, const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt; &amp;dom)</td></tr>
+<tr class="memdesc:ga955887c1e1e94d691123718244628a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtains the BDD that represents the same function/set as the given ZDD within the given domain.  <a href="group__module____bdd.html#ga955887c1e1e94d691123718244628a48">More...</a><br /></td></tr>
+<tr class="separator:ga955887c1e1e94d691123718244628a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaefc0bd8ba9c0a8e83a4cda09392bf542"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#gaefc0bd8ba9c0a8e83a4cda09392bf542">adiar::bdd_from</a> (const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;A)</td></tr>
+<tr class="memdesc:gaefc0bd8ba9c0a8e83a4cda09392bf542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtains the BDD that represents the same function/set as the given ZDD within the given domain.  <a href="group__module____bdd.html#gaefc0bd8ba9c0a8e83a4cda09392bf542">More...</a><br /></td></tr>
+<tr class="separator:gaefc0bd8ba9c0a8e83a4cda09392bf542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">DOT Files of BDDs</h2></td></tr>
+<tr class="memitem:ga971dd2bbea45d61a3603c339a918e0ee"><td class="memItemLeft" align="right" valign="top"><a id="ga971dd2bbea45d61a3603c339a918e0ee"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga971dd2bbea45d61a3603c339a918e0ee">adiar::bdd_printdot</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, std::ostream &amp;out=std::cout)</td></tr>
+<tr class="memdesc:ga971dd2bbea45d61a3603c339a918e0ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a DOT drawing of a BDD to the given output stream. <br /></td></tr>
+<tr class="separator:ga971dd2bbea45d61a3603c339a918e0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6d90eaeecbd46adb5df806055fa6aacd"><td class="memItemLeft" align="right" valign="top"><a id="ga6d90eaeecbd46adb5df806055fa6aacd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____bdd.html#ga6d90eaeecbd46adb5df806055fa6aacd">adiar::bdd_printdot</a> (const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;f, const std::string &amp;file_name)</td></tr>
+<tr class="memdesc:ga6d90eaeecbd46adb5df806055fa6aacd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output a DOT drawing of a BDD to the file with the given name. <br /></td></tr>
+<tr class="separator:ga6d90eaeecbd46adb5df806055fa6aacd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>A Binary Decision Diagram (BDD) represents a boolean function \( \{ 0,1 \}^n \rightarrow \{ 0,1 \} \) over a finite domain of \( n \) boolean input variables. </p>
-<p>The bdd class takes care of reference counting and optimal garbage collection of the underlying files. To ensure the most disk-space is available, try to garbage collect the bdd objects as quickly as possible and/or minimise the number of lvalues of said type. </p>
+<p>The <a class="el" href="classadiar_1_1bdd.html">bdd</a> class takes care of reference counting and optimal garbage collection of the underlying files. To ensure the most disk-space is available, try to garbage collect the <a class="el" href="classadiar_1_1bdd.html">bdd</a> objects as quickly as possible and/or minimise the number of lvalues of said type. </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ga4939a4318a163955b52eb004cf9ea1c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4939a4318a163955b52eb004cf9ea1c1">&#9670;&nbsp;</a></span>bdd_and() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_and </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'and' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( f \land g \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="gaafca27e14dbae9b7d7b9962baa2d1976"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaafca27e14dbae9b7d7b9962baa2d1976">&#9670;&nbsp;</a></span>bdd_and() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1bdd.html">bdd</a> adiar::bdd_and </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vars</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The BDD representing the logical 'and' of all the given variables. </p>
+<p>Creates a BDD with a chain of nodes on the 'high' arc to the true child, and false otherwise. The given labels must be smaller than or equal to MAX_LABEL.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vars</td><td>Labels of the desired variables (in ascending order)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \bigwedge_{x \in \mathit{vars}} x \)</dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>Labels in <code>vars</code> are provided in ascending order. </dd></dl>
+
+</div>
+</div>
+<a id="gaa76a2cada411953213108a945d9fabfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa76a2cada411953213108a945d9fabfb">&#9670;&nbsp;</a></span>bdd_apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_apply </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">bool_op</a> &amp;&#160;</td>
+          <td class="paramname"><em>op</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply a binary operator between two BDDs. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD for the left-hand-side of the operator </td></tr>
+    <tr><td class="paramname">g</td><td>BDD for the right-hand-side of the operator </td></tr>
+    <tr><td class="paramname">op</td><td>Binary boolean operator to be applied.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The product construction of \( f \mathbin{\mathit{op}} g\)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2" title="Computes the unique identifier of the resulting terminal based on the pointers to two terminals.">bool_op</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga3a4d57fd97fa2279c1145787a2f376bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3a4d57fd97fa2279c1145787a2f376bb">&#9670;&nbsp;</a></span>bdd_counter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1bdd.html">bdd</a> adiar::bdd_counter </td>
+          <td>(</td>
+          <td class="paramtype">bdd::label_t&#160;</td>
+          <td class="paramname"><em>min_var</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bdd::label_t&#160;</td>
+          <td class="paramname"><em>max_var</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bdd::label_t&#160;</td>
+          <td class="paramname"><em>threshold</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The BDD representing the function that is true exactly if a certain number of variables in an interval are true. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">min_var</td><td>The minimum label (inclusive) to start counting from </td></tr>
+    <tr><td class="paramname">max_var</td><td>The maximum label (inclusive) to end counting at </td></tr>
+    <tr><td class="paramname">threshold</td><td>The threshold number of variables set to true </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga0b790ed5a3dd4c7367b73b3fe8dbd998"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0b790ed5a3dd4c7367b73b3fe8dbd998">&#9670;&nbsp;</a></span>bdd_diff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_diff </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'difference' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( f \setminus g \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="gaaddc82e279f412570731750be0cffd7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaaddc82e279f412570731750be0cffd7d">&#9670;&nbsp;</a></span>bdd_equiv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_equiv </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'equivalence' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( f = g \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga6693ee586a88c07c6682fe099e9817ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6693ee586a88c07c6682fe099e9817ab">&#9670;&nbsp;</a></span>bdd_eval() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool adiar::bdd_eval </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, <a class="el" href="namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156b">boolean</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>xs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate a BDD according to an assignment to its variables. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>The BDD to evaluate</td></tr>
+    <tr><td class="paramname">xs</td><td>A list of tuples <code>(i,v)</code> in ascending order of <code>i</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section pre"><dt>Precondition</dt><dd>Assignment tuples in <code>xs</code> is in ascending order </dd></dl>
+
+</div>
+</div>
+<a id="gad9d847a2deb28b152e0a21a8d4e59ff7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad9d847a2deb28b152e0a21a8d4e59ff7">&#9670;&nbsp;</a></span>bdd_eval() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool adiar::bdd_eval </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; bool(bdd::label_t)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>xs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate a BDD according to an assignment to its variables. </p>
+<p>The given assignment function may assume/abuse that it is only called with the labels in a strictly increasing order.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>The BDD to evaluate</td></tr>
+    <tr><td class="paramname">xs</td><td>An assignment function of the type \( \texttt{label\_t} \rightarrow \texttt{bool} \). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaab407501178dcbf7b90c7d6ad1b70b71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaab407501178dcbf7b90c7d6ad1b70b71">&#9670;&nbsp;</a></span>bdd_exists() <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_exists </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bdd::label_t&#160;</td>
+          <td class="paramname"><em>var</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Existential quantification of a single variable. </p>
+<p>Computes the BDD for \( \exists x_{i} : f \) faster than computing \( f|_{x_i = \bot} \lor f|_{x_i = \top} \) using <code>bdd_apply</code> and <code>bdd_restrict</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to be quantified </td></tr>
+    <tr><td class="paramname">var</td><td>Variable to quantify in f</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \exists x_{var} : f \)</dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>There is possibly an ambiguity in overloading, if you use the value <em>0</em> directly for the <code>var</code> argument, since this can also be interpreted as the <code>nullptr</code> value for a <code>std::function</code>. To resolve this overloading, use <em>0u</em> or <code>static_cast&lt;bdd::label_t&gt;(0))</code> instead. </dd></dl>
+
+</div>
+</div>
+<a id="ga3d7e933222fa2464f0f50775fbd17341"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3d7e933222fa2464f0f50775fbd17341">&#9670;&nbsp;</a></span>bdd_exists() <span class="overload">[2/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_exists </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vars</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Existential quantification of multiple variables. </p>
+<p>Repeatedly calls <code>bdd_exists</code> for the given variables while optimising garbage collecting intermediate results.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
+    <tr><td class="paramname">vars</td><td>Variables to quantify in f (in order of their quantification)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \exists x_{i_1}, \dots, x_{i_k} : f \) </dd></dl>
+
+</div>
+</div>
+<a id="ga75e624a47b5278715d29c589267b159f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga75e624a47b5278715d29c589267b159f">&#9670;&nbsp;</a></span>bdd_exists() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_exists </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; bdd::label_t()&gt; &amp;&#160;</td>
+          <td class="paramname"><em>gen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Existential quantification of multiple variables. </p>
+<p>Repeatedly calls <code>bdd_exists</code> for the given variables while optimising garbage collecting intermediate results.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
+    <tr><td class="paramname">gen</td><td>Generator function, that produces variables to be quantified in <em>descending</em> order. When none are left to-be quantified, it returns a value larger than <code>bdd::MAX_LABEL</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \exists x_i \in \texttt{gen()} : f \) </dd></dl>
+
+</div>
+</div>
+<a id="ga013e2600102f741d7cfbce30bde335b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga013e2600102f741d7cfbce30bde335b1">&#9670;&nbsp;</a></span>bdd_exists() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_exists </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; bool(bdd::label_t)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>vars</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Existential quantification of multiple variables. </p>
+<p>Repeatedly calls <code>bdd_exists</code> for the given variables while optimising garbage collecting intermediate results.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
+    <tr><td class="paramname">vars</td><td>Predicate to identify the variables to quantify in f. You may abuse the fact, that this predicate will only be invoked in ascending/descending order of the levels in <code>f</code> (but, with retraversals).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \exists x_i \in \texttt{vars} : f \) </dd></dl>
+
+</div>
+</div>
+<a id="ga832aef9b6fa5ee60d9a239ac94e76ad9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga832aef9b6fa5ee60d9a239ac94e76ad9">&#9670;&nbsp;</a></span>bdd_exists() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IT &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_exists </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IT&#160;</td>
+          <td class="paramname"><em>begin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IT&#160;</td>
+          <td class="paramname"><em>end</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Existential quantification of multiple variables. </p>
+<p>Repeatedly calls <code>bdd_exists</code> for the given variables while optimising garbage collecting intermediate results.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
+    <tr><td class="paramname">begin</td><td>Iterator that provides variables to be quantified in <em>descending</em> order. When none are left to-be quantified, it returns a value larger than <code>bdd::MAX_LABEL</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \exists x_i \in \texttt{begin} ... \texttt{end} : f \) </dd></dl>
+
+</div>
+</div>
+<a id="ga8be534f77f587385b7255db613204528"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8be534f77f587385b7255db613204528">&#9670;&nbsp;</a></span>bdd_forall() <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_forall </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bdd::label_t&#160;</td>
+          <td class="paramname"><em>var</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Forall quantification of a single variable. </p>
+<p>Computes the BDD for \( \forall x_{i} : f \) faster than computing \( f|_{x_i = \bot} \land f|_{x_i = \top} \) using <code>bdd_apply</code> and <code>bdd_restrict</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
+    <tr><td class="paramname">var</td><td>Variable to quantify in f</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \forall x_{var} : f \)</dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>There is (possibly) an ambiguity in overloading, if you use the value <em>0</em> directly for the <code>var</code> argument, since this can also be interpreted as the <code>nullptr</code> value for a <code>std::function</code>. To resolve this overloading, use <em>0u</em> or <code>static_cast&lt;bdd::label_t&gt;(0))</code> instead. </dd></dl>
+
+</div>
+</div>
+<a id="gafc72368447308301739093fe85b463a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafc72368447308301739093fe85b463a6">&#9670;&nbsp;</a></span>bdd_forall() <span class="overload">[2/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_forall </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vars</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Forall quantification of multiple variables. </p>
+<p>Repeatedly calls <code>bdd_forall</code> for the given variables while optimising garbage collecting intermediate results.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
+    <tr><td class="paramname">vars</td><td>Variables to quantify in f (in order of their quantification)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \forall x_{i_1}, \dots, x_{i_k} : f \) </dd></dl>
+
+</div>
+</div>
+<a id="ga9933758ba2018fd1550ce2432c6a6bd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9933758ba2018fd1550ce2432c6a6bd6">&#9670;&nbsp;</a></span>bdd_forall() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_forall </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; bdd::label_t()&gt; &amp;&#160;</td>
+          <td class="paramname"><em>gen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Forall quantification of multiple variables. </p>
+<p>Repeatedly calls <code>bdd_forall</code> for the given variables while optimising garbage collecting intermediate results.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
+    <tr><td class="paramname">gen</td><td>Generator function, that produces variables to be quantified in <em>descending</em> order. When none are left to-be quantified, it returns a value larger than <code>bdd::MAX_LABEL</code>, e.g. -1.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \forall x_i \in \texttt{gen()} : f \) </dd></dl>
+
+</div>
+</div>
+<a id="ga903d1d641a3f4058011a3c45df1092c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga903d1d641a3f4058011a3c45df1092c3">&#9670;&nbsp;</a></span>bdd_forall() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_forall </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; bool(bdd::label_t)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>vars</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Forall quantification of multiple variables. </p>
+<p>Repeatedly calls <code>bdd_forall</code> for the given variables while optimising garbage collecting intermediate results.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
+    <tr><td class="paramname">vars</td><td>Predicate to identify the variables to quantify in f. You may abuse the fact, that this predicate will only be invoked in ascending/descending order of the levels in <code>f</code> (but, with retraversals).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \exists x_i \in \texttt{vars} : f \) </dd></dl>
+
+</div>
+</div>
+<a id="ga244d97202ea1cacaa3a472d0cd2623bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga244d97202ea1cacaa3a472d0cd2623bd">&#9670;&nbsp;</a></span>bdd_forall() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IT &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_forall </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IT&#160;</td>
+          <td class="paramname"><em>begin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IT&#160;</td>
+          <td class="paramname"><em>end</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Forall quantification of multiple variables. </p>
+<p>Repeatedly calls <code>bdd_forall</code> for the given variables while optimising garbage collecting intermediate results.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to be quantified.</td></tr>
+    <tr><td class="paramname">begin</td><td>Iterator that provides variables to be quantified in <em>descending</em> order. When none are left to-be quantified, it returns a value larger than <code>bdd::MAX_LABEL</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \forall x_i \in \texttt{begin} ... \texttt{end} : f \) </dd></dl>
+
+</div>
+</div>
+<a id="gaefc0bd8ba9c0a8e83a4cda09392bf542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaefc0bd8ba9c0a8e83a4cda09392bf542">&#9670;&nbsp;</a></span>bdd_from() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_from </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Obtains the BDD that represents the same function/set as the given ZDD within the given domain. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>Family of a set (within the given global <a class="el" href="group__module____domain.html">Variable Domain</a>)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>BDD that is true for the exact same assignments to variables in the global domain.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____domain.html#gacd89fe9c882e5a6dd2269571ae9f5afc" title="Set the domain globally for all of Adiar.">adiar_set_domain</a> <a class="el" href="group__module____domain.html#ga7ff4243ba9fbb1225508f62bbf712a78" title="Whether Adiar has a global domain.">adiar_has_domain</a></dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>The global <a class="el" href="group__module____domain.html">Variable Domain</a> is set to a set of variables that is equals to or a superset of the variables in <code>A</code>. </dd></dl>
+
+</div>
+</div>
+<a id="ga955887c1e1e94d691123718244628a48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga955887c1e1e94d691123718244628a48">&#9670;&nbsp;</a></span>bdd_from() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_from </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1zdd.html">zdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>A</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dom</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Obtains the BDD that represents the same function/set as the given ZDD within the given domain. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>Family of a set (within the given domain)</td></tr>
+    <tr><td class="paramname">dom</td><td>Domain of all variables (in ascending order)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>BDD that is true for the exact same assignments to variables in the given domain.</dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>Labels in <code>dom</code> are provided in ascending order. </dd></dl>
+
+</div>
+</div>
+<a id="ga82658b50a588937c75860217d1bb192b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga82658b50a588937c75860217d1bb192b">&#9670;&nbsp;</a></span>bdd_imp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_imp </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'implication' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( f \rightarrow g \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga3c80987bd08f6f47090ac8627b6dc8b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3c80987bd08f6f47090ac8627b6dc8b3">&#9670;&nbsp;</a></span>bdd_invimp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_invimp </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'inverse implication' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( f \leftarrow g \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga760162c0c2e938a17e8cf88abab785e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga760162c0c2e938a17e8cf88abab785e3">&#9670;&nbsp;</a></span>bdd_ite()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_ite </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>If-Then-Else operator. </p>
+<p>Computes the BDD expressing \( f ? g : h \) more efficient than computing \( (f \land g) \lor (\neg f \land h) \) with <code>bdd_apply</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD for the if conditional</td></tr>
+    <tr><td class="paramname">g</td><td>BDD for the then case</td></tr>
+    <tr><td class="paramname">h</td><td>BDD for the else case</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( f ? g : h \)</dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>In other BDD packages this function is good for manually constructing a BDD bottom-up. But, in Adiar you should use the <a class="el" href="group__module____builder.html#gacad7fc21ff3b724b2c485f4d9da5dc2f">bdd_builder</a> class (see <a class="el" href="classadiar_1_1builder.html">builder</a>) instead</dd></dl>
+<p>\se bdd_apply builder bdd_builder </p>
+
+</div>
+</div>
+<a id="ga9464f59d5be7a285ac275ea84f00c4e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9464f59d5be7a285ac275ea84f00c4e0">&#9670;&nbsp;</a></span>bdd_ithvar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1bdd.html">bdd</a> adiar::bdd_ithvar </td>
+          <td>(</td>
+          <td class="paramtype">bdd::label_t&#160;</td>
+          <td class="paramname"><em>var</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The BDD representing the i'th variable. </p>
+<p>Creates a BDD of a single node with label <code>var</code> and the children false and true. The given label must be smaller than MAX_LABEL.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">var</td><td>The label of the desired variable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( x_{var} \) </dd></dl>
+
+</div>
+</div>
+<a id="gadb90a6dd96f81df33505f67c303b0e66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadb90a6dd96f81df33505f67c303b0e66">&#9670;&nbsp;</a></span>bdd_less()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_less </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'less than' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( f &lt; g \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="gae3c685977ad4ae03e36f821ae0376f42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae3c685977ad4ae03e36f821ae0376f42">&#9670;&nbsp;</a></span>bdd_nand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_nand </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'nand' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( \neg (f \land g) \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga8d14933ff317b8f236bd4c386bdfb461"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8d14933ff317b8f236bd4c386bdfb461">&#9670;&nbsp;</a></span>bdd_nithvar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1bdd.html">bdd</a> adiar::bdd_nithvar </td>
+          <td>(</td>
+          <td class="paramtype">bdd::label_t&#160;</td>
+          <td class="paramname"><em>var</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The BDD representing the negation of the i'th variable. </p>
+<p>Creates a BDD of a single node with label <code>var</code> and the children true and false. The given label must be smaller than or equal to MAX_LABEL.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">var</td><td>Label of the desired variable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \neg x_{var} \) </dd></dl>
+
+</div>
+</div>
+<a id="ga13561a6ae0b5f0acf74f923ae1d78a52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga13561a6ae0b5f0acf74f923ae1d78a52">&#9670;&nbsp;</a></span>bdd_nor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_nor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'nor' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( \neg (f \lor g) \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga7fae475d2fde0a55f486cefabd001ac3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7fae475d2fde0a55f486cefabd001ac3">&#9670;&nbsp;</a></span>bdd_not()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1bdd.html">bdd</a> adiar::bdd_not </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Negation of a BDD. </p>
+<p>Flips the negation flag such that reading nodes with a node_stream within Adiar's algorithms will on-the-fly change the <code>false</code> terminals into the <code>true</code> terminals and vica versa.</p>
+<dl class="section return"><dt>Returns</dt><dd>\( \neg f \) </dd></dl>
+
+</div>
+</div>
+<a id="ga2365280db0d941e3e5c8fb0ce0ace5a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga2365280db0d941e3e5c8fb0ce0ace5a8">&#9670;&nbsp;</a></span>bdd_or() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_or </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'or' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( f \lor g \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga8dd755228f8bf2521f9d0d892e2771c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8dd755228f8bf2521f9d0d892e2771c8">&#9670;&nbsp;</a></span>bdd_or() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1bdd.html">bdd</a> adiar::bdd_or </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; bdd::label_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vars</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The BDD representing the logical 'or' of all the given variables. </p>
+<p>Creates a BDD with a chain of nodes on the 'low' arc to the true child, and false otherwise. The given labels must be smaller than or equal to MAX_LABEL.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vars</td><td>Labels of the desired variables (in ascending order)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( \bigvee_{x \in \mathit{vars}} x \)</dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>Labels in <code>vars</code> are provided in ascending order. </dd></dl>
+
+</div>
+</div>
+<a id="gadd0becff66aaae9313c29248bc33750e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadd0becff66aaae9313c29248bc33750e">&#9670;&nbsp;</a></span>bdd_pathcount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t adiar::bdd_pathcount </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count all unique (but not necessarily disjoint) paths to the true terminal. </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of unique paths. </dd></dl>
+
+</div>
+</div>
+<a id="gadb286670a1afdfac65d51777e9f4346e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadb286670a1afdfac65d51777e9f4346e">&#9670;&nbsp;</a></span>bdd_restrict()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_restrict </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt; bdd::label_t, assignment &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>xs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restrict a subset of variables to constant values. </p>
+<p>For each tuple (i,v) in the assignment <code>xs</code> the variable with label i is set to the constant value v. This binds the scope of the variables in <code>xs</code>, i.e. any later mention of a variable i is not the same as variable i in <code>xs</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to restrict</td></tr>
+    <tr><td class="paramname">xs</td><td>Assignments (i,v) to variables in (in ascending order)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>\( f|_{(i,v) \in xs : x_i = v} \) </dd></dl>
+
+</div>
+</div>
+<a id="gadbcca4521c9ab9cf4e5b8a31cb99f346"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadbcca4521c9ab9cf4e5b8a31cb99f346">&#9670;&nbsp;</a></span>bdd_satcount() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t adiar::bdd_satcount </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count the number of assignments x that make f(x) true. </p>
+<p>Same as <code>bdd_satcount(bdd, varcount)</code>, with varcount set to be the size of the global domain or the number of variables within the given BDD.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____domain.html#gacd89fe9c882e5a6dd2269571ae9f5afc" title="Set the domain globally for all of Adiar.">adiar_set_domain</a> <a class="el" href="group__module____bdd.html#gac317019e5963a4349b55dde7d994fd16" title="The number of variables that influence the outcome of f, i.e. the number of levels in the BDD.">bdd_varcount</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga2bf2d6300652daee73000c379e0b182e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga2bf2d6300652daee73000c379e0b182e">&#9670;&nbsp;</a></span>bdd_satcount() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t adiar::bdd_satcount </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bdd::label_t&#160;</td>
+          <td class="paramname"><em>varcount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count the number of assignments x that make f(x) true. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>BDD to count within.</td></tr>
+    <tr><td class="paramname">varcount</td><td>The number of variables in the domain of the function. This number should be larger than or equal to the number of levels in the BDD (</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gac317019e5963a4349b55dde7d994fd16" title="The number of variables that influence the outcome of f, i.e. the number of levels in the BDD.">bdd_varcount()</a>)</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of unique assignments. </dd></dl>
+
+</div>
+</div>
+<a id="ga3d4e5d3a83b4463909d88d516631f685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3d4e5d3a83b4463909d88d516631f685">&#9670;&nbsp;</a></span>bdd_satmax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt;<a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt;bdd::label_t, <a class="el" href="namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156b">boolean</a>&gt; &gt; adiar::bdd_satmax </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The lexicographically largest x such that f(x) is true. </p>
+<p>Outputs the trace of the high-most path to the true terminal. The resulting assignment is lexicographically largest, where every variable is treated as a digit and \( x_0 &gt; x_1 &gt; \dots \).</p>
+<dl class="section return"><dt>Returns</dt><dd>A <code>shared_file&lt;...&gt;</code> of pairs <code>(bdd::label_t, boolean)</code> for every variable mentioned by the given BDD. </dd></dl>
+
+</div>
+</div>
+<a id="ga148b9daa892b01e14a13f1ae1decad9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga148b9daa892b01e14a13f1ae1decad9f">&#9670;&nbsp;</a></span>bdd_satmin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt;<a class="el" href="classadiar_1_1map__pair.html">map_pair</a>&lt;bdd::label_t, <a class="el" href="namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156b">boolean</a>&gt; &gt; adiar::bdd_satmin </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The lexicographically smallest x such that f(x) is true. </p>
+<p>Outputs the trace of the low-most path to the true terminal. The resulting assignment is lexicographically smallest, where every variable is treated as a digit and \( x_0 &gt; x_1 &gt; \dots \).</p>
+<dl class="section return"><dt>Returns</dt><dd>A <code>shared_file&lt;...&gt;</code> of pairs <code>(bdd::label_t, boolean)</code> for every variable mentioned by the given BDD. </dd></dl>
+
+</div>
+</div>
+<a id="ga17447560cf6131804fa976e987150b24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga17447560cf6131804fa976e987150b24">&#9670;&nbsp;</a></span>bdd_terminal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1bdd.html">bdd</a> adiar::bdd_terminal </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The BDD representing a constant value. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>The constant terminal value</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaf5937f4f082e75b9b51597cb0f86639a" title="The BDD representing the constant false BDD.">bdd_false</a> <a class="el" href="group__module____bdd.html#ga4c2bac8aa277d53d7a0eb0fe2ee2b070" title="The BDD representing the constant true BDD.">bdd_true</a> </dd></dl>
+
+</div>
+</div>
+<a id="gaa0fd42b5dee7d8fc285f9ccd8ba0c4a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa0fd42b5dee7d8fc285f9ccd8ba0c4a0">&#9670;&nbsp;</a></span>bdd_xnor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_xnor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'xnor' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( \neg (f \oplus g) \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga65d9fd1b95db525159c59d921418850a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga65d9fd1b95db525159c59d921418850a">&#9670;&nbsp;</a></span>bdd_xor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::bdd_xor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical 'xor' operator. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( f \oplus g \)</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb" title="Apply a binary operator between two BDDs.">bdd_apply</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga7e9e73ba8dd7750fc6e72ee7707e0718"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7e9e73ba8dd7750fc6e72ee7707e0718">&#9670;&nbsp;</a></span>is_canonical()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool adiar::is_canonical </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p></p>
+
+</div>
+</div>
+<a id="gaa9b3e19419780c15c4b2534582431894"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa9b3e19419780c15c4b2534582431894">&#9670;&nbsp;</a></span>operator!=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool adiar::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#ga40b4b347f3ffb11b585653d1605d27d0" title="Whether f and g represent different functions.">bdd_unequal</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga395101a1d5c8caa1c34523309a244ab5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga395101a1d5c8caa1c34523309a244ab5">&#9670;&nbsp;</a></span>operator&amp;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::operator&amp; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gaafca27e14dbae9b7d7b9962baa2d1976" title="The BDD representing the logical &#39;and&#39; of all the given variables.">bdd_and</a> </dd></dl>
+
+</div>
+</div>
+<a id="gad082421dfdd27070d380342502d306fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad082421dfdd27070d380342502d306fa">&#9670;&nbsp;</a></span>operator==()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool adiar::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#gad95adbcf4ac35cd0ac917233843f935f" title="Whether f and g represent the same function.">bdd_equal</a> </dd></dl>
+
+</div>
+</div>
+<a id="gad23f070b6cb8ff481c3e8f29195feaef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad23f070b6cb8ff481c3e8f29195feaef">&#9670;&nbsp;</a></span>operator^()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::operator^ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#ga65d9fd1b95db525159c59d921418850a" title="Logical &#39;xor&#39; operator.">bdd_xor</a> </dd></dl>
+
+</div>
+</div>
+<a id="ga01b300a92341883e07bd5609ba9f719b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga01b300a92341883e07bd5609ba9f719b">&#9670;&nbsp;</a></span>operator|()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1____bdd.html">__bdd</a> adiar::operator| </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#ga8dd755228f8bf2521f9d0d892e2771c8" title="The BDD representing the logical &#39;or&#39; of all the given variables.">bdd_or</a> </dd></dl>
+
+</div>
+</div>
+<a id="gab78a2e3bd5b1a5187e274376df0d10df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab78a2e3bd5b1a5187e274376df0d10df">&#9670;&nbsp;</a></span>operator~()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1bdd.html">bdd</a> adiar::operator~ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classadiar_1_1bdd.html">bdd</a> &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____bdd.html#ga7fae475d2fde0a55f486cefabd001ac3" title="Negation of a BDD.">bdd_not</a> </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
