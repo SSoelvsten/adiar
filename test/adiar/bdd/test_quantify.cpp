@@ -892,7 +892,7 @@ go_bandit([]() {
           lw << 1 << 2;
         }
 
-        bdd in_bdd = terminal_T;
+        const bdd in_bdd = terminal_T;
         __bdd out = bdd_exists(in_bdd, labels);
 
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(terminal_T));
@@ -1756,7 +1756,7 @@ go_bandit([]() {
           lw << 0 << 2 << 1;
         }
 
-        bdd in_bdd = bdd_4;
+        const bdd in_bdd = bdd_4;
         __bdd out = bdd_forall(in_bdd, labels);
 
         node_test_stream out_nodes(out);
@@ -1818,7 +1818,7 @@ go_bandit([]() {
           lw << 1;
         }
 
-        bdd in_bdd = bdd_4;
+        const bdd in_bdd = bdd_4;
         bdd out = bdd_forall(in_bdd, labels);
 
         node_test_stream out_nodes(out);
@@ -1862,7 +1862,7 @@ go_bandit([]() {
       it("quantifies [] into the original file of BDD 3 [const &]", [&]() {
         adiar::shared_file<bdd::label_t> labels;
 
-        bdd in_bdd = bdd_3;
+        const bdd in_bdd = bdd_3;
         __bdd out = bdd_forall(in_bdd, labels);
 
         AssertThat(out.get<shared_levelized_file<bdd::node_t>>(), Is().EqualTo(bdd_3));
