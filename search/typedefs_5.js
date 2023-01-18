@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['id_5ft_577',['id_t',['../classadiar_1_1internal_1_1node.html#ab56c0f05e696d0aa8f78f3095cf77eea',1,'adiar::internal::node::id_t()'],['../classadiar_1_1internal_1_1ptr__uint64.html#a891ab31b19a902bd716dc001d8c380a3',1,'adiar::internal::ptr_uint64::id_t()']]]
+  ['file_5fstream_592',['file_stream',['../namespaceadiar.html#a2ce4d836629be7be429ae555a9af09af',1,'adiar']]],
+  ['file_5fwriter_593',['file_writer',['../namespaceadiar.html#ac0c8a98240760bd6186b1f3f590abca8',1,'adiar']]]
 ];

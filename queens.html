@@ -114,10 +114,11 @@ $(document).ready(function(){initNavTree('queens.html',''); initResizable(); });
 Computing the set of all solutions</h1>
 <p>We will compute the BDD containing all the solutions as described in the paper "Parallel Disk-Based Computation for Large, Monolithic Binary Decision Diagrams" by Daniel Kunkle, Vlad Slavici, and Gene Cooperman.</p>
 <p>We need to first choose some encoding of the problem into a set of variables. We will stay with the simple row-by-row ordering of variables for now. That is, we represent whether a queen is placed at position (<em>i</em>,<em>j</em>) on the <em>N_×_N</em> board board as the variable with label computed as follows.</p>
-<div class="fragment"><div class="line"><span class="keyword">inline</span> <span class="keyword">typename</span> adiar::bdd::label_t label_of_position(uint64_t N, uint64_t i, uint64_t j)</div>
+<div class="fragment"><div class="line"><span class="keyword">inline</span> <span class="keyword">typename</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">adiar::bdd::label_t</a> label_of_position(uint64_t N, uint64_t i, uint64_t j)</div>
 <div class="line">{</div>
 <div class="line">  <span class="keywordflow">return</span> (N * i) + j;</div>
 <div class="line">}</div>
+<div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_acf51971b31ef654d9a89b6828f1c3e5d"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">adiar::internal::dd::label_t</a></div><div class="ttdeci">node_t::label_t label_t</div><div class="ttdoc">Type of this node's variable label.</div><div class="ttdef"><b>Definition:</b> dd.h:137</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md15"></a>
 Explicitly Constructing Base Cases</h2>
 <p>Let us first restrict our attention to the base case of expressing the state of a single field (<em>i</em>,<em>j</em>). We need to express that a single queen is placed here, and that this queen is in no conflict with any other placed on the board, i.e. any queens on the same row, column or diagonals. This essentially is the formula </p><p class="formulaDsp">
@@ -139,7 +140,7 @@ Explicitly Constructing Base Cases</h2>
 <div class="line">      <span class="comment">// On row of the queen in question</span></div>
 <div class="line">      uint64_t column = N - 1;</div>
 <div class="line">      <span class="keywordflow">do</span> {</div>
-<div class="line">        <span class="keyword">typename</span> adiar::bdd::label_t label = label_of_position(N, row, column);</div>
+<div class="line">        <span class="keyword">typename</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">adiar::bdd::label_t</a> label = label_of_position(N, row, column);</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// If (row, column) == (i,j), then the chain goes through high</span></div>
 <div class="line">        <span class="comment">// such we check the queen actually is placed here.</span></div>
@@ -173,7 +174,7 @@ Explicitly Constructing Base Cases</h2>
 <div class="line">  largest_nodes = std::max(largest_nodes, <a class="code" href="group__module____bdd.html#ga1117a062b67bed809d230f6fac83f60a">bdd_nodecount</a>(res));</div>
 <div class="line">  <span class="keywordflow">return</span> res;</div>
 <div class="line">}</div>
-<div class="ttc" id="aclassadiar_1_1bdd_html"><div class="ttname"><a href="classadiar_1_1bdd.html">adiar::bdd</a></div><div class="ttdoc">A reduced Binary Decision Diagram.</div><div class="ttdef"><b>Definition:</b> bdd.h:48</div></div>
+<div class="ttc" id="aclassadiar_1_1bdd_html"><div class="ttname"><a href="classadiar_1_1bdd.html">adiar::bdd</a></div><div class="ttdoc">A reduced Binary Decision Diagram.</div><div class="ttdef"><b>Definition:</b> bdd.h:46</div></div>
 <div class="ttc" id="aclassadiar_1_1builder__ptr_html"><div class="ttname"><a href="classadiar_1_1builder__ptr.html">adiar::builder_ptr</a></div><div class="ttdoc">The pointer type that builders use to identify the nodes they have constructed in a decision diagram.</div><div class="ttdef"><b>Definition:</b> builder.h:53</div></div>
 <div class="ttc" id="aclassadiar_1_1builder_html"><div class="ttname"><a href="classadiar_1_1builder.html">adiar::builder</a></div><div class="ttdoc">A builder for decision diagrams.</div><div class="ttdef"><b>Definition:</b> builder.h:112</div></div>
 <div class="ttc" id="aclassadiar_1_1builder_html_ab01d6031368c51291ce565b03c049775"><div class="ttname"><a href="classadiar_1_1builder.html#ab01d6031368c51291ce565b03c049775">adiar::builder::build</a></div><div class="ttdeci">dd_policy::reduced_t build()</div><div class="ttdoc">Builds the decision diagram with the added nodes. This also clears the builder.</div><div class="ttdef"><b>Definition:</b> builder.h:379</div></div>
@@ -225,12 +226,12 @@ Printing each Solution</h1>
 </ul>
 <p>Since we want to backtrack our choices, we may keep BDDs for each column. This naturally happens by writing it as a recursive procedure. One should notice though, that this will result in multiple BDDs concurrently being instantiated in memory and on disk.</p>
 <p>We first need to convert a label back into a position on the board before getting to that . So, we'll also need the following two small functions.</p>
-<div class="fragment"><div class="line"><span class="keyword">inline</span> uint64_t i_of_label(uint64_t N, <span class="keyword">typename</span> adiar::bdd::label_t label)</div>
+<div class="fragment"><div class="line"><span class="keyword">inline</span> uint64_t i_of_label(uint64_t N, <span class="keyword">typename</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">adiar::bdd::label_t</a> label)</div>
 <div class="line">{</div>
 <div class="line">  <span class="keywordflow">return</span> label / N;</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">inline</span> uint64_t j_of_label(uint64_t N, <span class="keyword">typename</span> adiar::bdd::label_t label)</div>
+<div class="line"><span class="keyword">inline</span> uint64_t j_of_label(uint64_t N, <span class="keyword">typename</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">adiar::bdd::label_t</a> label)</div>
 <div class="line">{</div>
 <div class="line">  <span class="keywordflow">return</span> label % N;</div>
 <div class="line">}</div>

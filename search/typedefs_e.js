@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['zdd_5fbuilder_590',['zdd_builder',['../group__module____builder.html#ga592e87250f7f8446244b8de707a0c5ec',1,'adiar']]],
-  ['zdd_5fptr_591',['zdd_ptr',['../group__module____builder.html#ga514e020331f79af83a6680ca7b51accf',1,'adiar']]]
+  ['uid_5ft_607',['uid_t',['../classadiar_1_1internal_1_1node.html#a73f60430eef5f60b28fb5c098a30e1bb',1,'adiar::internal::node']]],
+  ['unique_5fptr_608',['unique_ptr',['../namespaceadiar.html#a93a4ec5d0d8a82bb459ec5cd77f5af21',1,'adiar']]]
 ];

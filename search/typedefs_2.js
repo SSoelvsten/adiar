@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['data_5ft_573',['data_t',['../classadiar_1_1internal_1_1request__data.html#ac691886972a73be1f1fe4de2f854b1ed',1,'adiar::internal::request_data']]]
+  ['children_5ft_589',['children_t',['../classadiar_1_1internal_1_1node.html#ac4221aa0936684cdb6790a1b43c5f300',1,'adiar::internal::node::children_t()'],['../classadiar_1_1internal_1_1request.html#a4a3d98adf56f255244586bcd8b1238a1',1,'adiar::internal::request::children_t()']]]
 ];

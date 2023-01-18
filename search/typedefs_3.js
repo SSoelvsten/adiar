@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['elem_5ft_574',['elem_t',['../classadiar_1_1internal_1_1tuple.html#ae3bb0cc6bc75b8667e361148c93e08be',1,'adiar::internal::tuple']]]
+  ['data_5ft_590',['data_t',['../classadiar_1_1internal_1_1request__data.html#ac691886972a73be1f1fe4de2f854b1ed',1,'adiar::internal::request_data']]]
 ];

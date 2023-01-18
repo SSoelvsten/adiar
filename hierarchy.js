@@ -10,7 +10,7 @@ var hierarchy =
       [ "adiar::stats_t::reduce_t", "structadiar_1_1stats__t_1_1reduce__t.html", null ],
       [ "adiar::stats_t::substitute_t", "structadiar_1_1stats__t_1_1substitute__t.html", null ]
     ] ],
-    [ "internal::__dd", null, [
+    [ "adiar::internal::__dd", "classadiar_1_1internal_1_1____dd.html", [
       [ "adiar::__bdd", "classadiar_1_1____bdd.html", null ],
       [ "adiar::__zdd", "classadiar_1_1____zdd.html", null ]
     ] ],
@@ -20,11 +20,7 @@ var hierarchy =
     [ "adiar::builder< dd_policy >", "classadiar_1_1builder.html", null ],
     [ "adiar::builder_ptr< dd_policy >", "classadiar_1_1builder__ptr.html", null ],
     [ "adiar::cube", "classadiar_1_1cube.html", null ],
-    [ "dd", null, [
-      [ "adiar::bdd", "classadiar_1_1bdd.html", null ],
-      [ "adiar::zdd", "classadiar_1_1zdd.html", null ]
-    ] ],
-    [ "internal::dd", null, [
+    [ "adiar::internal::dd", "classadiar_1_1internal_1_1dd.html", [
       [ "adiar::bdd", "classadiar_1_1bdd.html", null ],
       [ "adiar::zdd", "classadiar_1_1zdd.html", null ]
     ] ],

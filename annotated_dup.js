@@ -2,6 +2,8 @@ var annotated_dup =
 [
     [ "adiar", "namespaceadiar.html", [
       [ "internal", null, [
+        [ "__dd", "classadiar_1_1internal_1_1____dd.html", "classadiar_1_1internal_1_1____dd" ],
+        [ "dd", "classadiar_1_1internal_1_1dd.html", "classadiar_1_1internal_1_1dd" ],
         [ "arc", "classadiar_1_1internal_1_1arc.html", "classadiar_1_1internal_1_1arc" ],
         [ "arc_source_lt", "structadiar_1_1internal_1_1arc__source__lt.html", "structadiar_1_1internal_1_1arc__source__lt" ],
         [ "arc_target_lt", "structadiar_1_1internal_1_1arc__target__lt.html", "structadiar_1_1internal_1_1arc__target__lt" ],

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['raw_5ft_582',['raw_t',['../classadiar_1_1map__pair.html#a7770bc00befecce3b2c26f0a45bd44fe',1,'adiar::map_pair']]]
+  ['node_5ft_597',['node_t',['../classadiar_1_1internal_1_1____dd.html#a92bcf4e7e3c1ccbbc07fbbbed4baf4b3',1,'adiar::internal::__dd::node_t()'],['../classadiar_1_1internal_1_1dd.html#a1d911374388037fffd1e120804be1396',1,'adiar::internal::dd::node_t()']]],
+  ['nodes_5ft_598',['nodes_t',['../classadiar_1_1internal_1_1dd.html#a3ff48e48329a9ac5e88fe982bec7aafd',1,'adiar::internal::dd']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['negate_601',['negate',['../classadiar_1_1internal_1_1ptr__uint64.html#aeabd021bee17e9b07cc3ae1cee25ea8f',1,'adiar::internal::ptr_uint64']]]
+  ['is_5fterminal_622',['is_terminal',['../classadiar_1_1internal_1_1dd.html#a811197a3fa59b8a1b63de06f2101a0a7',1,'adiar::internal::dd']]]
 ];

@@ -1,6 +1,8 @@
 var namespaceadiar =
 [
     [ "internal", null, [
+      [ "__dd", "classadiar_1_1internal_1_1____dd.html", "classadiar_1_1internal_1_1____dd" ],
+      [ "dd", "classadiar_1_1internal_1_1dd.html", "classadiar_1_1internal_1_1dd" ],
       [ "arc", "classadiar_1_1internal_1_1arc.html", "classadiar_1_1internal_1_1arc" ],
       [ "arc_source_lt", "structadiar_1_1internal_1_1arc__source__lt.html", "structadiar_1_1internal_1_1arc__source__lt" ],
       [ "arc_target_lt", "structadiar_1_1internal_1_1arc__target__lt.html", "structadiar_1_1internal_1_1arc__target__lt" ],
@@ -22,13 +24,20 @@ var namespaceadiar =
       [ "tuple_trd_lt", "structadiar_1_1internal_1_1tuple__trd__lt.html", "structadiar_1_1internal_1_1tuple__trd__lt" ],
       [ "__uid", "classadiar_1_1internal_1_1____uid.html", "classadiar_1_1internal_1_1____uid" ],
       [ "arc", "arc_8h.html#a1b583ab0d05d0830f991302197084c6a", null ],
+      [ "no_file", "dd_8h.html#a64ae6c2e6b6bfa6434cd8f55127a957b", null ],
       [ "uid_uint64", "uid_8h.html#a12cd5ce58c49147c59a275b7b712122c", null ],
       [ "flag", "ptr_8h.html#aa5d23d0270fc5e621335bccbea567e04", null ],
       [ "fst", "tuple_8h.html#ada286daf564ade98a5a4e5f8c1a4dab7", null ],
       [ "fst", "tuple_8h.html#a33e988333b56871bb27a4fa7fb033b65", null ],
       [ "high_arc_of", "convert_8h.html#a3e49d472afee30c8b6f353d42853141c", null ],
+      [ "is_canonical", "dd_8h.html#acab41fc4cd343da68636b5d42e239e38", null ],
+      [ "is_false", "dd_8h.html#aecd7deb8f082e2c1f0edb6cb463e525f", null ],
+      [ "is_terminal", "dd_8h.html#aed738702c81fff0cc40d6f2bfa14eb68", null ],
+      [ "is_true", "dd_8h.html#ad52cad3fff25a92620fe780b7d8fb7e0", null ],
       [ "low_arc_of", "convert_8h.html#aebe3dd20b1c72569a8f74701f7dc4ad4", null ],
+      [ "max_var", "dd_8h.html#a53507ebf8cff17d751823bc1fa073dd4", null ],
       [ "memory_available", "memory_8h.html#a9441f27a0e7251988e8385d9e4058603", null ],
+      [ "min_var", "dd_8h.html#a5a48364251a8e288d9789e26153b78a6", null ],
       [ "negate", "arc_8h.html#a3ad6d7c548c4aa62105c5f530fabb558", null ],
       [ "negate", "node_8h.html#a6de0d5b39f567076872e07593cb27bc5", null ],
       [ "negate", "ptr_8h.html#ab8eb17aee2164d0e11fd1350616beeeb", null ],
@@ -44,7 +53,8 @@ var namespaceadiar =
       [ "snd", "tuple_8h.html#aaa68e3798570dcf7b8dcd0f7c453416c", null ],
       [ "snd", "tuple_8h.html#ad4ad9075b3a0c0e78b6b43472e5ebfed", null ],
       [ "trd", "tuple_8h.html#a53ab47b973cf347fd2cefb1144112195", null ],
-      [ "unflag", "ptr_8h.html#af09edad6e6c95c411b1b691ea5db8c9d", null ]
+      [ "unflag", "ptr_8h.html#af09edad6e6c95c411b1b691ea5db8c9d", null ],
+      [ "value_of", "dd_8h.html#a52ff794c512563f4258a596176704679", null ]
     ] ],
     [ "__bdd", "classadiar_1_1____bdd.html", "classadiar_1_1____bdd" ],
     [ "bdd", "classadiar_1_1bdd.html", "classadiar_1_1bdd" ],
