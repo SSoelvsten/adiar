@@ -93,6 +93,7 @@ namespace adiar
     return internal::quantify<bdd_quantify_policy>(f, gen, or_op);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   __bdd bdd_exists(bdd &&f, const std::function<bdd::label_t()> &gen)
   {
     return internal::quantify<bdd_quantify_policy>(std::forward<bdd>(f), gen, or_op);

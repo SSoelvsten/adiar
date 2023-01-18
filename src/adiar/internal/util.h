@@ -51,6 +51,19 @@ namespace adiar::internal
     }
     return vars;
   }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Converts a `begin` and `end` iterator pair into a generator
+  ///        function.
+  ////////////////////////////////////////////////////////////////////////////
+  template<typename label_t, typename IT>
+  inline std::function<label_t()> iterator_gen(IT &begin, IT &end)
+  {
+    return [&begin, &end]() {
+      if (begin == end) { return static_cast<label_t>(-1); }
+      return static_cast<label_t>(*(begin++));
+    };
+  }
 }
 
 #endif // ADIAR_INTERNAL_UTIL_H
