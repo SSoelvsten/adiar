@@ -125,7 +125,8 @@ go_bandit([]() {
           lw << 2 << 4 << 6;
         }
 
-        zdd out = zdd_project(zdd_empty, dom);
+        const zdd in = zdd_empty;
+        zdd out = zdd_project(in, dom);
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -198,7 +199,8 @@ go_bandit([]() {
       it("computes with dom = Ø to be { Ø } for { Ø } as input [const &]", [&](){
         adiar::shared_file<zdd::label_t> dom;
 
-        zdd out = zdd_project(zdd_null, dom);
+        const zdd in = zdd_null;
+        zdd out = zdd_project(in, dom);
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -221,7 +223,8 @@ go_bandit([]() {
       it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1] [const &]", [&](){
         adiar::shared_file<zdd::label_t> dom;
 
-        zdd out = zdd_project(zdd_1, dom);
+        const zdd in = zdd_1;
+        zdd out = zdd_project(in, dom);
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -267,7 +270,8 @@ go_bandit([]() {
       it("computes with dom = Ø to be { Ø } for non-empty input [zdd_3] [const &]", [&](){
         adiar::shared_file<zdd::label_t> dom;
 
-        zdd out = zdd_project(zdd_3, dom);
+        const zdd in = zdd_3;
+        zdd out = zdd_project(in, dom);
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -293,7 +297,8 @@ go_bandit([]() {
           lw << 1;
         }
 
-        zdd out = zdd_project(zdd_2, dom);
+        const zdd in = zdd_2;
+        zdd out = zdd_project(in, dom);
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -355,12 +360,13 @@ go_bandit([]() {
           lw << 0;
         }
 
+        const zdd in = zdd_x1;
+
         /* Expected: { Ø }
          *
          *        T
          */
-
-        zdd out = zdd_project(zdd(zdd_x1), dom);
+        zdd out = zdd_project(in, dom);
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -386,13 +392,15 @@ go_bandit([]() {
           lw << 0 << 1;
         }
 
+        const zdd in = zdd_x1;
+
         /* Expected: { 1 }
          *
          *        1       ---- x1
          *       / \
          *       F T
          */
-        zdd out = zdd_project(zdd(zdd_x1), dom);
+        zdd out = zdd_project(in, dom);
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
@@ -422,6 +430,8 @@ go_bandit([]() {
           lw << 2 << 3 << 4;
         }
 
+        const zdd in = zdd_1;
+
         /* Expected: { Ø, {2}, {3}, {3,4} }
         //
         //                           1    ---- x2
@@ -433,7 +443,7 @@ go_bandit([]() {
         //                          T T
         */
 
-        zdd out = zdd_project(zdd_1, dom);
+        zdd out = zdd_project(in, dom);
 
         node_test_stream out_nodes(out);
 
@@ -707,7 +717,8 @@ go_bandit([]() {
       it("computes with dom = Ø to be { Ø } for non-empty input [zdd_1] [const &]", [&](){
         adiar::shared_file<zdd::label_t> dom;
 
-        zdd out = zdd_project(zdd_1, [](zdd::label_t) { return false; });
+        const zdd in = zdd_1;
+        zdd out = zdd_project(in, [](zdd::label_t) { return false; });
 
         node_test_stream out_nodes(out);
         AssertThat(out_nodes.can_pull(), Is().True());
