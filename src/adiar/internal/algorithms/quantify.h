@@ -456,9 +456,26 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // Multi-variable (generator)
+  // Multi-variable (descending generator)
+  template<typename quantify_policy>
+  typename quantify_policy::unreduced_t
+  quantify(typename quantify_policy::reduced_t dd,
+           const std::function<typename quantify_policy::label_t()> &gen,
+           const bool_op &op)
+  {
+    typename quantify_policy::label_t label = gen();
+    if (quantify_policy::MAX_LABEL < label) { return dd; }
 
-  // TODO
+    typename quantify_policy::label_t next_label = gen();
+    while (next_label <= quantify_policy::MAX_LABEL) {
+      dd = quantify<quantify_policy>(dd, label, op);
+      if (is_terminal(dd)) { return dd; }
+
+      label = next_label;
+      next_label = gen();
+    }
+    return quantify<quantify_policy>(dd, label, op);
+  }
 }
 
 #endif // ADIAR_INTERNAL_ALGORITHMS_QUANTIFY_H
