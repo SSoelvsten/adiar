@@ -8,17 +8,26 @@
 
 namespace adiar::internal
 {
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Template to hide how to extra the level from a certain data type.
+  ////////////////////////////////////////////////////////////////////////////
   template<typename T>
-  inline ptr_uint64::label_t __level_of(const T& t)
+  inline ptr_uint64::label_t
+  __level_of(const T& t)
   { return t.level(); }
 
   template<>
-  inline ptr_uint64::label_t __level_of(const ptr_uint64::label_t& l)
+  inline ptr_uint64::label_t
+  __level_of(const ptr_uint64::label_t& l)
   { return l; }
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtain whether the levels in two files are disjoint.
+  ////////////////////////////////////////////////////////////////////////////
   template<typename in1_t = dd, typename stream1_t = level_info_stream<>,
            typename in2_t = dd, typename stream2_t = level_info_stream<>>
-  bool disjoint_labels(const in1_t &in1, const in2_t &in2)
+  bool
+  disjoint_levels(const in1_t &in1, const in2_t &in2)
   {
     stream1_t s1(in1);
     stream2_t s2(in2);
@@ -38,8 +47,8 @@ namespace adiar::internal
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain the level_info stream projected onto the labels.
   ////////////////////////////////////////////////////////////////////////////
-  // TODO: move to <adiar/internal/dd.h> as 'dd_varprofile'
-  inline shared_file<dd::label_t> varprofile(const dd &dd)
+  inline shared_file<dd::label_t>
+  dd_varprofile(const dd &dd)
   {
     level_info_stream<> info_stream(dd);
 
@@ -57,7 +66,8 @@ namespace adiar::internal
   ///        function.
   ////////////////////////////////////////////////////////////////////////////
   template<typename label_t, typename IT>
-  inline std::function<label_t()> iterator_gen(IT &begin, IT &end)
+  inline std::function<label_t()>
+  iterator_gen(IT &begin, IT &end)
   {
     return [&begin, &end]() {
       if (begin == end) { return static_cast<label_t>(-1); }

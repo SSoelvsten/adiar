@@ -13,6 +13,7 @@
 #include <adiar/internal/io/file.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/node_stream.h>
+#include <adiar/internal/util.h>
 
 
 namespace adiar::internal
@@ -156,22 +157,6 @@ namespace adiar::internal
     }
   }
 
-  template<typename intercut_policy>
-  shared_file<typename intercut_policy::label_t>
-  create_dd_levels(const typename intercut_policy::reduced_t &dd)
-  { // TODO: replace with using 'varprofile'
-    shared_file<typename intercut_policy::label_t> labels;
-    label_writer writer(labels);
-
-    level_info_stream<> info_stream(dd);
-
-    while(info_stream.can_pull()) {
-      writer << info_stream.pull().level();
-    }
-
-    return labels;
-  }
-
   template<typename intercut_policy, typename pq_t>
   typename intercut_policy::unreduced_t __intercut (const typename intercut_policy::reduced_t &dd,
                                                     const shared_file<typename intercut_policy::label_t> &labels,
@@ -191,7 +176,7 @@ namespace adiar::internal
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
-    shared_file<typename intercut_policy::label_t> dd_levels = create_dd_levels<intercut_policy>(dd);
+    shared_file<typename intercut_policy::label_t> dd_levels = dd_varprofile(dd);
     pq_t intercut_pq({dd_levels, labels}, pq_memory, max_pq_size, stats_intercut.lpq);
 
     // Add request for root in the queue
