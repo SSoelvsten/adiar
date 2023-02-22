@@ -17,25 +17,29 @@ go_bandit([]() {
         AssertThat(sizeof(n), Is().EqualTo(3u * 8u));
       });
 
-      describe("create_node, label_of, id_of", [&]() {
+      describe("node(...), .label(), .id(), .low(), .high()", [&]() {
         it("should create node [label_t, id_t, ptr_uint64, ptr_uint64] [1]", [&]() {
-          const node n1 = node(3u,12u, terminal_F, terminal_T);
-          AssertThat(n1.uid(), Is().EqualTo(ptr_uint64(3,12)));
-          AssertThat(n1.label(), Is().EqualTo(3u));
-          AssertThat(n1.id(), Is().EqualTo(12u));
+          const node n = node(3u,12u, terminal_F, terminal_T);
+          AssertThat(n.uid(), Is().EqualTo(ptr_uint64(3,12)));
+          AssertThat(n.label(), Is().EqualTo(3u));
+          AssertThat(n.id(), Is().EqualTo(12u));
 
-          AssertThat(n1.low(), Is().EqualTo(terminal_F));
-          AssertThat(n1.high(), Is().EqualTo(terminal_T));
+          AssertThat(n.child(false), Is().EqualTo(n.low()));
+          AssertThat(n.low(), Is().EqualTo(terminal_F));
+          AssertThat(n.child(true), Is().EqualTo(n.high()));
+          AssertThat(n.high(), Is().EqualTo(terminal_T));
         });
 
         it("should create node [label_t, id_t, ptr_uint64, ptr_uint64] [2]", [&]() {
-          const node n2 = node(3u,42u, terminal_T, terminal_F);
-          AssertThat(n2.uid(), Is().EqualTo(ptr_uint64(3,42)));
-          AssertThat(n2.label(), Is().EqualTo(3u));
-          AssertThat(n2.id(), Is().EqualTo(42u));
+          const node n = node(3u,42u, terminal_T, terminal_F);
+          AssertThat(n.uid(), Is().EqualTo(ptr_uint64(3,42)));
+          AssertThat(n.label(), Is().EqualTo(3u));
+          AssertThat(n.id(), Is().EqualTo(42u));
 
-          AssertThat(n2.low(), Is().EqualTo(terminal_T));
-          AssertThat(n2.high(), Is().EqualTo(terminal_F));
+          AssertThat(n.child(false), Is().EqualTo(n.low()));
+          AssertThat(n.low(), Is().EqualTo(terminal_T));
+          AssertThat(n.child(true), Is().EqualTo(n.high()));
+          AssertThat(n.high(), Is().EqualTo(terminal_F));
         });
 
         it("should create node [label_t, id_t, node&, node&]", [&]() {
@@ -47,7 +51,9 @@ go_bandit([]() {
           AssertThat(n.label(), Is().EqualTo(2u));
           AssertThat(n.id(), Is().EqualTo(2u));
 
+          AssertThat(n.child(false), Is().EqualTo(n.low()));
           AssertThat(n.low(), Is().EqualTo(n_child1.uid()));
+          AssertThat(n.child(true), Is().EqualTo(n.high()));
           AssertThat(n.high(), Is().EqualTo(n_child2.uid()));
         });
 
@@ -59,7 +65,9 @@ go_bandit([]() {
           AssertThat(n.label(), Is().EqualTo(1u));
           AssertThat(n.id(), Is().EqualTo(7u));
 
+          AssertThat(n.child(false), Is().EqualTo(n.low()));
           AssertThat(n.low(), Is().EqualTo(terminal_T));
+          AssertThat(n.child(true), Is().EqualTo(n.high()));
           AssertThat(n.high(), Is().EqualTo(n_child.uid()));
         });
 
@@ -71,7 +79,9 @@ go_bandit([]() {
           AssertThat(n.label(), Is().EqualTo(0u));
           AssertThat(n.id(), Is().EqualTo(3u));
 
+          AssertThat(n.child(false), Is().EqualTo(n.low()));
           AssertThat(n.low(), Is().EqualTo(terminal_T));
+          AssertThat(n.child(true), Is().EqualTo(n.high()));
           AssertThat(n.high(), Is().EqualTo(n_child.uid()));
         });
       });

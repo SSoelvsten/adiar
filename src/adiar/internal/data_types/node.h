@@ -228,8 +228,6 @@ namespace adiar::internal
 
     /* ================================= CHILDREN =========================== */
   public:
-    // TODO: indexable retrieval of children.
-
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The node's children sorted based on the semantics of this node.
     ////////////////////////////////////////////////////////////////////////////
@@ -237,27 +235,44 @@ namespace adiar::internal
     { return _children; }
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief The node's i'th child (sorted based on the semantics).
+    ////////////////////////////////////////////////////////////////////////////
+    inline ptr_t child(const size_t i) const
+    {
+      adiar_debug(i < OUTDEGREE, "'i' must be a valid children index.");
+      return _children[i];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief The 'low' child (also known as the 'else' child), i.e. reflecting
     ///        assigning `false` to variable with the 'label'.
+    ///
+    /// \details This is similar to writing `.child(false)`.
+    ///
+    /// \see child
     ////////////////////////////////////////////////////////////////////////////
-    inline ptr_uint64 low() const
+    inline ptr_t low() const
     {
       adiar_debug(OUTDEGREE == 2,
                   "Semantics of 'low' is only defined for binary nodes.");
 
-      return _children[false];
+      return child(false);
     }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The 'high' child (also known as the 'then' child), i.e.
     ///        reflecting assigning `true` to variable with the 'label'.
+    ///
+    /// \details This is similar to writing `.child(true)`.
+    ///
+    /// \see child
     ////////////////////////////////////////////////////////////////////////////
-    inline ptr_uint64 high() const
+    inline ptr_t high() const
     {
       adiar_debug(OUTDEGREE == 2,
                   "Semantics of 'high' is only defined for binary node.");
 
-      return _children[true];
+      return child(true);
     }
 
     /* =============================== COMPARATORS ========================== */
