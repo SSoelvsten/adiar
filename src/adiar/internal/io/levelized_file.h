@@ -107,7 +107,7 @@ namespace adiar::internal
     ///        canonical, i.e. match the paths created by `canonical_file_path`
     ///        and `canonical_levels_path`.
     ////////////////////////////////////////////////////////////////////////////
-    bool _canonical = false;
+    bool _canonical_paths = false;
 
     ////////////////////////////////////////////////////////////////////////////
     // Befriend the few places that need direct access to these variables.
@@ -156,14 +156,14 @@ namespace adiar::internal
         }
       }
 
-      _canonical = true;
+      _canonical_paths = true;
 
       // TODO: load data from header
     }
 
   public:
     bool canonical_paths()
-    { return _canonical; }
+    { return _canonical_paths; }
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -413,7 +413,7 @@ namespace adiar::internal
       }
 
       // Set canonicity flag
-      _canonical = true;
+      _canonical_paths = true;
     }
 
   public:
