@@ -1,10 +1,17 @@
 #ifndef ADIAR_INTERNAL_UTIL_H
 #define ADIAR_INTERNAL_UTIL_H
 
+#include <adiar/internal/assert.h>
+#include <adiar/internal/dd.h>
+#include <adiar/internal/data_types/arc.h>
+#include <adiar/internal/data_types/convert.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/arc_writer.h>
+#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/levelized_file_stream.h>
-#include <adiar/internal/io/file_writer.h>
-#include <adiar/internal/dd.h>
+#include <adiar/internal/io/node_file.h>
+#include <adiar/internal/io/node_stream.h>
 
 namespace adiar::internal
 {
@@ -54,12 +61,63 @@ namespace adiar::internal
     level_info_stream<> info_stream(dd);
 
     shared_file<typename dd_t::label_t> vars;
-    label_writer writer(vars);
+    file_writer<typename dd_t::label_t> writer(vars);
 
     while(info_stream.can_pull()) {
       writer << info_stream.pull().label();
     }
     return vars;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// \brief Obtain the semi-transposition of a decision diagram.
+  ///
+  /// \details Creates an `arc_file` of the given diagram. This file is on a
+  ///          valid form to be an input to the bottom-up `reduce` algorithm:
+  ///          internal arcs are transposed, i.e. sorted on their target in
+  ///          ascending order, while arcs to terminals are left untransposed,
+  ///          i.e. sorted on their source).
+  ///
+  /// \pre `!is_terminal(dd)`
+  ///
+  /// \see reduce
+  ////////////////////////////////////////////////////////////////////////////
+  template <typename dd_t>
+  inline shared_levelized_file<arc>
+  transpose(const dd_t &dd)
+  {
+    adiar_debug(!dd->is_terminal(),
+                "Given diagram must be a non-terminal to transpose it.");
+
+    shared_levelized_file<arc> af;
+
+    // Create the contents of 'af'
+    { arc_writer aw(af);
+      { // Split every node into their arcs.
+        node_stream ns(dd);
+        while (ns.can_pull()) {
+          const typename dd_t::node_t n = ns.pull();
+
+          // TODO (non-binary nodes):
+          //   This requires us to extend the 'ptr_t' to have more than a boolean
+          //   flag with the out-index.
+          aw << low_arc_of(n);
+          aw << high_arc_of(n);
+        }
+      }
+      { // Copy over meta information
+        af->max_1level_cut = dd->max_1level_cut[cut_type::INTERNAL];
+
+        level_info_stream<> lis(dd);
+        while (lis.can_pull()) {
+          aw << lis.pull();
+        }
+      }
+    }
+
+    // Sort internal arcs by their target
+    af->sort<arc_target_lt>(file_traits<arc>::IDX__INTERNAL);
+    return af;
   }
 
   ////////////////////////////////////////////////////////////////////////////
