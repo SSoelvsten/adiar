@@ -103,7 +103,7 @@ namespace adiar
   {
     if (l->size() == 0
         || is_terminal(dd)
-        || internal::disjoint_labels<shared_file<zdd::label_t>,
+        || internal::disjoint_levels<shared_file<zdd::label_t>,
                                      internal::file_stream<zdd::label_t>>(l, dd)) {
       return dd;
     }
@@ -160,7 +160,7 @@ namespace adiar
   __zdd zdd_onset(const zdd &dd, const shared_file<zdd::label_t> &l)
   {
     if (l->size() == 0 || (is_false(dd))) { return dd; }
-    if ((is_true(dd)) || internal::disjoint_labels<shared_file<zdd::label_t>,
+    if ((is_true(dd)) || internal::disjoint_levels<shared_file<zdd::label_t>,
                                                    internal::file_stream<zdd::label_t>>(l, dd)) {
       return zdd_empty();
     }

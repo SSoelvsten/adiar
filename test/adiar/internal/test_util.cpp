@@ -2,7 +2,7 @@
 
 go_bandit([]() {
   describe("adiar/internal/util.h", []() {
-    describe("varprofile", []() {
+    describe("dd_varprofile", []() {
       shared_levelized_file<node> terminal_F;
       {
         node_writer writer(terminal_F);

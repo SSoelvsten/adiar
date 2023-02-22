@@ -56,7 +56,7 @@ namespace adiar
   {
     if (a->size() == 0
         || is_terminal(dd)
-        || internal::disjoint_labels<shared_file<map_pair<bdd::label_t, assignment>>,
+        || internal::disjoint_levels<shared_file<map_pair<bdd::label_t, assignment>>,
                                      internal::file_stream<map_pair<bdd::label_t, assignment>>>(a, dd)) {
       return dd;
     }

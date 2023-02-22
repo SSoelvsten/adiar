@@ -193,7 +193,7 @@ namespace adiar
   // Input variables
   shared_file<zdd::label_t> zdd_varprofile(const zdd &A)
   {
-    return varprofile(A);
+    return internal::dd_varprofile(A);
   }
 
   //////////////////////////////////////////////////////////////////////////////

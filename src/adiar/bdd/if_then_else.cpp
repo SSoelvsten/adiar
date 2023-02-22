@@ -212,7 +212,7 @@ namespace adiar
     // is only O((N1+N2+N3)/B) I/Os!
     if (max_var(bdd_if) < v_then.label() &&
         max_var(bdd_if) < v_else.label() &&
-        internal::disjoint_labels(bdd_then, bdd_else)) {
+        internal::disjoint_levels(bdd_then, bdd_else)) {
       return __ite_zip_bdds(bdd_if,bdd_then,bdd_else);
     }
     // From here on forward, we probably cannot circumvent actually having to do

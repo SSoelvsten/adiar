@@ -158,7 +158,7 @@ namespace adiar
   // Input variables
   shared_file<bdd::label_t> bdd_varprofile(const bdd &f)
   {
-    return varprofile(f);
+    return internal::dd_varprofile(f);
   }
 
   //////////////////////////////////////////////////////////////////////////////
