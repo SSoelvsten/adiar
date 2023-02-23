@@ -3,52 +3,40 @@
 This project has been developed at the [Logic and Semantics](https://logsem.github.io/)
 group at [Aarhus University](https://cs.au.dk).
 
-
-## Primary authors
+## Main Contributors
 
 - **[Steffan Sølvsten](https://ssoelvsten.github.io/)**:
   [soelvsten@cs.au.dk](mailto:soelvsten@cs.au.dk)
 
-  Creator of Adiar.
+  PhD-student
+
+- **[Jaco van de Pol](https://cs.au.dk/~jaco/)**:
+  [jaco@cs.au.dk](mailto:jaco@cs.au.dk)
+  
+  PhD Supervisor
 
 - **[Anna Blume Jakobsen](https://github.com/AnnaBlume99)**:
 
-  Implemented the prototype of many core algorithms during a summer project in 2020 and
-  then added later in 2022 as a Student Programmer more features and optimisations. 
+  Bachelor's Student and later Student Programmer
 
 - **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
 
-  Implemented the prototype of many core algorithms during a summer project in 2020.
+  Bachelor's Student
 
-## Other authors
+## Minor Contributors
 
-Thank you, to all the other minor contributors to this project's codebase.
+Thank you, to all the minor contributors to this project's codebase.
 
-- **[Asger Hautop Drewsen](https://github.com/Tyilo)**:
+- **[Asger Hautop Drewsen](https://github.com/Tyilo)**
+- **[Ayoub Aboutarbouch](https://github.com/itsmeYO92)**
+- **[Jakob Schneider Villumsen](https://github.com/jaschdoc)**
+- **[Maxim Smolskiy](https://github.com/MaximSmolskiy)**
+- **[Sai Rugveth Vankayala](https://github.com/rugveth1210)**
 
-  Helped debug an issues in Reduce and gave general feedback on the codebase.
+## Acknowledgements
 
-- **[Jakob Schneider Villumsen](https://github.com/jaschdoc)**:
+Thanks to the following wonderful people for their contributions by sharing and discussing ideas.
 
-  Improved the setup of the git repository.
-
-Also, thanks to the following wonderful people for their indirect contributions.
-
-- **[Gerth Stølting brodal](https://cs.au.dk/~gerth/)**:
-
-  Helped out with the theory on I/O-algorithms and has suggested several
-  algorithmic improvements.
-
-- **[Jaco van de Pol](https://cs.au.dk/~jaco/)**:
-  
-  Insightful supervisor that has provided lots helpful information on Binary
-  Decision Diagrams and the overarching design of Adiar.
-
-- **[Lars Arge](http://lars.arge.dk/)**:
-
-  Created the theoretical foundation in 1995 on which all of Adiar is based and
-  was glad to give advice on how to pick up on his ideas.
-
-- **[Mathias Rav](https://github.com/Mortal)**:
-
-  Always helpful oracle about everything TPIE, I/O-algorithms, and C++.
+- **[Gerth Stølting Brodal](https://cs.au.dk/~gerth/)**
+- **[Lars Arge](http://lars.arge.dk/)**
+- **[Mathias Rav](https://github.com/Mortal)**
