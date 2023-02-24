@@ -6,7 +6,7 @@
 
 #include <adiar/domain.h>
 #include <adiar/internal/dot.h>
-#include <adiar/internal/util.h>
+#include <adiar/internal/dd_func.h>
 #include <adiar/internal/algorithms/convert.h>
 #include <adiar/internal/algorithms/intercut.h>
 #include <adiar/internal/algorithms/reduce.h>

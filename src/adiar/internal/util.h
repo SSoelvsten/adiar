@@ -7,7 +7,6 @@
 #include <adiar/internal/data_types/convert.h>
 #include <adiar/internal/io/arc_file.h>
 #include <adiar/internal/io/arc_writer.h>
-#include <adiar/internal/io/file_writer.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/levelized_file_stream.h>
 #include <adiar/internal/io/node_file.h>
@@ -49,24 +48,6 @@ namespace adiar::internal
       }
     }
     return true;
-  }
-
-  ////////////////////////////////////////////////////////////////////////////
-  /// \brief Obtain the level_info stream projected onto the labels.
-  ////////////////////////////////////////////////////////////////////////////
-  template <typename dd_t>
-  inline shared_file<typename dd_t::label_t>
-  dd_varprofile(const dd_t &dd)
-  {
-    level_info_stream<> info_stream(dd);
-
-    shared_file<typename dd_t::label_t> vars;
-    file_writer<typename dd_t::label_t> writer(vars);
-
-    while(info_stream.can_pull()) {
-      writer << info_stream.pull().label();
-    }
-    return vars;
   }
 
   ////////////////////////////////////////////////////////////////////////////

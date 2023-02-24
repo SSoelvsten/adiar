@@ -22,7 +22,7 @@
 #include <adiar/bool_op.h>
 #include <adiar/file.h>
 
-#include <adiar/internal/util.h>
+#include <adiar/internal/dd_func.h>
 
 #include <adiar/bdd/bdd.h>
 #include <adiar/zdd/zdd.h>
