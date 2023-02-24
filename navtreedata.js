@@ -80,10 +80,10 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"",
-"classadiar_1_1internal_1_1ptr__uint64.html#acf80f2d0e34f7d73b3f1bba88e113dd4",
-"group__module____bdd.html#ga955887c1e1e94d691123718244628a48",
-"node_8h.html#a129ce29fe6605fc1a2039dd66327ce08"
+"adiar_8h_source.html",
+"classadiar_1_1internal_1_1ptr__uint64.html#ade58a36514fe2de739072b9d6081192d",
+"group__module____bdd.html#gaa76a2cada411953213108a945d9fabfb",
+"node_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

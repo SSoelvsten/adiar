@@ -270,10 +270,10 @@ $(document).ready(function(){initNavTree('dd_8h_source.html',''); initResizable(
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> comp_policy&gt;</div>
 <div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">bool</span> comparison_check(<span class="keyword">const</span> dd &amp;in_1, <span class="keyword">const</span> dd &amp;in_2);</div>
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160; </div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#a811197a3fa59b8a1b63de06f2101a0a7">is_terminal</a>(<span class="keyword">const</span> dd &amp;dd);</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#a9e01a1d764d7ec048ce8e80607c7a496">value_of</a>(<span class="keyword">const</span> dd &amp;dd);</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keyword">friend</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">label_t</a> <a class="code" href="classadiar_1_1internal_1_1dd.html#a715f7e955c75080b60af0a3a2f59f50e">min_var</a>(<span class="keyword">const</span> dd &amp;dd);</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <span class="keyword">friend</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">label_t</a> <a class="code" href="classadiar_1_1internal_1_1dd.html#a6c7bf3aae335351ed1ee703f0209a902">max_var</a>(<span class="keyword">const</span> dd &amp;dd);</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code" href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">is_terminal</a>(<span class="keyword">const</span> dd &amp;dd);</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">bool</span> value_of(<span class="keyword">const</span> dd &amp;dd);</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keyword">friend</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">label_t</a> <a class="code" href="group__module____bdd.html#gaac8586a925cf7a95ceca026ad29259fb">min_var</a>(<span class="keyword">const</span> dd &amp;dd);</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <span class="keyword">friend</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">label_t</a> <a class="code" href="group__module____bdd.html#gaf48a24c478608bfdf3e9f6a1997df104">max_var</a>(<span class="keyword">const</span> dd &amp;dd);</div>
 <div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160; </div>
 <div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> to_policy, <span class="keyword">typename</span> from_policy&gt;</div>
 <div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span>convert_dd_policy;</div>
@@ -283,86 +283,51 @@ $(document).ready(function(){initNavTree('dd_8h_source.html',''); initResizable(
 <div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    : _union(dd.file), negate(dd.negate)</div>
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  { }</div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160; </div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code" href="group__module____bdd.html#ga7e9e73ba8dd7750fc6e72ee7707e0718">is_canonical</a>(<span class="keyword">const</span> dd &amp;dd)</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  {</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    <span class="keywordflow">return</span> dd-&gt;canonical;</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  }</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160; </div>
-<div class="line"><a name="l00315"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1dd.html#a811197a3fa59b8a1b63de06f2101a0a7">  315</a></span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code" href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">is_terminal</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a> &amp;<a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>)</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  {</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>-&gt;<a class="code" href="classadiar_1_1internal_1_1dd.html#a811197a3fa59b8a1b63de06f2101a0a7">is_terminal</a>();</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  }</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160; </div>
-<div class="line"><a name="l00323"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1dd.html#a9e01a1d764d7ec048ce8e80607c7a496">  323</a></span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">bool</span> value_of(<span class="keyword">const</span> <a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a> &amp;<a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>)</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  {</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>.<a class="code" href="classadiar_1_1internal_1_1dd.html#a2552dde28e5e045c0b1b9271e9db8807">negate</a> ^ <a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>-&gt;value();</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  }</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> dd_type, <span class="keyword">typename</span> __dd_type&gt;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  <span class="keyword">class </span>dd_policy</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  {</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="comment">// TODO: rename to &#39;dd_t&#39;?</span></div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    <span class="keyword">typedef</span> dd_type reduced_t;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160; </div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    <span class="comment">// TODO: rename to &#39;__dd_t&#39;?</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    <span class="keyword">typedef</span> __dd_type unreduced_t;</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160; </div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    <span class="comment">// Constants</span></div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::node_t node_t;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160; </div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::ptr_t ptr_t;</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160; </div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code" href="group__module____bdd.html#gaa770b1d0ae408db9345b064a4dd8390d">is_false</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a> &amp;<a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>)</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  {</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">is_terminal</a>(<a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>) &amp;&amp; !value_of(<a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>);</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  }</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160; </div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code" href="group__module____bdd.html#ga669be328589daa02ac9e609610ce64a1">is_true</a>(<span class="keyword">const</span> dd &amp;dd)</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  {</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">is_terminal</a>(dd) &amp;&amp; value_of(dd);</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  }</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160; </div>
-<div class="line"><a name="l00347"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1dd.html#a715f7e955c75080b60af0a3a2f59f50e">  347</a></span>&#160;  <span class="keyword">inline</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">dd::label_t</a> <a class="code" href="group__module____bdd.html#gaac8586a925cf7a95ceca026ad29259fb">min_var</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a> &amp;<a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>)</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  {</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>-&gt;first_level();</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  }</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160; </div>
-<div class="line"><a name="l00355"></a><span class="lineno"><a class="line" href="classadiar_1_1internal_1_1dd.html#a6c7bf3aae335351ed1ee703f0209a902">  355</a></span>&#160;  <span class="keyword">inline</span> <a class="code" href="classadiar_1_1internal_1_1dd.html#acf51971b31ef654d9a89b6828f1c3e5d">dd::label_t</a> <a class="code" href="group__module____bdd.html#gaf48a24c478608bfdf3e9f6a1997df104">max_var</a>(<span class="keyword">const</span> <a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a> &amp;<a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>)</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;  {</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classadiar_1_1internal_1_1dd.html">dd</a>-&gt;last_level();</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  }</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160; </div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> dd_type, <span class="keyword">typename</span> __dd_type&gt;</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  <span class="keyword">class </span>dd_policy</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  {</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    <span class="comment">// TODO: rename to &#39;dd_t&#39;?</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="keyword">typedef</span> dd_type reduced_t;</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160; </div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    <span class="comment">// TODO: rename to &#39;__dd_t&#39;?</span></div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    <span class="keyword">typedef</span> __dd_type unreduced_t;</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160; </div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    <span class="comment">// Constants</span></div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::node_t node_t;</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160; </div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::ptr_t ptr_t;</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160; </div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::label_t label_t;</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160; </div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    <span class="keyword">static</span> constexpr label_t MAX_LABEL = dd_type::MAX_LABEL;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160; </div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::id_t id_t;</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160; </div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    <span class="keyword">static</span> constexpr id_t MAX_ID = dd_type::MAX_ID;</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160; </div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> __dd_type::shared_nodes_t shared_nodes_t;</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160; </div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> __dd_type::shared_arcs_t shared_arcs_t;</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160; </div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> ptr_t</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    reduction_rule(<span class="keyword">const</span> node_t &amp;n);</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160; </div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">typename</span> node_t::children_t</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;    reduction_rule_inv(<span class="keyword">const</span> ptr_t &amp;child);</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160; </div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    <span class="comment">// TODO: stop using this one in favour of the other one below</span></div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;    compute_cofactor(<span class="keywordtype">bool</span> on_curr_level, ptr_t &amp;low, ptr_t &amp;high);</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160; </div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">typename</span> node_t::children_t</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    compute_cofactor(<span class="keywordtype">bool</span> on_curr_level, <span class="keyword">const</span> <span class="keyword">typename</span> node_t::children_t &amp;children);</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;  };</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;}</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160; </div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_INTERNAL_DD_H</span></div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::label_t label_t;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160; </div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    <span class="keyword">static</span> constexpr label_t MAX_LABEL = dd_type::MAX_LABEL;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160; </div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::id_t id_t;</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160; </div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keyword">static</span> constexpr id_t MAX_ID = dd_type::MAX_ID;</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160; </div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> __dd_type::shared_nodes_t shared_nodes_t;</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160; </div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> __dd_type::shared_arcs_t shared_arcs_t;</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160; </div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> ptr_t</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    reduction_rule(<span class="keyword">const</span> node_t &amp;n);</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160; </div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">typename</span> node_t::children_t</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    reduction_rule_inv(<span class="keyword">const</span> ptr_t &amp;child);</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160; </div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    <span class="comment">// TODO: stop using this one in favour of the other one below</span></div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    compute_cofactor(<span class="keywordtype">bool</span> on_curr_level, ptr_t &amp;low, ptr_t &amp;high);</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160; </div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">typename</span> node_t::children_t</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    compute_cofactor(<span class="keywordtype">bool</span> on_curr_level, <span class="keyword">const</span> <span class="keyword">typename</span> node_t::children_t &amp;children);</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;  };</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;}</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160; </div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_INTERNAL_DD_H</span></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____dd_html"><div class="ttname"><a href="classadiar_1_1internal_1_1____dd.html">adiar::internal::__dd</a></div><div class="ttdef"><b>Definition:</b> dd.h:46</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____dd_html_a35789c5b67874759a2a5a1759d7a25ed"><div class="ttname"><a href="classadiar_1_1internal_1_1____dd.html#a35789c5b67874759a2a5a1759d7a25ed">adiar::internal::__dd::shared_nodes_t</a></div><div class="ttdeci">shared_levelized_file&lt; node_t &gt; shared_nodes_t</div><div class="ttdoc">Type of the file object node-based representation of a diagram.</div><div class="ttdef"><b>Definition:</b> dd.h:56</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____dd_html_a41e476e94afe2c5093e3b007cc6bd1c7"><div class="ttname"><a href="classadiar_1_1internal_1_1____dd.html#a41e476e94afe2c5093e3b007cc6bd1c7">adiar::internal::__dd::shared_arcs_t</a></div><div class="ttdeci">shared_levelized_file&lt; arc_t &gt; shared_arcs_t</div><div class="ttdoc">Type of the file object arc-based representation of a diagram.</div><div class="ttdef"><b>Definition:</b> dd.h:66</div></div>
@@ -376,13 +341,9 @@ $(document).ready(function(){initNavTree('dd_8h_source.html',''); initResizable(
 <div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a355887367038d19632c86fb9c2717630"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a355887367038d19632c86fb9c2717630">adiar::internal::dd::is_negated</a></div><div class="ttdeci">bool is_negated() const</div><div class="ttdoc">Read-only access to the negation flag.</div><div class="ttdef"><b>Definition:</b> dd.h:203</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a3ff48e48329a9ac5e88fe982bec7aafd"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a3ff48e48329a9ac5e88fe982bec7aafd">adiar::internal::dd::nodes_t</a></div><div class="ttdeci">levelized_file&lt; node_t &gt; nodes_t</div><div class="ttdoc">File type for the file object representing the diagram.</div><div class="ttdef"><b>Definition:</b> dd.h:157</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a54f43ae8f2f16011bfa88600460b255c"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a54f43ae8f2f16011bfa88600460b255c">adiar::internal::dd::id_t</a></div><div class="ttdeci">node_t::id_t id_t</div><div class="ttdoc">Type of this node's level identifier.</div><div class="ttdef"><b>Definition:</b> dd.h:147</div></div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a6c7bf3aae335351ed1ee703f0209a902"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a6c7bf3aae335351ed1ee703f0209a902">adiar::internal::dd::max_var</a></div><div class="ttdeci">friend label_t max_var(const dd &amp;dd)</div><div class="ttdoc">Get the maximal occurring label in the decision diagram.</div><div class="ttdef"><b>Definition:</b> dd.h:355</div></div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a715f7e955c75080b60af0a3a2f59f50e"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a715f7e955c75080b60af0a3a2f59f50e">adiar::internal::dd::min_var</a></div><div class="ttdeci">friend label_t min_var(const dd &amp;dd)</div><div class="ttdoc">Get the minimal occurring label in the decision diagram.</div><div class="ttdef"><b>Definition:</b> dd.h:347</div></div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a811197a3fa59b8a1b63de06f2101a0a7"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a811197a3fa59b8a1b63de06f2101a0a7">adiar::internal::dd::is_terminal</a></div><div class="ttdeci">friend bool is_terminal(const dd &amp;dd)</div><div class="ttdoc">Whether a given decision diagram represents a terminal.</div><div class="ttdef"><b>Definition:</b> dd.h:315</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a84debd8766eb4dcda85255bb09bfbbd7"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a84debd8766eb4dcda85255bb09bfbbd7">adiar::internal::dd::MAX_ID</a></div><div class="ttdeci">static constexpr id_t MAX_ID</div><div class="ttdoc">The maximal possible value for this nodes level identifier.</div><div class="ttdef"><b>Definition:</b> dd.h:152</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a97c6094b5089c1f48ae271d605c80fbe"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a97c6094b5089c1f48ae271d605c80fbe">adiar::internal::dd::file</a></div><div class="ttdeci">shared_nodes_t file</div><div class="ttdoc">The file describing the actual DAG of the decision diagram.</div><div class="ttdef"><b>Definition:</b> dd.h:170</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a99124efed79851259374606556f8b94b"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a99124efed79851259374606556f8b94b">adiar::internal::dd::deref</a></div><div class="ttdeci">void deref()</div><div class="ttdoc">Release the claim on the underlying file, thereby decreasing its reference counter....</div><div class="ttdef"><b>Definition:</b> dd.h:178</div></div>
-<div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a9e01a1d764d7ec048ce8e80607c7a496"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a9e01a1d764d7ec048ce8e80607c7a496">adiar::internal::dd::value_of</a></div><div class="ttdeci">friend bool value_of(const dd &amp;dd)</div><div class="ttdoc">Obtain the terminal's value (if 'is_terminal' is true).</div><div class="ttdef"><b>Definition:</b> dd.h:323</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_a9f6d48741e8cfbf2514618c82b477282"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#a9f6d48741e8cfbf2514618c82b477282">adiar::internal::dd::operator-&gt;</a></div><div class="ttdeci">const nodes_t * operator-&gt;() const</div><div class="ttdoc">Read-only access to the members of the raw files and meta information, i.e. this is similar to writin...</div><div class="ttdef"><b>Definition:</b> dd.h:221</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_aa7378b0a0b663a0fe2ff98e0dba37769"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#aa7378b0a0b663a0fe2ff98e0dba37769">adiar::internal::dd::file_ptr</a></div><div class="ttdeci">const shared_nodes_t file_ptr() const</div><div class="ttdoc">Read-only access to the raw files and meta information.</div><div class="ttdef"><b>Definition:</b> dd.h:211</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1dd_html_aa7956ba576d3e5c71372399acfac00f0"><div class="ttname"><a href="classadiar_1_1internal_1_1dd.html#aa7956ba576d3e5c71372399acfac00f0">adiar::internal::dd::max_1level_cut</a></div><div class="ttdeci">cut_size_t max_1level_cut(const cut_type ct) const</div><div class="ttdoc">Obtain the 1-level cut of the desired type, i.e. of the sub-graph including the desired type of arcs.</div><div class="ttdef"><b>Definition:</b> dd.h:232</div></div>
@@ -397,9 +358,6 @@ $(document).ready(function(){initNavTree('dd_8h_source.html',''); initResizable(
 <div class="ttc" id="aclassadiar_1_1internal_1_1node_html_ab56c0f05e696d0aa8f78f3095cf77eea"><div class="ttname"><a href="classadiar_1_1internal_1_1node.html#ab56c0f05e696d0aa8f78f3095cf77eea">adiar::internal::node::id_t</a></div><div class="ttdeci">ptr_t::id_t id_t</div><div class="ttdoc">Type of this node's level identifier.</div><div class="ttdef"><b>Definition:</b> node.h:67</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1ptr__uint64_html"><div class="ttname"><a href="classadiar_1_1internal_1_1ptr__uint64.html">adiar::internal::ptr_uint64</a></div><div class="ttdoc">A (possibly flagged) unique identifier of a terminal, an internal node, or nothing (NIL).</div><div class="ttdef"><b>Definition:</b> ptr.h:49</div></div>
 <div class="ttc" id="agroup__module____bdd_html_ga0e5de81efc49b8e0aaa137013e2422c1"><div class="ttname"><a href="group__module____bdd.html#ga0e5de81efc49b8e0aaa137013e2422c1">adiar::is_terminal</a></div><div class="ttdeci">bool is_terminal(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents a terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:598</div></div>
-<div class="ttc" id="agroup__module____bdd_html_ga669be328589daa02ac9e609610ce64a1"><div class="ttname"><a href="group__module____bdd.html#ga669be328589daa02ac9e609610ce64a1">adiar::is_true</a></div><div class="ttdeci">bool is_true(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents true terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:610</div></div>
-<div class="ttc" id="agroup__module____bdd_html_ga7e9e73ba8dd7750fc6e72ee7707e0718"><div class="ttname"><a href="group__module____bdd.html#ga7e9e73ba8dd7750fc6e72ee7707e0718">adiar::is_canonical</a></div><div class="ttdeci">bool is_canonical(const bdd &amp;f)</div><div class="ttdef"><b>Definition:</b> bdd.h:592</div></div>
-<div class="ttc" id="agroup__module____bdd_html_gaa770b1d0ae408db9345b064a4dd8390d"><div class="ttname"><a href="group__module____bdd.html#gaa770b1d0ae408db9345b064a4dd8390d">adiar::is_false</a></div><div class="ttdeci">bool is_false(const bdd &amp;f)</div><div class="ttdoc">Whether this BDD represents false terminal.</div><div class="ttdef"><b>Definition:</b> bdd.h:604</div></div>
 <div class="ttc" id="agroup__module____bdd_html_gaac8586a925cf7a95ceca026ad29259fb"><div class="ttname"><a href="group__module____bdd.html#gaac8586a925cf7a95ceca026ad29259fb">adiar::min_var</a></div><div class="ttdeci">bdd::label_t min_var(const bdd &amp;f)</div><div class="ttdoc">Get the minimal occurring variable in this BDD.</div><div class="ttdef"><b>Definition:</b> bdd.h:709</div></div>
 <div class="ttc" id="agroup__module____bdd_html_gaf48a24c478608bfdf3e9f6a1997df104"><div class="ttname"><a href="group__module____bdd.html#gaf48a24c478608bfdf3e9f6a1997df104">adiar::max_var</a></div><div class="ttdeci">bdd::label_t max_var(const bdd &amp;f)</div><div class="ttdoc">Get the maximal occurring variable in this BDD.</div><div class="ttdef"><b>Definition:</b> bdd.h:715</div></div>
 </div><!-- fragment --></div><!-- contents -->
