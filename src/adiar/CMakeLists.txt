@@ -36,6 +36,7 @@ set(HEADERS
   internal/cnl.h
   internal/cut.h
   internal/dd.h
+  internal/dd_func.h
   internal/dot.h
   internal/memory.h
   internal/util.h
