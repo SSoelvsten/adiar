@@ -369,6 +369,67 @@ go_bandit([]() {
         });
       });
 
+      describe("width", [&]() {
+        it("is 0 for the False terminal", [&]() {
+          AssertThat(nf_F.width, Is().EqualTo(0u));
+        });
+
+        it("is 0 for True terminal", [&]() {
+          AssertThat(nf_T.width, Is().EqualTo(0u));
+        });
+
+        it("is 1 for single node [1]", [&]() {
+          AssertThat(nf_42.width, Is().EqualTo(1u));
+        });
+
+        it("is 1 for single node [2]", [&]() {
+          AssertThat(nf_not42.width, Is().EqualTo(1u));
+        });
+
+        it("is 1 for single node [2]", [&]() {
+          AssertThat(nf_42andnot42.width, Is().EqualTo(1u));
+        });
+
+        it("is 2 for x21 + x42", [&]() {
+          AssertThat(nf_21xor42.width, Is().EqualTo(2u));
+        });
+
+        it("is 2 for ~(x0 + x1) \\/ x2", [&]() {
+          AssertThat(nf_0xnor1_or_2.width, Is().EqualTo(2u));
+        });
+
+        it("is 2 for (x0 + x1 + x2 + x3) mod 2", [&]() {
+          AssertThat(nf_sum01234_mod2.width, Is().EqualTo(2u));
+        });
+
+        it("is 3 for (x1 -> !x3) \\/ (x2 /\\ (x1 \\/ x3))", []() {
+          /*
+          //               1            ---- x0
+          //              / \
+          //             _2_ \          ---- x1
+          //            /   \ \
+          //            3   4  5        ---- x2
+          //           / \ / \/ \
+          //           F 6 F T  F       ---- x3
+          //            / \
+          //            F T
+           */
+          levelized_file<node> nf;
+          {
+            node_writer nw(nf);
+            nw << node(3, node::MAX_ID,   node::ptr_t(false), node::ptr_t(true))  // n6
+               << node(2, node::MAX_ID,   node::ptr_t(true),  node::ptr_t(false)) // n5 (non-canonical)
+               << node(2, node::MAX_ID-1, node::ptr_t(false), node::ptr_t(true))  // n4 (non-canonical)
+               << node(2, node::MAX_ID-2, node::ptr_t(false), node::ptr_t(3, node::MAX_ID)) // n3
+               << node(1, node::MAX_ID,   node::ptr_t(2, node::MAX_ID-2), node::ptr_t(2, node::MAX_ID-1)) // n2
+               << node(0, node::MAX_ID,   node::ptr_t(1, node::MAX_ID),   node::ptr_t(2, node::MAX_ID));  // n1
+          }
+
+          AssertThat(nf.width, Is().EqualTo(3u));
+        });
+
+      });
+
       describe("number of terminals", [&]() {
         it("is [1,0] for the False terminal", [&]() {
           AssertThat(nf_F.number_of_terminals[false], Is().EqualTo(1u));

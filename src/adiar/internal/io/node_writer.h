@@ -188,6 +188,7 @@ namespace adiar::internal
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
       if (_latest_node == dummy()) { // First node pushed
+        _file_ptr->width = !n.is_terminal();
         _canonical = n.is_terminal() || n.id() == node::MAX_ID;
       } else { // Check validity of input based on prior written node
         adiar_debug(!_latest_node.is_terminal(),
@@ -198,13 +199,13 @@ namespace adiar::internal
         // Check it is canonically sorted
         if (_canonical) {
           if (_latest_node.label() == n.label()) {
-            bool id_diff = n.uid().id() == _latest_node.id() - 1u;
-            bool children_ordered = n.high() < _latest_node.high()
+            const bool id_diff = n.uid().id() == _latest_node.id() - 1u;
+            const bool children_ordered = n.high() < _latest_node.high()
               || (n.high() == _latest_node.high() && n.low() < _latest_node.low());
 
             _canonical = id_diff && children_ordered;
           } else {
-            bool id_reset = n.id() == node::MAX_ID;
+            const bool id_reset = n.id() == node::MAX_ID;
             _canonical = id_reset;
           }
         }
@@ -212,6 +213,7 @@ namespace adiar::internal
         // Check if this is the first node of a new level
         if (n.label() != _latest_node.label()) {
           // Update level information with the level just finished
+          _file_ptr->width = std::max(_file_ptr->width, _level_size);
           levelized_file_writer::push(level_info(_latest_node.label(),
                                                  _level_size));
           _level_size = 0u;
@@ -243,9 +245,9 @@ namespace adiar::internal
       }
 
       // Update terminal counters
-      if (n.low().is_terminal()) { _file_ptr->number_of_terminals[n.low().value()]++; }
+      if (n.low().is_terminal())  { _file_ptr->number_of_terminals[n.low().value()]++; }
       if (n.high().is_terminal()) { _file_ptr->number_of_terminals[n.high().value()]++; }
-      if (n.uid().is_terminal()) { _file_ptr->number_of_terminals[n.uid().value()]++; }
+      if (n.uid().is_terminal())  { _file_ptr->number_of_terminals[n.uid().value()]++; }
 
       // Write node to file
       _latest_node = n;
