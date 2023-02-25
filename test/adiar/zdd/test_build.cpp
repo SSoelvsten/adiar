@@ -17,6 +17,8 @@ go_bandit([]() {
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(0u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
@@ -43,6 +45,8 @@ go_bandit([]() {
 
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
@@ -71,6 +75,8 @@ go_bandit([]() {
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(0u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
@@ -97,6 +103,8 @@ go_bandit([]() {
 
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
@@ -130,6 +138,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(1u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
@@ -159,6 +169,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
@@ -190,6 +202,8 @@ go_bandit([]() {
 
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
@@ -227,6 +241,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
@@ -274,6 +290,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(1u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
@@ -304,6 +322,8 @@ go_bandit([]() {
 
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
@@ -341,6 +361,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
@@ -388,6 +410,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(1u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(3u));
@@ -419,6 +443,8 @@ go_bandit([]() {
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(0u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
@@ -448,6 +474,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
@@ -499,6 +527,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(1u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
@@ -530,6 +560,8 @@ go_bandit([]() {
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(0u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
@@ -554,7 +586,9 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().False());
 
         level_info_test_stream ms(res);
-        AssertThat(ms.can_pull(), Is().False());
+        AssertThat(ms.can_pull(), Is().False());\
+
+        AssertThat(res->width, Is().EqualTo(0u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
@@ -588,6 +622,8 @@ go_bandit([]() {
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(0u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
@@ -619,6 +655,8 @@ go_bandit([]() {
 
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
@@ -677,6 +715,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(1u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
@@ -708,6 +748,8 @@ go_bandit([]() {
 
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
@@ -759,6 +801,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(1u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
@@ -809,6 +853,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(1u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
@@ -841,6 +887,8 @@ go_bandit([]() {
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(0u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
@@ -867,6 +915,8 @@ go_bandit([]() {
 
         level_info_test_stream ms(res);
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(0u));
@@ -929,6 +979,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(2u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(5u));
@@ -1013,6 +1065,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(3u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(10u));
@@ -1103,6 +1157,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(3u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(12u));
@@ -1197,6 +1253,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(2u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(4u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(12u));
 
@@ -1287,6 +1345,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(3u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(6u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(12u));
 
@@ -1356,6 +1416,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(1u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(6u));
@@ -1427,6 +1489,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(2u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(3u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(7u));
@@ -1586,6 +1650,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(4u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(7u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(25u));
 
@@ -1665,6 +1731,8 @@ go_bandit([]() {
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(2u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(3u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(9u));
@@ -1879,6 +1947,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(6u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().GreaterThanOrEqualTo(12u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().LessThanOrEqualTo(39u));
 
@@ -1942,6 +2012,8 @@ go_bandit([]() {
         AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
         AssertThat(ms.can_pull(), Is().False());
 
+        AssertThat(res->width, Is().EqualTo(1u));
+
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
@@ -1967,6 +2039,8 @@ go_bandit([]() {
         AssertThat(ns.can_pull(), Is().True());
         AssertThat(ns.pull(), Is().EqualTo(node(false)));
         AssertThat(ns.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
 
         AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
         AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
