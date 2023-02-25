@@ -44,6 +44,11 @@ namespace adiar::internal
       bool canonical = false;
 
       //////////////////////////////////////////////////////////////////////////
+      /// \brief The diagram's width, i.e. the size of the largest level.
+      //////////////////////////////////////////////////////////////////////////
+      size_t width = std::numeric_limits<size_t>::max();
+
+      //////////////////////////////////////////////////////////////////////////
       /// \brief An upper bound for the maximum 1-level cut of the DAG (with or
       ///        without arcs to each respective terminal). Use
       ///        <tt>cut_type</tt> to index the desired variant of the type.
