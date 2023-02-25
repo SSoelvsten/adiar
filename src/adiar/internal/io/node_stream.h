@@ -13,15 +13,15 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief         Stream of nodes from a node file.
   ///
-  /// \param REVERSE Whether the reading direction should be reversed
+  /// \param reverse Whether the reading direction should be reversed
   ///                (relatively to the ordering of nodes within the file).
   ///
   /// \sa shared_levelized_file<node>
   //////////////////////////////////////////////////////////////////////////////
-  template<bool REVERSE = false>
-  class node_stream : public levelized_file_stream<node, !REVERSE>
+  template<bool reverse = false>
+  class node_stream : public levelized_file_stream<node, !reverse>
   {
-    using parent_t = levelized_file_stream<node, !REVERSE>;
+    using parent_t = levelized_file_stream<node, !reverse>;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ namespace adiar::internal
     /// \brief Create attached to a node file.
     ////////////////////////////////////////////////////////////////////////////
     node_stream(const levelized_file<node> &file,
-                bool negate = false)
+                const bool negate = false)
       : parent_t(file, negate)
     { }
 
@@ -41,7 +41,7 @@ namespace adiar::internal
     /// \brief Create attached to a shared node file.
     ////////////////////////////////////////////////////////////////////////////
     node_stream(const shared_ptr<levelized_file<node>> &file,
-                bool negate = false)
+                const bool negate = false)
       : parent_t(file, negate)
     { }
 
@@ -55,7 +55,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the stream contains more elements.
     ////////////////////////////////////////////////////////////////////////////
-    bool can_pull()
+    bool can_pull() const
     { return parent_t::template can_pull<0>(); }
 
     ////////////////////////////////////////////////////////////////////////////
