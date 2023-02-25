@@ -116,9 +116,19 @@ namespace adiar
 
     } while (curr_label-- > min_var);
 
-    // Maximum 1-level cut
+    // Width
     const bdd::label_t first_lvl_with_lt = vars - threshold; // 0-indexed
     const bdd::label_t first_lvl_with_gt = threshold;        // 0-indexed
+
+    const bdd::label_t shallowest_widest_lvl = std::min(first_lvl_with_lt, first_lvl_with_gt);
+
+    // The above are the number of levels (not the level number or the label).
+    // Hence, we directly get the width from the 'shallowest_widest_lvl'. Since
+    // these are 0-indexed, we need to add one.
+    const bdd::label_t width = shallowest_widest_lvl + 1;
+    nf->width = width;
+
+    // Maximum 1-level cut
 
     // A single gt_terminal is created on each level after having seen threshold+1
     // many levels (including said level).
@@ -132,8 +142,6 @@ namespace adiar
     // the end but still needs threshold-i+1 many variable to be set to true.
     const size_t lt_terminals = threshold;
 
-    const bdd::label_t shallowest_widest_lvl = std::min(first_lvl_with_lt, first_lvl_with_gt);
-
     const size_t internal_cut_below_shallowest_lvl = 2u * (shallowest_widest_lvl + 1u)
       // Do not count the one gt_terminal (if any)
       - (first_lvl_with_gt == shallowest_widest_lvl)
@@ -146,7 +154,7 @@ namespace adiar
     // nodes on either end, since their in-degree is only 1 and not 2.
     const size_t internal_cut_above_shallowest_lvl = shallowest_widest_lvl == 0
       ? 1u
-      : (2u * (shallowest_widest_lvl + 1u) - 2u);
+      : (2u * width - 2u);
 
     const bdd::label_t deepest_widest_lvl = std::max(first_lvl_with_lt, first_lvl_with_gt);
 
