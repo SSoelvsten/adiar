@@ -278,12 +278,12 @@ namespace adiar::internal
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Overwrite the number of false and true arcs.
+    /// \brief Increase the width to the maximum of the current or the given
+    ///        width.
     ////////////////////////////////////////////////////////////////////////////
-    void unsafe_set_number_of_terminals(size_t number_of_false, size_t number_of_true)
+    void unsafe_inc_width(const size_t &width)
     {
-      _file_ptr->number_of_terminals[false] = number_of_false;
-      _file_ptr->number_of_terminals[true]  = number_of_true;
+      _file_ptr->width = std::max(_file_ptr->width, width);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -302,6 +302,15 @@ namespace adiar::internal
     void unsafe_inc_2level_cut(const cuts_t &o)
     {
       inc_cut(_file_ptr->max_2level_cut, o);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Overwrite the number of false and true arcs.
+    ////////////////////////////////////////////////////////////////////////////
+    void unsafe_set_number_of_terminals(size_t number_of_false, size_t number_of_true)
+    {
+      _file_ptr->number_of_terminals[false] = number_of_false;
+      _file_ptr->number_of_terminals[true]  = number_of_true;
     }
 
     ////////////////////////////////////////////////////////////////////////////
