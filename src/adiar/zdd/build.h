@@ -79,7 +79,6 @@ namespace adiar
     }
 
     internal::shared_levelized_file<zdd::node_t> nf;
-    nf->width = 0u; // TODO: remove with O(1) computation
 
     internal::node_writer nw(nf);
 
@@ -171,8 +170,6 @@ namespace adiar
 
       adiar_debug(level_size > 0, "Should have output a node");
       nw.unsafe_push(internal::level_info(curr_label, level_size));
-
-      nf->width = std::max(nf->width, level_size); // TODO: remove with O(1) computation below
 
       prior_label = curr_label;
       prior_min_id = curr_id + 1;

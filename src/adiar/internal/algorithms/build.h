@@ -17,7 +17,6 @@ namespace adiar::internal
     node_writer nw(nf);
     nw.unsafe_push(node(value));
 
-    nf->width = 0;
     nf->number_of_terminals[value] = 1;
 
     return nf;
@@ -36,8 +35,6 @@ namespace adiar::internal
 
       nw.unsafe_push(level_info(label,1u));
     }
-
-    nf->width = 1;
 
     return nf;
   }
@@ -77,9 +74,6 @@ namespace adiar::internal
         nw.unsafe_push(next_node);
         nw.unsafe_push(level_info(next_label,1u));
       }
-
-      // Mark the width to be 1, as it is a chain.
-      nf->width = 1;
 
       // Compute 1-level cut sizes better than 'nw.detach()' will do on return.
       const size_t internal_arcs = number_of_levels > 1 ? (link_low + link_high) : 1u;

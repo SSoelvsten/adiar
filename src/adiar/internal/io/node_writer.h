@@ -135,8 +135,7 @@ namespace adiar::internal
       if (_latest_node != dummy()) {
         // Output level information of the final level
         if (!_latest_node.is_terminal()) {
-          levelized_file_writer::push(level_info(_latest_node.label(),
-                                                 _level_size));
+          unsafe_push(level_info(_latest_node.label(), _level_size));
         }
 
         _level_size = 0u; // TODO: move to attach...?
@@ -188,8 +187,10 @@ namespace adiar::internal
       adiar_assert(attached(), "file_writer is not yet attached to any file");
 
       if (_latest_node == dummy()) { // First node pushed
-        _file_ptr->width = !n.is_terminal();
         _canonical = n.is_terminal() || n.id() == node::MAX_ID;
+        if (n.is_terminal()) {
+          _file_ptr->number_of_terminals[n.uid().value()]++;
+        }
       } else { // Check validity of input based on prior written node
         adiar_debug(!_latest_node.is_terminal(),
                      "Cannot push a node after having pushed a terminal");
@@ -213,9 +214,7 @@ namespace adiar::internal
         // Check if this is the first node of a new level
         if (n.label() != _latest_node.label()) {
           // Update level information with the level just finished
-          _file_ptr->width = std::max(_file_ptr->width, _level_size);
-          levelized_file_writer::push(level_info(_latest_node.label(),
-                                                 _level_size));
+          unsafe_push(level_info(_latest_node.label(), _level_size));
           _level_size = 0u;
 
           // Update 1-level cut information
@@ -244,21 +243,16 @@ namespace adiar::internal
         else { _curr_1level_short_internal++; }
       }
 
-      // Update terminal counters
-      if (n.low().is_terminal())  { _file_ptr->number_of_terminals[n.low().value()]++; }
-      if (n.high().is_terminal()) { _file_ptr->number_of_terminals[n.high().value()]++; }
-      if (n.uid().is_terminal())  { _file_ptr->number_of_terminals[n.uid().value()]++; }
-
       // Write node to file
       _latest_node = n;
       _level_size++;
 
-      levelized_file_writer::template push<0>(n);
+      unsafe_push(n);
     }
 
     node_writer& operator<< (const node& n)
     {
-      this -> push(n);
+      this->push(n);
       return *this;
     }
 
@@ -266,26 +260,21 @@ namespace adiar::internal
     /// \brief Write directly to level information file without any checks.
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const level_info &m)
-    { levelized_file_writer::push(m); }
+    {
+      _file_ptr->width = std::max<size_t>(_file_ptr->width, m.width());
+
+      levelized_file_writer::push(m);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to the underlying node file without any checks.
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const node &n)
     {
-      levelized_file_writer::template push<0>(n);
-
-      if (n.low().is_terminal()) { _file_ptr->number_of_terminals[n.low().value()]++; }
+      if (n.low().is_terminal())  { _file_ptr->number_of_terminals[n.low().value()]++; }
       if (n.high().is_terminal()) { _file_ptr->number_of_terminals[n.high().value()]++; }
-    }
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Increase the width to the maximum of the current or the given
-    ///        width.
-    ////////////////////////////////////////////////////////////////////////////
-    void unsafe_inc_width(const size_t &width)
-    {
-      _file_ptr->width = std::max(_file_ptr->width, width);
+      levelized_file_writer::template push<0>(n);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -336,7 +325,7 @@ namespace adiar::internal
     {
       const size_t number_of_nodes = levelized_file_writer::size();
       const size_t number_of_false = _file_ptr->number_of_terminals[false];
-      const size_t number_of_true = _file_ptr->number_of_terminals[true];
+      const size_t number_of_true  = _file_ptr->number_of_terminals[true];
 
       // -----------------------------------------------------------------------
       // Upper bound for any directed cut based on number of internal nodes.

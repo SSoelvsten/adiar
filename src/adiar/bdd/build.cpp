@@ -126,7 +126,6 @@ namespace adiar
     // Hence, we directly get the width from the 'shallowest_widest_lvl'. Since
     // these are 0-indexed, we need to add one.
     const bdd::label_t width = shallowest_widest_lvl + 1;
-    nf->width = width;
 
     // Maximum 1-level cut
 
