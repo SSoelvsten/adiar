@@ -290,7 +290,6 @@ namespace adiar::internal
     // Add number of nodes to level information, if any nodes were pushed to the output.
     if (!out_node.low().is_nil() /* && !out_node.high().is_nil() */) {
       const size_t width = dd_policy::MAX_ID - out_id;
-      out_writer.unsafe_inc_width(width);
       out_writer.unsafe_push(level_info(label, width));
     }
 
@@ -402,8 +401,6 @@ namespace adiar::internal
     shared_levelized_file<typename dd_policy::node_t> out_file;
     out_file->canonical = true;
 
-    out_file->width     = 0u;
-
     out_file->max_1level_cut[cut_type::INTERNAL]       = 0u;
     out_file->max_1level_cut[cut_type::INTERNAL_FALSE] = 0u;
     out_file->max_1level_cut[cut_type::INTERNAL_TRUE]  = 0u;
@@ -434,8 +431,6 @@ namespace adiar::internal
         out_writer.unsafe_push(node(label, dd_policy::MAX_ID, e_low.target(), e_high.target()));
 
         out_writer.unsafe_push(level_info(label,1u));
-
-        out_file->width = 1u;
 
         out_file->max_1level_cut[cut_type::INTERNAL]       = 1u;
 
