@@ -359,7 +359,7 @@ namespace adiar::internal
         for(size_t ct = 0u; ct < CUT_TYPES; ct++) {
           // Use smallest sound upper bound. Since it is not a terminal, then there
           // must be at least one in-going arc to the root.
-          _file_ptr->max_1level_cut[ct] = std::max(1lu, std::min({
+          _file_ptr->max_1level_cut[ct] = std::max<cut_size_t>(1lu, std::min<cut_size_t>({
                 _file_ptr->max_1level_cut[ct],
                 max_cut,
                 all_arcs_cut[ct]
