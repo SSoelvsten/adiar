@@ -120,7 +120,7 @@ go_bandit([]() {
       });
 
       it("can be 'moved' when existing [./]", [&curr_path]() {
-        std::string new_path = "./after-move-path.adiar";
+        std::string new_path = curr_path + "after-move-path.adiar";
         if (std::filesystem::exists(new_path)) {
           // Clean up after prior test run
           std::filesystem::remove(new_path);

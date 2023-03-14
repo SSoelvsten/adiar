@@ -852,7 +852,7 @@ go_bandit([]() {
       });
     });
 
-    describe("levelized_file() + levelized_file_stream + levelized_file_writer", [&tmp_path, &curr_path]() {
+    describe("levelized_file() + levelized_file_stream + levelized_file_writer", [&tmp_path/*, &curr_path*/]() {
       it("can read written content", []() {
         levelized_file<int> lf;
         {
@@ -1276,7 +1276,7 @@ go_bandit([]() {
     });
 
     describe("levelized_file.sort(const pred&, size_t idx)", [&tmp_path]() {
-      it("can sort an empty subfile [0]", [&tmp_path]() {
+      it("can sort an empty subfile [0]", []() {
         levelized_file<int> lf;
         lf.touch();
 
@@ -1287,7 +1287,7 @@ go_bandit([]() {
         AssertThat(lf.empty(), Is().True());
       });
 
-      it("can sort an empty subfile [1]", [&tmp_path]() {
+      it("can sort an empty subfile [1]", []() {
         levelized_file<int> lf;
         lf.touch();
 
@@ -1298,7 +1298,7 @@ go_bandit([]() {
         AssertThat(lf.empty(), Is().True());
       });
 
-      it("cannot sort an index out of bounds", [&tmp_path]() {
+      it("cannot sort an index out of bounds", []() {
         levelized_file<int> lf;
         lf.touch();
 
