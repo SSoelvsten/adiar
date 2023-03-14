@@ -11,9 +11,9 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   enum class assignment : char
   {
-    FALSE = 0, // false
-    TRUE  = 1, // true
-    NONE  = -1
+    False = 0, // false
+    True  = 1, // true
+    None  = -1
   };
 }
 

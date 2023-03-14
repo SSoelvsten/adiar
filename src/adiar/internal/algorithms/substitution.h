@@ -63,12 +63,12 @@ namespace adiar::internal
                                                     substitute_assignment_mgr &amgr)
   {
     switch (a) {
-    case assignment::FALSE:
+    case assignment::False:
       return substitute_policy::fix_false(n, amgr);
-    case assignment::TRUE:
+    case assignment::True:
       return substitute_policy::fix_true(n, amgr);
     default:
-    case assignment::NONE:
+    case assignment::None:
       return substitute_policy::keep_node(n, amgr);
     }
   }

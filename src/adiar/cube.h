@@ -26,9 +26,9 @@ namespace adiar
     /// \brief Possible values for each coordinate: 0, 1, and 2.
     ////////////////////////////////////////////////////////////////////////////
     enum class value_t : char {
-      FALSE     = 0, // false
-      TRUE      = 1, // true
-      DONT_CARE = 2
+      False     = 0, // false
+      True      = 1, // true
+      Dont_Care = 2
     };
 
     ////////////////////////////////////////////////////////////////////////////

@@ -48,7 +48,7 @@ namespace adiar
   public:
     assignment assignment_for_level(const zdd::label_t new_level) {
       forward_to_level(new_level);
-      return l_incl == new_level ? FIX_VALUE : assignment::NONE;
+      return l_incl == new_level ? FIX_VALUE : assignment::None;
     }
 
   public:
@@ -108,8 +108,8 @@ namespace adiar
       return dd;
     }
 
-    zdd_subset_label_assignment<assignment::FALSE> amgr(l);
-    return internal::substitute<zdd_offset_policy<zdd_subset_label_assignment<assignment::FALSE>>>(dd, amgr);
+    zdd_subset_label_assignment<assignment::False> amgr(l);
+    return internal::substitute<zdd_offset_policy<zdd_subset_label_assignment<assignment::False>>>(dd, amgr);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ namespace adiar
       return zdd_empty();
     }
 
-    zdd_subset_label_assignment<assignment::TRUE> amgr(l);
-    return internal::substitute<zdd_onset_policy<zdd_subset_label_assignment<assignment::TRUE>>>(dd, amgr);
+    zdd_subset_label_assignment<assignment::True> amgr(l);
+    return internal::substitute<zdd_onset_policy<zdd_subset_label_assignment<assignment::True>>>(dd, amgr);
   }
 }

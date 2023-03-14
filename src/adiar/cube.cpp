@@ -19,7 +19,7 @@ namespace adiar
     cube::var_t s = 0u;
     cube_stream cs(*this);
     while (cs.can_pull()) {
-      if (cs.pull().value() == cube::value_t::DONT_CARE) { s += 1; }
+      if (cs.pull().value() == cube::value_t::Dont_Care) { s += 1; }
     }
     return s;
   }
@@ -100,7 +100,7 @@ namespace adiar
       adiar_debug(a.key() == b.key(), "Is only called for matching variables");
 
       if (a.value() == b.value()) { return a; }
-      else { return cube::pair_t(a.key(), cube::value_t::DONT_CARE); }
+      else { return cube::pair_t(a.key(), cube::value_t::Dont_Care); }
     }
   };
 
@@ -123,8 +123,8 @@ namespace adiar
       adiar_debug(a.key() == b.key(), "Is only called for matching variables");
 
       return a.value() != b.value()
-        && a.value() != cube::value_t::DONT_CARE
-        && b.value() != cube::value_t::DONT_CARE;
+        && a.value() != cube::value_t::Dont_Care
+        && b.value() != cube::value_t::Dont_Care;
     }
 
     static inline cube::pair_t merge(const cube::pair_t& a, const cube::pair_t& b)

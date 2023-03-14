@@ -13,8 +13,8 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   enum boolean : bool
   {
-    FALSE = false,
-    TRUE  = true
+    False = false,
+    True  = true
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -23,8 +23,8 @@ namespace adiar
   ///
   /// \tparam key_type   The (integral) type for the map's key.
   ///
-  /// \tparam value_enum An enum type that has the two values 'FALSE' with the
-  ///                    integral value '0' and 'TRUE' with the integral value
+  /// \tparam value_enum An enum type that has the two values 'False' with the
+  ///                    integral value '0' and 'True' with the integral value
   ///                    '1', e.g. `bool_enum`.
   //////////////////////////////////////////////////////////////////////////////
   template<typename key_type, typename value_enum = boolean>
@@ -53,8 +53,8 @@ namespace adiar
     /* ================================= CHECKS ============================= */
     static_assert(std::is_integral<key_t>::value);
     static_assert(std::is_integral<raw_t>::value);
-    static_assert(static_cast<raw_t>(value_t::FALSE) == static_cast<raw_t>(0u));
-    static_assert(static_cast<raw_t>(value_t::TRUE)  == static_cast<raw_t>(1u));
+    static_assert(static_cast<raw_t>(value_t::False) == static_cast<raw_t>(0u));
+    static_assert(static_cast<raw_t>(value_t::True)  == static_cast<raw_t>(1u));
 
     /* =============================== VARIABLES ============================ */
   private:
@@ -112,17 +112,17 @@ namespace adiar
     { return static_cast<raw_t>(_val); }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain whether the value is 'FALSE'.
+    /// \brief Obtain whether the value is 'False'.
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_false() const
-    { return value() == value_t::FALSE; }
+    { return value() == value_t::False; }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain whether the value is 'TRUE'.
+    /// \brief Obtain whether the value is 'True'.
     ////////////////////////////////////////////////////////////////////////////
     inline bool is_true() const
     {
-      return value() == value_t::TRUE;
+      return value() == value_t::True;
     }
 
     /* ============================== COMPARATORS =========================== */

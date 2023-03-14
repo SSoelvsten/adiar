@@ -27,7 +27,7 @@ namespace adiar
         mp = mps.pull();
       }
 
-      return mp.level() == level ? mp.value() : assignment::NONE;
+      return mp.level() == level ? mp.value() : assignment::None;
     }
   };
 
