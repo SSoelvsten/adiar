@@ -27,3 +27,18 @@ jobs:
         with:
           workflow_id: 'system_test.yml'
           access_token: ${{ github.token }}
+      - uses: styfle/cancel-workflow-action@0.9.0
+        name: 'Linux Build'
+        with:
+          workflow_id: 'linux.yml'
+          access_token: ${{ github.token }}
+      - uses: styfle/cancel-workflow-action@0.9.0
+        name: 'MacOS Build'
+        with:
+          workflow_id: 'mac.yml'
+          access_token: ${{ github.token }}
+      - uses: styfle/cancel-workflow-action@0.9.0
+        name: 'Windows Build'
+        with:
+          workflow_id: 'windows.yml'
+          access_token: ${{ github.token }}

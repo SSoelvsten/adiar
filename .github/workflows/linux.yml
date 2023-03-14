@@ -1,0 +1,91 @@
+name: linux
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  skip_duplicate:
+    name: 'Skip job?'
+    continue-on-error: true
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          paths: '["src/", "test/"]'
+
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+
+  build_test:
+    name: 'Build + Test (Linux, ${{matrix.cc.cc}}-${{matrix.cc.v}})'
+    runs-on: ${{ matrix.os }}
+
+    needs: skip_duplicate
+    if: ${{ needs.skip_duplicate.outputs.should_skip != 'true' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        cc:
+          # GNU Compiler
+          - { cc: gcc,   v: 10, cxx: g++ } # oldest possible
+          - { cc: gcc,   v: 11, cxx: g++ } # default
+          - { cc: gcc,   v: 12, cxx: g++ } # newest
+
+          # Clang Compiler
+          - { cc: clang, v: 11, cxx: clang++ } # oldest possible
+          - { cc: clang, v: 14, cxx: clang++ } # default
+          - { cc: clang, v: 15, cxx: clang++ } # newst possible
+
+    env:
+      cc: ${{matrix.cc.cc}}-${{matrix.cc.v}}
+      cxx: ${{matrix.cc.cxx}}-${{matrix.cc.v}}
+
+    steps:
+    - name: Checkout commit
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+
+        echo "================================"
+        echo "Compiler"
+        sudo apt install build-essential
+        sudo apt install ${{matrix.cc.cc}}-${{matrix.cc.v}}
+
+        echo "================================"
+        echo "Boost"
+        sudo apt install libboost-all-dev
+
+        echo "================================"
+        echo "Graphviz"
+        sudo apt install graphviz
+
+    - name: Build tests
+      working-directory: ${{runner.workspace}}
+      run: |
+        export CC=${{env.cc}}
+        if [ "${{ matrix.cc.cc }}" != "gcc" ] ;
+        then
+          export CXX=${{env.cxx}}
+        fi
+
+        cmake -E make_directory ${{github.workspace}}/build
+        cd ${{github.workspace}}/build
+        cmake -D CMAKE_BUILD_TYPE=DEBUG -D ADIAR_STATS=ON ..
+        cmake --build . --target test-adiar
+
+    - name: Run tests
+      working-directory: ${{github.workspace}}/build
+      run: ./test/test-adiar --reporter=info --colorizer=light
