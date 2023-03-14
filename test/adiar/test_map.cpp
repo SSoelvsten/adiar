@@ -2,8 +2,8 @@
 
 enum class test_map_value
 {
-  FALSE   = 0,
-  TRUE    = 1,
+  False   = 0,
+  True    = 1,
   OTHER_1 = 2,
   OTHER_2 = 4,
 };
@@ -15,23 +15,23 @@ go_bandit([]() {
     describe("map_pair<key, value>", []() {
       describe("var_mapping<...>(label_t, enum), .key(), .value(), .raw_value()", []() {
         it("provides access to variable [42]", []() {
-          test_map_pair a(42, test_map_value::FALSE);
+          test_map_pair a(42, test_map_value::False);
           AssertThat(a.key(), Is().EqualTo(42));
         });
 
         it("provides access to variable [21]", []() {
-          test_map_pair a(21, test_map_value::TRUE);
+          test_map_pair a(21, test_map_value::True);
           AssertThat(a.key(), Is().EqualTo(21));
         });
 
         it("provides access to value [0]", []() {
-          test_map_pair a(21, test_map_value::FALSE);
-          AssertThat(a.value(), Is().EqualTo(test_map_value::FALSE));
+          test_map_pair a(21, test_map_value::False);
+          AssertThat(a.value(), Is().EqualTo(test_map_value::False));
         });
 
         it("provides access to value [1]", []() {
-          test_map_pair a(21, test_map_value::TRUE);
-          AssertThat(a.value(), Is().EqualTo(test_map_value::TRUE));
+          test_map_pair a(21, test_map_value::True);
+          AssertThat(a.value(), Is().EqualTo(test_map_value::True));
         });
 
         it("provides access to value [2]", []() {
@@ -45,12 +45,12 @@ go_bandit([]() {
         });
 
         it("provides access to raw value [0]", []() {
-          test_map_pair a(21, test_map_value::FALSE);
+          test_map_pair a(21, test_map_value::False);
           AssertThat(a.raw_value(), Is().EqualTo(0));
         });
 
         it("provides access to raw value [1]", []() {
-          test_map_pair a(21, test_map_value::TRUE);
+          test_map_pair a(21, test_map_value::True);
           AssertThat(a.raw_value(), Is().EqualTo(1));
         });
 
@@ -66,13 +66,13 @@ go_bandit([]() {
       });
 
       describe(".is_false()", []() {
-        it("is true for 'FALSE'", []() {
-          test_map_pair a(0, test_map_value::FALSE);
+        it("is true for 'False'", []() {
+          test_map_pair a(0, test_map_value::False);
           AssertThat(a.is_false(), Is().True());
         });
 
-        it("is false for 'FALSE'", []() {
-          test_map_pair a(0, test_map_value::TRUE);
+        it("is false for 'False'", []() {
+          test_map_pair a(0, test_map_value::True);
           AssertThat(a.is_false(), Is().False());
         });
 
@@ -87,13 +87,13 @@ go_bandit([]() {
       });
 
       describe(".is_true()", []() {
-        it("is false for 'FALSE'", []() {
-          test_map_pair a(0, test_map_value::FALSE);
+        it("is false for 'False'", []() {
+          test_map_pair a(0, test_map_value::False);
           AssertThat(a.is_true(), Is().False());
         });
 
-        it("is true for 'FALSE'", []() {
-          test_map_pair a(0, test_map_value::TRUE);
+        it("is true for 'False'", []() {
+          test_map_pair a(0, test_map_value::True);
           AssertThat(a.is_true(), Is().True());
         });
 
@@ -110,60 +110,60 @@ go_bandit([]() {
         it("converts correctly from boolean value [0]", []() {
           test_map_pair a(42, false);
           AssertThat(a.key(), Is().EqualTo(42));
-          AssertThat(a.value(), Is().EqualTo(test_map_value::FALSE));
+          AssertThat(a.value(), Is().EqualTo(test_map_value::False));
           AssertThat(a.raw_value(), Is().EqualTo(0));
         });
 
         it("converts correctly from boolean value [1]", []() {
           test_map_pair a(42, true);
           AssertThat(a.key(), Is().EqualTo(42));
-          AssertThat(a.value(), Is().EqualTo(test_map_value::TRUE));
+          AssertThat(a.value(), Is().EqualTo(test_map_value::True));
           AssertThat(a.raw_value(), Is().EqualTo(1));
         });
       });
 
       describe("ordering '<' and '>'", []() {
         /*
-        it("has 'FALSE' values precede 'TRUE' [<]", []() {
-          AssertThat(test_map_pair(42, test_map_value::FALSE),
-                                               Is().LessThan(test_map_pair(42, test_map_value::TRUE)));
-          AssertThat(test_map_pair(42, test_map_value::TRUE),
-                                               Is().Not().LessThan(test_map_pair(42, test_map_value::FALSE)));
+        it("has 'False' values precede 'True' [<]", []() {
+          AssertThat(test_map_pair(42, test_map_value::False),
+                                               Is().LessThan(test_map_pair(42, test_map_value::True)));
+          AssertThat(test_map_pair(42, test_map_value::True),
+                                               Is().Not().LessThan(test_map_pair(42, test_map_value::False)));
         });
 
-        it("has 'FALSE' values precede 'TRUE' [>]", []() {
-          AssertThat(test_map_pair(42, test_map_value::TRUE),
-                                               Is().GreaterThan(test_map_pair(42, test_map_value::FALSE)));
-          AssertThat(test_map_pair(42, test_map_value::FALSE),
-                                               Is().Not().GreaterThan(test_map_pair(42, test_map_value::TRUE)));
+        it("has 'False' values precede 'True' [>]", []() {
+          AssertThat(test_map_pair(42, test_map_value::True),
+                                               Is().GreaterThan(test_map_pair(42, test_map_value::False)));
+          AssertThat(test_map_pair(42, test_map_value::False),
+                                               Is().Not().GreaterThan(test_map_pair(42, test_map_value::True)));
         });
         */
 
         it("sorts based on the variable order [1], [<]", []() {
-          AssertThat(test_map_pair(21, test_map_value::TRUE),
+          AssertThat(test_map_pair(21, test_map_value::True),
                      Is().LessThan(test_map_pair(42, test_map_value::OTHER_1)));
           AssertThat(test_map_pair(42, test_map_value::OTHER_1),
-                     Is().Not().LessThan(test_map_pair(21, test_map_value::TRUE)));
+                     Is().Not().LessThan(test_map_pair(21, test_map_value::True)));
         });
 
         it("sorts based on the variable order [1], [>]", []() {
           AssertThat(test_map_pair(42, test_map_value::OTHER_1),
-                     Is().GreaterThan(test_map_pair(21, test_map_value::TRUE)));
-          AssertThat(test_map_pair(21, test_map_value::TRUE),
+                     Is().GreaterThan(test_map_pair(21, test_map_value::True)));
+          AssertThat(test_map_pair(21, test_map_value::True),
                      Is().Not().GreaterThan(test_map_pair(42, test_map_value::OTHER_1)));
         });
 
         it("sorts based on the variable order [2], [<]", []() {
-          AssertThat(test_map_pair(20, test_map_value::FALSE),
+          AssertThat(test_map_pair(20, test_map_value::False),
                      Is().LessThan(test_map_pair(21, test_map_value::OTHER_1)));
           AssertThat(test_map_pair(21, test_map_value::OTHER_1),
-                     Is().Not().LessThan(test_map_pair(20, test_map_value::FALSE)));
+                     Is().Not().LessThan(test_map_pair(20, test_map_value::False)));
         });
 
         it("sorts based on the variable order [2], [>]", []() {
           AssertThat(test_map_pair(21, test_map_value::OTHER_1),
-                     Is().GreaterThan(test_map_pair(20, test_map_value::FALSE)));
-          AssertThat(test_map_pair(20, test_map_value::FALSE),
+                     Is().GreaterThan(test_map_pair(20, test_map_value::False)));
+          AssertThat(test_map_pair(20, test_map_value::False),
                      Is().Not().GreaterThan(test_map_pair(21, test_map_value::OTHER_1)));
         });
       });
@@ -175,74 +175,74 @@ go_bandit([]() {
         });
 
         it("is true when both variable and value match [2]", [&]() {
-          AssertThat(test_map_pair(2, test_map_value::FALSE),
-                     Is().EqualTo(test_map_pair(2, test_map_value::FALSE)));
+          AssertThat(test_map_pair(2, test_map_value::False),
+                     Is().EqualTo(test_map_pair(2, test_map_value::False)));
         });
 
         it("is true when both variable and value match [3]", [&]() {
-          AssertThat(test_map_pair(42, test_map_value::TRUE),
-                     Is().EqualTo(test_map_pair(42, test_map_value::TRUE)));
+          AssertThat(test_map_pair(42, test_map_value::True),
+                     Is().EqualTo(test_map_pair(42, test_map_value::True)));
         });
 
         it("is false when the variable mismatches [1]", [&]() {
-          AssertThat(test_map_pair(42, test_map_value::TRUE),
-                     Is().Not().EqualTo(test_map_pair(21, test_map_value::TRUE)));
+          AssertThat(test_map_pair(42, test_map_value::True),
+                     Is().Not().EqualTo(test_map_pair(21, test_map_value::True)));
         });
 
         it("is false when the variable mismatches [2]", [&]() {
-          AssertThat(test_map_pair(8, test_map_value::FALSE),
-                     Is().Not().EqualTo(test_map_pair(10, test_map_value::FALSE)));
+          AssertThat(test_map_pair(8, test_map_value::False),
+                     Is().Not().EqualTo(test_map_pair(10, test_map_value::False)));
         });
 
         it("is false when the value mismatches [1]", [&]() {
           AssertThat(test_map_pair(42, test_map_value::OTHER_1),
-                     Is().Not().EqualTo(test_map_pair(42, test_map_value::FALSE)));
+                     Is().Not().EqualTo(test_map_pair(42, test_map_value::False)));
           AssertThat(test_map_pair(42, test_map_value::OTHER_1),
-                     Is().Not().EqualTo(test_map_pair(42, test_map_value::TRUE)));
+                     Is().Not().EqualTo(test_map_pair(42, test_map_value::True)));
         });
 
         it("is false when the value mismatches [2]", [&]() {
-          AssertThat(test_map_pair(8, test_map_value::FALSE),
+          AssertThat(test_map_pair(8, test_map_value::False),
                      Is().Not().EqualTo(test_map_pair(8, test_map_value::OTHER_1)));
-          AssertThat(test_map_pair(8, test_map_value::FALSE),
-                     Is().Not().EqualTo(test_map_pair(8, test_map_value::TRUE)));
+          AssertThat(test_map_pair(8, test_map_value::False),
+                     Is().Not().EqualTo(test_map_pair(8, test_map_value::True)));
         });
 
         it("is false when the value mismatches [3]", [&]() {
-          AssertThat(test_map_pair(8, test_map_value::TRUE),
+          AssertThat(test_map_pair(8, test_map_value::True),
                      Is().Not().EqualTo(test_map_pair(8, test_map_value::OTHER_1)));
-          AssertThat(test_map_pair(13, test_map_value::TRUE),
-                     Is().Not().EqualTo(test_map_pair(13, test_map_value::FALSE)));
+          AssertThat(test_map_pair(13, test_map_value::True),
+                     Is().Not().EqualTo(test_map_pair(13, test_map_value::False)));
         });
       });
 
       describe("negation '~", []() {
-        it("turns 'FALSE' into 'TRUE' [1]", [&]() {
-          AssertThat(~test_map_pair(1, test_map_value::FALSE),
-                     Is().EqualTo(test_map_pair(1, test_map_value::TRUE)));
+        it("turns 'False' into 'True' [1]", [&]() {
+          AssertThat(~test_map_pair(1, test_map_value::False),
+                     Is().EqualTo(test_map_pair(1, test_map_value::True)));
         });
 
-        it("turns 'FALSE' into 'TRUE' [2]", [&]() {
-          AssertThat(~test_map_pair(2, test_map_value::FALSE),
-                     Is().EqualTo(test_map_pair(2, test_map_value::TRUE)));
+        it("turns 'False' into 'True' [2]", [&]() {
+          AssertThat(~test_map_pair(2, test_map_value::False),
+                     Is().EqualTo(test_map_pair(2, test_map_value::True)));
         });
 
-        it("turns 'TRUE' into 'FALSE' [1]", [&]() {
-          AssertThat(~test_map_pair(3, test_map_value::FALSE),
-                     Is().EqualTo(test_map_pair(3, test_map_value::TRUE)));
+        it("turns 'True' into 'False' [1]", [&]() {
+          AssertThat(~test_map_pair(3, test_map_value::False),
+                     Is().EqualTo(test_map_pair(3, test_map_value::True)));
         });
 
-        it("turns 'TRUE' into 'FALSE' [2]", [&]() {
-          AssertThat(~test_map_pair(4, test_map_value::FALSE),
-                     Is().EqualTo(test_map_pair(4, test_map_value::TRUE)));
+        it("turns 'True' into 'False' [2]", [&]() {
+          AssertThat(~test_map_pair(4, test_map_value::False),
+                     Is().EqualTo(test_map_pair(4, test_map_value::True)));
         });
 
-        it("keeps 'NONE' as-is [1]", [&]() {
+        it("keeps 'None' as-is [1]", [&]() {
           AssertThat(~test_map_pair(5, test_map_value::OTHER_1),
                      Is().EqualTo(test_map_pair(5, test_map_value::OTHER_1)));
         });
 
-        it("keeps 'NONE' as-is [2]", [&]() {
+        it("keeps 'None' as-is [2]", [&]() {
           AssertThat(~test_map_pair(6, test_map_value::OTHER_1),
                      Is().EqualTo(test_map_pair(6, test_map_value::OTHER_1)));
         });
