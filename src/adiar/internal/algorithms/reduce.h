@@ -41,6 +41,8 @@ namespace adiar::internal
     reduce_arc(const arc &a) : arc(a)
     { }
 
+    reduce_arc& operator= (const reduce_arc &a) = default;
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The level at which this nodes source belongs to.
     ////////////////////////////////////////////////////////////////////////////

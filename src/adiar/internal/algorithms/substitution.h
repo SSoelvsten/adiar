@@ -35,6 +35,11 @@ namespace adiar::internal
     substitute_arc(const arc &a) : arc(a)
     { }
 
+    substitute_arc& operator= (const substitute_arc &a) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The level at which this nodes target belongs to.
+    ////////////////////////////////////////////////////////////////////////////
     arc::label_t level() const
     { return target().label(); }
   };
