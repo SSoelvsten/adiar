@@ -29,7 +29,7 @@ namespace adiar
       stats_prod3,
       internal::stats_quantify,
       internal::stats_reduce,
-      internal::stats_substitute,
+      internal::stats_substitute
     };
   }
 
