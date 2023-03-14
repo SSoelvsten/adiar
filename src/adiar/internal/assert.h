@@ -70,10 +70,14 @@ namespace adiar
       }
   }
 
-#   define adiar_unreachable()                                                  \
-  std::cerr << "Reached \"unreachable\" statement\n"                            \
-            << "Source:\t\t" << __FILE__ << ", line " << __LINE__ << std::endl; \
-  __builtin_unreachable()
+  // From: https://stackoverflow.com/a/65258501/13300643
+#ifdef __GNUC__ // GCC 4.8+, Clang, Intel and other compilers compatible with GCC (-std=c++0x or above)
+  [[noreturn]] inline __attribute__((always_inline)) void adiar_unreachable() {__builtin_unreachable();}
+#elif defined(_MSC_VER) // MSVC
+  [[noreturn]] __forceinline void adiar_unreachable() {__assume(false);}
+#else // ???
+  inline void unreachable() {}
+#endif
 
   // LCOV_EXCL_STOP
 }
