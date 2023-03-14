@@ -189,7 +189,9 @@ namespace adiar::internal
 // Main
 int main(int argc, char* argv[]) {
 #ifdef NDEBUG
-  std::cerr << "Warning: Internal assertions are not enabled!\n\n";
+  std::cerr << "Warning: Internal assertions are not enabled!" << std::endl << std::endl;;
+
+  std::cerr << "Warning: Some tests may fail due to ties in ordering" << std::endl << std::endl;
 #endif
 
 #ifndef ADIAR_TEST_NO_INIT
