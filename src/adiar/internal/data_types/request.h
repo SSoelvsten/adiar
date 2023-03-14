@@ -1,6 +1,9 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_REQUEST_H
 #define ADIAR_INTERNAL_DATA_TYPES_REQUEST_H
 
+#include <algorithm>
+#include <array>
+
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/tuple.h>
 
@@ -93,6 +96,10 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Set of nodes of prior visited nodes in `target`.
     ///
+    /// \details This is not implemented as a `std::array<children_t,
+    /// node_carry_size>` because for `node_carry_size` being 0 we still spend 8
+    /// bytes on empty space.
+    ///
     /// \sa NO_CHILDREN
     ////////////////////////////////////////////////////////////////////////////
     children_t node_carry[node_carry_size];
@@ -145,8 +152,19 @@ namespace adiar::internal
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
     request(const target_t &t,
             const children_t (& nc) [node_carry_size])
-      : target(t), node_carry(nc)
-    { }
+      : target(t)
+        // TODO: The GNU C compiler allows one to do a copy-construction on arrays.
+        // This may be slightly faster than the 'std::copy' resorted to below.
+        //
+        // , node_carry(nc)
+    {
+      // For the non-GNU compilers, we have to use the 'std::copy' explicitly.
+      // Yet, it is only defined for non-empty arrays. Luckily, the size is
+      // known at compile time.
+      if constexpr (node_carry_size > 0) {
+        std::copy(std::begin(nc), std::end(nc), std::begin(node_carry));
+      }
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
