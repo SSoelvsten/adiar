@@ -45,7 +45,7 @@ group at [Aarhus University](https://cs.au.dk).
 
 
 ## Documentation
-The documentation is viewable on [Github Pages](https://ssoelvsten.github.io/adiar/).
+The documentation is available on [Github Pages](https://ssoelvsten.github.io/adiar/).
 
 ## Dependencies
 The implementation is dependant on the the following external libraries
