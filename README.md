@@ -1,15 +1,15 @@
 # Adiar
 [![MIT License](https://img.shields.io/github/license/ssoelvsten/adiar)](LICENSE.md)
 &nbsp;
-[![Release](https://img.shields.io/github/v/release/ssoelvsten/adiar)](https://github.com/SSoelvsten/adiar/releases)
-&nbsp;
 [![Documentation](https://img.shields.io/website?down_message=not%20available&label=docs&up_message=available&url=https%3A%2F%2Fssoelvsten.github.io%2Fadiar)](https://ssoelvsten.github.io/adiar)
 &nbsp;
+[![test](http://img.shields.io/github/actions/workflow/status/ssoelvsten/adiar/linux.yml?branch=main&label=tests%20%28linux%29&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/linux.yml)
+&nbsp;
+[![test](http://img.shields.io/github/actions/workflow/status/ssoelvsten/adiar/mac.yml?branch=main&label=tests%20%28mac%29&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/mac.yml)
+&nbsp;
+[![test](http://img.shields.io/github/actions/workflow/status/ssoelvsten/adiar/windows.yml?branch=main&label=tests%20%28windows%29&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/windows.yml)
+&nbsp;
 [![codecov](https://img.shields.io/codecov/c/github/ssoelvsten/adiar?logo=codecov&logoColor=white&token=106RCIR4DJ)](https://codecov.io/gh/SSoelvsten/adiar)
-&nbsp;
-[![test](http://img.shields.io/github/actions/workflow/status/ssoelvsten/adiar/unit_test.yml?branch=main&label=test&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/unit_test.yml)
-&nbsp;
-[![examples](http://img.shields.io/github/actions/workflow/status/ssoelvsten/adiar/examples.yml?branch=main&label=examples&logo=github&logoColor=white)](https://github.com/SSoelvsten/adiar/actions/workflows/examples.yml)
 
 Based on the work of Lars Arge [[Arge96](#references)], Adiar<sup>[1](#footnotes)</sup>
 is a BDD package [[Bryant86](#references)] that makes use of time-forward processing
