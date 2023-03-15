@@ -1,4 +1,4 @@
-name: 'unit test'
+name: 'coverage'
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
       should_skip: ${{ github.event_name == 'pull_request' && steps.skip_check.outputs.should_skip == 'true' }}
 
   test:
-    name: 'Unit test (incl. code coverage)'
+    name: 'Build + Test (incl. code coverage)'
     runs-on: ubuntu-latest
 
     needs: skip_duplicate
