@@ -244,7 +244,7 @@ namespace adiar::internal
         // element is written to it.
         if (!red1_mapping.is_open()) { red1_mapping.open(); }
 #ifdef ADIAR_STATS
-        stats_reduce.removed_by_rule_1++;
+        stats_reduce.removed_by_rule_1 += 1u;
 #endif
         red1_mapping.write({ n.uid(), reduction_rule_ret });
       } else {
@@ -282,7 +282,7 @@ namespace adiar::internal
                          out_node.high());
       } else {
 #ifdef ADIAR_STATS
-        stats_reduce.removed_by_rule_2++;
+        stats_reduce.removed_by_rule_2 += 1u;
 #endif
       }
 
@@ -419,7 +419,7 @@ namespace adiar::internal
       const ptr_uint64 reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
       if (reduction_rule_ret != e_low.source()) {
 #ifdef ADIAR_STATS
-        stats_reduce.removed_by_rule_1++;
+        stats_reduce.removed_by_rule_1 += 1u;
 #endif
         const bool terminal_val = reduction_rule_ret.value();
         const node out_node = node(terminal_val);
@@ -540,19 +540,19 @@ namespace adiar::internal
 
     if (!external_only && max_pq_size <= no_lookahead_bound(1)) {
 #ifdef ADIAR_STATS
-      stats_reduce.lpq.unbucketed++;
+      stats_reduce.lpq.unbucketed += 1u;
 #endif
       return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
         (in_file, pq_memory, sorters_memory);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_reduce.lpq.internal++;
+      stats_reduce.lpq.internal += 1u;
 #endif
       return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
         (in_file, pq_memory, sorters_memory);
     } else {
 #ifdef ADIAR_STATS
-      stats_reduce.lpq.external++;
+      stats_reduce.lpq.external += 1u;
 #endif
       return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
         (in_file, pq_memory, sorters_memory);

@@ -433,8 +433,8 @@ namespace adiar::internal
       stats_levelized_priority_queue.sum_max_size_ratio += frac(_actual_max_size, _max_size);
       _stats.sum_max_size_ratio += frac(_actual_max_size, _max_size);
 
-      stats_levelized_priority_queue.sum_destructors++;
-      _stats.sum_destructors++;
+      stats_levelized_priority_queue.sum_destructors += 1u;
+      _stats.sum_destructors += 1u;
 #endif
     }
 
@@ -512,16 +512,16 @@ namespace adiar::internal
         if (_buckets_level[bucket_idx] == level) {
           _buckets_sorter[bucket_idx] -> push(e);
 #ifdef ADIAR_STATS
-          stats_levelized_priority_queue.push_bucket++;
-          _stats.push_bucket++;
+          stats_levelized_priority_queue.push_bucket += 1u;
+          _stats.push_bucket += 1u;
 #endif
           return;
         }
       } while (bucket_offset <= pushable_buckets);
 
 #ifdef ADIAR_STATS
-      stats_levelized_priority_queue.push_overflow++;
-      _stats.push_overflow++;
+      stats_levelized_priority_queue.push_overflow += 1u;
+      _stats.push_overflow += 1u;
 #endif
       _overflow_queue.push(e);
     }
@@ -1046,8 +1046,8 @@ namespace adiar::internal
       stats_levelized_priority_queue.sum_max_size_ratio += frac(_actual_max_size, _max_size);
       _stats.sum_max_size_ratio += frac(_actual_max_size, _max_size);
 
-      stats_levelized_priority_queue.sum_destructors++;
-      _stats.sum_destructors++;
+      stats_levelized_priority_queue.sum_destructors += 1u;
+      _stats.sum_destructors += 1u;
 #endif
     }
 

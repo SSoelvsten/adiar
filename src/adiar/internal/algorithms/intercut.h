@@ -322,21 +322,21 @@ namespace adiar::internal
 
     if(!external_only && max_pq_size <= no_lookahead_bound()) {
 #ifdef ADIAR_STATS
-      stats_intercut.lpq.unbucketed++;
+      stats_intercut.lpq.unbucketed += 1u;
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_t<0, memory_mode_t::INTERNAL>>
         (dd, labels, pq_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_intercut.lpq.internal++;
+      stats_intercut.lpq.internal += 1u;
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
         (dd, labels, pq_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_intercut.lpq.external++;
+      stats_intercut.lpq.external += 1u;
 #endif
       return __intercut<intercut_policy,
                         intercut_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
