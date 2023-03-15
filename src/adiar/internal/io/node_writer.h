@@ -339,12 +339,12 @@ namespace adiar::internal
       const bool noa_overflow_safe = number_of_nodes <= MAX_CUT / 2u;
       const size_t number_of_arcs = 2u * number_of_nodes;
 
-      const cuts_t all_arcs_cut = {
-        noa_overflow_safe ? number_of_arcs - number_of_false - number_of_true : MAX_CUT,
-        noa_overflow_safe ? number_of_arcs - number_of_true                   : MAX_CUT,
-        noa_overflow_safe ? number_of_arcs - number_of_false                  : MAX_CUT,
-        noa_overflow_safe ? number_of_arcs                                    : MAX_CUT
-      };
+      const cuts_t all_arcs_cut = {{
+          noa_overflow_safe ? number_of_arcs - number_of_false - number_of_true : MAX_CUT,
+          noa_overflow_safe ? number_of_arcs - number_of_true                   : MAX_CUT,
+          noa_overflow_safe ? number_of_arcs - number_of_false                  : MAX_CUT,
+          noa_overflow_safe ? number_of_arcs                                    : MAX_CUT
+        }};
 
       // -----------------------------------------------------------------------
       // Maximum 1-level cuts

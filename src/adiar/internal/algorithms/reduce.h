@@ -188,10 +188,10 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Update a cut size with some number of arcs.
   //////////////////////////////////////////////////////////////////////////////
-  inline void __reduce_cut_add(size_t (&cut)[4],
-                               const size_t internal_arcs,
-                               const size_t false_arcs,
-                               const size_t true_arcs)
+  inline void __reduce_cut_add(cuts_t &cut,
+                               const cut_size_t internal_arcs,
+                               const cut_size_t false_arcs,
+                               const cut_size_t true_arcs)
   {
     cut[cut_type::INTERNAL]       += internal_arcs;
     cut[cut_type::INTERNAL_FALSE] += internal_arcs + false_arcs;
@@ -199,7 +199,7 @@ namespace adiar::internal
     cut[cut_type::ALL]            += internal_arcs + false_arcs + true_arcs;
   }
 
-  inline void __reduce_cut_add(size_t (&cut)[4], const ptr_uint64 target)
+  inline void __reduce_cut_add(cuts_t &cut, const ptr_uint64 target)
   {
     cut[cut_type::INTERNAL]       += target.is_node();
     cut[cut_type::INTERNAL_FALSE] += target.is_node() + target.is_false();
@@ -253,7 +253,7 @@ namespace adiar::internal
     }
 
     // Count number of arcs that cross this level
-    cuts_t local_1level_cut = { 0u, 0u, 0u, 0u };
+    cuts_t local_1level_cut = {{ 0u, 0u, 0u, 0u }};
 
     __reduce_cut_add(local_1level_cut,
                      reduce_pq.size_without_terminals(),
@@ -456,7 +456,7 @@ namespace adiar::internal
     // Cut for arcs that suddenly cross much further down than they did
     // initially in the input, e.g. when a node was removed due to Reduction
     // Rule 1.
-    cuts_t global_1level_cut = { 0u, 0u, 0u, 0u };
+    cuts_t global_1level_cut = {{ 0u, 0u, 0u, 0u }};
 
     // Initialize (levelized) priority queue
     pq_t reduce_pq({in_file}, lpq_memory, in_file->max_1level_cut);
