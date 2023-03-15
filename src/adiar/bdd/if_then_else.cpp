@@ -262,8 +262,8 @@ namespace adiar
           && (ite_pq_2.empty() || ite_pq_1.top().target.fst() < ite_pq_2.top().target.snd())
           && (ite_pq_3.empty() || ite_pq_1.top().target.fst() < ite_pq_3.top().target.trd())) {
         req = { ite_pq_1.top().target,
-                { { internal::node::ptr_t::NIL(), internal::node::ptr_t::NIL() },
-                  { internal::node::ptr_t::NIL(), internal::node::ptr_t::NIL() } },
+                {{ { internal::node::ptr_t::NIL(), internal::node::ptr_t::NIL() },
+                   { internal::node::ptr_t::NIL(), internal::node::ptr_t::NIL() } }},
                 ite_pq_1.top().data };
 
         ite_pq_1.pop();
