@@ -552,7 +552,7 @@ namespace adiar::internal
 
     if(!external_only && max_pq_1_size <= no_lookahead_bound(2)) {
 #ifdef ADIAR_STATS
-      stats_prod2.lpq.unbucketed++;
+      stats_prod2.lpq.unbucketed += 1u;
 #endif
       return __prod2<prod_policy,
                      prod_priority_queue_1_t<0, memory_mode_t::INTERNAL>,
@@ -561,7 +561,7 @@ namespace adiar::internal
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_prod2.lpq.internal++;
+      stats_prod2.lpq.internal += 1u;
 #endif
       return __prod2<prod_policy,
                      prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>,
@@ -569,7 +569,7 @@ namespace adiar::internal
         (in_1, in_2, op, pq_1_internal_memory, max_pq_1_size, pq_2_internal_memory, max_pq_2_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_prod2.lpq.external++;
+      stats_prod2.lpq.external += 1u;
 #endif
       const size_t pq_1_memory = aux_available_memory / 2;
       const size_t pq_2_memory = pq_1_memory;

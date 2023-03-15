@@ -65,7 +65,7 @@ namespace adiar::internal
       curr_level_processed++;
       const bool ret_value = curr_level_size < curr_level_processed;
 #ifdef ADIAR_STATS
-      if (ret_value) { stats_equality.slow_check.exit_on_processed_on_level++; }
+      if (ret_value) { stats_equality.slow_check.exit_on_processed_on_level += 1u; }
 #endif
       return ret_value;
     }
@@ -98,7 +98,7 @@ namespace adiar::internal
     {
       ret_value = v1.is_terminal() && v2.is_terminal() && v1.value() == v2.value();
 #ifdef ADIAR_STATS
-      stats_equality.slow_check.exit_on_root++;
+      stats_equality.slow_check.exit_on_root += 1u;
 #endif
       return true;
     }
@@ -107,7 +107,7 @@ namespace adiar::internal
     static bool resolve_singletons(const dd::node_t &v1, const dd::node_t v2)
     {
 #ifdef ADIAR_STATS
-      stats_equality.slow_check.exit_on_root++;
+      stats_equality.slow_check.exit_on_root += 1u;
 #endif
       adiar_debug(v1.label() == v2.label(), "Levels match per the precondition");
       return v1.low() == v2.low() && v1.high() == v2.high();
@@ -123,7 +123,7 @@ namespace adiar::internal
           return false;
         } else {
 #ifdef ADIAR_STATS
-          stats_equality.slow_check.exit_on_children++;
+          stats_equality.slow_check.exit_on_children += 1u;
 #endif
           return true;
         }
@@ -132,7 +132,7 @@ namespace adiar::internal
       // Do they NOT point to a node with the same level?
       if (r1.label() != r2.label()) {
 #ifdef ADIAR_STATS
-        stats_equality.slow_check.exit_on_children++;
+        stats_equality.slow_check.exit_on_children += 1u;
 #endif
         return true;
       }
@@ -183,7 +183,7 @@ namespace adiar::internal
       adiar_debug(in_nodes_2.can_pull(), "The number of nodes should coincide");
       if (in_nodes_1.pull() != in_nodes_2.pull()) {
 #ifdef ADIAR_STATS
-        stats_equality.fast_check.exit_on_mismatch++;
+        stats_equality.fast_check.exit_on_mismatch += 1u;
 #endif
         return false;
       }
@@ -199,7 +199,7 @@ namespace adiar::internal
     // Are they literally referring to the same underlying file?
     if (f1 == f2) {
 #ifdef ADIAR_STATS
-      stats_equality.exit_on_same_file++;
+      stats_equality.exit_on_same_file += 1u;
 #endif
       return negate1 == negate2;
     }
@@ -208,7 +208,7 @@ namespace adiar::internal
     // nodes?
     if (f1->size() != f2->size()) {
 #ifdef ADIAR_STATS
-      stats_equality.exit_on_nodecount++;
+      stats_equality.exit_on_nodecount += 1u;
 #endif
       return false;
     }
@@ -217,7 +217,7 @@ namespace adiar::internal
     // levels?
     if (f1->levels() != f2->levels()) {
 #ifdef ADIAR_STATS
-      stats_equality.exit_on_varcount++;
+      stats_equality.exit_on_varcount += 1u;
 #endif
       return false;
     }
@@ -227,7 +227,7 @@ namespace adiar::internal
     if(f1->number_of_terminals[negate1] != f2->number_of_terminals[negate2] ||
        f1->number_of_terminals[!negate1] != f2->number_of_terminals[!negate2]) {
 #ifdef ADIAR_STATS
-      stats_equality.exit_on_terminalcount++;
+      stats_equality.exit_on_terminalcount += 1u;
 #endif
       return false;
     }
@@ -242,7 +242,7 @@ namespace adiar::internal
         adiar_debug(in_meta_2.can_pull(), "level_info files are same size");
         if (in_meta_1.pull() != in_meta_2.pull()) {
 #ifdef ADIAR_STATS
-          stats_equality.exit_on_levels_mismatch++;
+          stats_equality.exit_on_levels_mismatch += 1u;
 #endif
           return false;
         }
@@ -255,12 +255,12 @@ namespace adiar::internal
     // between them.
     if (f1->canonical && f2->canonical && negate1 == negate2) {
 #ifdef ADIAR_STATS
-      stats_equality.fast_check.runs++;
+      stats_equality.fast_check.runs += 1u;
 #endif
       return fast_isomorphism_check(f1, f2);
     } else {
 #ifdef ADIAR_STATS
-      stats_equality.slow_check.runs++;
+      stats_equality.slow_check.runs += 1u;
 #endif
       return comparison_check<isomorphism_policy>(f1, f2, negate1, negate2);
     }

@@ -229,21 +229,21 @@ namespace adiar::internal
 
     if(!external_only && max_pq_size <= no_lookahead_bound(1)) {
 #ifdef ADIAR_STATS
-      stats_substitute.lpq.unbucketed++;
+      stats_substitute.lpq.unbucketed += 1u;
 #endif
       return __substitute<substitute_policy, substitute_assignment_mgr,
                           substitute_priority_queue_t<0, memory_mode_t::INTERNAL>>
         (dd, amgr, aux_available_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_substitute.lpq.internal++;
+      stats_substitute.lpq.internal += 1u;
 #endif
       return __substitute<substitute_policy, substitute_assignment_mgr,
                           substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
         (dd, amgr, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_substitute.lpq.external++;
+      stats_substitute.lpq.external += 1u;
 #endif
       return __substitute<substitute_policy, substitute_assignment_mgr,
                           substitute_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>

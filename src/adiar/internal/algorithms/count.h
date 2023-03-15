@@ -154,7 +154,7 @@ namespace adiar::internal
 
     if(!external_only && max_pq_size <= no_lookahead_bound()) {
 #ifdef ADIAR_STATS
-      stats_count.lpq.unbucketed++;
+      stats_count.lpq.unbucketed += 1u;
 #endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           0,
@@ -162,7 +162,7 @@ namespace adiar::internal
         (dd, varcount, aux_available_memory, max_pq_size);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
-      stats_count.lpq.internal++;
+      stats_count.lpq.internal += 1u;
 #endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           ADIAR_LPQ_LOOKAHEAD,
@@ -170,7 +170,7 @@ namespace adiar::internal
         (dd, varcount, aux_available_memory, max_pq_size);
     } else {
 #ifdef ADIAR_STATS
-      stats_count.lpq.external++;
+      stats_count.lpq.external += 1u;
 #endif
       return __count<count_policy, count_priority_queue_t<typename count_policy::queue_t,
                                                           ADIAR_LPQ_LOOKAHEAD,
