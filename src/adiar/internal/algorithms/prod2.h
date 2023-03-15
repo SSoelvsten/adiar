@@ -284,8 +284,8 @@ namespace adiar::internal
                                    prod_pq_1.top().target.fst() < prod_pq_2.top().target.snd())) {
         with_data = false;
         req = { prod_pq_1.top().target,
-                {{ node::ptr_t::NIL(), node::ptr_t::NIL() }},
-                {prod_pq_1.top().data } };
+                {{ { node::ptr_t::NIL(), node::ptr_t::NIL() } }},
+                { prod_pq_1.top().data } };
       } else {
         with_data = true;
         req = prod_pq_2.top();

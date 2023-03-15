@@ -191,7 +191,7 @@ namespace adiar::internal
       if (quantify_pq_1.can_pull()
           && (quantify_pq_2.empty() || quantify_pq_1.top().target.fst() < quantify_pq_2.top().target.snd())) {
         req = { quantify_pq_1.top().target,
-                {{ node::ptr_t::NIL(), node::ptr_t::NIL() }},
+                {{ { node::ptr_t::NIL(), node::ptr_t::NIL() } }},
                 quantify_pq_1.top().data };
         quantify_pq_1.pop();
       } else {

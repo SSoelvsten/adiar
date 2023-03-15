@@ -30,7 +30,13 @@ namespace adiar::internal
   template<uint8_t CARDINALITY,
            uint8_t NODE_CARRY_SIZE = 0u,
            uint8_t INPUTS = CARDINALITY>
-  class request
+  class request;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \details Common details for requests with and without a node carry.
+  //////////////////////////////////////////////////////////////////////////////
+  template<uint8_t CARDINALITY, uint8_t INPUTS>
+  class request<CARDINALITY, 0, INPUTS>
   {
   public:
     ////////////////////////////////////////////////////////////////////////////
@@ -41,15 +47,6 @@ namespace adiar::internal
     /// \brief Cardinality of the request target.
     ////////////////////////////////////////////////////////////////////////////
     static constexpr uint8_t cardinality = CARDINALITY;
-
-    ////////////////////////////////////////////////////////////////////////////
-    static_assert(NODE_CARRY_SIZE < cardinality,
-                  "'node_carry_size' ought not to hold more than the 'cardinality' of the algorithm");
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Size of the node forwarding array.
-    ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t node_carry_size = NODE_CARRY_SIZE;
 
     ////////////////////////////////////////////////////////////////////////////
     static_assert(INPUTS > 0,
@@ -87,11 +84,78 @@ namespace adiar::internal
     { return target.fst().label(); }
 
     /* ============================= NODE CARRY ============================= */
-  public:
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Size of the node forwarding array.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr uint8_t node_carry_size = 0u;
+
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the set of children carried to the last in `target`.
     ////////////////////////////////////////////////////////////////////////////
     typedef node::children_t children_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The value to be inserted in empy slots in the `node_carry`.
+    ////////////////////////////////////////////////////////////////////////////
+    static inline constexpr children_t NO_CHILDREN()
+    { return children_t(ptr_t::NIL()); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief The number of nodes actually carried by this request.
+    ////////////////////////////////////////////////////////////////////////////
+    uint8_t nodes_carried() const
+    { return 0u; }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Whether no nodes are carried by this request.
+    ////////////////////////////////////////////////////////////////////////////
+    bool empty_carry() const
+    { return true; }
+
+    /* ============================ CONSTRUCTORS ============================ */
+  public:
+    // Provide 'default' constructors to ensure it being a 'POD' inside of TPIE.
+    request() = default;
+    request(const request &r) = default;
+    ~request() = default;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Constructor for a request to the given `target`.
+    ////////////////////////////////////////////////////////////////////////////
+    request(const target_t &t) : target(t)
+    { }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Constructor for a request to the given `target` with an empty
+    ///        node carry.
+    ////////////////////////////////////////////////////////////////////////////
+    request(const target_t &t,
+            const std::array<children_t, node_carry_size>&/*nc*/)
+      : request(t)
+    { }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \details Implementation of `request` template with a non-empty node carry.
+  //////////////////////////////////////////////////////////////////////////////
+  template<uint8_t CARDINALITY, uint8_t NODE_CARRY_SIZE, uint8_t INPUTS>
+  class request : public request<CARDINALITY, 0, INPUTS>
+  {
+    using base = request<CARDINALITY, 0, INPUTS>;
+
+    /* ============================= NODE CARRY ============================= */
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    static_assert(NODE_CARRY_SIZE < base::cardinality,
+                  "'node_carry_size' ought not to hold more than the 'cardinality' of the algorithm");
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Size of the node forwarding array.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr uint8_t node_carry_size = NODE_CARRY_SIZE;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Set of nodes of prior visited nodes in `target`.
@@ -102,13 +166,7 @@ namespace adiar::internal
     ///
     /// \sa NO_CHILDREN
     ////////////////////////////////////////////////////////////////////////////
-    children_t node_carry[node_carry_size];
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief The value to be inserted in empy slots in the `node_carry`.
-    ////////////////////////////////////////////////////////////////////////////
-    static inline constexpr children_t NO_CHILDREN()
-    { return node::children_t(node::ptr_t::NIL()); }
+    std::array<typename base::children_t, node_carry_size> node_carry;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The number of nodes actually carried within `node_carry`.
@@ -119,8 +177,8 @@ namespace adiar::internal
     {
       uint8_t sum = 0u;
       for (uint8_t n_idx = 0u; n_idx < node_carry_size; n_idx++) {
-        if (node_carry[n_idx][0] == node::ptr_t::NIL()) {
-          adiar_debug(node_carry[n_idx] == NO_CHILDREN(),
+        if (node_carry[n_idx][0] == base::ptr_t::NIL()) {
+          adiar_debug(node_carry[n_idx] == base::NO_CHILDREN(),
                       "Either no entry is NIL or all of them are");
           break;
         }
@@ -138,7 +196,7 @@ namespace adiar::internal
     bool empty_carry() const
     {
       if constexpr (node_carry_size == 0u) return true;
-      return node_carry[0][0] == node::ptr_t::NIL();
+      return node_carry[0][0] == base::ptr_t::NIL();
     }
 
     /* ============================ CONSTRUCTORS ============================ */
@@ -150,21 +208,10 @@ namespace adiar::internal
 
   public:
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
-    request(const target_t &t,
-            const children_t (& nc) [node_carry_size])
-      : target(t)
-        // TODO: The GNU C compiler allows one to do a copy-construction on arrays.
-        // This may be slightly faster than the 'std::copy' resorted to below.
-        //
-        // , node_carry(nc)
-    {
-      // For the non-GNU compilers, we have to use the 'std::copy' explicitly.
-      // Yet, it is only defined for non-empty arrays. Luckily, the size is
-      // known at compile time.
-      if constexpr (node_carry_size > 0) {
-        std::copy(std::begin(nc), std::end(nc), std::begin(node_carry));
-      }
-    }
+    request(const typename base::target_t &t,
+            const std::array<typename base::children_t, node_carry_size> &nc)
+      : base(t), node_carry(nc)
+    { }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -235,7 +282,7 @@ namespace adiar::internal
   public:
     // Provide 'non-default' constructors to make it easy to use outside of TPIE.
     request_data(const typename request_t::target_t &t,
-                 const typename request_t::children_t (& nc) [node_carry_size],
+                 const std::array<typename request_t::children_t, node_carry_size> &nc,
                  const data_t &d)
       : request_t(t, nc), data(d)
     { }

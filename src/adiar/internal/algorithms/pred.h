@@ -133,7 +133,7 @@ namespace adiar::internal
         with_data = false;
 
         req = { comparison_pq_1.top().target,
-                {{ node::ptr_t::NIL(), node::ptr_t::NIL() }} };
+                { {{ node::ptr_t::NIL(), node::ptr_t::NIL() }} } };
         comparison_pq_1.pop();
       } else {
         with_data = true;

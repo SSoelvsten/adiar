@@ -115,7 +115,7 @@ go_bandit([]() {
         AssertThat(node_carry_size, Is().EqualTo(1u));
 
         const auto rec = request<2,1>({ request<2>::ptr_t(0,0), request<2>::ptr_t(0,0) },
-                                      { request<2>::ptr_t::NIL() });
+                                      {{ {request<2>::ptr_t::NIL()} }});
         AssertThat(sizeof(rec), Is().EqualTo(2u * 8u + 1u * 2u * 8u));
       });
 
@@ -149,19 +149,19 @@ go_bandit([]() {
 
         it("has no nodes when node_carry_size is 1 with manually added NIL()", []() {
           const auto req = request<2,1>({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
-                                        { request<2>::ptr_t::NIL() });
+                                        {{ request<2>::ptr_t::NIL() }});
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
         it("has no nodes when node_carry_size is 1 with NO_CHILDREN()", []() {
           const auto req = request<2,1>({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
-                                        { request<2>::NO_CHILDREN() });
+                                        {{ request<2>::NO_CHILDREN() }});
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
         it("has one nodes when node_carry_size is 1 with non-NIL content", []() {
           const auto req = request<2,1>({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
-                                        { {request<2>::ptr_t(2u,1u), request<2>::ptr_t(2u,0u)} });
+                                        {{ {request<2>::ptr_t(2u,1u), request<2>::ptr_t(2u,0u)} }});
           AssertThat(req.nodes_carried(), Is().EqualTo(1u));
         });
       });
@@ -174,19 +174,19 @@ go_bandit([]() {
 
         it("is true when node_carry_size is 1 with manually added NIL()", []() {
           const auto req = request<2,1>({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
-                                        { request<2>::ptr_t::NIL() });
+                                        {{ request<2>::ptr_t::NIL() }});
           AssertThat(req.empty_carry(), Is().True());
         });
 
         it("is true when node_carry_size is 1 with NO_CHILDREN()", []() {
           const auto req = request<2,1>({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
-                                        { request<2>::NO_CHILDREN() });
+                                        {{ request<2>::NO_CHILDREN() }});
           AssertThat(req.empty_carry(), Is().True());
         });
 
         it("is false when node_carry_size is 1 with non-NIL content", []() {
           const auto req = request<2,1>({request<2>::ptr_t(1u,1u), request<2>::ptr_t(1u,0u)},
-                                        { {request<2>::ptr_t(2u,1u), request<2>::ptr_t(2u,0u)} });
+                                        {{ {request<2>::ptr_t(2u,1u), request<2>::ptr_t(2u,0u)} }});
           AssertThat(req.empty_carry(), Is().False());
         });
       });
@@ -233,7 +233,7 @@ go_bandit([]() {
         AssertThat(node_carry_size, Is().EqualTo(1u));
 
         const auto rec = request<3,1>({ request<3>::ptr_t(0,0), request<3>::ptr_t(0,0), request<3>::ptr_t(0,0) },
-                                      { request<3>::ptr_t::NIL() });
+                                      {{ {request<3>::ptr_t::NIL()} }});
         AssertThat(sizeof(rec), Is().EqualTo(3u * 8u + 1u * 2u * 8u));
       });
 
@@ -242,8 +242,8 @@ go_bandit([]() {
         AssertThat(node_carry_size, Is().EqualTo(2u));
 
         const auto rec = request<3,2>({ request<3>::ptr_t(0,0), request<3>::ptr_t(0,0), request<3>::ptr_t(0,0) },
-                                      { {request<3>::ptr_t::NIL()},
-                                        {request<3>::ptr_t::NIL()} });
+                                      {{ {request<3>::ptr_t::NIL()},
+                                         {request<3>::ptr_t::NIL()} }});
         AssertThat(sizeof(rec), Is().EqualTo(3u * 8u + 2u * 2u * 8u));
       });
 
@@ -284,47 +284,46 @@ go_bandit([]() {
 
         it("has no nodes when node_carry_size is 1 with manually added NIL()", []() {
           const auto req = request<3,1>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { {request<3>::ptr_t::NIL()} });
+                                        {{ {request<3>::ptr_t::NIL()} }});
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
         it("has no nodes when node_carry_size is 2 with manually added NIL()", []() {
           const auto req = request<3,2>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { {request<3>::ptr_t::NIL()},
-                                          {request<3>::ptr_t::NIL()} });
+                                        {{ {request<3>::ptr_t::NIL()},
+                                           {request<3>::ptr_t::NIL()} }});
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
         it("has no nodes when node_carry_size is 1 with NO_CHILDREN()", []() {
           const auto req = request<3,1>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { request<3>::NO_CHILDREN() });
+                                        {{ request<3>::NO_CHILDREN() }});
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
         it("has no nodes when node_carry_size is 2 with NO_CHILDREN()", []() {
           const auto req = request<3,2>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { request<3>::NO_CHILDREN(),
-                                          request<3>::NO_CHILDREN() });
+                                        {{ request<3>::NO_CHILDREN(), request<3>::NO_CHILDREN() }});
           AssertThat(req.nodes_carried(), Is().EqualTo(0u));
         });
 
         it("has one nodes when node_carry_size is 1 with non-NIL content", []() {
           const auto req = request<3,1>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} });
+                                        {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} }});
           AssertThat(req.nodes_carried(), Is().EqualTo(1u));
         });
 
         it("has one nodes when node_carry_size is 2 with non-NIL and NIL content", []() {
           const auto req = request<3,2>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
-                                          request<3>::NO_CHILDREN() });
+                                        {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
+                                           request<3>::NO_CHILDREN() }});
           AssertThat(req.nodes_carried(), Is().EqualTo(1u));
         });
 
         it("has two nodes when node_carry_size is 2 with non-NIL content", []() {
           const auto req = request<3,2>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
-                                          {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} });
+                                        {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
+                                           {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} }});
           AssertThat(req.nodes_carried(), Is().EqualTo(2u));
         });
       });
@@ -344,28 +343,28 @@ go_bandit([]() {
 
         it("is true nodes when node_carry_size is 2 with NO_CHILDREN()", []() {
           const auto req = request<3,2>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { request<3>::NO_CHILDREN(),
-                                          request<3>::NO_CHILDREN() });
+                                        {{ request<3>::NO_CHILDREN(),
+                                          request<3>::NO_CHILDREN() }});
           AssertThat(req.empty_carry(), Is().True());
         });
 
         it("is false nodes when node_carry_size is 1 with non-NIL content", []() {
           const auto req = request<3,1>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} });
+                                        {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} }});
           AssertThat(req.empty_carry(), Is().False());
         });
 
         it("is false nodes when node_carry_size is 2 with non-NIL and NIL content", []() {
           const auto req = request<3,2>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
-                                          request<3>::NO_CHILDREN() });
+                                        {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
+                                           request<3>::NO_CHILDREN() }});
           AssertThat(req.empty_carry(), Is().False());
         });
 
         it("is false nodes when node_carry_size is 2 with non-NIL content", []() {
           const auto req = request<3,2>({request<3>::ptr_t(1u,1u), request<3>::ptr_t(1u,0u), request<3>::ptr_t(1u,2u)},
-                                        { {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
-                                          {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} });
+                                        {{ {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)},
+                                           {request<3>::ptr_t(2u,1u), request<3>::ptr_t(2u,0u)} }});
           AssertThat(req.empty_carry(), Is().False());
         });
       });
