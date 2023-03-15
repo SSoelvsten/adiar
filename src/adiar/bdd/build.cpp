@@ -46,7 +46,7 @@ namespace adiar
     return internal::build_chain<false, true, false>(labels);
   }
 
-  inline id_t bdd_counter_min_id(bdd::label_t label, bdd::label_t max_var, uint64_t threshold)
+  inline bdd::id_t bdd_counter_min_id(bdd::label_t label, bdd::label_t max_var, uint64_t threshold)
   {
     return label > max_var - threshold
       ? threshold - (max_var - label + 1)
@@ -81,15 +81,16 @@ namespace adiar
     bdd::label_t curr_label = max_var;
 
     do {
-      // Start with the maximal number the accumulated value can be at
-      // up to this label.
-      id_t max_id = std::min(curr_label - min_var, threshold);
-      id_t curr_id = max_id;
+      // How many 1s can have been set up to this number of variables?
+      const bdd::id_t max_id = std::min(curr_label - min_var, threshold);
 
       // How small has the accumulated sum up to this point to be, such
       // that it is still possible to reach threshold before max_var?
-      id_t min_id = bdd_counter_min_id(curr_label, max_var, threshold);
+      const bdd::id_t min_id = bdd_counter_min_id(curr_label, max_var, threshold);
 
+      // Start with the maximal number the accumulated value can be at
+      // up to this label.
+      bdd::id_t curr_id = max_id;
       do {
         bdd::ptr_t low;
         if (curr_label == max_var) {
