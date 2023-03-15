@@ -52,8 +52,8 @@ namespace adiar
 
   constexpr int FLOAT_PRECISION = 2;
 
-  const std::string bold_on  = "\e[1m";
-  const std::string bold_off = "\e[0m";
+  const std::string bold_on  = "\033[1m";
+  const std::string bold_off = "\033[0m";
   const std::string percent  = "%";
 
   inline std::ostream& indent(std::ostream &os)
