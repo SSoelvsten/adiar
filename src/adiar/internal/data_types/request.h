@@ -60,7 +60,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Whether the target tuple ought to be sorted.
     ////////////////////////////////////////////////////////////////////////////
-    static constexpr uint8_t sorted_target = cardinality == 1u || inputs == 1u;
+    static constexpr bool sorted_target = cardinality == 1u || inputs == 1u;
 
     typedef node::label_t label_t;
     typedef node::ptr_t ptr_t;
