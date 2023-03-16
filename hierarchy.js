@@ -42,6 +42,7 @@ var hierarchy =
     ] ],
     [ "adiar::internal::ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html", null ],
     [ "adiar::internal::request< CARDINALITY, NODE_CARRY_SIZE, INPUTS >", "classadiar_1_1internal_1_1request.html", null ],
+    [ "adiar::internal::request< CARDINALITY, 0, INPUTS >", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html", null ],
     [ "adiar::internal::request< cardinality, 0u, cardinality >", "classadiar_1_1internal_1_1request.html", [
       [ "adiar::internal::request_data< cardinality, data_type, node_carry_size, inputs >", "classadiar_1_1internal_1_1request__data.html", null ]
     ] ],

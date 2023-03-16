@@ -3,9 +3,9 @@ var classadiar_1_1cube =
     [ "pair_t", "classadiar_1_1cube.html#a7e2969d1f4c77180a2d1d24c038d083c", null ],
     [ "var_t", "classadiar_1_1cube.html#ac723a51060ebb9ee1c698dd7232e7f88", null ],
     [ "value_t", "classadiar_1_1cube.html#a614d635d55337853021f98befb4e1b02", [
-      [ "FALSE", "classadiar_1_1cube.html#a614d635d55337853021f98befb4e1b02a946003f97ccc52d5d3b54ac0ec31bbfc", null ],
-      [ "TRUE", "classadiar_1_1cube.html#a614d635d55337853021f98befb4e1b02ac0d83f0b82a6b30de8811e69e6d95c61", null ],
-      [ "DONT_CARE", "classadiar_1_1cube.html#a614d635d55337853021f98befb4e1b02a3d241dc381afd54422199a5e6864275a", null ]
+      [ "False", "classadiar_1_1cube.html#a614d635d55337853021f98befb4e1b02af8320b26d30ab433c5a54546d21f414c", null ],
+      [ "True", "classadiar_1_1cube.html#a614d635d55337853021f98befb4e1b02af827cf462f62848df37c5e1e94a4da74", null ],
+      [ "Dont_Care", "classadiar_1_1cube.html#a614d635d55337853021f98befb4e1b02afea0423c4beb7f8f8f39c750c0c857cf", null ]
     ] ],
     [ "cube", "classadiar_1_1cube.html#a47eb243d4a15291241374fc0c148c2f2", null ],
     [ "cube", "classadiar_1_1cube.html#afb6bfd05306bcdf43675638b5d1bff01", null ],

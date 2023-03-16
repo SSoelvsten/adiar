@@ -10,6 +10,7 @@ var namespaceadiar =
       [ "node", "classadiar_1_1internal_1_1node.html", "classadiar_1_1internal_1_1node" ],
       [ "ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html", "classadiar_1_1internal_1_1ptr__uint64" ],
       [ "request", "classadiar_1_1internal_1_1request.html", "classadiar_1_1internal_1_1request" ],
+      [ "request< CARDINALITY, 0, INPUTS >", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4" ],
       [ "request_fst_lt", "structadiar_1_1internal_1_1request__fst__lt.html", "structadiar_1_1internal_1_1request__fst__lt" ],
       [ "request_snd_lt", "structadiar_1_1internal_1_1request__snd__lt.html", "structadiar_1_1internal_1_1request__snd__lt" ],
       [ "request_trd_lt", "structadiar_1_1internal_1_1request__trd__lt.html", "structadiar_1_1internal_1_1request__trd__lt" ],
@@ -69,15 +70,15 @@ var namespaceadiar =
     [ "zdd_builder", "group__module____builder.html#ga592e87250f7f8446244b8de707a0c5ec", null ],
     [ "zdd_ptr", "group__module____builder.html#ga514e020331f79af83a6680ca7b51accf", null ],
     [ "assignment", "namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2", [
-      [ "FALSE", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156ba946003f97ccc52d5d3b54ac0ec31bbfc", null ],
-      [ "TRUE", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156bac0d83f0b82a6b30de8811e69e6d95c61", null ],
-      [ "NONE", "namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2ab50339a10e1de285ac99d4c3990b8693", null ]
+      [ "False", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156baf8320b26d30ab433c5a54546d21f414c", null ],
+      [ "True", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156baf827cf462f62848df37c5e1e94a4da74", null ],
+      [ "None", "namespaceadiar.html#a723cfcc9239dfdc3cf4cdc74df0265c2a6adf97f83acf6453d4a6a4b1070f3754", null ]
     ] ],
     [ "boolean", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156b", [
-      [ "FALSE", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156babfb286180aa57bf1e1d8c4e7264fe24f", null ],
-      [ "FALSE", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156ba946003f97ccc52d5d3b54ac0ec31bbfc", null ],
-      [ "TRUE", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156ba8ec273feeeaf4568629c17ff15ff9fc3", null ],
-      [ "TRUE", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156bac0d83f0b82a6b30de8811e69e6d95c61", null ]
+      [ "False", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156ba0a8fba5157d7219eb547255c6b4aa585", null ],
+      [ "False", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156baf8320b26d30ab433c5a54546d21f414c", null ],
+      [ "True", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156ba71a01efeccb1df5a50d74d67faf2664d", null ],
+      [ "True", "namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156baf827cf462f62848df37c5e1e94a4da74", null ]
     ] ],
     [ "memory_mode_t", "group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c", [
       [ "AUTO", "group__module____adiar.html#ggaa457265c627a4561a55df8b29ed1375cae1f2d5134ed2543d38a0de9751cf75d9", null ],

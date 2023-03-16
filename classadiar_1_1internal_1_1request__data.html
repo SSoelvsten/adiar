@@ -94,7 +94,6 @@ $(document).ready(function(){initNavTree('classadiar_1_1internal_1_1request__dat
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classadiar_1_1internal_1_1request__data-members.html">List of all members</a>  </div>
@@ -126,33 +125,15 @@ Public Types</h2></td></tr>
 typedef data_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request__data.html#ac691886972a73be1f1fe4de2f854b1ed">data_t</a></td></tr>
 <tr class="memdesc:ac691886972a73be1f1fe4de2f854b1ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the extra data carried with this recursion request. <br /></td></tr>
 <tr class="separator:ac691886972a73be1f1fe4de2f854b1ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4765fa023cb9ba587a80a19dd6039c7"><td class="memItemLeft" align="right" valign="top"><a id="aa4765fa023cb9ba587a80a19dd6039c7"></a>
-typedef <a class="el" href="classadiar_1_1internal_1_1node.html#a37197ed662719976542ac0975871c619">node::label_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>label_t</b></td></tr>
-<tr class="separator:aa4765fa023cb9ba587a80a19dd6039c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3da702f6386226b04b6b0ada080fed00"><td class="memItemLeft" align="right" valign="top"><a id="a3da702f6386226b04b6b0ada080fed00"></a>
-typedef <a class="el" href="classadiar_1_1internal_1_1node.html#aaf16f2039ac0c8ee57c92132f3cabeb1">node::ptr_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ptr_t</b></td></tr>
-<tr class="separator:a3da702f6386226b04b6b0ada080fed00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c7efba235240f643aacb1c849c7d3f3"><td class="memItemLeft" align="right" valign="top"><a id="a7c7efba235240f643aacb1c849c7d3f3"></a>
-typedef <a class="el" href="classadiar_1_1internal_1_1tuple.html">tuple</a>&lt; <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html">ptr_t</a>, <a class="el" href="classadiar_1_1internal_1_1request.html#abd6d219d25c8a64eb84f115c5d8fc96a">cardinality</a>, <a class="el" href="classadiar_1_1internal_1_1request.html#a7bf3cc13d35270a3491016d0e1e46140">sorted_target</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#a7c7efba235240f643aacb1c849c7d3f3">target_t</a></td></tr>
-<tr class="memdesc:a7c7efba235240f643aacb1c849c7d3f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the target tuple. <br /></td></tr>
-<tr class="separator:a7c7efba235240f643aacb1c849c7d3f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a3d98adf56f255244586bcd8b1238a1"><td class="memItemLeft" align="right" valign="top"><a id="a4a3d98adf56f255244586bcd8b1238a1"></a>
-typedef <a class="el" href="classadiar_1_1internal_1_1node.html#ac4221aa0936684cdb6790a1b43c5f300">node::children_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#a4a3d98adf56f255244586bcd8b1238a1">children_t</a></td></tr>
-<tr class="memdesc:a4a3d98adf56f255244586bcd8b1238a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the set of children carried to the last in <code>target</code>. <br /></td></tr>
-<tr class="separator:a4a3d98adf56f255244586bcd8b1238a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a29c1f47c1666a1a9322e0f69133aad69"><td class="memItemLeft" align="right" valign="top"><a id="a29c1f47c1666a1a9322e0f69133aad69"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>request_data</b> (const <a class="el" href="classadiar_1_1internal_1_1request__data.html">request_data</a> &amp;r)=default</td></tr>
 <tr class="separator:a29c1f47c1666a1a9322e0f69133aad69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b3c74774c6a5c8cb1cd54e69a8f966b"><td class="memItemLeft" align="right" valign="top"><a id="a9b3c74774c6a5c8cb1cd54e69a8f966b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>request_data</b> (const typename <a class="el" href="classadiar_1_1internal_1_1request.html#a7c7efba235240f643aacb1c849c7d3f3">request_t::target_t</a> &amp;t, const typename <a class="el" href="classadiar_1_1internal_1_1request.html#a4a3d98adf56f255244586bcd8b1238a1">request_t::children_t</a>(&amp;nc)[<a class="el" href="classadiar_1_1internal_1_1request.html#a12144d30626a36d150e55e05a143d07e">node_carry_size</a>], const <a class="el" href="classadiar_1_1internal_1_1request__data.html#ac691886972a73be1f1fe4de2f854b1ed">data_t</a> &amp;d)</td></tr>
-<tr class="separator:a9b3c74774c6a5c8cb1cd54e69a8f966b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a135b24676602f66555b0fbb49395461f"><td class="memItemLeft" align="right" valign="top"><a id="a135b24676602f66555b0fbb49395461f"></a>
-<a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801">ptr_t::label_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#a135b24676602f66555b0fbb49395461f">level</a> () const</td></tr>
-<tr class="memdesc:a135b24676602f66555b0fbb49395461f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The level at which this request should be resolved. <br /></td></tr>
-<tr class="separator:a135b24676602f66555b0fbb49395461f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a733b6f6146d09aa7984a1a17040bb858"><td class="memItemLeft" align="right" valign="top"><a id="a733b6f6146d09aa7984a1a17040bb858"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>request_data</b> (const typename request_t::target_t &amp;t, const std::array&lt; typename request_t::children_t, <a class="el" href="classadiar_1_1internal_1_1request.html#a12144d30626a36d150e55e05a143d07e">node_carry_size</a> &gt; &amp;nc, const <a class="el" href="classadiar_1_1internal_1_1request__data.html#ac691886972a73be1f1fe4de2f854b1ed">data_t</a> &amp;d)</td></tr>
+<tr class="separator:a733b6f6146d09aa7984a1a17040bb858"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd20eed797d6668dd2885dc35c23006d"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#abd20eed797d6668dd2885dc35c23006d">nodes_carried</a> () const</td></tr>
 <tr class="memdesc:abd20eed797d6668dd2885dc35c23006d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of nodes actually carried within <code>node_carry</code>.  <a href="classadiar_1_1internal_1_1request.html#abd20eed797d6668dd2885dc35c23006d">More...</a><br /></td></tr>
 <tr class="separator:abd20eed797d6668dd2885dc35c23006d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -160,45 +141,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa0a40123245810ac53c809e15ad6dc21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the node carry is empty. That is, this is a faster way to compute whether <code><a class="el" href="classadiar_1_1internal_1_1request.html#abd20eed797d6668dd2885dc35c23006d" title="The number of nodes actually carried within node_carry.">nodes_carried()</a> == 0</code>.  <a href="classadiar_1_1internal_1_1request.html#aa0a40123245810ac53c809e15ad6dc21">More...</a><br /></td></tr>
 <tr class="separator:aa0a40123245810ac53c809e15ad6dc21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a888b085ff55f183f07fbc1bd8732c6a9"><td class="memItemLeft" align="right" valign="top"><a id="a888b085ff55f183f07fbc1bd8732c6a9"></a>
-static constexpr <a class="el" href="classadiar_1_1internal_1_1request.html#a4a3d98adf56f255244586bcd8b1238a1">children_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#a888b085ff55f183f07fbc1bd8732c6a9">NO_CHILDREN</a> ()</td></tr>
-<tr class="memdesc:a888b085ff55f183f07fbc1bd8732c6a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The value to be inserted in empy slots in the <code>node_carry</code>. <br /></td></tr>
-<tr class="separator:a888b085ff55f183f07fbc1bd8732c6a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ae286f923ddf41bede77ef33c0e17e9b6"><td class="memItemLeft" align="right" valign="top"><a id="ae286f923ddf41bede77ef33c0e17e9b6"></a>
 <a class="el" href="classadiar_1_1internal_1_1request__data.html#ac691886972a73be1f1fe4de2f854b1ed">data_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request__data.html#ae286f923ddf41bede77ef33c0e17e9b6">data</a></td></tr>
 <tr class="memdesc:ae286f923ddf41bede77ef33c0e17e9b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extra data related to this recursion request tuple. <br /></td></tr>
 <tr class="separator:ae286f923ddf41bede77ef33c0e17e9b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8bf9eee0340e987d41eccb00296b6627"><td class="memItemLeft" align="right" valign="top"><a id="a8bf9eee0340e987d41eccb00296b6627"></a>
-<a class="el" href="classadiar_1_1internal_1_1request.html#a7c7efba235240f643aacb1c849c7d3f3">target_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#a8bf9eee0340e987d41eccb00296b6627">target</a></td></tr>
-<tr class="memdesc:a8bf9eee0340e987d41eccb00296b6627"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target node(s) of recursion request. <br /></td></tr>
-<tr class="separator:a8bf9eee0340e987d41eccb00296b6627"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a497f6b94197bf6b9f83295b0b151383e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1internal_1_1request.html#a4a3d98adf56f255244586bcd8b1238a1">children_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#a497f6b94197bf6b9f83295b0b151383e">node_carry</a> [<a class="el" href="classadiar_1_1internal_1_1request.html#a12144d30626a36d150e55e05a143d07e">node_carry_size</a>]</td></tr>
-<tr class="memdesc:a497f6b94197bf6b9f83295b0b151383e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set of nodes of prior visited nodes in <code>target</code>.  <a href="classadiar_1_1internal_1_1request.html#a497f6b94197bf6b9f83295b0b151383e">More...</a><br /></td></tr>
-<tr class="separator:a497f6b94197bf6b9f83295b0b151383e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95a5d4232f9c7d64a50ef9570939ec4f"><td class="memItemLeft" align="right" valign="top">std::array&lt; typename <a class="el" href="classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a45ec52929d634ac0329942afdb0fdc8e">base::children_t</a>, <a class="el" href="classadiar_1_1internal_1_1request.html#a12144d30626a36d150e55e05a143d07e">node_carry_size</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#a95a5d4232f9c7d64a50ef9570939ec4f">node_carry</a></td></tr>
+<tr class="memdesc:a95a5d4232f9c7d64a50ef9570939ec4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set of nodes of prior visited nodes in <code>target</code>.  <a href="classadiar_1_1internal_1_1request.html#a95a5d4232f9c7d64a50ef9570939ec4f">More...</a><br /></td></tr>
+<tr class="separator:a95a5d4232f9c7d64a50ef9570939ec4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:abd6d219d25c8a64eb84f115c5d8fc96a"><td class="memItemLeft" align="right" valign="top"><a id="abd6d219d25c8a64eb84f115c5d8fc96a"></a>
-static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#abd6d219d25c8a64eb84f115c5d8fc96a">cardinality</a></td></tr>
-<tr class="memdesc:abd6d219d25c8a64eb84f115c5d8fc96a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cardinality of the request target. <br /></td></tr>
-<tr class="separator:abd6d219d25c8a64eb84f115c5d8fc96a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12144d30626a36d150e55e05a143d07e"><td class="memItemLeft" align="right" valign="top"><a id="a12144d30626a36d150e55e05a143d07e"></a>
 static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#a12144d30626a36d150e55e05a143d07e">node_carry_size</a></td></tr>
 <tr class="memdesc:a12144d30626a36d150e55e05a143d07e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the node forwarding array. <br /></td></tr>
 <tr class="separator:a12144d30626a36d150e55e05a143d07e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e59f9e4c073c25fdb0778982d4d8e16"><td class="memItemLeft" align="right" valign="top"><a id="a4e59f9e4c073c25fdb0778982d4d8e16"></a>
-static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#a4e59f9e4c073c25fdb0778982d4d8e16">inputs</a></td></tr>
-<tr class="memdesc:a4e59f9e4c073c25fdb0778982d4d8e16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of input files. <br /></td></tr>
-<tr class="separator:a4e59f9e4c073c25fdb0778982d4d8e16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bf3cc13d35270a3491016d0e1e46140"><td class="memItemLeft" align="right" valign="top"><a id="a7bf3cc13d35270a3491016d0e1e46140"></a>
-static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1request.html#a7bf3cc13d35270a3491016d0e1e46140">sorted_target</a></td></tr>
-<tr class="memdesc:a7bf3cc13d35270a3491016d0e1e46140"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the target tuple ought to be sorted. <br /></td></tr>
-<tr class="separator:a7bf3cc13d35270a3491016d0e1e46140"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;uint8_t cardinality, typename data_type, uint8_t node_carry_size = 0u, uint8_t inputs = cardinality&gt;<br />
@@ -231,7 +189,7 @@ class adiar::internal::request_data&lt; cardinality, data_type, node_carry_size,
 </div><div class="memdoc">
 
 <p>Whether the node carry is empty. That is, this is a faster way to compute whether <code><a class="el" href="classadiar_1_1internal_1_1request.html#abd20eed797d6668dd2885dc35c23006d" title="The number of nodes actually carried within node_carry.">nodes_carried()</a> == 0</code>. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classadiar_1_1internal_1_1request.html#abd20eed797d6668dd2885dc35c23006d" title="The number of nodes actually carried within node_carry.">nodes_carried</a>, <a class="el" href="classadiar_1_1internal_1_1request.html#a888b085ff55f183f07fbc1bd8732c6a9" title="The value to be inserted in empy slots in the node_carry.">NO_CHILDREN</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classadiar_1_1internal_1_1request.html#abd20eed797d6668dd2885dc35c23006d" title="The number of nodes actually carried within node_carry.">nodes_carried</a>, NO_CHILDREN </dd></dl>
 
 </div>
 </div>
@@ -259,13 +217,13 @@ class adiar::internal::request_data&lt; cardinality, data_type, node_carry_size,
 </div><div class="memdoc">
 
 <p>The number of nodes actually carried within <code>node_carry</code>. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classadiar_1_1internal_1_1request.html#a888b085ff55f183f07fbc1bd8732c6a9" title="The value to be inserted in empy slots in the node_carry.">NO_CHILDREN</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>NO_CHILDREN </dd></dl>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a497f6b94197bf6b9f83295b0b151383e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a497f6b94197bf6b9f83295b0b151383e">&#9670;&nbsp;</a></span>node_carry</h2>
+<a id="a95a5d4232f9c7d64a50ef9570939ec4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95a5d4232f9c7d64a50ef9570939ec4f">&#9670;&nbsp;</a></span>node_carry</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -274,7 +232,7 @@ class adiar::internal::request_data&lt; cardinality, data_type, node_carry_size,
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classadiar_1_1internal_1_1request.html#a4a3d98adf56f255244586bcd8b1238a1">children_t</a> <a class="el" href="classadiar_1_1internal_1_1request.html">adiar::internal::request</a>&lt; CARDINALITY, NODE_CARRY_SIZE, INPUTS &gt;::node_carry[<a class="el" href="classadiar_1_1internal_1_1request.html#a12144d30626a36d150e55e05a143d07e">node_carry_size</a>]</td>
+          <td class="memname">std::array&lt;typename <a class="el" href="classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html#a45ec52929d634ac0329942afdb0fdc8e">base::children_t</a>, <a class="el" href="classadiar_1_1internal_1_1request.html#a12144d30626a36d150e55e05a143d07e">node_carry_size</a>&gt; <a class="el" href="classadiar_1_1internal_1_1request.html">adiar::internal::request</a>&lt; CARDINALITY, NODE_CARRY_SIZE, INPUTS &gt;::node_carry</td>
         </tr>
       </table>
   </td>
@@ -285,7 +243,8 @@ class adiar::internal::request_data&lt; cardinality, data_type, node_carry_size,
 </div><div class="memdoc">
 
 <p>Set of nodes of prior visited nodes in <code>target</code>. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classadiar_1_1internal_1_1request.html#a888b085ff55f183f07fbc1bd8732c6a9" title="The value to be inserted in empy slots in the node_carry.">NO_CHILDREN</a> </dd></dl>
+<p>This is not implemented as a <code>std::array&lt;children_t, node_carry_size&gt;</code> because for <code>node_carry_size</code> being 0 we still spend 8 bytes on empty space.</p>
+<dl class="section see"><dt>See also</dt><dd>NO_CHILDREN </dd></dl>
 
 </div>
 </div>
