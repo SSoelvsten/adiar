@@ -26,23 +26,23 @@ namespace adiar
   }
 
   template<>
-  inline bdd::node_t::children_t
+  inline bdd_policy::children_t
   bdd_policy::reduction_rule_inv(const bdd::ptr_t &child)
   {
     return { child, child };
   }
 
-  // TODO: stop using this one in favour of the other one below
+  // TODO: stop using these in favour of 'reduction_rule_inv' above
   template<>
   inline void
-  bdd_policy::compute_cofactor(bool,
+  bdd_policy::compute_cofactor(const bool /*on_level*/,
                                /*const*/ bdd::ptr_t &,
                                /*const*/ bdd::ptr_t &)
   { /* do nothing */ }
 
   template<>
-  inline bdd::node_t::children_t
-  bdd_policy::compute_cofactor(bool, const bdd::node_t::children_t &children)
+  inline bdd_policy::children_t
+  bdd_policy::compute_cofactor(const bool /*on_level*/, const bdd_policy::children_t &children)
   { return children; }
 }
 

@@ -54,7 +54,9 @@ namespace adiar
     static constexpr bool termination_value = false;
   };
 
-  class zdd_subseteq_policy : public zdd_policy, public internal::prod2_mixed_level_merger
+  class zdd_subseteq_policy
+    : public zdd_policy
+    , public internal::prod2_mixed_level_merger<zdd_policy>
   {
   public:
     typedef ignore_levels<internal::cut_type::INTERNAL_TRUE, internal::cut_type::INTERNAL_TRUE> level_check_t;
@@ -90,27 +92,27 @@ namespace adiar
 
   public:
     template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, zdd::ptr_t &r1, zdd::ptr_t &r2)
+    static bool resolve_request(pq_1_t &pq, const internal::tuple<zdd::ptr_t> &rp)
     {
       // Are they both a terminal? If so, check whether the left-hand side is true
       // and not the right, which would contradict being an implication (i.e.
       // representing a subset).
-      if (r1.is_terminal() && r2.is_terminal()) {
-        return unflag(r1) > unflag(r2);
+      if (rp[0].is_terminal() && rp[1].is_terminal()) {
+        return unflag(rp[0]) > unflag(rp[1]);
       }
 
       // Has the left-hand side fallen out of its set?
-      if (r1.is_false()) {
+      if (rp[0].is_false()) {
         return false;
       }
 
       // Has the right-hand side fallen out of its set?
-      if (r2.is_false()) {
+      if (rp[1].is_false()) {
         return true;
       }
 
       // Otherwise, recurse
-      pq.push({ {r1,r2}, {} });
+      pq.push({ rp, {} });
       return false;
     }
 
@@ -129,7 +131,9 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class zdd_disjoint_policy : public zdd_policy, public internal::prod2_mixed_level_merger
+  class zdd_disjoint_policy
+    : public zdd_policy
+    , public internal::prod2_mixed_level_merger<zdd_policy>
   {
   public:
     typedef ignore_levels<internal::cut_type::ALL, internal::cut_type::ALL> level_check_t;
@@ -156,28 +160,28 @@ namespace adiar
     }
 
   public:
-  template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, zdd::ptr_t &r1, zdd::ptr_t &r2)
+    template<typename pq_1_t>
+    static bool resolve_request(pq_1_t &pq, const internal::tuple<zdd::ptr_t> &rp)
     {
       // Are they both a terminal? If so, check whether they both are true, which
       // verify there is a satisfiying conjunction (i.e. representing a shared
       // path/element).
-      if (r1.is_terminal() && r2.is_terminal()) {
-        return r1.value() && r2.value();
+      if (rp[0].is_terminal() && rp[1].is_terminal()) {
+        return rp[0].value() && rp[1].value();
       }
 
       // Has the left-hand side fallen out of its set?
-      if (r1.is_false()) {
+      if (rp[0].is_false()) {
         return false;
       }
 
       // Has the right-hand side fallen out of its set?
-      if (r2.is_false()) {
+      if (rp[0].is_false()) {
         return false;
       }
 
       // Otherwise, recurse
-      pq.push({ {r1,r2}, {} });
+      pq.push({ rp, {} });
       return false;
     }
 

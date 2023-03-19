@@ -326,6 +326,11 @@ namespace adiar::internal
     typedef typename dd_type::ptr_t ptr_t;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of pointers of this diagram.
+    ////////////////////////////////////////////////////////////////////////////
+    typedef typename node_t::children_t children_t;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of this node's variable label.
     ////////////////////////////////////////////////////////////////////////////
     typedef typename dd_type::label_t label_t;
@@ -361,15 +366,18 @@ namespace adiar::internal
     static inline ptr_t
     reduction_rule(const node_t &n);
 
-    static inline typename node_t::children_t
+    static inline children_t
     reduction_rule_inv(const ptr_t &child);
 
-    // TODO: stop using this one in favour of the other one below
+    // TODO: stop using these in favour of 'reduction_rule_inv' above
     static inline void
-    compute_cofactor(bool on_curr_level, ptr_t &low, ptr_t &high);
+    compute_cofactor(const bool on_curr_level,
+                     ptr_t &low,
+                     ptr_t &high);
 
-    static inline typename node_t::children_t
-    compute_cofactor(bool on_curr_level, const typename node_t::children_t &children);
+    static inline children_t
+    compute_cofactor(const bool on_curr_level,
+                     const children_t &children);
   };
   /// \endcond
 }

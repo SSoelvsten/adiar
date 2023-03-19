@@ -22,26 +22,26 @@ namespace adiar::internal
   ///        negation flags) are isomorphic.
   ///
   /// \details Checks whether the two files are isomorphic, i.e. whether there
-  ///          is a structure-preserving mapping between f1 and f2. This
+  ///          is a structure-preserving mapping between `f0` and `f1`. This
   ///          assumes, that both files are of a unique reduced form.
   ///
   /// \param fi      The two files of nodes to compare.
   /// \param negatei Whether the nodes of fi should be read in negated form
   ///
-  /// \return  Whether <tt>f1</tt> and <tt>f2</tt> have isomorphic DAGs when
-  ///          applying the given negation flags.
+  /// \return Whether `f0` and `f1` have isomorphic DAGs when applying the given
+  ///         negation flags.
   //////////////////////////////////////////////////////////////////////////////
-  bool is_isomorphic(const shared_levelized_file<node> &f1,
-                     const shared_levelized_file<node> &f2,
-                     bool negate1 = false,
-                     bool negate2 = false);
+  bool is_isomorphic(const shared_levelized_file<node> &f0,
+                     const shared_levelized_file<node> &f1,
+                     bool negate0 = false,
+                     bool negate1 = false);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Computes whether two decision diagrams are isomorphic; i.e. whether
   ///        they are equivalent (under the same deletion-rule).
   ///
   /// \details Checks whether the two files are isomorphic, i.e. whether there
-  ///          is a structure-preserving mapping between f1 and f2. This
+  ///          is a structure-preserving mapping between `f0` and `f1`. This
   ///          assumes, that both files are of a unique reduced form.
   ///
   /// \param a   The first decision diagram.
@@ -70,50 +70,57 @@ namespace adiar::internal
     priority_queue<mem_mode, pred_request<1>, request_snd_lt<pred_request<1>>>;
 
   template<typename comp_policy, typename pq_1_t, typename pq_2_t>
-  bool __comparison_check(const shared_levelized_file<node> &f1,
-                          const shared_levelized_file<node> &f2,
+  bool __comparison_check(const shared_levelized_file<node> &f0,
+                          const shared_levelized_file<node> &f1,
+                          const bool negate0,
                           const bool negate1,
-                          const bool negate2,
                           const tpie::memory_size_type pq_1_memory,
                           const tpie::memory_size_type pq_2_memory,
                           const size_t max_pq_size)
   {
+    node_stream<> in_nodes_0(f0, negate0);
     node_stream<> in_nodes_1(f1, negate1);
-    node_stream<> in_nodes_2(f2, negate2);
 
+    node v0 = in_nodes_0.pull();
     node v1 = in_nodes_1.pull();
-    node v2 = in_nodes_2.pull();
 
-    if (v1.is_terminal() || v2.is_terminal()) {
+    if (v0.is_terminal() || v1.is_terminal()) {
       bool ret_value;
-      if (comp_policy::resolve_terminals(v1, v2, ret_value)) {
+      if (comp_policy::resolve_terminals(v0, v1, ret_value)) {
         return ret_value;
       }
     }
 
-    if (v1.low().is_terminal() && v1.high().is_terminal() && v2.low().is_terminal() && v2.high().is_terminal()) {
-      return comp_policy::resolve_singletons(v1, v2);
+    if (v0.low().is_terminal() && v0.high().is_terminal() &&
+        v1.low().is_terminal() && v1.high().is_terminal()) {
+      return comp_policy::resolve_singletons(v0, v1);
     }
 
     // Set up priority queue for recursion
-    pq_1_t comparison_pq_1({f1, f2}, pq_1_memory, max_pq_size, stats_equality.lpq);
+    pq_1_t comparison_pq_1({f0, f1}, pq_1_memory, max_pq_size, stats_equality.lpq);
 
-    // Check for violation on root children, or 'recurse' otherwise
-    typename comp_policy::label_t level = fst(v1.uid(), v2.uid()).label();
+    {
+      // Check for violation on root children, or 'recurse' otherwise
+      const typename comp_policy::label_t level = fst(v0.uid(), v1.uid()).label();
 
-    ptr_uint64 low1, high1, low2, high2;
-    comp_policy::merge_root(low1,high1, low2,high2, level, v1, v2);
+      const tuple<typename comp_policy::children_t> children =
+        comp_policy::merge_root(level, v0, v1);
 
-    comp_policy::compute_cofactor(v1.on_level(level), low1, high1);
-    comp_policy::compute_cofactor(v2.on_level(level), low2, high2);
+      // Create pairing of product children and obtain new recursion targets
+      const tuple<typename comp_policy::ptr_t> rec_pair_0 =
+        { children[0][false], children[1][false] };
 
-    if (comp_policy::resolve_request(comparison_pq_1, low1, low2)
-        || comp_policy::resolve_request(comparison_pq_1, high1, high2)) {
-      return comp_policy::early_return_value;
+      const tuple<typename comp_policy::ptr_t> rec_pair_1 =
+        { children[0][true], children[1][true] };
+
+      if (comp_policy::resolve_request(comparison_pq_1, rec_pair_0) ||
+          comp_policy::resolve_request(comparison_pq_1, rec_pair_1)) {
+        return comp_policy::early_return_value;
+      }
     }
 
     // Initialise level checking
-    typename comp_policy::level_check_t level_checker(f1,f2);
+    typename comp_policy::level_check_t level_checker(f0,f1);
 
     pq_2_t comparison_pq_2(pq_2_memory, max_pq_size);
 
@@ -125,7 +132,7 @@ namespace adiar::internal
       }
 
       pred_request_2 req;
-      bool with_data;
+      bool with_data; // TODO: replace with !req.empty_carry()
 
       // Merge requests from comparison_pq_1 and comparison_pq_2
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
@@ -143,13 +150,13 @@ namespace adiar::internal
       }
 
       // Seek request partially in stream
-      ptr_uint64 t_seek = with_data ? req.target.snd() : req.target.fst();
+      const ptr_uint64 t_seek = with_data ? req.target.snd() : req.target.fst();
 
+      while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
+        v0 = in_nodes_0.pull();
+      }
       while (v1.uid() < t_seek && in_nodes_1.can_pull()) {
         v1 = in_nodes_1.pull();
-      }
-      while (v2.uid() < t_seek && in_nodes_2.can_pull()) {
-        v2 = in_nodes_2.pull();
       }
 
       // Skip all requests to the same node
@@ -161,10 +168,12 @@ namespace adiar::internal
       if (!with_data
           && req.target[0].is_node() && req.target[1].is_node()
           && req.target[0].label() == req.target[1].label()
-          && (v1.uid() != req.target[0] || v2.uid() != req.target[1])) {
-        const node v_forwarded = req.target[0] == v1.uid() ? v1 : v2;
+          && (v0.uid() != req.target[0] || v1.uid() != req.target[1])) {
+        const typename comp_policy::children_t children =
+          (req.target[0] == v0.uid() ? v0 : v1).children();
 
-        comparison_pq_2.push({ req.target, { v_forwarded.children() } });
+        comparison_pq_2.push({ req.target, { children } });
+
         continue;
       }
 
@@ -172,18 +181,20 @@ namespace adiar::internal
         return level_checker.termination_value;
       }
 
-      ptr_uint64 low1, high1, low2, high2; // TODO: clean up...
-      comp_policy::merge_data(low1,high1, low2,high2,
-                              req.target[0], req.target[1], t_seek,
-                              v1, v2,
-                              req.node_carry[0][0], req.node_carry[0][1]);
+      // Obtain children or root for both nodes (depending on level)
+      const tuple<typename comp_policy::children_t, 2> children =
+        comp_policy::merge_request(req, t_seek, v0, v1);
 
-      const typename comp_policy::label_t level = t_seek.label();
-      comp_policy::compute_cofactor(req.target[0].on_level(level), low1, high1);
-      comp_policy::compute_cofactor(req.target[1].on_level(level), low2, high2);
+      // Create pairing of product children and obtain new recursion targets
+      const tuple<typename comp_policy::ptr_t> rec_pair_0 =
+        { children[0][false], children[1][false] };
 
-      if (comp_policy::resolve_request(comparison_pq_1, low1, low2)
-          || comp_policy::resolve_request(comparison_pq_1, high1, high2)) {
+      const tuple<typename comp_policy::ptr_t> rec_pair_1 =
+        { children[0][true], children[1][true] };
+
+      // Forward pairing and return early if possible
+      if (comp_policy::resolve_request(comparison_pq_1, rec_pair_0)
+          || comp_policy::resolve_request(comparison_pq_1, rec_pair_1)) {
         return comp_policy::early_return_value;
       }
     }
@@ -206,7 +217,7 @@ namespace adiar::internal
   /// - The constexpr 'early_return_value' and 'no_early_return_value' change the
   ///   return value on early returns.
   ///
-  /// This 'prod_policy' also should inherit (or provide) the general policy for
+  /// This 'comp_policy' also should inherit (or provide) the general policy for
   /// the decision_diagram used (i.e. bdd_policy in bdd/bdd.h, zdd_policy in
   /// zdd/zdd.h and so on). This provides the following functions
   ///
@@ -215,10 +226,10 @@ namespace adiar::internal
   ///   the product construction.
   //////////////////////////////////////////////////////////////////////////////
   template<typename comp_policy>
-  bool comparison_check(const shared_levelized_file<node> &f1,
-                        const shared_levelized_file<node> &f2,
-                        const bool negate1,
-                        const bool negate2)
+  bool comparison_check(const shared_levelized_file<node> &f0,
+                        const shared_levelized_file<node> &f1,
+                        const bool negate0,
+                        const bool negate1)
   {
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
@@ -252,11 +263,11 @@ namespace adiar::internal
     const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
     const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
 
-    const size_t pq_1_bound = comp_policy::level_check_t::pq1_upper_bound(f1, f2);
+    const size_t pq_1_bound = comp_policy::level_check_t::pq1_upper_bound(f0, f1);
 
     const size_t max_pq_1_size = internal_only ? std::min(pq_1_memory_fits, pq_1_bound) : pq_1_bound;
 
-    const size_t pq_2_bound = comp_policy::level_check_t::pq2_upper_bound(f1, f2);
+    const size_t pq_2_bound = comp_policy::level_check_t::pq2_upper_bound(f0, f1);
 
     const size_t max_pq_2_size = internal_only ? std::min(pq_2_memory_fits, pq_2_bound) : pq_2_bound;
 
@@ -268,7 +279,7 @@ namespace adiar::internal
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_1_t<0, memory_mode_t::INTERNAL>,
                                 comparison_priority_queue_2_t<memory_mode_t::INTERNAL>>
-        (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
+        (f0, f1, negate0, negate1, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
     } else if(!external_only && max_pq_1_size <= pq_1_memory_fits
                              && max_pq_2_size <= pq_2_memory_fits) {
 #ifdef ADIAR_STATS
@@ -277,7 +288,7 @@ namespace adiar::internal
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>,
                                 comparison_priority_queue_2_t<memory_mode_t::INTERNAL>>
-        (f1, f2, negate1, negate2, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
+        (f0, f1, negate0, negate1, pq_1_internal_memory, pq_2_internal_memory, max_pq_1_size);
     } else {
 #ifdef ADIAR_STATS
       stats_equality.lpq.external += 1u;
@@ -288,7 +299,7 @@ namespace adiar::internal
       return __comparison_check<comp_policy,
                                 comparison_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>,
                                 comparison_priority_queue_2_t<memory_mode_t::EXTERNAL>>
-        (f1, f2, negate1, negate2, pq_1_memory, pq_2_memory, max_pq_1_size);
+        (f0, f1, negate0, negate1, pq_1_memory, pq_2_memory, max_pq_1_size);
     }
   }
 
