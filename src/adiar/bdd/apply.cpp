@@ -8,7 +8,9 @@
 
 namespace adiar
 {
-  class apply_prod_policy : public bdd_policy, public internal::prod2_mixed_level_merger
+  class apply_prod2_policy
+    : public bdd_policy
+    , public internal::prod2_mixed_level_merger<bdd_policy>
   {
   public:
     static __bdd resolve_same_file(const bdd &bdd_1, const bdd &bdd_2,
@@ -34,6 +36,7 @@ namespace adiar
                                        const bdd::node_t &v2, const bdd& bdd_2,
                                        const bool_op &op)
     {
+      // TODO: use bdd_1 and bdd_2 instead of v1 and v2
       if (v1.is_terminal() && v2.is_terminal()) {
         bdd::ptr_t p = op(v1.uid(), v2.uid());
         return bdd_terminal(p.value());
@@ -78,25 +81,27 @@ namespace adiar
 
   private:
     static internal::tuple<bdd::ptr_t>
-    __resolve_request(const bool_op &op, const bdd::ptr_t &r1, const bdd::ptr_t &r2)
+    __resolve_request(const bool_op &op,
+                      const internal::tuple<bdd::ptr_t> &r)
     {
-      if (r1.is_terminal() && can_left_shortcut(op, r1)) {
-        return { r1, bdd::ptr_t(true) };
-      } else if (r2.is_terminal() && can_right_shortcut(op, r2)) {
-        return { bdd::ptr_t(true), r2 };
-      } else {
-        return { r1, r2 };
+      if (r[0].is_terminal() && can_left_shortcut(op, r[0])) {
+        return { r[0], bdd::ptr_t(true) };
       }
+      if (r[1].is_terminal() && can_right_shortcut(op, r[1])) {
+        return { bdd::ptr_t(true), r[1] };
+      }
+      return r;
     }
 
   public:
-    static internal::prod2_rec resolve_request(const bool_op &op,
-                                               bdd::ptr_t low1,  bdd::ptr_t low2,
-                                               bdd::ptr_t high1, bdd::ptr_t high2)
+    static internal::prod2_rec
+    resolve_request(const bool_op &op,
+                    const internal::tuple<bdd::ptr_t> &r_low,
+                    const internal::tuple<bdd::ptr_t> &r_high)
     {
       return internal::prod2_rec_output {
-        __resolve_request(op, low1, low2),
-        __resolve_request(op, high1, high2)
+        __resolve_request(op, r_low),
+        __resolve_request(op, r_high)
       };
     }
 
@@ -105,6 +110,6 @@ namespace adiar
 
   __bdd bdd_apply(const bdd &bdd_1, const bdd &bdd_2, const bool_op &op)
   {
-    return internal::prod2<apply_prod_policy>(bdd_1, bdd_2, op);
+    return internal::prod2<apply_prod2_policy>(bdd_1, bdd_2, op);
   }
 };

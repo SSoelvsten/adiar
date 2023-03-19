@@ -74,6 +74,37 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Special dd_policy for `isomorphism_policy` to be used within the
+  ///        level merger logic.
+  ///
+  /// \sa isomorphism_policy
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO (Decision Diagrams with other kinds of pointers):
+  // template<class dd_policy>
+  class isomorphism_dd_policy : public dd_policy<dd, __dd>
+  {
+  public:
+    // Since we guarantee to be on the same level, then we merely provide a noop
+    // (similar to the bdd_policy) for the cofactor.
+    static inline void compute_cofactor([[maybe_unused]] const bool on_curr_level,
+                                        dd::ptr_t &/*low*/,
+                                        dd::ptr_t &/*high*/)
+    { adiar_invariant(on_curr_level, "No request have mixed levels"); }
+
+    // Since we guarantee to be on the same level, then we merely provide a noop
+    // (similar to the bdd_policy) for the cofactor.
+    static inline dd::node_t::children_t
+    compute_cofactor([[maybe_unused]] const bool on_curr_level,
+                     const dd::node_t::children_t &children)
+    {
+      adiar_invariant(on_curr_level, "No request have mixed levels");
+      return children;
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Policy for isomorphism checking with `comparison_check`.
+  ///
   /// \pre To use this operation, the following should be satisfied.
   ///  - The number of nodes are the same
   ///  - The number of levels are the same
@@ -81,8 +112,9 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   // TODO (Decision Diagrams with other kinds of pointers):
   // template<class dd_policy>
-  class isomorphism_policy : public prod2_same_level_merger,
-                             public dd_policy<dd, __dd>
+  class isomorphism_policy
+    : public dd_policy<dd, __dd>
+    , public prod2_same_level_merger<isomorphism_dd_policy>
   {
   public:
     typedef input_bound_levels<false> level_check_t;
@@ -104,7 +136,7 @@ namespace adiar::internal
     }
 
   public:
-    static bool resolve_singletons(const dd::node_t &v1, const dd::node_t v2)
+    static bool resolve_singletons(const dd::node_t &v1, const dd::node_t &v2)
     {
 #ifdef ADIAR_STATS
       stats_equality.slow_check.exit_on_root += 1u;
@@ -115,11 +147,11 @@ namespace adiar::internal
 
   public:
     template<typename pq_1_t>
-    static bool resolve_request(pq_1_t &pq, dd::ptr_t r1, dd::ptr_t r2)
+    static bool resolve_request(pq_1_t &pq, const tuple<dd::ptr_t> &rp)
     {
       // Are they both a terminal (and the same terminal)?
-      if (r1.is_terminal() || r2.is_terminal()) {
-        if (r1.is_terminal() && r2.is_terminal() && r1.value() == r2.value()) {
+      if (rp[0].is_terminal() || rp[1].is_terminal()) {
+        if (rp[0].is_terminal() && rp[1].is_terminal() && rp[0].value() == rp[1].value()) {
           return false;
         } else {
 #ifdef ADIAR_STATS
@@ -130,7 +162,7 @@ namespace adiar::internal
       }
 
       // Do they NOT point to a node with the same level?
-      if (r1.label() != r2.label()) {
+      if (rp[0].label() != rp[1].label()) {
 #ifdef ADIAR_STATS
         stats_equality.slow_check.exit_on_children += 1u;
 #endif
@@ -138,15 +170,9 @@ namespace adiar::internal
       }
 
       // No violation, so recurse
-      pq.push({ {r1,r2}, {} });
+      pq.push({ rp, {} });
       return false;
     }
-
-  public:
-    // Since we guarantee to be on the same level, then we merely provide a noop
-    // (similar to the bdd_policy) for the cofactor.
-    static inline void compute_cofactor([[maybe_unused]] bool on_curr_level, dd::ptr_t &, dd::ptr_t &)
-    { adiar_invariant(on_curr_level, "No request have mixed levels"); }
 
   public:
     static constexpr bool early_return_value = false;

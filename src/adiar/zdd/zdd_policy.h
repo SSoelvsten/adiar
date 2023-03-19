@@ -29,7 +29,7 @@ namespace adiar
     return { child, zdd::ptr_t(false) };
   }
 
-  // TODO: stop using this one in favour of the other one below
+  // TODO: stop using these in favour of 'reduction_rule_inv' above
   template<>
   inline void
   zdd_policy::compute_cofactor(bool on_curr_level,
@@ -41,12 +41,13 @@ namespace adiar
 
   template<>
   inline zdd::node_t::children_t
-  zdd_policy::compute_cofactor(bool on_curr_level,
+  zdd_policy::compute_cofactor(const bool on_curr_level,
                                const zdd::node_t::children_t &children)
   {
-    return on_curr_level
-      ? children :
-      zdd::node_t::children_t(children[0], zdd::ptr_t(false));
+    if (!on_curr_level) {
+      return zdd::node_t::children_t(children[false], zdd::ptr_t(false));
+    }
+    return children;
   }
 }
 

@@ -8,17 +8,6 @@
 
 namespace adiar
 {
-  bool can_right_shortcut_zdd(const bool_op &op, const zdd::ptr_t &terminal)
-  {
-    zdd::ptr_t terminal_F = zdd::ptr_t(false);
-    zdd::ptr_t terminal_T = zdd::ptr_t(true);
-
-    return // Does it shortcut on this level?
-         op(terminal_F, terminal) == terminal_F && op(terminal_T,  terminal) == terminal_F
-      // Does it shortcut on all other levels below?
-      && op(terminal_F, terminal_F) == terminal_F && op(terminal_T,  terminal_F) == terminal_F;
-  }
-
   bool can_left_shortcut_zdd(const bool_op &op, const zdd::ptr_t &terminal)
   {
     zdd::ptr_t terminal_F = zdd::ptr_t(false);
@@ -30,17 +19,30 @@ namespace adiar
       && op(terminal_F, terminal_F) == terminal_F && op(terminal_F,  terminal_T) == terminal_F;
   }
 
-  bool zdd_skippable(const bool_op &op, const zdd::ptr_t &high1, const zdd::ptr_t &high2)
+  bool can_right_shortcut_zdd(const bool_op &op, const zdd::ptr_t &terminal)
   {
-    return (high1.is_terminal() && high2.is_terminal()
-            && op(high1, high2) == zdd::ptr_t(false))
-      || (high1.is_terminal() && can_left_shortcut_zdd(op, high1))
-      || (high2.is_terminal() && can_right_shortcut_zdd(op, high2));
+    zdd::ptr_t terminal_F = zdd::ptr_t(false);
+    zdd::ptr_t terminal_T = zdd::ptr_t(true);
+
+    return // Does it shortcut on this level?
+      op(terminal_F, terminal) == terminal_F && op(terminal_T,  terminal) == terminal_F
+      // Does it shortcut on all other levels below?
+      && op(terminal_F, terminal_F) == terminal_F && op(terminal_T,  terminal_F) == terminal_F;
   }
+
+  bool zdd_skippable(const bool_op &op, const zdd::node_t::children_t &r_high)
+  {
+    return (r_high[0].is_terminal() && r_high[1].is_terminal()
+            && op(r_high[0], r_high[1]) == zdd::ptr_t(false))
+      || (r_high[0].is_terminal() && can_left_shortcut_zdd(op, r_high[0]))
+      || (r_high[1].is_terminal() && can_right_shortcut_zdd(op, r_high[1]));
+ }
 
   //////////////////////////////////////////////////////////////////////////////
   // ZDD product construction policy
-  class zdd_prod_policy : public zdd_policy, public internal::prod2_mixed_level_merger
+  class zdd_prod2_policy
+    : public zdd_policy
+    , public internal::prod2_mixed_level_merger<zdd_policy>
   {
   public:
     static __zdd resolve_same_file(const zdd &zdd_1, const zdd &/* zdd_2 */,
@@ -63,6 +65,7 @@ namespace adiar
                                        const zdd::node_t &v2, const zdd& zdd_2,
                                        const bool_op &op)
     {
+      // TODO: only use zdd_1 and zdd_2 rather than v1 and v2
       zdd::ptr_t terminal_F = zdd::ptr_t(false);
 
       if (v1.is_terminal() && v2.is_terminal()) {
@@ -107,31 +110,36 @@ namespace adiar
 
   private:
     static internal::tuple<zdd::ptr_t>
-    __resolve_request(const bool_op &op, const zdd::ptr_t &r1, const zdd::ptr_t &r2)
+    __resolve_request(const bool_op &op,
+                      const internal::tuple<zdd::ptr_t> &r)
     {
-      if (r1.is_terminal() && can_left_shortcut_zdd(op, r1)) {
-        return { r1, zdd::ptr_t(true) };
-      } else if (r2.is_terminal() && can_right_shortcut_zdd(op, r2)) {
-        return { zdd::ptr_t(true), r2 };
-      } else {
-        return { r1, r2 };
+      if (r[0].is_terminal() && can_left_shortcut_zdd(op, r[0])) {
+        return { r[0], zdd::ptr_t(true) };
       }
+      if (r[1].is_terminal() && can_right_shortcut_zdd(op, r[1])) {
+        return { zdd::ptr_t(true), r[1] };
+      }
+      return r;
     }
 
   public:
-    static internal::prod2_rec resolve_request(const bool_op &op,
-                                               const zdd::ptr_t &low1,  const zdd::ptr_t &low2,
-                                               const zdd::ptr_t &high1, const zdd::ptr_t &high2)
+    static internal::prod2_rec
+    resolve_request(const bool_op &op,
+                    const internal::tuple<zdd::ptr_t>  &r_low,
+                    const internal::tuple<zdd::ptr_t > &r_high)
     {
-      // Skip node, if it would be removed in the following Reduce
-      if (zdd_skippable(op, high1, high2)) {
-        return internal::prod2_rec_skipto { low1, low2 };
-      } else {
-        return internal::prod2_rec_output {
-          __resolve_request(op, low1, low2),
-          __resolve_request(op, high1, high2)
-        };
+      // If r_high surely suppresses the node during the ZDD Reduce, then skip
+      // creating it in the first place and just forward the edge to r_low.
+      if (zdd_skippable(op, r_high)) {
+        // TODO: 'r_low' => '__resolve_request(op, r_low)' ?
+        return internal::prod2_rec_skipto(r_low);
       }
+
+      // Otherwise, create a node with children r_low and r_high
+      return internal::prod2_rec_output {
+        __resolve_request(op, r_low),
+        __resolve_request(op, r_high)
+      };
     }
 
     static constexpr bool no_skip = false;
@@ -140,6 +148,6 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   __zdd zdd_binop(const zdd &A, const zdd &B, const bool_op &op)
   {
-    return internal::prod2<zdd_prod_policy>(A, B, op);
+    return internal::prod2<zdd_prod2_policy>(A, B, op);
   }
 }

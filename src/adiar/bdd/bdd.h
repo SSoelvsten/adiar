@@ -50,7 +50,7 @@ namespace adiar
     friend __bdd;
 
     // |- classes [internal]
-    friend class apply_prod_policy;
+    friend class apply_prod2_policy;
 
     // |- functions
     friend bdd bdd_not(const bdd&);
