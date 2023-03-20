@@ -61,7 +61,8 @@ namespace adiar::internal
     levelized_node_priority_queue<pred_request<0>, request_fst_lt<pred_request<0>>,
                                   LOOK_AHEAD,
                                   mem_mode,
-                                  2u>;
+                                  2u,
+                                  0u>;
 
   typedef request<2, 1> pred_request_2;
 
@@ -96,33 +97,15 @@ namespace adiar::internal
       return comp_policy::resolve_singletons(v0, v1);
     }
 
-    // Set up priority queue for recursion
+    // Set up cross-level priority queue
     pq_1_t comparison_pq_1({f0, f1}, pq_1_memory, max_pq_size, stats_equality.lpq);
+    comparison_pq_1.push({ { v0.uid(), v1.uid() }, {} });
 
-    {
-      // Check for violation on root children, or 'recurse' otherwise
-      const typename comp_policy::label_t level = fst(v0.uid(), v1.uid()).label();
-
-      const tuple<typename comp_policy::children_t> children =
-        comp_policy::merge_root(level, v0, v1);
-
-      // Create pairing of product children and obtain new recursion targets
-      const tuple<typename comp_policy::ptr_t> rec_pair_0 =
-        { children[0][false], children[1][false] };
-
-      const tuple<typename comp_policy::ptr_t> rec_pair_1 =
-        { children[0][true], children[1][true] };
-
-      if (comp_policy::resolve_request(comparison_pq_1, rec_pair_0) ||
-          comp_policy::resolve_request(comparison_pq_1, rec_pair_1)) {
-        return comp_policy::early_return_value;
-      }
-    }
+    // Set up per-level priority queue
+    pq_2_t comparison_pq_2(pq_2_memory, max_pq_size);
 
     // Initialise level checking
     typename comp_policy::level_check_t level_checker(f0,f1);
-
-    pq_2_t comparison_pq_2(pq_2_memory, max_pq_size);
 
     while (!comparison_pq_1.empty() || !comparison_pq_2.empty()) {
       if (comparison_pq_1.empty_level() && comparison_pq_2.empty()) {
