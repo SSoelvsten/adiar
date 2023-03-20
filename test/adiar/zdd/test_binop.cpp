@@ -864,13 +864,13 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(3u));
       });
 
-      it("computes { {0}, {1} } ∩ { {0,1} }", [&]() {
+      it("computes (and skip) { {0}, {1} } ∩ { {0,1} }", [&]() {
         /*
                     1          1                  (1,1)         ---- x0
                    / \        / \                 /   \
-                   2 T        F 2                 F (T,2)       ---- x1
-                  / \          / \       ==>         / \
-                  F T          F T                   F F
+                   2 T        F 2                 F   F         ---- x1
+                  / \          / \       ==>
+                  F T          F T
         */
 
         shared_levelized_file<zdd::node_t> zdd_a;
@@ -908,7 +908,7 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
+        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(0u));
 
         AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
         AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(0u));
@@ -1383,13 +1383,13 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));
       });
 
-      it("computes { {0,1}, {1} } \\ { {1}, Ø }", [&]() {
+      it("computes (and skip) { {0,1}, {1} } \\ { {1}, Ø }", [&]() {
         /*
                      1                      (1,1)       ---- x0
                      ||                     /   \
-                     2      1     ==>    (2,1) (2,F)    ---- x1
-                    / \    / \            / \   / \
-                    F T    T T            F F   F T
+                     2      1     ==>    (2,1)  F       ---- x1
+                    / \    / \            / \
+                    F T    T T            F F
         */
         shared_levelized_file<zdd::node_t> zdd_a;
         shared_levelized_file<zdd::node_t> zdd_b;
@@ -1433,7 +1433,7 @@ go_bandit([]() {
 
         AssertThat(levels.can_pull(), Is().False());
 
-        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(2u));
+        AssertThat(out.get<__zdd::shared_arcs_t>()->max_1level_cut, Is().GreaterThanOrEqualTo(1u));
 
         AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[false], Is().EqualTo(2u));
         AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(1u));

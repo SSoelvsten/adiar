@@ -34,7 +34,8 @@ namespace adiar::internal
     levelized_node_priority_queue<prod2_request<0>, request_data_fst_lt<prod2_request<0>>,
                                   LOOK_AHEAD,
                                   mem_mode,
-                                  2>;
+                                  2,
+                                  0>;
 
   template<memory_mode_t mem_mode>
   using prod_priority_queue_2_t =
@@ -251,47 +252,16 @@ namespace adiar::internal
     node v0 = in_nodes_0.pull();
     node v1 = in_nodes_1.pull();
 
-    // Set up priority queues
+    // Set up cross-level priority queue
     pq_1_t prod_pq_1({in_0, in_1}, pq_1_memory, max_pq_1_size, stats_prod2.lpq);
+    prod_pq_1.push({ { v0.uid(), v1.uid() }, {}, { ptr_uint64::NIL() } });
+
+    // Set up per-level priority queue
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
     // Process root and create initial recursion requests
     typename prod_policy::label_t out_label = fst(v0.uid(), v1.uid()).label();
     typename prod_policy::id_t out_id = 0;
-
-    // Shortcut the root (maybe)
-    // TODO: Remove in favour of NIL - -> root pair
-    {
-      // Obtain children or root for both nodes (depending on level)
-      const tuple<typename prod_policy::children_t> children =
-        prod_policy::merge_root(out_label, v0, v1);
-
-      // Create pairing of product children and obtain new recursion targets
-      const tuple<typename prod_policy::ptr_t> rec_pair_0 =
-        { children[0][false], children[1][false] };
-
-      const tuple<typename prod_policy::ptr_t> rec_pair_1 =
-        { children[0][true], children[1][true] };
-
-      const prod2_rec root_rec = prod_policy::resolve_request(op, rec_pair_0, rec_pair_1);
-
-      // Forward recursion targets
-      if (std::holds_alternative<prod2_rec_output>(root_rec)) {
-        const prod2_rec_output r = std::get<prod2_rec_output>(root_rec);
-        const node::uid_t out_uid(out_label, out_id++);
-
-        __prod2_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
-        __prod2_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
-      } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
-        const prod2_rec_skipto r = std::get<prod2_rec_skipto>(root_rec);
-
-        if (r[0].is_terminal() && r[1].is_terminal()) {
-          return __prod2_terminal(r, op);
-        } else {
-          prod_pq_1.push({ r, {}, { ptr_uint64::NIL() } });
-        }
-      }
-    }
 
     size_t max_1level_cut = 0;
 
@@ -398,6 +368,12 @@ namespace adiar::internal
       // Push the level of the very last iteration
       aw.push(level_info(out_label, out_id));
     }
+
+    // Ensure the edge case, where the in-going edge from NIL to the root pair
+    // does not dominate the max_1level_cut
+    max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
+                                        - out_arcs->number_of_terminals[true],
+                              max_1level_cut);
 
     out_arcs->max_1level_cut = max_1level_cut;
 
