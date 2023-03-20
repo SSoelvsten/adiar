@@ -23,8 +23,8 @@ namespace adiar::internal
   private:
     level_info_stream<> in_meta_1;
 
-    size_t curr_level_size;
-    size_t curr_level_processed;
+    size_t curr_level_size = 0;
+    size_t curr_level_processed = 0;
 
   public:
     static size_t pq1_upper_bound(const shared_levelized_file<node> &in_1,
@@ -49,9 +49,7 @@ namespace adiar::internal
   public:
     input_bound_levels(const shared_levelized_file<node> &f1,
                        const shared_levelized_file<node> &/*f2*/)
-      : in_meta_1(f1),
-        curr_level_size(in_meta_1.pull().width()),
-        curr_level_processed(1)
+      : in_meta_1(f1)
     { }
 
     void next_level(ptr_uint64::label_t /* level */)
