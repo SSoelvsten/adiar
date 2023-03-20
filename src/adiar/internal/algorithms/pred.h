@@ -132,25 +132,21 @@ namespace adiar::internal
       }
 
       pred_request_2 req;
-      bool with_data; // TODO: replace with !req.empty_carry()
 
       // Merge requests from comparison_pq_1 and comparison_pq_2
       if (comparison_pq_1.can_pull() && (comparison_pq_2.empty() ||
                                          comparison_pq_1.top().target.fst() < comparison_pq_2.top().target.snd())) {
-        with_data = false;
-
         req = { comparison_pq_1.top().target,
                 { {{ node::ptr_t::NIL(), node::ptr_t::NIL() }} } };
         comparison_pq_1.pop();
       } else {
-        with_data = true;
-
         req = comparison_pq_2.top();
         comparison_pq_2.pop();
       }
 
       // Seek request partially in stream
-      const ptr_uint64 t_seek = with_data ? req.target.snd() : req.target.fst();
+      const typename comp_policy::ptr_t t_seek =
+        req.empty_carry() ? req.target.fst() : req.target.snd();
 
       while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
         v0 = in_nodes_0.pull();
@@ -165,7 +161,7 @@ namespace adiar::internal
       }
 
       // Forward information across the level
-      if (!with_data
+      if (req.empty_carry()
           && req.target[0].is_node() && req.target[1].is_node()
           && req.target[0].label() == req.target[1].label()
           && (v0.uid() != req.target[0] || v1.uid() != req.target[1])) {
