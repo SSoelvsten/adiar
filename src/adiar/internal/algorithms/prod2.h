@@ -240,25 +240,18 @@ namespace adiar::internal
           const size_t pq_1_memory, const size_t max_pq_1_size,
           const size_t pq_2_memory, const size_t max_pq_2_size)
   {
+    // Set up output
+    shared_levelized_file<arc> out_arcs;
+    arc_writer aw(out_arcs);
+
+    // Set up input
     node_stream<> in_nodes_0(in_0);
     node_stream<> in_nodes_1(in_1);
 
     node v0 = in_nodes_0.pull();
     node v1 = in_nodes_1.pull();
 
-    if (v0.is_terminal() || v1.is_terminal()) {
-      typename prod_policy::unreduced_t maybe_resolved =
-        prod_policy::resolve_terminal_root(v0, in_0, v1, in_1, op);
-
-      if (!(maybe_resolved.template has<no_file>())) {
-        return maybe_resolved;
-      }
-    }
-
-    // Set-up for Product Construction Algorithm
-    shared_levelized_file<arc> out_arcs;
-    arc_writer aw(out_arcs);
-
+    // Set up priority queues
     pq_1_t prod_pq_1({in_0, in_1}, pq_1_memory, max_pq_1_size, stats_prod2.lpq);
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
@@ -545,9 +538,25 @@ namespace adiar::internal
         const typename prod_policy::reduced_t &in_1,
         const bool_op &op)
   {
+    // -------------------------------------------------------------------------
+    // Case: Same file, i.e. exactly the same DAG.
     if (in_0.file_ptr() == in_1.file_ptr()) {
       return prod_policy::resolve_same_file(in_0, in_1, op);
     }
+
+    // -------------------------------------------------------------------------
+    // Case: At least one terminal.
+    if (is_terminal(in_0) || is_terminal(in_1)) {
+      typename prod_policy::unreduced_t maybe_resolved =
+        prod_policy::resolve_terminal_root(in_0, in_1, op);
+
+      if (!(maybe_resolved.template has<no_file>())) {
+        return maybe_resolved;
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Case: Do the product construction
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.
