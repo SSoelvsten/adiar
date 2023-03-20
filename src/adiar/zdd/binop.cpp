@@ -61,29 +61,36 @@ namespace adiar
     }
 
   public:
-    static __zdd resolve_terminal_root(const zdd::node_t &v1, const zdd& zdd_1,
-                                       const zdd::node_t &v2, const zdd& zdd_2,
+    static __zdd resolve_terminal_root(const zdd& zdd_1,
+                                       const zdd& zdd_2,
                                        const bool_op &op)
     {
-      // TODO: only use zdd_1 and zdd_2 rather than v1 and v2
-      zdd::ptr_t terminal_F = zdd::ptr_t(false);
+      adiar_precondition(is_terminal(zdd_1) || is_terminal(zdd_2));
 
-      if (v1.is_terminal() && v2.is_terminal()) {
-        zdd::ptr_t p = op(v1.uid(), v2.uid());
-        return zdd_terminal(p.value());
-      } else if (v1.is_terminal()) {
-        if (can_left_shortcut_zdd(op, v1.uid()))  {
+      const zdd::ptr_t terminal_F = zdd::ptr_t(false);
+
+      if (is_terminal(zdd_1) && is_terminal(zdd_2)) {
+        const zdd::ptr_t p1 = value_of(zdd_1);
+        const zdd::ptr_t p2 = value_of(zdd_2);
+
+        return zdd_terminal(op(p1, p2).value());
+      } else if (is_terminal(zdd_1)) {
+        const zdd::ptr_t p1 = value_of(zdd_1);
+
+        if (can_left_shortcut_zdd(op, p1))  {
           // Shortcuts the left-most path to {Ø} and all others to Ø
           return zdd_terminal(false);
-        } else if (is_left_irrelevant(op, v1.uid()) && is_left_irrelevant(op, terminal_F)) {
+        } else if (is_left_irrelevant(op, p1) && is_left_irrelevant(op, terminal_F)) {
           // Has no change to left-most path to {Ø} and neither any others
           return zdd_2;
         }
-      } else { // if (v2.is_terminal()) {
-        if (can_right_shortcut_zdd(op, v2.uid())) {
+      } else { // if (is_terminal(zdd_2)) {
+        const zdd::ptr_t p2 = value_of(zdd_2);
+
+        if (can_right_shortcut_zdd(op, p2)) {
           // Shortcuts the left-most path to {Ø} and all others to Ø
           return zdd_terminal(false);
-        } else if (is_right_irrelevant(op, v2.uid()) && is_right_irrelevant(op, terminal_F)) {
+        } else if (is_right_irrelevant(op, p2) && is_right_irrelevant(op, terminal_F)) {
           // Has no change to left-most path to {Ø} and neither any others
           return zdd_1;
         }

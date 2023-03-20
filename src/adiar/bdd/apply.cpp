@@ -32,32 +32,39 @@ namespace adiar
     }
 
   public:
-    static __bdd resolve_terminal_root(const bdd::node_t &v1, const bdd& bdd_1,
-                                       const bdd::node_t &v2, const bdd& bdd_2,
+    static __bdd resolve_terminal_root(const bdd& bdd_1,
+                                       const bdd& bdd_2,
                                        const bool_op &op)
     {
-      // TODO: use bdd_1 and bdd_2 instead of v1 and v2
-      if (v1.is_terminal() && v2.is_terminal()) {
-        bdd::ptr_t p = op(v1.uid(), v2.uid());
-        return bdd_terminal(p.value());
-      } else if (v1.is_terminal()) {
-        if (can_left_shortcut(op, v1.uid())) {
-          bdd::ptr_t p =  op(v1.uid(), bdd::ptr_t(false));
-          return bdd_terminal(p.value());
-        } else if (is_left_irrelevant(op, v1.uid())) {
+      adiar_precondition(is_terminal(bdd_1) || is_terminal(bdd_2));
+
+      if (is_terminal(bdd_1) && is_terminal(bdd_2)) {
+        const bdd::ptr_t p1 = bdd::ptr_t(value_of(bdd_1));
+        const bdd::ptr_t p2 = bdd::ptr_t(value_of(bdd_2));
+
+        return bdd_terminal(op(p1, p2).value());
+      } else if (is_terminal(bdd_1)) {
+        const bdd::ptr_t p1 = bdd::ptr_t(value_of(bdd_1));
+
+        if (can_left_shortcut(op, p1)) {
+          return bdd_terminal(op(p1, bdd::ptr_t(false)).value());
+        }
+        if (is_left_irrelevant(op, p1)) {
           return bdd_2;
-        } else { // if (is_left_negating(op, v1.uid())) {
-          return bdd_not(bdd_2);
         }
-      } else { // if (v2.is_terminal()) {
-        if (can_right_shortcut(op, v2.uid())) {
-          bdd::ptr_t p = op(bdd::ptr_t(false), v2.uid());
-          return bdd_terminal(p.value());
-        } else if (is_right_irrelevant(op, v2.uid())) {
+        // if (is_left_negating(op, p1))
+        return bdd_not(bdd_2);
+      } else { // if (is_terminal(bdd_2)) {
+        const bdd::ptr_t p2 = bdd::ptr_t(value_of(bdd_2));
+
+        if (can_right_shortcut(op, p2)) {
+          return bdd_terminal(op(bdd::ptr_t(false), p2).value());
+        }
+        if (is_right_irrelevant(op, p2)) {
           return bdd_1;
-        } else { // if (is_right_negating(op, v2.uid())) {
-          return bdd_not(bdd_1);
         }
+        // if (is_right_negating(op, p2))
+        return bdd_not(bdd_1);
       }
       adiar_unreachable(); // LCOV_EXCL_LINE
     }
