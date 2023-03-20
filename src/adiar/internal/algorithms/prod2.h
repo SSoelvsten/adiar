@@ -281,17 +281,14 @@ namespace adiar::internal
       }
 
       prod2_request<1> req;
-      bool with_data; // TODO: replace with !req.empty_carry()
 
       // Merge requests from prod_pq_1 or prod_pq_2
       if (prod_pq_1.can_pull() && (prod_pq_2.empty() ||
                                    prod_pq_1.top().target.fst() < prod_pq_2.top().target.snd())) {
-        with_data = false;
         req = { prod_pq_1.top().target,
                 {{ { node::ptr_t::NIL(), node::ptr_t::NIL() } }},
                 { prod_pq_1.top().data } };
       } else {
-        with_data = true;
         req = prod_pq_2.top();
       }
 
@@ -301,7 +298,9 @@ namespace adiar::internal
                       "Request should never level-wise be behind current position");
 
       // Seek request partially in stream
-      const ptr_uint64 t_seek = with_data ? req.target.snd() : req.target.fst();
+      const typename prod_policy::ptr_t t_seek =
+        req.empty_carry() ? req.target.fst() : req.target.snd();
+
       while (v0.uid() < t_seek && in_nodes_0.can_pull()) {
         v0 = in_nodes_0.pull();
       }
@@ -310,7 +309,7 @@ namespace adiar::internal
       }
 
       // Forward information across the level
-      if (!with_data
+      if (req.empty_carry()
           && req.target[0].is_node() && req.target[1].is_node()
           && req.target[0].label() == req.target[1].label()
           && (v0.uid() != req.target[0] || v1.uid() != req.target[1])) {
