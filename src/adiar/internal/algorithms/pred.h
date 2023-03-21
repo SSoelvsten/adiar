@@ -33,8 +33,8 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   bool is_isomorphic(const shared_levelized_file<node> &f0,
                      const shared_levelized_file<node> &f1,
-                     bool negate0 = false,
-                     bool negate1 = false);
+                     const bool negate0 = false,
+                     const bool negate1 = false);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Computes whether two decision diagrams are isomorphic; i.e. whether
