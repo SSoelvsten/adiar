@@ -184,17 +184,15 @@ namespace adiar::internal
         quantify_pq_2.pop();
       }
 
-      const bool empty_carry = req.empty_carry(); // TODO: remove?
-
       // Seek element from request in stream
-      const ptr_uint64 t_seek = empty_carry ? req.target.fst() : req.target.snd();
+      const ptr_uint64 t_seek = req.empty_carry() ? req.target.fst() : req.target.snd();
 
       while (v.uid() < t_seek) {
         v = in_nodes.pull();
       }
 
       // Forward information of node t1 across the level if needed
-      if (empty_carry
+      if (req.empty_carry()
           && req.target.snd().is_node()
           && req.target.fst().label() == req.target.snd().label()) {
         adiar_debug(!req.target.snd().is_nil(),
@@ -228,26 +226,24 @@ namespace adiar::internal
         // simulating both possibilities in parallel.
 
         // Resolve current node and recurse.
-        const node::children_t children1 =
-          quantify_policy::compute_cofactor(true,
-                                            { empty_carry ? v.low()  : req.node_carry[0][false],
-                                              empty_carry ? v.high() : req.node_carry[0][true] });
+        const node::children_t children0 =
+          req.empty_carry() ? v.children() : req.node_carry[0];
 
-        const node::children_t children2 =
-          quantify_policy::compute_cofactor(req.target.snd().on_level(out_label),
-                                            { empty_carry ? req.target.snd() : v.low(),
-                                              empty_carry ? req.target.snd() : v.high() });
+        const node::children_t children1 =
+          req.target.snd().on_level(out_label)
+          ? v.children()
+          : quantify_policy::reduction_rule_inv(req.target.snd());
 
         adiar_debug(out_id < quantify_policy::MAX_ID, "Has run out of ids");
         const node::uid_t out_uid(out_label, out_id++);
 
         __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
                                                     out_uid,
-                                                    { children1[false], children2[false] });
+                                                    { children0[false], children1[false] });
 
         __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
                                                     flag(out_uid),
-                                                    { children1[true], children2[true] });
+                                                    { children0[true], children1[true] });
 
         if (!req.data.source.is_nil()) {
           do {
