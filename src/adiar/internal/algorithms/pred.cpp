@@ -47,9 +47,9 @@ namespace adiar::internal
     }
 
   public:
-    input_bound_levels(const shared_levelized_file<node> &f1,
-                       const shared_levelized_file<node> &/*f2*/)
-      : in_meta_1(f1)
+    input_bound_levels(const shared_levelized_file<node> &f0,
+                       const shared_levelized_file<node> &/*f1*/)
+      : in_meta_1(f0)
     { }
 
     void next_level(ptr_uint64::label_t /* level */)
@@ -197,11 +197,11 @@ namespace adiar::internal
   /// (3) The negation flags given to both shared_levelized_file<node>s agree
   ///     (breaks canonicity)
   //////////////////////////////////////////////////////////////////////////////
-  bool fast_isomorphism_check(const shared_levelized_file<node> &f1,
-                              const shared_levelized_file<node> &f2)
+  bool fast_isomorphism_check(const shared_levelized_file<node> &f0,
+                              const shared_levelized_file<node> &f1)
   {
-    node_stream<> in_nodes_1(f1);
-    node_stream<> in_nodes_2(f2);
+    node_stream<> in_nodes_1(f0);
+    node_stream<> in_nodes_2(f1);
 
     while (in_nodes_1.can_pull()) {
       adiar_debug(in_nodes_2.can_pull(), "The number of nodes should coincide");
@@ -216,21 +216,22 @@ namespace adiar::internal
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  bool is_isomorphic(const shared_levelized_file<node> &f1,
-                     const shared_levelized_file<node> &f2,
-                     bool negate1, bool negate2)
+  bool is_isomorphic(const shared_levelized_file<node> &f0,
+                     const shared_levelized_file<node> &f1,
+                     const bool negate0,
+                     const bool negate1)
   {
     // Are they literally referring to the same underlying file?
-    if (f1 == f2) {
+    if (f0 == f1) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_same_file += 1u;
 #endif
-      return negate1 == negate2;
+      return negate0 == negate1;
     }
 
     // Are they trivially not the same, since they have different number of
     // nodes?
-    if (f1->size() != f2->size()) {
+    if (f0->size() != f1->size()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_nodecount += 1u;
 #endif
@@ -239,7 +240,7 @@ namespace adiar::internal
 
     // Are they trivially not the same, since they have different number of
     // levels?
-    if (f1->levels() != f2->levels()) {
+    if (f0->levels() != f1->levels()) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_varcount += 1u;
 #endif
@@ -248,8 +249,8 @@ namespace adiar::internal
 
     // Are they trivially not the same, since they have different number of
     // terminal arcs?
-    if(f1->number_of_terminals[negate1] != f2->number_of_terminals[negate2] ||
-       f1->number_of_terminals[!negate1] != f2->number_of_terminals[!negate2]) {
+    if(f0->number_of_terminals[negate0] != f1->number_of_terminals[negate1] ||
+       f0->number_of_terminals[!negate0] != f1->number_of_terminals[!negate1]) {
 #ifdef ADIAR_STATS
       stats_equality.exit_on_terminalcount += 1u;
 #endif
@@ -259,12 +260,12 @@ namespace adiar::internal
     // Are they trivially not the same, since the labels or the size of each
     // level does not match?
     { // Create new scope to garbage collect the two meta_streams early
+      level_info_stream<> in_meta_0(f0);
       level_info_stream<> in_meta_1(f1);
-      level_info_stream<> in_meta_2(f2);
 
-      while (in_meta_1.can_pull()) {
-        adiar_debug(in_meta_2.can_pull(), "level_info files are same size");
-        if (in_meta_1.pull() != in_meta_2.pull()) {
+      while (in_meta_0.can_pull()) {
+        adiar_debug(in_meta_1.can_pull(), "level_info files are same size");
+        if (in_meta_0.pull() != in_meta_1.pull()) {
 #ifdef ADIAR_STATS
           stats_equality.exit_on_levels_mismatch += 1u;
 #endif
@@ -277,16 +278,16 @@ namespace adiar::internal
 
     // Compare their content to discern whether there exists an isomorphism
     // between them.
-    if (f1->canonical && f2->canonical && negate1 == negate2) {
+    if (f0->canonical && f1->canonical && negate0 == negate1) {
 #ifdef ADIAR_STATS
       stats_equality.fast_check.runs += 1u;
 #endif
-      return fast_isomorphism_check(f1, f2);
+      return fast_isomorphism_check(f0, f1);
     } else {
 #ifdef ADIAR_STATS
       stats_equality.slow_check.runs += 1u;
 #endif
-      return comparison_check<isomorphism_policy>(f1, f2, negate1, negate2);
+      return comparison_check<isomorphism_policy>(f0, f1, negate0, negate1);
     }
   }
 
