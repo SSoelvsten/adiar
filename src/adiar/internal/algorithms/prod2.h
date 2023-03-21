@@ -259,13 +259,12 @@ namespace adiar::internal
     // Set up per-level priority queue
     pq_2_t prod_pq_2(pq_2_memory, max_pq_2_size);
 
-    // Process root and create initial recursion requests
+    // Process requests in topological order of both BDDs
     typename prod_policy::label_t out_label = fst(v0.uid(), v1.uid()).label();
     typename prod_policy::id_t out_id = 0;
 
     size_t max_1level_cut = 0;
 
-    // Process nodes in topological order of both BDDs
     while (!prod_pq_1.empty() || !prod_pq_2.empty()) {
       if (prod_pq_1.empty_level() && prod_pq_2.empty()) {
         if (prod_policy::no_skip || out_id > 0) {
