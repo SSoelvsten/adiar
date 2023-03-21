@@ -31,20 +31,15 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
-  //
-  // As such we could just reuse the comparators in tuple.h, but unlike in Apply
-  // and Homomorphism we only maintain request for two nodes in the same
-  // Decision Diagram. Assuming that the operator is commutative, we can in fact
-  // due to this optimise everything by having t1 and t2 in the quantify_tuple
-  // sorted.
-  //
-  // This improves the speed of the comparators.
 
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using quantify_priority_queue_1_t =
     levelized_node_priority_queue<quantify_request<0>,
                                   request_data_fst_lt<quantify_request<0>>,
-                                  LOOK_AHEAD, mem_mode>;
+                                  LOOK_AHEAD,
+                                  mem_mode,
+                                  1,
+                                  0>;
 
   template<memory_mode_t mem_mode>
   using quantify_priority_queue_2_t =
@@ -131,50 +126,40 @@ namespace adiar::internal
                                                    const size_t pq_1_memory, const size_t max_pq_1_size,
                                                    const size_t pq_2_memory, const size_t max_pq_2_size)
   {
-    // Check for trivial terminal-only return on shortcutting the root
+    // Set up input
     node_stream<> in_nodes(in);
-    node v = in_nodes.pull();
+    typename quantify_policy::node_t v = in_nodes.pull();
 
+    // Check for trivial terminal-only return on shortcutting the root
     if (v.label() == label && (v.low().is_terminal() || v.high().is_terminal())) {
-      typename quantify_policy::unreduced_t maybe_resolved = quantify_policy::resolve_terminal_root(v, op);
+      typename quantify_policy::unreduced_t maybe_resolved =
+        quantify_policy::resolve_terminal_root(v, op);
 
       if (!maybe_resolved.empty()) {
         return maybe_resolved;
       }
     }
 
+    // Set up output
     shared_levelized_file<arc> out_arcs;
     arc_writer aw(out_arcs);
 
+    // Set up cross-level priority queue
     pq_1_t quantify_pq_1({in}, pq_1_memory, max_pq_1_size, stats_quantify.lpq);
+    quantify_pq_1.push({ { v.uid(), ptr_uint64::NIL() }, {}, {ptr_uint64::NIL()} });
+
+    // Set up per-level priority queue
     pq_2_t quantify_pq_2(pq_2_memory, max_pq_2_size);
 
-    typename quantify_policy::label_t out_label = v.uid().label();
+    // Process requests in topological order of both BDDs
+    typename quantify_policy::label_t out_label = 0;
     typename quantify_policy::id_t out_id = 0;
-
-    if (v.uid().label() == label) {
-      // Precondition: The input is reduced and will not collapse to a terminal
-      quantify_pq_1.push({ {fst(v.low(), v.high()), snd(v.low(), v.high())}, {}, {ptr_uint64::NIL()} });
-    } else {
-      const node::uid_t out_uid(out_label, out_id++);
-
-      if (v.low().is_terminal()) {
-        aw.push_terminal({ out_uid, v.low() });
-      } else {
-        quantify_pq_1.push({ {v.low(), ptr_uint64::NIL()}, {}, {out_uid} });
-      }
-      if (v.high().is_terminal()) {
-        aw.push_terminal({ flag(out_uid), v.high() });
-      } else {
-        quantify_pq_1.push({ {v.high(), ptr_uint64::NIL()}, {}, {flag(out_uid)} });
-      }
-    }
 
     size_t max_1level_cut = 0;
 
     while(!quantify_pq_1.empty() || !quantify_pq_2.empty()) {
       if (quantify_pq_1.empty_level() && quantify_pq_2.empty()) {
-        if (out_label != label) {
+        if (out_id > 0) {
           aw.push(level_info(out_label, out_id));
         }
 
@@ -187,7 +172,7 @@ namespace adiar::internal
 
       quantify_request<1> req;
 
-      // Merge requests from quantify_pq_1 and quantify_pq_2 (pretty much just as for Apply)
+      // Merge requests from quantify_pq_1 and quantify_pq_2
       if (quantify_pq_1.can_pull()
           && (quantify_pq_2.empty() || quantify_pq_1.top().target.fst() < quantify_pq_2.top().target.snd())) {
         req = { quantify_pq_1.top().target,
@@ -199,10 +184,10 @@ namespace adiar::internal
         quantify_pq_2.pop();
       }
 
-      const bool empty_carry = req.empty_carry();
+      const bool empty_carry = req.empty_carry(); // TODO: remove?
 
       // Seek element from request in stream
-      ptr_uint64 t_seek = empty_carry ? req.target.fst() : req.target.snd();
+      const ptr_uint64 t_seek = empty_carry ? req.target.fst() : req.target.snd();
 
       while (v.uid() < t_seek) {
         v = in_nodes.pull();
@@ -210,9 +195,11 @@ namespace adiar::internal
 
       // Forward information of node t1 across the level if needed
       if (empty_carry
-          && !req.target.snd().is_nil()
           && req.target.snd().is_node()
           && req.target.fst().label() == req.target.snd().label()) {
+        adiar_debug(!req.target.snd().is_nil(),
+                    "req.target.snd().is_node ==> !req.target.snd().is_nil()");
+
         quantify_pq_2.push({ req.target, {v.children()}, req.data });
 
         while (quantify_pq_1.can_pull() && (quantify_pq_1.top().target == req.target)) {
@@ -274,7 +261,7 @@ namespace adiar::internal
     }
 
     // Push the level of the very last iteration
-    if (out_label != label) {
+    if (out_id > 0) {
       aw.push(level_info(out_label, out_id));
     }
 
