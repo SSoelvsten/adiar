@@ -299,35 +299,40 @@ $(document).ready(function(){initNavTree('dd_8h_source.html',''); initResizable(
 <div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160; </div>
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::ptr_t ptr_t;</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160; </div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::label_t label_t;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> node_t::children_t children_t;</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160; </div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    <span class="keyword">static</span> constexpr label_t MAX_LABEL = dd_type::MAX_LABEL;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::label_t label_t;</div>
 <div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160; </div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::id_t id_t;</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keyword">static</span> constexpr label_t MAX_LABEL = dd_type::MAX_LABEL;</div>
 <div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160; </div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keyword">static</span> constexpr id_t MAX_ID = dd_type::MAX_ID;</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> dd_type::id_t id_t;</div>
 <div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160; </div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> __dd_type::shared_nodes_t shared_nodes_t;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keyword">static</span> constexpr id_t MAX_ID = dd_type::MAX_ID;</div>
 <div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160; </div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> __dd_type::shared_arcs_t shared_arcs_t;</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> __dd_type::shared_nodes_t shared_nodes_t;</div>
 <div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160; </div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> ptr_t</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    reduction_rule(<span class="keyword">const</span> node_t &amp;n);</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160; </div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">typename</span> node_t::children_t</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    reduction_rule_inv(<span class="keyword">const</span> ptr_t &amp;child);</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160; </div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    <span class="comment">// TODO: stop using this one in favour of the other one below</span></div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    compute_cofactor(<span class="keywordtype">bool</span> on_curr_level, ptr_t &amp;low, ptr_t &amp;high);</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160; </div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">typename</span> node_t::children_t</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    compute_cofactor(<span class="keywordtype">bool</span> on_curr_level, <span class="keyword">const</span> <span class="keyword">typename</span> node_t::children_t &amp;children);</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;  };</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;}</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160; </div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_INTERNAL_DD_H</span></div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> __dd_type::shared_arcs_t shared_arcs_t;</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160; </div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> ptr_t</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    reduction_rule(<span class="keyword">const</span> node_t &amp;n);</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160; </div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> children_t</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    reduction_rule_inv(<span class="keyword">const</span> ptr_t &amp;child);</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160; </div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    <span class="comment">// TODO: stop using these in favour of &#39;reduction_rule_inv&#39; above</span></div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    compute_cofactor(<span class="keyword">const</span> <span class="keywordtype">bool</span> on_curr_level,</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;                     ptr_t &amp;low,</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;                     ptr_t &amp;high);</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160; </div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> children_t</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    compute_cofactor(<span class="keyword">const</span> <span class="keywordtype">bool</span> on_curr_level,</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;                     <span class="keyword">const</span> children_t &amp;children);</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  };</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;}</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160; </div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ADIAR_INTERNAL_DD_H</span></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____dd_html"><div class="ttname"><a href="classadiar_1_1internal_1_1____dd.html">adiar::internal::__dd</a></div><div class="ttdef"><b>Definition:</b> dd.h:46</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____dd_html_a35789c5b67874759a2a5a1759d7a25ed"><div class="ttname"><a href="classadiar_1_1internal_1_1____dd.html#a35789c5b67874759a2a5a1759d7a25ed">adiar::internal::__dd::shared_nodes_t</a></div><div class="ttdeci">shared_levelized_file&lt; node_t &gt; shared_nodes_t</div><div class="ttdoc">Type of the file object node-based representation of a diagram.</div><div class="ttdef"><b>Definition:</b> dd.h:56</div></div>
 <div class="ttc" id="aclassadiar_1_1internal_1_1____dd_html_a41e476e94afe2c5093e3b007cc6bd1c7"><div class="ttname"><a href="classadiar_1_1internal_1_1____dd.html#a41e476e94afe2c5093e3b007cc6bd1c7">adiar::internal::__dd::shared_arcs_t</a></div><div class="ttdeci">shared_levelized_file&lt; arc_t &gt; shared_arcs_t</div><div class="ttdoc">Type of the file object arc-based representation of a diagram.</div><div class="ttdef"><b>Definition:</b> dd.h:66</div></div>
