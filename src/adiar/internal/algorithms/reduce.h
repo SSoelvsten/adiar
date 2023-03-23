@@ -545,7 +545,7 @@ namespace adiar::internal
 #ifdef ADIAR_STATS
       stats_reduce.lpq.unbucketed += 1u;
 #endif
-      return __reduce<dd_policy, reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
+      return __reduce<dd_policy, reduce_priority_queue<0, memory_mode_t::INTERNAL>>
         (in_file, pq_memory, sorters_memory);
     } else if(!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
