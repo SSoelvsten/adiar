@@ -208,13 +208,14 @@ namespace adiar::internal
   }
 
   template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
-  void __reduce_level(arc_stream<> &arcs,
-                      const typename dd_policy::label_t label,
-                      pq_t &reduce_pq,
-                      node_writer &out_writer,
-                      cuts_t &global_1level_cut,
-                      const size_t sorters_memory,
-                      const size_t level_width)
+  void
+  __reduce_level(arc_stream<> &arcs,
+                 const typename dd_policy::label_t label,
+                 pq_t &reduce_pq,
+                 node_writer &out_writer,
+                 cuts_t &global_1level_cut,
+                 const size_t sorters_memory,
+                 const size_t level_width)
   {
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
     tpie::file_stream<mapping> red1_mapping;
@@ -387,9 +388,10 @@ namespace adiar::internal
   }
 
   template<typename dd_policy, typename pq_t>
-  typename dd_policy::reduced_t __reduce(const shared_levelized_file<arc> &in_file,
-                                         const size_t lpq_memory,
-                                         const size_t sorters_memory)
+  shared_levelized_file<typename dd_policy::node_t>
+  __reduce(const shared_levelized_file<arc> &in_file,
+           const size_t lpq_memory,
+           const size_t sorters_memory)
   {
 #ifdef ADIAR_STATS
     stats_reduce.sum_node_arcs += in_file->size(0);
@@ -499,7 +501,8 @@ namespace adiar::internal
   /// \return The reduced decision diagram in a node-based representation
   //////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy>
-  typename dd_policy::reduced_t reduce(const typename dd_policy::unreduced_t &input)
+  typename dd_policy::reduced_t
+  reduce(const typename dd_policy::unreduced_t &input)
   {
     adiar_debug(!input.empty(), "Input for Reduce should always be non-empty");
 
