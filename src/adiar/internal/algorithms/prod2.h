@@ -150,19 +150,12 @@ namespace adiar::internal
   class prod2_same_level_merger
   {
   public:
-    static tuple<typename dd_policy::children_t>
-    merge_root(node::label_t /*level*/, const node &v0, const node &v1)
-    {
-      return { v0.children(), v1.children() };
-    }
-
-  public:
     template<typename request_t>
     static tuple<typename dd_policy::children_t>
-    merge_request(const request_t &r,
-                  const ptr_uint64 &t_seek,
-                  const node &v0,
-                  const node &v1)
+    merge(const request_t &r,
+          const ptr_uint64 &t_seek,
+          const node &v0,
+          const node &v1)
     {
       const typename dd_policy::children_t pair_0 =
         r.target[0] < t_seek ? r.node_carry[0] : v0.children();
@@ -177,35 +170,13 @@ namespace adiar::internal
   template<typename dd_policy>
   class prod2_mixed_level_merger
   {
-  private:
-    static typename dd_policy::children_t
-    __merge_root(const typename dd_policy::label_t &level,
-                 const typename dd_policy::node_t &v)
-    {
-      return !v.is_terminal() && v.on_level(level)
-        ? v.children()
-        : dd_policy::reduction_rule_inv(v.uid());
-    }
-
-  public:
-    static tuple<typename dd_policy::children_t>
-    merge_root(const typename dd_policy::label_t &level,
-               const typename dd_policy::node_t &v0,
-               const typename dd_policy::node_t &v1)
-    {
-      const typename dd_policy::children_t pair_0 = __merge_root(level, v0);
-      const typename dd_policy::children_t pair_1 = __merge_root(level, v1);
-
-      return { pair_0, pair_1 };
-    }
-
   public:
     template<typename request_t>
     static tuple<typename dd_policy::children_t>
-    merge_request(const request_t &r,
-                  const typename dd_policy::ptr_t &t_seek,
-                  const typename dd_policy::node_t &v0,
-                  const typename dd_policy::node_t &v1)
+    merge(const request_t &r,
+          const typename dd_policy::ptr_t &t_seek,
+          const typename dd_policy::node_t &v0,
+          const typename dd_policy::node_t &v1)
     {
       if (r.target[0].is_terminal() ||
           r.target[1].is_terminal() ||
@@ -228,7 +199,7 @@ namespace adiar::internal
 
         return { pair_0, pair_1 };
       } else {
-        return prod2_same_level_merger<dd_policy>::merge_request(r, t_seek, v0, v1);
+        return prod2_same_level_merger<dd_policy>::merge(r, t_seek, v0, v1);
       }
     }
   };
@@ -323,7 +294,7 @@ namespace adiar::internal
 
       // Recreate children of nodes for req.target
       const tuple<typename prod_policy::children_t> children =
-        prod_policy::merge_request(req, t_seek, v0, v1);
+        prod_policy::merge(req, t_seek, v0, v1);
 
       // Create pairing of product children
       const tuple<typename prod_policy::ptr_t> rec_pair_0 =

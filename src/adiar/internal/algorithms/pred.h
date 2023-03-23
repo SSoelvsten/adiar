@@ -162,7 +162,7 @@ namespace adiar::internal
 
       // Obtain children or root for both nodes (depending on level)
       const tuple<typename comp_policy::children_t, 2> children =
-        comp_policy::merge_request(req, t_seek, v0, v1);
+        comp_policy::merge(req, t_seek, v0, v1);
 
       // Create pairing of product children and obtain new recursion targets
       const tuple<typename comp_policy::ptr_t> rec_pair_0 =
