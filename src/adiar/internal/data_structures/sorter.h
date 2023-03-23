@@ -60,7 +60,10 @@ namespace adiar::internal
     static constexpr size_t DATA_STRUCTURES = 1u;
 
     static unique_ptr<sorter<memory_mode_t::INTERNAL, T, pred_t>>
-    make_unique(size_t memory_bytes, size_t no_elements, size_t no_sorters, pred_t pred = pred_t())
+    make_unique(size_t memory_bytes,
+                size_t no_elements,
+                size_t no_sorters = 1,
+                pred_t pred = pred_t())
     {
       return adiar::make_unique<sorter<memory_mode_t::INTERNAL, T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
     }
@@ -69,7 +72,7 @@ namespace adiar::internal
     reset_unique(unique_ptr<sorter<memory_mode_t::INTERNAL, T, pred_t>> &u_ptr,
                  size_t /*memory_bytes*/,
                  size_t /*no_elements*/,
-                 size_t /*no_sorters*/,
+                 size_t /*no_sorters*/ = 1,
                  pred_t /*pred*/ = pred_t())
     {
       u_ptr->reset();
@@ -78,7 +81,7 @@ namespace adiar::internal
   public:
     sorter([[maybe_unused]] size_t memory_bytes,
            size_t no_elements,
-           [[maybe_unused]] size_t no_sorters,
+           [[maybe_unused]] size_t no_sorters = 1,
            pred_t pred = pred_t())
       : _array(no_elements), _pred(pred), _size(0), _front_idx(0)
     {
@@ -144,7 +147,10 @@ namespace adiar::internal
     static constexpr size_t DATA_STRUCTURES = 1u;
 
     static unique_ptr<sorter<memory_mode_t::EXTERNAL, T, pred_t>>
-    make_unique(size_t memory_bytes, size_t no_elements, size_t no_sorters, pred_t pred = pred_t())
+    make_unique(size_t memory_bytes,
+                size_t no_elements,
+                size_t no_sorters = 1,
+                pred_t pred = pred_t())
     {
       return adiar::make_unique<sorter<memory_mode_t::EXTERNAL, T, pred_t>>(memory_bytes, no_elements, no_sorters, pred);
     }
@@ -152,18 +158,47 @@ namespace adiar::internal
     static void reset_unique(unique_ptr<sorter<memory_mode_t::EXTERNAL, T, pred_t>> &u_ptr,
                              size_t memory_bytes,
                              size_t no_elements,
-                             size_t no_sorters,
+                             size_t no_sorters = 1,
                              pred_t pred = pred_t())
     {
       u_ptr = make_unique(memory_bytes, no_elements, no_sorters, pred);
     }
 
   public:
-    sorter(size_t memory_bytes, size_t no_elements, size_t number_of_sorters, pred_t pred = pred_t())
+    sorter(size_t memory_bytes,
+           size_t no_elements,
+           size_t number_of_sorters,
+           pred_t pred = pred_t())
       : _sorter(pred)
     {
+      // =======================================================================
+      // Case 0: No sorters - why are we then instantiating one?
       adiar_debug(number_of_sorters > 0, "Number of sorters should be positive");
-      adiar_debug(number_of_sorters > 1, "TODO: memory calculations for single sorter");
+
+      // Consult the internal sorter to get a bound of how much memory is
+      // necessary to sort these elements in internal memory. We don't need to
+      // allocate more than a constant of this for the external memory case.
+      const tpie::memory_size_type no_elements_memory =
+        2 * sorter<memory_mode_t::INTERNAL, T, pred_t>::memory_usage(no_elements);
+
+      // =======================================================================
+      // Case 1: A single sorter.
+      if (number_of_sorters == 1u) {
+        const size_t sorter_memory = std::min(no_elements_memory, memory_bytes);
+
+        adiar_debug(sorter_memory <= memory_bytes,
+                    "Memory of a single sorter does not exceed given amount.");
+
+        // ---------------------------------------------------------------------
+        // Use TPIE's default settings for the three phases.
+        _sorter.set_available_memory(sorter_memory);
+        _sorter.begin();
+        return;
+      }
+
+      // ======================================================================
+      // Case: 2+: Distribute a common area of memory between all sorters.
+      adiar_debug(number_of_sorters > 1, "Edge case for a single sorter taken care of above");
 
       // -----------------------------------------------------------------------
       // We intend to have the memory divided between all the sorters, such that
@@ -189,12 +224,6 @@ namespace adiar::internal
       //
       // Quickfix: Issue https://github.com/thomasmoelhave/tpie/issues/250
       constexpr tpie::memory_size_type minimum_phase1 = sizeof(T) * 128 * 1024 + 5 * 1024 * 1024;
-
-      // Consult the internal sorter to get a bound of how much memory is
-      // necessary to sort these elements in internal memory. We don't need to
-      // allocate more than a constant of this for the external memory case.
-      const tpie::memory_size_type no_elements_memory =
-        2 * sorter<memory_mode_t::INTERNAL, T, pred_t>::memory_usage(no_elements);
 
       // Take up at most 1/(Sorter-1)'th of 1/16th of the total memory. The last
       // sorter is either in the same phase or another phase.
