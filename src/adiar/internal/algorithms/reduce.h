@@ -24,28 +24,118 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Data structures
-  struct mapping
+
+  // TODO: template with 'dd_policy'
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Mapping from the unique identifier of an *old* node in the
+  ///        unreduced input to a *new* node in the reduced output.
+  //////////////////////////////////////////////////////////////////////////////
+  struct reduce_mapping
   {
     node::uid_t old_uid;
     node::uid_t new_uid;
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Priority queue elements
-  //
-  // TODO (Attributed Edges):
-  //   First add an 'uint8_t' value with reduce specific flags, e.g. the
-  //   red1_taint used to place something in the local og global 1-level cut.
-  struct reduce_arc : public arc
+  struct reduce_mapping_lt
   {
-    reduce_arc() = default;
+    bool operator()(const reduce_mapping &a, const reduce_mapping &b)
+    {
+      return a.old_uid > b.old_uid;
+    }
+  };
 
-    reduce_arc(const reduce_arc &) = default;
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Set of `bool` flags squeezed into as tiny a space as possible.
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: Move as a general type into 'adiar/internal/data_types/' instead. Or
+  //       make it a special implementation of tuple of `bool`?
+  template<uint8_t FLAGS>
+  struct reduce_flags
+  {
+    static_assert(FLAGS > 0, "No support for empty list of flags");
+    static_assert(FLAGS < 3, "No support (yet) for more than two flags");
 
-    reduce_arc(const arc &a) : arc(a)
+  private:
+    using flags_t = uint8_t;
+
+    flags_t flags;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Merge the boolean flags into a single 8-bit value.
+    ////////////////////////////////////////////////////////////////////////////
+    static flags_t merge_flags(const bool flag0, const bool flag1)
+    {
+      return flag0 + (flag1 << 1u);
+    }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    // Provide 'default' constructors and assignments to ensure it being a 'POD'
+    // inside of TPIE.
+    reduce_flags() = default;
+    reduce_flags(const reduce_flags&) = default;
+    ~reduce_flags() = default;
+
+    reduce_flags& operator= (const reduce_flags &) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Easy to use constructors outside of TPIE.
+    reduce_flags(const bool flag0, const bool flag1)
+      : flags(merge_flags(flag0, flag1))
     { }
 
+    reduce_flags(const bool flag0)
+      : flags(flag0)
+    { }
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Obtain a specific flag.
+    ///
+    /// \tparam The index to access.
+    ////////////////////////////////////////////////////////////////////////////
+    template<uint8_t idx>
+    inline bool is_flagged() const
+    {
+      static_assert(idx < FLAGS, "Access to a valid index");
+      if constexpr (FLAGS == 1) {
+        return flags;
+      } else {
+        return (flags >> idx) & 1u;
+      }
+    }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Priority queue elements
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief A Decision Diagram arc with Reduce algorithm related flags.
+  //////////////////////////////////////////////////////////////////////////////
+  struct reduce_arc : public arc, public reduce_flags<1>
+  {
+  public:
+    using flags_t = reduce_flags<1>;
+
+    static constexpr uint8_t RED1_TAINT = 0u;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    // Provide 'default' constructors and assignments to ensure it being a 'POD'
+    // inside of TPIE.
+    reduce_arc() = default;
+    reduce_arc(const reduce_arc &) = default;
+    ~reduce_arc() = default;
+
     reduce_arc& operator= (const reduce_arc &a) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct from an arc with the given flag values.
+    ////////////////////////////////////////////////////////////////////////////
+    reduce_arc(const arc &a, const flags_t &f)
+      : arc(a), flags_t(f)
+    { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief The level at which this nodes source belongs to.
@@ -93,7 +183,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Push an arc into the priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    void push(const arc &a)
+    void push(const reduce_arc &a)
     {
       _terminals[false] += a.target().is_false();
       _terminals[true]  += a.target().is_true();
@@ -104,9 +194,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain the top arc on the current level and remove it.
     ////////////////////////////////////////////////////////////////////////////
-    arc pull()
+    reduce_arc pull()
     {
-      arc a = inner_lpq::pull();
+      reduce_arc a = inner_lpq::pull();
 
       _terminals[false] -= a.target().is_false();
       _terminals[true]  -= a.target().is_true();
@@ -141,33 +231,45 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Reduction Rule 2 sorting (and back again)
-  struct reduce_node_children_lt
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief A Decision Diagram node with extra flags for the Reduce algorithm.
+  //////////////////////////////////////////////////////////////////////////////
+  struct reduce_node : public node, public reduce_flags<2>
   {
-    bool operator()(const node &a, const node &b)
-    {
-      // TODO (Attributed Edges):
-      //     Use the 'flag' bit on children to mark attributed edges. Currently,
-      //     we use this flag to mark whether Reduction Rule 1 was applied to
-      //     some node across some arc.
-      const ptr_uint64 a_high = unflag(a.high());
-      const ptr_uint64 a_low = unflag(a.low());
+  public:
+    using flags_t = reduce_flags<2>;
 
-      const ptr_uint64 b_high = unflag(b.high());
-      const ptr_uint64 b_low = unflag(b.low());
+    static constexpr uint8_t RED1_LOW_TAINT = 0u;
+    static constexpr uint8_t RED1_HIGH_TAINT = 1u;
 
-      return a_high > b_high || (a_high == b_high && a_low > b_low)
-#ifndef NDEBUG
-        || (a_high == b_high && a_low == b_low && a.uid() > b.uid())
-#endif
-        ;
-    }
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    // Provide 'default' constructors and assignments to ensure it being a 'POD'
+    // inside of TPIE.
+    reduce_node() = default;
+    reduce_node(const reduce_node &) = default;
+    ~reduce_node() = default;
+
+    reduce_node& operator= (const reduce_node &) = default;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct from an arc with the given flag values.
+    ////////////////////////////////////////////////////////////////////////////
+    reduce_node(const node &n, const flags_t &f)
+      : node(n), flags_t(f)
+    { }
   };
 
-  struct reduce_uid_lt
+  struct reduce_node_lt
   {
-    bool operator()(const mapping &a, const mapping &b)
+    bool operator()(const reduce_node &a, const reduce_node &b)
     {
-      return a.old_uid > b.old_uid;
+      return a.high() > b.high() || (a.high() == b.high() && a.low() > b.low())
+#ifndef NDEBUG
+        || (a.high() == b.high() && a.low() == b.low() && a.uid() > b.uid())
+#endif
+        ;
     }
   };
 
@@ -196,12 +298,12 @@ namespace adiar::internal
   /// \brief Merging priority queue with terminal_arc stream.
   //////////////////////////////////////////////////////////////////////////////
   template <typename pq_t>
-  inline arc __reduce_get_next(pq_t &reduce_pq, arc_stream<> &arcs)
+  inline reduce_arc __reduce_get_next(pq_t &reduce_pq, arc_stream<> &arcs)
   {
     if (!reduce_pq.can_pull()
         || (arcs.can_pull_terminal()
             && arcs.peek_terminal().source() > reduce_pq.top().source())) {
-      return arcs.pull_terminal();
+      return { arcs.pull_terminal(), {false} };
     } else {
       return reduce_pq.pull();
     }
@@ -246,13 +348,13 @@ namespace adiar::internal
                  const size_t level_width)
   {
     // Temporary file for Reduction Rule 1 mappings (opened later if need be)
-    tpie::file_stream<mapping> red1_mapping;
+    tpie::file_stream<reduce_mapping> red1_mapping;
 
     // Sorter to find Reduction Rule 2 mappings
-    sorter_t<node, reduce_node_children_lt>
+    sorter_t<reduce_node, reduce_node_lt>
       child_grouping(sorters_memory, level_width, 2);
 
-    sorter_t<mapping, reduce_uid_lt>
+    sorter_t<reduce_mapping, reduce_mapping_lt>
       red2_mapping(sorters_memory, level_width, 2);
 
     // Pull out all nodes from reduce_pq and terminal_arcs for this level
@@ -262,10 +364,15 @@ namespace adiar::internal
       // TODO (QMDD):
       //   Use __reduce_get_next node_t::OUTDEGREE times to create a
       //   node_t::children_t.
-      const arc e_high = __reduce_get_next(reduce_pq, arcs);
-      const arc e_low  = __reduce_get_next(reduce_pq, arcs);
+      const reduce_arc e_high = __reduce_get_next(reduce_pq, arcs);
+      const reduce_arc e_low  = __reduce_get_next(reduce_pq, arcs);
 
-      const node n = node_of(e_low, e_high);
+      const reduce_node n =
+        { node_of(e_low, e_high),
+          { e_low.is_flagged<reduce_arc::RED1_TAINT>(),
+            e_high.is_flagged<reduce_arc::RED1_TAINT>()
+          }
+        };
 
       // Apply Reduction rule 1
       const node::ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
@@ -297,18 +404,20 @@ namespace adiar::internal
     node out_node = node(node::uid_t(), ptr_uint64::NIL(), ptr_uint64::NIL());
 
     while (child_grouping.can_pull()) {
-      const node next_node = child_grouping.pull();
+      const reduce_node next_node = child_grouping.pull();
 
-      if (out_node.low() != unflag(next_node.low()) || out_node.high() != unflag(next_node.high())) {
-        out_node = node(label, out_id, unflag(next_node.low()), unflag(next_node.high()));
+      if (out_node.low() != next_node.low() || out_node.high() != next_node.high()) {
+        out_node = node(label, out_id, next_node.low(), next_node.high());
         out_writer.unsafe_push(out_node);
 
         adiar_debug(out_id > 0, "Has run out of ids");
         out_id--;
 
-        __reduce_cut_add(next_node.low().is_flagged() ? global_1level_cut : local_1level_cut,
+        __reduce_cut_add(next_node.is_flagged<reduce_node::RED1_LOW_TAINT>()
+                           ? global_1level_cut : local_1level_cut,
                          out_node.low());
-        __reduce_cut_add(next_node.high().is_flagged() ? global_1level_cut : local_1level_cut,
+        __reduce_cut_add(next_node.is_flagged<reduce_node::RED1_HIGH_TAINT>()
+                           ? global_1level_cut : local_1level_cut,
                          out_node.high());
       } else {
 #ifdef ADIAR_STATS
@@ -329,14 +438,14 @@ namespace adiar::internal
     red2_mapping.sort();
 
     // Merging of red1_mapping and red2_mapping
-    mapping next_red1 = { node::uid_t(), node::uid_t() }; // <-- dummy value
+    reduce_mapping next_red1 = { node::uid_t(), node::uid_t() }; // <-- dummy value
     bool has_next_red1 = red1_mapping.is_open() && red1_mapping.size() > 0;
     if (has_next_red1) {
       red1_mapping.seek(0);
       next_red1 = red1_mapping.read();
     }
 
-    mapping next_red2 = { node::uid_t(), node::uid_t() }; // <-- dummy value
+    reduce_mapping next_red2 = { node::uid_t(), node::uid_t() }; // <-- dummy value
     bool has_next_red2 = red2_mapping.can_pull();
     if (has_next_red2) {
       next_red2 = red2_mapping.pull();
@@ -348,7 +457,7 @@ namespace adiar::internal
       const bool is_red1_current = !has_next_red2
         || (has_next_red1 && next_red1.old_uid > next_red2.old_uid);
 
-      const mapping current_map = is_red1_current ? next_red1 : next_red2;
+      const reduce_mapping current_map = is_red1_current ? next_red1 : next_red2;
 
       adiar_invariant(!arcs.can_pull_internal()
                       || current_map.old_uid == arcs.peek_internal().target(),
@@ -357,15 +466,14 @@ namespace adiar::internal
       // Find all arcs that have sources that match the current mapping's old_uid
       while (arcs.can_pull_internal() && current_map.old_uid == arcs.peek_internal().target()) {
         // The is_high flag is included in arc.source() pulled from node_arcs.
-        const ptr_uint64 s = arcs.pull_internal().source();
+        const typename dd_policy::ptr_t s = arcs.pull_internal().source();
 
-        // If Reduction Rule 1 was used, then tell the parents to add to the global cut.
-        const ptr_uint64 t = is_red1_current
-          ? flag(current_map.new_uid)
-          : static_cast<ptr_uint64>(current_map.new_uid);
+        // Target is the newly made node.
+        const typename dd_policy::ptr_t t = current_map.new_uid;
 
-        adiar_debug(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
-        reduce_pq.push({ s,t });
+        // If Reduction Rule 1 was used, then tell the parents to add to the
+        // global cut.
+        reduce_pq.push({{ s,t }, {is_red1_current}});
       }
 
       // Update the mapping that was used
@@ -450,7 +558,9 @@ namespace adiar::internal
       const arc e_low  = arcs.pull_terminal();
 
       // Apply reduction rule 1, if applicable
-      const ptr_uint64 reduction_rule_ret = dd_policy::reduction_rule(node_of(e_low,e_high));
+      const ptr_uint64 reduction_rule_ret =
+        dd_policy::reduction_rule(node_of(e_low,e_high));
+
       if (reduction_rule_ret != e_low.source()) {
 #ifdef ADIAR_STATS
         stats_reduce.removed_by_rule_1 += 1u;
@@ -561,7 +671,7 @@ namespace adiar::internal
       - node_writer::memory_usage();
 
     const size_t pq_memory = aux_available_memory / 2;
-    const size_t sorters_memory = aux_available_memory - pq_memory - tpie::file_stream<mapping>::memory_usage();
+    const size_t sorters_memory = aux_available_memory - pq_memory - tpie::file_stream<reduce_mapping>::memory_usage();
 
     const tpie::memory_size_type pq_memory_fits =
       reduce_priority_queue<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_memory);
