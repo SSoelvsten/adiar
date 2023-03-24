@@ -37,15 +37,15 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_t> bdd_1;
     /*
-            1        ---- x0
-           / \
-           | 2       ---- x1
-           |/ \
-           3   4     ---- x2
-          / \ / \
-          F T T 5    ---- x3
-               / \
-               F T
+    //        1        ---- x0
+    //       / \
+    //       | 2       ---- x1
+    //       |/ \
+    //       3   4     ---- x2
+    //      / \ / \
+    //      F T T 5    ---- x3
+    //           / \
+    //           F T
     */
 
     node n1_5 = node(3, node::MAX_ID, terminal_F, terminal_T);
@@ -61,15 +61,15 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_t> bdd_2;
     /*
-                   ---- x0
-
-             1     ---- x1
-            / \
-            | T    ---- x2
-            |
-            2      ---- x3
-           / \
-           T F
+    //               ---- x0
+    //
+    //         1     ---- x1
+    //        / \
+    //        | T    ---- x2
+    //        |
+    //        2      ---- x3
+    //       / \
+    //       T F
     */
 
     node n2_2 = node(3, node::MAX_ID, terminal_T, terminal_F);
@@ -82,19 +82,18 @@ go_bandit([]() {
 
     shared_levelized_file<bdd::node_t> bdd_3;
     /*
-                1         ---- x0
-               / \
-               2 3        ---- x1
-             _/ X \_
-            | _/ \_ |
-             X     X
-            / \   / \
-           4  5  6  7     ---- x2
-          / \/ \/ \/ \
-          F T  8  T  F    ---- x3
-              / \
-              F T
-
+    //            1         ---- x0
+    //           / \
+    //           2 3        ---- x1
+    //         _/ X \_
+    //        | _/ \_ |
+    //         X     X
+    //        / \   / \
+    //       4  5  6  7     ---- x2
+    //      / \/ \/ \/ \
+    //      F T  8  T  F    ---- x3
+    //          / \
+    //          F T
     */
 
     node n3_8 = node(3, node::MAX_ID, terminal_F, terminal_T);
@@ -112,27 +111,27 @@ go_bandit([]() {
     }
 
     /* The product construction of bbd_1 and bdd_2 above is as follows in sorted order.
-
-                                            (1,1)                       ---- x0
-                                            \_ _/
-                                             _X_                        // Match in fst, but not coordinatewise
-                                            /   \
-                                        (3,1)   (2,1)                   ---- x1
-                                       /    \_ _/    \
-                                      /       X       \
-                                     /_______/ \       \
-                                     |          \       \
-                                 (3,2)          (3,T)   (4,T)           ---- x2
-                                  \ \           /   \   /   \
-                                   \ \      (F,T)   (T,T)   /
-                                    \ \________ ___________/
-                                     \________ X________
-                                              X_________\ _______
-                                             /           \       \
-                                            /             \       \
-                                         (5,T)         (F,2)     (T,2)   ---- x3
-                                         /   \         /   \     /   \
-                                      (F,T) (T,T)   (F,T)(F,F)  (T,T)(T,F)
+    //
+    //                                        (1,1)                       ---- x0
+    //                                        \_ _/
+    //                                         _X_                        // Match in fst, but not coordinatewise
+    //                                        /   \
+    //                                    (3,1)   (2,1)                   ---- x1
+    //                                   /    \_ _/    \
+    //                                  /       X       \
+    //                                 /_______/ \       \
+    //                                 |          \       \
+    //                             (3,2)          (3,T)   (4,T)           ---- x2
+    //                              \ \           /   \   /   \
+    //                               \ \      (F,T)   (T,T)   /
+    //                                \ \________ ___________/
+    //                                 \________ X________
+    //                                          X_________\ _______
+    //                                         /           \       \
+    //                                        /             \       \
+    //                                     (5,T)         (F,2)     (T,2)   ---- x3
+    //                                     /   \         /   \     /   \
+    //                                  (F,T) (T,T)   (F,T)(F,F)  (T,T)(T,F)
     */
 
     describe("bdd_and(f,g)", [&]() {
@@ -212,9 +211,9 @@ go_bandit([]() {
 
       it("should x0 and !x0", [&]() {
         /*
-                   1     ---- x0
-                  / \
-                  F F
+        //           1     ---- x0
+        //          / \
+        //          F F
         */
 
         __bdd out = bdd_and(bdd_x0, bdd_not_x0);
@@ -224,10 +223,10 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -267,19 +266,19 @@ go_bandit([]() {
 
       it("should compute (and shortcut) BBD 1 /\\ [2]", [&]() {
         /*
-                            1                        ---- x0
-                            X
-                           / \
-                          2   3                      ---- x1
-                         / \ / \
-                        /   X   \
-                       /___/ \   \
-                      /      |    \
-                     4       5     6                 ---- x2
-                    / \     / \_ _/ \
-                    F 7     F   T   8                ---- x3
-                     / \           / \
-                     T F           F T
+        //                    1                        ---- x0
+        //                    X
+        //                   / \
+        //                  2   3                      ---- x1
+        //                 / \ / \
+        //                /   X   \
+        //               /___/ \   \
+        //              /      |    \
+        //             4       5     6                 ---- x2
+        //            / \     / \_ _/ \
+        //            F 7     F   T   8                ---- x3
+        //             / \           / \
+        //             T F           F T
         */
 
         __bdd out = bdd_and(bdd_1, bdd_2);
@@ -287,47 +286,47 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
 
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,1) }));
 
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,0) }));
 
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true,  ptr_uint64(2,1) }));
 
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,2) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,2) }));
 
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(2,2)), ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,2), true,  ptr_uint64(3,0) }));
 
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), ptr_uint64(3,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -370,16 +369,16 @@ go_bandit([]() {
         // which all are tied, and hence the prior version would create
         // three nodes on this level rather than just two.
 
-        //TODO: This drawing seems to not fit - fix it?
+        // TODO: This drawing seems to not fit - fix it?
 
         /*
-                 1    ---- x0
-                / \
-                2 |   ---- x1
-               / \|
-               3  4   ---- x2
-              / \/ \
-              T  F T
+        //         1    ---- x0
+        //        / \
+        //        2 |   ---- x1
+        //       / \|
+        //       3  4   ---- x2
+        //      / \/ \
+        //      T  F T
         */
 
         // The second version is the same but has the nodes 3 and 4 mirrored
@@ -406,34 +405,34 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (2,2)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (3,4)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (4,3)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,1) }));
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (T,5) i.e. the added node
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(3,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -561,13 +560,13 @@ go_bandit([]() {
 
       it("should shortcut on x0 \\/ x2", [&]() {
         /*
-                   1     ---- x0
-                  / \
-                  | T
-                  |
-                  2      ---- x2
-                 / \
-                 F T
+        //           1     ---- x0
+        //          / \
+        //          | T
+        //          |
+        //          2      ---- x2
+        //         / \
+        //         F T
         */
 
         __bdd out = bdd_or(bdd_x0, bdd_x2);
@@ -575,18 +574,18 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -650,17 +649,17 @@ go_bandit([]() {
 
       it("should compute (and shortcut) [1] \\/ [2]", [&]() {
         /*
-                           1       ---- x0
-                          / \
-                         2   3     ---- x1
-                        / \ / \
-                        | T | T
-                        \_ _/
-                          4        ---- x2
-                         / \
-                         5  T      ---- x3
-                        / \
-                        T F
+        //                   1       ---- x0
+        //                  / \
+        //                 2   3     ---- x1
+        //                / \ / \
+        //                | T | T
+        //                \_ _/
+        //                  4        ---- x2
+        //                 / \
+        //                 5  T      ---- x3
+        //                / \
+        //                T F
         */
 
         __bdd out = bdd_or(bdd_1, bdd_2);
@@ -668,36 +667,36 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -806,13 +805,13 @@ go_bandit([]() {
 
       it("should compute x0 ^ x1", [&]() {
         /* The order on the leaves are due to the sorting of terminal requests
-           after evaluating x0
-
-                   1     ---- x0
-                  / \
-                 2   3   ---- x1
-                / \ / \
-                F T T F
+        //   after evaluating x0
+        //
+        //           1     ---- x0
+        //          / \
+        //         2   3   ---- x1
+        //        / \ / \
+        //        F T T F
         */
 
         __bdd out = bdd_xor(bdd_x0, bdd_x1);
@@ -820,24 +819,24 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -859,52 +858,52 @@ go_bandit([]() {
 
       it("should compute [2] ^ x2", [&]() {
         /*
-                                         ---- x0
-
-                         (1,1)           ---- x1
-                         /   \
-                     (2,1)   (T,1)       ---- x2
-                     /   \   /   \
-                    /     \  T   F
-                    |     |
-                (2,F)     (2,T)          ---- x3
-                /   \     /   \
-                T   F     F   T
+        //                                 ---- x0
+        //
+        //                 (1,1)           ---- x1
+        //                 /   \
+        //             (2,1)   (T,1)       ---- x2
+        //             /   \   /   \
+        //            /     \  T   F
+        //            |     |
+        //        (2,F)     (2,T)          ---- x3
+        //        /   \     /   \
+        //        T   F     F   T
         */
         __bdd out = bdd_xor(bdd_2, bdd_x2);
 
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
 
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), ptr_uint64(3,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -936,60 +935,60 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true,  ptr_uint64(2,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,2) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,2) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(2,2)), ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,2), true,  ptr_uint64(3,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), ptr_uint64(3,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), ptr_uint64(3,2) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,2) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,2), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,2)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -1017,29 +1016,29 @@ go_bandit([]() {
 
       it("should compute [3] ^ [1]", [&]() {
         /* The queue appD_data is used to forward data across the level. When
-           [1] and 3 are combined, this is needed
-
-                  The product between the [3] and [1] then is
-
-                                   (1,1)                      ---- x0
-                           ________/   \_______
-                          /                    \
-                        (2,3)                  (3,2)          ---- x1
-                        /   \_________ ________/   \
-                        |             X            |          //      (5,3) (7,3) (4,3) (6,4)
-                        \__ _________/ \__________ /          // min:   0     0     0     1
-                        ___X___                   X           // max:   1     3     0     2
-                       /       \            _____/ \          // coord: 2     3     1     4
-                      /         \          /        \
-                   (4,3)       (5,3)    (6,4)     (7,3)       ---- x2
-                   /   \       /   \    /   \     /   \
-                (F,F) (T,T) (T,F)  |   /     \  (T,F) (F,T)
-                                   |  /       \
-                                   | /        |
-                                   |/         |
-                                 (8,T)      (T,5)             ---- x3
-                                 /   \      /   \
-                              (F,T) (T,T) (T,F) (T,T)
+        // [1] and 3 are combined, this is needed
+        //
+        //          The product between the [3] and [1] then is
+        //
+        //                           (1,1)                      ---- x0
+        //                   ________/   \_______
+        //                  /                    \
+        //                (2,3)                  (3,2)          ---- x1
+        //                /   \_________ ________/   \
+        //                |             X            |          //      (5,3) (7,3) (4,3) (6,4)
+        //                \__ _________/ \__________ /          // min:   0     0     0     1
+        //                ___X___                   X           // max:   1     3     0     2
+        //               /       \            _____/ \          // coord: 2     3     1     4
+        //              /         \          /        \
+        //           (4,3)       (5,3)    (6,4)     (7,3)       ---- x2
+        //           /   \       /   \    /   \     /   \
+        //        (F,F) (T,T) (T,F)  |   /     \  (T,F) (F,T)
+        //                           |  /       \
+        //                           | /        |
+        //                           |/         |
+        //                         (8,T)      (T,5)             ---- x3
+        //                         /   \      /   \
+        //                      (F,T) (T,T) (T,F) (T,T)
         */
 
         __bdd out = bdd_xor(bdd_3, bdd_1);
@@ -1047,60 +1046,60 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (2,3)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (3,2)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (4,3)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (5,3)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (6,4)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), ptr_uint64(2,2) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,1), true,  ptr_uint64(2,2) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (7,3)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,3) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,3) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (8,T)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  ptr_uint64(3,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,2), ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,2), false, ptr_uint64(3,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True()); // (T,5)
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(2,2)), ptr_uint64(3,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,2), true,  ptr_uint64(3,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,3), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,3), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,3)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,3), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -1245,13 +1244,13 @@ go_bandit([]() {
 
       it("should shortcut on x0 -> x1", [&]() {
         /* The order on the leaves are due to the sorting of terminal requests
-           after evaluating x0
-
-                   1     ---- x0
-                  / \
-                  T 2    ---- x1
-                   / \
-                   F T
+        // after evaluating x0
+        //
+        //           1     ---- x0
+        //          / \
+        //          T 2    ---- x1
+        //           / \
+        //           F T
         */
 
         __bdd out = bdd_imp(bdd_x0, bdd_x1);
@@ -1259,18 +1258,18 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 

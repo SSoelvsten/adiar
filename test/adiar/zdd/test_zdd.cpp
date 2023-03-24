@@ -80,11 +80,11 @@ go_bandit([]() {
 
       {
         arc_writer aw(af);
-        aw.push_internal(arc {ptr_uint64(0,0), ptr_uint64(1,0)});
+        aw.push_internal(arc {ptr_uint64(0,0), false, ptr_uint64(1,0)});
 
-        aw.push_terminal(arc {flag(ptr_uint64(0,0)), ptr_uint64(true)});
-        aw.push_terminal(arc {ptr_uint64(1,0), ptr_uint64(false)});
-        aw.push_terminal(arc {flag(ptr_uint64(1,0)), ptr_uint64(true)});
+        aw.push_terminal(arc {ptr_uint64(0,0), true,  ptr_uint64(true)});
+        aw.push_terminal(arc {ptr_uint64(1,0), false, ptr_uint64(false)});
+        aw.push_terminal(arc {ptr_uint64(1,0), true,  ptr_uint64(true)});
 
         aw.push(level_info(0,1u));
         aw.push(level_info(1,1u));

@@ -11,7 +11,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline arc low_arc_of(const node &n)
   {
-    return { n.uid(), n.low() };
+    return { n.uid()/*.with(false)*/, n.low() };
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline arc high_arc_of(const node &n)
   {
-    return { flag(n.uid()), n.high() };
+    return { n.uid().with(true), n.high() };
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -30,11 +30,19 @@ namespace adiar::internal
   //////////////////////////////////////////////////////////////////////////////
   inline node node_of(const arc &low, const arc &high)
   {
-    adiar_debug(unflag(low.source()) == unflag(high.source()), "Arcs are not of the same node");
-    adiar_debug(!low.is_high(), "High flag is not set on low child");
-    adiar_debug(high.is_high(), "High flag is set on high child");
+    adiar_debug(essential(low.source()) == essential(high.source()),
+                "Source are the same origin");
 
-    return node(low.source(), low.target(), high.target());
+    adiar_debug(low.out_idx()  == false, "Out-index is correct on low arc");
+    adiar_debug(high.out_idx() == true,  "Out-index is correct on high arc");
+
+    adiar_debug(!low.target().is_node()  || low.target().out_idx()  == false, "Out-index is empty in low target");
+    adiar_debug(!high.target().is_node() || high.target().out_idx() == false, "Out-index is empty in high target");
+
+    adiar_debug(low.source().is_flagged()  == false, "Source is not flagged on low arc");
+    adiar_debug(high.source().is_flagged() == false, "Source is not flagged on high arc");
+
+    return node(essential(low.source()), low.target(), high.target());
   }
 }
 

@@ -1,10 +1,17 @@
 #ifndef ADIAR_INTERNAL_DATA_TYPES_ARC_H
 #define ADIAR_INTERNAL_DATA_TYPES_ARC_H
 
+#include <adiar/internal/data_types/ptr.h>
 #include <adiar/internal/data_types/uid.h>
 
 namespace adiar::internal
 {
+  // TODO (LDD):
+  //   Make the source a weighted pointer.
+
+  // TODO (QMDD):
+  //   Same as for LDD but with the weight specifically being complex values.
+
   //////////////////////////////////////////////////////////////////////////////
   /// \brief An arc from some source to a target.
   ///
@@ -14,10 +21,10 @@ namespace adiar::internal
   ///          word-aligned. That means with an explicit is_high member it would
   ///          take up 3 x 64 bits rather than only 2 x 64 bits.
   ///
-  /// \remark  If <tt>source</tt> is flagged, then this is a high arc rather
-  ///          than a low arc.
+  /// \remark If `source` is flagged, then this is a high arc rather than a low
+  ///         arc.
   ///
-  /// \remark  <tt>source</tt> may be NIL
+  /// \remark  `source` may be NIL
   //////////////////////////////////////////////////////////////////////////////
   class arc
   {
@@ -25,17 +32,22 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of the pointer of this arc's source and target.
     ////////////////////////////////////////////////////////////////////////////
-    typedef ptr_uint64 ptr_t;
+    using ptr_t = ptr_uint64;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of terminal values.
+    /// \brief Type of the a node's unique identifier.
     ////////////////////////////////////////////////////////////////////////////
-    typedef ptr_t::value_t value_t;
+    using uid_t = __uid<ptr_t>;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Type of variable label.
     ////////////////////////////////////////////////////////////////////////////
-    typedef ptr_t::label_t label_t;
+    using label_t = ptr_t::label_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of terminal values.
+    ////////////////////////////////////////////////////////////////////////////
+    using value_t = ptr_t::value_t;
 
   private:
     ptr_t _source;
@@ -58,31 +70,49 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Construct an arc with the given source and target.
     ///
-    /// \pre The flags on both `source` and `target` are already set correctly.
+    /// \pre The flags on both `source` and `target` are already set correctly
+    ///      and the out-index on `source` is too.
     ////////////////////////////////////////////////////////////////////////////
     arc(const ptr_t &source, const ptr_t &target)
       : _source(source), _target(target)
-    { }
+    {
+      adiar_precondition(!target.is_node() || target.out_idx() == 0u);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Construct an arc with the given source and target.
+    ///
+    /// \pre The flags on `target` is already set correctly.
+    ////////////////////////////////////////////////////////////////////////////
+    arc(const uid_t &source,
+        const ptr_t::out_idx_t &out_idx,
+        const ptr_t &target)
+      : _source(source.with(out_idx))
+      , _target(target)
+    {
+      adiar_precondition(!target.is_node() || target.out_idx() == 0u);
+    }
 
     /* ================================ NODES =============================== */
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Obtain 'source' value (including flag).
+    /// \brief Obtain 'source' value (including flag and out-index).
     ////////////////////////////////////////////////////////////////////////////
-    // TODO Always returned the unflagged value?
+    // TODO Always return the essential pointer?
     ptr_t source() const
     { return _source; }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Obtain 'target' value (including flag).
     ////////////////////////////////////////////////////////////////////////////
+    // TODO Always return the essential pointer?
     ptr_t target() const
     { return _target; }
 
     /* ================================= FLAGS ============================== */
   public:
-    bool is_high() const
-    { return _source.is_flagged(); }
+    ptr_t::out_idx_t out_idx() const
+    { return _source.out_idx(); }
 
     /* ============================== COMPARATORS =========================== */
 

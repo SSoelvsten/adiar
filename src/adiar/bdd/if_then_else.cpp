@@ -236,8 +236,8 @@ namespace adiar
 
     {
       const internal::node::uid_t out_uid(out_label, out_id++);
-      __ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
-      __ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
+      __ite_resolve_request(ite_pq_1, aw, out_uid.with(false), low_if, low_then, low_else);
+      __ite_resolve_request(ite_pq_1, aw, out_uid.with(true),  high_if, high_then, high_else);
     }
 
     size_t max_1level_cut = 0;
@@ -418,8 +418,8 @@ namespace adiar
       adiar_debug(out_id < bdd::MAX_ID, "Has run out of ids");
       const internal::node::uid_t out_uid(out_label, out_id++);
 
-      __ite_resolve_request(ite_pq_1, aw, out_uid, low_if, low_then, low_else);
-      __ite_resolve_request(ite_pq_1, aw, flag(out_uid), high_if, high_then, high_else);
+      __ite_resolve_request(ite_pq_1, aw, out_uid.with(false), low_if, low_then, low_else);
+      __ite_resolve_request(ite_pq_1, aw, out_uid.with(true),  high_if, high_then, high_else);
 
       // Output ingoing arcs
       internal::node::ptr_t source = req.data.source;

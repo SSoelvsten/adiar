@@ -98,7 +98,7 @@ namespace adiar
       // and not the right, which would contradict being an implication (i.e.
       // representing a subset).
       if (rp[0].is_terminal() && rp[1].is_terminal()) {
-        return unflag(rp[0]) > unflag(rp[1]);
+        return essential(rp[0]) > essential(rp[1]);
       }
 
       // Has the left-hand side fallen out of its set?

@@ -74,8 +74,7 @@ namespace adiar::internal
       quantify_request<0>::target_t rec = quantify_policy::resolve_request(op, {target.fst(), target.snd()});
 
       if (rec[0].is_terminal() /* sorted ==> rec[1].is_terminal() */) {
-        arc out_arc = { source, op(rec[0], rec[1]) };
-        aw.push_terminal(out_arc);
+        aw.push_terminal({ source, op(rec[0], rec[1]) });
       } else {
         quantify_pq_1.push({ rec, {}, {source} });
       }
@@ -238,11 +237,11 @@ namespace adiar::internal
         const node::uid_t out_uid(out_label, out_id++);
 
         __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
-                                                    out_uid,
+                                                    out_uid.with(false),
                                                     { children0[false], children1[false] });
 
         __quantify_resolve_request<quantify_policy>(quantify_pq_1, aw, op,
-                                                    flag(out_uid),
+                                                    out_uid.with(true),
                                                     { children0[true], children1[true] });
 
         if (!req.data.source.is_nil()) {

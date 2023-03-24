@@ -343,8 +343,8 @@ namespace adiar::internal
         adiar_debug(out_id < prod_policy::MAX_ID, "Has run out of ids");
         const node::uid_t out_uid(out_label, out_id++);
 
-        __prod2_recurse_out(prod_pq_1, aw, op, out_uid, r.low);
-        __prod2_recurse_out(prod_pq_1, aw, op, flag(out_uid), r.high);
+        __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(false), r.low);
+        __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(true),  r.high);
 
         __prod2_recurse_in<__prod2_recurse_in__output_node>(prod_pq_1, prod_pq_2, aw, out_uid, req.target);
 

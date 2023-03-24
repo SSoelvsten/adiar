@@ -2,50 +2,71 @@
 #include <adiar/internal/data_types/convert.h>
 
 go_bandit([]() {
-    describe("adiar/internal/data_types/convert.h", []() {
-        describe("low_arc_of", []() {
-            it("should extract low arc from node", [&]() {
-                const node n = node(7,42,
-                                      ptr_uint64(8,21),
-                                      ptr_uint64(9,8));
+  describe("adiar/internal/data_types/convert.h", []() {
+    // TODO: more than one unit test per function, please...
 
-                const arc arc = low_arc_of(n);
+    describe("low_arc_of", []() {
+      it("should extract low arc from node", [&]() {
+        const node n(7,42, ptr_uint64(8,21), ptr_uint64(9,8));
+        const arc a = low_arc_of(n);
 
-                AssertThat(arc.source().label(), Is().EqualTo(7u));
-                AssertThat(arc.source().id(), Is().EqualTo(42u));
-                AssertThat(arc.target().label(), Is().EqualTo(8u));
-                AssertThat(arc.target().id(), Is().EqualTo(21u));
-              });
-          });
+        AssertThat(a.source().is_flagged(), Is().False());
+        AssertThat(a.source().label(), Is().EqualTo(7u));
+        AssertThat(a.source().id(), Is().EqualTo(42u));
 
-        describe("high_arc_of", []() {
-            it("should extract high arc from node", [&]() {
-                const node n = node(6,13,
-                                      ptr_uint64(8,21),
-                                      ptr_uint64(9,8));
+        AssertThat(a.out_idx(), Is().EqualTo(0u));
+        AssertThat(a.source().out_idx(), Is().EqualTo(0u));
 
-                const arc arc = high_arc_of(n);
-
-                AssertThat(arc.source().label(), Is().EqualTo(6u));
-                AssertThat(arc.source().id(), Is().EqualTo(13u));
-                AssertThat(arc.target().label(), Is().EqualTo(9u));
-                AssertThat(arc.target().id(), Is().EqualTo(8u));
-              });
-          });
-
-        describe("node_of", []() {
-            it("should combine low and high arcs into single node", [&]() {
-                const arc low_arc = arc(ptr_uint64(17,42), ptr_uint64(9,8));
-                const arc high_arc = arc(flag(ptr_uint64(17,42)), ptr_uint64(8,21));
-
-                const node n = node_of(low_arc, high_arc);
-
-                AssertThat(n.label(), Is().EqualTo(17u));
-                AssertThat(n.id(), Is().EqualTo(42u));
-
-                AssertThat(n.low(), Is().EqualTo(low_arc.target()));
-                AssertThat(n.high(), Is().EqualTo(high_arc.target()));
-              });
-          });
+        AssertThat(a.target().is_flagged(), Is().False());
+        AssertThat(a.target().label(), Is().EqualTo(8u));
+        AssertThat(a.target().id(), Is().EqualTo(21u));
       });
+    });
+
+    describe("high_arc_of", []() {
+      it("should extract high arc from node", [&]() {
+        const node n(6,13, ptr_uint64(8,21), ptr_uint64(9,8));
+        const arc a = high_arc_of(n);
+
+        AssertThat(a.source().is_flagged(), Is().False());
+        AssertThat(a.source().label(), Is().EqualTo(6u));
+        AssertThat(a.source().id(), Is().EqualTo(13u));
+
+        AssertThat(a.out_idx(), Is().EqualTo(1u));
+        AssertThat(a.source().out_idx(), Is().EqualTo(1u));
+
+        AssertThat(a.target().is_flagged(), Is().False());
+        AssertThat(a.target().label(), Is().EqualTo(9u));
+        AssertThat(a.target().id(), Is().EqualTo(8u));
+      });
+    });
+
+    describe("node_of", []() {
+      it("should combine low and high arcs to nodes into single node", [&]() {
+        const arc l_arc(uid_uint64(17,42), false, ptr_uint64(9,8));
+        const arc h_arc(uid_uint64(17,42), true,  ptr_uint64(8,21));
+
+        const node n = node_of(l_arc, h_arc);
+
+        AssertThat(n.label(), Is().EqualTo(17u));
+        AssertThat(n.id(), Is().EqualTo(42u));
+
+        AssertThat(n.low(),  Is().EqualTo(l_arc.target()));
+        AssertThat(n.high(), Is().EqualTo(h_arc.target()));
+      });
+
+      it("should combine low and high arcs to terminals into single node", [&]() {
+        const arc l_arc(uid_uint64(17,42), false, ptr_uint64(false));
+        const arc h_arc(uid_uint64(17,42), true,  ptr_uint64(true));
+
+        const node n = node_of(l_arc, h_arc);
+
+        AssertThat(n.label(), Is().EqualTo(17u));
+        AssertThat(n.id(), Is().EqualTo(42u));
+
+        AssertThat(n.low(),  Is().EqualTo(l_arc.target()));
+        AssertThat(n.high(), Is().EqualTo(h_arc.target()));
+      });
+    });
   });
+ });
