@@ -31,7 +31,11 @@ namespace adiar::internal
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  // For priority queue
+  // Priority queue elements
+  //
+  // TODO (Attributed Edges):
+  //   First add an 'uint8_t' value with reduce specific flags, e.g. the
+  //   red1_taint used to place something in the local og global 1-level cut.
   struct reduce_arc : public arc
   {
     reduce_arc() = default;
@@ -129,7 +133,7 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Total number of arcs (across all levels) ignoring terminals.
     ////////////////////////////////////////////////////////////////////////////
-    size_t size_without_terminals()
+    size_t size_without_terminals() const
     {
       return inner_lpq::size() - _terminals[false] - _terminals[true];
     }
@@ -141,7 +145,7 @@ namespace adiar::internal
   {
     bool operator()(const node &a, const node &b)
     {
-      // If adding attributed edges, i.e. complement edges:
+      // TODO (Attributed Edges):
       //     Use the 'flag' bit on children to mark attributed edges. Currently,
       //     we use this flag to mark whether Reduction Rule 1 was applied to
       //     some node across some arc.
@@ -169,6 +173,24 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Create the output file with correct initial meta data already set.
+  //////////////////////////////////////////////////////////////////////////////
+  template<typename dd_policy>
+  shared_levelized_file<typename dd_policy::node_t>
+  __reduce_init_output()
+  {
+    shared_levelized_file<typename dd_policy::node_t> out_file;
+    out_file->canonical = true;
+
+    out_file->max_1level_cut[cut_type::INTERNAL]       = 0u;
+    out_file->max_1level_cut[cut_type::INTERNAL_FALSE] = 0u;
+    out_file->max_1level_cut[cut_type::INTERNAL_TRUE]  = 0u;
+    out_file->max_1level_cut[cut_type::ALL]            = 0u;
+
+    return out_file;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief Merging priority queue with terminal_arc stream.
@@ -207,6 +229,12 @@ namespace adiar::internal
     cut[cut_type::ALL]            += 1u;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Algorithm functions
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Reduce a single level
+  //////////////////////////////////////////////////////////////////////////////
   template <typename dd_policy, typename pq_t, template<typename, typename> typename sorter_t>
   void
   __reduce_level(arc_stream<> &arcs,
@@ -387,6 +415,9 @@ namespace adiar::internal
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Reduce an entire decision diagram bottom-up.
+  //////////////////////////////////////////////////////////////////////////////
   template<typename dd_policy, typename pq_t>
   shared_levelized_file<typename dd_policy::node_t>
   __reduce(const shared_levelized_file<arc> &in_file,
@@ -402,18 +433,14 @@ namespace adiar::internal
     level_info_stream<> levels(in_file);
 
     // Set up output
-    shared_levelized_file<typename dd_policy::node_t> out_file;
-    out_file->canonical = true;
-
-    out_file->max_1level_cut[cut_type::INTERNAL]       = 0u;
-    out_file->max_1level_cut[cut_type::INTERNAL_FALSE] = 0u;
-    out_file->max_1level_cut[cut_type::INTERNAL_TRUE]  = 0u;
-    out_file->max_1level_cut[cut_type::ALL]            = 0u;
+    shared_levelized_file<typename dd_policy::node_t> out_file =
+      __reduce_init_output<dd_policy>();
 
     node_writer out_writer(out_file);
 
     // Trivial single-node case
     if (!arcs.can_pull_internal()) {
+      // TODO: move into its own helper function
       const arc e_high = arcs.pull_terminal();
       const arc e_low  = arcs.pull_terminal();
 
