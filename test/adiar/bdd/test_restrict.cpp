@@ -55,24 +55,24 @@ go_bandit([]() {
       arc_test_stream arcs(out);
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n2.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n2.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n2.uid()), n5.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n2.uid(), true,  n5.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().False());
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1.uid(), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n1.uid(), false, terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), false, terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), false, terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n5.uid()), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), true,  terminal_T }));
 
       level_info_test_stream meta_arcs(out);
 
@@ -116,18 +116,18 @@ go_bandit([]() {
       arc_test_stream arcs(out);
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), n3.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), false, n3.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n3.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n3.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().False());
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_T }));
 
       level_info_test_stream meta_arcs(out);
 
@@ -170,30 +170,30 @@ go_bandit([]() {
       arc_test_stream arcs(out);
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), n3.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), false, n3.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n4.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n4.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n4.uid()), n5.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n4.uid(), true,  n5.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().False());
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4.uid(), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4.uid(), false, terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), false, terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n5.uid()), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), true,  terminal_T }));
 
       level_info_test_stream meta_arcs(out);
 
@@ -237,24 +237,24 @@ go_bandit([]() {
       arc_test_stream arcs(out);
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n2.uid(), n3.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n2.uid(), false, n3.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n2.uid()), n4.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n2.uid(), true,  n4.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().False());
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4.uid(), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4.uid(), false, terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n4.uid()), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n4.uid(), true,  terminal_F }));
 
       level_info_test_stream meta_arcs(out);
 
@@ -295,10 +295,10 @@ go_bandit([]() {
       AssertThat(arcs.can_pull_internal(), Is().False());
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_T }));
 
       level_info_test_stream meta_arcs(out);
 
@@ -480,24 +480,24 @@ go_bandit([]() {
       arc_test_stream arcs(out);
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), n2.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), false, n2.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n3.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n3.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().False());
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), false, terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n2.uid()), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), true,  terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -555,24 +555,24 @@ go_bandit([]() {
       arc_test_stream arcs(out);
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), n2.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), false, n2.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n3.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n3.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().False());
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), false, terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n2.uid()), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n2.uid(), true,  terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), false, terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n3.uid()), terminal_F} ));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n3.uid(), true,  terminal_F} ));
 
       AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -636,36 +636,36 @@ go_bandit([]() {
       arc_test_stream arcs(out);
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), n5.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), false, n5.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n1.uid()), n7.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n1.uid(), true,  n7.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(n5.uid()), n8.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n5.uid(), true,  n8.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().True());
-      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n7.uid(), n9.uid() }));
+      AssertThat(arcs.pull_internal(), Is().EqualTo(arc { n7.uid(), false, n9.uid() }));
 
       AssertThat(arcs.can_pull_internal(), Is().False());
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n5.uid(), false, terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n7.uid()), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n7.uid(), true,  terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n8.uid(), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n8.uid(), false, terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n8.uid()), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n8.uid(), true,  terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n9.uid(), terminal_T }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n9.uid(), false, terminal_T }));
 
       AssertThat(arcs.can_pull_terminal(), Is().True());
-      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(n9.uid()), terminal_F }));
+      AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { n9.uid(), true,  terminal_F }));
 
       AssertThat(arcs.can_pull_terminal(), Is().False());
 

@@ -260,14 +260,15 @@ namespace adiar::internal
             || reduce_pq.can_pull()) {
       // TODO (MDD):
       // TODO (QMDD):
-      //   Use __reduce_get_next node_t::OUTDEGREE times to create a node_t::children_t.
+      //   Use __reduce_get_next node_t::OUTDEGREE times to create a
+      //   node_t::children_t.
       const arc e_high = __reduce_get_next(reduce_pq, arcs);
-      const arc e_low = __reduce_get_next(reduce_pq, arcs);
+      const arc e_low  = __reduce_get_next(reduce_pq, arcs);
 
-      node n = node_of(e_low, e_high);
+      const node n = node_of(e_low, e_high);
 
       // Apply Reduction rule 1
-      node::ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
+      const node::ptr_t reduction_rule_ret = dd_policy::reduction_rule(n);
       if (reduction_rule_ret != n.uid()) {
         // Open red1_mapping first (and create file on disk) when at least one
         // element is written to it.
@@ -363,6 +364,7 @@ namespace adiar::internal
           ? flag(current_map.new_uid)
           : static_cast<ptr_uint64>(current_map.new_uid);
 
+        adiar_debug(t.is_terminal() || t.out_idx() == false, "Created target is without an index");
         reduce_pq.push({ s,t });
       }
 

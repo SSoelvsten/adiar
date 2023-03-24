@@ -106,7 +106,7 @@ namespace adiar::internal
           << "n" << a.target().label() << "_" << a.target().id()
           << " -> "
           << "n" << a.source().label() << "_" << a.source().id()
-          << " [style=" << (a.is_high() ? "solid" : "dashed") << ", color=blue];"
+          << " [style=" << (a.out_idx() ? "solid" : "dashed") << ", color=blue];"
           << std::endl;
     }
 
@@ -121,7 +121,7 @@ namespace adiar::internal
           << "n" << a.source().label() << "_" << a.source().id()
           << " -> "
           << "s" << a.target().value()
-          << " [style=" << (a.is_high() ? "solid" : "dashed") << ", color=red];"
+          << " [style=" << (a.out_idx() ? "solid" : "dashed") << ", color=red];"
           << std::endl;
     }
 

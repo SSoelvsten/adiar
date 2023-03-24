@@ -103,7 +103,7 @@ namespace snowhouse
       std::stringstream stream;
       stream << "arc: "
              << string_of_adiar_uid(a.source())
-             << " " << (a.is_high() ? "--->" : "- ->") << " "
+             << " " << (a.out_idx() ? "--->" : "- ->") << " "
              << string_of_adiar_uid(a.target())
         ;
       return stream.str();

@@ -92,9 +92,9 @@ go_bandit([]() {
 
       it("should shortcut on irrelevance for { {0} } U Ø", [&]() {
         /*
-                   1     ---- x0
-                  / \
-                  F T
+        //           1     ---- x0
+        //          / \
+        //          F T
         */
 
         __zdd out_1 = zdd_union(zdd_x0, zdd_F);
@@ -106,9 +106,9 @@ go_bandit([]() {
 
       it("computes { {0} } U { Ø }", [&]() {
         /*
-                   1     ---- x0
-                  / \
-                  T T
+        //           1     ---- x0
+        //          / \
+        //          T T
         */
 
         __zdd out = zdd_union(zdd_x0, zdd_T);
@@ -117,10 +117,10 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -139,11 +139,11 @@ go_bandit([]() {
 
       it("computes { {0} } U { {1} }", [&]() {
         /*
-                     1     ---- x0
-                    / \
-                    2 T    ---- x1
-                   / \
-                   F T
+        //             1     ---- x0
+        //            / \
+        //            2 T    ---- x1
+        //           / \
+        //           F T
         */
 
         __zdd out = zdd_union(zdd_x0, zdd_x1);
@@ -151,18 +151,18 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -184,15 +184,15 @@ go_bandit([]() {
 
       it("computes { {0,1}, {0,3} } U { {0,2}, {2} }", [&]() {
         /*
-                    1           1                (1,1)         ---- x0
-                   / \         / \                 X
-                   F 2         | |            (2,2) \          ---- x1
-                    / \        \ /   ==>      /   \  \
-                    | T         2          (3,2)  T (F,2)      ---- x2
-                    |          / \         /   \     / \
-                    3          F T       (3,F) T     F T       ---- x3
-                   / \                    / \
-                   F T                    F T
+        //            1           1                (1,1)         ---- x0
+        //           / \         / \                 X
+        //           F 2         | |            (2,2) \          ---- x1
+        //            / \        \ /   ==>      /   \  \
+        //            | T         2          (3,2)  T (F,2)      ---- x2
+        //            |          / \         /   \     / \
+        //            3          F T       (3,F) T     F T       ---- x3
+        //           / \                    / \
+        //           F T                    F T
         */
         shared_levelized_file<zdd::node_t> zdd_a;
         shared_levelized_file<zdd::node_t> zdd_b;
@@ -215,36 +215,36 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -272,13 +272,13 @@ go_bandit([]() {
 
       it("computes { {0,1}, {1} } U { {0,2}, {2} }", [&]() {
         /*
-                   1           1             (1,1)
-                   ||         / \             | |
-                   2          | |            (2,2)
-                  / \         \ /   ==>       / \
-                  F T          2          (F,2) (T,F) <-- since 2nd (2) skipped level
-                              / \          / \
-                              F T          F T
+        //           1           1             (1,1)
+        //           ||         / \             | |
+        //           2          | |            (2,2)
+        //          / \         \ /   ==>       / \
+        //          F T          2          (F,2) (T,F) <-- since 2nd (2) skipped level
+        //                      / \          / \
+        //                      F T          F T
         */
         shared_levelized_file<zdd::node_t> zdd_a;
         shared_levelized_file<zdd::node_t> zdd_b;
@@ -300,24 +300,24 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -342,18 +342,18 @@ go_bandit([]() {
 
       it("computes { {0}, {1,3}, {2,3}, {1} } U { {0,3}, {3} }", [&]() {
         /*
-                        1        1                        (1,1)         ---- x0
-                       / \      / \                       /   \
-                       2 T      | |                    (2,2)   \        ---- x1
-                      / \       | |                    /   \    \
-                      3  \      | |     ==>         (3,2)  |     \      ---- x2
-                      \\ /      \ /                 /   \  |     |
-                        4        2              (4,2)   (4,F)  (T,2)    ---- x3
-                       / \      / \              / \     / \    / \
-                       F T      F T              T T     T T    T T
-
-                   The high arc on (2) and (3) on the left is shortcutting the
-                   second ZDD, to compensate for the omitted nodes.
+        //                1        1                        (1,1)         ---- x0
+        //               / \      / \                       /   \
+        //               2 T      | |                    (2,2)   \        ---- x1
+        //              / \       | |                    /   \    \
+        //              3  \      | |     ==>         (3,2)  |     \      ---- x2
+        //              \\ /      \ /                 /   \  |     |
+        //                4        2              (4,2)   (4,F)  (T,2)    ---- x3
+        //               / \      / \              / \     / \    / \
+        //               F T      F T              T T     T T    T T
+        //
+        //           The high arc on (2) and (3) on the left is shortcutting the
+        //           second ZDD, to compensate for the omitted nodes.
         */
         shared_levelized_file<zdd::node_t> zdd_a;
         shared_levelized_file<zdd::node_t> zdd_b;
@@ -377,39 +377,39 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), ptr_uint64(3,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), false, ptr_uint64(3,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(3,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(3,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), ptr_uint64(3,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  ptr_uint64(3,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(3,2) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(3,2) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,1)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,1), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), false, terminal_T }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(3,2)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(3,2), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -487,9 +487,9 @@ go_bandit([]() {
 
       it("computes (and shortcut) { {0} } ∩ Ø", [&]() {
         /*
-                   1       F              F          ---- x0
-                  / \           ==>
-                  F T
+        //           1       F              F          ---- x0
+        //          / \           ==>
+        //          F T
         */
 
         __zdd out = zdd_intsec(zdd_x0, zdd_F);
@@ -535,9 +535,9 @@ go_bandit([]() {
 
       it("computes { {0} } ∩ { Ø }", [&]() {
         /*
-                   1       T              F       ---- x0
-                  / \           ==>
-                  F T
+        //           1       T              F       ---- x0
+        //          / \           ==>
+        //          F T
         */
 
         __zdd out = zdd_intsec(zdd_x0, zdd_T);
@@ -562,9 +562,9 @@ go_bandit([]() {
 
       it("computes { Ø, {0} } ∩ { Ø }", [&]() {
         /*
-                   1       T              T       ---- x0
-                  / \           ==>
-                  T T
+        //           1       T              T       ---- x0
+        //          / \           ==>
+        //          T T
         */
         shared_levelized_file<zdd::node_t> zdd_a;
 
@@ -595,11 +595,11 @@ go_bandit([]() {
 
       it("computes { {0}, {1} } ∩ { Ø }", [&]() {
         /*
-                       1        T             F          ---- x0
-                      / \
-                      2 T             ==>                ---- x1
-                     / \
-                     F T
+        //               1        T             F          ---- x0
+        //              / \
+        //              2 T             ==>                ---- x1
+        //             / \
+        //             F T
         */
 
         shared_levelized_file<zdd::node_t> zdd_a;
@@ -633,11 +633,11 @@ go_bandit([]() {
 
       it("computes (and shortcut) { {0,1}, {1} } ∩ { {0,1} }", [&]() {
         /*
-                    _1_        1            1        ---- x0
-                   /   \      / \          / \
-                   2   3      F 2    ==>   F 2       ---- x1
-                  / \ / \      / \          / \
-                  T T F T      F T          F T
+        //            _1_        1            1        ---- x0
+        //           /   \      / \          / \
+        //           2   3      F 2    ==>   F 2       ---- x1
+        //          / \ / \      / \          / \
+        //          T T F T      F T          F T
         */
 
         shared_levelized_file<zdd::node_t> zdd_a;
@@ -661,17 +661,17 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -693,12 +693,12 @@ go_bandit([]() {
 
       it("computes (and skip to terminal) { {0}, {1}, {0,1} } ∩ { Ø }", [&]() {
         /*
-                    1        T          F     ---- x0
-                   / \
-                   \ /            ==>
-                    2                         ---- x1
-                   / \
-                   F T
+        //            1        T          F     ---- x0
+        //           / \
+        //           \ /            ==>
+        //            2                         ---- x1
+        //           / \
+        //           F T
         */
 
         shared_levelized_file<zdd::node_t> zdd_a;
@@ -732,18 +732,18 @@ go_bandit([]() {
 
       it("computes (and skip to terminal) { {0,2}, {0}, {2} } \\ { {1}, {2}, Ø }", [&]() {
         /*
-                        1                             F       ---- x0
-                       / \
-                      /   \         _1_                         ---- x1
-                      |   |        /   \       =>
-                      2   3        2   3                        ---- x2
-                     / \ / \      / \ / \
-                     F T T T      T F F T
-
-                     Where (2) and (3) are swapped in order on the right. Notice,
-                     that (2) on the right technically is illegal, but it makes
-                     for a much simpler counter-example that catches
-                     prod_pq_1.peek() throwing an error on being empty.
+        //                1                             F       ---- x0
+        //               / \
+        //              /   \         _1_                         ---- x1
+        //              |   |        /   \       =>
+        //              2   3        2   3                        ---- x2
+        //             / \ / \      / \ / \
+        //             F T T T      T F F T
+        //
+        //             Where (2) and (3) are swapped in order on the right. Notice,
+        //             that (2) on the right technically is illegal, but it makes
+        //             for a much simpler counter-example that catches
+        //             prod_pq_1.peek() throwing an error on being empty.
         */
 
         shared_levelized_file<zdd::node_t> zdd_a;
@@ -788,19 +788,19 @@ go_bandit([]() {
 
       it("computes (and skips in) { {0,1,2}, {0,2}, {0}, {2} } } ∩ { {0,2}, {0}, {1}, {2} }", [&]() {
         /*
-                        1             1                 (1,1)      ---- x0
-                       / \           / \                /   \
-                       | _2_        2   \              /     \
-                       \/   \      / \  |     ==>      |     |
-                        3   4      3 T  4            (3,3) (3,4)
-                       / \ / \    / \  / \            / \   / \
-                       T T F T    F T  T T            F T   T T
-
-                       where (3) and (4) are swapped in order on the left one.
-
-                       (3,3) : ((2,1), (2,0))   ,   (3,4) : ((2,1), (2,1))
-
-                       so (3,3) is forwarded while (3,4) is not and hence (3,3) is output first.
+        //                1             1                 (1,1)      ---- x0
+        //               / \           / \                /   \
+        //               | _2_        2   \              /     \
+        //               \/   \      / \  |     ==>      |     |
+        //                3   4      3 T  4            (3,3) (3,4)
+        //               / \ / \    / \  / \            / \   / \
+        //               T T F T    F T  T T            F T   T T
+        //
+        //               where (3) and (4) are swapped in order on the left one.
+        //
+        //               (3,3) : ((2,1), (2,0))   ,   (3,4) : ((2,1), (2,1))
+        //
+        //               so (3,3) is forwarded while (3,4) is not and hence (3,3) is output first.
         */
         shared_levelized_file<zdd::node_t> zdd_a;
 
@@ -829,22 +829,22 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,1) }));
 
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_T }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -866,11 +866,11 @@ go_bandit([]() {
 
       it("computes (and skip) { {0}, {1} } ∩ { {0,1} }", [&]() {
         /*
-                    1          1                  (1,1)         ---- x0
-                   / \        / \                 /   \
-                   2 T        F 2                 F   F         ---- x1
-                  / \          / \       ==>
-                  F T          F T
+        //            1          1                  (1,1)         ---- x0
+        //           / \        / \                 /   \
+        //           2 T        F 2                 F   F         ---- x1
+        //          / \          / \       ==>
+        //          F T          F T
         */
 
         shared_levelized_file<zdd::node_t> zdd_a;
@@ -895,9 +895,9 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -916,15 +916,15 @@ go_bandit([]() {
 
       it("computes (and skip) { {0}, {1}, {2}, {1,2}, {0,2} } ∩ { {0}, {2}, {0,2}, {0,1,2} }", [&]() {
         /*
-                      1          1                 (1,1)         ---- x0
-                     / \        / \                /   \
-                     2 |        | 2               /     \        ---- x1
-                    / \|        |/ \       ==>    |     |
-                    3  4        3  4            (3,3) (4,3)      ---- x2
-                   / \/ \      / \/ \            / \   / \
-                   F T  T      F T  T            F T   F T
-
-                   Notice, how (2,3) and (4,2) was skipped on the low and high of (1,1)
+        //              1          1                 (1,1)         ---- x0
+        //             / \        / \                /   \
+        //             2 |        | 2               /     \        ---- x1
+        //            / \|        |/ \       ==>    |     |
+        //            3  4        3  4            (3,3) (4,3)      ---- x2
+        //           / \/ \      / \/ \            / \   / \
+        //           F T  T      F T  T            F T   F T
+        //
+        //           Notice, how (2,3) and (4,2) was skipped on the low and high of (1,1)
         */
 
         shared_levelized_file<zdd::node_t> zdd_a;
@@ -951,22 +951,22 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(2,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,1)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,1), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -988,13 +988,13 @@ go_bandit([]() {
 
       it("computes (and skip) { {0}, {1} } ∩ { {1}, {0,2} }", [&]() {
         /*
-                     1         1                (1,1)      ---- x0
-                    / \       / \               /   \
-                    2 T       2  \            (2,2) F      ---- x1
-                   / \       / \ |     =>      / \
-                   F T       F T 3             F T         ---- x2
-                                / \
-                                F T
+        //             1         1                (1,1)      ---- x0
+        //            / \       / \               /   \
+        //            2 T       2  \            (2,2) F      ---- x1
+        //           / \       / \ |     =>      / \
+        //           F T       F T 3             F T         ---- x2
+        //                        / \
+        //                        F T
         */
 
         shared_levelized_file<zdd::node_t> zdd_a;
@@ -1018,18 +1018,18 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -1051,15 +1051,15 @@ go_bandit([]() {
 
       it("computes (and skip) { {0,2}, {1,2}, Ø } ∩ { {0,1}, {0}, {1} }", [&]() {
         /*
-                     1         1                    (1,1)    ---- x0
-                    / \       / \                   /   \
-                    2  \      2 T                 (2,2) |    ---- x1
-                   / \ /     / \       =>         /   \ |
-                   T  3      T T                  T   F F    ---- x2
-                     / \
-                     F T
-
-                   This shortcuts the (3,T) tuple twice.
+        //             1         1                    (1,1)    ---- x0
+        //            / \       / \                   /   \
+        //            2  \      2 T                 (2,2) |    ---- x1
+        //           / \ /     / \       =>         /   \ |
+        //           T  3      T T                  T   F F    ---- x2
+        //             / \
+        //             F T
+        //
+        //           This shortcuts the (3,T) tuple twice.
         */
 
         shared_levelized_file<zdd::node_t> zdd_a;
@@ -1083,18 +1083,18 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_T }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -1116,15 +1116,15 @@ go_bandit([]() {
 
       it("computes (and shortcut) { {0,2}, {1,2}, Ø } ∩ { {0,2}, {0} }", [&]() {
         /*
-                     1            1               (1,1)     ---- x0
-                    / \          / \               / \
-                    2  \         F |               F |      ---- x1
-                   / \ /           |     ==>         |
-                   T  3            2               (2,3)    ---- x2
-                     / \          / \               / \
-                     F T          T T               F T
-
-                   This shortcuts the (3,T) tuple twice.
+        //             1            1               (1,1)     ---- x0
+        //            / \          / \               / \
+        //            2  \         F |               F |      ---- x1
+        //           / \ /           |     ==>         |
+        //           T  3            2               (2,3)    ---- x2
+        //             / \          / \               / \
+        //             F T          T T               F T
+        //
+        //           This shortcuts the (3,T) tuple twice.
         */
 
         shared_levelized_file<zdd::node_t> zdd_a;
@@ -1148,17 +1148,17 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -1314,9 +1314,9 @@ go_bandit([]() {
 
       it("computes { {0} } \\ { Ø }", [&]() {
         /*
-                   1      T            1       ---- x0
-                  / \          ==>    / \
-                  F T                 F T
+        //           1      T            1       ---- x0
+        //          / \          ==>    / \
+        //          F T                 F T
         */
         __zdd out = zdd_diff(zdd_x0, zdd_T);
 
@@ -1325,9 +1325,9 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -1346,9 +1346,9 @@ go_bandit([]() {
 
       it("computes { {0}, Ø } \\ { Ø }", [&]() {
         /*
-                   1      T            1       ---- x0
-                  / \          ==>    / \
-                  T T                 F T
+        //           1      T            1       ---- x0
+        //          / \          ==>    / \
+        //          T T                 F T
         */
         shared_levelized_file<zdd::node_t> zdd_a;
 
@@ -1364,9 +1364,9 @@ go_bandit([]() {
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -1385,11 +1385,11 @@ go_bandit([]() {
 
       it("computes (and skip) { {0,1}, {1} } \\ { {1}, Ø }", [&]() {
         /*
-                     1                      (1,1)       ---- x0
-                     ||                     /   \
-                     2      1     ==>    (2,1)  F       ---- x1
-                    / \    / \            / \
-                    F T    T T            F F
+        //             1                      (1,1)       ---- x0
+        //             ||                     /   \
+        //             2      1     ==>    (2,1)  F       ---- x1
+        //            / \    / \            / \
+        //            F T    T T            F F
         */
         shared_levelized_file<zdd::node_t> zdd_a;
         shared_levelized_file<zdd::node_t> zdd_b;
@@ -1409,17 +1409,17 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(0,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 
@@ -1441,13 +1441,13 @@ go_bandit([]() {
 
       it("computes { {0,1}, {1,2}, {1} } \\ { {1}, Ø }", [&]() {
         /*
-                     _1_                        (1,1)       ---- x0
-                    /   \                       /   \
-                    3   2      1     ==>    (3,1)   (2,F)    ---- x1
-                   / \ / \    / \           /   \    / \
-                   F 4 F T    T T           F (3,T)  F T    ---- x2
-                    / \                        / \
-                    T T                        F T
+        //             _1_                        (1,1)       ---- x0
+        //            /   \                       /   \
+        //            3   2      1     ==>    (3,1)   (2,F)    ---- x1
+        //           / \ / \    / \           /   \    / \
+        //           F 4 F T    T T           F (3,T)  F T    ---- x2
+        //            / \                        / \
+        //            T T                        F T
         */
         shared_levelized_file<zdd::node_t> zdd_a;
         shared_levelized_file<zdd::node_t> zdd_b;
@@ -1469,28 +1469,28 @@ go_bandit([]() {
         arc_test_stream arcs(out);
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), ptr_uint64(1,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), false, ptr_uint64(1,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(0,0)), ptr_uint64(1,1) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(0,0), true,  ptr_uint64(1,1) }));
 
         AssertThat(arcs.can_pull_internal(), Is().True());
-        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { flag(ptr_uint64(1,0)), ptr_uint64(2,0) }));
+        AssertThat(arcs.pull_internal(), Is().EqualTo(arc { ptr_uint64(1,0), true,  ptr_uint64(2,0) }));
 
         AssertThat(arcs.can_pull_internal(), Is().False());
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,0), false, terminal_F }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(1,1)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(1,1), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), terminal_F }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), false, terminal_F }));
         AssertThat(arcs.can_pull_terminal(), Is().True());
-        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { flag(ptr_uint64(2,0)), terminal_T }));
+        AssertThat(arcs.pull_terminal(), Is().EqualTo(arc { ptr_uint64(2,0), true,  terminal_T }));
 
         AssertThat(arcs.can_pull_terminal(), Is().False());
 

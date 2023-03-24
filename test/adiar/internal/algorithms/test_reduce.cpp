@@ -71,15 +71,15 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ flag(n1),n2 });
-          aw.push_internal({ n1,n3 });
-          aw.push_internal({ n2,n4 });
+          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, false, n3 });
+          aw.push_internal({ n2, false, n4 });
 
-          aw.push_terminal({ flag(n2),terminal_T });
-          aw.push_terminal({ n3,terminal_F });
-          aw.push_terminal({ flag(n3),terminal_T });
-          aw.push_terminal({ n4,terminal_F });
-          aw.push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n2, true,  terminal_T });
+          aw.push_terminal({ n3, false, terminal_F });
+          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n4, false, terminal_F });
+          aw.push_terminal({ n4, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -173,17 +173,17 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1, n2 });
-          aw.push_internal({ flag(n1), n3 });
-          aw.push_internal({ n3, n4 });
-          aw.push_internal({ flag(n2), n5 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n3, false, n4 });
+          aw.push_internal({ n2, true,  n5 });
 
-          aw.push_terminal({ n2, terminal_F });
-          aw.push_terminal({ flag(n3), terminal_T });
-          aw.push_terminal({ n4, terminal_F });
-          aw.push_terminal({ flag(n4), terminal_T });
-          aw.push_terminal({ n5, terminal_F });
-          aw.push_terminal({ flag(n5), terminal_T });
+          aw.push_terminal({ n2, false, terminal_F });
+          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n4, false, terminal_F });
+          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n5, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(2,2u));
@@ -279,19 +279,19 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ flag(n1),n2 });
-          aw.push_internal({ n1,n3 });
-          aw.push_internal({ n2,n4 });
-          aw.push_internal({ n3,n5 });
-          aw.push_internal({ n4,n5 });
-          aw.push_internal({ flag(n3),n6 });
-          aw.push_internal({ flag(n4),n6 });
+          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, false, n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n4, false, n5 });
+          aw.push_internal({ n3, true,  n6 });
+          aw.push_internal({ n4, true,  n6 });
 
-          aw.push_terminal({ flag(n2),terminal_T });
-          aw.push_terminal({ n5,terminal_F });
-          aw.push_terminal({ flag(n5),terminal_T });
-          aw.push_terminal({ n6,terminal_T });
-          aw.push_terminal({ flag(n6),terminal_F });
+          aw.push_terminal({ n2, true,  terminal_T });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n6, false, terminal_T });
+          aw.push_terminal({ n6, true,  terminal_F });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -398,17 +398,17 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ flag(n1),n2 });
-          aw.push_internal({ n1,n3 });
-          aw.push_internal({ n2,n4 });
-          aw.push_internal({ n3,n5 });
-          aw.push_internal({ n4,n5 });
+          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, false, n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n4, false, n5 });
 
-          aw.push_terminal({ flag(n2),terminal_T });
-          aw.push_terminal({ flag(n3),terminal_T });
-          aw.push_terminal({ flag(n4),terminal_T });
-          aw.push_terminal({ n5,terminal_F });
-          aw.push_terminal({ flag(n5),terminal_T });
+          aw.push_terminal({ n2, true,  terminal_T });
+          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n5, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -518,21 +518,21 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ n2,n4 });
-          aw.push_internal({ flag(n2),n5 });
-          aw.push_internal({ n3,n5 });
-          aw.push_internal({ flag(n3),n6 });
-          aw.push_internal({ n5,n7 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n3, true,  n6 });
+          aw.push_internal({ n5, false, n7 });
 
-          aw.push_terminal({ n4,terminal_F });
-          aw.push_terminal({ flag(n4),terminal_T });
-          aw.push_terminal({ flag(n5),terminal_T });
-          aw.push_terminal({ n6,terminal_F });
-          aw.push_terminal({ flag(n6),terminal_T });
-          aw.push_terminal({ n7,terminal_F });
-          aw.push_terminal({ flag(n7),terminal_T });
+          aw.push_terminal({ n4, false, terminal_F });
+          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n6, false, terminal_F });
+          aw.push_terminal({ n6, true,  terminal_T });
+          aw.push_terminal({ n7, false, terminal_F });
+          aw.push_terminal({ n7, true, terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));
@@ -651,19 +651,19 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ n2,n4 });
-          aw.push_internal({ flag(n2),n5 });
-          aw.push_internal({ n3,n5 });
-          aw.push_internal({ flag(n3),n6 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n3, true,  n6 });
 
-          aw.push_terminal({ n4,terminal_F });
-          aw.push_terminal({ flag(n4),terminal_T });
-          aw.push_terminal({ n5,terminal_F });
-          aw.push_terminal({ flag(n5),terminal_T });
-          aw.push_terminal({ n6,terminal_T });
-          aw.push_terminal({ flag(n6),terminal_F });
+          aw.push_terminal({ n4, false, terminal_F });
+          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n6, false, terminal_T });
+          aw.push_terminal({ n6, true,  terminal_F });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));
@@ -761,19 +761,19 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ n2,n4 });
-          aw.push_internal({ flag(n2),n5 });
-          aw.push_internal({ n3,n5 });
-          aw.push_internal({ flag(n3),n6 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n3, true,  n6 });
 
-          aw.push_terminal({ n4,terminal_T });
-          aw.push_terminal({ flag(n4),terminal_F });
-          aw.push_terminal({ n5,terminal_T });
-          aw.push_terminal({ flag(n5),terminal_F });
-          aw.push_terminal({ n6,terminal_F });
-          aw.push_terminal({ flag(n6),terminal_T });
+          aw.push_terminal({ n4, false, terminal_T });
+          aw.push_terminal({ n4, true,  terminal_F });
+          aw.push_terminal({ n5, false, terminal_T });
+          aw.push_terminal({ n5, true,  terminal_F });
+          aw.push_terminal({ n6, false, terminal_F });
+          aw.push_terminal({ n6, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));
@@ -870,15 +870,15 @@ go_bandit([]() {
         { // Garbage collect writer early
           arc_writer aw(in);
 
-          aw.push_internal({ flag(n1),n2 });
-          aw.push_internal({ n1,n3 });
-          aw.push_internal({ n2,n3 });
-          aw.push_internal({ flag(n2),n4 });
+          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, false, n3 });
+          aw.push_internal({ n2, false, n3 });
+          aw.push_internal({ n2, true,  n4 });
 
-          aw.push_terminal({ n3,terminal_F });
-          aw.push_terminal({ flag(n3),terminal_T });
-          aw.push_terminal({ n4,terminal_T });
-          aw.push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n3, false, terminal_F });
+          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n4, false, terminal_T });
+          aw.push_terminal({ n4, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -973,17 +973,17 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ flag(n1),n2 });
-          aw.push_internal({ n1,n3 });
-          aw.push_internal({ n2,n3 });
-          aw.push_internal({ flag(n2),n4 });
-          aw.push_internal({ n4,n5 });
-          aw.push_internal({ flag(n4),n5 });
+          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, false, n3 });
+          aw.push_internal({ n2, false, n3 });
+          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n4, false, n5 });
+          aw.push_internal({ n4, true,  n5 });
 
-          aw.push_terminal({ n3,terminal_F });
-          aw.push_terminal({ flag(n3),terminal_T });
-          aw.push_terminal({ n5,terminal_F });
-          aw.push_terminal({ flag(n5),terminal_T });
+          aw.push_terminal({ n3, false, terminal_F });
+          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n5, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -1086,17 +1086,17 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ n2,n4 });
-          aw.push_internal({ flag(n2),n4 });
-          aw.push_internal({ n3,n5 });
-          aw.push_internal({ flag(n3),n5 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n3, false, n5 });
+          aw.push_internal({ n3, true,  n5 });
 
-          aw.push_terminal({ n4,terminal_F });
-          aw.push_terminal({ flag(n4),terminal_T });
-          aw.push_terminal({ n5,terminal_T });
-          aw.push_terminal({ flag(n5),terminal_F });
+          aw.push_terminal({ n4, false, terminal_F });
+          aw.push_terminal({ n4, true,  terminal_T });
+          aw.push_terminal({ n5, false, terminal_T });
+          aw.push_terminal({ n5, true,  terminal_F });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));
@@ -1185,15 +1185,15 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ n2,n3 });
-          aw.push_internal({ flag(n2),n4 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n2, false, n3 });
+          aw.push_internal({ n2, true,  n4 });
 
-          aw.push_terminal({ flag(n1),terminal_T });
-          aw.push_terminal({ n3,terminal_F });
-          aw.push_terminal({ flag(n3),terminal_T });
-          aw.push_terminal({ n4,terminal_F });
-          aw.push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n1, true,  terminal_T });
+          aw.push_terminal({ n3, false, terminal_F });
+          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n4, false, terminal_F });
+          aw.push_terminal({ n4, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -1283,19 +1283,19 @@ go_bandit([]() {
           { // Garbage collect writer to free write-lock
             arc_writer aw(in);
 
-            aw.push_internal({ n1, n2 });
-            aw.push_internal({ flag(n1), n3 });
-            aw.push_internal({ flag(n2), n4 });
-            aw.push_internal({ n3, n4 });
-            aw.push_internal({ flag(n3), n5 });
-            aw.push_internal({ n2, n6 });
+            aw.push_internal({ n1, false, n2 });
+            aw.push_internal({ n1, true,  n3 });
+            aw.push_internal({ n2, true,  n4 });
+            aw.push_internal({ n3, false, n4 });
+            aw.push_internal({ n3, true,  n5 });
+            aw.push_internal({ n2, false, n6 });
 
-            aw.push_terminal({ n4, terminal_F });
-            aw.push_terminal({ flag(n4), terminal_T });
-            aw.push_terminal({ n5, terminal_F });
-            aw.push_terminal({ flag(n5), terminal_T });
-            aw.push_terminal({ n6, terminal_F });
-            aw.push_terminal({ flag(n6), terminal_T });
+            aw.push_terminal({ n4, false, terminal_F });
+            aw.push_terminal({ n4, true,  terminal_T });
+            aw.push_terminal({ n5, false, terminal_F });
+            aw.push_terminal({ n5, true,  terminal_T });
+            aw.push_terminal({ n6, false, terminal_F });
+            aw.push_terminal({ n6, true,  terminal_T });
 
             aw.push(level_info(0,1u));
             aw.push(level_info(1,2u));
@@ -1406,15 +1406,15 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ flag(n1),n2 });
-          aw.push_internal({ n1,n3 });
-          aw.push_internal({ n2,n3 });
-          aw.push_internal({ flag(n2),n4 });
+          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, false, n3 });
+          aw.push_internal({ n2, false, n3 });
+          aw.push_internal({ n2, true,  n4 });
 
-          aw.push_terminal({ n3,terminal_F });
-          aw.push_terminal({ flag(n3),terminal_T });
-          aw.push_terminal({ n4,terminal_F });
-          aw.push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n3, false, terminal_F });
+          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n4, false, terminal_F });
+          aw.push_terminal({ n4, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -1490,25 +1490,25 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ n2,n4 });
-          aw.push_internal({ n3,n4 });
-          aw.push_internal({ flag(n2),n5 });
-          aw.push_internal({ flag(n3),n5 });
-          aw.push_internal({ n4,n6 });
-          aw.push_internal({ flag(n4),n7 });
-          aw.push_internal({ n5,n7 });
-          aw.push_internal({ flag(n5),n8 });
-          aw.push_internal({ flag(n6),n9 });
-          aw.push_internal({ n7,n9 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n3, false, n4 });
+          aw.push_internal({ n2, true,  n5 });
+          aw.push_internal({ n3, true,  n5 });
+          aw.push_internal({ n4, false, n6 });
+          aw.push_internal({ n4, true,  n7 });
+          aw.push_internal({ n5, false, n7 });
+          aw.push_internal({ n5, true,  n8 });
+          aw.push_internal({ n6, true,  n9 });
+          aw.push_internal({ n7, false, n9 });
 
-          aw.push_terminal({ n6,terminal_F });
-          aw.push_terminal({ flag(n7),terminal_T });
-          aw.push_terminal({ n8,terminal_F });
-          aw.push_terminal({ flag(n8),terminal_T });
-          aw.push_terminal({ n9,terminal_F });
-          aw.push_terminal({ flag(n9),terminal_T });
+          aw.push_terminal({ n6, false, terminal_F });
+          aw.push_terminal({ n7, true,  terminal_T });
+          aw.push_terminal({ n8, false, terminal_F });
+          aw.push_terminal({ n8, true,  terminal_T });
+          aw.push_terminal({ n9, false, terminal_F });
+          aw.push_terminal({ n9, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));
@@ -1628,19 +1628,19 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ n2,n3 });
-          aw.push_internal({ n3,n4 });
-          aw.push_internal({ flag(n3),n5 });
-          aw.push_internal({ flag(n1),n6 });
-          aw.push_internal({ flag(n2),n6 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n2, false, n3 });
+          aw.push_internal({ n3, false, n4 });
+          aw.push_internal({ n3, true,  n5 });
+          aw.push_internal({ n1, true,  n6 });
+          aw.push_internal({ n2, true,  n6 });
 
-          aw.push_terminal({ n4,terminal_T });
-          aw.push_terminal({ flag(n4),terminal_F });
-          aw.push_terminal({ n5,terminal_F });
-          aw.push_terminal({ flag(n5),terminal_T });
-          aw.push_terminal({ n6,terminal_T });
-          aw.push_terminal({ flag(n6),terminal_T });
+          aw.push_terminal({ n4, false, terminal_T });
+          aw.push_terminal({ n4, true,  terminal_F });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n5, true,  terminal_T });
+          aw.push_terminal({ n6, false, terminal_T });
+          aw.push_terminal({ n6, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -1744,8 +1744,8 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_terminal({ n1,terminal_F });
-          aw.push_terminal({ flag(n1),terminal_F });
+          aw.push_terminal({ n1, false, terminal_F });
+          aw.push_terminal({ n1, true,  terminal_F });
 
           aw.push(level_info(0,1u));
         }
@@ -1802,11 +1802,11 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ flag(n1),n2 });
+          aw.push_internal({ n1, true,  n2 });
 
-          aw.push_terminal({ n1,terminal_T });
-          aw.push_terminal({ n2,terminal_T });
-          aw.push_terminal({ flag(n2),terminal_T });
+          aw.push_terminal({ n1, false, terminal_T });
+          aw.push_terminal({ n2, false, terminal_T });
+          aw.push_terminal({ n2, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -1859,8 +1859,8 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_terminal({ n1,terminal_F });
-          aw.push_terminal({ flag(n1),terminal_T });
+          aw.push_terminal({ n1, false, terminal_F });
+          aw.push_terminal({ n1, true,  terminal_T });
 
           aw.push(level_info(0u,1u));
         }
@@ -1935,29 +1935,29 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ n2,n4 });
-          aw.push_internal({ flag(n2),n4 });
-          aw.push_internal({ n3,n4 });
-          aw.push_internal({ flag(n3),n5 });
-          aw.push_internal({ n4,n6 });
-          aw.push_internal({ flag(n4),n6 });
-          aw.push_internal({ n5,n6 });
-          aw.push_internal({ flag(n5),n7 });
-          aw.push_internal({ n6,n8 });
-          aw.push_internal({ flag(n6),n8 });
-          aw.push_internal({ n7,n8 });
-          aw.push_internal({ flag(n7),n9 });
-          aw.push_internal({ n8,n10 });
-          aw.push_internal({ flag(n8),n10 });
-          aw.push_internal({ n9,n10 });
-          aw.push_internal({ flag(n9),n11 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, false, n4 });
+          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n3, false, n4 });
+          aw.push_internal({ n3, true,  n5 });
+          aw.push_internal({ n4, false, n6 });
+          aw.push_internal({ n4, true,  n6 });
+          aw.push_internal({ n5, false, n6 });
+          aw.push_internal({ n5, true,  n7 });
+          aw.push_internal({ n6, false, n8 });
+          aw.push_internal({ n6, true,  n8 });
+          aw.push_internal({ n7, false, n8 });
+          aw.push_internal({ n7, true,  n9 });
+          aw.push_internal({ n8, false, n10 });
+          aw.push_internal({ n8, true,  n10 });
+          aw.push_internal({ n9, false, n10 });
+          aw.push_internal({ n9, true,  n11 });
 
-          aw.push_terminal({ n10,terminal_T });
-          aw.push_terminal({ flag(n10),terminal_F });
-          aw.push_terminal({ n11,terminal_F });
-          aw.push_terminal({ flag(n11),terminal_T });
+          aw.push_terminal({ n10, false, terminal_T });
+          aw.push_terminal({ n10, true,  terminal_F });
+          aw.push_terminal({ n11, false, terminal_F });
+          aw.push_terminal({ n11, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));
@@ -2098,35 +2098,35 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ n2,n4 });
-          aw.push_internal({ flag(n2),n5 });
-          aw.push_internal({ n3,n5 });
-          aw.push_internal({ flag(n3),n6 });
-          aw.push_internal({ n4,n7 });
-          aw.push_internal({ flag(n4),n8 });
-          aw.push_internal({ n5,n8 });
-          aw.push_internal({ flag(n5),n8 });
-          aw.push_internal({ n6,n8 });
-          aw.push_internal({ flag(n6),n9 });
-          aw.push_internal({ n7,n10 });
-          aw.push_internal({ flag(n7),n11 });
-          aw.push_internal({ n8,n11 });
-          aw.push_internal({ flag(n8),n11 });
-          aw.push_internal({ n9,n11 });
-          aw.push_internal({ flag(n9),n12 });
-          aw.push_internal({ flag(n10),n13 });
-          aw.push_internal({ n11,n13 });
-          aw.push_internal({ flag(n11),n13 });
-          aw.push_internal({ n12,n13 });
-          aw.push_internal({ n10,n14 });
-          aw.push_internal({ flag(n12),n14 });
+          aw.push_internal({ n1,  false, n2 });
+          aw.push_internal({ n1,  true,  n3 });
+          aw.push_internal({ n2,  false, n4 });
+          aw.push_internal({ n2,  true,  n5 });
+          aw.push_internal({ n3,  false, n5 });
+          aw.push_internal({ n3,  true,  n6 });
+          aw.push_internal({ n4,  false, n7 });
+          aw.push_internal({ n4,  true,  n8 });
+          aw.push_internal({ n5,  false, n8 });
+          aw.push_internal({ n5,  true,  n8 });
+          aw.push_internal({ n6,  false, n8 });
+          aw.push_internal({ n6,  true,  n9 });
+          aw.push_internal({ n7,  false, n10 });
+          aw.push_internal({ n7,  true,  n11 });
+          aw.push_internal({ n8,  false, n11 });
+          aw.push_internal({ n8,  true,  n11 });
+          aw.push_internal({ n9,  false, n11 });
+          aw.push_internal({ n9,  true,  n12 });
+          aw.push_internal({ n10, true,  n13 });
+          aw.push_internal({ n11, false, n13 });
+          aw.push_internal({ n11, true,  n13 });
+          aw.push_internal({ n12, false, n13 });
+          aw.push_internal({ n10, false, n14 });
+          aw.push_internal({ n12, true,  n14 });
 
-          aw.push_terminal({ n13,terminal_T });
-          aw.push_terminal({ flag(n13),terminal_F });
-          aw.push_terminal({ n14,terminal_F });
-          aw.push_terminal({ flag(n14),terminal_T });
+          aw.push_terminal({ n13, false, terminal_T });
+          aw.push_terminal({ n13, true,  terminal_F });
+          aw.push_terminal({ n14, false, terminal_F });
+          aw.push_terminal({ n14, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));
@@ -2270,15 +2270,15 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ flag(n2),n4 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, true,  n4 });
 
-          aw.push_terminal({ n2,terminal_F });
-          aw.push_terminal({ n3,terminal_F });
-          aw.push_terminal({ flag(n3),terminal_T });
-          aw.push_terminal({ n4,terminal_T });
-          aw.push_terminal({ flag(n4),terminal_T });
+          aw.push_terminal({ n2, false, terminal_F });
+          aw.push_terminal({ n3, false, terminal_F });
+          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n4, false, terminal_T });
+          aw.push_terminal({ n4, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));
@@ -2342,11 +2342,11 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ flag(n1),n2 });
+          aw.push_internal({ n1, true,  n2 });
 
-          aw.push_terminal({ n1,terminal_T });
-          aw.push_terminal({ n2,terminal_T });
-          aw.push_terminal({ flag(n2),terminal_F });
+          aw.push_terminal({ n1, false, terminal_T });
+          aw.push_terminal({ n2, false, terminal_T });
+          aw.push_terminal({ n2, true,  terminal_F });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -2414,17 +2414,17 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ flag(n1),n2 });
-          aw.push_internal({ n1,n3 });
-          aw.push_internal({ n2,n3 });
-          aw.push_internal({ flag(n2),n4 });
-          aw.push_internal({ n4,n5 });
+          aw.push_internal({ n1, true,  n2 });
+          aw.push_internal({ n1, false, n3 });
+          aw.push_internal({ n2, false, n3 });
+          aw.push_internal({ n2, true,  n4 });
+          aw.push_internal({ n4, false, n5 });
 
-          aw.push_terminal({ n3,terminal_F });
-          aw.push_terminal({ flag(n3),terminal_T });
-          aw.push_terminal({ flag(n4),terminal_F });
-          aw.push_terminal({ n5,terminal_F });
-          aw.push_terminal({ flag(n5),terminal_T });
+          aw.push_terminal({ n3, false, terminal_F });
+          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n4, true,  terminal_F });
+          aw.push_terminal({ n5, false, terminal_F });
+          aw.push_terminal({ n5, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -2530,15 +2530,15 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ flag(n3),n4 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n3, true,  n4 });
 
-          aw.push_terminal({ n2,terminal_F });
-          aw.push_terminal({ flag(n2),terminal_T });
-          aw.push_terminal({ n3,terminal_F });
-          aw.push_terminal({ n4,terminal_T });
-          aw.push_terminal({ flag(n4),terminal_F });
+          aw.push_terminal({ n2, false, terminal_F });
+          aw.push_terminal({ n2, true,  terminal_T });
+          aw.push_terminal({ n3, false, terminal_F });
+          aw.push_terminal({ n4, false, terminal_T });
+          aw.push_terminal({ n4, true,terminal_F });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));
@@ -2619,8 +2619,8 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_terminal({ n1,terminal_T });
-          aw.push_terminal({ flag(n1),terminal_F });
+          aw.push_terminal({ n1, false, terminal_T });
+          aw.push_terminal({ n1, true,  terminal_F });
 
           aw.push(level_info(0,1u));
         }
@@ -2679,9 +2679,9 @@ go_bandit([]() {
 
           aw.push_internal({ n1,n2 });
 
-          aw.push_terminal({ flag(n1),terminal_F });
-          aw.push_terminal({ n2,terminal_F });
-          aw.push_terminal({ flag(n2),terminal_T });
+          aw.push_terminal({ n1, true,  terminal_F });
+          aw.push_terminal({ n2, false, terminal_F });
+          aw.push_terminal({ n2, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -2743,11 +2743,11 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ flag(n1),n2 });
+          aw.push_internal({ n1, true,  n2 });
 
-          aw.push_terminal({ n1,terminal_F });
-          aw.push_terminal({ n2,terminal_F });
-          aw.push_terminal({ flag(n2),terminal_F });
+          aw.push_terminal({ n1, false, terminal_F });
+          aw.push_terminal({ n2, false, terminal_F });
+          aw.push_terminal({ n2, true,  terminal_F });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,1u));
@@ -2800,8 +2800,8 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_terminal({ n1,terminal_F });
-          aw.push_terminal({ flag(n1),terminal_T });
+          aw.push_terminal({ n1, false, terminal_F });
+          aw.push_terminal({ n1, true,  terminal_T });
 
           aw.push(level_info(42,1u));
         }
@@ -2857,8 +2857,8 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_terminal({ n1,terminal_T });
-          aw.push_terminal({ flag(n1),terminal_T });
+          aw.push_terminal({ n1, false, terminal_T });
+          aw.push_terminal({ n1, true,  terminal_T });
 
           aw.push(level_info(12,1u));
         }
@@ -2935,29 +2935,29 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ n2,n4 });
-          aw.push_internal({ flag(n2),n5 });
-          aw.push_internal({ n3,n5 });
-          aw.push_internal({ n4,n6 });
-          aw.push_internal({ flag(n4),n7 });
-          aw.push_internal({ n5,n7 });
-          aw.push_internal({ n6,n8 });
-          aw.push_internal({ flag(n6),n9 });
-          aw.push_internal({ n7,n9 });
-          aw.push_internal({ n8,n10 });
-          aw.push_internal({ flag(n8),n11 });
-          aw.push_internal({ n9,n11 });
+          aw.push_internal({ n1,  false, n2 });
+          aw.push_internal({ n1,  true,  n3 });
+          aw.push_internal({ n2,  false, n4 });
+          aw.push_internal({ n2,  true,  n5 });
+          aw.push_internal({ n3,  false, n5 });
+          aw.push_internal({ n4,  false, n6 });
+          aw.push_internal({ n4,  true,  n7 });
+          aw.push_internal({ n5,  false, n7 });
+          aw.push_internal({ n6,  false, n8 });
+          aw.push_internal({ n6,  true,  n9 });
+          aw.push_internal({ n7,  false, n9 });
+          aw.push_internal({ n8,  false, n10 });
+          aw.push_internal({ n8,  true,  n11 });
+          aw.push_internal({ n9,  false, n11 });
 
-          aw.push_terminal({ flag(n3),terminal_F });
-          aw.push_terminal({ flag(n5),terminal_F });
-          aw.push_terminal({ flag(n7),terminal_F });
-          aw.push_terminal({ flag(n9),terminal_F });
-          aw.push_terminal({ n10,terminal_F });
-          aw.push_terminal({ flag(n10),terminal_T });
-          aw.push_terminal({ n11,terminal_T });
-          aw.push_terminal({ flag(n11),terminal_T });
+          aw.push_terminal({ n3,  true,  terminal_F });
+          aw.push_terminal({ n5,  true,  terminal_F });
+          aw.push_terminal({ n7,  true,  terminal_F });
+          aw.push_terminal({ n9,  true,  terminal_F });
+          aw.push_terminal({ n10, false, terminal_F });
+          aw.push_terminal({ n10, true,  terminal_T });
+          aw.push_terminal({ n11, false, terminal_T });
+          aw.push_terminal({ n11, true,  terminal_T });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));
@@ -3082,15 +3082,15 @@ go_bandit([]() {
         { // Garbage collect writer to free write-lock
           arc_writer aw(in);
 
-          aw.push_internal({ n1,n2 });
-          aw.push_internal({ flag(n1),n3 });
-          aw.push_internal({ flag(n2),n4 });
+          aw.push_internal({ n1, false, n2 });
+          aw.push_internal({ n1, true,  n3 });
+          aw.push_internal({ n2, true,  n4 });
 
-          aw.push_terminal({ n2,terminal_F });
-          aw.push_terminal({ n3,terminal_F });
-          aw.push_terminal({ flag(n3),terminal_T });
-          aw.push_terminal({ n4,terminal_T });
-          aw.push_terminal({ flag(n4),terminal_F });
+          aw.push_terminal({ n2, false, terminal_F });
+          aw.push_terminal({ n3, false, terminal_F });
+          aw.push_terminal({ n3, true,  terminal_T });
+          aw.push_terminal({ n4, false, terminal_T });
+          aw.push_terminal({ n4, true,  terminal_F });
 
           aw.push(level_info(0,1u));
           aw.push(level_info(1,2u));

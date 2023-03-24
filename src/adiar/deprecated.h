@@ -299,7 +299,7 @@ namespace adiar
 
   [[deprecated("Replaced by member function in 'adiar/internal/data_types/arc.h'")]]
   inline internal::node is_high(const internal::arc &a)
-  { return a.is_high(); }
+  { return a.source().out_idx(); }
 
   //////////////////////////////////////////////////////////////////////////////
   /// \copydoc adiar::internal::arc::operator~

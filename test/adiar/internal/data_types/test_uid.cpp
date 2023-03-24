@@ -28,6 +28,38 @@ go_bandit([]() {
       });
     });
 
+    describe("out-index", []() {
+      it("should strip away out-index from 'internal node' pointer [1]", [&]() {
+        const ptr_uint64 p1(53, 4, false);
+        const uid_uint64 u1 = p1;
+
+        const ptr_uint64 p2(53, 4, true);
+        const uid_uint64 u2 = p2;
+
+        AssertThat(u1, Is().EqualTo(u2));
+      });
+
+      it("should strip away out-index 'internal node' pointer [2]", [&]() {
+        const ptr_uint64 p1(42, 0, false);
+        const uid_uint64 u1 = p1;
+
+        const ptr_uint64 p2(42, 0, true);
+        const uid_uint64 u2 = p2;
+
+        AssertThat(u1, Is().EqualTo(u2));
+      });
+
+      it("can provide a pointer with out-index 0", [&]() {
+        const uid_uint64 u(42, 0);
+        AssertThat(u.with(false), Is().EqualTo(ptr_uint64(42, 0, false)));
+      });
+
+      it("can provide a pointer with out-index 1", [&]() {
+        const uid_uint64 u(42, 0);
+        AssertThat(u.with(true), Is().EqualTo(ptr_uint64(42, 0, true)));
+      });
+    });
+
     describe("NIL", [&](){
 #ifndef NDEBUG
       it("throws 'std::illegal_argument' when given NIL [unflagged]", [&]() {

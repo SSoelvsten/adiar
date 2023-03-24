@@ -25,7 +25,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op and_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
-    return unflag(terminal1 & terminal2);
+    return essential(terminal1 & terminal2);
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op or_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
-    return unflag(terminal1 | terminal2);
+    return essential(terminal1 | terminal2);
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op xor_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
-    return unflag(terminal1 ^ terminal2);
+    return essential(terminal1 ^ terminal2);
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op imp_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::uid_uint64
   {
-    return internal::ptr_uint64(unflag(terminal1) <= unflag(terminal2));
+    return internal::ptr_uint64(essential(terminal1) <= essential(terminal2));
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ namespace adiar
   //////////////////////////////////////////////////////////////////////////////
   const bool_op invimp_op = [](const internal::ptr_uint64 &terminal1, const internal::ptr_uint64 &terminal2) -> internal::ptr_uint64
   {
-    return internal::ptr_uint64(unflag(terminal2) <= unflag(terminal1));
+    return internal::ptr_uint64(essential(terminal2) <= essential(terminal1));
   };
 
   //////////////////////////////////////////////////////////////////////////////

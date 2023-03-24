@@ -21,7 +21,7 @@ namespace adiar
     // If adding attributed edges, i.e. complement edges:
     //    remove the 'unflag' below. Currently, it removes any forwarding of
     //    applying Reduction Rule.
-    if (unflag(n.low()) == unflag(n.high())) { return n.low(); }
+    if (essential(n.low()) == essential(n.high())) { return n.low(); }
     return n.uid();
   }
 
