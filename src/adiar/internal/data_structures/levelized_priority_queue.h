@@ -47,7 +47,8 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   /// The preprocessor variable ADIAR_PQ_LOOKAHEAD can be used to change the
-  /// number of buckets used by the levelized priority queue.
+  /// number of buckets used by the levelized priority queue (if the number of
+  /// elements are larger than the `no_lookahead_bound`).
   //////////////////////////////////////////////////////////////////////////////
 #ifndef ADIAR_LPQ_LOOKAHEAD
 #define ADIAR_LPQ_LOOKAHEAD 1u
@@ -73,48 +74,94 @@ namespace adiar::internal
   /// \remark  Elements may \e only be pushed to a \e later level than the
   ///          currently read level.
   ///
-  /// \param elem_t       Type of items to be placed in the priority queue
+  /// \tparam elem_t       Type of items to be placed in the priority queue
   ///
-  /// \param elem_comp_t  Sorting comparator to use in the inner queue buckets
-  ///                     and for merging
+  /// \tparam elem_comp_t  Sorting comparator to use in the inner queue buckets
+  ///                      and for merging
   ///
-  /// \param file_t       Type of the files to obtain the relevant levels from
+  /// \tparam file_t       Type of the files to obtain the relevant levels from
   ///
-  /// \param FILES        Number of files to obtain the levels from
+  /// \tparam FILES        Number of files to obtain the levels from
   ///
+  /// \tparam level_comp_t Comparator to be used for merging multiple levels
+  ///                      from the files together (std::less = top-down, while
+  ///                      std::greater = bottom-up)
   ///
-  /// \param level_comp_t Comparator to be used for merging multiple levels from
-  ///                     the files together (std::less = top-down, while
-  ///                     std::greater = bottom-up)
+  /// \tparam INIT_LEVEL   The index for the first level one can push to. In
+  ///                      other words, the number of levels to 'skip'.
   ///
-  /// \param INIT_LEVEL   The index for the first level one can push to. In other
-  ///                     words, the number of levels to 'skip'.
-  ///
-  /// \param LOOK_AHEAD   The number of levels (ahead of the current)
-  ///                     explicitly handle with a sorting algorithm
+  /// \tparam LOOK_AHEAD   The number of levels (ahead of the current)
+  ///                      explicitly handle with a sorting algorithm
   //////////////////////////////////////////////////////////////////////////////
-
-  template <typename            elem_t,
-            typename            elem_comp_t  = std::less<elem_t>,
-            ptr_uint64::label_t LOOK_AHEAD   = ADIAR_LPQ_LOOKAHEAD,
-            memory_mode_t       mem_mode     = memory_mode_t::EXTERNAL,
-            typename            file_t       = shared_file_ptr<levelized_file<elem_t>>,
-            size_t              FILES        = 1u,
-            typename            level_comp_t = std::less<ptr_uint64::label_t>,
-            ptr_uint64::label_t INIT_LEVEL   = 1u
+  template <typename            element_t,
+            typename            element_comp_t = std::less<element_t>,
+            ptr_uint64::label_t LOOK_AHEAD     = ADIAR_LPQ_LOOKAHEAD,
+            memory_mode_t       memory_mode    = memory_mode_t::EXTERNAL,
+            typename            file_t         = shared_file_ptr<levelized_file<element_t>>,
+            size_t              FILES          = 1u,
+            typename            level_comp_t   = std::less<ptr_uint64::label_t>,
+            ptr_uint64::label_t INIT_LEVEL     = 1u
             >
   class levelized_priority_queue
   {
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the elements.
+    ////////////////////////////////////////////////////////////////////////////
+    using elem_t = element_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the element comparator.
+    ////////////////////////////////////////////////////////////////////////////
+    using elem_comp_t = element_comp_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of buckets.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr memory_mode_t mem_mode = memory_mode;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the sorter for each bucket.
+    ////////////////////////////////////////////////////////////////////////////
+    using sorter_t = sorter<mem_mode, elem_t, elem_comp_t>;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the overflow priority queue.
+    ////////////////////////////////////////////////////////////////////////////
+    using priority_queue_t = priority_queue<memory_mode, elem_t, elem_comp_t>;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of buckets.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr size_t BUCKETS = LOOK_AHEAD + 1;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Index for no bucket.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr ptr_uint64::label_t OUT_OF_BUCKETS_IDX =
+      static_cast<ptr_uint64::label_t>(-1);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Total number of data structures in Levelized Priority Queue.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr size_t DATA_STRUCTURES =
+      BUCKETS * sorter_t::DATA_STRUCTURES + priority_queue_t::DATA_STRUCTURES;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Value to reflect 'out of levels'.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr ptr_uint64::label_t NO_LABEL = ptr_uint64::MAX_LABEL+1;
+
   private:
     static_assert(0 < LOOK_AHEAD,
                   "LOOK_AHEAD must at least be of one level");
 
-    // TODO: LOOK_AHEAD must be strictly smaller than MAX_LABEL (but we need to
-    //       close #164 first to do this check at compile time)
+    static_assert(0 < ptr_uint64::MAX_LABEL,
+                  "A larger LOOK_AHEAD than MAX_LABEL is wasteful");
 
-    static constexpr ptr_uint64::label_t OUT_OF_BUCKETS_IDX = static_cast<ptr_uint64::label_t>(-1);
-
-    static_assert(LOOK_AHEAD + 1 < OUT_OF_BUCKETS_IDX,
+    static_assert(BUCKETS < OUT_OF_BUCKETS_IDX,
                   "LOOK_AHEAD must not be so large to also include '-1'");
 
     static_assert(OUT_OF_BUCKETS_IDX + 1 == 0,
@@ -122,30 +169,6 @@ namespace adiar::internal
 
     static_assert(ptr_uint64::MAX_LABEL+1 > ptr_uint64::MAX_LABEL,
                   "'ptr_uint64::label_t' should leave a window of at least one above 'MAX_LABEL'");
-
-    static constexpr ptr_uint64::label_t NO_LABEL = ptr_uint64::MAX_LABEL+1;
-
-  public:
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of the sorter for each bucket.
-    ////////////////////////////////////////////////////////////////////////////
-    typedef sorter<mem_mode, elem_t, elem_comp_t> sorter_t;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of the overflow priority queue.
-    ////////////////////////////////////////////////////////////////////////////
-    typedef priority_queue<mem_mode, elem_t, elem_comp_t> priority_queue_t;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Number of buckets.
-    ////////////////////////////////////////////////////////////////////////////
-    static constexpr size_t BUCKETS = LOOK_AHEAD + 1;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Total number of data structures in Levelized Priority Queue.
-    ////////////////////////////////////////////////////////////////////////////
-    static constexpr size_t DATA_STRUCTURES =
-      BUCKETS * sorter_t::DATA_STRUCTURES + priority_queue_t::DATA_STRUCTURES;
 
   private:
     static tpie::memory_size_type const_memory_usage()
@@ -912,31 +935,55 @@ namespace adiar::internal
   /// \brief Specialization of the levelized priority queue with a look_ahead
   ///        of '0', i.e. **without** any buckets.
   ////////////////////////////////////////////////////////////////////////////
-  template <typename elem_t,
-            typename elem_comp_t,
-            memory_mode_t mem_mode,
+  template <typename element_t,
+            typename element_comp_t,
+            memory_mode_t memory_mode,
             typename file_t,
             size_t   FILES,
             typename level_comp_t,
             ptr_uint64::label_t INIT_LEVEL
             >
-  class levelized_priority_queue<elem_t, elem_comp_t,
+  class levelized_priority_queue<element_t, element_comp_t,
                                  0u, // <--
-                                 mem_mode, file_t, FILES, level_comp_t, INIT_LEVEL>
+                                 memory_mode, file_t, FILES, level_comp_t, INIT_LEVEL>
   {
-  private:
-    static constexpr ptr_uint64::label_t NO_LABEL = ptr_uint64::MAX_LABEL+1;
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the elements.
+    ////////////////////////////////////////////////////////////////////////////
+    using elem_t = element_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Type of the element comparator.
+    ////////////////////////////////////////////////////////////////////////////
+    using elem_comp_t = element_comp_t;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of buckets.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr memory_mode_t mem_mode = memory_mode;
 
   public:
     ////////////////////////////////////////////////////////////////////////////
-    /// \brief Type of the overflow priority queue.
+    /// \brief Type of the (overflow) priority queue.
     ////////////////////////////////////////////////////////////////////////////
-    typedef priority_queue<mem_mode, elem_t, elem_comp_t> priority_queue_t;
+    using priority_queue_t = priority_queue<mem_mode, elem_t, elem_comp_t>;
+
+  public:
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Number of buckets.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr size_t BUCKETS = 0;
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Total number of data structures in Levelized Priority Queue.
     ////////////////////////////////////////////////////////////////////////////
     static constexpr size_t DATA_STRUCTURES = priority_queue_t::DATA_STRUCTURES;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// \brief Value to reflect 'out of levels'.
+    ////////////////////////////////////////////////////////////////////////////
+    static constexpr ptr_uint64::label_t NO_LABEL = ptr_uint64::MAX_LABEL+1;
 
   public:
     static tpie::memory_size_type memory_usage(tpie::memory_size_type no_elements)
