@@ -344,9 +344,10 @@ namespace adiar::internal
     // Pass all the mappings to Q
     while (has_next_red1 || has_next_red2) {
       // Find the mapping with largest old_uid
-      bool is_red1_current = !has_next_red2 ||
-                              (has_next_red1 && next_red1.old_uid > next_red2.old_uid);
-      mapping current_map = is_red1_current ? next_red1 : next_red2;
+      const bool is_red1_current = !has_next_red2
+        || (has_next_red1 && next_red1.old_uid > next_red2.old_uid);
+
+      const mapping current_map = is_red1_current ? next_red1 : next_red2;
 
       adiar_invariant(!arcs.can_pull_internal()
                       || current_map.old_uid == arcs.peek_internal().target(),
@@ -355,10 +356,12 @@ namespace adiar::internal
       // Find all arcs that have sources that match the current mapping's old_uid
       while (arcs.can_pull_internal() && current_map.old_uid == arcs.peek_internal().target()) {
         // The is_high flag is included in arc.source() pulled from node_arcs.
-        ptr_uint64 s = arcs.pull_internal().source();
+        const ptr_uint64 s = arcs.pull_internal().source();
 
         // If Reduction Rule 1 was used, then tell the parents to add to the global cut.
-        ptr_uint64 t = is_red1_current ? flag(current_map.new_uid) : current_map.new_uid;
+        const ptr_uint64 t = is_red1_current
+          ? flag(current_map.new_uid)
+          : static_cast<ptr_uint64>(current_map.new_uid);
 
         reduce_pq.push({ s,t });
       }
