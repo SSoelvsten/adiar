@@ -52,7 +52,7 @@ test:
       --reporter=info --colorizer=light
 
 #	@./build/test/$(TEST_NAME) --reporter=info --colorizer=light
-	$(MAKE) clean/file
+	$(MAKE) clean/files
 
 test/all:
 	make $(MAKE_FLAGS) test
