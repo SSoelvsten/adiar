@@ -97,6 +97,7 @@ $(document).ready(function(){initNavTree('classadiar_1_1internal_1_1ptr__uint64.
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="#pro-static-attribs">Static Protected Attributes</a> &#124;
 <a href="classadiar_1_1internal_1_1ptr__uint64-members.html">List of all members</a>  </div>
@@ -112,18 +113,22 @@ $(document).ready(function(){initNavTree('classadiar_1_1internal_1_1ptr__uint64.
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:acf80f2d0e34f7d73b3f1bba88e113dd4"><td class="memItemLeft" align="right" valign="top"><a id="acf80f2d0e34f7d73b3f1bba88e113dd4"></a>
-typedef bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#acf80f2d0e34f7d73b3f1bba88e113dd4">value_t</a></td></tr>
-<tr class="memdesc:acf80f2d0e34f7d73b3f1bba88e113dd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of terminal values. <br /></td></tr>
-<tr class="separator:acf80f2d0e34f7d73b3f1bba88e113dd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab12f58460a4fa3ebab4db869d6b7d1f9"><td class="memItemLeft" align="right" valign="top"><a id="ab12f58460a4fa3ebab4db869d6b7d1f9"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">out_idx_t</a> = uint64_t</td></tr>
+<tr class="memdesc:ab12f58460a4fa3ebab4db869d6b7d1f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the out-degree. <br /></td></tr>
+<tr class="separator:ab12f58460a4fa3ebab4db869d6b7d1f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc07ccbe6d9937def83e52b981532801"><td class="memItemLeft" align="right" valign="top"><a id="abc07ccbe6d9937def83e52b981532801"></a>
 typedef uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801">label_t</a></td></tr>
 <tr class="memdesc:abc07ccbe6d9937def83e52b981532801"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type able to hold the label of a variable. <br /></td></tr>
 <tr class="separator:abc07ccbe6d9937def83e52b981532801"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a891ab31b19a902bd716dc001d8c380a3"><td class="memItemLeft" align="right" valign="top"><a id="a891ab31b19a902bd716dc001d8c380a3"></a>
-typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a891ab31b19a902bd716dc001d8c380a3">id_t</a></td></tr>
-<tr class="memdesc:a891ab31b19a902bd716dc001d8c380a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of a level identifier. <br /></td></tr>
-<tr class="separator:a891ab31b19a902bd716dc001d8c380a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b62f3f22694bc25f208f1318b1e9543"><td class="memItemLeft" align="right" valign="top"><a id="a9b62f3f22694bc25f208f1318b1e9543"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a9b62f3f22694bc25f208f1318b1e9543">id_t</a> = uint64_t</td></tr>
+<tr class="memdesc:a9b62f3f22694bc25f208f1318b1e9543"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of a level identifier. <br /></td></tr>
+<tr class="separator:a9b62f3f22694bc25f208f1318b1e9543"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf80f2d0e34f7d73b3f1bba88e113dd4"><td class="memItemLeft" align="right" valign="top"><a id="acf80f2d0e34f7d73b3f1bba88e113dd4"></a>
+typedef bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#acf80f2d0e34f7d73b3f1bba88e113dd4">value_t</a></td></tr>
+<tr class="memdesc:acf80f2d0e34f7d73b3f1bba88e113dd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of terminal values. <br /></td></tr>
+<tr class="separator:acf80f2d0e34f7d73b3f1bba88e113dd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -138,9 +143,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ae981e272645b44d5a0e3e1ee69fc3eac">is_nil</a> () const</td></tr>
 <tr class="memdesc:ae981e272645b44d5a0e3e1ee69fc3eac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a pointer is NIL. <br /></td></tr>
 <tr class="separator:ae981e272645b44d5a0e3e1ee69fc3eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fc8650864eae064c00dd58e609a3294"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a2fc8650864eae064c00dd58e609a3294">ptr_uint64</a> (const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801">label_t</a> <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a40a6c123b0e0ebd7fd9c05f4b9ab1d4c">label</a>, const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a891ab31b19a902bd716dc001d8c380a3">id_t</a> <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab6f7e249361fd7f0e40fdcc006219f0a">id</a>)</td></tr>
-<tr class="memdesc:a2fc8650864eae064c00dd58e609a3294"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a pointer to an internal node (label, id).  <a href="classadiar_1_1internal_1_1ptr__uint64.html#a2fc8650864eae064c00dd58e609a3294">More...</a><br /></td></tr>
+<tr class="memitem:a2fc8650864eae064c00dd58e609a3294"><td class="memItemLeft" align="right" valign="top"><a id="a2fc8650864eae064c00dd58e609a3294"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a2fc8650864eae064c00dd58e609a3294">ptr_uint64</a> (const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801">label_t</a> <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a40a6c123b0e0ebd7fd9c05f4b9ab1d4c">label</a>, const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a9b62f3f22694bc25f208f1318b1e9543">id_t</a> <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab6f7e249361fd7f0e40fdcc006219f0a">id</a>)</td></tr>
+<tr class="memdesc:a2fc8650864eae064c00dd58e609a3294"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a pointer to an internal node (label, id) with weight 0. <br /></td></tr>
 <tr class="separator:a2fc8650864eae064c00dd58e609a3294"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02b3dbc38ff8bd41ed45ff214ded9bff"><td class="memItemLeft" align="right" valign="top"><a id="a02b3dbc38ff8bd41ed45ff214ded9bff"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a02b3dbc38ff8bd41ed45ff214ded9bff">ptr_uint64</a> (const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801">label_t</a> <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a40a6c123b0e0ebd7fd9c05f4b9ab1d4c">label</a>, const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a9b62f3f22694bc25f208f1318b1e9543">id_t</a> <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab6f7e249361fd7f0e40fdcc006219f0a">id</a>, const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">out_idx_t</a> <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ae578fa4d0f2cee34fcef9c2f526847fe">out_idx</a>)</td></tr>
+<tr class="memdesc:a02b3dbc38ff8bd41ed45ff214ded9bff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a pointer to an internal node (label, id) with given weight. <br /></td></tr>
+<tr class="separator:a02b3dbc38ff8bd41ed45ff214ded9bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6eb9cfae62d7ec1050f5269b46bac687"><td class="memItemLeft" align="right" valign="top"><a id="a6eb9cfae62d7ec1050f5269b46bac687"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a6eb9cfae62d7ec1050f5269b46bac687">is_node</a> () const</td></tr>
 <tr class="memdesc:a6eb9cfae62d7ec1050f5269b46bac687"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a pointer is for an internal node (label, id). <br /></td></tr>
@@ -148,9 +158,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a40a6c123b0e0ebd7fd9c05f4b9ab1d4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801">label_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a40a6c123b0e0ebd7fd9c05f4b9ab1d4c">label</a> () const</td></tr>
 <tr class="memdesc:a40a6c123b0e0ebd7fd9c05f4b9ab1d4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the label from an internal node (label, id).  <a href="classadiar_1_1internal_1_1ptr__uint64.html#a40a6c123b0e0ebd7fd9c05f4b9ab1d4c">More...</a><br /></td></tr>
 <tr class="separator:a40a6c123b0e0ebd7fd9c05f4b9ab1d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6f7e249361fd7f0e40fdcc006219f0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a891ab31b19a902bd716dc001d8c380a3">id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab6f7e249361fd7f0e40fdcc006219f0a">id</a> () const</td></tr>
+<tr class="memitem:ab6f7e249361fd7f0e40fdcc006219f0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a9b62f3f22694bc25f208f1318b1e9543">id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab6f7e249361fd7f0e40fdcc006219f0a">id</a> () const</td></tr>
 <tr class="memdesc:ab6f7e249361fd7f0e40fdcc006219f0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the level identifier from an internal node (label, id).  <a href="classadiar_1_1internal_1_1ptr__uint64.html#ab6f7e249361fd7f0e40fdcc006219f0a">More...</a><br /></td></tr>
 <tr class="separator:ab6f7e249361fd7f0e40fdcc006219f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae578fa4d0f2cee34fcef9c2f526847fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">out_idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ae578fa4d0f2cee34fcef9c2f526847fe">out_idx</a> () const</td></tr>
+<tr class="memdesc:ae578fa4d0f2cee34fcef9c2f526847fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract the out-index associated with this pointer.  <a href="classadiar_1_1internal_1_1ptr__uint64.html#ae578fa4d0f2cee34fcef9c2f526847fe">More...</a><br /></td></tr>
+<tr class="separator:ae578fa4d0f2cee34fcef9c2f526847fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e855a9d11f58081825ca214fe68388e"><td class="memItemLeft" align="right" valign="top"><a id="a4e855a9d11f58081825ca214fe68388e"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a4e855a9d11f58081825ca214fe68388e">ptr_uint64</a> (const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#acf80f2d0e34f7d73b3f1bba88e113dd4">value_t</a> v)</td></tr>
 <tr class="memdesc:a4e855a9d11f58081825ca214fe68388e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a pointer to a terminal node (v). <br /></td></tr>
@@ -213,12 +226,23 @@ Static Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
+<tr class="memitem:aff6330154a8dd505d17bf466364ccf23"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#aff6330154a8dd505d17bf466364ccf23">OUTDEGREE</a> = 2u</td></tr>
+<tr class="memdesc:aff6330154a8dd505d17bf466364ccf23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of out-going edges from a node.  <a href="classadiar_1_1internal_1_1ptr__uint64.html#aff6330154a8dd505d17bf466364ccf23">More...</a><br /></td></tr>
+<tr class="separator:aff6330154a8dd505d17bf466364ccf23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaa9907fe2e75979bde00e9e67bf038e"><td class="memItemLeft" align="right" valign="top"><a id="afaa9907fe2e75979bde00e9e67bf038e"></a>
+static constexpr <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">out_idx_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#afaa9907fe2e75979bde00e9e67bf038e">MAX_OUT_IDX</a> = <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#aff6330154a8dd505d17bf466364ccf23">OUTDEGREE</a> - 1</td></tr>
+<tr class="memdesc:afaa9907fe2e75979bde00e9e67bf038e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The maximal possible value for the out index. <br /></td></tr>
+<tr class="separator:afaa9907fe2e75979bde00e9e67bf038e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0c52b3f27002001e918af102ac1a2db"><td class="memItemLeft" align="right" valign="top"><a id="af0c52b3f27002001e918af102ac1a2db"></a>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#af0c52b3f27002001e918af102ac1a2db">OUT_IDX_BITS</a> = log2(<a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#afaa9907fe2e75979bde00e9e67bf038e">MAX_OUT_IDX</a>)</td></tr>
+<tr class="memdesc:af0c52b3f27002001e918af102ac1a2db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of bits used to store the out0index. <br /></td></tr>
+<tr class="separator:af0c52b3f27002001e918af102ac1a2db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a54bbe1bad49e25d550829036354f0f"><td class="memItemLeft" align="right" valign="top"><a id="a2a54bbe1bad49e25d550829036354f0f"></a>
 static constexpr <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801">label_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a2a54bbe1bad49e25d550829036354f0f">MAX_LABEL</a> = (1ull &lt;&lt; LABEL_BITS) - 1</td></tr>
 <tr class="memdesc:a2a54bbe1bad49e25d550829036354f0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The maximal possible value for a unique identifier's label. <br /></td></tr>
 <tr class="separator:a2a54bbe1bad49e25d550829036354f0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a325ed1710fc09d1bea2bad990f04ca22"><td class="memItemLeft" align="right" valign="top"><a id="a325ed1710fc09d1bea2bad990f04ca22"></a>
-static constexpr <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a891ab31b19a902bd716dc001d8c380a3">id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a325ed1710fc09d1bea2bad990f04ca22">MAX_ID</a> = (1ull &lt;&lt; ID_BITS) - 1</td></tr>
+static constexpr <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a9b62f3f22694bc25f208f1318b1e9543">id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a325ed1710fc09d1bea2bad990f04ca22">MAX_ID</a> = (1ull &lt;&lt; ID_BITS) - 1</td></tr>
 <tr class="memdesc:a325ed1710fc09d1bea2bad990f04ca22"><td class="mdescLeft">&#160;</td><td class="mdescRight">The maximal possible value for a level identifier. <br /></td></tr>
 <tr class="separator:a325ed1710fc09d1bea2bad990f04ca22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -228,6 +252,17 @@ Protected Member Functions</h2></td></tr>
 constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>ptr_uint64</b> (const uint64_t raw)</td></tr>
 <tr class="separator:a3da002e962d0b720faddd3b4f1cd71b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
+Static Protected Member Functions</h2></td></tr>
+<tr class="memitem:ab3727fdddfbfe90c9a36a51c6c2ed42f"><td class="memItemLeft" align="right" valign="top">static uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab3727fdddfbfe90c9a36a51c6c2ed42f">encode_label</a> (const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801">label_t</a> <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a40a6c123b0e0ebd7fd9c05f4b9ab1d4c">label</a>)</td></tr>
+<tr class="separator:ab3727fdddfbfe90c9a36a51c6c2ed42f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10f5e00332e2aba6fda85b72957ab4fd"><td class="memItemLeft" align="right" valign="top"><a id="a10f5e00332e2aba6fda85b72957ab4fd"></a>
+static uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>encode_id</b> (const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a9b62f3f22694bc25f208f1318b1e9543">id_t</a> <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab6f7e249361fd7f0e40fdcc006219f0a">id</a>)</td></tr>
+<tr class="separator:a10f5e00332e2aba6fda85b72957ab4fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a280f07096c0e357c4bca41db08adaa32"><td class="memItemLeft" align="right" valign="top"><a id="a280f07096c0e357c4bca41db08adaa32"></a>
+static uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>encode_out_idx</b> (const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">out_idx_t</a> <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ae578fa4d0f2cee34fcef9c2f526847fe">out_idx</a>)</td></tr>
+<tr class="separator:a280f07096c0e357c4bca41db08adaa32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:ac64a28c9b65ba155c6ef4a70f9d8a87c"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ac64a28c9b65ba155c6ef4a70f9d8a87c">_raw</a></td></tr>
@@ -235,16 +270,31 @@ Protected Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-attribs"></a>
 Static Protected Attributes</h2></td></tr>
+<tr class="memitem:a0911676e9f1e7dccc885267882055c48"><td class="memItemLeft" align="right" valign="top"><a id="a0911676e9f1e7dccc885267882055c48"></a>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a0911676e9f1e7dccc885267882055c48">TOTAL_BITS</a> = sizeof(uint64_t)*8u</td></tr>
+<tr class="memdesc:a0911676e9f1e7dccc885267882055c48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of bits. <br /></td></tr>
+<tr class="separator:a0911676e9f1e7dccc885267882055c48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a020eaf5637fe491c7c257735accd7080"><td class="memItemLeft" align="right" valign="top"><a id="a020eaf5637fe491c7c257735accd7080"></a>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a020eaf5637fe491c7c257735accd7080">FLAG_BITS</a> = 1u</td></tr>
+<tr class="memdesc:a020eaf5637fe491c7c257735accd7080"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of flags. <br /></td></tr>
+<tr class="separator:a020eaf5637fe491c7c257735accd7080"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09c1d43b919b71c8c5f1bb7a8bc830c7"><td class="memItemLeft" align="right" valign="top"><a id="a09c1d43b919b71c8c5f1bb7a8bc830c7"></a>
+static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a09c1d43b919b71c8c5f1bb7a8bc830c7">FLAG_MASK</a> = 0x0000000000000001ull</td></tr>
+<tr class="memdesc:a09c1d43b919b71c8c5f1bb7a8bc830c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic bit-flag. <br /></td></tr>
+<tr class="separator:a09c1d43b919b71c8c5f1bb7a8bc830c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55e5102eede8780b005432ed38517f5f"><td class="memItemLeft" align="right" valign="top"><a id="a55e5102eede8780b005432ed38517f5f"></a>
-static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a55e5102eede8780b005432ed38517f5f">FLAG_BIT</a> = 0x0000000000000001ull</td></tr>
+static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a55e5102eede8780b005432ed38517f5f">FLAG_BIT</a> = <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a09c1d43b919b71c8c5f1bb7a8bc830c7">FLAG_MASK</a></td></tr>
 <tr class="memdesc:a55e5102eede8780b005432ed38517f5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic bit-flag. <br /></td></tr>
 <tr class="separator:a55e5102eede8780b005432ed38517f5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae096f179af0b53e6b4f14144f3138773"><td class="memItemLeft" align="right" valign="top"><a id="ae096f179af0b53e6b4f14144f3138773"></a>
-static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>NIL_VAL</b> = UINT64_MAX - 1</td></tr>
+<tr class="memitem:ae096f179af0b53e6b4f14144f3138773"><td class="memItemLeft" align="right" valign="top">static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>NIL_VAL</b></td></tr>
 <tr class="separator:ae096f179af0b53e6b4f14144f3138773"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93f6ad1148c45cb234f3008b6140b00e"><td class="memItemLeft" align="right" valign="top">static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a93f6ad1148c45cb234f3008b6140b00e">TERMINAL_BIT</a> = 0x8000000000000000ull</td></tr>
 <tr class="memdesc:a93f6ad1148c45cb234f3008b6140b00e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminal bit-flag.  <a href="classadiar_1_1internal_1_1ptr__uint64.html#a93f6ad1148c45cb234f3008b6140b00e">More...</a><br /></td></tr>
 <tr class="separator:a93f6ad1148c45cb234f3008b6140b00e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d45a69003e91d4bf053061f1dc2dd56"><td class="memItemLeft" align="right" valign="top"><a id="a7d45a69003e91d4bf053061f1dc2dd56"></a>
+static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a7d45a69003e91d4bf053061f1dc2dd56">VALUE_MASK</a> = 0x0000000000000002ull</td></tr>
+<tr class="memdesc:a7d45a69003e91d4bf053061f1dc2dd56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminal bit-flag mask. <br /></td></tr>
+<tr class="separator:a7d45a69003e91d4bf053061f1dc2dd56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A (possibly flagged) unique identifier of a terminal, an internal node, or nothing (<code>NIL</code>). </p>
@@ -252,9 +302,9 @@ static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 <dd>
 A pointer may be flagged. For an arc's source this marks the arc being a 'high' rather than a 'low' arc.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd>uid_t </dd></dl>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a2fc8650864eae064c00dd58e609a3294"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2fc8650864eae064c00dd58e609a3294">&#9670;&nbsp;</a></span>ptr_uint64()</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ab3727fdddfbfe90c9a36a51c6c2ed42f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3727fdddfbfe90c9a36a51c6c2ed42f">&#9670;&nbsp;</a></span>encode_label()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -263,43 +313,31 @@ A pointer may be flagged. For an arc's source this marks the arc being a 'high' 
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">adiar::internal::ptr_uint64::ptr_uint64 </td>
+          <td class="memname">static uint64_t adiar::internal::ptr_uint64::encode_label </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801">label_t</a>&#160;</td>
-          <td class="paramname"><em>label</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>label</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a891ab31b19a902bd716dc001d8c380a3">id_t</a>&#160;</td>
-          <td class="paramname"><em>id</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Constructor for a pointer to an internal node (label, id). </p>
 <p>When the <code>is_node</code> flag is true, then it is a pointer to a node, which is identifiable by two variables:</p>
 <ul>
-<li>L : the variable label. For nodes n1 and n2 with n1.label &lt; n2.label, we guarantee that n1 comes before n2 in the stream reading order.</li>
-<li>I : a unique identifier for the nodes on the same level. For nodes n1 and n2 with n1.label == n2.label but n1.id &lt; n2.id, we guarantee that n1 comes before n2 in the stream reading order.</li>
+<li><code>L</code> : the variable label. For nodes n1 and n2 with n1.label &lt; n2.label, we guarantee that n1 comes before n2 in the stream reading order.</li>
+<li><code>I</code> : a unique identifier for the nodes on the same level. For nodes n1 and n2 with n1.label == n2.label but n1.id &lt; n2.id, we guarantee that n1 comes before n2 in the stream reading order.</li>
+<li><code>O</code> : bit with the out-index (used in <code>arc</code>).</li>
 </ul>
-<p>These are spaced out in the middle area as follows</p>
-<p>| S | LLLLLLLLLLLLLLLLLLLL | IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII | F |</p>
-<p>That means that nodes are to be sorted first by their label, and then by their level-identifier. </p>
+<p>These are spaced out in the middle area as follows (out-degree: 1)</p>
+<p><code>SLLLLLLLLLLLLLLLLLLLLLLLLIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIOF</code></p>
+<p>That means that nodes are to be sorted first by their label, then by their level-identifier, and finally by their . </p>
 
 </div>
 </div>
-<h2 class="groupheader">Member Function Documentation</h2>
 <a id="ab6f7e249361fd7f0e40fdcc006219f0a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab6f7e249361fd7f0e40fdcc006219f0a">&#9670;&nbsp;</a></span>id()</h2>
 
@@ -310,7 +348,7 @@ A pointer may be flagged. For an arc's source this marks the arc being a 'high' 
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a891ab31b19a902bd716dc001d8c380a3">id_t</a> adiar::internal::ptr_uint64::id </td>
+          <td class="memname"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a9b62f3f22694bc25f208f1318b1e9543">id_t</a> adiar::internal::ptr_uint64::id </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -500,6 +538,35 @@ A pointer may be flagged. For an arc's source this marks the arc being a 'high' 
 
 </div>
 </div>
+<a id="ae578fa4d0f2cee34fcef9c2f526847fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae578fa4d0f2cee34fcef9c2f526847fe">&#9670;&nbsp;</a></span>out_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9">out_idx_t</a> adiar::internal::ptr_uint64::out_idx </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Extract the out-index associated with this pointer. </p>
+<dl class="section pre"><dt>Precondition</dt><dd><code><a class="el" href="classadiar_1_1internal_1_1ptr__uint64.html#a6eb9cfae62d7ec1050f5269b46bac687" title="Whether a pointer is for an internal node (label, id).">is_node()</a></code> evaluates to <code>true.</code></dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classadiar_1_1internal_1_1arc.html" title="An arc from some source to a target.">arc</a> </dd></dl>
+
+</div>
+</div>
 <a id="a1f22f4488d0e954f5b32c6c3ade9d659"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1f22f4488d0e954f5b32c6c3ade9d659">&#9670;&nbsp;</a></span>value()</h2>
 
@@ -549,14 +616,64 @@ A pointer may be flagged. For an arc's source this marks the arc being a 'high' 
 </table>
 </div><div class="memdoc">
 <p>To condense almost everything down to mere integer comparisons we reserve specific parts of a single 64 bit unsigned integer to different variables.</p>
-<p>| S | ???????????????????????????????????????????????????? | F |</p>
+<p><code>S______________________________________________________________F</code></p>
 <p>Where these three parts represent the following variables:</p>
 <ul>
-<li>S : the is_terminal flag. If the terminal flag is set, the L and I areas differ (see below for the terminal type description).</li>
-<li>? : The layout of these 62 bits change based on whether it describes a terminal, an internal node, or NIL.</li>
-<li>F : A boolean flag. This is currently only used in arcs to identify high and low arcs (see below).</li>
+<li><code>S</code> : the is_terminal flag. If the terminal flag is set, the contents of the middle areas differ (see below).</li>
+<li><code>_</code> : The layout of these 62 bits change based on whether it describes a terminal, an internal node, or NIL.</li>
+<li><code>F</code> : A boolean flag. This is currently only used in arcs to identify high and low arcs (see below).</li>
 </ul>
 <p>We ensure, that the S and ? areas combined uniquely identify all terminals and nodes. We also notice, that sorting these pointers directly enforce terminal pointers are sorted after nodes. Finally, two pointers for the same uid will finally be sorted by the flag. </p>
+
+</div>
+</div>
+<a id="ae096f179af0b53e6b4f14144f3138773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae096f179af0b53e6b4f14144f3138773">&#9670;&nbsp;</a></span>NIL_VAL</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint64_t adiar::internal::ptr_uint64::NIL_VAL</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">      std::numeric_limits&lt;uint64_t&gt;::max() ^ <a class="code" href="classadiar_1_1internal_1_1ptr__uint64.html#a09c1d43b919b71c8c5f1bb7a8bc830c7">FLAG_MASK</a></div>
+<div class="ttc" id="aclassadiar_1_1internal_1_1ptr__uint64_html_a09c1d43b919b71c8c5f1bb7a8bc830c7"><div class="ttname"><a href="classadiar_1_1internal_1_1ptr__uint64.html#a09c1d43b919b71c8c5f1bb7a8bc830c7">adiar::internal::ptr_uint64::FLAG_MASK</a></div><div class="ttdeci">static constexpr uint64_t FLAG_MASK</div><div class="ttdoc">Generic bit-flag.</div><div class="ttdef"><b>Definition:</b> ptr.h:121</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aff6330154a8dd505d17bf466364ccf23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff6330154a8dd505d17bf466364ccf23">&#9670;&nbsp;</a></span>OUTDEGREE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t adiar::internal::ptr_uint64::OUTDEGREE = 2u</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of out-going edges from a node. </p>
+<p>As this 'ptr' class is used within the <code>arc</code> class, we need to store somewhere which index the arc is part of the node. To save on space, we reserve some of the bits. </p>
 
 </div>
 </div>
@@ -581,8 +698,9 @@ A pointer may be flagged. For an arc's source this marks the arc being a 'high' 
 </div><div class="memdoc">
 
 <p>Terminal bit-flag. </p>
-<p>When the terminal flag is set, then we interpret the middle bits as the value of the terminal. </p><pre class="fragment">| S | VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV | F |
-</pre><p> Notice, that this means we will never have to actually visit to retrieve its value. That is, the only time a terminal has to be explicitly represented as a node is when the BDD only consists of said terminal. </p>
+<p>When the terminal flag is set, then we interpret the middle bits as the value of the terminal.</p>
+<p><code>SVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVF</code></p>
+<p>Notice, that this means we will never have to actually visit the terminal node to retrieve its value. That is, the only time a terminal has to be explicitly represented as a node is when the BDD only consists of said terminal. </p>
 
 </div>
 </div>

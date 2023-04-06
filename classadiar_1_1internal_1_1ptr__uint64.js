@@ -1,13 +1,15 @@
 var classadiar_1_1internal_1_1ptr__uint64 =
 [
-    [ "id_t", "classadiar_1_1internal_1_1ptr__uint64.html#a891ab31b19a902bd716dc001d8c380a3", null ],
+    [ "id_t", "classadiar_1_1internal_1_1ptr__uint64.html#a9b62f3f22694bc25f208f1318b1e9543", null ],
     [ "label_t", "classadiar_1_1internal_1_1ptr__uint64.html#abc07ccbe6d9937def83e52b981532801", null ],
+    [ "out_idx_t", "classadiar_1_1internal_1_1ptr__uint64.html#ab12f58460a4fa3ebab4db869d6b7d1f9", null ],
     [ "value_t", "classadiar_1_1internal_1_1ptr__uint64.html#acf80f2d0e34f7d73b3f1bba88e113dd4", null ],
     [ "ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html#afa92916d54da667c6fe5c74d14221950", null ],
     [ "ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html#a9c5ea297992ec61b44d828a53a498ae2", null ],
     [ "~ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html#a7e8a1e21c7438ad41fc94a8bc0f41e3e", null ],
     [ "ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html#a3da002e962d0b720faddd3b4f1cd71b0", null ],
     [ "ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html#a2fc8650864eae064c00dd58e609a3294", null ],
+    [ "ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html#a02b3dbc38ff8bd41ed45ff214ded9bff", null ],
     [ "ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html#a4e855a9d11f58081825ca214fe68388e", null ],
     [ "id", "classadiar_1_1internal_1_1ptr__uint64.html#ab6f7e249361fd7f0e40fdcc006219f0a", null ],
     [ "is_false", "classadiar_1_1internal_1_1ptr__uint64.html#a823a8b91d61475ad5f6b35808f9317f8", null ],
@@ -28,10 +30,14 @@ var classadiar_1_1internal_1_1ptr__uint64 =
     [ "operator^", "classadiar_1_1internal_1_1ptr__uint64.html#a7fdf584b8d911c8c1bafb433c34c427d", null ],
     [ "operator|", "classadiar_1_1internal_1_1ptr__uint64.html#a83842c5cf39bb89cb874f2e756c7cd2a", null ],
     [ "operator~", "classadiar_1_1internal_1_1ptr__uint64.html#a4c87ba06b40bd54466082853d9bbd3d5", null ],
+    [ "out_idx", "classadiar_1_1internal_1_1ptr__uint64.html#ae578fa4d0f2cee34fcef9c2f526847fe", null ],
     [ "value", "classadiar_1_1internal_1_1ptr__uint64.html#a1f22f4488d0e954f5b32c6c3ade9d659", null ],
+    [ "__uid", "classadiar_1_1internal_1_1ptr__uint64.html#a8087940f18dfd770eb5f4fdf606cdc1c", null ],
+    [ "essential", "classadiar_1_1internal_1_1ptr__uint64.html#aa274437eccc7f852ef04536d4e49cdd1", null ],
     [ "flag", "classadiar_1_1internal_1_1ptr__uint64.html#a7c3eaace72a833c379094d3f8d98a2b8", null ],
     [ "negate", "classadiar_1_1internal_1_1ptr__uint64.html#aeabd021bee17e9b07cc3ae1cee25ea8f", null ],
     [ "output_dot", "classadiar_1_1internal_1_1ptr__uint64.html#a56b3a704b4dd2098061a570261956c6c", null ],
     [ "unflag", "classadiar_1_1internal_1_1ptr__uint64.html#ae7f8d4267d296ee137408ed6681693ad", null ],
+    [ "with_out_idx", "classadiar_1_1internal_1_1ptr__uint64.html#ab538662856232f31c6de281c806b688b", null ],
     [ "_raw", "classadiar_1_1internal_1_1ptr__uint64.html#ac64a28c9b65ba155c6ef4a70f9d8a87c", null ]
 ];

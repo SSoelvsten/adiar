@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['xnor_5fop_587',['xnor_op',['../namespaceadiar.html#ae956ef704feace706586a391d3cc0d91',1,'adiar']]],
-  ['xor_5fop_588',['xor_op',['../namespaceadiar.html#af4f487e39dded71f30fc122939acdbdd',1,'adiar']]]
+  ['value_5fmask_607',['VALUE_MASK',['../classadiar_1_1internal_1_1ptr__uint64.html#a7d45a69003e91d4bf053061f1dc2dd56',1,'adiar::internal::ptr_uint64']]]
 ];

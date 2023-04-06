@@ -10,5 +10,8 @@ var classadiar_1_1internal_1_1____uid =
     [ "is_flagged", "classadiar_1_1internal_1_1____uid.html#af4a784fa34dfa7ad801216a15ca40260", null ],
     [ "is_nil", "classadiar_1_1internal_1_1____uid.html#add1f33ef6a64a4834b03376fb8f73b37", null ],
     [ "is_terminal", "classadiar_1_1internal_1_1____uid.html#a7f69cf866bc5026161f0a924f764b5af", null ],
-    [ "is_terminal", "classadiar_1_1internal_1_1____uid.html#aa2a8745d64f5e2141f2a48e7239d7d3d", null ]
+    [ "is_terminal", "classadiar_1_1internal_1_1____uid.html#aa2a8745d64f5e2141f2a48e7239d7d3d", null ],
+    [ "out_idx", "classadiar_1_1internal_1_1____uid.html#ad80c7a31d66ed30b465dbfb23d8a077a", null ],
+    [ "with", "classadiar_1_1internal_1_1____uid.html#a78bf7b452bda837c4fdde75e73bb3860", null ],
+    [ "with", "classadiar_1_1internal_1_1____uid.html#ae735cb3bb6f09b8028317e15095dff1c", null ]
 ];

@@ -939,7 +939,7 @@ template&lt;typename elem_t &gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= [](<span class="keyword">const</span> internal::ptr_uint64 &amp;terminal1, <span class="keyword">const</span> internal::ptr_uint64 &amp;terminal2) -&gt; internal::uid_uint64</div>
 <div class="line">  {</div>
-<div class="line">    <span class="keywordflow">return</span> unflag(terminal1 &amp; terminal2);</div>
+<div class="line">    <span class="keywordflow">return</span> essential(terminal1 &amp; terminal2);</div>
 <div class="line">  }</div>
 </div><!-- fragment -->
 <p>Logical 'and' operator, i.e. the truth table: [1,0,0,0]. </p>
@@ -980,7 +980,7 @@ template&lt;typename elem_t &gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= [](<span class="keyword">const</span> internal::ptr_uint64 &amp;terminal1, <span class="keyword">const</span> internal::ptr_uint64 &amp;terminal2) -&gt; internal::uid_uint64</div>
 <div class="line">  {</div>
-<div class="line">    <span class="keywordflow">return</span> internal::ptr_uint64(unflag(terminal1) &lt;= unflag(terminal2));</div>
+<div class="line">    <span class="keywordflow">return</span> internal::ptr_uint64(essential(terminal1) &lt;= essential(terminal2));</div>
 <div class="line">  }</div>
 </div><!-- fragment -->
 <p>Logical 'implication' operator, i.e. the truth table: [1,0,1,1]. </p>
@@ -1000,7 +1000,7 @@ template&lt;typename elem_t &gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= [](<span class="keyword">const</span> internal::ptr_uint64 &amp;terminal1, <span class="keyword">const</span> internal::ptr_uint64 &amp;terminal2) -&gt; internal::ptr_uint64</div>
 <div class="line">  {</div>
-<div class="line">    <span class="keywordflow">return</span> internal::ptr_uint64(unflag(terminal2) &lt;= unflag(terminal1));</div>
+<div class="line">    <span class="keywordflow">return</span> internal::ptr_uint64(essential(terminal2) &lt;= essential(terminal1));</div>
 <div class="line">  }</div>
 </div><!-- fragment -->
 <p>Logical 'implication' operator, i.e. the truth table: [1,1,0,1]. </p>
@@ -1081,7 +1081,7 @@ template&lt;typename elem_t &gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= [](<span class="keyword">const</span> internal::ptr_uint64 &amp;terminal1, <span class="keyword">const</span> internal::ptr_uint64 &amp;terminal2) -&gt; internal::uid_uint64</div>
 <div class="line">  {</div>
-<div class="line">    <span class="keywordflow">return</span> unflag(terminal1 | terminal2);</div>
+<div class="line">    <span class="keywordflow">return</span> essential(terminal1 | terminal2);</div>
 <div class="line">  }</div>
 </div><!-- fragment -->
 <p>Logical 'or' operator, i.e. the truth table: [1,1,1,0]. </p>
@@ -1122,7 +1122,7 @@ template&lt;typename elem_t &gt; </div>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= [](<span class="keyword">const</span> internal::ptr_uint64 &amp;terminal1, <span class="keyword">const</span> internal::ptr_uint64 &amp;terminal2) -&gt; internal::uid_uint64</div>
 <div class="line">  {</div>
-<div class="line">    <span class="keywordflow">return</span> unflag(terminal1 ^ terminal2);</div>
+<div class="line">    <span class="keywordflow">return</span> essential(terminal1 ^ terminal2);</div>
 <div class="line">  }</div>
 </div><!-- fragment -->
 <p>Logical 'xor' operator, i.e. the truth table: [0,1,1,0]. </p>
