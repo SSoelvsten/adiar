@@ -39,13 +39,16 @@ digraph builder_example {
   n0 -> n2 [style=dashed]
   n0 -> n1 [style=solid]
 
-  n1 -> t0 [style=dashed]
+  n1 -> n2 [style=dashed]
   n1 -> t1 [style=solid]
 
   n2 -> t0 [style=dashed]
   n2 -> t1 [style=solid]
-
-  n1 -> n2 [style=invis]
+  
+  { rank=same; n0 }
+  { rank=same; n1 }
+  { rank=same; n2 }
+  { rank=same; t0 t1 }
 }
 \enddot
 
@@ -56,7 +59,7 @@ for all its member functions) as follows.
 bdd_builder b;
 
 const bdd_ptr p2 = b.add_node(2, false, true);
-const bdd_ptr p1 = b.add_node(1, false, true);
+const bdd_ptr p1 = b.add_node(1, p2, true);
 const bdd_ptr p0 = b.add_node(0, p2, p1);
 
 bdd example_a = b.build();
