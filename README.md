@@ -73,20 +73,20 @@ git submodule update --init --recursive
 ```
 
 Other dependencies that we cannot provide as a submodule are shown below. The
-_ticked_ dependencies are mandatory to install.
+_ticked_ dependencies are mandatory to have installed.
 
-- [x] **CMake** and a **C++ compiler**
+- [x] **CMake** (3.21+) and a **C++ compiler** (C++17)
 
-  One also needs a _C++_ compiler that supports the _17_ standard and _CMake_.
-  All development has currently been with the _gcc_ compiler, so we cannot
-  guarantee other compilers will work out-of-the-box.
+  Adiar compiles with the *GNU*, *Clang*, and *MSVC* C++ compilers. We do not
+  monitor compatibility with other compilers, so we cannot guarantee they will
+  work out-of-the-box.
 
-- [x] **Boost**
+- [x] **Boost** (1.74.0+)
 
   Furthermore, TPIE has a dependency on the [Boost](https://www.boost.org/)
   Library.
 
-- [ ] **Doxygen**
+- [ ] **Doxygen** (1.8.0+)
 
   The documentation is created with the [Doxygen](https://www.doxygen.nl/)
   documentation generator.
@@ -97,14 +97,14 @@ _ticked_ dependencies are mandatory to install.
   output as
   [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) files.
   These can then be turned into a graphical representation by use of a number of
-  tools, such as _graphviz_.
+  tools, such as _graphviz_ (2.40+).
 
 To install all of the above then run the respective below.
 
 | Operating System | Shell command                                                 |
 |------------------|---------------------------------------------------------------|
-| Ubuntu 18+       | `apt install cmake g++     libboost-all-dev doxygen graphviz` |
-| Fedora 35+       | `dnf install cmake gcc-c++ boost-devel      doxygen graphviz` |
+| Ubuntu 22+       | `apt install cmake g++     libboost-all-dev doxygen graphviz` |
+| Fedora 36+       | `dnf install cmake gcc-c++ boost-devel      doxygen graphviz` |
 
 ## Usage
 
