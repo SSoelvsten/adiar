@@ -176,4 +176,15 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   VERSION ${PROJECT_VERSION}
 )
 
+# Include Interprocedural Optimisations, if requested and possible
+if (ADIAR_IPO)
+	include(CheckIPOSupported)
+	check_ipo_supported(RESULT ipo_result OUTPUT ipo_output)
+	if(ipo_result)
+	  set_property(TARGET adiar PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	else()
+	  message(WARNING "IPO is not supported: ${ipo_output}")
+	endif()
+endif(ADIAR_IPO)
+ 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

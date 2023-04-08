@@ -34,6 +34,13 @@ message(VERBOSE "    EXE Linker Flags:       ${CMAKE_EXE_LINKER_FLAGS}")
 
 message(STATUS "  Library Options:")
 
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+	option(ADIAR_IPO "Enable Interprocedural Optimisations (IPO)" ON)
+else ()
+	option(ADIAR_IPO "Enable Interprocedural Optimisations (IPO)" OFF)
+endif()
+message(STATUS "  | IPO:                     ${ADIAR_IPO}")
+
 option(ADIAR_SHARED "Build adiar as a shared library" OFF)
 message(STATUS "  | Shared:                  ${ADIAR_SHARED}")
 
