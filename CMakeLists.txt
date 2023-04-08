@@ -42,13 +42,13 @@ message(STATUS "  | Statistics:              ${ADIAR_STATS}")
 
 message(STATUS "  Optional targets:")
 
-option(ADIAR_DOCS "Build Documentation for Adiar" ON)
+option(ADIAR_DOCS "Create target for Adiar's documentation" ${PROJECT_IS_TOP_LEVEL})
 message(STATUS "  | Documentation (Doxygen): ${ADIAR_DOCS}")
 
-option(ADIAR_TEST "Build unit tests for adiar" ${PROJECT_IS_TOP_LEVEL})
+option(ADIAR_TEST "Create target for Adiar's unit tests" ${PROJECT_IS_TOP_LEVEL})
 message(STATUS "  | Unit Tests:              ${ADIAR_TEST}")
 
-option(ADIAR_EXAMPLES "Build examples for usage of adiar" ${PROJECT_IS_TOP_LEVEL})
+option(ADIAR_EXAMPLES "Create targets for Adiar's examples" ${PROJECT_IS_TOP_LEVEL})
 message(STATUS "  | Examples:                ${ADIAR_EXAMPLES}")
 
 message(STATUS "")
