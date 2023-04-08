@@ -23,7 +23,7 @@ build/shared:
 clean/files:
 	@rm -rf *.tpie
 	@rm -rf *.adiar*
-	@rm -rf *.dot
+	@rm -rf *.dot*
 
 clean: | clean/files
 	@rm -r -f build/
