@@ -170,6 +170,10 @@ go_bandit([]() {
         AssertThat(x0_and_x1, Is().EqualTo(other));
       });
 
+      // TODO: remove access mode setup
+      // Setup access mode
+      access_mode = access_mode_t::PQ;
+
       it("should compute x0 & x1", [&]() {
         AssertThat(x0_and_x1 == (x0 & x1), Is().True());
       });
@@ -233,6 +237,10 @@ go_bandit([]() {
         AssertThat((x0 | x1) == ((x0 & x1) | (~x0 & x1)), Is().False());
         AssertThat((x0 | x1) != ((x0 & x1) | (~x0 & x1)), Is().True());
       });
+
+      // TODO: remove access mode setup
+      // Reset access mode
+      access_mode = access_mode_t::AUTO;
     });
 
     describe("terminal predicates", [&]() {

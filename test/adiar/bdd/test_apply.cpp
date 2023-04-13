@@ -1,7 +1,10 @@
 #include "../../test.h"
 
 go_bandit([]() {
-  describe("adiar/bdd/apply.cpp", []() {
+  describe("adiar/bdd/apply.cpp [priority queues]", []() {
+    // Set access mode to priority queues for this batch of tests
+    access_mode = access_mode_t::PQ;
+
     shared_levelized_file<bdd::node_t> bdd_F;
     shared_levelized_file<bdd::node_t> bdd_T;
 
@@ -1340,5 +1343,17 @@ go_bandit([]() {
     describe("bdd_less(f,g)", [&]() {
       // TODO
     });
+
+    // Reset access mode
+    access_mode = access_mode_t::AUTO;
+  });
+
+  describe("adiar/bdd/apply.cpp [random access]", []() {
+    // Set access mode to random access for this batch of tests
+    access_mode = access_mode_t::RA;
+    // TODO
+
+    // Reset access mode
+    access_mode = access_mode_t::AUTO;
   });
  });

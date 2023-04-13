@@ -1,7 +1,10 @@
 #include "../../test.h"
 
 go_bandit([]() {
-  describe("adiar/zdd/binop.cpp", []() {
+  describe("adiar/zdd/binop.cpp [priority queues]", []() {
+    // Set access mode to priority queues for this batch of tests
+    access_mode = access_mode_t::PQ;
+
     shared_levelized_file<zdd::node_t> zdd_F;
     shared_levelized_file<zdd::node_t> zdd_T;
 
@@ -1513,5 +1516,16 @@ go_bandit([]() {
         AssertThat(out.get<__zdd::shared_arcs_t>()->number_of_terminals[true],  Is().EqualTo(2u));
       });
     });
+
+    // Reset access mode
+    access_mode = access_mode_t::AUTO;
+  });
+ 
+  describe("adiar/zdd/binop.cpp [random access]", []() {
+    // Set access mode to random access for this batch of tests
+    access_mode = access_mode_t::RA;
+
+    // Reset access mode
+    access_mode = access_mode_t::AUTO;
   });
  });
