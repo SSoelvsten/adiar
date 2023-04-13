@@ -11,6 +11,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Core
+#include <adiar/access_mode.h>
 #include <adiar/assignment.h>
 #include <adiar/builder.h>
 #include <adiar/cube.h>
