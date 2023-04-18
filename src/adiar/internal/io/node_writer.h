@@ -98,9 +98,7 @@ namespace adiar::internal
       levelized_file_writer::attach(f);
 
       //Reset all meta-data
-      _latest_node = node(node::uid_t(0, 0),
-                                    node::ptr_t::NIL(),
-                                    node::ptr_t::NIL());
+      _latest_node = dummy();
 
       _canonical = true;
 
