@@ -173,6 +173,17 @@ namespace adiar
 
     return op(terminal_T, terminal_F) == op(terminal_F, terminal_T);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Return the operator in flipped version, i.e. op'(X, Y) = op(Y, X).
+  //////////////////////////////////////////////////////////////////////////////
+  inline bool_op flip(const bool_op &op)
+  {
+    if (is_commutative(op)) return op;
+
+    return [&op](const internal::ptr_uint64 &a, const internal::ptr_uint64 &b)
+           {return op(b, a);};
+  }
 }
 
 #endif // ADIAR_BOOL_OP_H
