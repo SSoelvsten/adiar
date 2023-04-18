@@ -191,5 +191,25 @@ go_bandit([]() {
             AssertThat(is_commutative(diff_op), Is().False());
             AssertThat(is_commutative(diff_op), Is().False());
           });
+        
+        describe("flip operator", [&]() {
+          it("resolves commutative operator (and)", [&]() {
+              const bool_op &flip_and_op = flip(and_op);
+
+              AssertThat(flip_and_op(terminal_T, terminal_T), Is().EqualTo(terminal_T));
+              AssertThat(flip_and_op(terminal_T, terminal_F), Is().EqualTo(terminal_F));
+              AssertThat(flip_and_op(terminal_F, terminal_T), Is().EqualTo(terminal_F));
+              AssertThat(flip_and_op(terminal_F, terminal_F), Is().EqualTo(terminal_F));
+            });
+
+          it("resolves non-commutative operator (imp)", [&]() {
+              const bool_op &flip_imp_op = flip(imp_op);
+
+              AssertThat(flip_imp_op(terminal_T, terminal_T), Is().EqualTo(terminal_T));
+              AssertThat(flip_imp_op(terminal_T, terminal_F), Is().EqualTo(terminal_T));
+              AssertThat(flip_imp_op(terminal_F, terminal_T), Is().EqualTo(terminal_F));
+              AssertThat(flip_imp_op(terminal_F, terminal_F), Is().EqualTo(terminal_T));
+            });
+        });
       });
   });
