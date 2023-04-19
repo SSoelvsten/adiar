@@ -32,6 +32,16 @@ namespace adiar::internal
   template<uint8_t nodes_carried>
   using prod2_request = request_data<2, with_parent, nodes_carried>;
 
+  // TODO: move this definition down to __prod2_ra, as it is only used here?
+  template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
+  using prod_priority_queue_t =
+    levelized_node_priority_queue<prod2_request<0>, request_data_lt<1, prod2_request<0>>,
+                                  LOOK_AHEAD,
+                                  mem_mode,
+                                  2,
+                                  0>;
+
+  // TODO: move this definition down to __prod2_pq, as it is only used here?
   template<size_t LOOK_AHEAD, memory_mode_t mem_mode>
   using prod_priority_queue_1_t =
     levelized_node_priority_queue<prod2_request<0>, request_data_fst_lt<prod2_request<0>>,
@@ -56,6 +66,16 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper functions
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Forward edge from `source` to `target`.
+  ///
+  /// \details If `target` is two terminals, the result terminal is computed,
+  ///          and the edge output. Otherwise the edge is forwarded to be
+  ///          processed later.
+  /// 
+  /// \pre `source` level is strictly before `target`
+  //////////////////////////////////////////////////////////////////////////////
   template<typename pq_1_t>
   inline void __prod2_recurse_out(pq_1_t &prod_pq_1, arc_writer &aw,
                                   const bool_op &op,
@@ -207,15 +227,118 @@ namespace adiar::internal
     }
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// \pre `in_0` is the input to random access
+  //////////////////////////////////////////////////////////////////////////////
   template<typename prod_policy, typename pq_1_t>
   typename prod_policy::unreduced_t
   __prod2_ra(const typename prod_policy::reduced_t &in_0,
              const typename prod_policy::reduced_t &in_1,
              const bool_op &op,
-             const size_t pq_1_memory, const size_t max_pq_1_size,
-             const bool ra_0)
+             const size_t pq_memory, const size_t max_pq_size)
   {
-    adiar_unreachable();
+    // Set up output
+    shared_levelized_file<arc> out_arcs;
+    arc_writer aw(out_arcs);
+
+    // Set up input
+    node_random_access<> in_nodes_0(in_0);
+    node_stream<> in_nodes_1(in_1);
+
+    node v1 = in_nodes_1.pull();
+
+    // Set up cross-level priority queue
+    pq_1_t prod_pq({in_0, in_1}, pq_memory, max_pq_size, stats_prod2.lpq);
+    prod_pq.push({ { in_nodes_0.root(), v1.uid() }, {}, { ptr_uint64::NIL() } });
+
+    size_t max_1level_cut = 0;
+
+    while (!prod_pq.empty()){
+      adiar_invariant(prod_pq.empty_level(), "pq has finished processing last layers");
+
+      // Setup layer
+      prod_pq.setup_next_level();
+      typename prod_policy::label_t out_label = prod_pq.current_level();
+      typename prod_policy::id_t out_id = 0;
+
+      in_nodes_0.setup_next_level(out_label);
+      
+      while (!prod_pq.empty_level()) {
+        const prod2_request<0> req = prod_pq.top();
+
+        // Seek request partially in stream
+        if (req.target[1].is_node() && req.target[1].label() == out_label) {
+          while (v1.uid() < req.target[1] && in_nodes_1.can_pull()) {
+            v1 = in_nodes_1.pull();
+          }
+
+          adiar_invariant(v1.uid() == req.target[1], "Must have found correct node in `in_1`");
+        }
+
+        const typename prod_policy::children_t children_0 =
+          req.target[0].on_level(out_label)
+              ? in_nodes_0.at(req.target[0]).children()
+              : prod_policy::reduction_rule_inv(req.target[0]); 
+
+        const typename prod_policy::children_t children_1 =
+          req.target[1].on_level(out_label)
+              ? v1.children()
+              : prod_policy::reduction_rule_inv(req.target[1]); 
+
+        // Create pairing of product children
+        const tuple<typename prod_policy::ptr_t> rec_pair_0 =
+          { children_0[false], children_1[false] };
+
+        const tuple<typename prod_policy::ptr_t> rec_pair_1 =
+          { children_0[true], children_1[true] };
+
+        // Obtain new recursion targets
+        const prod2_rec rec_res =
+          prod_policy::resolve_request(op, rec_pair_0, rec_pair_1);
+
+        // Forward recursion targets
+        if (prod_policy::no_skip || std::holds_alternative<prod2_rec_output>(rec_res)) {
+          const prod2_rec_output r = std::get<prod2_rec_output>(rec_res);
+
+          adiar_debug(out_id < prod_policy::MAX_ID, "Has run out of ids");
+          const node::uid_t out_uid(out_label, out_id++);
+
+          __prod2_recurse_out(prod_pq, aw, op, out_uid.with(false), r.low);
+          __prod2_recurse_out(prod_pq, aw, op, out_uid.with(true),  r.high);
+
+          __prod2_recurse_in__1<__prod2_recurse_in__output_node>(prod_pq, aw, out_uid, req.target);
+
+        } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
+          const prod2_rec_skipto r = std::get<prod2_rec_skipto>(rec_res);
+          if (r[0].is_terminal() && r[1].is_terminal()) {
+            if (req.data.source.is_nil()) {
+              // Skipped in both DAGs all the way from the root until a pair of terminals.
+              return __prod2_terminal(r, op);
+            }
+            __prod2_recurse_in__1<__prod2_recurse_in__output_terminal>(prod_pq, aw, op(r[0], r[1]), req.target);
+          } else {
+            __prod2_recurse_in__1<__prod2_recurse_in__forward>(prod_pq, aw, r, req.target);
+          }
+        }
+      }
+
+      if (prod_policy::no_skip || out_id > 0) {
+        // Only output level_info information of level, if output
+        aw.push(level_info(out_label, out_id));
+      }
+
+      max_1level_cut = std::max(max_1level_cut, prod_pq.size());
+    }
+
+    // Ensure the edge case, where the in-going edge from NIL to the root pair
+    // does not dominate the max_1level_cut
+    max_1level_cut = std::min(aw.size() - out_arcs->number_of_terminals[false]
+                                        - out_arcs->number_of_terminals[true],
+                              max_1level_cut);
+
+    out_arcs->max_1level_cut = max_1level_cut;
+
+    return out_arcs;
   }
 
   template<typename prod_policy, typename pq_1_t, typename pq_2_t>
@@ -517,6 +640,11 @@ namespace adiar::internal
     // -------------------------------------------------------------------------
     // Case: Do the product construction (with random access)
 
+    // TODO: lower the functionality of this
+    // This function should only determine the cases (base, ra, pq)
+    // and then another function should handle memory setup for the pq's and
+    // order of inputs
+
     const size_t pq_1_bound = std::min({__prod2_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_0, in_1, op),
                                         __prod2_2level_upper_bound<prod_policy>(in_0, in_1, op),
                                         __prod2_ilevel_upper_bound<prod_policy>(in_0, in_1, op)});
@@ -530,25 +658,32 @@ namespace adiar::internal
 
     if (access_mode == access_mode_t::RA
         || (access_mode == access_mode_t::AUTO
-            && (in_0->canonical || in_1->canonical)
-            && std::min(in_0->width, in_1->width) <= ra_thresshold)) {
+            // The smallest of the canonical inputs, must be under the thresshold
+            && (   (in_0->canonical && in_1->canonical && std::min(in_0->width, in_1->width) <= ra_thresshold)
+                || (in_0->canonical && in_0->width <= ra_thresshold)
+                || (in_1->canonical && in_1->width <= ra_thresshold)
+               ))) {
       
       // TODO: stats
       adiar_debug(in_0->canonical || in_1->canonical, "At least one input must be canonical");
 
+      // Determine if to flip the inputs
       // TODO: is the smallest or widest the best to random access on?
       const bool ra_0 = in_0->canonical && (!in_1->canonical || in_0->width <= in_1->width);
-      
+      const typename prod_policy::reduced_t& ra_in_0 = ra_0 ? in_0 : in_1;
+      const typename prod_policy::reduced_t& ra_in_1 = ra_0 ? in_1 : in_0;
+      const bool_op& ra_op = ra_0 ? op : flip(op);
+
       const size_t pq_available_memory = memory_available()
         // Input stream
         - node_stream<>::memory_usage()
         // Random access
-        - node_random_access<>::memory_usage(ra_0 ? in_0 : in_1)
+        - node_random_access<>::memory_usage(ra_in_0)
         // Output stream
         - arc_writer::memory_usage();
 
       const size_t pq_memory_fits =
-        prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_available_memory);
+        prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_available_memory);
       
       const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_1_bound) : pq_1_bound;
 
@@ -557,22 +692,22 @@ namespace adiar::internal
         stats_prod2.lpq.unbucketed += 1u;
 #endif
         return __prod2_ra<prod_policy,
-                          prod_priority_queue_1_t<0, memory_mode_t::INTERNAL>>
-          (in_0, in_1, op, pq_available_memory, max_pq_size, ra_0);
+                          prod_priority_queue_t<0, memory_mode_t::INTERNAL>>
+          (ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
       } else if (!external_only && max_pq_size <= pq_memory_fits) {
 #ifdef ADIAR_STATS
         stats_prod2.lpq.internal += 1u;
 #endif
         return __prod2_ra<prod_policy,
-                          prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
-          (in_0, in_1, op, pq_available_memory, max_pq_size, ra_0);
+                          prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>>
+          (ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
       } else {
 #ifdef ADIAR_STATS
         stats_prod2.lpq.external += 1u;
 #endif
         return __prod2_ra<prod_policy,
-                          prod_priority_queue_1_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
-          (in_0, in_1, op, pq_available_memory, max_pq_size, ra_0);
+                          prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::EXTERNAL>>
+          (ra_in_0, ra_in_1, ra_op, pq_available_memory, max_pq_size);
       }
     }
 

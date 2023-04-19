@@ -124,10 +124,6 @@ go_bandit([]() {
         AssertThat(x0, Is().EqualTo(x0_2));
       });
 
-      // TODO: remove access mode setup
-      // Setup access mode
-      access_mode = access_mode_t::PQ;
-
       it("should compute {{0}} /\\ {{1}} == {{0}, {1}}", [&]() {
         AssertThat((x0 | x1) == x0_or_x1, Is().True());
       });
@@ -199,10 +195,6 @@ go_bandit([]() {
         AssertThat((x0 | x1) == (x0_or_x1 - x1), Is().False());
         AssertThat((x0 | x1) != (x0_or_x1 - x1), Is().True());
       });
-
-      // TODO: remove access mode setup
-      // Reset access mode
-      access_mode = access_mode_t::AUTO;
     });
 
     it("should copy-construct shared_levelized_file<zdd::node_t> and negation back to zdd", [&]() {
