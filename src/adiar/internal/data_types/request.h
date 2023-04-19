@@ -218,6 +218,28 @@ namespace adiar::internal
   // Priority queue functions
 
   // TODO: turn it into only having the cardinality
+  template<size_t idx, class request_t>
+  struct request_lt
+  {
+    inline bool operator()(const request_t &a, const request_t &b)
+    {
+      const typename request_t::label_t label_a = a.target.fst().label();
+      const typename request_t::label_t label_b = b.target.fst().label();
+      
+      if constexpr (request_t::cardinality == 2) {
+        constexpr size_t o_idx = 1u - idx;
+
+        return label_a < label_b
+          || (label_a == label_b && a.target[idx] < b.target[idx])
+          || (label_a == label_b && a.target[idx] == b.target[idx] && a.target[o_idx] < b.target[o_idx]);
+      }
+
+      return label_a < label_b
+        || (label_a == label_b && a.target[idx] < b.target[idx])
+        || (label_a == label_b && a.target[idx] == b.target[idx] && a.target < b.target);
+    }
+  };
+
   template<class request_t>
   struct request_fst_lt
   {
@@ -290,6 +312,18 @@ namespace adiar::internal
 
   //////////////////////////////////////////////////////////////////////////////
   // Priority queue functions
+  template<size_t idx, class request_t>
+  struct request_data_lt
+  {
+    inline bool operator()(const request_t &a, const request_t &b)
+    {
+      if (request_t::data_t::sort_on_tiebreak && a.target == b.target) {
+        return a.data < b.data;
+      }
+      return request_lt<idx, request_t>()(a, b);
+    }
+  };
+
   template<class request_t>
   struct request_data_fst_lt
   {
