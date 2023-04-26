@@ -18,15 +18,24 @@
 
 There has been a major rewrite of the internal logic of Adiar to pay off technical debt and to get Adiar ready for implementing the I/O-efficient version of the much more complex BDD operations. At the same time, this also brings Adiar much closer to support other types of decision diagrams (e.g. QMDDs) and to store BDDs on disk and loading them again later.
 
+- All internal logic in *<adiar/internal/...>* has been moved into its nested namespace `adiar::internal`. If you use anything from this namespace (e.g. the *node* and the *node_writer* classes) then you are not guaranteed non-breaking changes.
 - Fundamental data types in *<adiar/data.h>* have been moved to each their own file (most of which are placed in the *<adiar/internal/data_types/...>*). These have been converted from C-like structs with manipulating functions to C++ (immutable) classes. That is, the entire interface for *node*, *arc* etc. have completely changed.
 - Files, streams and their writers have been moved, rewritten, and renamed.
   - They have been moved to *<adiar/internal/...>*, leaving *<adiar/file.h>* only to expose the public parts of the API.
   - If you have been using a *label_file* or an *assignment_file* you should now use the *shared_file\<T\>* template instead. To read from it use the *file_stream\<T\>* and to write use the *file_writer\<T\>*.
   - The *node_file* class is replaced with the *adiar::internal::shared_levelized_file\<node\>*. You can read from it with the 
 *adiar::internal::node_stream* and write to it with the *adiar::internal::node_writer* as before. But, we highly encourage you to transition over to using the *adiar::bdd_builder* and *adiar::zdd_builder* instead.
-- All internal logic in *<adiar/internal/...>* has been moved into its nested namespace `adiar::internal`. If you use anything from this namespace (e.g. the *node* and the *node_writer* classes) then you are not guaranteed non-breaking changes.
 
 That is, this rewrite only results in breaking changes if you have been interacting with Adiar's files directly, e.g. you have used the `bdd_restrict`, `bdd_exists`, `bdd_forall` functions or have created BDDs by hand with the *node_writer*.
+
+Other breaking changes are:
+
+- The two-level granularity of statistics has been removed. If you want to compile Adiar with statistics you just have to set the CMake variable `ADIAR_STATS` to *ON*; the CMake variable `ADIAR_STATS_EXTRA` has been removed as its highly detailed statistics is now included within `ADIAR_STATS`.
+- Every deprecated function from *v1.x* that was moved to *<adiar/deprecated.h>* has been removed.
+
+## License
+Adiar 1.0.0 is distributed under the MIT license. But, notice that it depends on the TPIE library which is licensed under LGPL v3. So, by extension any binary file of Adiar is covered by the very same license.
+
 
 # v1.2.2
 
@@ -38,6 +47,7 @@ That is, this rewrite only results in breaking changes if you have been interact
   An accidental swapping of arguments for a helper function resulted in the generated recursion requests are for the wrong elements and hence the wrong ZDD was constructed.
   
 - Fixes C++ and CMake such that Adiar compiles and runs on Mac computers with default Clang.
+
 
 # v1.2.1
 
@@ -78,11 +88,11 @@ Instead of separate Markdown files, the documentation is generated directly from
 
 ## Performance
 
-This new release's primary focus is to drastically improve performance for smaller instances.To this end, we still use the very same algorithms, but if the input is small enough then we soundly can use purely internal memory auxiliary data structures within each algorithm. Prior to this version we could only guarantee up to a 4x performance difference compared to other BDD libraries when the largest constructed decision diagram is 113 MiB or larger (for benchmarks where the base cases are manually constructed, i.e. also have some considerable size). Now, we are able to now guarantee the same when the largest is only 3.2 MiB or larger!
+This new release's primary focus is to drastically improve performance for smaller instances. To this end, we still use the very same algorithms, but if the input is small enough then we can safely use purely internal memory auxiliary data structures within each algorithm. Prior to this version we could only guarantee up to a 4x performance difference compared to other BDD libraries when the largest constructed decision diagram is 113 MiB or larger (for benchmarks where the base cases are manually constructed, i.e. also have some considerable size). Now, we are able to now guarantee the same when the largest is only 3.2 MiB or larger!
 
 ## Domain
 
-One may now set a *file<label_t>* as the global domain over which one works.
+A *file<label_t>* can globally be set as the problem domain, i.e. the set of variables you are using.
 
 - `adiar_set_domain(file<label_t> dom)`
   sets the global domain variable.
@@ -96,7 +106,7 @@ One may now set a *file<label_t>* as the global domain over which one works.
 ### New Features
 
 - `bdd_builder`
-  is a new class to replace using the *node_writer* directly. This allows you to much more naturally construct BDDs bottom-up by hiding away several details. Furthermore, it makes use of exceptions rather than immediately terminating assertions.
+  is a new class to replace using the *node_writer* directly. This enables a much more natural construction of BDDs bottom-up by hiding away several details. Furthermore, it makes use of exceptions rather than immediately terminating assertions.
 - `bdd_from(zdd A)`
   converts from a ZDD to a BDD using the global domain.
 - `bdd_equal(bdd f, bdd g)`
@@ -117,7 +127,7 @@ One may now set a *file<label_t>* as the global domain over which one works.
 ### New Features
 
 - `zdd_builder`
-  is a new class to replace using the *node_writer* directly. This allows you to much more naturally construct ZDDs bottom-up by hiding away several details. Furthermore, it makes use of exceptions rather than immediately terminating assertions.
+  is a new class to replace using the *node_writer* directly. This enables a much more natural construction of ZDDs bottom-up by hiding away several details. Furthermore, it makes use of exceptions rather than immediately terminating assertions.
 - `zdd_complement(zdd A)`
   Complementation within the global domain.
 - `zdd_from(bdd f)`
@@ -143,7 +153,7 @@ One may now set a *file<label_t>* as the global domain over which one works.
 
 ### Bug Fixes
 
-- Fixed fine grained statistics (*ADIAR_STATS_EXTRA*) are turned on if only coarse-grained statistics (*ADIAR_STATS*) was desired.
+- Fixed fine grained statistics (`ADIAR_STATS_EXTRA`) are turned on even though only the coarse-grained statistics (`ADIAR_STATS`) was desired.
 
 ## Deprecations
 
@@ -196,7 +206,7 @@ Adds support for *zero-suppressed* decision diagrams with the `zdd` class. All o
 - `zdd zdd_project(zdd A, file<label_t> is)` to project onto a (smaller) domain.
 
 ### Counting Operations
-- `uint64_t zdd_nodecount(zdd A)` the number of (non-leaf) nodes.
+- `uint64_t zdd_nodecount(zdd A)` the number of (non-terminal) nodes.
 - `uint64_t zdd_varcount(zdd A)` the number of levels present (i.e. variables).
 - `uint64_t bdd_size(bdd A)` the number of elements in the family of sets.
 
@@ -218,7 +228,7 @@ Adds support for *zero-suppressed* decision diagrams with the `zdd` class. All o
 
 ## Statistics
 
-Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics about the execution of the internal algorithms. With `ADIAR_STATS` you only gathers statistics that introduce a small constant time overhead to every operation. `ADIAR_STATS_EXTRA` also gathers much more detailed information, such as the bucket-hits of the levelized priority queue, which does introduce a linear-time overhead to every operation.
+Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics about the execution of the internal algorithms. With `ADIAR_STATS`, Adiar will record all statistics that only introduce a small constant time overhead to every operation. `ADIAR_STATS_EXTRA` also gathers much more detailed information, such as the bucket-hits of the levelized priority queue, which does introduce a linear-time overhead to every operation.
 
 - `stats_t adiar_stats()` to obtain a copy of the raw data values.
 - `void adiar_printstat(std::ostream)` to print all statistics to an output stream.
@@ -231,7 +241,7 @@ Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics abo
 ## Bug fixes
 
 - `bdd_apply`:
-  - Fix tuples have their ties on `std::min` or `std::max` not broken correctly. This resulted in that the same recursion request could potentially be handled multiple times independently, since all its "calls" ended up interleaving with other tied requests in the priority queues.
+  - Fix tuples have their ties on `std::min` or `std::max` not broken correctly. This resulted in that the same recursion request could potentially be handled multiple times independently, since all its "calls" ended up interleaving with other tied requests in the priority queues. This bug fix ensures the algorithm runs in quadratic time.
   - Slightly improve performance of some boolean operators. Most likely this is negligible.
 - `bdd_counter`:
   - Fix returns trivially false cases as *true*. 
@@ -243,8 +253,9 @@ Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics abo
 - `adiar_init`:
   - It now takes its memory argument in *bytes* rather than in *MiB*.
 - *Equality Checking* (`==`): Improved performance from its prior *O(N<sup>2</sup> log N<sup>2</sup>)* time comparison.
-  - If both given BDDs are *canonical* (as defined in the [documentation](https://ssoelvsten.github.io/adiar/core/files#a-note-on-equality-checking)) and have the same value in their *negation flag*, then equality checking is done with a simple (and much faster) linear scan.
+  - If both given BDDs are *canonical* (definition: as it would be output by Adiar's *reduce* algorithm) and have the same value in their *negation flag*, then equality checking is done with a simple (and much faster) linear scan.
   - In all other cases the prior time-forward processing algorithm is used. But this one has been improved to be an *O(N log N)* time comparison algorithm. That is, equality checking is not only a constant improvement computing `~(f ^ g) == bdd_true()` but it is provably faster (both in terms of time and I/Os).
+
 
 # v1.0.0
 
@@ -270,9 +281,9 @@ Furthermore, the `node_writer` class is also provided as a means to construct a 
 - `bdd_exists(bdd f, label_t i)` and `bdd_forall(bdd f, label_t i)` to existentially or forall quantify a single variable (also includes versions with the second argument being multiple labels in a `file<label_t>`).
 
 ### Counting Operations
-- `bdd_nodecount(bdd f)` the number of (non-leaf) nodes.
+- `bdd_nodecount(bdd f)` the number of (non-terminal) nodes.
 - `bdd_varcount(bdd f)` the number of levels present (i.e. variables).
-- `bdd_pathcount(bdd f)` the number of unique paths to the *true* sink.
+- `bdd_pathcount(bdd f)` the number of unique paths to the *true* terminal.
 - `bdd_satcount(bdd f, size_t varcount)` the number of satisfying assignments.
 
 ### Input variables
@@ -283,4 +294,4 @@ Furthermore, the `node_writer` class is also provided as a means to construct a 
 - `output_dot(bdd f, std::string filename)` to output a visualizable *.dot* file.
 
 ## License
-Adiar 1.0.0 is distributed under the MIT license. But, you should notice that it uses the TPIE library underneath, which is licensed under LGPL v3, and so by extension any binary file of Adiar is covered by the very same license.
+Adiar 1.0.0 is distributed under the MIT license. But, notice that it depends on the TPIE library which is licensed under LGPL v3. So, by extension any binary file of Adiar is covered by the very same license.
