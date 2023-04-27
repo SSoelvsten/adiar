@@ -9,7 +9,7 @@ namespace adiar
 {
   bool zdd_equal(const zdd &s1, const zdd &s2)
   {
-    return internal::is_isomorphic(s2, s1);
+    return internal::is_isomorphic(s1, s2);
   }
 
   //////////////////////////////////////////////////////////////////////////////
