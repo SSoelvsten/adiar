@@ -12,7 +12,7 @@
 ## Bug Fixes
 
 - The result of `adiar_stats()` is now fixed such that the values for *reduce* and *substitute* are correct.
-- Many small fixes to make Adiar compile with GCC, Clang, and MSVC on Linux, Mac, and Windows. Simultaneously, we have now set up continuous integration, such that we can truly ensure we support all platforms. 
+- Many small fixes to make Adiar compile with GCC, Clang, and MSVC on Linux, Mac, and Windows. Simultaneously, we have now set up continuous integration, such that we can truly ensure we support all platforms.
 
 ## Breaking Changes
 
@@ -23,7 +23,7 @@ There has been a major rewrite of the internal logic of Adiar to pay off technic
 - Files, streams and their writers have been moved, rewritten, and renamed.
   - They have been moved to *<adiar/internal/...>*, leaving *<adiar/file.h>* only to expose the public parts of the API.
   - If you have been using a *label_file* or an *assignment_file* you should now use the *shared_file\<T\>* template instead. To read from it use the *file_stream\<T\>* and to write use the *file_writer\<T\>*.
-  - The *node_file* class is replaced with the *adiar::internal::shared_levelized_file\<node\>*. You can read from it with the 
+  - The *node_file* class is replaced with the *adiar::internal::shared_levelized_file\<node\>*. You can read from it with the
 *adiar::internal::node_stream* and write to it with the *adiar::internal::node_writer* as before. But, we highly encourage you to transition over to using the *adiar::bdd_builder* and *adiar::zdd_builder* instead.
 
 That is, this rewrite only results in breaking changes if you have been interacting with Adiar's files directly, e.g. you have used the `bdd_restrict`, `bdd_exists`, `bdd_forall` functions or have created BDDs by hand with the *node_writer*.
@@ -31,6 +31,7 @@ That is, this rewrite only results in breaking changes if you have been interact
 Other breaking changes are:
 
 - The two-level granularity of statistics has been removed. If you want to compile Adiar with statistics you just have to set the CMake variable `ADIAR_STATS` to *ON*; the CMake variable `ADIAR_STATS_EXTRA` has been removed as its highly detailed statistics is now included within `ADIAR_STATS`.
+- The semantics of the`zdd_ithvar` function has been changed to be more akin to the BDD semantics. That is, `zdd_ithvar(i)` is the set of all bitvectors where *i* is true. Symmetrically, the `zdd_nithvar(i)` function has been added. The original semantics of `zdd_ithvar` is still provided with the `zdd_singleton` function.
 - Every deprecated function from *v1.x* that was moved to *<adiar/deprecated.h>* has been removed.
 
 ## License
@@ -45,7 +46,7 @@ Adiar 1.0.0 is distributed under the MIT license. But, notice that it depends on
 
 - `zdd_project(A, dom)`
   An accidental swapping of arguments for a helper function resulted in the generated recursion requests are for the wrong elements and hence the wrong ZDD was constructed.
-  
+
 - Fixes C++ and CMake such that Adiar compiles and runs on Mac computers with default Clang.
 
 
@@ -70,12 +71,12 @@ Adiar 1.0.0 is distributed under the MIT license. But, notice that it depends on
 - `bdd_satcount(bdd f)`
   If the global domain is set, then that value will take precedence over the number of levels in *f* (assuming *f* has fewer levels than the domain claims to exist).
 - `bdd_printdot(bdd f, std::ostream out)`
-  Added to allow more flexibility when outputting DOT files. 
+  Added to allow more flexibility when outputting DOT files.
 
 ## Zero-suppressed Decision Diagrams
 
 - `zdd_printdot(zdd A, std::ostream out)`
-  Added to allow more flexibility when outputting DOT files. 
+  Added to allow more flexibility when outputting DOT files.
 
 ## Documentation
 
@@ -244,8 +245,8 @@ Compile Adiar with `ADIAR_STATS` or `ADIAR_STATS_EXTRA` to gather statistics abo
   - Fix tuples have their ties on `std::min` or `std::max` not broken correctly. This resulted in that the same recursion request could potentially be handled multiple times independently, since all its "calls" ended up interleaving with other tied requests in the priority queues. This bug fix ensures the algorithm runs in quadratic time.
   - Slightly improve performance of some boolean operators. Most likely this is negligible.
 - `bdd_counter`:
-  - Fix returns trivially false cases as *true*. 
-- *CMake* 
+  - Fix returns trivially false cases as *true*.
+- *CMake*
   - Now Adiar compiles with C++17 regardless of its parent project. This allows the user to omit the use of `set_target_properties(<target> PROPERTIES CXX_STANDARD 17)` in their own CMake settings.
 
 ## Changes
