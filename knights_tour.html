@@ -330,7 +330,7 @@ Combining Constraints</h1>
 <div class="line">  <a class="code" href="classadiar_1_1zdd.html">adiar::zdd</a> paths;</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (N == 1) {</div>
-<div class="line">    paths = <a class="code" href="group__module____zdd.html#gaf37f9772d2b1204255565d525a424808">adiar::zdd_ithvar</a>(0);</div>
+<div class="line">    paths = <a class="code" href="group__module____zdd.html#ga45d1923228d2714f11ff3dc3b0d6f4d1">adiar::zdd_singleton</a>(0);</div>
 <div class="line">  } <span class="keywordflow">else</span> {</div>
 <div class="line">    paths = only_closed ? constraint_closed(N) : constraint_transition(N,0);</div>
 <div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> t = 1; t &lt; N*N-1; t++) {</div>
@@ -345,10 +345,10 @@ Combining Constraints</h1>
 <div class="line">      }</div>
 <div class="line">    }</div>
 <div class="line">  }</div>
-<div class="line">  </div>
+<div class="line"> </div>
 <div class="line">  <span class="keywordflow">return</span> paths;</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__module____zdd_html_gaf37f9772d2b1204255565d525a424808"><div class="ttname"><a href="group__module____zdd.html#gaf37f9772d2b1204255565d525a424808">adiar::zdd_ithvar</a></div><div class="ttdeci">zdd zdd_ithvar(zdd::label_t var)</div><div class="ttdoc">The family { {i} } .</div></div>
+<div class="ttc" id="agroup__module____zdd_html_ga45d1923228d2714f11ff3dc3b0d6f4d1"><div class="ttname"><a href="group__module____zdd.html#ga45d1923228d2714f11ff3dc3b0d6f4d1">adiar::zdd_singleton</a></div><div class="ttdeci">zdd zdd_singleton(zdd::label_t var)</div><div class="ttdoc">The family { {i} } .</div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md13"></a>
 Counting the Number of Paths</h1>
 <p>Since every element of the final ZDD represents a unique path through the board, then the number of solutions is exactly the size of the set.</p>
