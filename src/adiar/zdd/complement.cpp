@@ -18,6 +18,23 @@ namespace adiar
 
     static constexpr size_t mult_factor = 2u;
 
+  private:
+    class terminal_chain_0_policy
+    {
+    public:
+      static constexpr bool on_empty          = true;
+      static constexpr bool link[2]           = {true, true};
+      static constexpr bool terminal_value[2] = {true, true};
+    };
+
+    class terminal_chain_1_policy
+    {
+    public:
+      static constexpr bool on_empty          = false;
+      static constexpr bool link[2]           = {true, true};
+      static constexpr bool terminal_value[2] = {false, true};
+    };
+
   public:
     static zdd on_empty_labels(const zdd& dd)
     {
@@ -27,11 +44,13 @@ namespace adiar
     static zdd on_terminal_input(const bool terminal_value, const zdd& /*dd*/,
                                  const shared_file<zdd::label_t> &universe)
     {
-      return terminal_value
-        // The entire universe minus Ø
-        ? internal::build_chain<false, true, true, false, true>(universe)
-        // The entire universe
-        : internal::build_chain<true, true, true, true, true>(universe);
+      if (terminal_value) {
+        terminal_chain_1_policy p;
+        return internal::build_chain<terminal_chain_1_policy>(p, universe);
+      } else {
+        terminal_chain_0_policy p;
+        return internal::build_chain<terminal_chain_0_policy>(p, universe);
+      }
     }
 
     // LCOV_EXCL_START
