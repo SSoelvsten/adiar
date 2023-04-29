@@ -45,8 +45,7 @@ namespace adiar::internal
   public:
     static constexpr bool init_terminal = INIT_TERMINAL;
 
-    inline
-    typename dd_policy::node_t
+    inline typename dd_policy::node_t
     make_node(const typename dd_policy::label_t &l,
               const typename dd_policy::ptr_t &r) const
     {
@@ -62,8 +61,7 @@ namespace adiar::internal
   public:
     static constexpr bool init_terminal = INIT_TERMINAL;
 
-    inline
-    typename dd_policy::node_t
+    inline typename dd_policy::node_t
     make_node(const typename dd_policy::label_t &l,
               const typename dd_policy::ptr_t &r) const
     {
@@ -79,8 +77,7 @@ namespace adiar::internal
   public:
     static constexpr bool init_terminal = INIT_TERMINAL;
 
-    inline
-    typename dd_policy::node_t
+    inline typename dd_policy::node_t
     make_node(const typename dd_policy::label_t &l,
               const typename dd_policy::ptr_t &r) const
     {
@@ -103,10 +100,14 @@ namespace adiar::internal
 
       file_stream<node::label_t, true> ls(labels);
 
-      size_t max_internal_cut    = 1;
-      size_t terminals[2] = {0u, 0u};
+      size_t max_internal_cut      = 1;
+
+      size_t terminals_internal[2] = {0u, 0u};
+      bool   terminal_at_bottom[2] = {false, false};
+      size_t terminals[2]          = {0u, 0u};
 
       node::ptr_t root = node::ptr_t(chain_policy::init_terminal);
+
       while(ls.can_pull()) {
         const node::ptr_t::label_t next_label = ls.pull();
 
@@ -119,10 +120,22 @@ namespace adiar::internal
                                             n.low().is_node() + n.high().is_node());
 
         if (n.low().is_terminal()) {
+          terminals_internal[n.low().value()] =
+            std::max<size_t>(terminals_internal[n.low().value()], n.high().is_node());
+
           terminals[n.low().value()] += 1u;
         }
+
         if (n.high().is_terminal()) {
+          terminals_internal[n.high().value()] =
+            std::max<size_t>(terminals_internal[n.high().value()], n.low().is_node());
+
           terminals[n.high().value()] += 1u;
+        }
+
+        if (root.is_terminal()) {
+          terminal_at_bottom[n.low().value()] = true;
+          terminal_at_bottom[n.high().value()] = true;
         }
 
         nw.unsafe_push(n);
@@ -134,14 +147,27 @@ namespace adiar::internal
       // 1-level cuts
       nf->max_1level_cut[cut_type::INTERNAL] = max_internal_cut;
 
-      nf->max_1level_cut[cut_type::INTERNAL_FALSE] = std::max(max_internal_cut,
-                                                              terminals[false]);
+      nf->max_1level_cut[cut_type::INTERNAL_FALSE] =
+        std::max<size_t>({
+            nf->max_1level_cut[cut_type::INTERNAL],
+            terminals_internal[false] + terminals[false] - terminal_at_bottom[false],
+            terminals[false]
+          });
 
-      nf->max_1level_cut[cut_type::INTERNAL_TRUE] = std::max(max_internal_cut,
-                                                             terminals[true]);
+      nf->max_1level_cut[cut_type::INTERNAL_TRUE] =
+        std::max<size_t>({
+            nf->max_1level_cut[cut_type::INTERNAL],
+            terminals_internal[true] + terminals[true] - terminal_at_bottom[true],
+            terminals[true]
+          });
 
-      nf->max_1level_cut[cut_type::ALL] = std::max(max_internal_cut,
-                                                   terminals[false] + terminals[true]);
+      nf->max_1level_cut[cut_type::ALL] =
+        std::max<size_t>({
+            nf->max_1level_cut[cut_type::INTERNAL],
+            nf->max_1level_cut[cut_type::INTERNAL_FALSE],
+            nf->max_1level_cut[cut_type::INTERNAL_TRUE],
+            terminals[false] + terminals[true]
+          });
 
       return nf;
     }
