@@ -37,6 +37,10 @@ namespace adiar
   public:
     static constexpr bool init_terminal = true;
 
+    constexpr bool
+    skip(const zdd_policy::label_t &) const
+    { return false; }
+
     inline zdd_policy::node_t
     make_node(const zdd_policy::label_t &l, const zdd_policy::ptr_t &r) const
     {
@@ -47,7 +51,8 @@ namespace adiar
     }
   };
 
-  zdd zdd_ithvar(zdd::label_t var, const shared_file<zdd::label_t> &dom)
+  zdd zdd_ithvar(const zdd::label_t var,
+                 const shared_file<zdd::label_t> &dom)
   {
     if (dom->size() == 0u) { return zdd_empty(); }
 
@@ -55,10 +60,43 @@ namespace adiar
     return internal::build_chain<>(p, dom);
   }
 
-  zdd zdd_ithvar(zdd::label_t var)
+  zdd zdd_ithvar(const zdd::label_t var)
   {
-    zdd_ithvar_policy p(var);
-    return internal::build_chain<>(p, adiar_get_domain());
+    return zdd_ithvar(var, adiar_get_domain());
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  class zdd_nithvar_policy : public zdd_policy
+  {
+  private:
+    const zdd::label_t var;
+
+  public:
+    zdd_nithvar_policy(zdd::label_t v) : var(v)
+    { }
+
+  public:
+    static constexpr bool init_terminal = true;
+
+    inline bool
+    skip(const zdd_policy::label_t &l) const
+    { return l == var; }
+
+    inline zdd_policy::node_t
+    make_node(const zdd_policy::label_t &l, const zdd_policy::ptr_t &r) const
+    { return zdd_policy::node_t(l, zdd_policy::MAX_ID, r, r); }
+  };
+
+  zdd zdd_nithvar(const zdd::label_t var,
+                  const shared_file<zdd::label_t> &dom)
+  {
+    zdd_nithvar_policy p(var);
+    return internal::build_chain<>(p, dom);
+  }
+
+  zdd zdd_nithvar(const zdd::label_t var)
+  {
+    return zdd_nithvar(var, adiar_get_domain());
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -69,7 +107,7 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_singleton(zdd::label_t label)
+  zdd zdd_singleton(const zdd::label_t label)
   {
     return internal::build_ithvar(label);
   }

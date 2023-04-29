@@ -89,6 +89,34 @@ namespace adiar
   zdd zdd_ithvar(zdd::label_t var);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief     The set of bitvectors over a given domain where `var` is set to
+  ///            false.
+  ///
+  /// \details   Creates a ZDD with a don't care chain of nodes to the true
+  ///            child except for the node for `var`; this one instead is forced
+  ///            to be true. The given labels must be smaller than or equal to
+  ///            `zdd::MAX_LABEL`.
+  ///
+  /// \param var The variable to be forced to false.
+  ///
+  /// \param dom Labels of the desired variables (in ascending order)
+  ///
+  /// \pre       The variable `var` should occur in `dom`.
+  //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_nithvar(zdd::label_t var, const shared_file<zdd::label_t> &dom);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     The set of bitvectors over the globally set domain where `var`
+  ///            is set to false.
+  ///
+  /// \param var The variable to be forced to false.
+  ///
+  /// \pre       `adiar_has_domain() == true` and the variable `var` should
+  ///            occur in the global domain.
+  //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_nithvar(zdd::label_t var);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { { 1, 2, ..., k } }.
   ///
   /// \details   Creates a ZDD with a chain of nodes on the 'high' arc to the
