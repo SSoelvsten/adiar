@@ -295,7 +295,7 @@ adiar::zdd combine_constraints(uint64_t N, bool closed)
   adiar::zdd paths;
 
   if (N == 1) {
-    paths = adiar::zdd_ithvar(0);
+    paths = adiar::zdd_singleton(0);
   } else {
     paths = only_closed ? constraint_closed(N) : constraint_transition(N,0);
     for (int t = 1; t < N*N-1; t++) {
@@ -310,7 +310,7 @@ adiar::zdd combine_constraints(uint64_t N, bool closed)
       }
     }
   }
-  
+
   return paths;
 }
 ```
@@ -329,4 +329,3 @@ size_t knights_tour(uint64_t N, bool closed)
   return solutions;
 }
 ```
-

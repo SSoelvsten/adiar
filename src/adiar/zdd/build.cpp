@@ -20,14 +20,14 @@ namespace adiar
     return internal::build_terminal(true);
   }
 
-  zdd zdd_ithvar(zdd::label_t label)
-  {
-    return internal::build_ithvar(label);
-  }
-
   zdd zdd_vars(const shared_file<zdd::label_t> &labels)
   {
     return internal::build_chain<true, false, true>(labels);
+  }
+
+  zdd zdd_singleton(zdd::label_t label)
+  {
+    return internal::build_ithvar(label);
   }
 
   zdd zdd_singletons(const shared_file<zdd::label_t> &labels)
