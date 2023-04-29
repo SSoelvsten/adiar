@@ -73,7 +73,7 @@ namespace adiar::internal
   /// \details If `target` is two terminals, the result terminal is computed,
   ///          and the edge output. Otherwise the edge is forwarded to be
   ///          processed later.
-  /// 
+  ///
   /// \pre `source` level is strictly before `target`
   //////////////////////////////////////////////////////////////////////////////
   template<typename pq_1_t>
@@ -262,7 +262,7 @@ namespace adiar::internal
       typename prod_policy::id_t out_id = 0;
 
       in_nodes_0.setup_next_level(out_label);
-      
+
       while (!prod_pq.empty_level()) {
         const prod2_request<0> req = prod_pq.top();
 
@@ -272,18 +272,19 @@ namespace adiar::internal
             v1 = in_nodes_1.pull();
           }
 
-          adiar_invariant(v1.uid() == req.target[1], "Must have found correct node in `in_1`");
+          adiar_invariant(v1.uid() == req.target[1],
+                          "Must have found correct node in `in_1`");
         }
 
         const typename prod_policy::children_t children_0 =
           req.target[0].on_level(out_label)
               ? in_nodes_0.at(req.target[0]).children()
-              : prod_policy::reduction_rule_inv(req.target[0]); 
+              : prod_policy::reduction_rule_inv(req.target[0]);
 
         const typename prod_policy::children_t children_1 =
           req.target[1].on_level(out_label)
               ? v1.children()
-              : prod_policy::reduction_rule_inv(req.target[1]); 
+              : prod_policy::reduction_rule_inv(req.target[1]);
 
         // Create pairing of product children
         const tuple<typename prod_policy::ptr_t> rec_pair_0 =
@@ -306,7 +307,8 @@ namespace adiar::internal
           __prod2_recurse_out(prod_pq, aw, op, out_uid.with(false), r.low);
           __prod2_recurse_out(prod_pq, aw, op, out_uid.with(true),  r.high);
 
-          __prod2_recurse_in__1<__prod2_recurse_in__output_node>(prod_pq, aw, out_uid, req.target);
+          __prod2_recurse_in__1<__prod2_recurse_in__output_node>
+            (prod_pq, aw, out_uid, req.target);
 
         } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
           const prod2_rec_skipto r = std::get<prod2_rec_skipto>(rec_res);
@@ -315,9 +317,11 @@ namespace adiar::internal
               // Skipped in both DAGs all the way from the root until a pair of terminals.
               return __prod2_terminal(r, op);
             }
-            __prod2_recurse_in__1<__prod2_recurse_in__output_terminal>(prod_pq, aw, op(r[0], r[1]), req.target);
+            __prod2_recurse_in__1<__prod2_recurse_in__output_terminal>
+              (prod_pq, aw, op(r[0], r[1]), req.target);
           } else {
-            __prod2_recurse_in__1<__prod2_recurse_in__forward>(prod_pq, aw, r, req.target);
+            __prod2_recurse_in__1<__prod2_recurse_in__forward>
+              (prod_pq, aw, r, req.target);
           }
         }
       }
@@ -424,6 +428,9 @@ namespace adiar::internal
               (req.target[0] == v0.uid() ? v0 : v1).children();
 
         while (prod_pq_1.can_pull() && prod_pq_1.top().target == req.target) {
+#ifdef ADIAR_STATS
+          stats_prod2.pq.pq_2_elems += 1u;
+#endif
           prod_pq_2.push({ req.target, { children }, prod_pq_1.pull().data });
         }
         continue;
@@ -454,7 +461,8 @@ namespace adiar::internal
         __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(false), r.low);
         __prod2_recurse_out(prod_pq_1, aw, op, out_uid.with(true),  r.high);
 
-        __prod2_recurse_in<__prod2_recurse_in__output_node>(prod_pq_1, prod_pq_2, aw, out_uid, req.target);
+        __prod2_recurse_in<__prod2_recurse_in__output_node>
+          (prod_pq_1, prod_pq_2, aw, out_uid, req.target);
 
       } else { // std::holds_alternative<prod2_rec_skipto>(root_rec)
         const prod2_rec_skipto r = std::get<prod2_rec_skipto>(rec_res);
@@ -463,9 +471,11 @@ namespace adiar::internal
             // Skipped in both DAGs all the way from the root until a pair of terminals.
             return __prod2_terminal(r, op);
           }
-          __prod2_recurse_in<__prod2_recurse_in__output_terminal>(prod_pq_1, prod_pq_2, aw, op(r[0], r[1]), req.target);
+          __prod2_recurse_in<__prod2_recurse_in__output_terminal>
+            (prod_pq_1, prod_pq_2, aw, op(r[0], r[1]), req.target);
         } else {
-          __prod2_recurse_in<__prod2_recurse_in__forward>(prod_pq_1, prod_pq_2, aw, r, req.target);
+          __prod2_recurse_in<__prod2_recurse_in__forward>
+            (prod_pq_1, prod_pq_2, aw, r, req.target);
         }
       }
     }
@@ -623,6 +633,9 @@ namespace adiar::internal
     // -------------------------------------------------------------------------
     // Case: Same file, i.e. exactly the same DAG.
     if (in_0.file_ptr() == in_1.file_ptr()) {
+#ifdef ADIAR_STATS
+      stats_prod2.trivial_file += 1u;
+#endif
       return prod_policy::resolve_same_file(in_0, in_1, op);
     }
 
@@ -633,6 +646,9 @@ namespace adiar::internal
         prod_policy::resolve_terminal_root(in_0, in_1, op);
 
       if (!(maybe_resolved.template has<no_file>())) {
+#ifdef ADIAR_STATS
+        stats_prod2.trivial_terminal += 1u;
+#endif
         return maybe_resolved;
       }
     }
@@ -645,10 +661,14 @@ namespace adiar::internal
     // and then another function should handle memory setup for the pq's and
     // order of inputs
 
+    // TODO: we do not need to check on the decision diagram being 'canonical'.
+    // It merely suffices, that it is 'indexable', i.e. the one half of being
+    // 'canonical'.
+
     const size_t pq_1_bound = std::min({__prod2_ilevel_upper_bound<prod_policy, get_2level_cut, 2u>(in_0, in_1, op),
                                         __prod2_2level_upper_bound<prod_policy>(in_0, in_1, op),
                                         __prod2_ilevel_upper_bound<prod_policy>(in_0, in_1, op)});
-    
+
     const bool internal_only = memory_mode == memory_mode_t::INTERNAL;
     const bool external_only = memory_mode == memory_mode_t::EXTERNAL;
 
@@ -663,8 +683,10 @@ namespace adiar::internal
                 || (in_0->canonical && in_0->width <= ra_thresshold)
                 || (in_1->canonical && in_1->width <= ra_thresshold)
                ))) {
-      
-      // TODO: stats
+#ifdef ADIAR_STATS
+      stats_prod2.ra.runs += 1u;
+#endif
+
       adiar_debug(in_0->canonical || in_1->canonical, "At least one input must be canonical");
 
       // Determine if to flip the inputs
@@ -673,6 +695,15 @@ namespace adiar::internal
       const typename prod_policy::reduced_t& ra_in_0 = ra_0 ? in_0 : in_1;
       const typename prod_policy::reduced_t& ra_in_1 = ra_0 ? in_1 : in_0;
       const bool_op& ra_op = ra_0 ? op : flip(op);
+
+#ifdef ADIAR_STATS
+      stats_prod2.ra.used_narrowest +=
+        static_cast<size_t>(ra_in_0->width == std::min(in_0->width, in_1->width));
+
+      stats_prod2.ra.acc_width += ra_in_0->width;
+      stats_prod2.ra.min_width = std::min(stats_prod2.ra.min_width, ra_in_0->width);
+      stats_prod2.ra.max_width = std::max(stats_prod2.ra.max_width, ra_in_0->width);
+#endif
 
       const size_t pq_available_memory = memory_available()
         // Input stream
@@ -684,7 +715,7 @@ namespace adiar::internal
 
       const size_t pq_memory_fits =
         prod_priority_queue_t<ADIAR_LPQ_LOOKAHEAD, memory_mode_t::INTERNAL>::memory_fits(pq_available_memory);
-      
+
       const size_t max_pq_size = internal_only ? std::min(pq_memory_fits, pq_1_bound) : pq_1_bound;
 
       if(!external_only && max_pq_size <= no_lookahead_bound(2)) {
@@ -713,6 +744,9 @@ namespace adiar::internal
 
     // -------------------------------------------------------------------------
     // Case: Do the product construction (with priority queues)
+#ifdef ADIAR_STATS
+    stats_prod2.pq.runs += 1u;
+#endif
 
     // Compute amount of memory available for auxiliary data structures after
     // having opened all streams.

@@ -119,6 +119,7 @@ namespace adiar
     indent_level -= 2;
   }
 
+
   void __printstat_alg_base(std::ostream &o, const stats_t::__alg_base& stats)
   {
     o << indent << bold_on << "levelized priority queue" << bold_off << endl;
@@ -161,6 +162,7 @@ namespace adiar
     indent_level--;
   }
 
+
   void __printstat_comparison_check(std::ostream &o)
   {
     uintwide_t total_runs = internal::stats_equality.lpq.total();
@@ -177,6 +179,7 @@ namespace adiar
     indent_level--;
   }
 
+
   void __printstat_intercut(std::ostream &o)
   {
     uintwide_t total_runs = internal::stats_intercut.lpq.total();
@@ -192,6 +195,7 @@ namespace adiar
     __printstat_alg_base(o, internal::stats_intercut);
     indent_level--;
   }
+
 
   void __printstat_isomorphism(std::ostream &o)
   {
@@ -266,9 +270,15 @@ namespace adiar
 
     indent_level -= 2;
   }
+
+
   void __printstat_prod2(std::ostream &o)
   {
-    uintwide_t total_runs = internal::stats_prod2.lpq.total();
+    uintwide_t total_runs = internal::stats_prod2.trivial_file
+                          + internal::stats_prod2.trivial_terminal
+                          + internal::stats_prod2.ra.runs
+                          + internal::stats_prod2.pq.runs;
+
     o << indent << bold_on << label << "Product Construction (2-ary)" << bold_off << total_runs << endl;
 
     indent_level++;
@@ -278,9 +288,73 @@ namespace adiar
       return;
     }
 
+    o << indent << bold_on << label << "case [same file]" << bold_off
+      << internal::stats_prod2.trivial_file
+      << " = " << percent_frac(internal::stats_prod2.trivial_file, total_runs) << percent
+      << endl;
+
+    o << indent << endl;
+
+    o << indent << bold_on << label << "case [terminal]" << bold_off
+      << internal::stats_prod2.trivial_terminal
+      << " = " << percent_frac(internal::stats_prod2.trivial_terminal, total_runs) << percent
+      << endl;
+
+    o << indent << endl;
+
+    o << indent << bold_on << label << "case [random access]" << bold_off
+      << internal::stats_prod2.ra.runs
+      << " = " << percent_frac(internal::stats_prod2.ra.runs, total_runs) << percent
+      << endl;
+    if (internal::stats_prod2.ra.runs > 0u) {
+      indent_level++;
+      o << indent << label << "used narrowest:"
+        << internal::stats_prod2.ra.used_narrowest
+        << " = " << percent_frac(internal::stats_prod2.ra.used_narrowest, internal::stats_prod2.ra.runs) << percent
+        << endl;
+
+      o << indent << endl;
+
+      o << indent << bold_on << label << "width:" << bold_off << endl;
+      indent_level++;
+
+      o << indent << label << "minimum:"
+        << internal::stats_prod2.ra.min_width
+        << endl;
+
+      o << indent << label << "maximum:"
+        << internal::stats_prod2.ra.max_width
+        << endl;
+
+      o << indent << label << "accumulated:"
+        << internal::stats_prod2.ra.acc_width
+        << " (avg = " << frac(internal::stats_prod2.ra.acc_width, internal::stats_prod2.ra.runs) << ")"
+        << endl;
+
+      indent_level -= 2;
+    }
+
+    o << indent << endl;
+
+    o << indent << bold_on << label << "case [priority queue]" << bold_off
+      << internal::stats_prod2.pq.runs
+      << " = " << percent_frac(internal::stats_prod2.pq.runs, total_runs) << percent
+      << endl;
+    if (internal::stats_prod2.pq.runs > 0u) {
+      indent_level++;
+      o << indent << label << "pq2 elements:"
+        << internal::stats_prod2.pq.pq_2_elems
+        << endl;
+
+      indent_level--;
+    }
+
+
+    o << indent << endl;
     __printstat_alg_base(o, internal::stats_prod2);
     indent_level--;
   }
+
 
   void __printstat_prod3(std::ostream &o)
   {
@@ -297,6 +371,7 @@ namespace adiar
     __printstat_alg_base(o, stats_prod3);
     indent_level--;
   }
+
 
   void __printstat_reduce(std::ostream &o)
   {
@@ -353,6 +428,7 @@ namespace adiar
     indent_level--;
   }
 
+
   void __printstat_quantify(std::ostream &o)
   {
     uintwide_t total_runs = internal::stats_quantify.lpq.total();
@@ -369,6 +445,7 @@ namespace adiar
     indent_level--;
   }
 
+
   void __printstat_substitute(std::ostream &o)
   {
     uintwide_t total_runs = internal::stats_substitute.lpq.total();
@@ -384,6 +461,7 @@ namespace adiar
     __printstat_alg_base(o, internal::stats_substitute);
     indent_level--;
   }
+
 
   void adiar_printstat(std::ostream &o)
   {
