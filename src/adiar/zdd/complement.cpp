@@ -19,20 +19,25 @@ namespace adiar
     static constexpr size_t mult_factor = 2u;
 
   private:
-    class terminal_chain_0_policy
+    class on_true_terminal_chain_policy : public zdd_policy
     {
     public:
-      static constexpr bool on_empty          = true;
+      static constexpr bool init_terminal = false;
+
+      inline
+      bdd::node_t
+      make_node(const zdd::label_t &l, const zdd::ptr_t &r) const
+      {
+        if (r.is_terminal()) {
+          adiar_debug(r.value() == false, "Root should be Ø");
+          return zdd::node_t(l, zdd::MAX_ID, r, zdd_policy::ptr_t(true));
+        } else {
+          return zdd::node_t(l, zdd::MAX_ID, r, r);
+        }
+      }
+
       static constexpr bool link[2]           = {true, true};
       static constexpr bool terminal_value[2] = {true, true};
-    };
-
-    class terminal_chain_1_policy
-    {
-    public:
-      static constexpr bool on_empty          = false;
-      static constexpr bool link[2]           = {true, true};
-      static constexpr bool terminal_value[2] = {false, true};
     };
 
   public:
@@ -44,12 +49,12 @@ namespace adiar
     static zdd on_terminal_input(const bool terminal_value, const zdd& /*dd*/,
                                  const shared_file<zdd::label_t> &universe)
     {
-      if (terminal_value) {
-        terminal_chain_1_policy p;
-        return internal::build_chain<terminal_chain_1_policy>(p, universe);
-      } else {
-        terminal_chain_0_policy p;
-        return internal::build_chain<terminal_chain_0_policy>(p, universe);
+      if (terminal_value) { // Include everything but Ø
+        on_true_terminal_chain_policy p;
+        return internal::build_chain<>(p, universe);
+      } else { // The complement of nothing is everything
+        internal::chain_both<zdd_policy> p;
+        return internal::build_chain<>(p, universe);
       }
     }
 

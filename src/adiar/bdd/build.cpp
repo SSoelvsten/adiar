@@ -1,5 +1,6 @@
 #include <adiar/bdd.h>
 
+#include <adiar/bdd/bdd_policy.h>
 #include <adiar/internal/io/file_stream.h>
 #include <adiar/internal/io/levelized_file_writer.h>
 #include <adiar/internal/assert.h>
@@ -40,33 +41,17 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class bdd_and_chain_policy
-  {
-  public:
-    static constexpr bool on_empty          = true;
-    static constexpr bool link[2]           = {false, true};
-    static constexpr bool terminal_value[2] = {false, true};
-  };
-
   bdd bdd_and(const shared_file<bdd::label_t> &labels)
   {
-    bdd_and_chain_policy p;
-    return internal::build_chain<bdd_and_chain_policy>(p, labels);
+    internal::chain_high<bdd_policy> p;
+    return internal::build_chain<>(p, labels);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class bdd_or_chain_policy
-  {
-  public:
-    static constexpr bool on_empty          = false;
-    static constexpr bool link[2]           = {true, false};
-    static constexpr bool terminal_value[2] = {false, true};
-  };
-
   bdd bdd_or(const shared_file<bdd::label_t> &labels)
   {
-    bdd_or_chain_policy p;
-    return internal::build_chain<bdd_or_chain_policy>(p, labels);
+    internal::chain_low<bdd_policy> p;
+    return internal::build_chain<>(p, labels);
   }
 
   //////////////////////////////////////////////////////////////////////////////

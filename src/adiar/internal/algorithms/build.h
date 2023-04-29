@@ -39,69 +39,109 @@ namespace adiar::internal
     return nf;
   }
 
+  template<typename dd_policy, bool INIT_TERMINAL = false, bool HIGH_VAL = true>
+  class chain_low : public dd_policy
+  {
+  public:
+    static constexpr bool init_terminal = INIT_TERMINAL;
+
+    inline
+    typename dd_policy::node_t
+    make_node(const typename dd_policy::label_t &l,
+              const typename dd_policy::ptr_t &r) const
+    {
+      return typename dd_policy::node_t(l, dd_policy::MAX_ID,
+                                        r,
+                                        typename dd_policy::ptr_t(HIGH_VAL));
+    }
+  };
+
+  template<typename dd_policy, bool INIT_TERMINAL = true, bool LOW_VAL = false>
+  class chain_high : public dd_policy
+  {
+  public:
+    static constexpr bool init_terminal = INIT_TERMINAL;
+
+    inline
+    typename dd_policy::node_t
+    make_node(const typename dd_policy::label_t &l,
+              const typename dd_policy::ptr_t &r) const
+    {
+      return typename dd_policy::node_t(l, dd_policy::MAX_ID,
+                                        typename dd_policy::ptr_t(LOW_VAL),
+                                        r);
+    }
+  };
+
+  template<typename dd_policy, bool INIT_TERMINAL = true>
+  class chain_both : public dd_policy
+  {
+  public:
+    static constexpr bool init_terminal = INIT_TERMINAL;
+
+    inline
+    typename dd_policy::node_t
+    make_node(const typename dd_policy::label_t &l,
+              const typename dd_policy::ptr_t &r) const
+    {
+      return typename dd_policy::node_t(l, dd_policy::MAX_ID, r, r);
+    }
+  };
+
   template<typename chain_policy>
-  inline shared_levelized_file<node> build_chain(const chain_policy &/*policy*/,
-                                                 const shared_file<node::label_t> &labels)
+  inline shared_levelized_file<typename chain_policy::node_t>
+  build_chain(const chain_policy &policy,
+              const shared_file<node::label_t> &labels)
     {
       const size_t number_of_levels = labels->size();
       if (number_of_levels == 0) {
-        return build_terminal(chain_policy::on_empty);
+        return build_terminal(chain_policy::init_terminal);
       }
 
-      ptr_uint64 low = ptr_uint64(chain_policy::terminal_value[false]);
-      ptr_uint64 high = ptr_uint64(chain_policy::terminal_value[true]);
-
-      shared_levelized_file<bdd::node_t> nf;
+      shared_levelized_file<typename chain_policy::node_t> nf;
       node_writer nw(nf);
 
       file_stream<node::label_t, true> ls(labels);
-      while(ls.can_pull()) {
-        node::ptr_t::label_t next_label = ls.pull();
-        node next_node = node(next_label, node::ptr_t::MAX_ID, low, high);
 
-        adiar_assert(next_label <= node::ptr_t::MAX_LABEL, "Cannot represent that large a label");
-        adiar_assert(high.is_terminal() || next_label < high.label(),
+      size_t max_internal_cut    = 1;
+      size_t terminals[2] = {0u, 0u};
+
+      node::ptr_t root = node::ptr_t(chain_policy::init_terminal);
+      while(ls.can_pull()) {
+        const node::ptr_t::label_t next_label = ls.pull();
+
+        adiar_assert(root.is_terminal() || next_label < root.label(),
                      "Labels not given in increasing order");
 
-        if constexpr (chain_policy::link[false]) {
-          low = next_node.uid();
+        const node n = policy.make_node(next_label, root);
+
+        max_internal_cut = std::max<size_t>(max_internal_cut,
+                                            n.low().is_node() + n.high().is_node());
+
+        if (n.low().is_terminal()) {
+          terminals[n.low().value()] += 1u;
         }
-        if constexpr (chain_policy::link[true]) {
-          high = next_node.uid();
+        if (n.high().is_terminal()) {
+          terminals[n.high().value()] += 1u;
         }
 
-        nw.unsafe_push(next_node);
+        nw.unsafe_push(n);
         nw.unsafe_push(level_info(next_label,1u));
+
+        root = n.uid();
       }
 
-      // Compute 1-level cut sizes better than 'nw.detach()' will do on return.
-      const size_t internal_arcs =
-        number_of_levels > 1 ? (chain_policy::link[false] + chain_policy::link[true]) : 1u;
+      // 1-level cuts
+      nf->max_1level_cut[cut_type::INTERNAL] = max_internal_cut;
 
-      nf->max_1level_cut[cut_type::INTERNAL] = internal_arcs;
+      nf->max_1level_cut[cut_type::INTERNAL_FALSE] = std::max(max_internal_cut,
+                                                              terminals[false]);
 
-      const size_t false_arcs_pre_end =
-        (number_of_levels - 1) * ((!chain_policy::link[false] && !chain_policy::terminal_value[false])
-                                  + (!chain_policy::link[true] && !chain_policy::terminal_value[true]));
+      nf->max_1level_cut[cut_type::INTERNAL_TRUE] = std::max(max_internal_cut,
+                                                             terminals[true]);
 
-      const size_t false_arcs_end =
-        false_arcs_pre_end + !chain_policy::terminal_value[false] + !chain_policy::terminal_value[true];
-
-      nf->max_1level_cut[cut_type::INTERNAL_FALSE] = std::max(internal_arcs + false_arcs_pre_end,
-                                                              false_arcs_end);
-
-      const size_t true_arcs_pre_end  =
-        (number_of_levels - 1) * ((!chain_policy::link[false] && chain_policy::terminal_value[false])
-                                  + (!chain_policy::link[true] && chain_policy::terminal_value[true]));
-
-      const size_t true_arcs_end =
-        true_arcs_pre_end + chain_policy::terminal_value[false] + chain_policy::terminal_value[true];
-
-      nf->max_1level_cut[cut_type::INTERNAL_TRUE] = std::max(internal_arcs + true_arcs_pre_end,
-                                                             true_arcs_end);
-
-      nf->max_1level_cut[cut_type::ALL] = std::max(internal_arcs + false_arcs_pre_end + true_arcs_pre_end,
-                                                   false_arcs_end + true_arcs_end);
+      nf->max_1level_cut[cut_type::ALL] = std::max(max_internal_cut,
+                                                   terminals[false] + terminals[true]);
 
       return nf;
     }
