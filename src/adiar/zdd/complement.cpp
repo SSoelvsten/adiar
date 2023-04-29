@@ -24,6 +24,10 @@ namespace adiar
     public:
       static constexpr bool init_terminal = false;
 
+      constexpr bool
+      skip(const typename dd_policy::label_t &) const
+      { return false; }
+
       inline
       bdd::node_t
       make_node(const zdd::label_t &l, const zdd::ptr_t &r) const

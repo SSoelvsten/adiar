@@ -45,6 +45,10 @@ namespace adiar::internal
   public:
     static constexpr bool init_terminal = INIT_TERMINAL;
 
+    constexpr bool
+    skip(const typename dd_policy::label_t &) const
+    { return false; }
+
     inline typename dd_policy::node_t
     make_node(const typename dd_policy::label_t &l,
               const typename dd_policy::ptr_t &r) const
@@ -61,6 +65,10 @@ namespace adiar::internal
   public:
     static constexpr bool init_terminal = INIT_TERMINAL;
 
+    constexpr bool
+    skip(const typename dd_policy::label_t &) const
+    { return false; }
+
     inline typename dd_policy::node_t
     make_node(const typename dd_policy::label_t &l,
               const typename dd_policy::ptr_t &r) const
@@ -76,6 +84,10 @@ namespace adiar::internal
   {
   public:
     static constexpr bool init_terminal = INIT_TERMINAL;
+
+    constexpr bool
+    skip(const typename dd_policy::label_t &) const
+    { return false; }
 
     inline typename dd_policy::node_t
     make_node(const typename dd_policy::label_t &l,
@@ -114,6 +126,8 @@ namespace adiar::internal
         adiar_assert(root.is_terminal() || next_label < root.label(),
                      "Labels not given in increasing order");
 
+        if (policy.skip(next_label)) { continue; }
+
         const node n = policy.make_node(next_label, root);
 
         max_internal_cut = std::max<size_t>(max_internal_cut,
@@ -142,6 +156,10 @@ namespace adiar::internal
         nw.unsafe_push(level_info(next_label,1u));
 
         root = n.uid();
+      }
+
+      if (nw.size() == 0u) {
+        return build_terminal(chain_policy::init_terminal);
       }
 
       // 1-level cuts
