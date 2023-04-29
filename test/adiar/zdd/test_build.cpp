@@ -123,72 +123,6 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_ithvar", [&]() {
-      it("can create { {0} }", [&]() {
-        zdd res = zdd_ithvar(0);
-        node_test_stream ns(res);
-
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID, terminal_F, terminal_T)));
-        AssertThat(ns.can_pull(), Is().False());
-
-        level_info_test_stream ms(res);
-
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
-        AssertThat(ms.can_pull(), Is().False());
-
-        AssertThat(res->width, Is().EqualTo(1u));
-
-        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
-
-        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
-
-        AssertThat(adiar::is_canonical(res), Is().True());
-
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
-      });
-
-      it("can create { {42} }", [&]() {
-        zdd res = zdd_ithvar(42);
-        node_test_stream ns(res);
-
-        AssertThat(ns.can_pull(), Is().True());
-        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID, terminal_F, terminal_T)));
-        AssertThat(ns.can_pull(), Is().False());
-
-        level_info_test_stream ms(res);
-
-        AssertThat(ms.can_pull(), Is().True());
-        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
-        AssertThat(ms.can_pull(), Is().False());
-
-        AssertThat(res->width, Is().EqualTo(1u));
-
-        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
-
-        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
-        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
-
-        AssertThat(adiar::is_canonical(res), Is().True());
-
-        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
-        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
-      });
-    });
-
     describe("zdd_vars", [&]() {
       it("can create { Ø } on empty list", [&]() {
         adiar::shared_file<zdd::label_t> labels;
@@ -305,6 +239,73 @@ go_bandit([]() {
         AssertThat(adiar::is_canonical(res), Is().True());
 
         AssertThat(res->number_of_terminals[false], Is().EqualTo(3u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+    });
+
+
+    describe("zdd_singleton", [&]() {
+      it("can create { {0} }", [&]() {
+        zdd res = zdd_singleton(0);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("can create { {42} }", [&]() {
+        zdd res = zdd_singleton(42);
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID, terminal_F, terminal_T)));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
         AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
       });
     });

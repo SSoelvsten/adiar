@@ -61,17 +61,6 @@ namespace adiar
   zdd zdd_null();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     The family { {i} } .
-  ///
-  /// \details   Creates a ZDD of a single node with label `var` and the
-  ///            children false and true. The given label must be smaller than
-  ///            `zdd::MAX_LABEL`.
-  ///
-  /// \param var The label of the desired variable to include
-  //////////////////////////////////////////////////////////////////////////////
-  zdd zdd_ithvar(zdd::label_t var);
-
-  //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { { 1, 2, ..., k } }.
   ///
   /// \details   Creates a ZDD with a chain of nodes on the 'high' arc to the
@@ -81,6 +70,17 @@ namespace adiar
   /// \param vars Labels of the desired variables (in ascending order)
   //////////////////////////////////////////////////////////////////////////////
   zdd zdd_vars(const shared_file<zdd::label_t> &vars);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief     The family { {i} } .
+  ///
+  /// \details   Creates a ZDD of a single node with label `var` and the
+  ///            children false and true. The given label must be smaller than
+  ///            `zdd::MAX_LABEL`.
+  ///
+  /// \param var The label of the desired variable to include
+  //////////////////////////////////////////////////////////////////////////////
+  zdd zdd_singleton(zdd::label_t var);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     The family { {1}, {2}, ..., {k} }.

@@ -382,7 +382,7 @@ int main(int argc, char* argv[])
   std::cout << "| Time:" << std::endl;
 
   if (N == 1) {
-    paths = adiar::zdd_ithvar(0);
+    paths = adiar::zdd_singleton(0);
   } else {
     timestamp_t before_paths = get_timestamp();
     paths = only_closed ? constraint_closed(N) : constraint_transition(N,0);
