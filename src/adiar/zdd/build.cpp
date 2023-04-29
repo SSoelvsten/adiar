@@ -1,5 +1,7 @@
 #include "build.h"
 
+#include <adiar/zdd/zdd_policy.h>
+
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/build.h>
 
@@ -22,18 +24,10 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class zdd_vars_chain_policy
-  {
-  public:
-    static constexpr bool on_empty          = true;
-    static constexpr bool link[2]           = {false, true};
-    static constexpr bool terminal_value[2] = {false, true};
-  };
-
   zdd zdd_vars(const shared_file<zdd::label_t> &labels)
   {
-    zdd_vars_chain_policy p;
-    return internal::build_chain<zdd_vars_chain_policy>(p, labels);
+    internal::chain_high<zdd_policy> p;
+    return internal::build_chain<>(p, labels);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -43,32 +37,16 @@ namespace adiar
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class zdd_singletons_chain_policy
-  {
-  public:
-    static constexpr bool on_empty          = false;
-    static constexpr bool link[2]           = {true, false};
-    static constexpr bool terminal_value[2] = {false, true};
-  };
-
   zdd zdd_singletons(const shared_file<zdd::label_t> &labels)
   {
-    zdd_singletons_chain_policy p;
-    return internal::build_chain<zdd_singletons_chain_policy>(p, labels);
+    internal::chain_low<zdd_policy> p;
+    return internal::build_chain<>(p, labels);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class zdd_powerset_chain_policy
-  {
-  public:
-    static constexpr bool on_empty          = true;
-    static constexpr bool link[2]           = {true, true};
-    static constexpr bool terminal_value[2] = {true, true};
-  };
-
   zdd zdd_powerset(const shared_file<zdd::label_t> &labels)
   {
-    zdd_powerset_chain_policy p;
-    return internal::build_chain<zdd_powerset_chain_policy>(p, labels);
+    internal::chain_both<zdd_policy> p;
+    return internal::build_chain<>(p, labels);
   }
 }
