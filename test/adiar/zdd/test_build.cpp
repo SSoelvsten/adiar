@@ -1,7 +1,7 @@
 #include "../../test.h"
 
 go_bandit([]() {
-  describe("adiar/zdd/build.cpp", [&]() {
+  describe("adiar/zdd/build.cpp", []() {
     ptr_uint64 terminal_T = ptr_uint64(true);
     ptr_uint64 terminal_F = ptr_uint64(false);
 
@@ -123,11 +123,355 @@ go_bandit([]() {
       });
     });
 
+    describe("zdd_ithvar(i, dom)", [&]() {
+      it("creates Ø when dom is empty", [&]() {
+        adiar::shared_file<zdd::label_t> dom;
+
+        zdd res = zdd_ithvar(42, dom);
+
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(false)));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(0u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(0u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(1u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(0u));
+      });
+
+      it("creates { { 42 } } for i = 42, dom = {42}", [&]() {
+        adiar::shared_file<zdd::label_t> dom;
+        { // Garbage collect writer to free write-lock
+          label_writer lw(dom);
+          lw << 42;
+        }
+
+        zdd res = zdd_ithvar(42, dom);
+
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID,
+                                                node::ptr_t(false),
+                                                node::ptr_t(true))));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("creates { { 7 } } for i = 7, dom = {7}", [&]() {
+        adiar::shared_file<zdd::label_t> dom;
+        { // Garbage collect writer to free write-lock
+          label_writer lw(dom);
+          lw << 7;
+        }
+
+        zdd res = zdd_ithvar(7, dom);
+
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(7, node::MAX_ID,
+                                                node::ptr_t(false),
+                                                node::ptr_t(true))));
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(7,1u)));
+
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("creates { { 21 }, { 42,21 } } for i = 21, dom = {21,42}", [&]() {
+        adiar::shared_file<zdd::label_t> dom;
+        { // Garbage collect writer to free write-lock
+          label_writer lw(dom);
+          lw << 21 << 42;
+        }
+
+        zdd res = zdd_ithvar(21, dom);
+
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID,
+                                                node::ptr_t(true),
+                                                node::ptr_t(true))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(21, node::MAX_ID,
+                                                node::ptr_t(false),
+                                                node::ptr_t(42, node::MAX_ID))));
+
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(21,1u)));
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+      });
+
+      it("creates { { 42 }, { 42,21 } } for i = 42, dom = {21,42}", [&]() {
+        adiar::shared_file<zdd::label_t> dom;
+        { // Garbage collect writer to free write-lock
+          label_writer lw(dom);
+          lw << 21 << 42;
+        }
+
+        zdd res = zdd_ithvar(42, dom);
+
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID,
+                                                node::ptr_t(false),
+                                                node::ptr_t(true))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(21, node::MAX_ID,
+                                                node::ptr_t(42, node::MAX_ID),
+                                                node::ptr_t(42, node::MAX_ID))));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(21,1u)));
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(2u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+
+      it("creates { { 21 }, { 42,21 }, { 21,10 }, { 42,21,10 } } for i = 21, dom = {10,21,42}", [&]() {
+        adiar::shared_file<zdd::label_t> dom;
+        { // Garbage collect writer to free write-lock
+          label_writer lw(dom);
+          lw << 10 << 21 << 42;
+        }
+
+        zdd res = zdd_ithvar(21, dom);
+
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(42, node::MAX_ID,
+                                                node::ptr_t(true),
+                                                node::ptr_t(true))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(21, node::MAX_ID,
+                                                node::ptr_t(false),
+                                                node::ptr_t(42, node::MAX_ID))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(10, node::MAX_ID,
+                                                node::ptr_t(21, node::MAX_ID),
+                                                node::ptr_t(21, node::MAX_ID))));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(21,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(10,1u)));
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+      });
+    });
+
+    describe("zdd_ithvar(i)", [&]() {
+      it("constructs chain for i = 1 global dom = {0,1,2,3}", [&]() {
+        {
+          adiar::shared_file<zdd::label_t> dom;
+          { // Garbage collect writer to free write-lock
+            label_writer lw(dom);
+            lw << 0 << 1 << 2 << 3;
+          }
+          adiar_set_domain(dom);
+        }
+
+        zdd res = zdd_ithvar(1);
+
+        node_test_stream ns(res);
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(3, node::MAX_ID,
+                                                node::ptr_t(true),
+                                                node::ptr_t(true))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(2, node::MAX_ID,
+                                                node::ptr_t(3, node::MAX_ID),
+                                                node::ptr_t(3, node::MAX_ID))));
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(1, node::MAX_ID,
+                                                node::ptr_t(false),
+                                                node::ptr_t(2, node::MAX_ID))));
+
+
+        AssertThat(ns.can_pull(), Is().True());
+        AssertThat(ns.pull(), Is().EqualTo(node(0, node::MAX_ID,
+                                                node::ptr_t(1, node::MAX_ID),
+                                                node::ptr_t(1, node::MAX_ID))));
+
+        AssertThat(ns.can_pull(), Is().False());
+
+        level_info_test_stream ms(res);
+
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(3,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(2,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(1,1u)));
+        AssertThat(ms.can_pull(), Is().True());
+        AssertThat(ms.pull(), Is().EqualTo(level_info(0,1u)));
+        AssertThat(ms.can_pull(), Is().False());
+
+        AssertThat(res->width, Is().EqualTo(1u));
+
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_1level_cut[cut_type::ALL], Is().EqualTo(3u));
+
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(2u));
+        AssertThat(res->max_2level_cut[cut_type::ALL], Is().EqualTo(3u));
+
+        AssertThat(adiar::is_canonical(res), Is().True());
+
+        AssertThat(res->number_of_terminals[false], Is().EqualTo(1u));
+        AssertThat(res->number_of_terminals[true],  Is().EqualTo(2u));
+      });
+    });
+
     describe("zdd_vars", [&]() {
       it("can create { Ø } on empty list", [&]() {
         adiar::shared_file<zdd::label_t> labels;
 
         zdd res = zdd_vars(labels);
+
         node_test_stream ns(res);
 
         AssertThat(ns.can_pull(), Is().True());
@@ -174,6 +518,7 @@ go_bandit([]() {
 
         AssertThat(ms.can_pull(), Is().True());
         AssertThat(ms.pull(), Is().EqualTo(level_info(42,1u)));
+
         AssertThat(ms.can_pull(), Is().False());
 
         AssertThat(res->width, Is().EqualTo(1u));
