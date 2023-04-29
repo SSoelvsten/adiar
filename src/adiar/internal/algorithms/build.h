@@ -39,18 +39,17 @@ namespace adiar::internal
     return nf;
   }
 
-  template<bool on_empty, bool link_low, bool link_high,
-    bool low_terminal_value = false,
-    bool high_terminal_value = true>
-  inline shared_levelized_file<node> build_chain(const shared_file<node::label_t> &labels)
+  template<typename chain_policy>
+  inline shared_levelized_file<node> build_chain(const chain_policy &/*policy*/,
+                                                 const shared_file<node::label_t> &labels)
     {
       const size_t number_of_levels = labels->size();
       if (number_of_levels == 0) {
-        return build_terminal(on_empty);
+        return build_terminal(chain_policy::on_empty);
       }
 
-      ptr_uint64 low = ptr_uint64(low_terminal_value);
-      ptr_uint64 high = ptr_uint64(high_terminal_value);
+      ptr_uint64 low = ptr_uint64(chain_policy::terminal_value[false]);
+      ptr_uint64 high = ptr_uint64(chain_policy::terminal_value[true]);
 
       shared_levelized_file<bdd::node_t> nf;
       node_writer nw(nf);
@@ -64,10 +63,10 @@ namespace adiar::internal
         adiar_assert(high.is_terminal() || next_label < high.label(),
                      "Labels not given in increasing order");
 
-        if constexpr(link_low) {
+        if constexpr (chain_policy::link[false]) {
           low = next_node.uid();
         }
-        if constexpr(link_high) {
+        if constexpr (chain_policy::link[true]) {
           high = next_node.uid();
         }
 
@@ -76,22 +75,27 @@ namespace adiar::internal
       }
 
       // Compute 1-level cut sizes better than 'nw.detach()' will do on return.
-      const size_t internal_arcs = number_of_levels > 1 ? (link_low + link_high) : 1u;
+      const size_t internal_arcs =
+        number_of_levels > 1 ? (chain_policy::link[false] + chain_policy::link[true]) : 1u;
 
       nf->max_1level_cut[cut_type::INTERNAL] = internal_arcs;
 
       const size_t false_arcs_pre_end =
-        (number_of_levels - 1) * ((!link_low && !low_terminal_value) + (!link_high && !high_terminal_value));
+        (number_of_levels - 1) * ((!chain_policy::link[false] && !chain_policy::terminal_value[false])
+                                  + (!chain_policy::link[true] && !chain_policy::terminal_value[true]));
 
-      const size_t false_arcs_end = false_arcs_pre_end + !low_terminal_value + !high_terminal_value;
+      const size_t false_arcs_end =
+        false_arcs_pre_end + !chain_policy::terminal_value[false] + !chain_policy::terminal_value[true];
 
       nf->max_1level_cut[cut_type::INTERNAL_FALSE] = std::max(internal_arcs + false_arcs_pre_end,
                                                               false_arcs_end);
 
       const size_t true_arcs_pre_end  =
-      (number_of_levels - 1) * ((!link_low && low_terminal_value) + (!link_high && high_terminal_value));
+        (number_of_levels - 1) * ((!chain_policy::link[false] && chain_policy::terminal_value[false])
+                                  + (!chain_policy::link[true] && chain_policy::terminal_value[true]));
 
-      const size_t true_arcs_end = true_arcs_pre_end + low_terminal_value + high_terminal_value;
+      const size_t true_arcs_end =
+        true_arcs_pre_end + chain_policy::terminal_value[false] + chain_policy::terminal_value[true];
 
       nf->max_1level_cut[cut_type::INTERNAL_TRUE] = std::max(internal_arcs + true_arcs_pre_end,
                                                              true_arcs_end);

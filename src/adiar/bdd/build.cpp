@@ -11,6 +11,7 @@
 
 namespace adiar
 {
+  //////////////////////////////////////////////////////////////////////////////
   bdd bdd_terminal(bool value)
   {
     return internal::build_terminal(value);
@@ -26,26 +27,49 @@ namespace adiar
     return internal::build_terminal(false);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   bdd bdd_ithvar(bdd::label_t label)
   {
     return internal::build_ithvar(label);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   bdd bdd_nithvar(bdd::label_t label)
   {
     return bdd_not(internal::build_ithvar(label));
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  class bdd_and_chain_policy
+  {
+  public:
+    static constexpr bool on_empty          = true;
+    static constexpr bool link[2]           = {false, true};
+    static constexpr bool terminal_value[2] = {false, true};
+  };
+
   bdd bdd_and(const shared_file<bdd::label_t> &labels)
   {
-    return internal::build_chain<true, false, true>(labels);
+    bdd_and_chain_policy p;
+    return internal::build_chain<bdd_and_chain_policy>(p, labels);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  class bdd_or_chain_policy
+  {
+  public:
+    static constexpr bool on_empty          = false;
+    static constexpr bool link[2]           = {true, false};
+    static constexpr bool terminal_value[2] = {false, true};
+  };
 
   bdd bdd_or(const shared_file<bdd::label_t> &labels)
   {
-    return internal::build_chain<false, true, false>(labels);
+    bdd_or_chain_policy p;
+    return internal::build_chain<bdd_or_chain_policy>(p, labels);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   inline bdd::id_t bdd_counter_min_id(bdd::label_t label, bdd::label_t max_var, uint64_t threshold)
   {
     return label > max_var - threshold
