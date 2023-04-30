@@ -16,6 +16,8 @@
 
 namespace adiar
 {
+  using domain_var_t = internal::node::label_t;
+
   //////////////////////////////////////////////////////////////////////////////
   /// \addtogroup module__domain
   ///
@@ -24,12 +26,17 @@ namespace adiar
   // TODO: make the labels of the domain a supertype of all labels (size_t?).
 
   //////////////////////////////////////////////////////////////////////////////
+  /// \brief Set the domain globally for all of Adiar to be [0, varcount).
+  //////////////////////////////////////////////////////////////////////////////
+  void adiar_set_domain(const size_t varcount);
+
+  //////////////////////////////////////////////////////////////////////////////
   /// \brief     Set the domain globally for all of Adiar.
   ///
   /// \param dom A \ref shared_file containing all labels of the problem domain
   ///            in ascending order.
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_set_domain(const shared_file<internal::node::label_t> &dom);
+  void adiar_set_domain(const shared_file<domain_var_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Removes any globally shared domain variable (if any).
@@ -49,7 +56,7 @@ namespace adiar
   /// \throws std::domain_error If no domain is yet set, i.e.
   ///         `adiar_has_domain() == false`.
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<internal::node::label_t> adiar_get_domain();
+  shared_file<domain_var_t> adiar_get_domain();
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

@@ -9,9 +9,18 @@ namespace adiar
   // Use an explicit 'shared_ptr' rather than a 'shared_file' to allow using the
   // NULL value.
 
-  shared_ptr<internal::file<internal::node::label_t>> domain_ptr;
+  shared_ptr<internal::file<domain_var_t>> domain_ptr;
 
-  void adiar_set_domain(const shared_file<internal::node::label_t> &dom) {
+  void adiar_set_domain(const size_t varcount) {
+    shared_file<domain_var_t> dom;
+    { // Garbage collect writer to free write-lock
+      internal::file_writer<domain_var_t> lw(dom);
+      for (domain_var_t v = 0; v < varcount; v++) { lw << v; }
+    }
+    adiar_set_domain(dom);
+  }
+
+  void adiar_set_domain(const shared_file<domain_var_t> &dom) {
     domain_ptr = dom;
   }
 
@@ -23,7 +32,7 @@ namespace adiar
     return domain_ptr ? true : false;
   }
 
-  shared_file<internal::node::label_t> adiar_get_domain() {
+  shared_file<domain_var_t> adiar_get_domain() {
     if(!adiar_has_domain()) {
       throw std::domain_error("Domain must be set before it can be used");
     }
