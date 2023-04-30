@@ -103,9 +103,13 @@ $(document).ready(function(){initNavTree('group__module____domain.html',''); ini
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gacd89fe9c882e5a6dd2269571ae9f5afc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#gacd89fe9c882e5a6dd2269571ae9f5afc">adiar::adiar_set_domain</a> (const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1internal_1_1node.html#a37197ed662719976542ac0975871c619">internal::node::label_t</a> &gt; &amp;dom)</td></tr>
-<tr class="memdesc:gacd89fe9c882e5a6dd2269571ae9f5afc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the domain globally for all of Adiar.  <a href="group__module____domain.html#gacd89fe9c882e5a6dd2269571ae9f5afc">More...</a><br /></td></tr>
-<tr class="separator:gacd89fe9c882e5a6dd2269571ae9f5afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0448e5fffbe7c3b3c041c121c10d4844"><td class="memItemLeft" align="right" valign="top"><a id="ga0448e5fffbe7c3b3c041c121c10d4844"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga0448e5fffbe7c3b3c041c121c10d4844">adiar::adiar_set_domain</a> (const size_t varcount)</td></tr>
+<tr class="memdesc:ga0448e5fffbe7c3b3c041c121c10d4844"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the domain globally for all of Adiar to be [0, varcount). <br /></td></tr>
+<tr class="separator:ga0448e5fffbe7c3b3c041c121c10d4844"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga33501154d8f9b336a905581c7959010b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga33501154d8f9b336a905581c7959010b">adiar::adiar_set_domain</a> (const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; domain_var_t &gt; &amp;dom)</td></tr>
+<tr class="memdesc:ga33501154d8f9b336a905581c7959010b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the domain globally for all of Adiar.  <a href="group__module____domain.html#ga33501154d8f9b336a905581c7959010b">More...</a><br /></td></tr>
+<tr class="separator:ga33501154d8f9b336a905581c7959010b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6d647e7ebfdf713ffff61da243a3472c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga6d647e7ebfdf713ffff61da243a3472c">adiar::adiar_unset_domain</a> ()</td></tr>
 <tr class="memdesc:ga6d647e7ebfdf713ffff61da243a3472c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes any globally shared domain variable (if any).  <a href="group__module____domain.html#ga6d647e7ebfdf713ffff61da243a3472c">More...</a><br /></td></tr>
 <tr class="separator:ga6d647e7ebfdf713ffff61da243a3472c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -113,22 +117,22 @@ Functions</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga7ff4243ba9fbb1225508f62bbf712a78">adiar::adiar_has_domain</a> ()</td></tr>
 <tr class="memdesc:ga7ff4243ba9fbb1225508f62bbf712a78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar has a global domain. <br /></td></tr>
 <tr class="separator:ga7ff4243ba9fbb1225508f62bbf712a78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga321e4d4e052194242d8c63cbb80a8dd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1internal_1_1node.html#a37197ed662719976542ac0975871c619">internal::node::label_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga321e4d4e052194242d8c63cbb80a8dd9">adiar::adiar_get_domain</a> ()</td></tr>
-<tr class="memdesc:ga321e4d4e052194242d8c63cbb80a8dd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the global domain if <code><a class="el" href="group__module____domain.html#ga7ff4243ba9fbb1225508f62bbf712a78" title="Whether Adiar has a global domain.">adiar_has_domain()</a> == true</code>.  <a href="group__module____domain.html#ga321e4d4e052194242d8c63cbb80a8dd9">More...</a><br /></td></tr>
-<tr class="separator:ga321e4d4e052194242d8c63cbb80a8dd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa9d454d761ac5574556d61a391f7dc56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; domain_var_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#gaa9d454d761ac5574556d61a391f7dc56">adiar::adiar_get_domain</a> ()</td></tr>
+<tr class="memdesc:gaa9d454d761ac5574556d61a391f7dc56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the global domain if <code><a class="el" href="group__module____domain.html#ga7ff4243ba9fbb1225508f62bbf712a78" title="Whether Adiar has a global domain.">adiar_has_domain()</a> == true</code>.  <a href="group__module____domain.html#gaa9d454d761ac5574556d61a391f7dc56">More...</a><br /></td></tr>
+<tr class="separator:gaa9d454d761ac5574556d61a391f7dc56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Global domain of variables. </p>
 <p>Some operations relate to the entire variable domain. Instead of passing this around explicitly, you may set it once and then Adiar will take care of using it when needed. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga321e4d4e052194242d8c63cbb80a8dd9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga321e4d4e052194242d8c63cbb80a8dd9">&#9670;&nbsp;</a></span>adiar_get_domain()</h2>
+<a id="gaa9d454d761ac5574556d61a391f7dc56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa9d454d761ac5574556d61a391f7dc56">&#9670;&nbsp;</a></span>adiar_get_domain()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt;<a class="el" href="classadiar_1_1internal_1_1node.html#a37197ed662719976542ac0975871c619">internal::node::label_t</a>&gt; adiar::adiar_get_domain </td>
+          <td class="memname"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt;domain_var_t&gt; adiar::adiar_get_domain </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -146,8 +150,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 
 </div>
 </div>
-<a id="gacd89fe9c882e5a6dd2269571ae9f5afc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gacd89fe9c882e5a6dd2269571ae9f5afc">&#9670;&nbsp;</a></span>adiar_set_domain()</h2>
+<a id="ga33501154d8f9b336a905581c7959010b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga33501154d8f9b336a905581c7959010b">&#9670;&nbsp;</a></span>adiar_set_domain()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -155,7 +159,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
         <tr>
           <td class="memname">void adiar::adiar_set_domain </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="classadiar_1_1internal_1_1node.html#a37197ed662719976542ac0975871c619">internal::node::label_t</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; domain_var_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>dom</em></td><td>)</td>
           <td></td>
         </tr>
@@ -188,7 +192,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 </div><div class="memdoc">
 
 <p>Removes any globally shared domain variable (if any). </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____domain.html#gacd89fe9c882e5a6dd2269571ae9f5afc" title="Set the domain globally for all of Adiar.">adiar_set_domain</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group__module____domain.html#ga0448e5fffbe7c3b3c041c121c10d4844" title="Set the domain globally for all of Adiar to be [0, varcount).">adiar_set_domain</a> </dd></dl>
 
 </div>
 </div>
