@@ -51,7 +51,22 @@ var group__module____statistics =
         [ "sum_predicted_max_size", "structadiar_1_1stats__t_1_1levelized__priority__queue__t.html#adbb00047f1127e2a664949e29533d83e", null ]
       ] ],
       [ "prod2_t", "structadiar_1_1stats__t_1_1prod2__t.html", [
-        [ "lpq", "structadiar_1_1stats__t_1_1prod2__t.html#a50829118ad63e1a074b9441e89fa54a4", null ]
+        [ "pq_t", "structadiar_1_1stats__t_1_1prod2__t_1_1pq__t.html", [
+          [ "pq_2_elems", "structadiar_1_1stats__t_1_1prod2__t_1_1pq__t.html#aedea64c05adba451ebf929c5ec9fda5d", null ],
+          [ "runs", "structadiar_1_1stats__t_1_1prod2__t_1_1pq__t.html#a78f0eb164610b899dc6c6239fb70318c", null ]
+        ] ],
+        [ "ra_t", "structadiar_1_1stats__t_1_1prod2__t_1_1ra__t.html", [
+          [ "acc_width", "structadiar_1_1stats__t_1_1prod2__t_1_1ra__t.html#a252ac36f0f361e6ad17d86988184659b", null ],
+          [ "max_width", "structadiar_1_1stats__t_1_1prod2__t_1_1ra__t.html#af836bdd4b405ac66066749ea1a7e77d5", null ],
+          [ "min_width", "structadiar_1_1stats__t_1_1prod2__t_1_1ra__t.html#aab27ee0cddf38ac19c48133eaf9daa9d", null ],
+          [ "runs", "structadiar_1_1stats__t_1_1prod2__t_1_1ra__t.html#ac76c91fae7e1bca1cb3c20d926ccae14", null ],
+          [ "used_narrowest", "structadiar_1_1stats__t_1_1prod2__t_1_1ra__t.html#abdafc8f65f84b90091b5002f61ab8b53", null ]
+        ] ],
+        [ "lpq", "structadiar_1_1stats__t_1_1prod2__t.html#a50829118ad63e1a074b9441e89fa54a4", null ],
+        [ "pq", "structadiar_1_1stats__t_1_1prod2__t.html#a3ca3772af5845f5c0b857c04be817c5c", null ],
+        [ "ra", "structadiar_1_1stats__t_1_1prod2__t.html#af4bbfe77f9b9c70d51b218ad113b46c2", null ],
+        [ "trivial_file", "structadiar_1_1stats__t_1_1prod2__t.html#aca8c6a93e5d247676b96c488be35d678", null ],
+        [ "trivial_terminal", "structadiar_1_1stats__t_1_1prod2__t.html#a57ef72d6adb642c3f2d545c5fece5022", null ]
       ] ],
       [ "prod3_t", "structadiar_1_1stats__t_1_1prod3__t.html", [
         [ "lpq", "structadiar_1_1stats__t_1_1prod3__t.html#a50829118ad63e1a074b9441e89fa54a4", null ]

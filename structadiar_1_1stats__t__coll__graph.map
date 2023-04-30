@@ -1,16 +1,18 @@
 <map id="adiar::stats_t" name="adiar::stats_t">
-<area shape="rect" id="node1" title="Available statistics from algorithm&#39;s and data structures." alt="" coords="1076,224,1183,251"/>
+<area shape="rect" id="node1" title="Available statistics from algorithm&#39;s and data structures." alt="" coords="1076,263,1183,289"/>
 <area shape="rect" id="node2" href="$structadiar_1_1stats__t_1_1levelized__priority__queue__t.html" title="Levelized Priority Queue statistics." alt="" coords="5,43,180,85"/>
-<area shape="rect" id="node5" href="$structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="229,109,379,150"/>
-<area shape="rect" id="node3" href="$structadiar_1_1stats__t_1_1intercut__t.html" title="Intercut algorithm statistics." alt="" coords="774,224,951,251"/>
-<area shape="rect" id="node4" href="$structadiar_1_1stats__t_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="452,224,639,251"/>
-<area shape="rect" id="node6" href="$structadiar_1_1stats__t_1_1equality__t.html" title="Equality Checking algorithm statistics." alt="" coords="773,427,953,453"/>
-<area shape="rect" id="node9" href="$structadiar_1_1stats__t_1_1quantify__t.html" title="Quantification algorithm statistics." alt="" coords="773,275,953,301"/>
-<area shape="rect" id="node10" href="$structadiar_1_1stats__t_1_1substitute__t.html" title="Substitution algorithm statistics." alt="" coords="767,325,959,352"/>
-<area shape="rect" id="node11" href="$structadiar_1_1stats__t_1_1prod2__t.html" title="2&#45;ary Product Construction algorithm statistics." alt="" coords="781,376,945,403"/>
-<area shape="rect" id="node12" href="$structadiar_1_1stats__t_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="777,72,948,99"/>
-<area shape="rect" id="node13" href="$structadiar_1_1stats__t_1_1count__t.html" title="Counting algorithm statistics." alt="" coords="781,123,944,149"/>
-<area shape="rect" id="node14" href="$structadiar_1_1stats__t_1_1prod3__t.html" title="3&#45;ary Product Construction algorithm statistics." alt="" coords="781,173,945,200"/>
-<area shape="rect" id="node7" href="$structadiar_1_1stats__t_1_1equality__t_1_1slow__t.html" title="Statistics from O(N log N) time&#45;forward processing equality checking algorithm." alt="" coords="461,418,629,459"/>
-<area shape="rect" id="node8" href="$structadiar_1_1stats__t_1_1equality__t_1_1fast__t.html" title="Statistics from O(N) linear&#45;scan equality checking algorithm." alt="" coords="461,483,629,525"/>
+<area shape="rect" id="node5" href="$structadiar_1_1stats__t_1_1____alg__base_1_1____lpq.html" title="Type and usage of this algorithm&#39;s levelized priority queue." alt="" coords="229,122,379,163"/>
+<area shape="rect" id="node3" href="$structadiar_1_1stats__t_1_1intercut__t.html" title="Intercut algorithm statistics." alt="" coords="774,263,951,289"/>
+<area shape="rect" id="node4" href="$structadiar_1_1stats__t_1_1____alg__base.html" title="Common statistics for all algorithms." alt="" coords="452,280,639,307"/>
+<area shape="rect" id="node6" href="$structadiar_1_1stats__t_1_1equality__t.html" title="Equality Checking algorithm statistics." alt="" coords="773,111,953,137"/>
+<area shape="rect" id="node9" href="$structadiar_1_1stats__t_1_1quantify__t.html" title="Quantification algorithm statistics." alt="" coords="773,415,953,441"/>
+<area shape="rect" id="node10" href="$structadiar_1_1stats__t_1_1substitute__t.html" title="Substitution algorithm statistics." alt="" coords="767,161,959,188"/>
+<area shape="rect" id="node11" href="$structadiar_1_1stats__t_1_1prod2__t.html" title="2&#45;ary Product Construction algorithm statistics." alt="" coords="781,465,945,492"/>
+<area shape="rect" id="node14" href="$structadiar_1_1stats__t_1_1reduce__t.html" title="Reduce algorithm statistics." alt="" coords="777,212,948,239"/>
+<area shape="rect" id="node15" href="$structadiar_1_1stats__t_1_1count__t.html" title="Counting algorithm statistics." alt="" coords="781,313,944,340"/>
+<area shape="rect" id="node16" href="$structadiar_1_1stats__t_1_1prod3__t.html" title="3&#45;ary Product Construction algorithm statistics." alt="" coords="781,364,945,391"/>
+<area shape="rect" id="node7" href="$structadiar_1_1stats__t_1_1equality__t_1_1slow__t.html" title="Statistics from O(N log N) time&#45;forward processing equality checking algorithm." alt="" coords="461,83,629,125"/>
+<area shape="rect" id="node8" href="$structadiar_1_1stats__t_1_1equality__t_1_1fast__t.html" title="Statistics from O(N) linear&#45;scan equality checking algorithm." alt="" coords="461,149,629,190"/>
+<area shape="rect" id="node12" href="$structadiar_1_1stats__t_1_1prod2__t_1_1ra__t.html" title="Statistics for the double priority queue implementation." alt="" coords="469,457,621,498"/>
+<area shape="rect" id="node13" href="$structadiar_1_1stats__t_1_1prod2__t_1_1pq__t.html" title="Statistics for the double priority queue implementation." alt="" coords="469,522,621,563"/>
 </map>

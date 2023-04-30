@@ -220,6 +220,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#ae4c073a63facbc16062cae3653e8f01c">is_commutative</a> (const <a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">bool_op</a> &amp;op)</td></tr>
 <tr class="memdesc:ae4c073a63facbc16062cae3653e8f01c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether an operator is commutative, op(X, Y) = op(Y, X). <br /></td></tr>
 <tr class="separator:ae4c073a63facbc16062cae3653e8f01c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd655f3440fb3210e2b2e27f439597d2"><td class="memItemLeft" align="right" valign="top"><a id="acd655f3440fb3210e2b2e27f439597d2"></a>
+<a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">bool_op</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#acd655f3440fb3210e2b2e27f439597d2">flip</a> (const <a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2">bool_op</a> &amp;op)</td></tr>
+<tr class="memdesc:acd655f3440fb3210e2b2e27f439597d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the operator in flipped version, i.e. op'(X, Y) = op(Y, X). <br /></td></tr>
+<tr class="separator:acd655f3440fb3210e2b2e27f439597d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44d88c01d2a9c89f1b2aeac80c61a595"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classadiar_1_1cube.html">cube</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceadiar.html#a44d88c01d2a9c89f1b2aeac80c61a595">cube_union</a> (const <a class="el" href="classadiar_1_1cube.html">cube</a> &amp;A, const <a class="el" href="classadiar_1_1cube.html">cube</a> &amp;B)</td></tr>
 <tr class="memdesc:a44d88c01d2a9c89f1b2aeac80c61a595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the union of two cubes.  <a href="namespaceadiar.html#a44d88c01d2a9c89f1b2aeac80c61a595">More...</a><br /></td></tr>
 <tr class="separator:a44d88c01d2a9c89f1b2aeac80c61a595"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -704,6 +708,19 @@ const <a class="el" href="namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2"
 <tr class="memitem:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaa457265c627a4561a55df8b29ed1375c">memory_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">memory_mode</a></td></tr>
 <tr class="memdesc:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current memory mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">More...</a><br /></td></tr>
 <tr class="separator:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">Access Mode</h2></td></tr>
+<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrpd947aa43211217130e006fb4a28a524c"></a>Adiar’s Algorithms delay recursion through use of auxiliary data structures. These auxiliary data structures are redundant when the width of one or more inputs fits in the internal memory. In these cases it is much faster to use random access. </p>
+</td></tr>
+<tr class="memitem:gaf478550fd9fee97c8357934d10e69ada"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">access_mode_t</a> { <b>AUTO</b>
+, <b>RA</b>
+, <b>PQ</b>
+ }</td></tr>
+<tr class="memdesc:gaf478550fd9fee97c8357934d10e69ada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar should exclusively use random access (RA) or priority queues (PQ) or automatically pick either way based on size of input.  <a href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">More...</a><br /></td></tr>
+<tr class="separator:gaf478550fd9fee97c8357934d10e69ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">access_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">access_mode</a></td></tr>
+<tr class="memdesc:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current access mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">More...</a><br /></td></tr>
+<tr class="separator:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Package Initialisation</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp414c34eac6873267e452317bc52a184a"></a>After having linked the C++ source file with Adiar, one needs to include the <code>&lt;<a class="el" href="adiar_8h_source.html">adiar/adiar.h</a>&gt;</code> header, initialise the library before using any of its data structures, and finally remember to deinitialise the library again before the program terminates. </p>

@@ -112,6 +112,19 @@ $(document).ready(function(){initNavTree('group__module____adiar.html',''); init
 <tr class="memdesc:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current memory mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#gaa7f0e02f27b1884ce06f69040fb8ff89">More...</a><br /></td></tr>
 <tr class="separator:gaa7f0e02f27b1884ce06f69040fb8ff89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader">Access Mode</h2></td></tr>
+<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrpd947aa43211217130e006fb4a28a524c"></a>Adiar’s Algorithms delay recursion through use of auxiliary data structures. These auxiliary data structures are redundant when the width of one or more inputs fits in the internal memory. In these cases it is much faster to use random access. </p>
+</td></tr>
+<tr class="memitem:gaf478550fd9fee97c8357934d10e69ada"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">adiar::access_mode_t</a> { <b>AUTO</b>
+, <b>RA</b>
+, <b>PQ</b>
+ }</td></tr>
+<tr class="memdesc:gaf478550fd9fee97c8357934d10e69ada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether Adiar should exclusively use random access (RA) or priority queues (PQ) or automatically pick either way based on size of input.  <a href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">More...</a><br /></td></tr>
+<tr class="separator:gaf478550fd9fee97c8357934d10e69ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">access_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a></td></tr>
+<tr class="memdesc:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current access mode (default: <code>AUTO</code>).  <a href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">More...</a><br /></td></tr>
+<tr class="separator:ga7d6776af40156e16b1dc9e4ca2b74b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader">Package Initialisation</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp414c34eac6873267e452317bc52a184a"></a>After having linked the C++ source file with Adiar, one needs to include the <code>&lt;<a class="el" href="adiar_8h_source.html">adiar/adiar.h</a>&gt;</code> header, initialise the library before using any of its data structures, and finally remember to deinitialise the library again before the program terminates. </p>
 </td></tr>
@@ -133,6 +146,40 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Set up of Adiar and its core settings. </p>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="gaf478550fd9fee97c8357934d10e69ada"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf478550fd9fee97c8357934d10e69ada">&#9670;&nbsp;</a></span>access_mode_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">adiar::access_mode_t</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether Adiar should exclusively use random access (RA) or priority queues (PQ) or automatically pick either way based on size of input. </p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Enum Value   </th><th class="markdownTableHeadNone">Effect    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>AUTO</code>   </td><td class="markdownTableBodyNone">Automatically decide on type of access to use.    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>RA</code>   </td><td class="markdownTableBodyNone">Always use <em>random access</em>.    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>PQ</code>   </td><td class="markdownTableBodyNone">Always use <em>priority queues</em>.   </td></tr>
+</table>
+
+</div>
+</div>
 <a id="gaa457265c627a4561a55df8b29ed1375c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gaa457265c627a4561a55df8b29ed1375c">&#9670;&nbsp;</a></span>memory_mode_t</h2>
 
@@ -239,6 +286,33 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="ga7d6776af40156e16b1dc9e4ca2b74b36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7d6776af40156e16b1dc9e4ca2b74b36">&#9670;&nbsp;</a></span>access_mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__module____adiar.html#gaf478550fd9fee97c8357934d10e69ada">access_mode_t</a> adiar::access_mode</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The current access mode (default: <code>AUTO</code>). </p>
+<p>If you want to force <em>Adiar</em> to a specific access mode then you should set the global variable <code><a class="el" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36" title="The current access mode (default: AUTO).">adiar::access_mode</a></code> to one of the above three values. For example, one can force <em>Adiar</em> always use random access with the following piece of code. </p><div class="fragment"><div class="line"><a class="code" href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a> = adiar::access_mode_t::RA</div>
+<div class="ttc" id="agroup__module____adiar_html_ga7d6776af40156e16b1dc9e4ca2b74b36"><div class="ttname"><a href="group__module____adiar.html#ga7d6776af40156e16b1dc9e4ca2b74b36">adiar::access_mode</a></div><div class="ttdeci">access_mode_t access_mode</div><div class="ttdoc">The current access mode (default: AUTO).</div></div>
+</div><!-- fragment --><dl class="section warning"><dt>Warning</dt><dd>Using <code>RA</code> may lead to crashes if all inputs are too wide or input to random access is not canonical! </dd></dl>
+
+</div>
+</div>
 <a id="gaa7f0e02f27b1884ce06f69040fb8ff89"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gaa7f0e02f27b1884ce06f69040fb8ff89">&#9670;&nbsp;</a></span>memory_mode</h2>
 

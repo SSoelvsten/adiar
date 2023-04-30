@@ -34,6 +34,7 @@ var hierarchy =
     ] ],
     [ "adiar::map_pair< key_type, value_enum >", "classadiar_1_1map__pair.html", null ],
     [ "adiar::internal::node", "classadiar_1_1internal_1_1node.html", null ],
+    [ "adiar::stats_t::prod2_t::pq_t", "structadiar_1_1stats__t_1_1prod2__t_1_1pq__t.html", null ],
     [ "ptr_t", null, [
       [ "adiar::internal::__uid< ptr_t >", "classadiar_1_1internal_1_1____uid.html", null ]
     ] ],
@@ -41,15 +42,18 @@ var hierarchy =
       [ "adiar::internal::__uid< ptr_type >", "classadiar_1_1internal_1_1____uid.html", null ]
     ] ],
     [ "adiar::internal::ptr_uint64", "classadiar_1_1internal_1_1ptr__uint64.html", null ],
+    [ "adiar::stats_t::prod2_t::ra_t", "structadiar_1_1stats__t_1_1prod2__t_1_1ra__t.html", null ],
     [ "adiar::internal::request< CARDINALITY, NODE_CARRY_SIZE, INPUTS >", "classadiar_1_1internal_1_1request.html", null ],
     [ "adiar::internal::request< CARDINALITY, 0, INPUTS >", "classadiar_1_1internal_1_1request_3_01CARDINALITY_00_010_00_01INPUTS_01_4.html", null ],
     [ "adiar::internal::request< cardinality, 0u, cardinality >", "classadiar_1_1internal_1_1request.html", [
       [ "adiar::internal::request_data< cardinality, data_type, node_carry_size, inputs >", "classadiar_1_1internal_1_1request__data.html", null ]
     ] ],
     [ "adiar::internal::request_data_fst_lt< request_t >", "structadiar_1_1internal_1_1request__data__fst__lt.html", null ],
+    [ "adiar::internal::request_data_lt< idx, request_t >", "structadiar_1_1internal_1_1request__data__lt.html", null ],
     [ "adiar::internal::request_data_snd_lt< request_t >", "structadiar_1_1internal_1_1request__data__snd__lt.html", null ],
     [ "adiar::internal::request_data_trd_lt< request_t >", "structadiar_1_1internal_1_1request__data__trd__lt.html", null ],
     [ "adiar::internal::request_fst_lt< request_t >", "structadiar_1_1internal_1_1request__fst__lt.html", null ],
+    [ "adiar::internal::request_lt< idx, request_t >", "structadiar_1_1internal_1_1request__lt.html", null ],
     [ "adiar::internal::request_snd_lt< request_t >", "structadiar_1_1internal_1_1request__snd__lt.html", null ],
     [ "adiar::internal::request_trd_lt< request_t >", "structadiar_1_1internal_1_1request__trd__lt.html", null ],
     [ "adiar::stats_t::equality_t::slow_t", "structadiar_1_1stats__t_1_1equality__t_1_1slow__t.html", null ],
