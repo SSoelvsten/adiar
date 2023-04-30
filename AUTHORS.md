@@ -12,12 +12,16 @@ group at [Aarhus University](https://cs.au.dk).
 
 - **[Jaco van de Pol](https://cs.au.dk/~jaco/)**:
   [jaco@cs.au.dk](mailto:jaco@cs.au.dk)
-  
+
   PhD Supervisor
 
 - **[Anna Blume Jakobsen](https://github.com/AnnaBlume99)**:
 
   Bachelor's Student and later Student Programmer
+
+- **[Casper Moldrup Rysgaard](https://github.com/Crowton)**:
+
+  PhD-student
 
 - **[Mathias Weller Berg Thomasen](https://github.com/MathiasWeller42)**:
 
