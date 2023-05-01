@@ -27,9 +27,9 @@ namespace adiar
   using domain_var_t = internal::node::label_t;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief Set the domain globally for all of Adiar to be [0, varcount).
+  /// \brief Set the domain globally for all of Adiar to be [*0, varcount*).
   //////////////////////////////////////////////////////////////////////////////
-  void adiar_set_domain(const size_t varcount);
+  void adiar_set_domain(const domain_var_t varcount);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief     Set the domain globally for all of Adiar.

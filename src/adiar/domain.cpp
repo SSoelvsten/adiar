@@ -11,7 +11,7 @@ namespace adiar
 
   shared_ptr<internal::file<domain_var_t>> domain_ptr;
 
-  void adiar_set_domain(const size_t varcount) {
+  void adiar_set_domain(const domain_var_t varcount) {
     shared_file<domain_var_t> dom;
     { // Garbage collect writer to free write-lock
       internal::file_writer<domain_var_t> lw(dom);
