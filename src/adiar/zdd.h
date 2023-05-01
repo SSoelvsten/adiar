@@ -61,7 +61,7 @@ namespace adiar
   zdd zdd_null();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     The set of bitvectors over a given domain where `var` is set to
+  /// \brief     The set of bitvectors over a given domain where *var* is set to
   ///            true.
   ///
   /// \details   Creates a ZDD with a don't care chain of nodes to the true
@@ -78,7 +78,7 @@ namespace adiar
   zdd zdd_ithvar(zdd::label_t var, const shared_file<zdd::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     The set of bitvectors over the globally set domain where `var`
+  /// \brief     The set of bitvectors over the globally set domain where *var*
   ///            is set to true.
   ///
   /// \param var The variable to be forced to true.
@@ -89,7 +89,7 @@ namespace adiar
   zdd zdd_ithvar(zdd::label_t var);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     The set of bitvectors over a given domain where `var` is set to
+  /// \brief     The set of bitvectors over a given domain where *var* is set to
   ///            false.
   ///
   /// \details   Creates a ZDD with a don't care chain of nodes to the true
@@ -106,7 +106,7 @@ namespace adiar
   zdd zdd_nithvar(zdd::label_t var, const shared_file<zdd::label_t> &dom);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief     The set of bitvectors over the globally set domain where `var`
+  /// \brief     The set of bitvectors over the globally set domain where *var*
   ///            is set to false.
   ///
   /// \param var The variable to be forced to false.
