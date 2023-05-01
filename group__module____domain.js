@@ -1,5 +1,6 @@
 var group__module____domain =
 [
+    [ "domain_var_t", "group__module____domain.html#ga47c91e9e9fc0519fe19a7ba9b9a972e3", null ],
     [ "adiar_get_domain", "group__module____domain.html#gaa9d454d761ac5574556d61a391f7dc56", null ],
     [ "adiar_has_domain", "group__module____domain.html#ga7ff4243ba9fbb1225508f62bbf712a78", null ],
     [ "adiar_set_domain", "group__module____domain.html#ga33501154d8f9b336a905581c7959010b", null ],

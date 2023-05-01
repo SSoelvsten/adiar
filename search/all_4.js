@@ -5,5 +5,6 @@ var searchData=
   ['dd_91',['dd',['../classadiar_1_1internal_1_1dd.html',1,'adiar::internal']]],
   ['deref_92',['deref',['../classadiar_1_1internal_1_1dd.html#a99124efed79851259374606556f8b94b',1,'adiar::internal::dd']]],
   ['diff_5fop_93',['diff_op',['../namespaceadiar.html#a09c9c0628547101eb024b41d38c8a0b1',1,'adiar']]],
-  ['dimensionality_94',['dimensionality',['../classadiar_1_1cube.html#a76841ee34f25db466215f1b86705b8c1',1,'adiar::cube']]]
+  ['dimensionality_94',['dimensionality',['../classadiar_1_1cube.html#a76841ee34f25db466215f1b86705b8c1',1,'adiar::cube']]],
+  ['domain_5fvar_5ft_95',['domain_var_t',['../group__module____domain.html#ga47c91e9e9fc0519fe19a7ba9b9a972e3',1,'adiar']]]
 ];

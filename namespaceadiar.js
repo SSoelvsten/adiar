@@ -67,7 +67,7 @@ var namespaceadiar =
     [ "bdd_builder", "group__module____builder.html#gacad7fc21ff3b724b2c485f4d9da5dc2f", null ],
     [ "bdd_ptr", "group__module____builder.html#ga667558bbb8a9b959dd2b788eadf18678", null ],
     [ "bool_op", "namespaceadiar.html#ab27a30e6ed61621ab1e47b8512abd1d2", null ],
-    [ "domain_var_t", "namespaceadiar.html#a47c91e9e9fc0519fe19a7ba9b9a972e3", null ],
+    [ "domain_var_t", "group__module____domain.html#ga47c91e9e9fc0519fe19a7ba9b9a972e3", null ],
     [ "file_stream", "namespaceadiar.html#a2ce4d836629be7be429ae555a9af09af", null ],
     [ "file_writer", "namespaceadiar.html#ac0c8a98240760bd6186b1f3f590abca8", null ],
     [ "shared_file", "namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4", null ],
