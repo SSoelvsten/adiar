@@ -66,7 +66,7 @@ namespace adiar
   ///   the */tmp* library.
   ///
   /// \throws std::invalid_argument If `memory_limit_bytes` is set to a value
-  ///                               less than the MINIMUM_BYTES required.
+  ///                               less than the `MINIMUM_MEMORY` required.
   ///
   /// \throws std::runtime_error    If `adiar_init()` and then `adiar_deinit()`
   ///                               have been called previously.
