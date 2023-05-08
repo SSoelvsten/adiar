@@ -24,7 +24,7 @@ given machine.
        style="max-width:32rem; width:32rem;" />
 </div>
 <div align="center">
-  <p style="margin-bottom:1rem;">Figure: Running time solving N -Queens (lower is better).</p>
+  <p style="margin-bottom:1rem;">Figure: Running time solving *N*-Queens (lower is better).</p>
 </div>
 
 
@@ -110,11 +110,11 @@ To install all of the above then run the respective below.
 
 ### Makefile targets
 
-The project is build with _CMake_, though for convenience I have simplified the
-_CMake_ interactions to a single _Makefile_ which works on a local machine. This
-has only been tested on _Ubuntu 18.04 LTS_ and _20.04 LTS_.
+The project is build with *CMake*, though for convenience I have simplified the
+*CMake* interactions to a single *Makefile* which works on a local machine. This
+script is continuously tested on *Ubuntu 22.04 LTS* and *Fedora 36+*.
 
-The _Makefile_ provides the following targets
+The *Makefile* provides the following targets
 
 | target         | effect                                                               |
 |----------------|----------------------------------------------------------------------|
@@ -128,13 +128,13 @@ The _Makefile_ provides the following targets
 | `main M=<MiB>` | Run the _main_ function in `src/main.cpp` with `<MiB>` MiB of memory |
 
 ### Examples
-The _example/_ folder contains examples for using the data structures in Adiar.
-The _README.md_ file in said folder contains a more in-depth description of each
+The *example/* folder contains examples for using the data structures in Adiar.
+The *README.md* file in said folder contains a more in-depth description of each
 of the examples. Even more examples and benchmarks are provided in a separate
 [BDD Benchmarking repository](https://github.com/SSoelvsten/bdd-benchmark).
 
 Each example takes a set of arguments as input, which can be parsed to the
-program as a makefile variable. That is, to change the value of _N_ to to value
+program as a makefile variable. That is, to change the value of *N* to to value
 follow the `make <target>` with `N=<value>`.
 
 **example/queens**
@@ -146,7 +146,7 @@ follow the `make <target>` with `N=<value>`.
 
 **example/knights-tour/[T]** 
 
-The value **T** can either be _all_ or _closed_.
+The value **T** can either be *all* or *closed*.
 
 | variable | description                                      |
 |----------|--------------------------------------------------|
@@ -160,7 +160,7 @@ Adiar is not yet feature complete. If you feel anything is missing, please open
 an [issue](https://github.com/SSoelvsten/adiar/issues/new/choose).
 
 Your contribution to the project is also very welcome! Our
-[issues](https://github.com/SSoelvsten/adiar/issues) list of larger student
+[issues](https://github.com/SSoelvsten/adiar/issues) list larger student
 projects but also many smaller things for *you* to help us with. Please read our
 [Contribution Guidelines](/CONTRIBUTING.md) before you start working on
 something.
