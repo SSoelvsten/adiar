@@ -33,6 +33,7 @@ Thank you, to all the minor contributors to this project's codebase.
 
 - **[Asger Hautop Drewsen](https://github.com/Tyilo)**
 - **[Ayoub Aboutarbouch](https://github.com/itsmeYO92)**
+- **[Erik Funder Carstensen](https://github.com/halvko)**
 - **[Jakob Schneider Villumsen](https://github.com/jaschdoc)**
 - **[Maxim Smolskiy](https://github.com/MaximSmolskiy)**
 - **[Sai Rugveth Vankayala](https://github.com/rugveth1210)**
