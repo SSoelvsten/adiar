@@ -82,7 +82,6 @@ in practice.
     pages         = {295--313},
     numPages      = {19},
     publisher     = {Springer},
-    address       = {Berlin, Heidelberg},  
     series        = {Lecture Notes in Computer Science},
     volume        = {13244},
     isbn          = {978-3-030-99527-0},
@@ -116,6 +115,24 @@ v1.1
 With [v1.1.0](https://github.com/SSoelvsten/adiar/releases/tag/v1.1.0) we add
 support for *Zero-suppressed Decision Diagrams* to *Adiar*.
 
+- Steffan Christ Sølvsten, Jaco van de Pol.
+  “[*Adiar 1:1: Zero-suppressed Decision Diagrams in External Memory*](https://link.springer.com/book/9783031331695)”.
+  In: *NASA Formal Methods* (NFM). (2023)
+  ```bibtex
+  @InProceedings{soelvsten2023:NFM,
+    title         = {Adiar 1.1: Zero-suppressed Decision Diagrams in External Memory},
+    author        = {S{\o}lvsten, Steffan Christ
+                 and van de Pol, Jaco},
+    year          = {2023},
+    booktitle     = {NASA Formal Methods},
+    editor        = {Yvonne Rozier, Kristin
+                 and Chaudhuri, Swarat},
+    numPages      = {8},
+    publisher     = {Springer}, 
+    series        = {Lecture Notes in Computer Science},
+    volume        = {13903},
+  }
+  ```
 
 v1.2
 ------------------------
