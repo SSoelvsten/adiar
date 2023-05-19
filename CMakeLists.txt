@@ -20,12 +20,6 @@ enable_language(CXX)
 
 message(STATUS "CMake build configuration for Adiar ${PROJECT_VERSION}")
 
-option(ADIAR_STATS_EXTRA "Collect statistics (deprecated)" OFF)
-if (ADIAR_STATS_EXTRA)
-  message(DEPRECATED "  The 'ADIAR_STATS_EXTRA' variable has been merged with 'ADIAR_STATS'.\n")
-  set(ADIAR_STATS ON)
-endif (ADIAR_STATS_EXTRA)
-
 message(STATUS "  OS:                        ${CMAKE_SYSTEM_NAME}")
 message(STATUS "  Compiler:                  ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(VERBOSE "    C Flags:                ${CMAKE_C_FLAGS}")
