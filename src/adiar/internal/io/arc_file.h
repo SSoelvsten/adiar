@@ -1,6 +1,7 @@
 #ifndef ADIAR_INTERNAL_IO_ARC_FILE_H
 #define ADIAR_INTERNAL_IO_ARC_FILE_H
 
+#include <adiar/statistics.h>
 #include <adiar/internal/data_types/node.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/io/file.h>
@@ -8,6 +9,11 @@
 
 namespace adiar::internal
 {
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Struct holding statistics on arc files
+  //////////////////////////////////////////////////////////////////////////////
+  extern stats_t::arc_file_t stats_arc_file;
+
   // TODO (ADD):
   // TODO (QMDD):
   //  Generalize the arc type and the arc_file based on a given node.

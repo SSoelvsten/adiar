@@ -259,8 +259,10 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const level_info &m)
     {
+#ifdef ADIAR_STATS
+      stats_node_file.push_level += 1;
+#endif
       _file_ptr->width = std::max<size_t>(_file_ptr->width, m.width());
-
       levelized_file_writer::push(m);
     }
 
@@ -269,6 +271,9 @@ namespace adiar::internal
     ////////////////////////////////////////////////////////////////////////////
     void unsafe_push(const node &n)
     {
+#ifdef ADIAR_STATS
+      stats_node_file.push_node += 1;
+#endif
       if (n.low().is_terminal())  { _file_ptr->number_of_terminals[n.low().value()]++; }
       if (n.high().is_terminal()) { _file_ptr->number_of_terminals[n.high().value()]++; }
 

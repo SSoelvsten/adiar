@@ -137,6 +137,10 @@ set(SOURCES
 
   # adiar/internal/data_structures
   internal/data_structures/levelized_priority_queue.cpp
+
+  # adiar/internal/io
+  internal/io/arc_file.cpp
+  internal/io/node_file.cpp
 )
 
 # ============================================================================ #
