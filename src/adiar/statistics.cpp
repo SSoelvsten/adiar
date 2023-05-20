@@ -11,6 +11,8 @@
 #include <adiar/internal/algorithms/quantify.h>
 #include <adiar/internal/algorithms/substitution.h>
 #include <adiar/internal/data_structures/levelized_priority_queue.h>
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/node_file.h>
 
 namespace adiar
 {
@@ -21,6 +23,10 @@ namespace adiar
 #endif
 
     return {
+      // i/o
+      internal::stats_arc_file,
+      internal::stats_node_file,
+
       // data structures
       internal::stats_levelized_priority_queue,
 
@@ -40,6 +46,10 @@ namespace adiar
 
   void adiar_statsreset()
   {
+    // i/o
+    internal::stats_arc_file   = {};
+    internal::stats_node_file  = {};
+
     // data structures
     internal::stats_levelized_priority_queue = {};
 
@@ -85,6 +95,62 @@ namespace adiar
   inline std::ostream& operator<< (std::ostream& os, const uintwide_t &s)
   {
     return os << to_string(s);
+  }
+
+  void __printstat_arc_file(std::ostream &o)
+  {
+    o << indent << bold_on << "Arc Files" << bold_off << endl;
+
+    indent_level++;
+
+    uintwide_t total_pushes = internal::stats_arc_file.push_internal
+      + internal::stats_arc_file.push_in_order
+      + internal::stats_arc_file.push_out_of_order;
+
+    if (total_pushes == 0u) {
+      o << indent << "No writes" << endl;
+      indent_level--;
+      return;
+    }
+
+    o << indent << bold_on << label << "unsafe_push(arc ...)" << bold_off << total_pushes << endl;
+
+    indent_level++;
+    o << indent << label << "internal" << internal::stats_arc_file.push_internal
+      << " = " << percent_frac(internal::stats_arc_file.push_internal, total_pushes) << percent << endl;
+    o << indent << label << "terminals (in-order)" << internal::stats_arc_file.push_in_order
+      << " = " << percent_frac(internal::stats_arc_file.push_in_order, total_pushes) << percent << endl;
+    o << indent << label << "terminals (out-of-order)" << internal::stats_arc_file.push_out_of_order
+      << " = " << percent_frac(internal::stats_arc_file.push_out_of_order, total_pushes) << percent << endl;
+    indent_level--;
+
+    o << indent << bold_on << label << "push(level_info ...)" << bold_off << internal::stats_arc_file.push_level << endl;
+
+    o << indent << bold_on << label << "out-of-order sortings" << bold_off << internal::stats_arc_file.sort_out_of_order << endl;
+
+    indent_level--;
+  }
+
+  void __printstat_node_file(std::ostream &o)
+  {
+    o << indent << bold_on << "Node Files" << bold_off << endl;
+
+    indent_level++;
+
+    if (internal::stats_node_file.push_node == 0u) {
+      o << indent << "No writes" << endl;
+      indent_level--;
+      return;
+    }
+
+    o << indent << bold_on << label << "unsafe_push(...)" << bold_off << endl;
+
+    indent_level++;
+    o << indent << label << "node" << internal::stats_node_file.push_node << endl;
+    o << indent << label << "level_info" << internal::stats_node_file.push_level << endl;
+    indent_level--;
+
+    indent_level--;
   }
 
   void __printstat_lpq(std::ostream &o, const stats_t::levelized_priority_queue_t& stats)
@@ -481,6 +547,14 @@ namespace adiar
     o << indent << "Not gathered; please compile with 'ADIAR_STATS'." << endl;
 #else
     o << std::fixed << std::setprecision(FLOAT_PRECISION);
+
+    o << bold_on << "--== I/O ==--" << bold_off << endl << endl;
+
+    __printstat_arc_file(o);
+    o << endl;
+
+    __printstat_node_file(o);
+    o << endl;
 
     o << bold_on << "--== Data Structures ==--" << bold_off << endl << endl;
 

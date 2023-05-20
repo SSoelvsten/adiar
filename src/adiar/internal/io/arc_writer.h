@@ -106,8 +106,13 @@ namespace adiar::internal
     void detach() {
       if (!attached()) return;
 
+#ifdef ADIAR_STATS
+      if (_elem_writers[IDX__TERMINALS__OUT_OF_ORDER].size() != 0u) {
+        stats_arc_file.sort_out_of_order += 1;
+      }
+#endif
       _elem_writers[IDX__TERMINALS__OUT_OF_ORDER].sort<arc_source_lt>();
-      return levelized_file_writer::detach();
+      levelized_file_writer::detach();
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -118,7 +123,12 @@ namespace adiar::internal
     /// \pre `attached() == true`.
     //////////////////////////////////////////////////////////////////////////////
     void push(const level_info &li)
-    { levelized_file_writer::push(li); }
+    {
+#ifdef ADIAR_STATS
+      stats_arc_file.push_level += 1;
+#endif
+      levelized_file_writer::push(li);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     /// \brief Write directly to the level_info file.
@@ -172,7 +182,9 @@ namespace adiar::internal
     {
       adiar_precondition(attached());
       adiar_precondition(a.target().is_node());
-
+#ifdef ADIAR_STATS
+      stats_arc_file.push_internal += 1;
+#endif
       levelized_file_writer::template push<IDX__INTERNAL>(a);
     }
 
@@ -190,9 +202,15 @@ namespace adiar::internal
         // Given arc is 'in-order' compared to latest 'in-order' pushed
         __has_latest_terminal = true;
         __latest_terminal = a;
+#ifdef ADIAR_STATS
+        stats_arc_file.push_in_order += 1;
+#endif
         levelized_file_writer::template push<IDX__TERMINALS__IN_ORDER>(a);
       } else {
         // Given arc is 'out-of-order' compared to latest 'in-order' pushed
+#ifdef ADIAR_STATS
+        stats_arc_file.push_out_of_order += 1;
+#endif
         levelized_file_writer::template push<IDX__TERMINALS__OUT_OF_ORDER>(a);
       }
 
