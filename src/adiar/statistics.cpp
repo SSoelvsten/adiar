@@ -21,29 +21,39 @@ namespace adiar
 #endif
 
     return {
+      // data structures
       internal::stats_levelized_priority_queue,
+
+      // top-down sweeps
       internal::stats_count,
       internal::stats_equality,
       internal::stats_intercut,
       internal::stats_prod2,
       stats_prod3,
       internal::stats_quantify,
-      internal::stats_reduce,
-      internal::stats_substitute
+      internal::stats_substitute,
+
+      // bottom-up sweeps
+      internal::stats_reduce
     };
   }
 
   void adiar_statsreset()
   {
+    // data structures
+    internal::stats_levelized_priority_queue = {};
+
+    // top-down sweeps
     internal::stats_count      = {};
     internal::stats_equality   = {};
     internal::stats_intercut   = {};
-    internal::stats_levelized_priority_queue = {};
     internal::stats_prod2      = {};
     stats_prod3                = {};
     internal::stats_quantify   = {};
-    internal::stats_reduce     = {};
     internal::stats_substitute = {};
+
+    // bottom-up sweeps
+    internal::stats_reduce     = {};
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -472,8 +482,12 @@ namespace adiar
 #else
     o << std::fixed << std::setprecision(FLOAT_PRECISION);
 
+    o << bold_on << "--== Data Structures ==--" << bold_off << endl << endl;
+
     __printstat_lpq(o, internal::stats_levelized_priority_queue);
     o << endl;
+
+    o << bold_on << "--== Top-Down Sweep Algorithms ==--" << bold_off << endl << endl;
 
     __printstat_count(o);
     o << endl;
@@ -493,13 +507,15 @@ namespace adiar
     __printstat_prod3(o);
     o << endl;
 
-    __printstat_reduce(o);
-    o << endl;
-
     __printstat_quantify(o);
     o << endl;
 
     __printstat_substitute(o);
+    o << endl;
+
+    o << bold_on << "--== Bottom-Up Sweep Algorithms ==--" << bold_off << endl << endl;
+
+    __printstat_reduce(o);
 #endif
   }
 }
