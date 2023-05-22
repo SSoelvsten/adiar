@@ -151,7 +151,7 @@ else()
   add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
 endif()
 
-if (ADIAR_STATS_EXTRA OR ADIAR_STATS)
+if (ADIAR_STATS)
   target_compile_definitions(${PROJECT_NAME} PRIVATE ADIAR_STATS)
 endif()
 
