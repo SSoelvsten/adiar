@@ -5,10 +5,12 @@
 #include <adiar/internal/dd.h>
 #include <adiar/internal/data_types/arc.h>
 #include <adiar/internal/data_types/convert.h>
-#include <adiar/internal/io/arc_file.h>
-#include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/levelized_file.h>
 #include <adiar/internal/io/levelized_file_stream.h>
+
+// TODO: remove these imports
+#include <adiar/internal/io/arc_file.h>
+#include <adiar/internal/io/arc_writer.h>
 #include <adiar/internal/io/node_file.h>
 #include <adiar/internal/io/node_stream.h>
 
@@ -49,6 +51,8 @@ namespace adiar::internal
     }
     return true;
   }
+
+  // TODO: Move to dd_func
 
   ////////////////////////////////////////////////////////////////////////////
   /// \brief Obtain the semi-transposition of a decision diagram.
