@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['boolean_676',['boolean',['../namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156b',1,'adiar']]]
+  ['boolean_678',['boolean',['../namespaceadiar.html#a256717aa32b45d75ea8d93d69d0e156b',1,'adiar']]]
 ];

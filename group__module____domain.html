@@ -93,7 +93,8 @@ $(document).ready(function(){initNavTree('group__module____domain.html',''); ini
 <div class="header">
   <div class="summary">
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">Variable Domain</div>  </div>
 </div><!--header-->
@@ -115,6 +116,13 @@ Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga22403b0c5697b1c8e57b70ae8ad2f0ee">adiar::adiar_set_domain</a> (const <a class="el" href="group__module____domain.html#ga47c91e9e9fc0519fe19a7ba9b9a972e3">domain_var_t</a> varcount)</td></tr>
 <tr class="memdesc:ga22403b0c5697b1c8e57b70ae8ad2f0ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the domain globally for all of Adiar to be [<em>0, varcount</em>). <br /></td></tr>
 <tr class="separator:ga22403b0c5697b1c8e57b70ae8ad2f0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf34e24b7a49a30688ba3aabc429b45dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#gaf34e24b7a49a30688ba3aabc429b45dd">adiar::adiar_set_domain</a> (const std::function&lt; <a class="el" href="group__module____domain.html#ga47c91e9e9fc0519fe19a7ba9b9a972e3">domain_var_t</a>()&gt; &amp;gen)</td></tr>
+<tr class="memdesc:gaf34e24b7a49a30688ba3aabc429b45dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the domain globally for all of Adiar to be the variables produced by the given generator function.  <a href="group__module____domain.html#gaf34e24b7a49a30688ba3aabc429b45dd">More...</a><br /></td></tr>
+<tr class="separator:gaf34e24b7a49a30688ba3aabc429b45dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7823e2737ab1c52c04f4da1b47f60539"><td class="memTemplParams" colspan="2">template&lt;typename IT &gt; </td></tr>
+<tr class="memitem:ga7823e2737ab1c52c04f4da1b47f60539"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga7823e2737ab1c52c04f4da1b47f60539">adiar::adiar_set_domain</a> (IT begin, IT end)</td></tr>
+<tr class="memdesc:ga7823e2737ab1c52c04f4da1b47f60539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the domain globally for all of Adiar to be the variables in the given range of iterators.  <a href="group__module____domain.html#ga7823e2737ab1c52c04f4da1b47f60539">More...</a><br /></td></tr>
+<tr class="separator:ga7823e2737ab1c52c04f4da1b47f60539"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga33501154d8f9b336a905581c7959010b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga33501154d8f9b336a905581c7959010b">adiar::adiar_set_domain</a> (const <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="group__module____domain.html#ga47c91e9e9fc0519fe19a7ba9b9a972e3">domain_var_t</a> &gt; &amp;dom)</td></tr>
 <tr class="memdesc:ga33501154d8f9b336a905581c7959010b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the domain globally for all of Adiar.  <a href="group__module____domain.html#ga33501154d8f9b336a905581c7959010b">More...</a><br /></td></tr>
 <tr class="separator:ga33501154d8f9b336a905581c7959010b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,6 +136,13 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <tr class="memitem:gaa9d454d761ac5574556d61a391f7dc56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a>&lt; <a class="el" href="group__module____domain.html#ga47c91e9e9fc0519fe19a7ba9b9a972e3">domain_var_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#gaa9d454d761ac5574556d61a391f7dc56">adiar::adiar_get_domain</a> ()</td></tr>
 <tr class="memdesc:gaa9d454d761ac5574556d61a391f7dc56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the global domain if <code><a class="el" href="group__module____domain.html#ga7ff4243ba9fbb1225508f62bbf712a78" title="Whether Adiar has a global domain.">adiar_has_domain()</a> == true</code>.  <a href="group__module____domain.html#gaa9d454d761ac5574556d61a391f7dc56">More...</a><br /></td></tr>
 <tr class="separator:gaa9d454d761ac5574556d61a391f7dc56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ga6c9639ccfd5b4bece92c7900db7e2361"><td class="memItemLeft" align="right" valign="top"><a id="ga6c9639ccfd5b4bece92c7900db7e2361"></a>
+constexpr <a class="el" href="group__module____domain.html#ga47c91e9e9fc0519fe19a7ba9b9a972e3">domain_var_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__module____domain.html#ga6c9639ccfd5b4bece92c7900db7e2361">adiar::MAX_DOMAIN_VAR</a> = <a class="el" href="classadiar_1_1internal_1_1node.html#a65ccc42adf54d97db3c89ddc49f60c04">internal::node::MAX_LABEL</a></td></tr>
+<tr class="memdesc:ga6c9639ccfd5b4bece92c7900db7e2361"><td class="mdescLeft">&#160;</td><td class="mdescRight">The maximum supported domain variable. <br /></td></tr>
+<tr class="separator:ga6c9639ccfd5b4bece92c7900db7e2361"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Global domain of variables. </p>
@@ -159,7 +174,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 </div>
 </div>
 <a id="ga33501154d8f9b336a905581c7959010b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga33501154d8f9b336a905581c7959010b">&#9670;&nbsp;</a></span>adiar_set_domain()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ga33501154d8f9b336a905581c7959010b">&#9670;&nbsp;</a></span>adiar_set_domain() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -178,6 +193,71 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dom</td><td>A <a class="el" href="namespaceadiar.html#a2e9c9607b1291675f96fd7ac2a30dfb4">shared_file</a> containing all labels of the problem domain in ascending order. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaf34e24b7a49a30688ba3aabc429b45dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf34e24b7a49a30688ba3aabc429b45dd">&#9670;&nbsp;</a></span>adiar_set_domain() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void adiar::adiar_set_domain </td>
+          <td>(</td>
+          <td class="paramtype">const std::function&lt; <a class="el" href="group__module____domain.html#ga47c91e9e9fc0519fe19a7ba9b9a972e3">domain_var_t</a>()&gt; &amp;&#160;</td>
+          <td class="paramname"><em>gen</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the domain globally for all of Adiar to be the variables produced by the given generator function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gen</td><td>Generator function, that produces variables to be quantified in <em>ascending</em> order. When none are left to-be quantified, it must return a value greater than <code>MAX_DOMAIN_VAR</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga7823e2737ab1c52c04f4da1b47f60539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7823e2737ab1c52c04f4da1b47f60539">&#9670;&nbsp;</a></span>adiar_set_domain() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IT &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void adiar::adiar_set_domain </td>
+          <td>(</td>
+          <td class="paramtype">IT&#160;</td>
+          <td class="paramname"><em>begin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IT&#160;</td>
+          <td class="paramname"><em>end</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the domain globally for all of Adiar to be the variables in the given range of iterators. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">begin</td><td>Iterator that provides variables to be quantified in <em>ascending</em> order.</td></tr>
+    <tr><td class="paramname">end</td><td>Iterator that marks the end for <code>begin</code>. </td></tr>
   </table>
   </dd>
 </dl>
