@@ -9,75 +9,79 @@
 
 namespace adiar
 {
-  template<typename visitor_t>
-  class zdd_sat_label_writer_visitor
+  class zdd_sat_zdd_callback
   {
-    visitor_t visitor;
-
-    bool has_elem = false;
-
     shared_file<zdd::label_t> lf;
     internal::label_writer lw;
 
   public:
-    zdd_sat_label_writer_visitor() : lw(lf) { }
+    zdd_sat_zdd_callback()
+      : lw(lf)
+    { }
+
+    void operator() (zdd::label_t x)
+    { lw << x; }
+
+    zdd get_zdd()
+    {
+      lw.detach();
+      return zdd_vars(lf);
+    }
+  };
+
+  class zdd_sat_lambda_callback
+  {
+    const std::function<void(bdd::label_t)> &__lambda;
+
+  public:
+    zdd_sat_lambda_callback(const std::function<void(zdd::label_t)> &lambda)
+      : __lambda(lambda)
+    { }
+
+    void operator() (zdd::label_t x) const
+    { __lambda(x); }
+  };
+
+  template<typename base_visitor, typename callback>
+  class zdd_sat_visitor
+  {
+    base_visitor  __visitor;
+    callback     &__callback;
+
+  public:
+    zdd_sat_visitor(callback &cb)
+      : __callback(cb)
+    { }
 
     zdd::ptr_t visit(const zdd::node_t n)
     {
-      const zdd::ptr_t next_ptr = visitor.visit(n);
+      adiar_debug(!n.high().is_terminal() || n.high().value(), "high terminals are never false");
+      const zdd::ptr_t next_ptr = __visitor.visit(n);
 
-      if (next_ptr == n.high() && (next_ptr != n.low() || visitor_t::keep_dont_cares)) {
-        lw << n.label();
+      if (next_ptr == n.high() && (next_ptr != n.low() || base_visitor::default_direction)) {
+        __callback(n.label());
       }
 
       return next_ptr;
     }
 
     void visit(const bool s)
-    {
-      visitor.visit(s);
-      has_elem = s;
-    }
-
-    const std::optional<shared_file<zdd::label_t>> get_result() const
-    {
-      if (has_elem) { return lf; } else { return std::nullopt; }
-    }
+    { __visitor.visit(s); }
   };
 
-  class zdd_satmin_visitor : public internal::traverse_satmin_visitor
+  zdd zdd_minelem(const zdd &A)
   {
-  public:
-    static constexpr bool keep_dont_cares = false;
-  };
-
-  std::optional<shared_file<zdd::label_t>>
-  zdd_minelem(const zdd &A)
-  {
-    zdd_sat_label_writer_visitor<zdd_satmin_visitor> v;
+    zdd_sat_zdd_callback __cb;
+    zdd_sat_visitor<internal::traverse_satmin_visitor, zdd_sat_zdd_callback> v(__cb);
     internal::traverse(A, v);
-    return v.get_result();
+    return __cb.get_zdd();
   }
 
-  class zdd_satmax_visitor
+  zdd zdd_maxelem(const zdd &A)
   {
-  public:
-    static constexpr bool keep_dont_cares = true;
-
-    inline zdd::ptr_t visit(const zdd::node_t n) {
-      adiar_debug(!n.high().is_terminal() || n.high().value(), "high terminals are never false");
-      return n.high();
-    }
-
-    inline void visit(const bool /*s*/)
-    { }
-  };
-
-  std::optional<shared_file<zdd::label_t>>
-  zdd_maxelem(const zdd &A)
-  {
-    zdd_sat_label_writer_visitor<zdd_satmax_visitor> v;
+    zdd_sat_zdd_callback __cb;
+    zdd_sat_visitor<internal::traverse_satmax_visitor, zdd_sat_zdd_callback> v(__cb);
     internal::traverse(A, v);
-    return v.get_result();
+    return __cb.get_zdd();
   }
 }

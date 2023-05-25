@@ -737,7 +737,10 @@ namespace adiar
                   const std::function<void(bdd::label_t, bool)> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: bdd_satmin(f, begin, end)
+  // TODO: wrap into consumer lambda
+  //
+  // template<typename IT>
+  // bdd_satmin(const bdd &f, IT begin, IT end)
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
@@ -761,7 +764,10 @@ namespace adiar
                   const std::function<void(bdd::label_t, bool)> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: bdd_satmax(f, begin, end)
+  // TODO: wrap into consumer lambda
+  //
+  // template<typename IT>
+  // bdd_satmax(const bdd &f, IT begin, IT end)
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief    Evaluate a BDD according to an assignment to its variables.
@@ -790,9 +796,20 @@ namespace adiar
                 const shared_file<map_pair<bdd::label_t, boolean>> &xs);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief    Get the labels of the levels of the BDD
+  /// \brief Get the labels of the levels of the BDD
   //////////////////////////////////////////////////////////////////////////////
   shared_file<bdd::label_t> bdd_varprofile(const bdd &f);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: add callback
+  //
+  // bdd_varprofile(const bdd &f, const std::function<void(bdd::label_t)> &cb);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: wrap into consumer lambda
+  //
+  // template<typename IT>
+  // bdd_varprofile(const bdd &f, IT begin, IT end)
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////

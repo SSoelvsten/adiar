@@ -561,7 +561,18 @@ namespace adiar
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   //////////////////////////////////////////////////////////////////////////////
-  std::optional<shared_file<zdd::label_t>> zdd_minelem(const zdd &A);
+  zdd zdd_minelem(const zdd &A);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: add callback
+  //
+  // zdd_minelem(const zdd &A, const std::function<void(zdd::label_t, bool)> &cb);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: wrap into consumer lambda
+  //
+  // template<typename IT>
+  // zdd_minelem(const zdd &A, IT begin, IT end)
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   Retrieves the lexicographically largest set a in A.
@@ -570,12 +581,34 @@ namespace adiar
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   //////////////////////////////////////////////////////////////////////////////
-  std::optional<shared_file<zdd::label_t>> zdd_maxelem(const zdd &A);
+  zdd zdd_maxelem(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// \brief    Get the labels of the levels of the ZDD
+  // TODO: add callback
+  //
+  // zdd_maxelem(const zdd &A, const std::function<void(zdd::label_t, bool)> &cb);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: wrap into consumer lambda
+  //
+  // template<typename IT>
+  // zdd_maxelem(const zdd &A, IT begin, IT end)
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// \brief Get the labels of the levels of the ZDD
   //////////////////////////////////////////////////////////////////////////////
   shared_file<zdd::label_t> zdd_varprofile(const zdd &A);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: add callback
+  //
+  // zdd_varprofile(const zdd &A, const std::function<void(zdd::label_t)> &cb);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // TODO: wrap into consumer lambda
+  //
+  // template<typename IT>
+  // zdd_varprofile(const zdd &A, IT begin, IT end)
 
   /// \}
   //////////////////////////////////////////////////////////////////////////////
