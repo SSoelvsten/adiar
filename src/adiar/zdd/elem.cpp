@@ -77,11 +77,27 @@ namespace adiar
     return __cb.get_zdd();
   }
 
+  void zdd_minelem(const zdd &A,
+                  const std::function<void(zdd::label_t)> &cb)
+  {
+    zdd_sat_lambda_callback __cb(cb);
+    zdd_sat_visitor<internal::traverse_satmin_visitor, zdd_sat_lambda_callback> v(__cb);
+    internal::traverse(A, v);
+  }
+
   zdd zdd_maxelem(const zdd &A)
   {
     zdd_sat_zdd_callback __cb;
     zdd_sat_visitor<internal::traverse_satmax_visitor, zdd_sat_zdd_callback> v(__cb);
     internal::traverse(A, v);
     return __cb.get_zdd();
+  }
+
+  void zdd_maxelem(const zdd &A,
+                   const std::function<void(zdd::label_t)> &cb)
+  {
+    zdd_sat_lambda_callback __cb(cb);
+    zdd_sat_visitor<internal::traverse_satmax_visitor, zdd_sat_lambda_callback> v(__cb);
+    internal::traverse(A, v);
   }
 }
