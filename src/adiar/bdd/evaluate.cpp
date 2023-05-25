@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include <adiar/domain.h>
 #include <adiar/internal/cut.h>
 #include <adiar/internal/assert.h>
 #include <adiar/internal/algorithms/traverse.h>
@@ -146,32 +147,35 @@ namespace adiar
     { __lambda(x,v); }
   };
 
-  template<typename base_visitor, typename callback>
+  template<typename base_visitor, typename callback, typename lvl_stream_t, typename lvl_t>
   class bdd_sat_visitor
   {
     base_visitor  __visitor;
     callback     &__callback;
 
-    internal::level_info_stream<> lvls;
+    bdd::label_t lvl = bdd::MAX_LABEL+1;
+    lvl_stream_t lvls;
 
   public:
-    bdd_sat_visitor(const bdd& f, callback &cb)
-      : __callback(cb), lvls(f) // <-- TODO: use domain if available
+    bdd_sat_visitor(callback &cb, const lvl_t &lvl)
+      : __callback(cb), lvls(lvl)
     { }
 
     bdd::ptr_t visit(const bdd::node_t &n)
     {
       const bdd::ptr_t next_ptr = __visitor.visit(n);
-      const bdd::label_t label = n.label();
+      lvl = n.label();
 
       // set default to all skipped levels
-      while (lvls.peek().label() < label) {
-        __callback(lvls.pull().label(), base_visitor::default_direction);
+      while (lvls.can_pull() && internal::__level_of(lvls.peek()) < lvl) {
+        __callback(internal::__level_of(lvls.pull()), base_visitor::default_direction);
       }
-      adiar_debug(lvls.peek().label() == label,
-                  "level given should exist in BDD");
+      // skip visited level (if exists)
+      if (lvls.can_pull() && internal::__level_of(lvls.peek()) == lvl) {
+        lvls.pull();
+      }
 
-      __callback(lvls.pull().label(), next_ptr == n.high());
+      __callback(lvl, next_ptr == n.high());
       return next_ptr;
     }
 
@@ -180,18 +184,32 @@ namespace adiar
       __visitor.visit(s);
 
       while (lvls.can_pull()) {
-        __callback(lvls.pull().label(), base_visitor::default_direction);
+        if (internal::__level_of(lvls.peek()) <= lvl) { lvls.pull(); continue; };
+        __callback(internal::__level_of(lvls.pull()), base_visitor::default_direction);
       }
     }
   };
+
+  template<typename base_visitor, typename callback>
+  inline void __bdd_satX(const bdd &f, callback &__cb)
+  {
+    if (adiar_has_domain()) {
+      bdd_sat_visitor<base_visitor, callback, internal::file_stream<domain_var_t>, internal::shared_file<domain_var_t>>
+        v(__cb, adiar_get_domain());
+      internal::traverse(f,v);
+    } else {
+      bdd_sat_visitor<base_visitor, callback, internal::level_info_stream<>, bdd>
+        v(__cb, f);
+      internal::traverse(f,v);
+    }
+  }
 
   bdd bdd_satmin(const bdd &f)
   {
     if (is_terminal(f)) { return f; }
 
     bdd_sat_bdd_callback __cb;
-    bdd_sat_visitor<internal::traverse_satmin_visitor, bdd_sat_bdd_callback> v(f, __cb);
-    internal::traverse(f,v);
+    __bdd_satX<internal::traverse_satmin_visitor>(f, __cb);
     return __cb.get_bdd();
   }
 
@@ -199,8 +217,7 @@ namespace adiar
                   const std::function<void(bdd::label_t, bool)> &cb)
   {
     bdd_sat_lambda_callback __cb(cb);
-    bdd_sat_visitor<internal::traverse_satmin_visitor, bdd_sat_lambda_callback> v(f, __cb);
-    internal::traverse(f,v);
+    __bdd_satX<internal::traverse_satmin_visitor>(f, __cb);
   }
 
   bdd bdd_satmax(const bdd &f)
@@ -208,8 +225,7 @@ namespace adiar
     if (is_terminal(f)) { return f; }
 
     bdd_sat_bdd_callback __cb;
-    bdd_sat_visitor<internal::traverse_satmax_visitor, bdd_sat_bdd_callback> v(f, __cb);
-    internal::traverse(f,v);
+    __bdd_satX<internal::traverse_satmax_visitor>(f, __cb);
     return __cb.get_bdd();
   }
 
@@ -217,7 +233,6 @@ namespace adiar
                   const std::function<void(bdd::label_t, bool)> &cb)
   {
     bdd_sat_lambda_callback __cb(cb);
-    bdd_sat_visitor<internal::traverse_satmax_visitor, bdd_sat_lambda_callback> v(f, __cb);
-    internal::traverse(f,v);
+    __bdd_satX<internal::traverse_satmax_visitor>(f, __cb);
   }
 }

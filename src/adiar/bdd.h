@@ -722,6 +722,11 @@ namespace adiar
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
+  /// \remark  If `adiar_has_domain() == true` then the assignment is to the
+  ///          domain variables (and the visited bdd variables). If only the
+  ///          variables that exist within `f` is of interest, please unset the
+  ///          domain first.
+  ///
   /// \returns A bdd whos only path to the `true` terminal reflects the minimal
   ///          assignment.
   //////////////////////////////////////////////////////////////////////////////
@@ -729,6 +734,11 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest x such that f(x) is true.
+  ///
+  /// \remark  If `adiar_has_domain() == true` then the assignment is to the
+  ///          domain variables (and the visited bdd variables). If only the
+  ///          variables that exist within `f` is of interest, please unset the
+  ///          domain first.
   ///
   /// \param cb Callback function that is called in ascending order of the bdd's
   ///           levels with the (var, value) pairs of the assignment.
@@ -749,6 +759,11 @@ namespace adiar
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
+  /// \remark  If `adiar_has_domain() == true` then the assignment is to the
+  ///          domain variables (and the visited bdd variables). If only the
+  ///          variables that exist within `f` is of interest, please unset the
+  ///          domain first.
+  ///
   /// \returns A bdd whos only path to the `true` terminal reflects the maximal
   ///          assignment.
   //////////////////////////////////////////////////////////////////////////////
@@ -756,6 +771,11 @@ namespace adiar
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
+  ///
+  /// \remark  If `adiar_has_domain() == true` then the assignment is to the
+  ///          domain variables (and the visited bdd variables). If only the
+  ///          variables that exist within `f` is of interest, please unset the
+  ///          domain first.
   ///
   /// \param cb Callback function that is called in ascending order of the bdd's
   ///           levels with the (var, value) pairs of the assignment.

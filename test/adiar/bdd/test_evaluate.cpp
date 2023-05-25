@@ -482,7 +482,9 @@ go_bandit([]() {
         nw << n4 << n3 << n2 << n1;
       }
 
-      describe("bdd_satmin(f)", [&]() {
+      describe("bdd_satmin(f) [bdd levels]", [&]() {
+        adiar_unset_domain();
+
         it("returns same file for true terminal", [&]() {
           bdd out = bdd_satmin(bdd_T);
           AssertThat(out.file_ptr(), Is().EqualTo(bdd_T));
@@ -493,7 +495,7 @@ go_bandit([]() {
           AssertThat(out.file_ptr(), Is().EqualTo(bdd_F));
         });
 
-        it("should retrieve evaluation of [0]", [&]() {
+        it("should retrieve evaluation [0]", [&]() {
           bdd out = bdd_satmin(bdd_0);
 
           // Check it looks all right
@@ -753,7 +755,133 @@ go_bandit([]() {
         });
       });
 
-      describe("bdd_satmin(f, cb)", [&]() {
+      describe("bdd_satmin(f) [domain]", [&]() {
+        it("should retrieve evaluation [0] in domain { 0,1,2 }", [&]() {
+          adiar_set_domain(3);
+          bdd out = bdd_satmin(bdd_0);
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         terminal_T,
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         bdd::ptr_t(2, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(1, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(3u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(4u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(3u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        });
+
+        it("should retrieve evaluation [2] in domain { 0,2,4 }", [&]() {
+          std::vector<domain_var_t> dom = { 0,2,4 };
+          adiar_set_domain(dom.begin(), dom.end());
+
+          bdd out = bdd_satmin(bdd_2);
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::MAX_ID,
+                                                         terminal_T,
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         bdd::ptr_t(4, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(3, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         bdd::ptr_t(2, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         bdd::ptr_t(1, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(5u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(6u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(5u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(6u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(5u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        });
+
+        adiar_unset_domain();
+      });
+
+      describe("bdd_satmin(f, cb) [bdd levels]", [&]() {
+        adiar_unset_domain();
+
         it("is never called for true terminal", [&]() {
           size_t calls = 0u;
           const auto cb = [&calls](bdd::label_t, bool) { calls++; };
@@ -850,11 +978,60 @@ go_bandit([]() {
         });
       });
 
-      describe("bdd_satmin(f, begin, end)", [&]() {
+      describe("bdd_satmin(f, cb) [bdd levels]", [&]() {
+        it("is called with full domain for [0]", [&]() {
+          adiar_set_domain(2);
+
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, true}, {1, false} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+
+            calls++;
+          };
+
+          bdd_satmin(bdd_0, cb);
+          AssertThat(calls, Is().EqualTo(2u));
+        });
+
+        it("is called with expected evaluation [2]", [&]() {
+          std::vector<bdd::label_t> dom = { 0,2,4 };
+          adiar_set_domain(dom.begin(), dom.end());
+
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, false}, {1, false}, {2, true}, {3, false}, {4, false} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+
+            calls++;
+          };
+
+          bdd_satmin(bdd_2, cb);
+          AssertThat(calls, Is().EqualTo(5u));
+        });
+      });
+
+      describe("bdd_satmin(f, begin, end) [bdd levels]", [&]() {
+        adiar_unset_domain();
+
         // TODO
       });
 
-      describe("bdd_satmax(f)", [&]() {
+      describe("bdd_satmin(f, begin, end) [domain]", [&]() {
+        // TODO
+      });
+
+      describe("bdd_satmax(f) [bdd levels]", [&]() {
+        adiar_unset_domain();
+
         it("should retrieve maximal evaluation [1]", [&]() {
           bdd out = bdd_satmax(bdd_1);
 
@@ -1188,7 +1365,218 @@ go_bandit([]() {
         });
       });
 
-      describe("bdd_satmax(f, cb)", [&]() {
+      describe("bdd_satmax(f) [domain]", [&]() {
+        it("should retrieve maximal evaluation [~1] in domain { 0, 1, ..., 5 }", [&]() {
+          adiar_set_domain(6);
+          bdd out = bdd_satmax(bdd_1);
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(5, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(5, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(4, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         bdd::ptr_t(3, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(2, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(1, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(5,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(6u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(7u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(6u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(7u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(6u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        });
+
+        it("should retrieve maximal evaluation [~2] in domain { 0, 1, ..., 5 }", [&]() {
+          adiar_set_domain(5);
+
+          bdd out = bdd_satmax(bdd_not(bdd_2));
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(4, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         bdd::ptr_t(3, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(1, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(2, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(1, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(1,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(5u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(6u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(5u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(6u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(5u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        });
+
+        it("should retrieve maximal evaluation [~2] in domain { 0, 2, 4 }", [&]() {
+          std::vector<bdd::label_t> dom = { 0,2,4 };
+          adiar_set_domain(dom.begin(), dom.end());
+
+          bdd out = bdd_satmax(bdd_not(bdd_2));
+
+          // Check it looks all right
+          node_test_stream out_nodes(out);
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(4, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         terminal_T)));
+
+          // Notice, this variable is outside the domain but on the traversed path!
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(3, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(4, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(2, bdd::MAX_ID,
+                                                         bdd::ptr_t(3, bdd::MAX_ID),
+                                                         terminal_F)));
+
+          AssertThat(out_nodes.can_pull(), Is().True());
+          AssertThat(out_nodes.pull(), Is().EqualTo(node(0, bdd::MAX_ID,
+                                                         terminal_F,
+                                                         bdd::ptr_t(2, bdd::MAX_ID))));
+
+          AssertThat(out_nodes.can_pull(), Is().False());
+
+          level_info_test_stream out_meta(out);
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(4,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(3,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(2,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().True());
+          AssertThat(out_meta.pull(), Is().EqualTo(level_info(0,1u)));
+
+          AssertThat(out_meta.can_pull(), Is().False());
+
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_1level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_1level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_FALSE], Is().EqualTo(4u));
+          AssertThat(out->max_2level_cut[cut_type::INTERNAL_TRUE], Is().EqualTo(1u));
+          AssertThat(out->max_2level_cut[cut_type::ALL], Is().EqualTo(5u));
+
+          AssertThat(out->number_of_terminals[false], Is().EqualTo(4u));
+          AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+        });
+
+        adiar_unset_domain();
+      });
+
+      describe("bdd_satmax(f, cb) [bdd levels]", [&]() {
+        adiar_unset_domain();
+
         it("should retrieve maximal evaluation [1]", [&]() {
           size_t calls = 0;
           std::vector<std::pair<bdd::label_t, bool>> expected =
@@ -1286,9 +1674,77 @@ go_bandit([]() {
         });
       });
 
-      describe("bdd_satmax(f, begin, end)", [&]() {
+      describe("bdd_satmax(f, cb) [domain]", [&]() {
+        it("should retrieve maximal evaluation [~1] in domain { 0, 1, ..., 5 }", [&]() {
+          adiar_set_domain(6);
+
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, true}, {1, true}, {2, false}, {3, true}, {4, true}, {5, true} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmax(bdd_1, cb);
+          AssertThat(calls, Is().EqualTo(6u));
+        });
+
+        it("should retrieve maximal evaluation [~2] in domain { 0, 1, ..., 5 }", [&]() {
+          adiar_set_domain(5);
+
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, true}, {1, true}, {2, false}, {3, true}, {4, true} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmax(bdd_not(bdd_2), cb);
+          AssertThat(calls, Is().EqualTo(5u));
+        });
+
+        it("should retrieve maximal evaluation [~2] in domain { 0, 2, 4 }", [&]() {
+          std::vector<bdd::label_t> dom = { 0,2,4 };
+          adiar_set_domain(dom.begin(), dom.end());
+
+          bdd out = bdd_satmax(bdd_not(bdd_2));
+
+          size_t calls = 0;
+          std::vector<std::pair<bdd::label_t, bool>> expected =
+            { {0, true}, {2, false}, {3, true}, {4, true} };
+
+          const auto cb = [&calls, &expected](bdd::label_t x, bool v) {
+            AssertThat(calls, Is().LessThan(expected.size()));
+            AssertThat(x, Is().EqualTo(expected.at(calls).first));
+            AssertThat(v, Is().EqualTo(expected.at(calls).second));
+            calls++;
+          };
+
+          bdd_satmax(bdd_not(bdd_2), cb);
+          AssertThat(calls, Is().EqualTo(3u + 1u));
+        });
+
+        adiar_unset_domain();
+      });
+
+      describe("bdd_satmax(f, begin, end) [bdd levels]", [&]() {
+        adiar_unset_domain();
+
         // TODO
       });
+
+      describe("bdd_satmax(f, begin, end) [domain]", [&]() {
+        // TODO
+      });
+
     } // bdd_satmin, bdd_satmax
   });
  });
