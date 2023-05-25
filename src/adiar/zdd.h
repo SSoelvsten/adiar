@@ -564,9 +564,14 @@ namespace adiar
   zdd zdd_minelem(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: add callback
-  //
-  // zdd_minelem(const zdd &A, const std::function<void(zdd::label_t, bool)> &cb);
+  /// \brief   Retrieves the lexicographically smallest set a in A.
+  ///
+  /// \param cb Callback function that is called in ascending order of the zdd's
+  ///           levels with the variable in the smallest set.
+  ///
+  /// \pre `A != zdd_empty()`
+  //////////////////////////////////////////////////////////////////////////////
+  void zdd_minelem(const zdd &A, const std::function<void(zdd::label_t)> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   // TODO: wrap into consumer lambda
@@ -584,9 +589,14 @@ namespace adiar
   zdd zdd_maxelem(const zdd &A);
 
   //////////////////////////////////////////////////////////////////////////////
-  // TODO: add callback
-  //
-  // zdd_maxelem(const zdd &A, const std::function<void(zdd::label_t, bool)> &cb);
+  /// \brief   Retrieves the lexicographically largest set a in A.
+  ///
+  /// \param cb Callback function that is called in ascending order of the zdd's
+  ///           levels with the variable in the largest set.
+  ///
+  /// \pre `A != zdd_empty()`
+  //////////////////////////////////////////////////////////////////////////////
+  void zdd_maxelem(const zdd &A, const std::function<void(zdd::label_t)> &cb);
 
   //////////////////////////////////////////////////////////////////////////////
   // TODO: wrap into consumer lambda

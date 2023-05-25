@@ -96,7 +96,7 @@ go_bandit([]() {
       nw << n2 << n1;
     }
 
-    describe("zdd_minelem", [&]() {
+    describe("zdd_minelem(A)", [&]() {
       it("finds Ø on Ø", [&]() {
         zdd out = zdd_minelem(zdd_F);
 
@@ -291,7 +291,68 @@ go_bandit([]() {
       });
     });
 
-    describe("zdd_maxelem", [&]() {
+    describe("zdd_minelem(A, cb)", [&]() {
+      it("makes no calls for { Ø } on { Ø }", [&]() {
+        size_t calls = 0u;
+        const auto cb = [&calls](zdd::label_t) {
+          calls++;
+        };
+
+        zdd_minelem(zdd_T, cb);
+        AssertThat(calls, Is().EqualTo(0u));
+      });
+
+      it("calls with 1 on [1]", [&]() {
+        size_t calls = 0u;
+        std::vector<zdd::label_t> expected { 1 };
+
+        const auto cb = [&calls, &expected](zdd::label_t x) {
+          AssertThat(x, Is().EqualTo(expected.at(calls)));
+          calls++;
+        };
+
+        zdd_minelem(zdd_1, cb);
+        AssertThat(calls, Is().EqualTo(1u));
+      });
+
+      it("makes no calls for { Ø } on [2]", [&]() {
+        size_t calls = 0u;
+        const auto cb = [&calls](zdd::label_t) {
+          calls++;
+        };
+
+        zdd_minelem(zdd_2, cb);
+        AssertThat(calls, Is().EqualTo(0u));
+      });
+
+      it("calls with 2,4 on [3]", [&]() {
+        size_t calls = 0u;
+        std::vector<zdd::label_t> expected { 2,4 };
+
+        const auto cb = [&calls, &expected](zdd::label_t x) {
+          AssertThat(x, Is().EqualTo(expected.at(calls)));
+          calls++;
+        };
+
+        zdd_minelem(zdd_3, cb);
+        AssertThat(calls, Is().EqualTo(2u));
+      });
+
+      it("calls with 1 on [4]", [&]() {
+        size_t calls = 0u;
+        std::vector<zdd::label_t> expected { 1 };
+
+        const auto cb = [&calls, &expected](zdd::label_t x) {
+          AssertThat(x, Is().EqualTo(expected.at(calls)));
+          calls++;
+        };
+
+        zdd_minelem(zdd_4, cb);
+        AssertThat(calls, Is().EqualTo(1u));
+      });
+    });
+
+    describe("zdd_maxelem(A)", [&]() {
       it("finds Ø on Ø", [&]() {
         zdd out = zdd_maxelem(zdd_F);
 
@@ -464,6 +525,60 @@ go_bandit([]() {
 
         AssertThat(out->number_of_terminals[false], Is().EqualTo(2u));
         AssertThat(out->number_of_terminals[true],  Is().EqualTo(1u));
+      });
+    });
+
+
+    describe("zdd_maxelem(A, cb)", [&]() {
+      it("makes no calls for { Ø } on { Ø }", [&]() {
+        size_t calls = 0u;
+        const auto cb = [&calls](zdd::label_t) {
+          calls++;
+        };
+
+        zdd_maxelem(zdd_T, cb);
+        AssertThat(calls, Is().EqualTo(0u));
+
+        zdd out = zdd_maxelem(zdd_T);
+      });
+
+      it("calls 0,2 on [1]", [&]() {
+        size_t calls = 0u;
+        std::vector<zdd::label_t> expected { 0,2 };
+
+        const auto cb = [&calls, &expected](zdd::label_t x) {
+          AssertThat(x, Is().EqualTo(expected.at(calls)));
+          calls++;
+        };
+
+        zdd_maxelem(zdd_1, cb);
+        AssertThat(calls, Is().EqualTo(2u));
+      });
+
+      it("calls with 1 on [2]", [&]() {
+        size_t calls = 0u;
+        std::vector<zdd::label_t> expected { 1 };
+
+        const auto cb = [&calls, &expected](zdd::label_t x) {
+          AssertThat(x, Is().EqualTo(expected.at(calls)));
+          calls++;
+        };
+
+        zdd_maxelem(zdd_2, cb);
+        AssertThat(calls, Is().EqualTo(1u));
+      });
+
+      it("calls with 0,1 on [4]", [&]() {
+        size_t calls = 0u;
+        std::vector<zdd::label_t> expected { 0,1 };
+
+        const auto cb = [&calls, &expected](zdd::label_t x) {
+          AssertThat(x, Is().EqualTo(expected.at(calls)));
+          calls++;
+        };
+
+        zdd_maxelem(zdd_4, cb);
+        AssertThat(calls, Is().EqualTo(2u));
       });
     });
   });
