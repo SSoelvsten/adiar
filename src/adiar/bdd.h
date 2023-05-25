@@ -722,10 +722,10 @@ namespace adiar
   ///          resulting assignment is lexicographically smallest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \returns A `shared_file<...>` of pairs `(bdd::label_t,
-  ///          boolean)` for every variable mentioned by the given BDD.
+  /// \returns A bdd whos only path to the `true` terminal reflects the minimal
+  ///          assignment.
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<map_pair<bdd::label_t, boolean>> bdd_satmin(const bdd &f);
+  bdd bdd_satmin(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically smallest x such that f(x) is true.
@@ -746,10 +746,10 @@ namespace adiar
   ///          resulting assignment is lexicographically largest, where every
   ///          variable is treated as a digit and \f$ x_0 > x_1 > \dots \f$.
   ///
-  /// \returns A `shared_file<...>` of pairs `(bdd::label_t, boolean)` for every
-  ///          variable mentioned by the given BDD.
+  /// \returns A bdd whos only path to the `true` terminal reflects the maximal
+  ///          assignment.
   //////////////////////////////////////////////////////////////////////////////
-  shared_file<map_pair<bdd::label_t, boolean>> bdd_satmax(const bdd &f);
+  bdd bdd_satmax(const bdd &f);
 
   //////////////////////////////////////////////////////////////////////////////
   /// \brief   The lexicographically largest x such that f(x) is true.
